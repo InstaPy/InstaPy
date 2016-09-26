@@ -1,7 +1,7 @@
 """Example Case of the Script"""
 from instapy import InstaPy
 
-# leave this empty to take env vars
+#if you don't provide arguments, the script will look for INSTA_USER and INSTA_PW in the environment
 session = InstaPy(username='test', password='test')
 
 """Logging in"""
@@ -10,21 +10,21 @@ session.login()
 
 """Comment util"""
 #default enabled=False, ~ every 4th image will be commented on
-session.do_comment(enabled=True, percentage=25)
+session.set_do_comment(enabled=True, percentage=25)
 session.set_comments(['Awesome', 'Really Cool', 'I like your stuff'])
 
 """Follow util"""
 #default enabled=False, follows ~ every 10th user from the images
-session.do_follow(enabled=True, percentage=10)
+session.set_do_follow(enabled=True, percentage=10)
 
 """Like util"""
 #searches the description for the given words and won't
 # like the image if one of the words are in there
-session.dont_like(['food', 'eat', 'meal'])
+session.set_dont_like(['food', 'eat', 'meal'])
 
 """Unfollow util"""
 #will prevent commenting and unfollowing your good friends
-session.dont_include(['friend1', 'friend2', 'friend3'])
+session.set_dont_include(['friend1', 'friend2', 'friend3'])
 
 """Different tasks"""
 # you can put in as much tags as you want, likes 100 of each tag
@@ -44,7 +44,7 @@ session.end()
 #--------------------------------------------------------------------------------
 """Not yet implemented"""
 #default enabled=False , checks the description of each image for stuff you don't want to like
-session.check_image(enabled=True)
+session.set_check_image(enabled=True)
 session.check_image_for(['nsfw']) #uses the clarifai api to check if the image contains like nsfw stuff...
 # Check out their homepage to see which tags there are -> won't comment on image
 # (you won't do this on every single image or the 5000 free checks are wasted very fast)
