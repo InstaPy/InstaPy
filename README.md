@@ -8,6 +8,15 @@ Implemented in Python using the selenium module.</p>
 <h3>It's easy to use and the built in delays prevet your account from getting banned</h3>
 <h5>Getting started</h5>
 ```
+pip install selenium
+```
+<p>If you want the script to get the username and password for your environment, you can do:</p>
+```
+export INSTA_USER="<Your username>"
+export INSTA_PW="<Your password>"
+```
+<hr />
+```
 from instapy import InstaPy
 
 #if you don't provide arguments, the script will look for INSTA_USER and INSTA_PW in the environment
