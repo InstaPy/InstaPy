@@ -52,7 +52,8 @@ class InstaPy:
   def set_do_comment(self, enabled=False, percentage=0):
     """Defines if images should be commented or not
     percentage=25 -> ~ every 4th picture will be commented"""
-    if self.aborting: return self
+    if self.aborting:
+      return self
 
     self.do_comment = enabled
     self.comment_percentage = percentage
@@ -61,7 +62,8 @@ class InstaPy:
 
   def set_comments(self, comments=None):
     """Changes the possible comments"""
-    if self.aborting: return self
+    if self.aborting:
+      return self
 
     if comments is None:
       comments = []
@@ -71,7 +73,8 @@ class InstaPy:
 
   def set_do_follow(self, enabled=False, percentage=0):
     """Defines if the user of the liked image should be followed"""
-    if self.aborting: return self
+    if self.aborting:
+      return self
 
     self.do_follow = enabled
     self.follow_percentage = percentage
@@ -81,7 +84,8 @@ class InstaPy:
   def set_dont_like(self, tags=None):
     """Changes the possible restriction tags, if one of this
      words is in the description, the image won't be liked"""
-    if self.aborting: return self
+    if self.aborting:
+      return self
 
     if tags is None:
       tags = []
@@ -91,7 +95,8 @@ class InstaPy:
 
   def set_dont_include(self, friends=None):
     """Defines which accounts should not be unfollowed"""
-    if self.aborting: return self
+    if self.aborting:
+      return self
 
     if friends is None:
       friends = []
@@ -101,7 +106,8 @@ class InstaPy:
 
   def like_by_tags(self, tags=None, amount=50):
     """Likes (default) 50 images per given tag"""
-    if self.aborting: return self
+    if self.aborting:
+      return self
 
     liked_img = 0
     already_liked = 0
@@ -150,7 +156,8 @@ class InstaPy:
 
   def like_from_image(self, url, amount=50):
     """Gets the tags from an image and likes 50 images for each tag"""
-    if self.aborting: return self
+    if self.aborting:
+      return self
 
     try:
       tags = get_tags(self.browser, url)
