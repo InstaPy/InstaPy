@@ -37,47 +37,72 @@ class InstaPy:
 
     self.dont_like = ['sex', 'nsfw']
 
+    self.aborting = False
+
   def login(self):
     """Used to login the user either with the username and password"""
-    try:
-      login_user(self.browser, self.username, self.password)
-      print('Logged in successfully')
-      sleep(3)
-    except NotImplementedError as err:
-      print(str(err))
+    if not login_user(self.browser, self.username, self.password):
+      print('Wrong login data!')
+      self.aborting = True
+    else:
+      print('Logged in successfully!')
+
+    return self
 
   def set_do_comment(self, enabled=False, percentage=0):
     """Defines if images should be commented or not
     percentage=25 -> ~ every 4th picture will be commented"""
+    if self.aborting: return self
+
     self.do_comment = enabled
     self.comment_percentage = percentage
 
+    return self
+
   def set_comments(self, comments=None):
     """Changes the possible comments"""
+    if self.aborting: return self
+
     if comments is None:
       comments = []
     self.comments = comments
 
+    return self
+
   def set_do_follow(self, enabled=False, percentage=0):
     """Defines if the user of the liked image should be followed"""
+    if self.aborting: return self
+
     self.do_follow = enabled
     self.follow_percentage = percentage
+
+    return self
 
   def set_dont_like(self, tags=None):
     """Changes the possible restriction tags, if one of this
      words is in the description, the image won't be liked"""
+    if self.aborting: return self
+
     if tags is None:
       tags = []
     self.dont_like = tags
 
+    return self
+
   def set_dont_include(self, friends=None):
     """Defines which accounts should not be unfollowed"""
+    if self.aborting: return self
+
     if friends is None:
       friends = []
     self.dont_include = friends
 
+    return self
+
   def like_by_tags(self, tags=None, amount=50):
     """Likes (default) 50 images per given tag"""
+    if self.aborting: return self
+
     liked_img = 0
     already_liked = 0
     inap_img = 0
@@ -121,15 +146,22 @@ class InstaPy:
     print('Commented: ' + str(commented))
     print('Followed: ' + str(followed))
 
+    return self
+
   def like_from_image(self, url, amount=50):
     """Gets the tags from an image and likes 50 images for each tag"""
+    if self.aborting: return self
+
     try:
       tags = get_tags(self.browser, url)
       print(tags)
       self.like_by_tags(tags, amount)
     except TypeError as err:
       print('Sorry, an error occured: ' + str(err))
-      self.end()
+      self.aborting = True
+      return self
+
+    return self
 
   def unfollow_users(self, amount=10):
     """Unfollows (default) 10 users from your following list"""
@@ -138,13 +170,16 @@ class InstaPy:
         unfollow(self.browser, self.username, amount)
       except TypeError as err:
         print('Sorry, an error occured: ' + str(err))
-        self.end()
+        self.aborting = True
+        return self
 
       if amount > 10:
         sleep(600)
         print('Sleeping for 10min')
 
       amount -= 10
+
+    return self
 
   def end(self):
     """Closes the current session"""

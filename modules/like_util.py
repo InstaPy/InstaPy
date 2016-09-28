@@ -6,7 +6,7 @@ from selenium.webdriver.common.keys import Keys
 def get_links_for_tag(browser, tag, amount):
   """Fetches the number of links specified
   by amount and returns a list of links"""
-  browser.get('https://www.instagram.com/explore/tags/' + tag[1:])
+  browser.get('https://www.instagram.com/explore/tags/' + (tag[1:] if tag[:1] == '#' else tag))
 
   # clicking load more till there are 1000 posts
   load_div = browser.find_element_by_class_name('_pupj3')

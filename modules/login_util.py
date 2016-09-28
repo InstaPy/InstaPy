@@ -1,4 +1,6 @@
 """Module only used for the login part of the script"""
+from time import sleep
+from selenium.common.exceptions import NoSuchElementException
 
 def login_user(browser, username, password):
   """Logins the user with the given username and password"""
@@ -17,3 +19,11 @@ def login_user(browser, username, password):
   username_elem.send_keys(username)
   passwd_elem.send_keys(password)
   login_elem.click()
+
+  sleep(2)
+
+  try:
+    browser.find_element_by_class_name('_q90d5')
+    return False
+  except NoSuchElementException as err:
+    return True
