@@ -15,7 +15,7 @@ InstaPy(username='test', password='test')\
   .set_comments(['Cool!', 'Awesome!', 'Nice!'])\
   .set_dont_include(['friend1', 'friend2', 'friend3'])\
   .set_dont_like(['food', 'girl', 'hot'])\
-  .like_by_tags(['dog', '#cat'], amount=2)\
+  .like_by_tags(['dog', '#cat'], amount=100)\
   .end()
 ```
 <h2>It's easy to use and the built in delays prevet your account from getting banned</h2>
