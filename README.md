@@ -5,7 +5,20 @@
 <p>Automation Script for "farming" Likes, Comments and Followers on Instagram.<br />
 Implemented in Python using the selenium module.</p>
 
-<h3>It's easy to use and the built in delays prevet your account from getting banned</h3>
+<h4>Example</h4>
+```
+from instapy import InstaPy
+
+InstaPy(username='test', password='test')\ #start the session
+  .login()\ #logs you in with the given username and pw
+  .set_do_comment(True, percentage=10)\ #enables comments
+  .set_comments(['Cool!', 'Awesome!', 'Nice!'])\ #sets the used comments
+  .set_dont_include(['friend1', 'friend2', 'friend3'])\ #won't commenting/unfollow real friends
+  .set_dont_like(['food', 'girl', 'hot'])\ # won't like posts that contain these
+  .like_by_tags(['dog', '#cat'], amount=2)\ # likes 2 posts for dog and for cat
+  .end() # ends the session
+```
+<h2>It's easy to use and the built in delays prevet your account from getting banned</h2>
 <h5>Getting started</h5>
 ```
 pip install selenium
