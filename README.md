@@ -15,6 +15,7 @@ InstaPy(username='test', password='test')\
   .set_comments(['Cool!', 'Awesome!', 'Nice!'])\
   .set_dont_include(['friend1', 'friend2', 'friend3'])\
   .set_dont_like(['food', 'girl', 'hot'])\
+  .set_ignore_if_contains(['pizza'])\
   .like_by_tags(['dog', '#cat'], amount=100)\
   .end()
 ```
@@ -51,6 +52,13 @@ session.end()
 # like the image if one of the words are in there
 
 session.set_dont_like(['food', 'eat', 'meal'])
+```
+<h5>Ignoring Restrictions</h5>
+```
+#will ignore the don't like if the description contains
+# one of the given words
+
+session.set_ignore_if_contains(['glutenfree', 'french', 'tasty'])
 ```
 
 <h5>Commenting</h5>
