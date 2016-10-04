@@ -21,6 +21,9 @@ session.set_do_follow(enabled=True, percentage=10)
 #searches the description for the given words and won't
 # like the image if one of the words are in there
 session.set_dont_like(['food', 'eat', 'meal'])
+#will ignore the don't like if the description contains
+# one of the given words
+session.set_ignore_if_contains(['glutenfree', 'french', 'tasty'])
 
 """Unfollow util"""
 #will prevent commenting and unfollowing your good friends
@@ -43,8 +46,9 @@ session.end()
 
 #--------------------------------------------------------------------------------
 """Not yet implemented"""
-#default enabled=False , checks the description of each image for stuff you don't want to like
-session.set_check_image(enabled=True)
-session.check_image_for(['nsfw']) #uses the clarifai api to check if the image contains like nsfw stuff...
+#default enabled=False , enables the checking with the clarifai api (image tagging)
+session.set_use_clarifai(enabled=True, token='xyz', proj_id='123')
+
+session.check_image_for(['nsfw']) #uses the clarifai api to check if the image contains nsfw content
 # Check out their homepage to see which tags there are -> won't comment on image
 # (you won't do this on every single image or the 5000 free checks are wasted very fast)

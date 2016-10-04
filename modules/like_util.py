@@ -6,7 +6,8 @@ from selenium.webdriver.common.keys import Keys
 def get_links_for_tag(browser, tag, amount):
   """Fetches the number of links specified
   by amount and returns a list of links"""
-  browser.get('https://www.instagram.com/explore/tags/' + (tag[1:] if tag[:1] == '#' else tag))
+  browser.get('https://www.instagram.com/explore/tags/'
+              + (tag[1:] if tag[:1] == '#' else tag))
 
   # clicking load more till there are 1000 posts
   load_div = browser.find_element_by_class_name('_pupj3')
@@ -29,7 +30,7 @@ def get_links_for_tag(browser, tag, amount):
 
   return links[:amount]
 
-def check_link(browser, link, dont_like, username):
+def check_link(browser, link, dont_like, ignore_if_contains, username):
   """Gets the description of the link and checks for the dont_like tags"""
   browser.get(link)
 
@@ -42,6 +43,10 @@ def check_link(browser, link, dont_like, username):
   print('Image from: ' + user_name)
   print('Link: ' + link)
   print('Description: ' + image_text)
+
+  for word in ignore_if_contains:
+    if word in image_text:
+      return False, user_name
 
   for tag in dont_like:
     if tag in image_text or user_name == username:

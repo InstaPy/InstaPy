@@ -36,6 +36,7 @@ class InstaPy:
     self.dont_include = []
 
     self.dont_like = ['sex', 'nsfw']
+    self.ignore_if_contains = []
 
     self.aborting = False
 
@@ -93,6 +94,18 @@ class InstaPy:
 
     return self
 
+  def set_ignore_if_contains(self, words=None):
+    """ignores the don't likes if the description contains
+    one of the given words"""
+    if self.aborting:
+      return self
+
+    if words is None:
+      words = []
+    self.ignore_if_contains = words
+
+    return self
+
   def set_dont_include(self, friends=None):
     """Defines which accounts should not be unfollowed"""
     if self.aborting:
@@ -125,7 +138,8 @@ class InstaPy:
       for link in links:
         try:
           inappropriate, user_name = \
-            check_link(self.browser, link, self.dont_like, self.username)
+            check_link(self.browser, link, self.dont_like,
+                       self.ignore_if_contains, self.username)
 
           if not inappropriate:
             liked = like_image(self.browser)
