@@ -92,7 +92,7 @@ session.unfollow_users(amount=10)
 <br />
 <h3>Clarifai ImageAPI</h3>
 <img src="https://d1qb2nb5cznatu.cloudfront.net/startups/i/396673-2fb6e8026b393dddddc093c23d8cd866-medium_jpg.jpg?buster=1399901540" width="200" align="right">
-<h6>Note: Head over to https://developer.clarifai.com/signup/ and create a free account, once you're logged in go to https://developer.clarifai.com/account/applications/ and create a new application. You can find the client ID and secret there.</h6>
+<h6>Note: Head over to https://developer.clarifai.com/signup/ and create a free account, once you're logged in go to https://developer.clarifai.com/account/applications/ and create a new application. You can find the client ID and Secret there.</h6>
 <p>If you want the script to get your Clarifai_ID and Clarifai_Secret for your environment, you can do:</p>
 ```
 export CLARIFAI_ID="<ProjectID>"
