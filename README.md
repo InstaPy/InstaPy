@@ -89,8 +89,9 @@ session.set_dont_include(['friend1', 'friend2', 'friend3'])
 
 session.unfollow_users(amount=10) 
 ```
-
+<br />
 <h3>Clarifai ImageAPI</h3>
+<img src="https://d1qb2nb5cznatu.cloudfront.net/startups/i/396673-2fb6e8026b393dddddc093c23d8cd866-medium_jpg.jpg?buster=1399901540" width="200" align="right">
 <p>If you want the script to get your Clarifai_ID and Clarifai_Secret for your environment, you can do:</p>
 ```
 export CLARIFAI_ID="<ProjectID>"
