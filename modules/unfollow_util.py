@@ -1,6 +1,5 @@
 """Module which handles the follow features like unfollowing and following"""
 from time import sleep
-from random import randint
 
 def unfollow(browser, username, amount):
   """unfollows the given amount of users"""
@@ -25,24 +24,18 @@ def unfollow(browser, username, amount):
     print('--> Now unfollowing: ' + person)
     sleep(1)
 
-def follow_user(browser, follow_percentage):
+def follow_user(browser):
   """Follows the user of the currently opened image"""
-  if randint(0, 100) <= follow_percentage:
-    follow_button = browser.find_elements_by_tag_name('button')[0]
-    sleep(1)
+  follow_button = browser.find_elements_by_tag_name('button')[0]
+  sleep(1)
 
-    if follow_button.text == 'Follow':
-      follow_button.click()
-      print('--> Now following')
-      sleep(3)
-      return 1
-
-    else:
-      print('--> Already following')
-      sleep(1)
-      return 0
+  if follow_button.text == 'Follow':
+    follow_button.click()
+    print('--> Now following')
+    sleep(3)
+    return 1
 
   else:
-    print('--> Not following')
+    print('--> Already following')
     sleep(1)
     return 0

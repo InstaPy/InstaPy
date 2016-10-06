@@ -17,6 +17,27 @@ session.set_comments(['Awesome', 'Really Cool', 'I like your stuff'])
 #default enabled=False, follows ~ every 10th user from the images
 session.set_do_follow(enabled=True, percentage=10)
 
+"""Image Check with Image tagging api"""
+#default enabled=False , enables the checking with the clarifai api (image tagging)
+#if token and proj_id are not set, it will get the environment Variables
+# 'Clarifai_TOKEN' and 'CLARIFAI_ID'
+session.set_use_clarifai(enabled=True, secret='xyz', proj_id='123')
+#                                        ^
+# ^If specified once, you don't need to add them again
+
+session.set_use_clarifai(enabled=False)
+session.set_use_clarifai(enabled=True) #<- will use the one from above
+
+#uses the clarifai api to check if the image contains nsfw content
+# Check out their homepage to see which tags there are -> won't comment on image
+# (you won't do this on every single image or the 5000 free checks are wasted very fast)
+session.check_image_for(['nsfw'], comment=False) # !if no tags are set, use_clarifai will be False
+
+#checks the image for keywords food and lunch, if found, sets the comments possible comments
+#to the given comments
+session.check_image_for(['food', 'lunch'], comment=True, comments=['Tasty!', 'Yum!'])
+session.check_image_for(['dog', 'cat', 'cute'], comment=True, comments=['Sweet!', 'Cutie!!!'])
+
 """Like util"""
 #searches the description for the given words and won't
 # like the image if one of the words are in there
@@ -42,13 +63,3 @@ session.unfollow_users(amount=10) #unfollows 10 of the accounts your following -
 """Ending the script"""
 #clears all the cookies, deleting you password and all information from this session
 session.end()
-
-
-#--------------------------------------------------------------------------------
-"""Not yet implemented"""
-#default enabled=False , enables the checking with the clarifai api (image tagging)
-session.set_use_clarifai(enabled=True, token='xyz', proj_id='123')
-
-session.check_image_for(['nsfw']) #uses the clarifai api to check if the image contains nsfw content
-# Check out their homepage to see which tags there are -> won't comment on image
-# (you won't do this on every single image or the 5000 free checks are wasted very fast)

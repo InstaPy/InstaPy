@@ -1,9 +1,11 @@
 """OS Modules environ method to get the setup vars from the Environment"""
 from os import environ
+from random import randint
 from time import sleep
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
 
+from modules.clarifai_util import check_image
 from modules.comment_util import comment_image
 from modules.like_util import check_link
 from modules.like_util import get_links_for_tag
@@ -37,6 +39,11 @@ class InstaPy:
 
     self.dont_like = ['sex', 'nsfw']
     self.ignore_if_contains = []
+
+    self.use_clarifai = False
+    self.clarifai_secret = None
+    self.clarifai_id = None
+    self.clarifai_img_tags = []
 
     self.aborting = False
 
@@ -117,6 +124,38 @@ class InstaPy:
 
     return self
 
+  def set_use_clarifai(self, enabled=False, secret=None, proj_id=None):
+    """Defines if the clarifai img api should be used
+    Which 'project' will be used (only 5000 calls per month)"""
+    if self.aborting:
+      return self
+
+    self.use_clarifai = enabled
+
+    if secret is None and self.clarifai_secret is None:
+      self.clarifai_secret = environ.get('CLARIFAI_SECRET')
+    elif secret is not None:
+      self.clarifai_secret = secret
+
+    if proj_id is None and self.clarifai_id is None:
+      self.clarifai_id = environ.get('CLARIFAI_ID')
+    elif proj_id is not None:
+      self.clarifai_id = proj_id
+
+    return self
+
+  def clarifai_check_img_for(self, tags=None, comment=False, comments=None):
+    """Defines the tags, the images should be checked for"""
+    if self.aborting:
+      return self
+
+    if tags is None and not self.clarifai_img_tags:
+      self.use_clarifai = False
+    elif tags:
+      self.clarifai_img_tags.append((tags, comment, comments))
+
+    return self
+
   def like_by_tags(self, tags=None, amount=50):
     """Likes (default) 50 images per given tag"""
     if self.aborting:
@@ -131,11 +170,18 @@ class InstaPy:
     if tags is None:
       tags = []
 
-    for tag in tags:
+    for index, tag in enumerate(tags):
+      print('Tag [%d/%d]' % (index + 1, len(tags)))
       print('--> ' + tag)
-      links = get_links_for_tag(self.browser, tag, amount)
+      try:
+        links = get_links_for_tag(self.browser, tag, amount)
+      except NoSuchElementException:
+        print('Too few images, aborting')
+        self.aborting = True
+        return self
 
-      for link in links:
+      for i, link in enumerate(links):
+        print('[%d/%d]' % (i + 1, len(links)))
         try:
           inappropriate, user_name = \
             check_link(self.browser, link, self.dont_like,
@@ -146,15 +192,41 @@ class InstaPy:
 
             if liked:
               liked_img += 1
-              if self.do_comment and user_name not in self.dont_include:
-                commented += comment_image(self.browser, self.comments,
-                                           self.comment_percentage)
+              checked_img = True
+              temp_comments = []
+              commenting = True if randint(0, 100) <= self.comment_percentage\
+                          else False
+              following = True if randint(0, 100) <= self.follow_percentage\
+                          else False
 
-              if self.do_follow and user_name not in self.dont_include:
-                followed += follow_user(self.browser, self.follow_percentage)
+              if following or commenting:
+                try:
+                  checked_img, temp_comments =\
+                    check_image(self.browser, self.clarifai_id,
+                                self.clarifai_secret,
+                                self.clarifai_img_tags)
+                except Exception as err:
+                  print('Image check error: ' + str(err))
+
+              if self.do_comment and user_name not in self.dont_include \
+                  and checked_img and commenting:
+                commented += comment_image(self.browser,
+                                           temp_comments if temp_comments
+                                           else self.comments)
+              else:
+                print('--> Not commented')
+                sleep(1)
+
+              if self.do_follow and user_name not in self.dont_include \
+                  and checked_img and following:
+                followed += follow_user(self.browser)
+              else:
+                print('--> Not following')
+                sleep(1)
             else:
               already_liked += 1
           else:
+            print('Image not liked: Inappropriate')
             inap_img += 1
         except NoSuchElementException as err:
           print('Invalid Page: ' + str(err))

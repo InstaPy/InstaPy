@@ -1,4 +1,5 @@
 """Module that handles the like features"""
+from math import ceil
 from time import sleep
 from re import findall
 from selenium.webdriver.common.keys import Keys
@@ -17,7 +18,7 @@ def get_links_for_tag(browser, tag, amount):
   body_elem = browser.find_element_by_tag_name('body')
   main_elem = browser.find_element_by_tag_name('main')
 
-  new_needed = round((amount - 33) / 12)
+  new_needed = ceil((amount - 33) / 12)
 
   for _ in range(new_needed):  # add images x * 12
     body_elem.send_keys(Keys.END)
@@ -66,6 +67,7 @@ def like_image(browser):
   if span_elem_text == 'Like':
     link_elem.click()
     print('--> Image liked!')
+    sleep(2)
     return True
   else:
     print('--> Already Liked!')
