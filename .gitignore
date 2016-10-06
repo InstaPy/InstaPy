@@ -1,3 +1,6 @@
+# pylint file
+googlecl-pylint.rc.txt
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
