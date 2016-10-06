@@ -90,4 +90,55 @@ session.set_dont_include(['friend1', 'friend2', 'friend3'])
 session.unfollow_users(amount=10) 
 ```
 
+<h3>Clarifai ImageAPI</h3>
+<p>If you want the script to get your Clarifai_ID and Clarifai_Secret for your environment, you can do:</p>
+```
+export CLARIFAI_ID="<ProjectID>"
+export CLARIFAI_SECRET="<Project Secret>"
+```
+<h5>Getting started</h5>
+```bash
+pip install pip install git+git://github.com/Clarifai/clarifai-python.git
+```
+<h4>Example with Imagecontent handling</h4>
+```python
+from instapy import InstaPy
+
+InstaPy(username='test', password='test')\
+  .login()\
+  .set_do_comment(True, percentage=10)\
+  .set_comments(['Cool!', 'Awesome!', 'Nice!'])\
+  .set_dont_include(['friend1', 'friend2', 'friend3'])\
+  .set_dont_like(['food', 'girl', 'hot'])\
+  .set_ignore_if_contains(['pizza'])\
+  .set_use_clarifai(enabled=True)\
+  .clarifai_check_img_for(['nsfw'])\
+  .clarifai_check_img_for(['food', 'lunch', 'dinner'], comment=True, comments=['Tasty!', 'Nice!', 'Yum!'])\
+  .like_by_tags(['dog', '#cat'], amount=100)\
+  .end()
+```
+<h5>Enabling Imagechecking</h5>
+```python
+#default enabled=False , enables the checking with the clarifai api (image tagging)
+#if secret and proj_id are not set, it will get the environment Variables
+# 'Clarifai_SECRET' and 'CLARIFAI_ID'
+
+session.set_use_clarifai(enabled=True, secret='xyz', proj_id='123')
+```
+<h5>Filtering inappropriate images</h5>
+```python
+# uses the clarifai api to check if the image contains nsfw content
+# -> won't comment if image is nsfw
+
+session.check_image_for(['nsfw'])
+```
+<h5>Specialized comments for images with specific content</h5>
+```python
+#checks the image for keywords food and lunch, if found,
+#comments with the given comments
+
+session.check_image_for(['food', 'lunch'], comment=True, comments=['Tasty!', 'Yum!'])
+```
+<h6>Check out https://clarifai.com/demo to see some of the available tags.</h6>
+<hr />
 <h6>Have Fun & Feel Free to report any issues</h6>
