@@ -54,7 +54,7 @@ session.end()
 session.set_dont_like(['food', 'eat', 'meal'])
 ```
 <h5>Ignoring Restrictions</h5>
-```
+```python
 #will ignore the don't like if the description contains
 # one of the given words
 
