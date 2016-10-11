@@ -19,5 +19,5 @@ setup(
     author_email='contact.timgrossmann@gmail.com',
     url='https://github.com/timgrossmann/InstaPy',
     license=license,
-    packages=find_packages(exclude=('examples'))
+    packages=find_packages(exclude=('examples', 'assets'))
 )
