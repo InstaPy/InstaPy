@@ -1,0 +1,2 @@
+selenium
+git+git://github.com/Clarifai/clarifai-python.git

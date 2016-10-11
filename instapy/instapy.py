@@ -5,15 +5,15 @@ from time import sleep
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
 
-from modules.clarifai_util import check_image
-from modules.comment_util import comment_image
-from modules.like_util import check_link
-from modules.like_util import get_links_for_tag
-from modules.like_util import get_tags
-from modules.like_util import like_image
-from modules.login_util import login_user
-from modules.unfollow_util import unfollow
-from modules.unfollow_util import follow_user
+from .clarifai_util import check_image
+from .comment_util import comment_image
+from .like_util import check_link
+from .like_util import get_links_for_tag
+from .like_util import get_tags
+from .like_util import like_image
+from .login_util import login_user
+from .unfollow_util import unfollow
+from .unfollow_util import follow_user
 
 class InstaPy:
   """Class to be instantiated to use the script"""

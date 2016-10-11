@@ -1,5 +1,4 @@
 from instapy import InstaPy
-
 tag_list = ['sex','nude','naked','beef','pork','seafood',
             'egg','chicken','cheese','sausage','lobster',
             'fisch','schwein','lamm','rind','kuh','meeresfrüchte',
