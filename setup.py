@@ -11,7 +11,7 @@ with open('LICENSE') as f:
     license = f.read()
 
 setup(
-    name='insta-py',
+    name='instapy',
     version='0.1.0',
     description='Instagram Like/Comment/Follow Automation',
     long_description=readme,
