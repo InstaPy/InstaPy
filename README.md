@@ -100,7 +100,7 @@ export CLARIFAI_SECRET="<Project Secret>"
 ```
 <h5>Getting started</h5>
 ```bash
-pip install pip install git+git://github.com/Clarifai/clarifai-python.git
+pip install git+git://github.com/Clarifai/clarifai-python.git
 ```
 <h4>Example with Imagecontent handling</h4>
 ```python
