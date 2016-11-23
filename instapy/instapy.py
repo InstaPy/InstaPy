@@ -28,7 +28,7 @@ class InstaPy:
     chrome_options.add_argument('--dns-prefetch-disable')
     self.browser = webdriver.Chrome('./assets/chromedriver', chrome_options=chrome_options)
 
-    self.logFile = open('./logFile.txt', 'a')
+    self.logFile = open('./logs/logFile.txt', 'a')
     self.logFile.write('Session started - %s\n' \
                        % (datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
 
@@ -206,7 +206,7 @@ class InstaPy:
       for i, link in enumerate(links):
         print('[%d/%d]' % (i + 1, len(links)))
         self.logFile.write('[%d/%d]' % (i + 1, len(links)))
-        self.logFile.write(link + '\n')
+        self.logFile.write(link)
 
         try:
           inappropriate, user_name = \
