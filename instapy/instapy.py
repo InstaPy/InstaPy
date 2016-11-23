@@ -2,8 +2,10 @@
 from os import environ
 from random import randint
 from time import sleep
+from pyvirtualdisplay import Display
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
+from selenium.webdriver.chrome.options import Options
 
 from .clarifai_util import check_image
 from .comment_util import comment_image
@@ -18,7 +20,12 @@ from .unfollow_util import follow_user
 class InstaPy:
   """Class to be instantiated to use the script"""
   def __init__(self, username=None, password=None):
-    self.browser = webdriver.Chrome('./assets/chromedriver')
+    self.display = Display(visible=0, size=(800, 600))
+    self.display.start()
+    chrome_options = Options()
+    chrome_options.add_argument('--dns-prefetch-disable')
+    self.browser = webdriver.Chrome('./assets/chromedriver', chrome_options=chrome_options)
+
     if username is None:
       self.username = environ.get('INSTA_USER')
     else:
