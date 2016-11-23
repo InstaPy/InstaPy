@@ -1,8 +1,9 @@
 """OS Modules environ method to get the setup vars from the Environment"""
+from datetime import datetime
 from os import environ
 from random import randint
 from time import sleep
-from pyvirtualdisplay import Display
+#from pyvirtualdisplay import Display
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.chrome.options import Options
@@ -16,15 +17,20 @@ from .like_util import like_image
 from .login_util import login_user
 from .unfollow_util import unfollow
 from .unfollow_util import follow_user
+from .print_log_writer import log_follower_num
 
 class InstaPy:
   """Class to be instantiated to use the script"""
   def __init__(self, username=None, password=None):
-    self.display = Display(visible=0, size=(800, 600))
-    self.display.start()
+    #self.display = Display(visible=0, size=(800, 600))
+    #self.display.start()
     chrome_options = Options()
     chrome_options.add_argument('--dns-prefetch-disable')
     self.browser = webdriver.Chrome('./assets/chromedriver', chrome_options=chrome_options)
+
+    self.logFile = open('./logFile.txt', 'a')
+    self.logFile.write('Session started - %s\n' \
+                       % (datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
 
     if username is None:
       self.username = environ.get('INSTA_USER')
@@ -58,9 +64,14 @@ class InstaPy:
     """Used to login the user either with the username and password"""
     if not login_user(self.browser, self.username, self.password):
       print('Wrong login data!')
+      self.logFile.write('Wrong login data!\n')
+
       self.aborting = True
     else:
       print('Logged in successfully!')
+      self.logFile.write('Logged in successfully!\n')
+
+    log_follower_num(self.browser, self.username)
 
     return self
 
@@ -180,15 +191,23 @@ class InstaPy:
     for index, tag in enumerate(tags):
       print('Tag [%d/%d]' % (index + 1, len(tags)))
       print('--> ' + tag)
+      self.logFile.write('Tag [%d/%d]' % (index + 1, len(tags)))
+      self.logFile.write('--> ' + tag + '\n')
+
       try:
         links = get_links_for_tag(self.browser, tag, amount)
       except NoSuchElementException:
         print('Too few images, aborting')
+        self.logFile.write('Too few images, aborting\n')
+
         self.aborting = True
         return self
 
       for i, link in enumerate(links):
         print('[%d/%d]' % (i + 1, len(links)))
+        self.logFile.write('[%d/%d]' % (i + 1, len(links)))
+        self.logFile.write(link + '\n')
+
         try:
           inappropriate, user_name = \
             check_link(self.browser, link, self.dont_like,
@@ -214,6 +233,7 @@ class InstaPy:
                                 self.clarifai_img_tags)
                 except Exception as err:
                   print('Image check error: ' + str(err))
+                  self.logFile.write('Image check error: ' + str(err) + '\n')
 
               if self.do_comment and user_name not in self.dont_include \
                   and checked_img and commenting:
@@ -237,13 +257,22 @@ class InstaPy:
             inap_img += 1
         except NoSuchElementException as err:
           print('Invalid Page: ' + str(err))
+          self.logFile.write('Invalid Page: ' + str(err))
+
         print('')
+        self.logFile.write('\n')
 
     print('Liked: ' + str(liked_img))
     print('Already Liked: ' + str(already_liked))
     print('Inappropriate: ' + str(inap_img))
     print('Commented: ' + str(commented))
     print('Followed: ' + str(followed))
+
+    self.logFile.write('Liked: ' + str(liked_img) + '\n')
+    self.logFile.write('Already Liked: ' + str(already_liked) + '\n')
+    self.logFile.write('Inappropriate: ' + str(inap_img) + '\n')
+    self.logFile.write('Commented: ' + str(commented) + '\n')
+    self.logFile.write('Followed: ' + str(followed) + '\n')
 
     return self
 
@@ -258,6 +287,8 @@ class InstaPy:
       self.like_by_tags(tags, amount)
     except TypeError as err:
       print('Sorry, an error occured: ' + str(err))
+      self.logFile.write('Sorry, an error occured: ' + str(err) + '\n')
+
       self.aborting = True
       return self
 
@@ -270,6 +301,8 @@ class InstaPy:
         unfollow(self.browser, self.username, amount)
       except TypeError as err:
         print('Sorry, an error occured: ' + str(err))
+        self.logFile.write('Sorry, an error occured: ' + str(err) + '\n')
+
         self.aborting = True
         return self
 
@@ -285,6 +318,12 @@ class InstaPy:
     """Closes the current session"""
     self.browser.delete_all_cookies()
     self.browser.close()
+
     print('')
     print('Session ended')
     print('-------------')
+
+    self.logFile.write('\nSession ended - %s\n' \
+                       % (datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
+    self.logFile.write('-' * 20 + '\n\n')
+    self.logFile.close()
