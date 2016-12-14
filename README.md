@@ -19,7 +19,7 @@ InstaPy(username='test', password='test')\
   .like_by_tags(['dog', '#cat'], amount=100)\
   .end()
 ```
-<h2>It's easy to use and the built in delays prevent your account from getting banned.</h2>
+<h2>It's easy to use and the built in delays prevent your account from getting banned. (Just make sure you don't like 1000s of post/day)</h2>
 <h5>Getting started</h5>
 ```bash
 pip install selenium
