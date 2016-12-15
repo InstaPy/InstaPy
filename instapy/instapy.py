@@ -199,7 +199,7 @@ class InstaPy:
               following = True if randint(0, 100) <= self.follow_percentage\
                           else False
 
-              if following or commenting:
+              if self.use_clarifai and (following or commenting):
                 try:
                   checked_img, temp_comments =\
                     check_image(self.browser, self.clarifai_id,
