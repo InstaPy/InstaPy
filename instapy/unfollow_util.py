@@ -22,12 +22,12 @@ def unfollow(browser, username, amount):
   for button, person in zip(follow_buttons[:amount], person_list[:amount]):
     button.click()
     print('--> Now unfollowing: ' + person)
-    sleep(1)
+    sleep(15)
 
 def follow_user(browser):
   """Follows the user of the currently opened image"""
   follow_button = browser.find_elements_by_tag_name('button')[0]
-  sleep(1)
+  sleep(2)
 
   if follow_button.text == 'Follow':
     follow_button.click()
