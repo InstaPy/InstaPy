@@ -1,8 +1,10 @@
 """Module which handles the follow features like unfollowing and following"""
 from time import sleep
 
-def unfollow(browser, username, amount):
+def unfollow(browser, username, amount, dont_include):
   """unfollows the given amount of users"""
+  unfollowNum = 0
+
   browser.get('https://www.instagram.com/' + username)
 
   following_link_div = browser.find_elements_by_class_name('_218yx')[2]
@@ -20,9 +22,13 @@ def unfollow(browser, username, amount):
   follow_buttons = follow_div.find_elements_by_tag_name('button')
 
   for button, person in zip(follow_buttons[:amount], person_list[:amount]):
-    button.click()
-    print('--> Now unfollowing: ' + person)
-    sleep(15)
+    if person not in dont_include:
+      unfollowNum += 1
+      button.click()
+      print('--> Now unfollowing: ' + person)
+      sleep(15)
+
+  return unfollowNum
 
 def follow_user(browser):
   """Follows the user of the currently opened image"""

@@ -46,6 +46,7 @@ class InstaPy:
     self.comment_percentage = 0
     self.comments = ['Cool!', 'Nice!', 'Looks good!']
 
+    self.followed = 0
     self.do_follow = False
     self.follow_percentage = 0
     self.dont_include = []
@@ -274,6 +275,8 @@ class InstaPy:
     self.logFile.write('Commented: ' + str(commented) + '\n')
     self.logFile.write('Followed: ' + str(followed) + '\n')
 
+    self.followed += followed
+
     return self
 
   def like_from_image(self, url, amount=50):
@@ -298,7 +301,7 @@ class InstaPy:
     """Unfollows (default) 10 users from your following list"""
     while amount > 0:
       try:
-        unfollow(self.browser, self.username, amount)
+        amount -= unfollow(self.browser, self.username, amount, self.dont_include)
       except TypeError as err:
         print('Sorry, an error occured: ' + str(err))
         self.logFile.write('Sorry, an error occured: ' + str(err) + '\n')
@@ -309,8 +312,6 @@ class InstaPy:
       if amount > 10:
         sleep(600)
         print('Sleeping for 10min')
-
-      amount -= 10
 
     return self
 
@@ -327,3 +328,6 @@ class InstaPy:
                        % (datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
     self.logFile.write('-' * 20 + '\n\n')
     self.logFile.close()
+
+    with('./logs/followed.txt', 'w') as followFile:
+      followFile.write(str(self.followed))
