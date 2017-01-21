@@ -12,17 +12,22 @@ username = argv[1]
 
 def getUserInfo(browser, username):
   container = browser.find_element_by_class_name('_de9bg')
+  img_container = browser.find_element_by_class_name('_o0ohn')
 
   infos = container.find_elements_by_class_name('_218yx')
 
+  prof_img = img_container.find_element_by_tag_name('img').get_attribute('src')
   num_of_posts = int(infos[0].text.split(' ')[0].replace(',', ''))
   followers = int(infos[1].text.split(' ')[0].replace(',', ''))
   following = int(infos[2].text.split(' ')[0].replace(',', ''))
 
-  return num_of_posts, followers, following
+  return prof_img, num_of_posts, followers, following
 
 def extractPostInfo(browser):
   post = browser.find_element_by_class_name('_tjnr4')
+
+  imgs = post.find_elements_by_tag_name('img')
+  img = imgs[1].get_attribute('src')
 
   likes = post.find_element_by_tag_name('section')\
           .find_element_by_tag_name('div').text
@@ -34,8 +39,7 @@ def extractPostInfo(browser):
     likes = len([word for word in likes if word not in ['and', 'like', 'this']])
   else:
     likes = likes[0]
-
-  likes = likes.replace(',', '')
+    likes = likes.replace(',', '')
 
   # if more than 22 comment elements, use the second to see
   # how much comments, else count the li's
@@ -58,12 +62,12 @@ def extractPostInfo(browser):
     comments = comments[1].find_element_by_tag_name('span').text
     comments = comments.replace(',', '')
 
-  return tags, int(likes), int(comments)
+  return img, tags, int(likes), int(comments)
 
 browser = webdriver.Chrome('./assets/chromedriver')
 browser.get('https://www.instagram.com/' + username)
 
-num_of_posts, followers, following = getUserInfo(browser, username)
+prof_img, num_of_posts, followers, following = getUserInfo(browser, username)
 
 prev_divs = browser.find_elements_by_class_name('_myci9')
 
@@ -93,13 +97,14 @@ for link in links:
   browser.get(link)
 
   try:
-    tags, likes, comments = extractPostInfo(browser)
+    img, tags, likes, comments = extractPostInfo(browser)
   except NoSuchElementException as err:
     print('Error: ' + str(err))
 
-  postInfos.append({'tags': tags, 'likes': likes, 'comments': comments})
+  postInfos.append({'img': img, 'tags': tags, 'likes': likes, 'comments': comments})
 
 information = {
+  'prof_img': prof_img,
   'num_of_posts': num_of_posts,
   'followers': followers,
   'following': following,
