@@ -50,7 +50,7 @@ def extractPostInfo(browser):
   comments = comment_list.find_elements_by_tag_name('li')
 
   if len(comments) > 1:
-    tags = comments[0].text + comments[1].text
+    tags = comments[0].text + ' ' + comments[1].text
   else:
     tags = comments[0].text
 
