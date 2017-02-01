@@ -74,16 +74,22 @@ prev_divs = browser.find_elements_by_class_name('_myci9')
 try:
   body_elem = browser.find_element_by_tag_name('body')
 
-  load_div = browser.find_element_by_class_name('_pupj3')
-  load_button = load_div.find_element_by_tag_name('a')
+  load_button = body_elem.find_element_by_xpath\
+    ('//a[contains(@class, "_8imhp _glz1g")]')
+  body_elem.send_keys(Keys.END)
+  sleep(2)
+
   load_button.click()
+
+  body_elem.send_keys(Keys.HOME)
+  sleep(2)
 
   while(len(browser.find_elements_by_class_name('_myci9')) > len(prev_divs)):
     prev_divs = browser.find_elements_by_class_name('_myci9')
     body_elem.send_keys(Keys.END)
-    sleep(1)
+    sleep(2)
     body_elem.send_keys(Keys.HOME)
-    sleep(1)
+    sleep(2)
 
 except NoSuchElementException as err:
   print('Only few posts')
