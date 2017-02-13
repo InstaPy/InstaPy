@@ -10,12 +10,23 @@ def get_links_for_tag(browser, tag, amount):
   browser.get('https://www.instagram.com/explore/tags/'
               + (tag[1:] if tag[:1] == '#' else tag))
 
+  sleep(2)
+
   # clicking load more till there are 1000 posts
-  load_div = browser.find_element_by_class_name('_pupj3')
-  load_button = load_div.find_element_by_tag_name('a')
+  body_elem = browser.find_element_by_tag_name('body')
+
+  sleep(2)
+
+  load_button = body_elem.find_element_by_xpath \
+    ('//a[contains(@class, "_8imhp _glz1g")]')
+  body_elem.send_keys(Keys.END)
+  sleep(2)
+
   load_button.click()
 
-  body_elem = browser.find_element_by_tag_name('body')
+  body_elem.send_keys(Keys.HOME)
+  sleep(1)
+
   main_elem = browser.find_element_by_tag_name('main')
 
   new_needed = ceil((amount - 33) / 12)
