@@ -7,7 +7,7 @@ def log_follower_num(browser, username):
   browser.get('https://www.instagram.com/' + username)
 
   follower_elem = browser.find_element_by_xpath\
-    ('//a[@href="/' + username.lower() + '/followers/"]')
+    ('//a[@href="/' + username.lower()  + '/followers/"]')
 
   with open('./logs/followerNum.txt', 'a') as numFile:
     numFile.write(datetime.now().strftime('%Y-%m-%d %H:%M '))

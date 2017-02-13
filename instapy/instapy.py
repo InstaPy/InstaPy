@@ -3,7 +3,7 @@ from datetime import datetime
 from os import environ
 from random import randint
 from time import sleep
-#from pyvirtualdisplay import Display
+from pyvirtualdisplay import Display
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.chrome.options import Options
@@ -27,6 +27,7 @@ class InstaPy:
     chrome_options = Options()
     chrome_options.add_argument('--dns-prefetch-disable')
     self.browser = webdriver.Chrome('./assets/chromedriver', chrome_options=chrome_options)
+    self.browser.implicitly_wait(25)
 
     self.logFile = open('./logs/logFile.txt', 'a')
     self.logFile.write('Session started - %s\n' \
@@ -226,7 +227,7 @@ class InstaPy:
               following = True if randint(0, 100) <= self.follow_percentage\
                           else False
 
-              if self.use_clarifai and (following or commenting):
+              if following or commenting:
                 try:
                   checked_img, temp_comments =\
                     check_image(self.browser, self.clarifai_id,
@@ -319,6 +320,7 @@ class InstaPy:
     """Closes the current session"""
     self.browser.delete_all_cookies()
     self.browser.close()
+    #self.display.stop()
 
     print('')
     print('Session ended')
@@ -329,5 +331,5 @@ class InstaPy:
     self.logFile.write('-' * 20 + '\n\n')
     self.logFile.close()
 
-    with('./logs/followed.txt', 'w') as followFile:
+    with open('./logs/followed.txt', 'w') as followFile:
       followFile.write(str(self.followed))

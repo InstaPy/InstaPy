@@ -10,8 +10,12 @@ def get_links_for_tag(browser, tag, amount):
   browser.get('https://www.instagram.com/explore/tags/'
               + (tag[1:] if tag[:1] == '#' else tag))
 
+  sleep(2)
+
   # clicking load more till there are 1000 posts
   body_elem = browser.find_element_by_tag_name('body')
+
+  sleep(2)
 
   load_button = body_elem.find_element_by_xpath \
     ('//a[contains(@class, "_8imhp _glz1g")]')

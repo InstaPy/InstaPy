@@ -65,6 +65,7 @@ def extractPostInfo(browser):
   return img, tags, int(likes), int(comments)
 
 browser = webdriver.Chrome('./assets/chromedriver')
+browser.implicitly_wait(10)
 browser.get('https://www.instagram.com/' + username)
 
 prof_img, num_of_posts, followers, following = getUserInfo(browser, username)
@@ -77,19 +78,19 @@ try:
   load_button = body_elem.find_element_by_xpath\
     ('//a[contains(@class, "_8imhp _glz1g")]')
   body_elem.send_keys(Keys.END)
-  sleep(2)
+  sleep(1)
 
   load_button.click()
 
   body_elem.send_keys(Keys.HOME)
-  sleep(2)
+  sleep(1)
 
   while(len(browser.find_elements_by_class_name('_myci9')) > len(prev_divs)):
     prev_divs = browser.find_elements_by_class_name('_myci9')
     body_elem.send_keys(Keys.END)
-    sleep(2)
+    sleep(1)
     body_elem.send_keys(Keys.HOME)
-    sleep(2)
+    sleep(1)
 
 except NoSuchElementException as err:
   print('Only few posts')
