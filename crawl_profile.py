@@ -65,7 +65,7 @@ def extractPostInfo(browser):
   return img, tags, int(likes), int(comments)
 
 browser = webdriver.Chrome('./assets/chromedriver')
-browser.implicitly_wait(10)
+browser.implicitly_wait(25)
 browser.get('https://www.instagram.com/' + username)
 
 prof_img, num_of_posts, followers, following = getUserInfo(browser, username)
