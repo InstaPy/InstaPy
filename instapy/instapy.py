@@ -17,6 +17,8 @@ from .like_util import like_image
 from .login_util import login_user
 from .unfollow_util import unfollow
 from .unfollow_util import follow_user
+from .unfollow_util import load_follow_restriction
+from .unfollow_util import dump_follow_restriction
 from .print_log_writer import log_follower_num
 
 class InstaPy:
@@ -48,6 +50,8 @@ class InstaPy:
     self.comments = ['Cool!', 'Nice!', 'Looks good!']
 
     self.followed = 0
+    self.follow_restrict = load_follow_restriction()
+    self.follow_times = 1
     self.do_follow = False
     self.follow_percentage = 0
     self.dont_include = []
@@ -99,11 +103,12 @@ class InstaPy:
 
     return self
 
-  def set_do_follow(self, enabled=False, percentage=0):
+  def set_do_follow(self, enabled=False, percentage=0, times=1):
     """Defines if the user of the liked image should be followed"""
     if self.aborting:
       return self
 
+    self.follow_times = times
     self.do_follow = enabled
     self.follow_percentage = percentage
 
@@ -227,7 +232,7 @@ class InstaPy:
               following = True if randint(0, 100) <= self.follow_percentage\
                           else False
 
-              if following or commenting:
+              if self.use_clarifai and (following or commenting):
                 try:
                   checked_img, temp_comments =\
                     check_image(self.browser, self.clarifai_id,
@@ -247,8 +252,9 @@ class InstaPy:
                 sleep(1)
 
               if self.do_follow and user_name not in self.dont_include \
-                  and checked_img and following:
-                followed += follow_user(self.browser)
+                  and checked_img and following \
+                  and self.follow_restrict.get(user_name, 0) < self.follow_times:
+                followed += follow_user(self.browser, user_name, self.follow_restrict)
               else:
                 print('--> Not following')
                 sleep(1)
@@ -318,6 +324,7 @@ class InstaPy:
 
   def end(self):
     """Closes the current session"""
+    dump_follow_restriction(self.follow_restrict)
     self.browser.delete_all_cookies()
     self.browser.close()
     #self.display.stop()
