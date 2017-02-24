@@ -1,9 +1,10 @@
+[![GitHub license](https://img.shields.io/github/license/mashape/apistatus.svg)](https://github.com/timgrossmann/InstaPy/blob/master/LICENSE)
+
 <img src="https://s3-eu-central-1.amazonaws.com/centaur-wp/designweek/prod/content/uploads/2016/05/11170038/Instagram_Logo-1002x1003.jpg" width="200" align="right">
 # InstaPy
-
-<h2>Instagram Like, Comment and Follow Automation Script</h2>
-<p>Automation Script for "farming" Likes, Comments and Followers on Instagram.<br />
-Implemented in Python using the Selenium module.</p>
+### Instagram Like, Comment and Follow Automation Script
+>Automation Script for "farming" Likes, Comments and Followers on Instagram.<br />
+Implemented in Python using the Selenium module.
 
 <h4>Example</h4>
 ```python
