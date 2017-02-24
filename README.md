@@ -3,7 +3,7 @@
 
 <h2>Instagram Like, Comment and Follow Automation Script</h2>
 <p>Automation Script for "farming" Likes, Comments and Followers on Instagram.<br />
-Implemented in Python using the selenium module.</p>
+Implemented in Python using the Selenium module.</p>
 
 <h4>Example</h4>
 ```python
@@ -19,7 +19,7 @@ InstaPy(username='test', password='test')\
   .like_by_tags(['dog', '#cat'], amount=100)\
   .end()
 ```
-<h2>It's easy to use and the built in delays prevet your account from getting banned</h2>
+<h2>It's easy to use and the built in delays prevent your account from getting banned. (Just make sure you don't like 1000s of post/day)</h2>
 <h5>Getting started</h5>
 ```bash
 pip install selenium
