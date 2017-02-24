@@ -1,4 +1,5 @@
 """Module which handles the follow features like unfollowing and following"""
+import json
 from time import sleep
 
 def unfollow(browser, username, amount, dont_include):
@@ -30,7 +31,7 @@ def unfollow(browser, username, amount, dont_include):
 
   return unfollowNum
 
-def follow_user(browser):
+def follow_user(browser, user_name, follow_restrict):
   """Follows the user of the currently opened image"""
   follow_button = browser.find_elements_by_tag_name('button')[0]
   sleep(2)
@@ -38,6 +39,8 @@ def follow_user(browser):
   if follow_button.text == 'Follow':
     follow_button.click()
     print('--> Now following')
+
+    follow_restrict[user_name] = follow_restrict.get(user_name, 0) + 1
     sleep(3)
     return 1
 
@@ -45,3 +48,13 @@ def follow_user(browser):
     print('--> Already following')
     sleep(1)
     return 0
+
+def dump_follow_restriction(followRes):
+  """Dumps the given dictionary to a file using the json format"""
+  with open('./logs/followRestriction.json', 'w') as followResFile:
+    json.dump(followRes, followResFile)
+
+def load_follow_restriction():
+  """Loads the saved """
+  with open('./logs/followRestriction.json') as followResFile:
+    return json.load(followResFile)
