@@ -71,9 +71,9 @@ session.set_comments(['Awesome', 'Really Cool', 'I like your stuff'])
 
 <h5>Following</h5>
 ```python
-#default enabled=False, follows ~ every 10th user from the images
+#default enabled=False, follows ~ every 10th user from the images, times=1 (only follows a user once (if unfollowed again))
 
-session.set_do_follow(enabled=True, percentage=10)
+session.set_do_follow(enabled=True, percentage=10, times=2)
 ```
 
 <h5>Excluding friends</h5>
