@@ -27,7 +27,8 @@ InstaPy(username='test', password='test')\
 <h2>It's easy to use and the built in delays prevent your account from getting banned. (Just make sure you don't like 1000s of post/day)</h2>
 <h5>Getting started</h5>
 ```bash
-pip install selenium
+pip3.5 install selenium
+pip3.5 install git+git://github.com/Clarifai/clarifai-python.git
 ```
 <p>If you want the script to get the username and password for your environment, you can do:</p>
 ```
@@ -102,10 +103,6 @@ session.unfollow_users(amount=10)
 ```
 export CLARIFAI_ID="<ProjectID>"
 export CLARIFAI_SECRET="<Project Secret>"
-```
-<h5>Getting started</h5>
-```bash
-pip install git+git://github.com/Clarifai/clarifai-python.git
 ```
 <h4>Example with Imagecontent handling</h4>
 ```python
