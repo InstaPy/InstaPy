@@ -4,7 +4,7 @@
 # InstaPy
 [![GitHub license](https://img.shields.io/github/license/mashape/apistatus.svg)](https://github.com/timgrossmann/InstaPy/blob/master/LICENSE)
 [![built with Selenium](https://img.shields.io/badge/built%20with-Selenium-red.svg)](https://github.com/SeleniumHQ/selenium)
-
+[![built with Python3](https://img.shields.io/badge/Built%20with-Python3-green.svg)](https://www.python.org/)
 
 ### Instagram Like, Comment and Follow Automation Script
 >Automation Script for "farming" Likes, Comments and Followers on Instagram.<br />
