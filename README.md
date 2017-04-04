@@ -12,6 +12,7 @@
 Implemented in Python using the Selenium module.  
 
 <h4>Example</h4>
+
 ```python
 from instapy import InstaPy
 
@@ -27,16 +28,19 @@ InstaPy(username='test', password='test')\
 ```
 <h2>It's easy to use and the built in delays prevent your account from getting banned. (Just make sure you don't like 1000s of post/day)</h2>
 <h5>Getting started</h5>
+
 ```bash
 pip3.5 install selenium
 pip3.5 install git+git://github.com/Clarifai/clarifai-python.git
 ```
 <p>If you want the script to get the username and password for your environment, you can do:</p>
+
 ```
 export INSTA_USER="<Your username>"
 export INSTA_PW="<Your password>"
 ```
 <hr />
+
 ```python
 from instapy import InstaPy
 
@@ -54,6 +58,7 @@ session.end()
 ```
 
 <h5>Restricting Likes</h5>
+
 ```python
 #searches the description for the given words and won't
 # like the image if one of the words are in there
@@ -61,6 +66,7 @@ session.end()
 session.set_dont_like(['food', 'eat', 'meal'])
 ```
 <h5>Ignoring Restrictions</h5>
+
 ```python
 #will ignore the don't like if the description contains
 # one of the given words
@@ -69,6 +75,7 @@ session.set_ignore_if_contains(['glutenfree', 'french', 'tasty'])
 ```
 
 <h5>Commenting</h5>
+
 ```python
 #default enabled=False, ~ every 4th image will be commented on
 
@@ -77,6 +84,7 @@ session.set_comments(['Awesome', 'Really Cool', 'I like your stuff'])
 ```
 
 <h5>Following</h5>
+
 ```python
 #default enabled=False, follows ~ every 10th user from the images, times=1 (only follows a user once (if unfollowed again))
 
@@ -84,6 +92,7 @@ session.set_do_follow(enabled=True, percentage=10, times=2)
 ```
 
 <h5>Excluding friends</h5>
+
 ```python
 #will prevent commenting on and unfollowing your good friends (the images will still be liked)
 
@@ -91,6 +100,7 @@ session.set_dont_include(['friend1', 'friend2', 'friend3'])
 ```
 
 <h5>Unfollowing</h5>
+
 ```python
 #unfollows 10 of the accounts your following -> instagram will only unfollow 10 before you'll be 'blocked for 10 minutes' (if you enter a higher number than 10 it will unfollow 10, then wait 10 minutes and will continue then)
 
@@ -101,11 +111,13 @@ session.unfollow_users(amount=10)
 <img src="https://d1qb2nb5cznatu.cloudfront.net/startups/i/396673-2fb6e8026b393dddddc093c23d8cd866-medium_jpg.jpg?buster=1399901540" width="200" align="right">
 <h6>Note: Head over to https://developer.clarifai.com/signup/ and create a free account, once you're logged in go to https://developer.clarifai.com/account/applications/ and create a new application. You can find the client ID and Secret there. You get 5000 API-calls free/month.</h6>
 <p>If you want the script to get your Clarifai_ID and Clarifai_Secret for your environment, you can do:</p>
+
 ```
 export CLARIFAI_ID="<ProjectID>"
 export CLARIFAI_SECRET="<Project Secret>"
 ```
 <h4>Example with Imagecontent handling</h4>
+
 ```python
 from instapy import InstaPy
 
@@ -123,6 +135,7 @@ InstaPy(username='test', password='test')\
   .end()
 ```
 <h5>Enabling Imagechecking</h5>
+
 ```python
 #default enabled=False , enables the checking with the clarifai api (image tagging)
 #if secret and proj_id are not set, it will get the environment Variables
@@ -131,6 +144,7 @@ InstaPy(username='test', password='test')\
 session.set_use_clarifai(enabled=True, secret='xyz', proj_id='123')
 ```
 <h5>Filtering inappropriate images</h5>
+
 ```python
 # uses the clarifai api to check if the image contains nsfw content
 # -> won't comment if image is nsfw
@@ -138,6 +152,7 @@ session.set_use_clarifai(enabled=True, secret='xyz', proj_id='123')
 session.check_image_for(['nsfw'])
 ```
 <h5>Specialized comments for images with specific content</h5>
+
 ```python
 #checks the image for keywords food and lunch, if found,
 #comments with the given comments
