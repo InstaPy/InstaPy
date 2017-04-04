@@ -33,7 +33,7 @@ InstaPy(username='test', password='test')\
 
 ```bash
 pip3.5 install selenium
-pip3.5 install git+git://github.com/Clarifai/clarifai-python.git
+pip3.5 install clarifai
 ```
 <p>If you want the script to get the username and password for your environment, you can do:</p>
 
