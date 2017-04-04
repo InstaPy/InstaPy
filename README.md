@@ -32,9 +32,17 @@ InstaPy(username='test', password='test')\
 <h5>Getting started</h5>
 
 ```bash
-pip3.5 install selenium
-pip3.5 install clarifai
+cd InstaPy
+pip install .
 ```
+
+or 
+
+```bash
+cd InstaPy
+python setup.py install
+```
+
 <p>If you want the script to get the username and password for your environment, you can do:</p>
 
 ```
