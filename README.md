@@ -160,7 +160,7 @@ session.set_use_clarifai(enabled=True, secret='xyz', proj_id='123')
 # uses the clarifai api to check if the image contains nsfw content
 # -> won't comment if image is nsfw
 
-session.check_image_for(['nsfw'])
+session.clarifai_check_img_for(['nsfw'])
 ```
 <h5>Specialized comments for images with specific content</h5>
 
@@ -168,7 +168,7 @@ session.check_image_for(['nsfw'])
 #checks the image for keywords food and lunch, if found,
 #comments with the given comments
 
-session.check_image_for(['food', 'lunch'], comment=True, comments=['Tasty!', 'Yum!'])
+session.clarifai_check_img_for(['food', 'lunch'], comment=True, comments=['Tasty!', 'Yum!'])
 ```
 <h6>Check out https://clarifai.com/demo to see some of the available tags.</h6>
 <hr />
