@@ -31,12 +31,12 @@ session.set_use_clarifai(enabled=True) #<- will use the one from above
 #uses the clarifai api to check if the image contains nsfw content
 # Check out their homepage to see which tags there are -> won't comment on image
 # (you won't do this on every single image or the 5000 free checks are wasted very fast)
-session.check_image_for(['nsfw'], comment=False) # !if no tags are set, use_clarifai will be False
+session.clarifai_check_img_for(['nsfw'], comment=False) # !if no tags are set, use_clarifai will be False
 
 #checks the image for keywords food and lunch, if found, sets the comments possible comments
 #to the given comments
-session.check_image_for(['food', 'lunch'], comment=True, comments=['Tasty!', 'Yum!'])
-session.check_image_for(['dog', 'cat', 'cute'], comment=True, comments=['Sweet!', 'Cutie!!!'])
+session.clarifai_check_img_for(['food', 'lunch'], comment=True, comments=['Tasty!', 'Yum!'])
+session.clarifai_check_img_for(['dog', 'cat', 'cute'], comment=True, comments=['Sweet!', 'Cutie!!!'])
 
 """Like util"""
 #searches the description for the given words and won't
