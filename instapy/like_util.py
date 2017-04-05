@@ -68,19 +68,20 @@ def check_link(browser, link, dont_like, ignore_if_contains, username):
 
 def like_image(browser):
   """Likes the browser opened image"""
-  link_elem = browser.find_element_by_xpath('//article/div[2]/section[1]/a[1]/span[1]')
+  like_elem = browser.find_elements_by_xpath("//span[contains(@class, 'coreSpriteLikeHeartOpen')]")
+  liked_elem = browser.find_elements_by_xpath("//span[contains(@class, 'coreSpriteLikeHeartFull')]")
 
-  span_elem_text = link_elem.text
-
-  if span_elem_text == 'Like':
-    link_elem.click()
-    print('--> Image liked!')
+  if len(like_elem) == 1:
+    like_elem[0].click()
+    print('--> Image Liked!')
     sleep(2)
     return True
-  else:
+  elif len(liked_elem) == 1:
     print('--> Already Liked!')
     return False
-
+  else:
+    print('--> Invalid Like Element!')
+    return False
 
 def get_tags(browser, url):
   """Gets all the tags of the given description in the url"""
