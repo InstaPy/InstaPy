@@ -33,7 +33,7 @@ def unfollow(browser, username, amount, dont_include):
 
 def follow_user(browser, user_name, follow_restrict):
   """Follows the user of the currently opened image"""
-  follow_button = browser.find_elements_by_tag_name('button')[0]
+  follow_button = browser.find_element_by_xpath("//article/header/span/button")
   sleep(2)
 
   if follow_button.text == 'Follow':
