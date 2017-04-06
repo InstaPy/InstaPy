@@ -48,9 +48,8 @@ def check_link(browser, link, dont_like, ignore_if_contains, username):
 
   sleep(2)
 
-  user_div = browser.find_element_by_xpath("//article/div[2]/div[1]/ul[1]/li[1]")
-  user_name = user_div.find_element_by_tag_name('a').text
-  image_text = user_div.find_element_by_tag_name('span').text
+  user_name = browser.execute_script("return window._sharedData.entry_data.PostPage[0].media.owner.username")
+  image_text = browser.execute_script("return window._sharedData.entry_data.PostPage[0].media.caption")
 
   print('Image from: ' + user_name)
   print('Link: ' + link)
@@ -68,8 +67,8 @@ def check_link(browser, link, dont_like, ignore_if_contains, username):
 
 def like_image(browser):
   """Likes the browser opened image"""
-  like_elem = browser.find_elements_by_xpath("//span[contains(@class, 'coreSpriteLikeHeartOpen')]")
-  liked_elem = browser.find_elements_by_xpath("//span[contains(@class, 'coreSpriteLikeHeartFull')]")
+  like_elem = browser.find_elements_by_xpath("//a[@role = 'button']/span[text()='Like']")
+  liked_elem = browser.find_elements_by_xpath("//a[@role = 'button']/span[text()='Unlike']")
 
   if len(like_elem) == 1:
     like_elem[0].click()
@@ -88,8 +87,7 @@ def get_tags(browser, url):
   browser.get(url)
   sleep(1)
 
-  user_div = browser.find_element_by_xpath("//article/div[2]/div[1]/ul[1]/li[1]")
-  image_text = user_div.find_element_by_tag_name('span').text
+  image_text = browser.execute_script("return window._sharedData.entry_data.PostPage[0].media.caption")
 
   tags = findall(r'#\w*', image_text)
   return tags
