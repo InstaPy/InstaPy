@@ -31,7 +31,7 @@ InstaPy(username='test', password='test')\
 <h2>It's easy to use and the built in delays prevent your account from getting banned. (Just make sure you don't like 1000s of post/day)</h2>
 <h4>Getting started</h4>
 
-##### Make sure to replace the ```chromedriver``` file in assets with the one for your system.
+### Make sure to get the right ```chromedriver``` for your system from here: https://sites.google.com/a/chromium.org/chromedriver/downloads. Just put it in /assets.
 ```bash
 cd InstaPy
 pip install .
