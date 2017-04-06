@@ -28,6 +28,9 @@ class InstaPy:
     #self.display.start()
     chrome_options = Options()
     chrome_options.add_argument('--dns-prefetch-disable')
+    chrome_options.add_argument('--no-sandbox')
+    chrome_options.add_argument('--lang=en-US')
+    chrome_options.add_experimental_option('prefs', {'intl.accept_languages': 'en-US'})
     self.browser = webdriver.Chrome('./assets/chromedriver', chrome_options=chrome_options)
     self.browser.implicitly_wait(25)
 
