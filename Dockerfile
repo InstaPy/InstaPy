@@ -14,9 +14,8 @@ RUN mkdir /InstaPy
 WORKDIR /InstaPy
 COPY . .
 
-WORKDIR /InstaPy/assets
-RUN wget https://chromedriver.storage.googleapis.com/2.29/chromedriver_linux64.zip
-RUN unzip -o chromedriver_linux64.zip
+RUN wget https://chromedriver.storage.googleapis.com/2.29/chromedriver_linux64.zip \
+    && unzip -o -d /InstaPy/assets chromedriver_linux64.zip \
+    && rm chromedriver_linux64.zip
 
-WORKDIR /InstaPy
 RUN pip install .
