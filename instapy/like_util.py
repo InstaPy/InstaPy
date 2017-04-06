@@ -48,7 +48,7 @@ def check_link(browser, link, dont_like, ignore_if_contains, username):
 
   sleep(2)
 
-  user_div = browser.find_element_by_xpath("//article/div[2]/ul[1]/li[1]")
+  user_div = browser.find_element_by_xpath("//article/div[2]/div[1]/ul[1]/li[1]")
   user_name = user_div.find_element_by_tag_name('a').text
   image_text = user_div.find_element_by_tag_name('span').text
 
@@ -88,7 +88,7 @@ def get_tags(browser, url):
   browser.get(url)
   sleep(1)
 
-  user_div = browser.find_element_by_xpath("//article/div[2]/ul[1]/li[1]")
+  user_div = browser.find_element_by_xpath("//article/div[2]/div[1]/ul[1]/li[1]")
   image_text = user_div.find_element_by_tag_name('span').text
 
   tags = findall(r'#\w*', image_text)
