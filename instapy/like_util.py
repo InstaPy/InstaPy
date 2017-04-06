@@ -43,13 +43,24 @@ def get_links_for_tag(browser, tag, amount):
   return links[:amount]
 
 def check_link(browser, link, dont_like, ignore_if_contains, username):
-  """Gets the description of the link and checks for the dont_like tags"""
   browser.get(link)
-
   sleep(2)
 
+  """Check if the Post is Valid/Exists"""
+  post_page = browser.execute_script("return window._sharedData.entry_data.PostPage")
+  if post_page is None:
+    print('Unavailable Page: ' + link)
+    return False, 'Unavailable Page'
+
+  """Gets the description of the link and checks for the dont_like tags"""
   user_name = browser.execute_script("return window._sharedData.entry_data.PostPage[0].media.owner.username")
   image_text = browser.execute_script("return window._sharedData.entry_data.PostPage[0].media.caption")
+
+  """If the image has no description gets the first comment""" 
+  if image_text is None:
+    image_text = browser.execute_script("return window._sharedData.entry_data.PostPage[0].media.comments.nodes[0].text")
+  if image_text is None:
+    image_text = "No description"
 
   print('Image from: ' + user_name)
   print('Link: ' + link)
