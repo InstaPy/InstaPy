@@ -1,5 +1,5 @@
 > **Think this tool is worth supporting?** <br />
-> Feel free to contribute to the project in whatever way! <br /> If you're not familiar with python, you could build a github page for this project (Just head over to the issues, there might be a task for you). You're a marketer? Perfect! hit me with a message on contact.timgrossmann@gmail.com. <br/> If you don't have the time or skills to contribute, you can also support us through Patreon! <br /><br /> [<img src="http://4playernetwork.com/static/images/buttons/patreon.png" width="125"/>](https://www.patreon.com/timgrossmann)
+> Feel free to contribute to the project in whatever way! <br /> If you're not familiar with python, you could build a github page for this project (Just head over to the issues, there might be a task for you). You're a marketer? Perfect! hit me with a message on contact.timgrossmann@gmail.com. <br/> If you don't have the time or skills to contribute, you can also support us through Patreon! <br /> **Become a part of InstaPy!**
 
 > **Disclaimer**: Please Note that this is a research project. I am by no means responsible for any usage of this tool. Use on your own behalf. I'm also not responsible if your accounts get banned due to extensive use of this tool.
 
