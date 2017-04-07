@@ -82,7 +82,7 @@ def like_image(browser):
   liked_elem = browser.find_elements_by_xpath("//a[@role = 'button']/span[text()='Unlike']")
 
   if len(like_elem) == 1:
-    like_elem[0].click()
+    browser.execute_script("document.getElementsByClassName('" + like_elem[0].get_attribute("class") + "')[0].click()")
     print('--> Image Liked!')
     sleep(2)
     return True
