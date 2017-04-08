@@ -1,4 +1,6 @@
 # How to run InstaPy on a digital ocean CentOS 7 droplet
+> Use https://m.do.co/c/be9ec19b28c1 to get 10$ free to start your InstaPy journey :wink:
+
 - ### Make sure to use the 1GB RAM version
 
 ## General dependencies
