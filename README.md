@@ -14,7 +14,7 @@
 
 ### Instagram Like, Comment and Follow Automation Script
 >Automation Script for "farming" Likes, Comments and Followers on Instagram.<br />
-Implemented in Python using the Selenium module.  
+Implemented in Python using the Selenium module.
 
 <h4>Example</h4>
 
@@ -40,7 +40,7 @@ cd InstaPy
 pip install .
 ```
 
-or 
+or
 
 ```bash
 cd InstaPy
@@ -74,8 +74,14 @@ session.end()
 <h5>Restricting Likes</h5>
 
 ```python
-#searches the description for the given words and won't
-# like the image if one of the words are in there
+#completely ignore liking images from certain users
+
+session.set_ignore_users(['random_user', 'another_username'])
+```
+
+```python
+#searches the description and owner comments for the given words
+# and won't like the image if one of the words are in there
 
 session.set_dont_like(['food', 'eat', 'meal'])
 ```
@@ -118,7 +124,7 @@ session.set_dont_include(['friend1', 'friend2', 'friend3'])
 ```python
 #unfollows 10 of the accounts your following -> instagram will only unfollow 10 before you'll be 'blocked for 10 minutes' (if you enter a higher number than 10 it will unfollow 10, then wait 10 minutes and will continue then)
 
-session.unfollow_users(amount=10) 
+session.unfollow_users(amount=10)
 ```
 <br />
 <h3>Clarifai ImageAPI</h3>
