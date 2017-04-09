@@ -129,6 +129,18 @@ class InstaPy:
 
     return self
 
+  def set_ignore_users(self, users=None):
+    """Changes the possible restriction to users, if user who postes
+    is one of this, the image won't be liked"""
+    if self.aborting:
+      return self
+
+    if users is None:
+      users = []
+    self.ignore_users = users
+
+    return self
+
   def set_ignore_if_contains(self, words=None):
     """ignores the don't likes if the description contains
     one of the given words"""
@@ -221,7 +233,8 @@ class InstaPy:
         try:
           inappropriate, user_name = \
             check_link(self.browser, link, self.dont_like,
-                       self.ignore_if_contains, self.username)
+                       self.ignore_if_contains, self.ignore_users,
+                       self.username)
 
           if not inappropriate:
             liked = like_image(self.browser)

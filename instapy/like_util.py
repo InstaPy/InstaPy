@@ -42,7 +42,9 @@ def get_links_for_tag(browser, tag, amount):
 
   return links[:amount]
 
-def check_link(browser, link, dont_like, ignore_if_contains, username):
+def check_link(browser, link, dont_like,
+               ignore_if_contains, ignore_users,
+               username):
   browser.get(link)
   sleep(2)
 
@@ -56,7 +58,19 @@ def check_link(browser, link, dont_like, ignore_if_contains, username):
   user_name = browser.execute_script("return window._sharedData.entry_data.PostPage[0].media.owner.username")
   image_text = browser.execute_script("return window._sharedData.entry_data.PostPage[0].media.caption")
 
-  """If the image has no description gets the first comment""" 
+  comments = browser.execute_script("return window._sharedData.entry_data.PostPage[0].media.comments.nodes")
+  owner_comments = [comment['text'] for comment in comments if comment['user']['username'] == user_name]
+  owner_comments = '\n'.join(owner_comments)
+  if owner_comments == '':
+    owner_comments = None
+
+  """Append owner comments to description as it might contain further tags"""
+  if image_text is None:
+    image_text = owner_comments
+  elif owner_comments is not None:
+    image_text = image_text + '\n' + owner_comments
+
+  """If the image still has no description gets the first comment"""
   if image_text is None:
     image_text = browser.execute_script("return window._sharedData.entry_data.PostPage[0].media.comments.nodes[0].text")
   if image_text is None:
@@ -66,12 +80,18 @@ def check_link(browser, link, dont_like, ignore_if_contains, username):
   print('Link: ' + link)
   print('Description: ' + image_text)
 
+  """Check if the user_name is in the ignore_users list"""
+  if (user_name in ignore_users) or (user_name == username):
+    print '--> Ignoring user: {}'.format(user_name)
+    return True, user_name
+
   for word in ignore_if_contains:
     if word in image_text:
       return False, user_name
 
   for tag in dont_like:
-    if tag in image_text or user_name == username:
+    if tag in image_text:
+      '--> Ignoring content: {}'.format(tag)
       return True, user_name
 
   return False, user_name
