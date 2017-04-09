@@ -3,7 +3,7 @@
 
 - #### Make sure to use the 1GB RAM version
 
-- #### Make sure to uncommented the display lines on instapy/instapy.py (self.display)
+- #### Make sure to uncomment the display lines on instapy/instapy.py (self.display)
 
 ## General dependencies
 
