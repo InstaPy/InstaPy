@@ -91,7 +91,7 @@ def check_link(browser, link, dont_like,
 
   for tag in dont_like:
     if tag in image_text:
-      '--> Ignoring content: {}'.format(tag)
+      print '--> Ignoring content: {}'.format(tag)
       return True, user_name
 
   return False, user_name
