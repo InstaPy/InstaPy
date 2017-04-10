@@ -59,7 +59,8 @@ def check_link(browser, link, dont_like,
   image_text = browser.execute_script("return window._sharedData.entry_data.PostPage[0].media.caption")
 
   owner_comments = browser.execute_script('''
-    comments = window._sharedData.entry_data.PostPage[0].media.comments.nodes
+    comments = window._sharedData.entry_data.PostPage[0].media.comments.nodes || Array();
+    comments = comments
       .filter(item => item.user.username == '{}')
       .map(item => item.text)
       .reduce((item, total) => item + '\\n' + total, '');
