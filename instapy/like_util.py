@@ -58,9 +58,13 @@ def check_link(browser, link, dont_like,
   user_name = browser.execute_script("return window._sharedData.entry_data.PostPage[0].media.owner.username")
   image_text = browser.execute_script("return window._sharedData.entry_data.PostPage[0].media.caption")
 
-  comments = browser.execute_script("return window._sharedData.entry_data.PostPage[0].media.comments.nodes")
-  owner_comments = [comment['text'] for comment in comments if comment['user']['username'] == user_name]
-  owner_comments = '\n'.join(owner_comments)
+  owner_comments = browser.execute_script('''
+    comments = window._sharedData.entry_data.PostPage[0].media.comments.nodes
+      .filter(item => item.user.username == '{}')
+      .map(item => item.text)
+      .reduce((item, total) => item + '\\n' + total, '');
+    return comments;
+  '''.format(username))
   if owner_comments == '':
     owner_comments = None
 
@@ -82,7 +86,7 @@ def check_link(browser, link, dont_like,
 
   """Check if the user_name is in the ignore_users list"""
   if (user_name in ignore_users) or (user_name == username):
-    print '--> Ignoring user: {}'.format(user_name)
+    print('--> Ignoring user: ' + user_name)
     return True, user_name
 
   for word in ignore_if_contains:
@@ -91,7 +95,7 @@ def check_link(browser, link, dont_like,
 
   for tag in dont_like:
     if tag in image_text:
-      print '--> Ignoring content: {}'.format(tag)
+      print('--> Ignoring content: ' + tag)
       return True, user_name
 
   return False, user_name
