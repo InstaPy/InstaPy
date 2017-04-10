@@ -27,10 +27,10 @@ InstaPy(username='test', password='test')\
   .end()
   ```
 > The above logs into IG user test using the password test and then comments on
-every 1/10 images with either Cool!, Awesome! or Nice!. The bot will not
+every 1/10 images with either Cool!, Awesome! or Nice!.<br />The bot will not
 interact with friend1, friend2 or friend3, this means that if the bot is set to
-unfollow people it will not unfollow these people. The bot will not like anthing
-that contains the words food, girl or hot. It will ignore posts that contain pizza.
+unfollow people it will not unfollow these people.<br />The bot will not like anthing
+that contains the words food, girl or hot. It will ignore posts that contain pizza.<br />
 It will like images that have been tagged with dog or food and will like 100 images.
 
 <h2>Getting started</h2>
@@ -60,7 +60,7 @@ export INSTA_PW="<Your password>"
 
 <h3>Usage and Components</h3>
 
-
+<h5>Usage</h5>
 ```python
 from instapy import InstaPy
 
