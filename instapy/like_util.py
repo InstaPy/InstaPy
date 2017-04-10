@@ -59,12 +59,17 @@ def check_link(browser, link, dont_like,
   image_text = browser.execute_script("return window._sharedData.entry_data.PostPage[0].media.caption")
 
   owner_comments = browser.execute_script('''
-    comments = window._sharedData.entry_data.PostPage[0].media.comments.nodes || Array();
-    comments = comments
+    latest_comments = window._sharedData.entry_data.PostPage[0].media.comments.nodes;
+    console.log(latest_comments);
+    console.info('latest_comments was of type: ' + typeof(latest_comments));
+    if (latest_comments === undefined) latest_comments = Array();
+    console.info('latest_comments is now of type: ' + typeof(latest_comments));
+    console.log(latest_comments);
+    owner_comments = latest_comments
       .filter(item => item.user.username == '{}')
       .map(item => item.text)
       .reduce((item, total) => item + '\\n' + total, '');
-    return comments;
+    return owner_comments;
   '''.format(username))
   if owner_comments == '':
     owner_comments = None
