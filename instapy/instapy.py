@@ -51,6 +51,8 @@ class InstaPy:
     self.do_comment = False
     self.comment_percentage = 0
     self.comments = ['Cool!', 'Nice!', 'Looks good!']
+    self.photo_comments = []
+    self.video_comments = []
 
     self.followed = 0
     self.follow_restrict = load_follow_restriction()
@@ -95,14 +97,23 @@ class InstaPy:
 
     return self
 
-  def set_comments(self, comments=None):
+  def set_comments(self, comments=None, media=None):
     """Changes the possible comments"""
     if self.aborting:
       return self
 
+    if (media not in [None, 'Photo', 'Video']):
+      print('Unkown media type! Treating as "any".')
+      media = None
+
     if comments is None:
       comments = []
-    self.comments = comments
+
+    if media is None:
+      self.comments = comments
+    else:
+      attr = '{}_comments'.format(media.lower())
+      setattr(self, attr, comments)
 
     return self
 
@@ -184,7 +195,7 @@ class InstaPy:
 
     return self
 
-  def like_by_tags(self, tags=None, amount=50):
+  def like_by_tags(self, tags=None, amount=50, media=None):
     """Likes (default) 50 images per given tag"""
     if self.aborting:
       return self
@@ -205,7 +216,7 @@ class InstaPy:
       self.logFile.write('--> ' + tag + '\n')
 
       try:
-        links = get_links_for_tag(self.browser, tag, amount)
+        links = get_links_for_tag(self.browser, tag, amount, media)
       except NoSuchElementException:
         print('Too few images, aborting')
         self.logFile.write('Too few images, aborting\n')
@@ -219,7 +230,7 @@ class InstaPy:
         self.logFile.write(link)
 
         try:
-          inappropriate, user_name = \
+          inappropriate, user_name, is_video = \
             check_link(self.browser, link, self.dont_like,
                        self.ignore_if_contains, self.username)
 
@@ -247,9 +258,14 @@ class InstaPy:
 
               if self.do_comment and user_name not in self.dont_include \
                   and checked_img and commenting:
-                commented += comment_image(self.browser,
-                                           temp_comments if temp_comments
-                                           else self.comments)
+                if temp_comments:
+                  # Use clarifai related comments only!
+                  comments = temp_comments
+                elif is_video:
+                  comments = self.comments + self.video_comments
+                else:
+                  comments = self.comments + self.photo_comments
+                commented += comment_image(self.browser, comments)
               else:
                 print('--> Not commented')
                 sleep(1)
@@ -289,7 +305,7 @@ class InstaPy:
 
     return self
 
-  def like_from_image(self, url, amount=50):
+  def like_from_image(self, url, amount=50, media=None):
     """Gets the tags from an image and likes 50 images for each tag"""
     if self.aborting:
       return self
@@ -297,7 +313,7 @@ class InstaPy:
     try:
       tags = get_tags(self.browser, url)
       print(tags)
-      self.like_by_tags(tags, amount)
+      self.like_by_tags(tags, amount, media)
     except TypeError as err:
       print('Sorry, an error occured: ' + str(err))
       self.logFile.write('Sorry, an error occured: ' + str(err) + '\n')

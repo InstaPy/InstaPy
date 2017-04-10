@@ -14,7 +14,7 @@
 
 ### Instagram Like, Comment and Follow Automation Script
 >Automation Script for "farming" Likes, Comments and Followers on Instagram.<br />
-Implemented in Python using the Selenium module.  
+Implemented in Python using the Selenium module.
 
 <h4>Example</h4>
 
@@ -40,7 +40,7 @@ cd InstaPy
 pip install .
 ```
 
-or 
+or
 
 ```bash
 cd InstaPy
@@ -67,6 +67,16 @@ session.login()
 
 session.like_by_tags(['#dog'], amount=100)
 session.like_from_image(url='www.instagram.com/image', amount=100)
+
+#likes 50 photos of other animals
+
+session.like_by_tags(['#animals'], amount=50, media='Photo')
+session.like_from_image(url='www.instagram.com/image', amount=50, media='Photo')
+
+#likes 15 videos of cats
+
+session.like_by_tags(['#cat'], amount=15, media='Video')
+session.like_from_image(url='www.instagram.com/image', amount=15, media='Video')
 
 session.end()
 ```
@@ -95,6 +105,10 @@ session.set_ignore_if_contains(['glutenfree', 'french', 'tasty'])
 
 session.set_do_comment(enabled=True, percentage=25)
 session.set_comments(['Awesome', 'Really Cool', 'I like your stuff'])
+
+# you can also set comments for specific media types (Photo / Video)
+session.set_comments(['Nice shot!'], media='Photo')
+session.set_comments(['Great Video!'], media='Video')
 ```
 
 <h5>Following</h5>
@@ -118,7 +132,7 @@ session.set_dont_include(['friend1', 'friend2', 'friend3'])
 ```python
 #unfollows 10 of the accounts your following -> instagram will only unfollow 10 before you'll be 'blocked for 10 minutes' (if you enter a higher number than 10 it will unfollow 10, then wait 10 minutes and will continue then)
 
-session.unfollow_users(amount=10) 
+session.unfollow_users(amount=10)
 ```
 <br />
 <h3>Clarifai ImageAPI</h3>
