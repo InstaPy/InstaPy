@@ -1,9 +1,14 @@
-<img src="https://s3-eu-central-1.amazonaws.com/centaur-wp/designweek/prod/content/uploads/2016/05/11170038/Instagram_Logo-1002x1003.jpg" width="200" align="right">
+<img src="http://i.imgur.com/9ZjtveL.png" width="200" align="right">
 
 # InstaPy
 [![GitHub license](https://img.shields.io/github/license/mashape/apistatus.svg)](https://github.com/timgrossmann/InstaPy/blob/master/LICENSE)
 [![built with Selenium](https://img.shields.io/badge/built%20with-Selenium-red.svg)](https://github.com/SeleniumHQ/selenium)
 [![built with Python3](https://img.shields.io/badge/Built%20with-Python3-green.svg)](https://www.python.org/)
+
+> **Think this tool is worth supporting?** 
+Feel free to contribute to the project in whatever way! 
+If you're not familiar with python, you could build a github page for this project (Just head over to the issues, there might be a task for you). You're a marketer? Perfect! hit me with a message on contact.timgrossmann@gmail.com. 
+**Become a part of InstaPy!**
 
 ### What is InstaPy
 >An automation script that uses your Instagram account to like and follow others with the aim of them liking and following back. <br />
