@@ -77,7 +77,7 @@ def check_link(browser, link, dont_like, ignore_if_contains, username):
   post_page = browser.execute_script("return window._sharedData.entry_data.PostPage")
   if post_page is None:
     print('Unavailable Page: ' + link)
-    return False, 'Unavailable Page'
+    return False, 'Unavailable Page', None
 
   """Gets the description of the link and checks for the dont_like tags"""
   is_video = browser.execute_script("return window._sharedData.entry_data.PostPage[0].media.is_video")
