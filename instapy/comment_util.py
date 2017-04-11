@@ -3,7 +3,7 @@
 from random import choice
 from time import sleep
 
-def comment_image(browser, comments):
+def comment_image(browser, comments, logger):
   """Checks if it should comment on the image"""
   rand_comment = (choice(comments))
 
@@ -12,6 +12,6 @@ def comment_image(browser, comments):
   comment_input.send_keys(rand_comment)
   comment_input.submit()
 
-  print('--> Commented: ' + rand_comment)
+  logger.info('--> Commented: ' + rand_comment)
   sleep(2)
   return 1
