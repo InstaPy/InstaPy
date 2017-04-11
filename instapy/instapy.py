@@ -61,6 +61,7 @@ class InstaPy:
 
     self.dont_like = ['sex', 'nsfw']
     self.ignore_if_contains = []
+    self.ignore_users = []
 
     self.use_clarifai = False
     self.clarifai_secret = None
