@@ -42,14 +42,14 @@ def get_links_for_tag(browser, tag, amount):
 
   return links[:amount]
 
-def check_link(browser, link, dont_like, ignore_if_contains, username):
+def check_link(browser, link, dont_like, ignore_if_contains, username, logger):
   browser.get(link)
   sleep(2)
 
   """Check if the Post is Valid/Exists"""
   post_page = browser.execute_script("return window._sharedData.entry_data.PostPage")
   if post_page is None:
-    print('Unavailable Page: ' + link)
+    logger.info('Unavailable Page: ' + link)
     return False, 'Unavailable Page'
 
   """Gets the description of the link and checks for the dont_like tags"""
@@ -62,9 +62,9 @@ def check_link(browser, link, dont_like, ignore_if_contains, username):
   if image_text is None:
     image_text = "No description"
 
-  print('Image from: ' + user_name)
-  print('Link: ' + link)
-  print('Description: ' + image_text)
+  logger.info('Image from: ' + user_name)
+  logger.info('Link: ' + link)
+  logger.info('Description: ' + image_text)
 
   for word in ignore_if_contains:
     if word in image_text:
@@ -76,21 +76,21 @@ def check_link(browser, link, dont_like, ignore_if_contains, username):
 
   return False, user_name
 
-def like_image(browser):
+def like_image(browser, logger):
   """Likes the browser opened image"""
   like_elem = browser.find_elements_by_xpath("//a[@role = 'button']/span[text()='Like']")
   liked_elem = browser.find_elements_by_xpath("//a[@role = 'button']/span[text()='Unlike']")
 
   if len(like_elem) == 1:
     browser.execute_script("document.getElementsByClassName('" + like_elem[0].get_attribute("class") + "')[0].click()")
-    print('--> Image Liked!')
+    logger.info('--> Image Liked!')
     sleep(2)
     return True
   elif len(liked_elem) == 1:
-    print('--> Already Liked!')
+    logger.info('--> Already Liked!')
     return False
   else:
-    print('--> Invalid Like Element!')
+    logger.info('--> Invalid Like Element!')
     return False
 
 def get_tags(browser, url):

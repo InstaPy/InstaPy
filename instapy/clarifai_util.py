@@ -2,7 +2,7 @@
 the image for invalid content"""
 from clarifai.client import ClarifaiApi
 
-def check_image(browser, clarifai_id, clarifai_secret, img_tags):
+def check_image(browser, clarifai_id, clarifai_secret, img_tags, logger):
   """Uses the link to the image to check for invalid content
   in the image"""
   clarifai_api = ClarifaiApi(clarifai_id, clarifai_secret)
@@ -14,7 +14,7 @@ def check_image(browser, clarifai_id, clarifai_secret, img_tags):
   for pair in img_tags:
     if not pair[1]:
       if given_tags_in_result(pair[0], result_tags):
-        print('Inappropriate content in Image, not commenting')
+        logger.info('Inappropriate content in Image, not commenting')
         return False, []
     else:
       if given_tags_in_result(pair[0], result_tags):

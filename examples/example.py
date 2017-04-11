@@ -57,8 +57,10 @@ session.like_by_tags(['#test'], amount=100)
 #get's the tags from the description and likes 100 images of each tag
 session.like_from_image(url='www.instagram.com/image', amount=100)
 
-session.unfollow_users(amount=10) #unfollows 10 of the accounts your following -> instagram will only unfollow 10 before you'll be 'blocked
+session.unfollow_users(amount=10) #unfollows 10 most recent accounts you're following -> instagram will only unfollow 10 before you'll be 'blocked
 #  for 10 minutes' (if you enter a higher number than 10 it will unfollow 10, then wait 10 minutes and will continue then)
+
+session.unfollow_users(amount=10, unfollow_oldest=True) #unfollows 10 oldest accounts you're following
 
 """Ending the script"""
 #clears all the cookies, deleting you password and all information from this session
