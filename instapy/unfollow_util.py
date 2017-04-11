@@ -11,10 +11,10 @@ def unfollow(browser, username, amount, dont_include, logger, unfollow_oldest):
   unfollowNum = 0
 
   browser.get('https://www.instagram.com/' + username)
-  sleep(2)
 
-  following_link_div = browser.find_elements_by_class_name('_218yx')[2]
-  following_link = following_link_div.find_element_by_tag_name('a')
+  following_link_div = browser.find_elements_by_class_name('_218yx')
+  sleep(1)
+  following_link = following_link_div[2].find_element_by_tag_name('a')
   following_link.click()
 
   sleep(2)
@@ -23,7 +23,7 @@ def unfollow(browser, username, amount, dont_include, logger, unfollow_oldest):
   person_list = person_list_div.find_elements_by_class_name('_cx1ua')
 
   follow_div = browser.find_element_by_class_name('_4gt3b')
-  follow_buttons = follow_div.find_elements_by_tag_name('button')
+
 
   temp_list = []
   actions = ActionChains(browser)
@@ -46,25 +46,25 @@ def unfollow(browser, username, amount, dont_include, logger, unfollow_oldest):
     while len(person_list) < len(temp_list):
       actions.send_keys(Keys.END).perform()
       sleep(1)
-      actions.send_keys(Keys.HOME).perform()
-      sleep(1)
       person_list = temp_list
       temp_list = person_list_div.find_elements_by_class_name('_cx1ua')
 
-    # Finally, extract the names of users from the list in reversed order
+    # Finally, extract the names of users from the list in reversed order (and buttons)
+    follow_div = browser.find_element_by_class_name('_4gt3b')
     person_list = reversed([x.find_element_by_class_name('_gzjax').text for x in person_list])
+    follow_buttons = reversed(follow_div.find_elements_by_tag_name('button'))
   else:
       # Make sure enough users are loaded (as required by amount). If len(temp_list) == len(person_list) nothing has been loaded - stop
       while len(person_list) < amount and len(temp_list) != len(person_list):
         actions.send_keys(Keys.END).perform()
         sleep(1)
-        actions.send_keys(Keys.HOME).perform()
-        sleep(1)
         temp_list = person_list
         person_list = person_list_div.find_elements_by_class_name('_cx1ua')
 
-      # Finally, extract the names of users from the list
+      # Finally, extract the names of users from the list (and buttons)
+      follow_div = browser.find_element_by_class_name('_4gt3b')
       person_list = [x.find_element_by_class_name('_gzjax').text for x in person_list]
+      follow_buttons = follow_div.find_elements_by_tag_name('button')
 
   for button, person in zip(follow_buttons, person_list):
     if person not in dont_include:
