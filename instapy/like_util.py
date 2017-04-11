@@ -54,9 +54,16 @@ def get_links_for_tag(browser, tag, amount, media=None):
     # Number of page load needed
     new_needed = int(ceil(amount_left / new_per_page))
 
-    for _ in range(new_needed):  # add images x * 12
+    if new_needed > 12:
+      # Don't go bananas trying to get all of instagram!
+      new_needed = 12
+
+    for i in range(new_needed):  # add images x * 12
+      # Keep the latest window active while loading more posts
+      browser.switch_to.window(browser.window_handles[-1])
       body_elem.send_keys(Keys.END)
       sleep(1)
+      browser.switch_to.window(browser.window_handles[-1])
       body_elem.send_keys(Keys.HOME)
       sleep(1)
 
