@@ -1,22 +1,22 @@
-> **Think this tool is worth supporting?** <br />
-> Feel free to contribute to the project in whatever way! <br /> If you're not familiar with python, you could build a github page for this project (Just head over to the issues, there might be a task for you). You're a marketer? Perfect! hit me with a message on contact.timgrossmann@gmail.com. <br /> **Become a part of InstaPy!**
-
-> **Disclaimer**: Please Note that this is a research project. I am by no means responsible for any usage of this tool. Use on your own behalf. I'm also not responsible if your accounts get banned due to extensive use of this tool.
-
-<img src="http://i.imgur.com/9ZjtveL.png" width="150" align="right">
+<img src="http://i.imgur.com/9ZjtveL.png" width="200" align="right">
 
 # InstaPy
 [![GitHub license](https://img.shields.io/github/license/mashape/apistatus.svg)](https://github.com/timgrossmann/InstaPy/blob/master/LICENSE)
 [![built with Selenium](https://img.shields.io/badge/built%20with-Selenium-red.svg)](https://github.com/SeleniumHQ/selenium)
 [![built with Python3](https://img.shields.io/badge/Built%20with-Python3-green.svg)](https://www.python.org/)
 
+> **Think this tool is worth supporting?** 
+Feel free to contribute to the project in whatever way! 
+If you're not familiar with python, you could build a github page for this project (Just head over to the issues, there might be a task for you). You're a marketer? Perfect! hit me with a message on contact.timgrossmann@gmail.com. 
+**Become a part of InstaPy!**
+
+### What is InstaPy
+>An automation script that uses your Instagram account to like and follow others with the aim of them liking and following back. <br />
+Implemented in Python using the Selenium module.
+
 ### [Read about how it works on Medium](https://medium.freecodecamp.com/my-open-source-instagram-bot-got-me-2-500-real-followers-for-5-in-server-costs-e40491358340)
 
-### Instagram Like, Comment and Follow Automation Script
->Automation Script for "farming" Likes, Comments and Followers on Instagram.<br />
-Implemented in Python using the Selenium module.  
-
-<h4>Example</h4>
+<h2>Example Script</h2>
 
 ```python
 from instapy import InstaPy
@@ -30,17 +30,25 @@ InstaPy(username='test', password='test')\
   .set_ignore_if_contains(['pizza'])\
   .like_by_tags(['dog', '#cat'], amount=100)\
   .end()
-```
-<h2>It's easy to use and the built in delays prevent your account from getting banned. (Just make sure you don't like 1000s of post/day)</h2>
-<h3>Getting started</h3>
+  ```
+> The above logs into IG user test using the password test and then comments on
+every 1/10 images with either Cool!, Awesome! or Nice!.<br />The bot will not
+interact with friend1, friend2 or friend3, this means that if the bot is set to
+unfollow people it will not unfollow these people.<br />The bot will not like anthing
+that contains the words food, girl or hot. It will ignore posts that contain pizza.<br />
+It will like images that have been tagged with dog or food and will like 100 images.
 
+<h2>Getting started</h2>
+<h3>Setting Up</h3>
+
+#### Download the repository from GitHub and extract the files.
 #### Make sure to get the right ```chromedriver``` for your system from here: https://sites.google.com/a/chromium.org/chromedriver/downloads. Just put it in /assets.
 ```bash
 cd InstaPy
 pip install .
 ```
 
-or 
+or
 
 ```bash
 cd InstaPy
@@ -55,6 +63,9 @@ export INSTA_PW="<Your password>"
 ```
 <hr />
 
+<h3>Usage and Components</h3>
+
+<h5>Usage</h5>
 ```python
 from instapy import InstaPy
 
@@ -118,7 +129,7 @@ session.set_dont_include(['friend1', 'friend2', 'friend3'])
 ```python
 #unfollows 10 of the accounts your following -> instagram will only unfollow 10 before you'll be 'blocked for 10 minutes' (if you enter a higher number than 10 it will unfollow 10, then wait 10 minutes and will continue then)
 
-session.unfollow_users(amount=10) 
+session.unfollow_users(amount=10)
 ```
 <br />
 <h3>Clarifai ImageAPI</h3>
@@ -175,4 +186,7 @@ session.clarifai_check_img_for(['food', 'lunch'], comment=True, comments=['Tasty
 ```
 <h6>Check out https://clarifai.com/demo to see some of the available tags.</h6>
 <hr />
-<h6>Have Fun & Feel Free to report any issues</h6>
+
+<h5>Have Fun & Feel Free to report any issues</h5>
+
+> **Disclaimer**: Please Note that this is a research project. I am by no means responsible for any usage of this tool. Use on your own behalf. I'm also not responsible if your accounts get banned due to extensive use of this tool.
