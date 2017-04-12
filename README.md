@@ -176,3 +176,14 @@ session.clarifai_check_img_for(['food', 'lunch'], comment=True, comments=['Tasty
 <h6>Check out https://clarifai.com/demo to see some of the available tags.</h6>
 <hr />
 <h6>Have Fun & Feel Free to report any issues</h6>
+
+
+## Docker
+
+### Build Image
+
+You can build the image with `docker build instapy .`
+
+### Run Image
+
+Run the container with `docker run --name=instapy -e INSTAGRAM_USER=<your-user> -e INSTAGRAM_PW=<your-pw> -d instapy`
