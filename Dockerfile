@@ -1,5 +1,10 @@
 FROM ubuntu:16.04
+
 MAINTAINER Grossmann Tim <contact.timgrossmann@gmail.com>
+
+# Set env variables
+ENV CHROME https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+ENV CRHOMEDRIVER http://chromedriver.storage.googleapis.com/2.29/chromedriver_linux64.zip
 
 # Environment setup
 RUN apt-get update \
@@ -42,7 +47,7 @@ RUN apt-get update \
 
 # Installing latest chrome
 RUN cd ~ \
-    && wget "https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb" \
+    && wget ${CHROME} \
     && dpkg -i google-chrome-stable_current_amd64.deb \
     && apt-get install -y -f \
     && rm google-chrome-stable_current_amd64.deb
@@ -52,7 +57,7 @@ RUN apt-get clean
 
 # Adding InstaPy
 RUN git clone -b docker_settings https://github.com/timgrossmann/InstaPy.git \
-    && wget "http://chromedriver.storage.googleapis.com/2.29/chromedriver_linux64.zip" \
+    && wget ${CRHOMEDRIVER} \
     && unzip chromedriver_linux64 \
     && mv chromedriver InstaPy/assets/chromedriver \
     && chmod +x InstaPy/assets/chromedriver \
