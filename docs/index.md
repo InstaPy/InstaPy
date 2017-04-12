@@ -1,6 +1,6 @@
-<img src="http://i.imgur.com/9ZjtveL.png" width="200" align="right">
 
-# InstaPy
+
+# <img src="http://i.imgur.com/9ZjtveL.png" width="200" align="right"> InstaPy
 [![GitHub license](https://img.shields.io/github/license/mashape/apistatus.svg)](https://github.com/timgrossmann/InstaPy/blob/master/LICENSE)
 [![built with Selenium](https://img.shields.io/badge/built%20with-Selenium-red.svg)](https://github.com/SeleniumHQ/selenium)
 [![built with Python3](https://img.shields.io/badge/Built%20with-Python3-green.svg)](https://www.python.org/)
@@ -39,6 +39,10 @@ that contains the words food, girl or hot. It will ignore posts that contain piz
 It will like images that have been tagged with dog or food and will like 100 images.
 
 <h2>Getting started</h2>
+
+> Guides:  
+**[How to Ubuntu](./How_To_DO_Ubuntu.md) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [How to CentOS](How_To_DO_Centos.md)**
+
 <h3>Setting Up</h3>
 
 #### Download the repository from GitHub and extract the files.
