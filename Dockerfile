@@ -46,7 +46,10 @@ RUN cd ~ \
     && dpkg -i google-chrome-stable_current_amd64.deb \
     && apt-get install -y -f \
     && rm google-chrome-stable_current_amd64.deb
-    
+
+# Cleanup
+RUN apt-get clean
+
 # Setting the language enc
 ENV LANGUAGE en_US.UTF-8
 ENV LANG en_US.UTF-8
@@ -64,6 +67,6 @@ RUN git clone -b docker_settings https://github.com/timgrossmann/InstaPy.git \
 
 # Copying the your quickstart file into the container and setting directory
 COPY quickstart.py ./InstaPy
-WORKDIR /InstaPy 
-    
+WORKDIR /InstaPy
+
 CMD ["python3.5", "quickstart.py"]
