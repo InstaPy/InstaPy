@@ -24,8 +24,8 @@ def get_links_for_tag(browser, tag, amount):
 
   load_button.click()
 
-  body_elem.send_keys(Keys.HOME)
-  sleep(1)
+  # body_elem.send_keys(Keys.HOME)
+  # sleep(1)
 
   main_elem = browser.find_element_by_tag_name('main')
 
@@ -34,8 +34,8 @@ def get_links_for_tag(browser, tag, amount):
   for _ in range(new_needed):  # add images x * 12
     body_elem.send_keys(Keys.END)
     sleep(1)
-    body_elem.send_keys(Keys.HOME)
-    sleep(1)
+    # body_elem.send_keys(Keys.HOME)
+    # sleep(1)
 
   link_elems = main_elem.find_elements_by_tag_name('a')
   links = [link_elem.get_attribute('href') for link_elem in link_elems]
@@ -48,6 +48,7 @@ def check_link(browser, link, dont_like, ignore_if_contains, username, logger):
 
   """Check if the Post is Valid/Exists"""
   post_page = browser.execute_script("return window._sharedData.entry_data.PostPage")
+
   if post_page is None:
     logger.info('Unavailable Page: ' + link)
     return False, 'Unavailable Page'
@@ -66,12 +67,14 @@ def check_link(browser, link, dont_like, ignore_if_contains, username, logger):
   logger.info('Link: ' + link)
   logger.info('Description: ' + image_text)
 
+  text_words = image_text.split()
+
   for word in ignore_if_contains:
-    if word in image_text:
+    if word in text_words:
       return False, user_name
 
   for tag in dont_like:
-    if tag in image_text or user_name == username:
+    if tag in text_words or user_name == username:
       return True, user_name
 
   return False, user_name

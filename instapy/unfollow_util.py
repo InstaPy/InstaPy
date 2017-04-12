@@ -14,6 +14,18 @@ def unfollow(browser, username, amount, dont_include, logger, unfollow_oldest):
 
   following_link_div = browser.find_elements_by_class_name('_218yx')
   sleep(1)
+  num_of_tries = 0
+
+  # Make sure the necessary element is loaded (try 10 times)
+  while len(following_link_div) < 3 and num_of_tries < 10:
+      following_link_div = browser.find_elements_by_class_name('_218yx')
+      sleep(1)
+      num_of_tries += 1
+
+  # Failed to unfollow
+  if len(following_link_div) < 3:
+      return unfollowNum
+
   following_link = following_link_div[2].find_element_by_tag_name('a')
   following_link.click()
 

@@ -302,20 +302,27 @@ class InstaPy:
 
     def unfollow_users(self, amount=10, unfollow_oldest=False):
         """Unfollows (default) 10 users from your following list"""
+        removed = 0
 
         while amount > 0:
             try:
-                amount -= unfollow(self.browser, self.username, amount,
+                removed += unfollow(self.browser, self.username, amount,
                                    self.dont_include, self.logger, unfollow_oldest)
+                amount -= removed
             except TypeError as err:
                 self.logger.error('Sorry, an error occurred: ' + str(err))
 
                 self.aborting = True
                 return self
 
-            if amount > 10:
-                sleep(600)
+            # If 10 or more people have been unfollowed and there are more to unfollow
+            if amount > 0 and removed >= 10:
+                # Reset removed
+                removed = 0
+
+                # Sleep for 10 minutes after removing 10 people
                 self.logger.info('Sleeping for 10min')
+                sleep(600)
 
         return self
 
