@@ -53,7 +53,8 @@ RUN cd ~ \
     && rm google-chrome-stable_current_amd64.deb
 
 # Cleanup
-RUN apt-get clean
+RUN apt-get clean \
+	&& rm -rf /var/lib/apt/lists/*
 
 # Adding InstaPy
 RUN git clone -b docker_settings https://github.com/timgrossmann/InstaPy.git \
