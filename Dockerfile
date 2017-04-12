@@ -53,7 +53,7 @@ ENV LANG en_US.UTF-8
 ENV LC_ALL en_US.UTF-8
 
 # Adding InstaPy
-RUN git clone -b pyvirutal_active https://github.com/timgrossmann/InstaPy.git \
+RUN git clone -b docker_settings https://github.com/timgrossmann/InstaPy.git \
     && wget "http://chromedriver.storage.googleapis.com/2.29/chromedriver_linux64.zip" \
     && unzip chromedriver_linux64 \
     && mv chromedriver InstaPy/assets/chromedriver \
