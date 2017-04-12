@@ -50,11 +50,6 @@ RUN cd ~ \
 # Cleanup
 RUN apt-get clean
 
-# Setting the language enc
-ENV LANGUAGE en_US.UTF-8
-ENV LANG en_US.UTF-8
-ENV LC_ALL en_US.UTF-8
-
 # Adding InstaPy
 RUN git clone -b docker_settings https://github.com/timgrossmann/InstaPy.git \
     && wget "http://chromedriver.storage.googleapis.com/2.29/chromedriver_linux64.zip" \
