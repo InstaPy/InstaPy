@@ -24,8 +24,8 @@ def get_links_for_tag(browser, tag, amount):
 
   load_button.click()
 
-  body_elem.send_keys(Keys.HOME)
-  sleep(1)
+  # body_elem.send_keys(Keys.HOME)
+  # sleep(1)
 
   main_elem = browser.find_element_by_tag_name('main')
 
@@ -34,22 +34,23 @@ def get_links_for_tag(browser, tag, amount):
   for _ in range(new_needed):  # add images x * 12
     body_elem.send_keys(Keys.END)
     sleep(1)
-    body_elem.send_keys(Keys.HOME)
-    sleep(1)
+    # body_elem.send_keys(Keys.HOME)
+    # sleep(1)
 
   link_elems = main_elem.find_elements_by_tag_name('a')
   links = [link_elem.get_attribute('href') for link_elem in link_elems]
 
   return links[:amount]
 
-def check_link(browser, link, dont_like, ignore_if_contains, username):
+def check_link(browser, link, dont_like, ignore_if_contains, username, logger):
   browser.get(link)
   sleep(2)
 
   """Check if the Post is Valid/Exists"""
   post_page = browser.execute_script("return window._sharedData.entry_data.PostPage")
+
   if post_page is None:
-    print('Unavailable Page: ' + link)
+    logger.info('Unavailable Page: ' + link)
     return False, 'Unavailable Page'
 
   """Gets the description of the link and checks for the dont_like tags"""
@@ -62,35 +63,37 @@ def check_link(browser, link, dont_like, ignore_if_contains, username):
   if image_text is None:
     image_text = "No description"
 
-  print('Image from: ' + user_name)
-  print('Link: ' + link)
-  print('Description: ' + image_text)
+  logger.info('Image from: ' + user_name)
+  logger.info('Link: ' + link)
+  logger.info('Description: ' + image_text)
+
+  text_words = image_text.split()
 
   for word in ignore_if_contains:
-    if word in image_text:
+    if word in text_words:
       return False, user_name
 
   for tag in dont_like:
-    if tag in image_text or user_name == username:
+    if tag in text_words or user_name == username:
       return True, user_name
 
   return False, user_name
 
-def like_image(browser):
+def like_image(browser, logger):
   """Likes the browser opened image"""
   like_elem = browser.find_elements_by_xpath("//a[@role = 'button']/span[text()='Like']")
   liked_elem = browser.find_elements_by_xpath("//a[@role = 'button']/span[text()='Unlike']")
 
   if len(like_elem) == 1:
     browser.execute_script("document.getElementsByClassName('" + like_elem[0].get_attribute("class") + "')[0].click()")
-    print('--> Image Liked!')
+    logger.info('--> Image Liked!')
     sleep(2)
     return True
   elif len(liked_elem) == 1:
-    print('--> Already Liked!')
+    logger.info('--> Already Liked!')
     return False
   else:
-    print('--> Invalid Like Element!')
+    logger.info('--> Invalid Like Element!')
     return False
 
 def get_tags(browser, url):
