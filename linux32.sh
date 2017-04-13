@@ -14,7 +14,7 @@ rm chromedriver_linux32.zip
 echo "Removal completed."
 echo " "
 sudo pip install setuptools
-sudo pip install python-dev
+sudo apt-get install python-dev
 sudo pip install ./
 echo "Setup is completed."
 read -n1 -r -p "Press any key to continue..." key
