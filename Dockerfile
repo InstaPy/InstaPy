@@ -45,6 +45,10 @@ RUN apt-get update \
     && pip3 install --upgrade pip \
     && apt-get -f install
 
+ENV LANG en_US.UTF-8
+ENV LANGUAGE en_US:en
+ENV LC_ALL en_US.UTF-8
+
 # Installing latest chrome
 RUN cd ~ \
     && wget ${CHROME} \
