@@ -104,6 +104,14 @@ session.set_comments(['Awesome', 'Really Cool', 'I like your stuff'])
 
 session.set_do_follow(enabled=True, percentage=10, times=2)
 ```
+<h5>Following by a list</h5>
+
+```python
+#follows each account from a list of instagram nicknames (only follows a user once (if unfollowed again))
+
+accs = ['therock','natgeo'] 
+session.follow_by_list(accs, times=1)
+```
 
 <h5>Excluding friends</h5>
 

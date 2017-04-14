@@ -49,6 +49,25 @@ def follow_user(browser, user_name, follow_restrict):
     sleep(1)
     return 0
 
+def follow_user_from_list(browser, acc_to_follow, follow_restrict):
+    """Follows users from an list"""
+    browser.get('https://www.instagram.com/' + acc_to_follow)
+    print('--> ' + acc_to_follow + ' instagram account is opened...')
+    follow_button = browser.find_element_by_xpath("//*[contains(text(), 'Follow')]")
+    sleep(10)
+    if follow_button.text == 'Follow':
+        follow_button.click()
+        print('---> Now following ' + acc_to_follow)
+        print('*' * 20)
+        follow_restrict[acc_to_follow] = follow_restrict.get(acc_to_follow, 0) + 1
+        sleep(3)
+        return 1
+    else:
+        print('---> ' + acc_to_follow + ' is already followed')
+        print('*' * 20)
+        sleep(3)
+        return  0
+
 def dump_follow_restriction(followRes):
   """Dumps the given dictionary to a file using the json format"""
   with open('./logs/followRestriction.json', 'w') as followResFile:

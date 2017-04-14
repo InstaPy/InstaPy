@@ -17,6 +17,7 @@ from .like_util import like_image
 from .login_util import login_user
 from .unfollow_util import unfollow
 from .unfollow_util import follow_user
+from .unfollow_util import follow_user_from_list
 from .unfollow_util import load_follow_restriction
 from .unfollow_util import dump_follow_restriction
 from .print_log_writer import log_follower_num
@@ -168,6 +169,28 @@ class InstaPy:
       self.clarifai_img_tags.append((tags, comment, comments))
 
     return self
+
+  def follow_by_list(self, followlist, times=1):
+    """Allows to follow by any scrapped list"""
+    self.follow_times = times
+    if self.aborting:
+      return self
+
+    followed = 0
+
+    for acc_to_follow in followlist:
+      if self.follow_restrict.get(acc_to_follow, 0) < self.follow_times:
+        followed += follow_user_from_list(self.browser, acc_to_follow, self.follow_restrict)
+        self.followed += followed
+        self.logFile.write('Followed: ' + str(followed) + '\n')
+        followed = 0
+      else:
+        print('---> ' + acc_to_follow + ' has already been followed more > times than specified')
+        sleep(1)
+
+    return self
+
+
 
   def like_by_tags(self, tags=None, amount=50):
     """Likes (default) 50 images per given tag"""
