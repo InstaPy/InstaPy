@@ -67,7 +67,7 @@ class InstaPy:
     self.clarifai_id = None
     self.clarifai_img_tags = []
 
-    self.like_by_followers_limit = 10000000000
+    self.like_by_followers_limit = 0
 
     self.aborting = False
 
@@ -186,11 +186,9 @@ class InstaPy:
 
     return self
 
-  def set_upper_follower_count(self, limit=100):
+  def set_upper_follower_count(self, limit=None):
     """Used to chose if a post is liked by the number of likes"""
-    if limit is None:
-      self.like_by_followers_limit = 10000000000
-    self.like_by_followers_limit = limit
+    self.like_by_followers_limit = limit or 0
     return self
 
   def like_by_tags(self, tags=None, amount=50):
@@ -273,7 +271,7 @@ class InstaPy:
             else:
               already_liked += 1
           else:
-            print('Image not liked: Inappropriate')
+            print('Image not liked: Inappropriate or Exceeds followers limit')
             inap_img += 1
         except NoSuchElementException as err:
           print('Invalid Page: ' + str(err))

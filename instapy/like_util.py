@@ -78,7 +78,7 @@ def check_link(browser, link, dont_like, ignore_if_contains, username, like_by_f
   print "Number of Followers: ", num_followers
   print "LBF", like_by_followers_limit
 
-  if num_followers > like_by_followers_limit:
+  if like_by_followers_limit and num_followers > like_by_followers_limit:
       return True, user_name
 
   for word in ignore_if_contains:
