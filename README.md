@@ -1,9 +1,9 @@
 > **Think this tool is worth supporting?** <br />
-> Feel free to contribute to the project in whatever way! <br /> If you're not familiar with python, you could build a github page for this project (Just head over to the issues, there might be a task for you). You're a marketer? Perfect! hit me with a message on contact.timgrossmann@gmail.com. <br/> If you don't have the time or skills to contribute, you can also support us through Patreon! <br /> **Become a part of InstaPy!**
+> Feel free to contribute to the project in whatever way! <br /> If you're not familiar with python, you could build a github page for this project (Just head over to the issues, there might be a task for you). You're a marketer? Perfect! hit me with a message on contact.timgrossmann@gmail.com. <br /> **Become a part of InstaPy!**
 
 > **Disclaimer**: Please Note that this is a research project. I am by no means responsible for any usage of this tool. Use on your own behalf. I'm also not responsible if your accounts get banned due to extensive use of this tool.
 
-<img src="https://s3-eu-central-1.amazonaws.com/centaur-wp/designweek/prod/content/uploads/2016/05/11170038/Instagram_Logo-1002x1003.jpg" width="200" align="right">
+<img src="http://i.imgur.com/9ZjtveL.png" width="150" align="right">
 
 # InstaPy
 [![GitHub license](https://img.shields.io/github/license/mashape/apistatus.svg)](https://github.com/timgrossmann/InstaPy/blob/master/LICENSE)
