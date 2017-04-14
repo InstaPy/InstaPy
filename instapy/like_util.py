@@ -56,7 +56,7 @@ def check_link(browser, link, dont_like, ignore_if_contains, username):
   user_name = browser.execute_script("return window._sharedData.entry_data.PostPage[0].media.owner.username")
   image_text = browser.execute_script("return window._sharedData.entry_data.PostPage[0].media.caption")
 
-  """If the image has no description gets the first comment""" 
+  """If the image has no description gets the first comment"""
   if image_text is None:
     image_text = browser.execute_script("return window._sharedData.entry_data.PostPage[0].media.comments.nodes[0].text")
   if image_text is None:
@@ -66,12 +66,10 @@ def check_link(browser, link, dont_like, ignore_if_contains, username):
   print('Link: ' + link)
   print('Description: ' + image_text)
 
-  for word in ignore_if_contains:
-    if word in image_text:
+  if any((word in image_text for word in ignore_if_contains)):
       return False, user_name
 
-  for tag in dont_like:
-    if tag in image_text or user_name == username:
+  if any(((tag in image_text or user_name == username) for tag in dont_like)):
       return True, user_name
 
   return False, user_name
