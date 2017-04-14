@@ -178,12 +178,18 @@ session.clarifai_check_img_for(['food', 'lunch'], comment=True, comments=['Tasty
 <h6>Have Fun & Feel Free to report any issues</h6>
 
 
-## Docker
+### Running it with Docker
 
-### Build Image
+#### Build the Image
 
-You can build the image with `docker build instapy .`
+You first need to build the image by running this in the Terminal:
+```bash
+docker build instapy .
+```
 
-### Run Image
+#### Run in a Container
 
-Run the container with `docker run --name=instapy -e INSTAGRAM_USER=<your-user> -e INSTAGRAM_PW=<your-pw> -d instapy`
+After the build succeeded, you can simply run the container with:
+```bash
+docker run --name=instapy -e INSTAGRAM_USER=<your-user> -e INSTAGRAM_PW=<your-pw> -d instapy
+```
