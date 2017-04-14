@@ -67,6 +67,8 @@ class InstaPy:
     self.clarifai_id = None
     self.clarifai_img_tags = []
 
+    self.like_by_followers_limit = 10000000000
+
     self.aborting = False
 
   def login(self):
@@ -184,6 +186,13 @@ class InstaPy:
 
     return self
 
+  def set_upper_follower_count(self, limit=100):
+    """Used to chose if a post is liked by the number of likes"""
+    if limit is None:
+      self.like_by_followers_limit = 10000000000
+    self.like_by_followers_limit = limit
+    return self
+
   def like_by_tags(self, tags=None, amount=50):
     """Likes (default) 50 images per given tag"""
     if self.aborting:
@@ -221,7 +230,7 @@ class InstaPy:
         try:
           inappropriate, user_name = \
             check_link(self.browser, link, self.dont_like,
-                       self.ignore_if_contains, self.username)
+                       self.ignore_if_contains, self.username, self.like_by_followers_limit)
 
           if not inappropriate:
             liked = like_image(self.browser)
