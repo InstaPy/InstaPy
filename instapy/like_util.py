@@ -42,7 +42,8 @@ def get_links_for_tag(browser, tag, amount):
 
   return links[:amount]
 
-def check_link(browser, link, dont_like, ignore_if_contains, username):
+def check_link(browser, link, dont_like, ignore_if_contains, username, like_by_followers_limit):
+
   browser.get(link)
   sleep(2)
 
@@ -56,15 +57,29 @@ def check_link(browser, link, dont_like, ignore_if_contains, username):
   user_name = browser.execute_script("return window._sharedData.entry_data.PostPage[0].media.owner.username")
   image_text = browser.execute_script("return window._sharedData.entry_data.PostPage[0].media.caption")
 
-  """If the image has no description gets the first comment""" 
+  """If the image has no description gets the first comment"""
   if image_text is None:
     image_text = browser.execute_script("return window._sharedData.entry_data.PostPage[0].media.comments.nodes[0].text")
   if image_text is None:
     image_text = "No description"
 
+  """Find the number of followes the user has"""
+  userlink = 'https://www.instagram.com/' + user_name
+  browser.get(userlink)
+  sleep(1)
+  num_followers = browser.execute_script("return window._sharedData.entry_data.ProfilePage[0].user.followed_by.count")
+  browser.get(link)
+  sleep(1)
+
+
   print('Image from: ' + user_name)
   print('Link: ' + link)
   print('Description: ' + image_text)
+  print "Number of Followers: ", num_followers
+  print "LBF", like_by_followers_limit
+
+  if num_followers > like_by_followers_limit:
+      return True, user_name
 
   for word in ignore_if_contains:
     if word in image_text:

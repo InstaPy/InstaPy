@@ -1,9 +1,9 @@
 > **Think this tool is worth supporting?** <br />
-> Feel free to contribute to the project in whatever way! <br /> If you're not familiar with python, you could build a github page for this project (Just head over to the issues, there might be a task for you). You're a marketer? Perfect! hit me with a message on contact.timgrossmann@gmail.com. <br /> **Become a part of InstaPy!**
+> Feel free to contribute to the project in whatever way! <br /> If you're not familiar with python, you could build a github page for this project (Just head over to the issues, there might be a task for you). You're a marketer? Perfect! hit me with a message on contact.timgrossmann@gmail.com. <br/> If you don't have the time or skills to contribute, you can also support us through Patreon! <br /> **Become a part of InstaPy!**
 
 > **Disclaimer**: Please Note that this is a research project. I am by no means responsible for any usage of this tool. Use on your own behalf. I'm also not responsible if your accounts get banned due to extensive use of this tool.
 
-<img src="http://i.imgur.com/9ZjtveL.png" width="150" align="right">
+<img src="https://s3-eu-central-1.amazonaws.com/centaur-wp/designweek/prod/content/uploads/2016/05/11170038/Instagram_Logo-1002x1003.jpg" width="200" align="right">
 
 # InstaPy
 [![GitHub license](https://img.shields.io/github/license/mashape/apistatus.svg)](https://github.com/timgrossmann/InstaPy/blob/master/LICENSE)
@@ -40,7 +40,7 @@ cd InstaPy
 pip install .
 ```
 
-or 
+or
 
 ```bash
 cd InstaPy
@@ -118,7 +118,7 @@ session.set_dont_include(['friend1', 'friend2', 'friend3'])
 ```python
 #unfollows 10 of the accounts your following -> instagram will only unfollow 10 before you'll be 'blocked for 10 minutes' (if you enter a higher number than 10 it will unfollow 10, then wait 10 minutes and will continue then)
 
-session.unfollow_users(amount=10) 
+session.unfollow_users(amount=10)
 ```
 <br />
 <h3>Clarifai ImageAPI</h3>
@@ -172,6 +172,14 @@ session.clarifai_check_img_for(['nsfw'])
 #comments with the given comments
 
 session.clarifai_check_img_for(['food', 'lunch'], comment=True, comments=['Tasty!', 'Yum!'])
+```
+<h5>Interactions based on the number of followers a user has</h5>
+
+```python
+#This is used to check the number of followers a user has and if this number exceeds the number set then no further interaction happens
+
+session.set_upper_follower_count(limit = 250)
+
 ```
 <h6>Check out https://clarifai.com/demo to see some of the available tags.</h6>
 <hr />

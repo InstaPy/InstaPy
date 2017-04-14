@@ -9,6 +9,7 @@ friend_list = ['friend1', 'friend2', 'friend3']
 
 InstaPy(username='<username>', password='<password>')\
   .login()\
+  .set_upper_follower_count(limit = 2500) \
   .set_do_comment(True, percentage=10) \
   .set_comments(['Cool!', 'Awesome!', 'Nice!']) \
   .set_dont_include(friend_list) \
