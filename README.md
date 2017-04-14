@@ -174,9 +174,6 @@ session.clarifai_check_img_for(['nsfw'])
 session.clarifai_check_img_for(['food', 'lunch'], comment=True, comments=['Tasty!', 'Yum!'])
 ```
 <h6>Check out https://clarifai.com/demo to see some of the available tags.</h6>
-<hr />
-<h6>Have Fun & Feel Free to report any issues</h6>
-
 
 ### Running it with Docker
 
@@ -193,3 +190,6 @@ After the build succeeded, you can simply run the container with:
 ```bash
 docker run --name=instapy -e INSTAGRAM_USER=<your-user> -e INSTAGRAM_PW=<your-pw> -d instapy
 ```
+
+<hr />
+<h6>Have Fun & Feel Free to report any issues</h6>
