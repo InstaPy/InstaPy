@@ -1,5 +1,10 @@
 FROM ubuntu:16.04
+
 MAINTAINER Grossmann Tim <contact.timgrossmann@gmail.com>
+
+# Set env variables
+ENV CHROME https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+ENV CRHOMEDRIVER http://chromedriver.storage.googleapis.com/2.29/chromedriver_linux64.zip
 
 # Environment setup
 RUN apt-get update \
@@ -40,21 +45,24 @@ RUN apt-get update \
     && pip3 install --upgrade pip \
     && apt-get -f install
 
+ENV LANG en_US.UTF-8
+ENV LANGUAGE en_US:en
+ENV LC_ALL en_US.UTF-8
+
 # Installing latest chrome
 RUN cd ~ \
-    && wget "https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb" \
+    && wget ${CHROME} \
     && dpkg -i google-chrome-stable_current_amd64.deb \
     && apt-get install -y -f \
     && rm google-chrome-stable_current_amd64.deb
-    
-# Setting the language enc
-ENV LANGUAGE en_US.UTF-8
-ENV LANG en_US.UTF-8
-ENV LC_ALL en_US.UTF-8
+
+# Cleanup
+RUN apt-get clean \
+	&& rm -rf /var/lib/apt/lists/*
 
 # Adding InstaPy
 RUN git clone -b docker_settings https://github.com/timgrossmann/InstaPy.git \
-    && wget "http://chromedriver.storage.googleapis.com/2.29/chromedriver_linux64.zip" \
+    && wget ${CRHOMEDRIVER} \
     && unzip chromedriver_linux64 \
     && mv chromedriver InstaPy/assets/chromedriver \
     && chmod +x InstaPy/assets/chromedriver \
@@ -64,6 +72,6 @@ RUN git clone -b docker_settings https://github.com/timgrossmann/InstaPy.git \
 
 # Copying the your quickstart file into the container and setting directory
 COPY quickstart.py ./InstaPy
-WORKDIR /InstaPy 
-    
+WORKDIR /InstaPy
+
 CMD ["python3.5", "quickstart.py"]
