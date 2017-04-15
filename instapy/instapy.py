@@ -32,7 +32,7 @@ class InstaPy:
     chrome_options.add_argument('--lang=en-US')
     chrome_options.add_experimental_option('prefs', {'intl.accept_languages': 'en-US'})
     self.browser = webdriver.Chrome('./assets/chromedriver', chrome_options=chrome_options)
-    self.browser.implicitly_wait(15)
+    self.browser.implicitly_wait(25)
 
     self.logFile = open('./logs/logFile.txt', 'a')
     self.logFile.write('Session started - %s\n' \
