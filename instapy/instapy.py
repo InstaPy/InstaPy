@@ -38,15 +38,9 @@ class InstaPy:
     self.logFile.write('Session started - %s\n' \
                        % (datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
 
-    if username is None:
-      self.username = environ.get('INSTA_USER')
-    else:
-      self.username = username
+    self.username = username or environ.get('INSTA_USER')
+    self.password = password or environ.get('INSTA_PW')
 
-    if password is None:
-      self.password = environ.get('INSTA_PW')
-    else:
-      self.password = password
 
     self.do_comment = False
     self.comment_percentage = 0
@@ -100,10 +94,7 @@ class InstaPy:
     if self.aborting:
       return self
 
-    if comments is None:
-      comments = []
-    self.comments = comments
-
+    self.comments = comments or []
     return self
 
   def set_do_follow(self, enabled=False, percentage=0, times=1):
@@ -123,9 +114,7 @@ class InstaPy:
     if self.aborting:
       return self
 
-    if tags is None:
-      tags = []
-    self.dont_like = tags
+    self.dont_like = tags or []
 
     return self
 
@@ -147,9 +136,7 @@ class InstaPy:
     if self.aborting:
       return self
 
-    if words is None:
-      words = []
-    self.ignore_if_contains = words
+    self.ignore_if_contains = words or []
 
     return self
 
@@ -158,9 +145,7 @@ class InstaPy:
     if self.aborting:
       return self
 
-    if friends is None:
-      friends = []
-    self.dont_include = friends
+    self.dont_include = friends or []
 
     return self
 
@@ -174,7 +159,7 @@ class InstaPy:
 
     if secret is None and self.clarifai_secret is None:
       self.clarifai_secret = environ.get('CLARIFAI_SECRET')
-    elif secret is not None:
+    elif secret:
       self.clarifai_secret = secret
 
     if proj_id is None and self.clarifai_id is None:
@@ -207,8 +192,7 @@ class InstaPy:
     commented = 0
     followed = 0
 
-    if tags is None:
-      tags = []
+    tags = tags or []
 
     for index, tag in enumerate(tags):
       print('Tag [%d/%d]' % (index + 1, len(tags)))
@@ -243,10 +227,8 @@ class InstaPy:
               liked_img += 1
               checked_img = True
               temp_comments = []
-              commenting = True if randint(0, 100) <= self.comment_percentage\
-                          else False
-              following = True if randint(0, 100) <= self.follow_percentage\
-                          else False
+              commenting = randint(0, 100) <= self.comment_percentage
+              following = randint(0, 100) <= self.follow_percentage
 
               if self.use_clarifai and (following or commenting):
                 try:
