@@ -1,13 +1,13 @@
-<img src="http://i.imgur.com/9ZjtveL.png" width="200" align="right">
 
-# InstaPy
+
+# <img src="http://i.imgur.com/9ZjtveL.png" width="200" align="right"> InstaPy
 [![GitHub license](https://img.shields.io/github/license/mashape/apistatus.svg)](https://github.com/timgrossmann/InstaPy/blob/master/LICENSE)
 [![built with Selenium](https://img.shields.io/badge/built%20with-Selenium-red.svg)](https://github.com/SeleniumHQ/selenium)
 [![built with Python3](https://img.shields.io/badge/Built%20with-Python3-green.svg)](https://www.python.org/)
 
-> **Think this tool is worth supporting?** 
-Feel free to contribute to the project in whatever way! 
-If you're not familiar with python, you could build a github page for this project (Just head over to the issues, there might be a task for you). You're a marketer? Perfect! hit me with a message on contact.timgrossmann@gmail.com. 
+> **Think this tool is worth supporting?**
+Feel free to contribute to the project in whatever way!
+If you're not familiar with python, you could build a github page for this project (Just head over to the issues, there might be a task for you). You're a marketer? Perfect! hit me with a message on contact.timgrossmann@gmail.com.
 **Become a part of InstaPy!**
 
 ### What is InstaPy
@@ -39,6 +39,10 @@ that contains the words food, girl or hot. It will ignore posts that contain piz
 It will like images that have been tagged with dog or food and will like 100 images.
 
 <h2>Getting started</h2>
+
+> Guides:
+**[How to Ubuntu](./How_To_DO_Ubuntu.md) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [How to CentOS](How_To_DO_Centos.md)**
+
 <h3>Setting Up</h3>
 
 #### Download the repository from GitHub and extract the files.
@@ -79,6 +83,16 @@ session.login()
 session.like_by_tags(['#dog'], amount=100)
 session.like_from_image(url='www.instagram.com/image', amount=100)
 
+#likes 50 photos of other animals
+
+session.like_by_tags(['#animals'], amount=50, media='Photo')
+session.like_from_image(url='www.instagram.com/image', amount=50, media='Photo')
+
+#likes 15 videos of cats
+
+session.like_by_tags(['#cat'], amount=15, media='Video')
+session.like_from_image(url='www.instagram.com/image', amount=15, media='Video')
+
 session.end()
 ```
 
@@ -106,6 +120,10 @@ session.set_ignore_if_contains(['glutenfree', 'french', 'tasty'])
 
 session.set_do_comment(enabled=True, percentage=25)
 session.set_comments(['Awesome', 'Really Cool', 'I like your stuff'])
+
+# you can also set comments for specific media types (Photo / Video)
+session.set_comments(['Nice shot!'], media='Photo')
+session.set_comments(['Great Video!'], media='Video')
 ```
 
 <h5>Following</h5>
@@ -185,8 +203,24 @@ session.clarifai_check_img_for(['nsfw'])
 session.clarifai_check_img_for(['food', 'lunch'], comment=True, comments=['Tasty!', 'Yum!'])
 ```
 <h6>Check out https://clarifai.com/demo to see some of the available tags.</h6>
-<hr />
 
-<h5>Have Fun & Feel Free to report any issues</h5>
+### Running it with Docker
+
+#### Build the Image
+
+You first need to build the image by running this in the Terminal:
+```bash
+docker build instapy .
+```
+
+#### Run in a Container
+
+After the build succeeded, you can simply run the container with:
+```bash
+docker run --name=instapy -e INSTAGRAM_USER=<your-user> -e INSTAGRAM_PW=<your-pw> -d instapy
+```
+
+<hr />
+<h6>Have Fun & Feel Free to report any issues</h6>
 
 > **Disclaimer**: Please Note that this is a research project. I am by no means responsible for any usage of this tool. Use on your own behalf. I'm also not responsible if your accounts get banned due to extensive use of this tool.
