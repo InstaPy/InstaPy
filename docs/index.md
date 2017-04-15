@@ -1,6 +1,6 @@
 
 
-# <img src="http://i.imgur.com/9ZjtveL.png" width="200" align="right"> InstaPy
+# <img src="https://s3-eu-central-1.amazonaws.com/centaur-wp/designweek/prod/content/uploads/2016/05/11170038/Instagram_Logo-1002x1003.jpg" width="200" align="right"> InstaPy
 [![GitHub license](https://img.shields.io/github/license/mashape/apistatus.svg)](https://github.com/timgrossmann/InstaPy/blob/master/LICENSE)
 [![built with Selenium](https://img.shields.io/badge/built%20with-Selenium-red.svg)](https://github.com/SeleniumHQ/selenium)
 [![built with Python3](https://img.shields.io/badge/Built%20with-Python3-green.svg)](https://www.python.org/)
