@@ -61,7 +61,8 @@ class InstaPy:
     self.clarifai_id = None
     self.clarifai_img_tags = []
 
-    self.like_by_followers_limit = 0
+    self.like_by_followers_upper_limit = 0
+    self.like_by_followers_lower_limit = 0
 
     self.aborting = False
 
@@ -173,7 +174,12 @@ class InstaPy:
 
   def set_upper_follower_count(self, limit=None):
     """Used to chose if a post is liked by the number of likes"""
-    self.like_by_followers_limit = limit or 0
+    self.like_by_followers_upper_limit = limit or 0
+    return self
+
+  def set_lower_follower_count(self, limit=None):
+    """Used to chose if a post is liked by the number of likes"""
+    self.like_by_followers_lower_limit = limit or 0
     return self
 
   def like_by_tags(self, tags=None, amount=50):
@@ -210,9 +216,9 @@ class InstaPy:
         self.logFile.write(link)
 
         try:
-          inappropriate, user_name = \
+          inappropriate, user_name, reason = \
             check_link(self.browser, link, self.dont_like,
-                       self.ignore_if_contains, self.username, self.like_by_followers_limit)
+                       self.ignore_if_contains, self.username, self.like_by_followers_upper_limit, self.like_by_followers_lower_limit)
 
           if not inappropriate:
             liked = like_image(self.browser)
@@ -253,7 +259,7 @@ class InstaPy:
             else:
               already_liked += 1
           else:
-            print('Image not liked: Inappropriate or Exceeds followers limit')
+            print('Image not liked: ', reason)
             inap_img += 1
         except NoSuchElementException as err:
           print('Invalid Page: ' + str(err))

@@ -196,6 +196,11 @@ session.clarifai_check_img_for(['food', 'lunch'], comment=True, comments=['Tasty
 
 session.set_upper_follower_count(limit = 250)
 
+```python
+#This is used to check the number of followers a user has and if this number does not pass the number set then no further interaction happens
+
+session.set_lower_follower_count(limit = 1)
+
 ```
 <h6>Check out https://clarifai.com/demo to see some of the available tags.</h6>
 
