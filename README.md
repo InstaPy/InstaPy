@@ -130,7 +130,7 @@ session.set_lower_follower_count(limit = 1)
 <h5>Unfollowing</h5>
 
 ```python
-#unfollows 10 of the accounts your following -> instagram will only unfollow 10 before you'll be 'blocked for 10 minutes' (if you enter a higher number than 10 it will unfollow 10, then wait 10 minutes and will continue then)
+#unfollows 10 of the accounts you're following -> instagram will only unfollow 10 before you'll be 'blocked for 10 minutes' (if you enter a higher number than 10 it will unfollow 10, then wait 10 minutes and will continue then)
 
 session.unfollow_users(amount=10)
 ```
