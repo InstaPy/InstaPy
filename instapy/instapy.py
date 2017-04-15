@@ -60,6 +60,7 @@ class InstaPy:
     self.clarifai_secret = None
     self.clarifai_id = None
     self.clarifai_img_tags = []
+    self.clarifai_full_match = False
 
     self.like_by_followers_upper_limit = 0
     self.like_by_followers_lower_limit = 0
@@ -140,7 +141,7 @@ class InstaPy:
 
     return self
 
-  def set_use_clarifai(self, enabled=False, secret=None, proj_id=None):
+  def set_use_clarifai(self, enabled=False, secret=None, proj_id=None, full_match=False):
     """Defines if the clarifai img api should be used
     Which 'project' will be used (only 5000 calls per month)"""
     if self.aborting:
@@ -157,6 +158,8 @@ class InstaPy:
       self.clarifai_id = environ.get('CLARIFAI_ID')
     elif proj_id is not None:
       self.clarifai_id = proj_id
+
+    self.clarifai_full_match = full_match
 
     return self
 
@@ -235,7 +238,8 @@ class InstaPy:
                   checked_img, temp_comments =\
                     check_image(self.browser, self.clarifai_id,
                                 self.clarifai_secret,
-                                self.clarifai_img_tags)
+                                self.clarifai_img_tags,
+                                self.clarifai_full_match)
                 except Exception as err:
                   print('Image check error: ' + str(err))
                   self.logFile.write('Image check error: ' + str(err) + '\n')
