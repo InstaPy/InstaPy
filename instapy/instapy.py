@@ -124,9 +124,7 @@ class InstaPy:
     if self.aborting:
       return self
 
-    if users is None:
-      users = []
-    self.ignore_users = users
+    self.ignore_users = users or []
 
     return self
 
