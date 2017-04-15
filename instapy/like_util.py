@@ -77,7 +77,7 @@ def check_link(browser, link, dont_like,
   """Append owner comments to description as it might contain further tags"""
   if image_text is None:
     image_text = owner_comments
-  elif owner_comments is not None:
+  elif owner_comments:
     image_text = image_text + '\n' + owner_comments
 
   """If the image still has no description gets the first comment"""
