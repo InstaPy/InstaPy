@@ -25,10 +25,8 @@ def check_image(browser, clarifai_id, clarifai_secret, img_tags):
 def given_tags_in_result(search_tags, result_tags):
   """Checks the result tags if it contains
   one of the searcht tags """
-  for tag in search_tags:
-    if tag in result_tags:
-      return True
-  return False
+  return any((tag in result_tags for tag in search_tags))
+
 
 def get_imagelink(browser):
   """Gets the imagelink from the given webpage open in the browser"""

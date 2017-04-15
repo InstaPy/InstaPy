@@ -81,12 +81,10 @@ def check_link(browser, link, dont_like, ignore_if_contains, username, like_by_f
   if like_by_followers_limit and num_followers > like_by_followers_limit:
       return True, user_name
 
-  for word in ignore_if_contains:
-    if word in image_text:
+  if any((word in image_text for word in ignore_if_contains)):
       return False, user_name
 
-  for tag in dont_like:
-    if tag in image_text or user_name == username:
+  if any(((tag in image_text or user_name == username) for tag in dont_like)):
       return True, user_name
 
   return False, user_name
