@@ -90,3 +90,7 @@ ENV/
 
 # Rope project settings
 .ropeproject
+
+assets/chromedriver\.exe
+
+run\.py
