@@ -113,6 +113,20 @@ session.set_do_follow(enabled=True, percentage=10, times=2)
 session.set_dont_include(['friend1', 'friend2', 'friend3'])
 ```
 
+<h5>Interactions based on the number of followers a user has</h5>
+
+```python
+#This is used to check the number of followers a user has and if this number exceeds the number set then no further interaction happens
+
+session.set_upper_follower_count(limit = 250)
+```
+
+```python
+#This is used to check the number of followers a user has and if this number does not pass the number set then no further interaction happens
+
+session.set_lower_follower_count(limit = 1)
+```
+
 <h5>Unfollowing</h5>
 
 ```python
@@ -173,19 +187,7 @@ session.clarifai_check_img_for(['nsfw'])
 
 session.clarifai_check_img_for(['food', 'lunch'], comment=True, comments=['Tasty!', 'Yum!'])
 ```
-<h5>Interactions based on the number of followers a user has</h5>
 
-```python
-#This is used to check the number of followers a user has and if this number exceeds the number set then no further interaction happens
-
-session.set_upper_follower_count(limit = 250)
-
-```python
-#This is used to check the number of followers a user has and if this number does not pass the number set then no further interaction happens
-
-session.set_lower_follower_count(limit = 1)
-
-```
 <h6>Check out https://clarifai.com/demo to see some of the available tags.</h6>
 
 ### Running it with Docker
