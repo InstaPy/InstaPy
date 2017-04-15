@@ -172,7 +172,7 @@ class InstaPy:
 
   def follow_by_list(self, followlist, times=1):
     """Allows to follow by any scrapped list"""
-    self.follow_times = times
+    self.follow_times = times or 0
     if self.aborting:
       return self
 
@@ -185,7 +185,7 @@ class InstaPy:
         self.logFile.write('Followed: ' + str(followed) + '\n')
         followed = 0
       else:
-        print('---> ' + acc_to_follow + ' has already been followed more > times than specified')
+        print('---> ' + acc_to_follow + ' has already been followed more than self.follow_times')
         sleep(1)
 
     return self
