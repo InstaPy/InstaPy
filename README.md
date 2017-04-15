@@ -182,10 +182,11 @@ session.clarifai_check_img_for(['nsfw'])
 <h5>Specialized comments for images with specific content</h5>
 
 ```python
-#checks the image for keywords food and lunch, if found,
-#comments with the given comments
+#checks the image for keywords food and lunch, if both are found,
+#comments with the given comments. If match_all is False (default), it only
+# requires a single tag to match Clarifai results.
 
-session.clarifai_check_img_for(['food', 'lunch'], comment=True, comments=['Tasty!', 'Yum!'])
+session.clarifai_check_img_for(['food', 'lunch'], comment=True, comments=['Tasty!', 'Yum!'], match_all=True)
 ```
 
 <h6>Check out https://clarifai.com/demo to see some of the available tags.</h6>
