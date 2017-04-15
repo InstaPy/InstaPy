@@ -1,5 +1,5 @@
 > **Think this tool is worth supporting?** <br />
-> Feel free to contribute to the project in whatever way! <br /> If you're not familiar with python, you could build a github page for this project (Just head over to the issues, there might be a task for you). You're a marketer? Perfect! hit me with a message on contact.timgrossmann@gmail.com. <br /> **Become a part of InstaPy!**
+> Feel free to contribute to the project in whatever way! <br /> If you're not familiar with python, you could build a github page for this project (Just head over to the issues, there might be a task for you). You're a marketer? Perfect! hit me with a message on contact.timgrossmann@gmail.com. <br/> If you don't have the time or skills to contribute, you can also support us through Patreon! <br /> **Become a part of InstaPy!**
 
 > **Disclaimer**: Please Note that this is a research project. I am by no means responsible for any usage of this tool. Use on your own behalf. I'm also not responsible if your accounts get banned due to extensive use of this tool.
 
@@ -119,10 +119,24 @@ session.set_do_follow(enabled=True, percentage=10, times=2)
 session.set_dont_include(['friend1', 'friend2', 'friend3'])
 ```
 
+<h5>Interactions based on the number of followers a user has</h5>
+
+```python
+#This is used to check the number of followers a user has and if this number exceeds the number set then no further interaction happens
+
+session.set_upper_follower_count(limit = 250)
+```
+
+```python
+#This is used to check the number of followers a user has and if this number does not pass the number set then no further interaction happens
+
+session.set_lower_follower_count(limit = 1)
+```
+
 <h5>Unfollowing</h5>
 
 ```python
-#unfollows 10 of the accounts your following -> instagram will only unfollow 10 before you'll be 'blocked for 10 minutes' (if you enter a higher number than 10 it will unfollow 10, then wait 10 minutes and will continue then)
+#unfollows 10 of the accounts you're following -> instagram will only unfollow 10 before you'll be 'blocked for 10 minutes' (if you enter a higher number than 10 it will unfollow 10, then wait 10 minutes and will continue then)
 
 session.unfollow_users(amount=10)
 ```
@@ -179,6 +193,7 @@ session.clarifai_check_img_for(['nsfw'])
 
 session.clarifai_check_img_for(['food', 'lunch'], comment=True, comments=['Tasty!', 'Yum!'])
 ```
+
 <h6>Check out https://clarifai.com/demo to see some of the available tags.</h6>
 
 ### Running it with Docker

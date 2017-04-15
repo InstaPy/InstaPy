@@ -2,7 +2,6 @@
 from datetime import datetime
 from os import environ
 from random import randint
-from time import sleep
 from pyvirtualdisplay import Display
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
@@ -15,11 +14,12 @@ from .like_util import get_links_for_tag
 from .like_util import get_tags
 from .like_util import like_image
 from .login_util import login_user
+from .print_log_writer import log_follower_num
+from .time_util import sleep
 from .unfollow_util import unfollow
 from .unfollow_util import follow_user
 from .unfollow_util import load_follow_restriction
 from .unfollow_util import dump_follow_restriction
-from .print_log_writer import log_follower_num
 
 class InstaPy:
   """Class to be instantiated to use the script"""
@@ -61,6 +61,9 @@ class InstaPy:
     self.clarifai_secret = None
     self.clarifai_id = None
     self.clarifai_img_tags = []
+
+    self.like_by_followers_upper_limit = 0
+    self.like_by_followers_lower_limit = 0
 
     self.aborting = False
 
@@ -180,6 +183,16 @@ class InstaPy:
 
     return self
 
+  def set_upper_follower_count(self, limit=None):
+    """Used to chose if a post is liked by the number of likes"""
+    self.like_by_followers_upper_limit = limit or 0
+    return self
+
+  def set_lower_follower_count(self, limit=None):
+    """Used to chose if a post is liked by the number of likes"""
+    self.like_by_followers_lower_limit = limit or 0
+    return self
+
   def like_by_tags(self, tags=None, amount=50):
     """Likes (default) 50 images per given tag"""
     if self.aborting:
@@ -214,10 +227,9 @@ class InstaPy:
         self.logFile.write(link)
 
         try:
-          inappropriate, user_name = \
-            check_link(self.browser, link, self.dont_like,
-                       self.ignore_if_contains, self.ignore_users,
-                       self.username)
+          inappropriate, user_name, reason = \
+            check_link(self.browser, link, self.dont_like, self.ignore_if_contains, self.ignore_users,
+                       self.username, self.like_by_followers_upper_limit, self.like_by_followers_lower_limit)
 
           if not inappropriate:
             liked = like_image(self.browser)
@@ -258,7 +270,7 @@ class InstaPy:
             else:
               already_liked += 1
           else:
-            print('Image not liked: Inappropriate')
+            print('Image not liked: ', reason)
             inap_img += 1
         except NoSuchElementException as err:
           print('Invalid Page: ' + str(err))

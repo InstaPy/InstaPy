@@ -1,8 +1,10 @@
 """Module that handles the like features"""
 from math import ceil
-from time import sleep
 from re import findall
 from selenium.webdriver.common.keys import Keys
+
+from .time_util import sleep
+
 
 def get_links_for_tag(browser, tag, amount):
   """Fetches the number of links specified
@@ -42,9 +44,8 @@ def get_links_for_tag(browser, tag, amount):
 
   return links[:amount]
 
-def check_link(browser, link, dont_like,
-               ignore_if_contains, ignore_users,
-               username):
+def check_link(browser, link, dont_like, ignore_if_contains, ignore_users,
+               username, like_by_followers_upper_limit, like_by_followers_lower_limit):
   browser.get(link)
   sleep(2)
 
@@ -86,23 +87,37 @@ def check_link(browser, link, dont_like,
   if image_text is None:
     image_text = "No description"
 
+  """Find the number of followes the user has"""
+  userlink = 'https://www.instagram.com/' + user_name
+  browser.get(userlink)
+  sleep(1)
+  num_followers = browser.execute_script("return window._sharedData.entry_data.ProfilePage[0].user.followed_by.count")
+  browser.get(link)
+  sleep(1)
+
+
   print('Image from: ' + user_name)
   print('Link: ' + link)
   print('Description: ' + image_text)
+  print "Number of Followers: ", num_followers
+
+  if like_by_followers_upper_limit and num_followers > like_by_followers_upper_limit:
+    return True, user_name, 'Number of followers exceeds limit'
+  if like_by_followers_lower_limit and num_followers < like_by_followers_lower_limit:
+    return True, user_name, 'Number of followers does not reach limit'
 
   """Check if the user_name is in the ignore_users list"""
   if (user_name in ignore_users) or (user_name == username):
-    print('--> Ignoring user: ' + user_name)
-    return True, user_name
+    return True, user_name, 'Username'
 
   if any((word in image_text for word in ignore_if_contains)):
       print('--> Ignoring content: ' + tag)
-      return False, user_name
+      return False, user_name, 'None'
 
   if any((tag in image_text for tag in dont_like)):
-      return True, user_name
+      return True, user_name, 'Inappropriate'
 
-  return False, user_name
+  return False, user_name, 'None'
 
 def like_image(browser):
   """Likes the browser opened image"""
