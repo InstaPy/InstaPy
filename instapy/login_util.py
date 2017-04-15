@@ -1,6 +1,8 @@
 """Module only used for the login part of the script"""
-from time import sleep
 from selenium.common.exceptions import NoSuchElementException
+
+from .time_util import sleep
+
 
 def login_user(browser, username, password):
   """Logins the user with the given username and password"""
