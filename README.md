@@ -40,7 +40,7 @@ cd InstaPy
 pip install .
 ```
 
-or 
+or
 
 ```bash
 cd InstaPy
@@ -118,7 +118,7 @@ session.set_dont_include(['friend1', 'friend2', 'friend3'])
 ```python
 #unfollows 10 of the accounts your following -> instagram will only unfollow 10 before you'll be 'blocked for 10 minutes' (if you enter a higher number than 10 it will unfollow 10, then wait 10 minutes and will continue then)
 
-session.unfollow_users(amount=10) 
+session.unfollow_users(amount=10)
 ```
 <br />
 <h3>Clarifai ImageAPI</h3>
@@ -168,10 +168,11 @@ session.clarifai_check_img_for(['nsfw'])
 <h5>Specialized comments for images with specific content</h5>
 
 ```python
-#checks the image for keywords food and lunch, if found,
-#comments with the given comments
+#checks the image for keywords food and lunch, if both are found,
+#comments with the given comments. If match_all is False (default), it only
+# requires a single tag to match Clarifai results.
 
-session.clarifai_check_img_for(['food', 'lunch'], comment=True, comments=['Tasty!', 'Yum!'])
+session.clarifai_check_img_for(['food', 'lunch'], comment=True, comments=['Tasty!', 'Yum!'], match_all=True)
 ```
 <h6>Check out https://clarifai.com/demo to see some of the available tags.</h6>
 
