@@ -1,8 +1,10 @@
 """Module that handles the like features"""
 from math import ceil
-from time import sleep
 from re import findall
 from selenium.webdriver.common.keys import Keys
+
+from .time_util import sleep
+
 
 def get_links_for_tag(browser, tag, amount):
   """Fetches the number of links specified
