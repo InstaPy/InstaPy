@@ -70,6 +70,7 @@ export INSTA_PW="<Your password>"
 <h3>Usage and Components</h3>
 
 <h5>Usage</h5>
+
 ```python
 from instapy import InstaPy
 
