@@ -1,6 +1,6 @@
 """Helper module to handle time related stuff"""
-import random
-import time
+import random import gauss
+import time import sleep as original_sleep
 
 
 # Amount of variance to be introduced
@@ -13,10 +13,10 @@ def randomize_time(mean):
 
   t = 0
   while abs(mean - t) > allowed_range:
-    t = random.gauss(mean, stdev)
+    t = gauss(mean, stdev)
 
   return t
 
 
 def sleep(t):
-  time.sleep(randomize_time(t))
+  original_sleep(randomize_time(t))
