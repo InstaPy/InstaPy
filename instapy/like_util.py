@@ -101,12 +101,11 @@ def check_link(browser, link, dont_like, ignore_if_contains, username):
   print('Link: ' + link)
   print('Description: ' + image_text)
 
-  for word in ignore_if_contains:
-    if word in image_text:
+  if any((word in image_text for word in ignore_if_contains)):
       return False, user_name, is_video
 
-  for tag in dont_like:
-    if tag in image_text or user_name == username:
+  image_text = image_text.lower()
+  if (user_name == username) or any((tag.lower() in image_text for tag in dont_like)):
       return True, user_name, is_video
 
   return False, user_name, is_video
