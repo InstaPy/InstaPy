@@ -1,8 +1,9 @@
 """Module that handles the like features"""
 from math import ceil
-from time import sleep
 from re import findall
 from selenium.webdriver.common.keys import Keys
+
+from .time_util import sleep
 
 
 def get_links_for_tag(browser, tag, amount, media=None):
@@ -75,8 +76,7 @@ def get_links_for_tag(browser, tag, amount, media=None):
 
   return links[:amount]
 
-
-def check_link(browser, link, dont_like, ignore_if_contains, username):
+def check_link(browser, link, dont_like, ignore_if_contains, username, like_by_followers_upper_limit, like_by_followers_lower_limit):
   browser.get(link)
   sleep(2)
 
@@ -84,7 +84,7 @@ def check_link(browser, link, dont_like, ignore_if_contains, username):
   post_page = browser.execute_script("return window._sharedData.entry_data.PostPage")
   if post_page is None:
     print('Unavailable Page: ' + link)
-    return False, 'Unavailable Page', None
+    return False, 'Unavailable Page', None, 'None'
 
   """Gets the description of the link and checks for the dont_like tags"""
   is_video = browser.execute_script("return window._sharedData.entry_data.PostPage[0].media.is_video")
@@ -97,18 +97,33 @@ def check_link(browser, link, dont_like, ignore_if_contains, username):
   if image_text is None:
     image_text = "No description"
 
+  """Find the number of followes the user has"""
+  userlink = 'https://www.instagram.com/' + user_name
+  browser.get(userlink)
+  sleep(1)
+  num_followers = browser.execute_script("return window._sharedData.entry_data.ProfilePage[0].user.followed_by.count")
+  browser.get(link)
+  sleep(1)
+
+
   print('Image from: ' + user_name)
   print('Link: ' + link)
   print('Description: ' + image_text)
+  print "Number of Followers: ", num_followers
+
+  if like_by_followers_upper_limit and num_followers > like_by_followers_upper_limit:
+    return True, user_name, is_video, 'Number of followers exceeds limit'
+  if like_by_followers_lower_limit and num_followers < like_by_followers_lower_limit:
+    return True, user_name, is_video, 'Number of followers does not reach limit'
 
   if any((word in image_text for word in ignore_if_contains)):
-      return False, user_name, is_video
+      return False, user_name, is_video, 'None'
 
   image_text = image_text.lower()
   if (user_name == username) or any((tag.lower() in image_text for tag in dont_like)):
-      return True, user_name, is_video
+      return True, user_name, is_video, 'Inappropriate'
 
-  return False, user_name, is_video
+  return False, user_name, is_video, 'None'
 
 
 def like_image(browser):

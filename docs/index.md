@@ -1,6 +1,6 @@
 
 
-# <img src="http://i.imgur.com/9ZjtveL.png" width="200" align="right"> InstaPy
+# <img src="http://i.imgur.com/9ZjtveL.png" width="150" align="right"> InstaPy
 [![GitHub license](https://img.shields.io/github/license/mashape/apistatus.svg)](https://github.com/timgrossmann/InstaPy/blob/master/LICENSE)
 [![built with Selenium](https://img.shields.io/badge/built%20with-Selenium-red.svg)](https://github.com/SeleniumHQ/selenium)
 [![built with Python3](https://img.shields.io/badge/Built%20with-Python3-green.svg)](https://www.python.org/)
@@ -70,6 +70,7 @@ export INSTA_PW="<Your password>"
 <h3>Usage and Components</h3>
 
 <h5>Usage</h5>
+
 ```python
 from instapy import InstaPy
 
@@ -142,6 +143,20 @@ session.set_do_follow(enabled=True, percentage=10, times=2)
 session.set_dont_include(['friend1', 'friend2', 'friend3'])
 ```
 
+<h5>Interactions based on the number of followers a user has</h5>
+
+```python
+#This is used to check the number of followers a user has and if this number exceeds the number set then no further interaction happens
+
+session.set_upper_follower_count(limit = 250)
+```
+
+```python
+#This is used to check the number of followers a user has and if this number does not pass the number set then no further interaction happens
+
+session.set_lower_follower_count(limit = 1)
+```
+
 <h5>Unfollowing</h5>
 
 ```python
@@ -194,14 +209,17 @@ session.set_use_clarifai(enabled=True, secret='xyz', proj_id='123')
 
 session.clarifai_check_img_for(['nsfw'])
 ```
+
 <h5>Specialized comments for images with specific content</h5>
 
 ```python
-#checks the image for keywords food and lunch, if found,
-#comments with the given comments
+#checks the image for keywords food and lunch, if both are found,
+#comments with the given comments. If match_all is False (default), it only
+# requires a single tag to match Clarifai results.
 
-session.clarifai_check_img_for(['food', 'lunch'], comment=True, comments=['Tasty!', 'Yum!'])
+session.clarifai_check_img_for(['food', 'lunch'], comment=True, comments=['Tasty!', 'Yum!'], match_all=True)
 ```
+
 <h6>Check out https://clarifai.com/demo to see some of the available tags.</h6>
 
 ### Running it with Docker
