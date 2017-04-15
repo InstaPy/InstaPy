@@ -197,7 +197,7 @@ session.clarifai_check_img_for(['food', 'lunch'], comment=True, comments=['Tasty
 
 You first need to build the image by running this in the Terminal:
 ```bash
-docker build instapy .
+docker build -t instapy .
 ```
 
 #### Run in a Container
