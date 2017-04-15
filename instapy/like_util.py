@@ -84,7 +84,7 @@ def check_link(browser, link, dont_like, ignore_if_contains, username, like_by_f
   post_page = browser.execute_script("return window._sharedData.entry_data.PostPage")
   if post_page is None:
     print('Unavailable Page: ' + link)
-    return False, 'Unavailable Page', None, 'None'
+    return True, None, 'Unavailable Page'
 
   """Gets the description of the link and checks for the dont_like tags"""
   is_video = browser.execute_script("return window._sharedData.entry_data.PostPage[0].media.is_video")
@@ -109,7 +109,7 @@ def check_link(browser, link, dont_like, ignore_if_contains, username, like_by_f
   print('Image from: ' + user_name)
   print('Link: ' + link)
   print('Description: ' + image_text)
-  print "Number of Followers: ", num_followers
+  print('Number of Followers: ', num_followers)
 
   if like_by_followers_upper_limit and num_followers > like_by_followers_upper_limit:
     return True, user_name, is_video, 'Number of followers exceeds limit'

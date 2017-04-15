@@ -1,6 +1,6 @@
 """Helper module to handle time related stuff"""
-import random import gauss
-import time import sleep as original_sleep
+from random import gauss
+from time import sleep as original_sleep
 
 
 # Amount of variance to be introduced
