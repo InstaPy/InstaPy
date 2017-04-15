@@ -94,3 +94,7 @@ ENV/
 assets/chromedriver\.exe
 
 run\.py
+
+logs/followerNum\.txt
+
+logs/logFile\.txt
