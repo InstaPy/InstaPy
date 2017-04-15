@@ -95,13 +95,11 @@ def check_link(browser, link, dont_like,
     print('--> Ignoring user: ' + user_name)
     return True, user_name
 
-  for word in ignore_if_contains:
-    if word in image_text:
+  if any((word in image_text for word in ignore_if_contains)):
+      print('--> Ignoring content: ' + tag)
       return False, user_name
 
-  for tag in dont_like:
-    if tag in image_text:
-      print('--> Ignoring content: ' + tag)
+  if any((tag in image_text for tag in dont_like)):
       return True, user_name
 
   return False, user_name
