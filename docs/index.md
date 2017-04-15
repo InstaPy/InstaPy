@@ -1,13 +1,13 @@
 
 
-# <img src="http://i.imgur.com/9ZjtveL.png" width="200" align="right"> InstaPy
+# <img src="http://i.imgur.com/9ZjtveL.png" width="150" align="right"> InstaPy
 [![GitHub license](https://img.shields.io/github/license/mashape/apistatus.svg)](https://github.com/timgrossmann/InstaPy/blob/master/LICENSE)
 [![built with Selenium](https://img.shields.io/badge/built%20with-Selenium-red.svg)](https://github.com/SeleniumHQ/selenium)
 [![built with Python3](https://img.shields.io/badge/Built%20with-Python3-green.svg)](https://www.python.org/)
 
-> **Think this tool is worth supporting?** 
-Feel free to contribute to the project in whatever way! 
-If you're not familiar with python, you could build a github page for this project (Just head over to the issues, there might be a task for you). You're a marketer? Perfect! hit me with a message on contact.timgrossmann@gmail.com. 
+> **Think this tool is worth supporting?**
+Feel free to contribute to the project in whatever way!
+If you're not familiar with python, you could build a github page for this project (Just head over to the issues, there might be a task for you). You're a marketer? Perfect! hit me with a message on contact.timgrossmann@gmail.com.
 **Become a part of InstaPy!**
 
 ### What is InstaPy
@@ -70,6 +70,7 @@ export INSTA_PW="<Your password>"
 <h3>Usage and Components</h3>
 
 <h5>Usage</h5>
+
 ```python
 from instapy import InstaPy
 
@@ -126,6 +127,20 @@ session.set_do_follow(enabled=True, percentage=10, times=2)
 #will prevent commenting on and unfollowing your good friends (the images will still be liked)
 
 session.set_dont_include(['friend1', 'friend2', 'friend3'])
+```
+
+<h5>Interactions based on the number of followers a user has</h5>
+
+```python
+#This is used to check the number of followers a user has and if this number exceeds the number set then no further interaction happens
+
+session.set_upper_follower_count(limit = 250)
+```
+
+```python
+#This is used to check the number of followers a user has and if this number does not pass the number set then no further interaction happens
+
+session.set_lower_follower_count(limit = 1)
 ```
 
 <h5>Unfollowing</h5>
@@ -187,6 +202,20 @@ session.clarifai_check_img_for(['nsfw'])
 #comments with the given comments
 
 session.clarifai_check_img_for(['food', 'lunch'], comment=True, comments=['Tasty!', 'Yum!'])
+```
+
+<h5>Interactions based on the number of followers a user has</h5>
+
+```python
+#This is used to check the number of followers a user has and if this number exceeds the number set then no further interaction happens
+
+session.set_upper_follower_count(limit = 250)
+
+```python
+#This is used to check the number of followers a user has and if this number does not pass the number set then no further interaction happens
+
+session.set_lower_follower_count(limit = 1)
+
 ```
 <h6>Check out https://clarifai.com/demo to see some of the available tags.</h6>
 
