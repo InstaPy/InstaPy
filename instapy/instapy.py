@@ -185,7 +185,7 @@ class InstaPy:
         self.logFile.write('Followed: ' + str(followed) + '\n')
         followed = 0
       else:
-        print('---> ' + acc_to_follow + ' has already been followed more than self.follow_times')
+        print('---> ' + acc_to_follow + ' has already been followed more than ' + str(self.follow_times) + ' times')
         sleep(1)
 
     return self
