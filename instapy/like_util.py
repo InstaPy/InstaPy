@@ -77,7 +77,7 @@ def check_link(browser, link, dont_like, ignore_if_contains, username, like_by_f
   print('Image from: ' + user_name)
   print('Link: ' + link)
   print('Description: ' + image_text)
-  print "Number of Followers: ", num_followers
+  print('Number of Followers: ', num_followers)
 
   if like_by_followers_upper_limit and num_followers > like_by_followers_upper_limit:
     return True, user_name, 'Number of followers exceeds limit'
