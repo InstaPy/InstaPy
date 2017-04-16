@@ -16,7 +16,7 @@ Implemented in Python using the Selenium module.
 
 ### [Read about how it works on Medium](https://medium.freecodecamp.com/my-open-source-instagram-bot-got-me-2-500-real-followers-for-5-in-server-costs-e40491358340)
 
-<h2>Example Script</h2>
+## Example Script
 
 ```python
 from instapy import InstaPy
@@ -38,12 +38,12 @@ unfollow people it will not unfollow these people.<br />The bot will not like an
 that contains the words food, girl or hot. It will ignore posts that contain pizza.<br />
 It will like images that have been tagged with dog or food and will like 100 images.
 
-<h2>Getting started</h2>
+## Getting started
 
 > Guides:
 **[How to Ubuntu](./How_To_DO_Ubuntu.md) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [How to CentOS](How_To_DO_Centos.md)**
 
-<h3>Setting Up</h3>
+### Setting Up
 
 #### Download the repository from GitHub and extract the files.
 #### Make sure to get the right ```chromedriver``` for your system from here: https://sites.google.com/a/chromium.org/chromedriver/downloads. Just put it in /assets.
@@ -59,17 +59,17 @@ cd InstaPy
 python setup.py install
 ```
 
-<p>If you want the script to get the username and password for your environment, you can do:</p>
+If you want the script to get the username and password for your environment, you can do:  
 
 ```
 export INSTA_USER="<Your username>"
 export INSTA_PW="<Your password>"
 ```
-<hr />
+--- 
 
-<h3>Usage and Components</h3>
+### Usage and Components
 
-<h5>Usage</h5>
+##### Usage
 
 ```python
 from instapy import InstaPy
@@ -79,10 +79,12 @@ from instapy import InstaPy
 session = InstaPy(username='test', password='test')
 session.login()
 
-#likes 100 posts of dogs
+#likes specified amount of posts for each hashtag in the array (the '#' is optional)
+#in this case: 100 dog-posts and 100 cat-posts
+session.like_by_tags(['#dog', 'cat'], amount=100)
 
-session.like_by_tags(['#dog'], amount=100)
-session.like_from_image(url='www.instagram.com/image', amount=100)
+#gets tags from image passed as instagram-url and likes specified amount of images for each tag
+session.like_from_image(url='www.instagram.com/p/BSrfITEFUAM/', amount=100)
 
 #likes 50 photos of other animals
 
@@ -97,7 +99,13 @@ session.like_from_image(url='www.instagram.com/image', amount=15, media='Video')
 session.end()
 ```
 
-<h5>Restricting Likes</h5>
+##### Restricting Likes
+
+```python
+#completely ignore liking images from certain users
+
+session.set_ignore_users(['random_user', 'another_username'])
+```
 
 ```python
 #searches the description for the given words and won't
@@ -105,7 +113,7 @@ session.end()
 
 session.set_dont_like(['food', 'eat', 'meal'])
 ```
-<h5>Ignoring Restrictions</h5>
+##### Ignoring Restrictions
 
 ```python
 #will ignore the don't like if the description contains
@@ -114,7 +122,7 @@ session.set_dont_like(['food', 'eat', 'meal'])
 session.set_ignore_if_contains(['glutenfree', 'french', 'tasty'])
 ```
 
-<h5>Commenting</h5>
+##### Commenting
 
 ```python
 #default enabled=False, ~ every 4th image will be commented on
@@ -135,7 +143,7 @@ session.set_comments(['Great Video!'], media='Video')
 session.set_do_follow(enabled=True, percentage=10, times=2)
 ```
 
-<h5>Excluding friends</h5>
+##### Excluding friends
 
 ```python
 #will prevent commenting on and unfollowing your good friends (the images will still be liked)
@@ -143,7 +151,7 @@ session.set_do_follow(enabled=True, percentage=10, times=2)
 session.set_dont_include(['friend1', 'friend2', 'friend3'])
 ```
 
-<h5>Interactions based on the number of followers a user has</h5>
+##### Interactions based on the number of followers a user has
 
 ```python
 #This is used to check the number of followers a user has and if this number exceeds the number set then no further interaction happens
@@ -157,7 +165,7 @@ session.set_upper_follower_count(limit = 250)
 session.set_lower_follower_count(limit = 1)
 ```
 
-<h5>Unfollowing</h5>
+##### Unfollowing
 
 ```python
 #unfollows 10 of the accounts your following -> instagram will only unfollow 10 before you'll be 'blocked for 10 minutes' (if you enter a higher number than 10 it will unfollow 10, then wait 10 minutes and will continue then)
@@ -165,16 +173,18 @@ session.set_lower_follower_count(limit = 1)
 session.unfollow_users(amount=10)
 ```
 <br />
-<h3>Clarifai ImageAPI</h3>
+### Clarifai ImageAPI
 <img src="https://d1qb2nb5cznatu.cloudfront.net/startups/i/396673-2fb6e8026b393dddddc093c23d8cd866-medium_jpg.jpg?buster=1399901540" width="200" align="right">
-<h6>Note: Head over to https://developer.clarifai.com/signup/ and create a free account, once you're logged in go to https://developer.clarifai.com/account/applications/ and create a new application. You can find the client ID and Secret there. You get 5000 API-calls free/month.</h6>
-<p>If you want the script to get your Clarifai_ID and Clarifai_Secret for your environment, you can do:</p>
+
+###### Note: Head over to https://developer.clarifai.com/signup/ and create a free account, once you're logged in go to https://developer.clarifai.com/account/applications/ and create a new application. You can find the client ID and Secret there. You get 5000 API-calls free/month.  
+
+If you want the script to get your Clarifai_ID and Clarifai_Secret for your environment, you can do:
 
 ```
 export CLARIFAI_ID="<ProjectID>"
 export CLARIFAI_SECRET="<Project Secret>"
 ```
-<h4>Example with Imagecontent handling</h4>
+#### Example with Imagecontent handling
 
 ```python
 from instapy import InstaPy
@@ -192,7 +202,7 @@ InstaPy(username='test', password='test')\
   .like_by_tags(['dog', '#cat'], amount=100)\
   .end()
 ```
-<h5>Enabling Imagechecking</h5>
+##### Enabling Imagechecking
 
 ```python
 #default enabled=False , enables the checking with the clarifai api (image tagging)
@@ -201,7 +211,7 @@ InstaPy(username='test', password='test')\
 
 session.set_use_clarifai(enabled=True, secret='xyz', proj_id='123')
 ```
-<h5>Filtering inappropriate images</h5>
+##### Filtering inappropriate images
 
 ```python
 # uses the clarifai api to check if the image contains nsfw content
@@ -210,7 +220,7 @@ session.set_use_clarifai(enabled=True, secret='xyz', proj_id='123')
 session.clarifai_check_img_for(['nsfw'])
 ```
 
-<h5>Specialized comments for images with specific content</h5>
+##### Specialized comments for images with specific content
 
 ```python
 #checks the image for keywords food and lunch, if both are found,
@@ -220,7 +230,7 @@ session.clarifai_check_img_for(['nsfw'])
 session.clarifai_check_img_for(['food', 'lunch'], comment=True, comments=['Tasty!', 'Yum!'], match_all=True)
 ```
 
-<h6>Check out https://clarifai.com/demo to see some of the available tags.</h6>
+###### Check out https://clarifai.com/demo to see some of the available tags.
 
 ### Running it with Docker
 
@@ -238,7 +248,8 @@ After the build succeeded, you can simply run the container with:
 docker run --name=instapy -e INSTAGRAM_USER=<your-user> -e INSTAGRAM_PW=<your-pw> -d instapy
 ```
 
-<hr />
-<h6>Have Fun & Feel Free to report any issues</h6>
+--- 
+
+###### Have Fun & Feel Free to report any issues
 
 > **Disclaimer**: Please Note that this is a research project. I am by no means responsible for any usage of this tool. Use on your own behalf. I'm also not responsible if your accounts get banned due to extensive use of this tool.
