@@ -66,8 +66,6 @@ def check_link(browser, link, dont_like, ignore_if_contains, username, like_by_f
     image_text = "No description"
 
   print('Image from: ' + user_name)
-  print('Link: ' + link)
-  print('Description: ' + image_text)
 
   """Find the number of followes the user has"""
   if like_by_followers_upper_limit or like_by_followers_lower_limit:
@@ -83,6 +81,9 @@ def check_link(browser, link, dont_like, ignore_if_contains, username, like_by_f
       return True, user_name, 'Number of followers exceeds limit'
     if like_by_followers_lower_limit and num_followers < like_by_followers_lower_limit:
       return True, user_name, 'Number of followers does not reach minimum'
+    
+  print('Link: ' + link)
+  print('Description: ' + image_text)
 
   if any((word in image_text for word in ignore_if_contains)):
       return False, user_name, 'None'
