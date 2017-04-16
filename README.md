@@ -70,10 +70,12 @@ from instapy import InstaPy
 session = InstaPy(username='test', password='test')
 session.login()
 
-#likes 100 posts of dogs
+#likes specified amount of posts for each hashtag in the array (the '#' is optional)
+#in this case: 100 dog-posts and 100 cat-posts
+session.like_by_tags(['#dog', 'cat'], amount=100)
 
-session.like_by_tags(['#dog'], amount=100)
-session.like_from_image(url='www.instagram.com/image', amount=100)
+#gets tags from image passed as instagram-url and likes specified amount of images for each tag
+session.like_from_image(url='www.instagram.com/p/BSrfITEFUAM/', amount=100)
 
 session.end()
 ```
