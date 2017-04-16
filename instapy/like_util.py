@@ -27,12 +27,17 @@ def get_links_for_tag(browser, tag, amount, media=None):
   body_elem = browser.find_element_by_tag_name('body')
   sleep(2)
 
-  load_button = body_elem.find_element_by_xpath \
-    ('//a[contains(@class, "_8imhp _glz1g")]')
-  body_elem.send_keys(Keys.END)
-  sleep(2)
-
-  load_button.click()
+  abort = True
+  try:
+    load_button = body_elem.find_element_by_xpath \
+      ('//a[contains(@class, "_8imhp _glz1g")]')
+  except:
+    print('Load button not found, working with current images!')
+  else:
+    abort = False
+    body_elem.send_keys(Keys.END)
+    sleep(2)
+    load_button.click()
 
   body_elem.send_keys(Keys.HOME)
   sleep(1)
@@ -45,7 +50,7 @@ def get_links_for_tag(browser, tag, amount, media=None):
            if link_elem.text in media]
   filtered_links = len(links)
 
-  while (filtered_links < amount):
+  while (filtered_links < amount) and not abort:
     amount_left = amount - filtered_links
     # Average items of the right media per page loaded
     new_per_page = ceil(12 * filtered_links / total_links)
@@ -61,15 +66,19 @@ def get_links_for_tag(browser, tag, amount, media=None):
 
     for i in range(new_needed):  # add images x * 12
       # Keep the latest window active while loading more posts
+      before_load = total_links
       browser.switch_to.window(browser.window_handles[-1])
       body_elem.send_keys(Keys.END)
       sleep(1)
       browser.switch_to.window(browser.window_handles[-1])
       body_elem.send_keys(Keys.HOME)
       sleep(1)
+      link_elems = main_elem.find_elements_by_tag_name('a')
+      total_links = len(link_elems)
+      abort = (before_load == total_links)
+      if abort:
+        break
 
-    link_elems = main_elem.find_elements_by_tag_name('a')
-    total_links = len(link_elems)
     links = [link_elem.get_attribute('href') for link_elem in link_elems
              if link_elem.text in media]
     filtered_links = len(links)
