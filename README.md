@@ -1,8 +1,8 @@
-> **Think this tool is worth supporting?**
-Feel free to contribute to the project in whatever way!
-If you’re not familiar with python, you could build a github page for this project (Just head over to the issues, there might be a task for you). You're a marketer? Perfect! hit me with a message on contact.timgrossmann@gmail.com.
-If you don’t have the time or skills to contribute, you can also support us through Patreon!
-**Become a part of InstaPy!**
+> **Think this tool is worth supporting?**  
+Feel free to contribute to the project in whatever way!  
+If you’re not familiar with python, you could build a github page for this project (Just head over to the issues, there might be a task for you). You're a marketer? Perfect! hit me with a message on contact.timgrossmann@gmail.com.  
+If you don’t have the time or skills to contribute, you can also support us through Patreon!  
+**Become a part of InstaPy!**  
 
 > **Disclaimer**: Please Note that this is a research project. I am by no means responsible for any usage of this tool. Use on your own behalf. I’m also not responsible if your accounts get banned due to extensive use of this tool.
 
@@ -16,7 +16,7 @@ If you don’t have the time or skills to contribute, you can also support us th
 ### [Read about how it works on Medium](https://medium.freecodecamp.com/my-open-source-instagram-bot-got-me-2-500-real-followers-for-5-in-server-costs-e40491358340)
 
 ### Instagram Like, Comment and Follow Automation Script
-> Automation Script for “farming” Likes, Comments and Followers on Instagram.
+> Automation Script for “farming” Likes, Comments and Followers on Instagram.  
 Implemented in Python using the Selenium module.
 
 #### Example
