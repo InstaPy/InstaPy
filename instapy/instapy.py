@@ -57,6 +57,7 @@ class InstaPy:
 
     self.dont_like = ['sex', 'nsfw']
     self.ignore_if_contains = []
+    self.ignore_users = []
 
     self.use_clarifai = False
     self.clarifai_secret = None
@@ -132,6 +133,16 @@ class InstaPy:
       return self
 
     self.dont_like = tags or []
+
+    return self
+
+  def set_ignore_users(self, users=None):
+    """Changes the possible restriction to users, if user who postes
+    is one of this, the image won't be liked"""
+    if self.aborting:
+      return self
+
+    self.ignore_users = users or []
 
     return self
 
@@ -234,8 +245,8 @@ class InstaPy:
 
         try:
           inappropriate, user_name, is_video, reason = \
-            check_link(self.browser, link, self.dont_like,
-                       self.ignore_if_contains, self.username, self.like_by_followers_upper_limit, self.like_by_followers_lower_limit)
+            check_link(self.browser, link, self.dont_like, self.ignore_if_contains, self.ignore_users,
+                       self.username, self.like_by_followers_upper_limit, self.like_by_followers_lower_limit)
 
           if not inappropriate:
             liked = like_image(self.browser)
