@@ -90,6 +90,12 @@ session.end()
 ##### Restricting Likes
 
 ```python
+#completely ignore liking images from certain users
+
+session.set_ignore_users(['random_user', 'another_username'])
+```
+
+```python
 #searches the description for the given words and won't
 # like the image if one of the words are in there
 
