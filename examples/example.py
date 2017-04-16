@@ -39,12 +39,15 @@ session.clarifai_check_img_for(['food', 'lunch'], comment=True, comments=['Tasty
 session.clarifai_check_img_for(['dog', 'cat', 'cute'], comment=True, comments=['Sweet!', 'Cutie!!!'])
 
 """Like util"""
-#searches the description for the given words and won't
-# like the image if one of the words are in there
+#completely ignore liking images from certain users
+session.set_ignore_users(['random_user', 'another_username'])
+#searches the description and owner comments for the given words
+# and won't like the image if one of the words are in there
 session.set_dont_like(['food', 'eat', 'meal'])
 #will ignore the don't like if the description contains
 # one of the given words
 session.set_ignore_if_contains(['glutenfree', 'french', 'tasty'])
+
 
 """Unfollow util"""
 #will prevent commenting and unfollowing your good friends
