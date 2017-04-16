@@ -210,10 +210,10 @@ class InstaPy:
     tags = tags or []
 
     for index, tag in enumerate(tags):
-      print('Tag [%d/%d]' % (index + 1, len(tags)))
-      print('--> ' + tag)
-      self.logFile.write('Tag [%d/%d]' % (index + 1, len(tags)))
-      self.logFile.write('--> ' + tag + '\n')
+      print('Tag [{}/{}]'.format(index + 1, len(tags)))
+      print('--> {}'.format(tag.encode('utf-8')))
+      self.logFile.write('Tag [{}/[]]'.format(index + 1, len(tags)))
+      self.logFile.write('--> {}\n'.format(tag.encode('utf-8')))
 
       try:
         links = get_links_for_tag(self.browser, tag, amount)
@@ -225,8 +225,8 @@ class InstaPy:
         return self
 
       for i, link in enumerate(links):
-        print('[%d/%d]' % (i + 1, len(links)))
-        self.logFile.write('[%d/%d]' % (i + 1, len(links)))
+        print('[{}/{}]'.format(i + 1, len(links)))
+        self.logFile.write('[{}/{}]'.format(i + 1, len(links)))
         self.logFile.write(link)
 
         try:
@@ -252,8 +252,8 @@ class InstaPy:
                                 self.clarifai_img_tags,
                                 self.clarifai_full_match)
                 except Exception as err:
-                  print('Image check error: ' + str(err))
-                  self.logFile.write('Image check error: ' + str(err) + '\n')
+                  print('Image check error: {}'.format(err))
+                  self.logFile.write('Image check error: {}\n'.format(err))
 
               if self.do_comment and user_name not in self.dont_include \
                   and checked_img and commenting:
@@ -274,26 +274,26 @@ class InstaPy:
             else:
               already_liked += 1
           else:
-            print('Image not liked: ', reason)
+            print('--> Image not liked: {}'.format(reason))
             inap_img += 1
         except NoSuchElementException as err:
-          print('Invalid Page: ' + str(err))
-          self.logFile.write('Invalid Page: ' + str(err))
+          print('Invalid Page: {}'.format(err))
+          self.logFile.write('Invalid Page: {}\n'.format(err))
 
         print('')
         self.logFile.write('\n')
 
-    print('Liked: ' + str(liked_img))
-    print('Already Liked: ' + str(already_liked))
-    print('Inappropriate: ' + str(inap_img))
-    print('Commented: ' + str(commented))
-    print('Followed: ' + str(followed))
+    print('Liked: {}'.format(liked_img))
+    print('Already Liked: {}'.format(already_liked))
+    print('Inappropriate: {}'.format(inap_img))
+    print('Commented: {}'.format(commented))
+    print('Followed: {}'.format(followed))
 
-    self.logFile.write('Liked: ' + str(liked_img) + '\n')
-    self.logFile.write('Already Liked: ' + str(already_liked) + '\n')
-    self.logFile.write('Inappropriate: ' + str(inap_img) + '\n')
-    self.logFile.write('Commented: ' + str(commented) + '\n')
-    self.logFile.write('Followed: ' + str(followed) + '\n')
+    self.logFile.write('Liked: {}\n'.format(liked_img))
+    self.logFile.write('Already Liked: {}\n'.format(already_liked))
+    self.logFile.write('Inappropriate: {}\n'.format(inap_img))
+    self.logFile.write('Commented: {}\n'.format(commented))
+    self.logFile.write('Followed: {}\n'.format(followed))
 
     self.followed += followed
 
@@ -309,8 +309,8 @@ class InstaPy:
       print(tags)
       self.like_by_tags(tags, amount)
     except TypeError as err:
-      print('Sorry, an error occured: ' + str(err))
-      self.logFile.write('Sorry, an error occured: ' + str(err) + '\n')
+      print('Sorry, an error occured: {}'.format(err))
+      self.logFile.write('Sorry, an error occured: {}\n'.format(err))
 
       self.aborting = True
       return self
@@ -323,15 +323,15 @@ class InstaPy:
       try:
         amount -= unfollow(self.browser, self.username, amount, self.dont_include)
       except TypeError as err:
-        print('Sorry, an error occured: ' + str(err))
-        self.logFile.write('Sorry, an error occured: ' + str(err) + '\n')
+        print('Sorry, an error occured: {}'.format(err))
+        self.logFile.write('Sorry, an error occured: {}\n'.format(err))
 
         self.aborting = True
         return self
 
       if amount > 10:
         sleep(600)
-        print('Sleeping for 10min')
+        print('Sleeping for about 10min')
 
     return self
 
@@ -346,8 +346,11 @@ class InstaPy:
     print('Session ended')
     print('-------------')
 
-    self.logFile.write('\nSession ended - %s\n' \
-                       % (datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
+    self.logFile.write(
+      '\nSession ended - {}\n'.format(
+        datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+      )
+    )
     self.logFile.write('-' * 20 + '\n\n')
     self.logFile.close()
 
