@@ -16,7 +16,9 @@ If you don’t have the time or skills to contribute, you can also support us th
 ### [Read about how it works on Medium](https://medium.freecodecamp.com/my-open-source-instagram-bot-got-me-2-500-real-followers-for-5-in-server-costs-e40491358340)
 
 ### Instagram Like, Comment and Follow Automation Script
+
 > Automation Script for “farming” Likes, Comments and Followers on Instagram.  
+
 Implemented in Python using the Selenium module.
 
 #### Example
@@ -79,8 +81,14 @@ session.end()
 ##### Restricting Likes
 
 ```python
-#searches the description for the given words and won't
-# like the image if one of the words are in there
+#completely ignore liking images from certain users
+
+session.set_ignore_users(['random_user', 'another_username'])
+```
+
+```python
+#searches the description and owner comments for the given words
+# and won't like the image if one of the words are in there
 
 session.set_dont_like(['food', 'eat', 'meal'])
 ```
