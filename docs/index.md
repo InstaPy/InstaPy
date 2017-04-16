@@ -195,28 +195,17 @@ session.set_use_clarifai(enabled=True, secret='xyz', proj_id='123')
 
 session.clarifai_check_img_for(['nsfw'])
 ```
+
 <h5>Specialized comments for images with specific content</h5>
 
 ```python
-#checks the image for keywords food and lunch, if found,
-#comments with the given comments
+#checks the image for keywords food and lunch, if both are found,
+#comments with the given comments. If match_all is False (default), it only
+# requires a single tag to match Clarifai results.
 
-session.clarifai_check_img_for(['food', 'lunch'], comment=True, comments=['Tasty!', 'Yum!'])
+session.clarifai_check_img_for(['food', 'lunch'], comment=True, comments=['Tasty!', 'Yum!'], match_all=True)
 ```
 
-<h5>Interactions based on the number of followers a user has</h5>
-
-```python
-#This is used to check the number of followers a user has and if this number exceeds the number set then no further interaction happens
-
-session.set_upper_follower_count(limit = 250)
-
-```python
-#This is used to check the number of followers a user has and if this number does not pass the number set then no further interaction happens
-
-session.set_lower_follower_count(limit = 1)
-
-```
 <h6>Check out https://clarifai.com/demo to see some of the available tags.</h6>
 
 ### Running it with Docker

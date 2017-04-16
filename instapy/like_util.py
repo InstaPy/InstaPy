@@ -53,7 +53,7 @@ def check_link(browser, link, dont_like, ignore_if_contains, ignore_users,
   post_page = browser.execute_script("return window._sharedData.entry_data.PostPage")
   if post_page is None:
     print('Unavailable Page: ' + link)
-    return False, 'Unavailable Page'
+    return True, None, 'Unavailable Page'
 
   """Gets the description of the link and checks for the dont_like tags"""
   user_name = browser.execute_script("return window._sharedData.entry_data.PostPage[0].media.owner.username")
@@ -87,24 +87,25 @@ def check_link(browser, link, dont_like, ignore_if_contains, ignore_users,
   if image_text is None:
     image_text = "No description"
 
-  """Find the number of followes the user has"""
-  userlink = 'https://www.instagram.com/' + user_name
-  browser.get(userlink)
-  sleep(1)
-  num_followers = browser.execute_script("return window._sharedData.entry_data.ProfilePage[0].user.followed_by.count")
-  browser.get(link)
-  sleep(1)
-
-
   print('Image from: ' + user_name)
+
+  """Find the number of followes the user has"""
+  if like_by_followers_upper_limit or like_by_followers_lower_limit:
+    userlink = 'https://www.instagram.com/' + user_name
+    browser.get(userlink)
+    sleep(1)
+    num_followers = browser.execute_script("return window._sharedData.entry_data.ProfilePage[0].user.followed_by.count")
+    browser.get(link)
+    sleep(1)
+    print('Number of Followers: ' + num_followers)
+
+    if like_by_followers_upper_limit and num_followers > like_by_followers_upper_limit:
+      return True, user_name, 'Number of followers exceeds limit'
+    if like_by_followers_lower_limit and num_followers < like_by_followers_lower_limit:
+      return True, user_name, 'Number of followers does not reach minimum'
+    
   print('Link: ' + link)
   print('Description: ' + image_text)
-  print "Number of Followers: ", num_followers
-
-  if like_by_followers_upper_limit and num_followers > like_by_followers_upper_limit:
-    return True, user_name, 'Number of followers exceeds limit'
-  if like_by_followers_lower_limit and num_followers < like_by_followers_lower_limit:
-    return True, user_name, 'Number of followers does not reach limit'
 
   """Check if the user_name is in the ignore_users list"""
   if (user_name in ignore_users) or (user_name == username):
