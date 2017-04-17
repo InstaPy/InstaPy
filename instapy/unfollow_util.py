@@ -54,7 +54,7 @@ def follow_user(browser, user_name, follow_restrict):
 def follow_user_from_list(browser, acc_to_follow, follow_restrict):
     """Follows users from an list"""
     browser.get('https://www.instagram.com/' + acc_to_follow)
-    print('--> ' + acc_to_follow + ' instagram account is opened...')
+    print('--> {} instagram account is opened...'.format(acc_to_follow))
     follow_button = browser.find_element_by_xpath("//*[contains(text(), 'Follow')]")
     sleep(10)
     if follow_button.text == 'Follow':
