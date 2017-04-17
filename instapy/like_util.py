@@ -56,18 +56,35 @@ def check_link(browser, link, dont_like, ignore_if_contains, ignore_users,
     return True, None, 'Unavailable Page'
 
   """Gets the description of the link and checks for the dont_like tags"""
-  user_name = browser.execute_script("return window._sharedData.entry_data.PostPage[0].graphql.shortcode_media.owner.username")
-  image_text = browser.execute_script("return window._sharedData.entry_data.PostPage[0].graphql.shortcode_media.edge_media_to_caption.edges[0].node.text")
+  graphql = 'graphql' in post_page[0]
+  if graphql:
+    media = post_page[0]['graphql']['shortcode_media']
+    user_name = media['owner']['username']
+    image_text = media['edge_media_to_caption']['edges']
+    image_text = image_text[0]['node']['text'] if image_text else None
+    owner_comments = browser.execute_script('''
+      latest_comments = window._sharedData.entry_data.PostPage[0].graphql.shortcode_media.edge_media_to_comment.edges;
+      if (latest_comments === undefined) latest_comments = Array();
+      owner_comments = latest_comments
+        .filter(item => item.node.owner.username == '{}')
+        .map(item => item.node.text)
+        .reduce((item, total) => item + '\\n' + total, '');
+      return owner_comments;
+    '''.format(user_name))
+  else:
+    media = post_page[0]['media']
+    user_name = media['owner']['username']
+    image_text = media['caption']
+    owner_comments = browser.execute_script('''
+      latest_comments = window._sharedData.entry_data.PostPage[0].media.comments.nodes;
+      if (latest_comments === undefined) latest_comments = Array();
+      owner_comments = latest_comments
+        .filter(item => item.node.owner.username == '{}')
+        .map(item => item.text)
+        .reduce((item, total) => item + '\\n' + total, '');
+      return owner_comments;
+    '''.format(user_name))
 
-  owner_comments = browser.execute_script('''
-    latest_comments = window._sharedData.entry_data.PostPage[0].graphql.shortcode_media.edge_media_to_comment.edges;
-    if (latest_comments === undefined) latest_comments = Array();
-    owner_comments = latest_comments
-      .filter(item => item.node.owner.username == '{}')
-      .map(item => item.text)
-      .reduce((item, total) => item + '\\n' + total, '');
-    return owner_comments;
-  '''.format(username))
   if owner_comments == '':
     owner_comments = None
 
@@ -79,7 +96,12 @@ def check_link(browser, link, dont_like, ignore_if_contains, ignore_users,
 
   """If the image still has no description gets the first comment"""
   if image_text is None:
-    image_text = browser.execute_script("return window._sharedData.entry_data.PostPage[0].graphql.shortcode_media.edge_media_to_comment.edges[0].nodes.text")
+    if graphql:
+      image_text = media['edge_media_to_comment']['edges']
+      image_text = image_text[0]['nodes']['text'] if image_text else None
+    else:
+      image_text = media['comments']['nodes']
+      image_text = image_text[0]['text'] if image_text else None
   if image_text is None:
     image_text = "No description"
 
@@ -137,7 +159,11 @@ def get_tags(browser, url):
   browser.get(url)
   sleep(1)
 
-  image_text = browser.execute_script("return window._sharedData.entry_data.PostPage[0].graphql.shortcode_media.edge_media_to_caption.edges[0].node.text")
+  graphql = browser.execute_script("return ('graphql' in window._sharedData.entry_data.PostPage[0])")
+  if graphql:
+    image_text = browser.execute_script("return window._sharedData.entry_data.PostPage[0].graphql.shortcode_media.edge_media_to_caption.edges[0].node.text")
+  else:
+    image_text = browser.execute_script("return window._sharedData.entry_data.PostPage[0].media.caption.text")
 
   tags = findall(r'#\w*', image_text)
   return tags
