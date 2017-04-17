@@ -90,3 +90,17 @@ ENV/
 
 # Rope project settings
 .ropeproject
+
+assets/chromedriver\.exe
+
+run\.py
+
+logs/followerNum\.txt
+
+logs/logFile\.txt
+
+logs/
+
+\.vs/InstaPy/v15/
+
+\.vs/
