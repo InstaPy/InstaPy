@@ -28,7 +28,7 @@ def unfollow(browser, username, amount, dont_include):
     if person not in dont_include:
       unfollowNum += 1
       button.click()
-      print('--> Now unfollowing: ' + person)
+      print('--> Now unfollowing: {}'.format(person.encode('utf-8')))
       sleep(15)
 
   return unfollowNum
