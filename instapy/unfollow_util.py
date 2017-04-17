@@ -28,7 +28,7 @@ def unfollow(browser, username, amount, dont_include):
     if person not in dont_include:
       unfollowNum += 1
       button.click()
-      print('--> Now unfollowing: ' + person)
+      print('--> Now unfollowing: {}'.format(person.encode('utf-8')))
       sleep(15)
 
   return unfollowNum
@@ -59,13 +59,13 @@ def follow_user_from_list(browser, acc_to_follow, follow_restrict):
     sleep(10)
     if follow_button.text == 'Follow':
         follow_button.click()
-        print('---> Now following ' + acc_to_follow)
+        print('---> Now following: {}'.format(acc_to_follow))
         print('*' * 20)
         follow_restrict[acc_to_follow] = follow_restrict.get(acc_to_follow, 0) + 1
         sleep(3)
         return 1
     else:
-        print('---> ' + acc_to_follow + ' is already followed')
+        print('---> {} is already followed'.format(acc_to_follow))
         print('*' * 20)
         sleep(3)
         return  0
