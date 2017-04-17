@@ -56,18 +56,14 @@ def check_link(browser, link, dont_like, ignore_if_contains, ignore_users,
     return True, None, 'Unavailable Page'
 
   """Gets the description of the link and checks for the dont_like tags"""
-  user_name = browser.execute_script("return window._sharedData.entry_data.PostPage[0].media.owner.username")
-  image_text = browser.execute_script("return window._sharedData.entry_data.PostPage[0].media.caption")
+  user_name = browser.execute_script("return window._sharedData.entry_data.PostPage[0].graphql.shortcode_media.owner.username")
+  image_text = browser.execute_script("return window._sharedData.entry_data.PostPage[0].graphql.shortcode_media.edge_media_to_caption.edges[0].node.text")
 
   owner_comments = browser.execute_script('''
-    latest_comments = window._sharedData.entry_data.PostPage[0].media.comments.nodes;
-    console.log(latest_comments);
-    console.info('latest_comments was of type: ' + typeof(latest_comments));
+    latest_comments = window._sharedData.entry_data.PostPage[0].graphql.shortcode_media.edge_media_to_comment.edges;
     if (latest_comments === undefined) latest_comments = Array();
-    console.info('latest_comments is now of type: ' + typeof(latest_comments));
-    console.log(latest_comments);
     owner_comments = latest_comments
-      .filter(item => item.user.username == '{}')
+      .filter(item => item.node.owner.username == '{}')
       .map(item => item.text)
       .reduce((item, total) => item + '\\n' + total, '');
     return owner_comments;
@@ -83,7 +79,7 @@ def check_link(browser, link, dont_like, ignore_if_contains, ignore_users,
 
   """If the image still has no description gets the first comment"""
   if image_text is None:
-    image_text = browser.execute_script("return window._sharedData.entry_data.PostPage[0].media.comments.nodes[0].text")
+    image_text = browser.execute_script("return window._sharedData.entry_data.PostPage[0].graphql.shortcode_media.edge_media_to_comment.edges[0].nodes.text")
   if image_text is None:
     image_text = "No description"
 
@@ -141,7 +137,7 @@ def get_tags(browser, url):
   browser.get(url)
   sleep(1)
 
-  image_text = browser.execute_script("return window._sharedData.entry_data.PostPage[0].media.caption")
+  image_text = browser.execute_script("return window._sharedData.entry_data.PostPage[0].graphql.shortcode_media.edge_media_to_caption.edges[0].node.text")
 
   tags = findall(r'#\w*', image_text)
   return tags
