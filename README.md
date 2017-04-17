@@ -221,7 +221,7 @@ docker build -t instapy .
 
 After the build succeeded, you can simply run the container with:
 ```bash
-docker run --name=instapy -e INSTAGRAM_USER=<your-user> -e INSTAGRAM_PW=<your-pw> -d instapy
+docker run --name=instapy -e INSTA_USER=<your-user> -e INSTA_PW=<your-pw> -d instapy
 ```
 
 ---
