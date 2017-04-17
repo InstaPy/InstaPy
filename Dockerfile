@@ -61,7 +61,7 @@ RUN apt-get clean \
 	&& rm -rf /var/lib/apt/lists/*
 
 # Adding InstaPy
-RUN git clone -b docker_settings https://github.com/timgrossmann/InstaPy.git \
+RUN git clone https://github.com/timgrossmann/InstaPy.git \
     && wget ${CRHOMEDRIVER} \
     && unzip chromedriver_linux64 \
     && mv chromedriver InstaPy/assets/chromedriver \

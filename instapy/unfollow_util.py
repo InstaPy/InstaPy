@@ -1,6 +1,8 @@
 """Module which handles the follow features like unfollowing and following"""
 import json
-from time import sleep
+
+from .time_util import sleep
+
 
 def unfollow(browser, username, amount, dont_include):
   """unfollows the given amount of users"""
