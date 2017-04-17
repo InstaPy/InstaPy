@@ -65,6 +65,9 @@ If you want the script to get the username and password for your environment, yo
 export INSTA_USER="<Your username>"
 export INSTA_PW="<Your password>"
 ```
+
+> If you're not too familiar with code and you're working on Windows, try out this tool to set up the settings: [InstaPy Windows GUI](https://github.com/Nemixalone/GUI-tool-for-InstaPy-script)
+
 --- 
 
 ### Usage and Components
