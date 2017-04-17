@@ -2,7 +2,6 @@
 from datetime import datetime
 from os import environ
 from random import randint
-from time import sleep
 from pyvirtualdisplay import Display
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
@@ -15,11 +14,12 @@ from .like_util import get_links_for_tag
 from .like_util import get_tags
 from .like_util import like_image
 from .login_util import login_user
+from .print_log_writer import log_follower_num
+from .time_util import sleep
 from .unfollow_util import unfollow
 from .unfollow_util import follow_user
 from .unfollow_util import load_follow_restriction
 from .unfollow_util import dump_follow_restriction
-from .print_log_writer import log_follower_num
 
 class InstaPy:
   """Class to be instantiated to use the script"""
@@ -55,11 +55,13 @@ class InstaPy:
 
     self.dont_like = ['sex', 'nsfw']
     self.ignore_if_contains = []
+    self.ignore_users = []
 
     self.use_clarifai = False
     self.clarifai_secret = None
     self.clarifai_id = None
     self.clarifai_img_tags = []
+    self.clarifai_full_match = False
 
     self.like_by_followers_upper_limit = 0
     self.like_by_followers_lower_limit = 0
@@ -121,6 +123,16 @@ class InstaPy:
 
     return self
 
+  def set_ignore_users(self, users=None):
+    """Changes the possible restriction to users, if user who postes
+    is one of this, the image won't be liked"""
+    if self.aborting:
+      return self
+
+    self.ignore_users = users or []
+
+    return self
+
   def set_ignore_if_contains(self, words=None):
     """ignores the don't likes if the description contains
     one of the given words"""
@@ -140,7 +152,7 @@ class InstaPy:
 
     return self
 
-  def set_use_clarifai(self, enabled=False, secret=None, proj_id=None):
+  def set_use_clarifai(self, enabled=False, secret=None, proj_id=None, full_match=False):
     """Defines if the clarifai img api should be used
     Which 'project' will be used (only 5000 calls per month)"""
     if self.aborting:
@@ -157,6 +169,8 @@ class InstaPy:
       self.clarifai_id = environ.get('CLARIFAI_ID')
     elif proj_id is not None:
       self.clarifai_id = proj_id
+
+    self.clarifai_full_match = full_match
 
     return self
 
@@ -217,8 +231,8 @@ class InstaPy:
 
         try:
           inappropriate, user_name, reason = \
-            check_link(self.browser, link, self.dont_like,
-                       self.ignore_if_contains, self.username, self.like_by_followers_upper_limit, self.like_by_followers_lower_limit)
+            check_link(self.browser, link, self.dont_like, self.ignore_if_contains, self.ignore_users,
+                       self.username, self.like_by_followers_upper_limit, self.like_by_followers_lower_limit)
 
           if not inappropriate:
             liked = like_image(self.browser)
@@ -235,7 +249,8 @@ class InstaPy:
                   checked_img, temp_comments =\
                     check_image(self.browser, self.clarifai_id,
                                 self.clarifai_secret,
-                                self.clarifai_img_tags)
+                                self.clarifai_img_tags,
+                                self.clarifai_full_match)
                 except Exception as err:
                   print('Image check error: ' + str(err))
                   self.logFile.write('Image check error: ' + str(err) + '\n')
