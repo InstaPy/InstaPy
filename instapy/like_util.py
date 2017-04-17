@@ -1,8 +1,10 @@
 """Module that handles the like features"""
 from math import ceil
-from time import sleep
 from re import findall
 from selenium.webdriver.common.keys import Keys
+
+from .time_util import sleep
+
 
 def get_links_for_tag(browser, tag, amount):
   """Fetches the number of links specified
@@ -42,7 +44,8 @@ def get_links_for_tag(browser, tag, amount):
 
   return links[:amount]
 
-def check_link(browser, link, dont_like, ignore_if_contains, username):
+def check_link(browser, link, dont_like, ignore_if_contains, ignore_users,
+               username, like_by_followers_upper_limit, like_by_followers_lower_limit):
   browser.get(link)
   sleep(2)
 
@@ -50,29 +53,72 @@ def check_link(browser, link, dont_like, ignore_if_contains, username):
   post_page = browser.execute_script("return window._sharedData.entry_data.PostPage")
   if post_page is None:
     print('Unavailable Page: ' + link)
-    return False, 'Unavailable Page'
+    return True, None, 'Unavailable Page'
 
   """Gets the description of the link and checks for the dont_like tags"""
   user_name = browser.execute_script("return window._sharedData.entry_data.PostPage[0].media.owner.username")
   image_text = browser.execute_script("return window._sharedData.entry_data.PostPage[0].media.caption")
 
-  """If the image has no description gets the first comment"""
+  owner_comments = browser.execute_script('''
+    latest_comments = window._sharedData.entry_data.PostPage[0].media.comments.nodes;
+    console.log(latest_comments);
+    console.info('latest_comments was of type: ' + typeof(latest_comments));
+    if (latest_comments === undefined) latest_comments = Array();
+    console.info('latest_comments is now of type: ' + typeof(latest_comments));
+    console.log(latest_comments);
+    owner_comments = latest_comments
+      .filter(item => item.user.username == '{}')
+      .map(item => item.text)
+      .reduce((item, total) => item + '\\n' + total, '');
+    return owner_comments;
+  '''.format(username))
+  if owner_comments == '':
+    owner_comments = None
+
+  """Append owner comments to description as it might contain further tags"""
+  if image_text is None:
+    image_text = owner_comments
+  elif owner_comments:
+    image_text = image_text + '\n' + owner_comments
+
+  """If the image still has no description gets the first comment"""
   if image_text is None:
     image_text = browser.execute_script("return window._sharedData.entry_data.PostPage[0].media.comments.nodes[0].text")
   if image_text is None:
     image_text = "No description"
 
   print('Image from: ' + user_name)
+
+  """Find the number of followes the user has"""
+  if like_by_followers_upper_limit or like_by_followers_lower_limit:
+    userlink = 'https://www.instagram.com/' + user_name
+    browser.get(userlink)
+    sleep(1)
+    num_followers = browser.execute_script("return window._sharedData.entry_data.ProfilePage[0].user.followed_by.count")
+    browser.get(link)
+    sleep(1)
+    print('Number of Followers: ' + num_followers)
+
+    if like_by_followers_upper_limit and num_followers > like_by_followers_upper_limit:
+      return True, user_name, 'Number of followers exceeds limit'
+    if like_by_followers_lower_limit and num_followers < like_by_followers_lower_limit:
+      return True, user_name, 'Number of followers does not reach minimum'
+    
   print('Link: ' + link)
   print('Description: ' + image_text)
 
+  """Check if the user_name is in the ignore_users list"""
+  if (user_name in ignore_users) or (user_name == username):
+    return True, user_name, 'Username'
+
   if any((word in image_text for word in ignore_if_contains)):
-      return False, user_name
+      print('--> Ignoring content: ' + tag)
+      return False, user_name, 'None'
 
-  if any(((tag in image_text or user_name == username) for tag in dont_like)):
-      return True, user_name
+  if any((tag in image_text for tag in dont_like)):
+      return True, user_name, 'Inappropriate'
 
-  return False, user_name
+  return False, user_name, 'None'
 
 def like_image(browser):
   """Likes the browser opened image"""
