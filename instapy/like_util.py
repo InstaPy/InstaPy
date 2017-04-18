@@ -93,7 +93,7 @@ def check_link(browser, link, dont_like, ignore_if_contains, ignore_users,
   """Check if the Post is Valid/Exists"""
   post_page = browser.execute_script("return window._sharedData.entry_data.PostPage")
   if post_page is None:
-    print('Unavailable Page: ' + link)
+    print('Unavailable Page: {}'.format(link.encode('utf-8')))
     return True, None, None, 'Unavailable Page'
 
   """Gets the description of the link and checks for the dont_like tags"""
@@ -129,7 +129,7 @@ def check_link(browser, link, dont_like, ignore_if_contains, ignore_users,
   if image_text is None:
     image_text = "No description"
 
-  print('Image from: ' + user_name)
+  print('Image from: {}'.format(user_name.encode('utf-8')))
 
   """Find the number of followes the user has"""
   if like_by_followers_upper_limit or like_by_followers_lower_limit:
@@ -139,15 +139,15 @@ def check_link(browser, link, dont_like, ignore_if_contains, ignore_users,
     num_followers = browser.execute_script("return window._sharedData.entry_data.ProfilePage[0].user.followed_by.count")
     browser.get(link)
     sleep(1)
-    print('Number of Followers: ' + num_followers)
+    print('Number of Followers: {}'.format(num_followers))
 
     if like_by_followers_upper_limit and num_followers > like_by_followers_upper_limit:
       return True, user_name, is_video, 'Number of followers exceeds limit'
     if like_by_followers_lower_limit and num_followers < like_by_followers_lower_limit:
       return True, user_name, is_video, 'Number of followers does not reach minimum'
     
-  print('Link: ' + link)
-  print('Description: ' + image_text)
+  print('Link: {}'.format(link.encode('utf-8')))
+  print('Description: {}'.format(image_text.encode('utf-8')))
 
   """Check if the user_name is in the ignore_users list"""
   if (user_name in ignore_users) or (user_name == username):
