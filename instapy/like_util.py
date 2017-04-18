@@ -178,6 +178,8 @@ def check_link(browser, link, dont_like, ignore_if_contains, ignore_users,
   image_text = image_text.lower()
   if any((tag.lower() in image_text for tag in dont_like)):
       return True, user_name, is_video, 'Inappropriate'
+    
+  return False, user_name, is_video, 'None'
 
 
 def like_image(browser):
