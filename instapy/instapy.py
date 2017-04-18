@@ -18,7 +18,7 @@ from .print_log_writer import log_follower_num
 from .time_util import sleep
 from .unfollow_util import unfollow
 from .unfollow_util import follow_user
-from .unfollow_util import follow_user_from_list
+from .unfollow_util import follow_given_user
 from .unfollow_util import load_follow_restriction
 from .unfollow_util import dump_follow_restriction
 
@@ -197,7 +197,7 @@ class InstaPy:
 
     for acc_to_follow in followlist:
       if self.follow_restrict.get(acc_to_follow, 0) < self.follow_times:
-        followed += follow_user_from_list(self.browser, acc_to_follow, self.follow_restrict)
+        followed += follow_given_user(self.browser, acc_to_follow, self.follow_restrict)
         self.followed += followed
         self.logFile.write('Followed: {}\n'.format(str(followed)))
         followed = 0
