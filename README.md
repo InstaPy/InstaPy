@@ -80,6 +80,16 @@ session.like_by_tags(['#dog', 'cat'], amount=100)
 #gets tags from image passed as instagram-url and likes specified amount of images for each tag
 session.like_from_image(url='www.instagram.com/p/BSrfITEFUAM/', amount=100)
 
+#likes 50 photos of other animals
+
+session.like_by_tags(['#animals'], amount=50, media='Photo')
+session.like_from_image(url='www.instagram.com/image', amount=50, media='Photo')
+
+#likes 15 videos of cats
+
+session.like_by_tags(['#cat'], amount=15, media='Video')
+session.like_from_image(url='www.instagram.com/image', amount=15, media='Video')
+
 session.end()
 ```
 
@@ -113,6 +123,10 @@ session.set_ignore_if_contains(['glutenfree', 'french', 'tasty'])
 
 session.set_do_comment(enabled=True, percentage=25)
 session.set_comments(['Awesome', 'Really Cool', 'I like your stuff'])
+
+# you can also set comments for specific media types (Photo / Video)
+session.set_comments(['Nice shot!'], media='Photo')
+session.set_comments(['Great Video!'], media='Video')
 ```
 
 ##### Following
@@ -121,6 +135,16 @@ session.set_comments(['Awesome', 'Really Cool', 'I like your stuff'])
 #default enabled=False, follows ~ every 10th user from the images, times=1 (only follows a user once (if unfollowed again))
 
 session.set_do_follow(enabled=True, percentage=10, times=2)
+```
+
+##### Following by a list
+
+```python
+#follows each account from a list of instagram nicknames (only follows a user once (if unfollowed again))
+# would be useful for the precise targeting. For example, if one needs to get followbacks from followers of a chosen account/group of accounts.
+
+accs = ['therock','natgeo'] 
+session.follow_by_list(accs, times=1)
 ```
 
 ##### Excluding friends
