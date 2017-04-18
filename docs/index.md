@@ -123,13 +123,22 @@ session.set_ignore_if_contains(['glutenfree', 'french', 'tasty'])
 session.set_do_comment(enabled=True, percentage=25)
 session.set_comments(['Awesome', 'Really Cool', 'I like your stuff'])
 ```
-
-<h5>Following</h5>
+##### Following
 
 ```python
 #default enabled=False, follows ~ every 10th user from the images, times=1 (only follows a user once (if unfollowed again))
 
 session.set_do_follow(enabled=True, percentage=10, times=2)
+```
+
+##### Following by a list
+
+```python
+#follows each account from a list of instagram nicknames (only follows a user once (if unfollowed again))
+# would be useful for the precise targeting. For example, if one needs to get followbacks from followers of a chosen account/group of accounts.
+
+accs = ['therock','natgeo'] 
+session.follow_by_list(accs, times=1)
 ```
 
 ##### Excluding friends

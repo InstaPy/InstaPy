@@ -18,6 +18,7 @@ from .print_log_writer import log_follower_num
 from .time_util import sleep
 from .unfollow_util import unfollow
 from .unfollow_util import follow_user
+from .unfollow_util import follow_given_user
 from .unfollow_util import load_follow_restriction
 from .unfollow_util import dump_follow_restriction
 
@@ -183,6 +184,27 @@ class InstaPy:
       self.use_clarifai = False
     elif tags:
       self.clarifai_img_tags.append((tags, comment, comments))
+
+    return self
+
+  def follow_by_list(self, followlist, times=1):
+    """Allows to follow by any scrapped list"""
+    self.follow_times = times or 0
+    if self.aborting:
+      return self
+
+    followed = 0
+
+    for acc_to_follow in followlist:
+      if self.follow_restrict.get(acc_to_follow, 0) < self.follow_times:
+        followed += follow_given_user(self.browser, acc_to_follow, self.follow_restrict)
+        self.followed += followed
+        self.logFile.write('Followed: {}\n'.format(str(followed)))
+        followed = 0
+      else:
+        print('---> {} has already been followed more than {} times'.format(acc_to_follow,
+              str(self.follow_times)))
+        sleep(1)
 
     return self
 
