@@ -40,7 +40,7 @@ It will like images that have been tagged with dog or food and will like 100 ima
 
 ## Getting started
 
-> Guides:  
+> Guides:
 **[How to Ubuntu](./How_To_DO_Ubuntu.md) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [How to CentOS](How_To_DO_Centos.md)**
 
 ### Setting Up
@@ -89,6 +89,16 @@ session.like_by_tags(['#dog', 'cat'], amount=100)
 #gets tags from image passed as instagram-url and likes specified amount of images for each tag
 session.like_from_image(url='www.instagram.com/p/BSrfITEFUAM/', amount=100)
 
+#likes 50 photos of other animals
+
+session.like_by_tags(['#animals'], amount=50, media='Photo')
+session.like_from_image(url='www.instagram.com/image', amount=50, media='Photo')
+
+#likes 15 videos of cats
+
+session.like_by_tags(['#cat'], amount=15, media='Video')
+session.like_from_image(url='www.instagram.com/image', amount=15, media='Video')
+
 session.end()
 ```
 
@@ -122,6 +132,10 @@ session.set_ignore_if_contains(['glutenfree', 'french', 'tasty'])
 
 session.set_do_comment(enabled=True, percentage=25)
 session.set_comments(['Awesome', 'Really Cool', 'I like your stuff'])
+
+# you can also set comments for specific media types (Photo / Video)
+session.set_comments(['Nice shot!'], media='Photo')
+session.set_comments(['Great Video!'], media='Video')
 ```
 ##### Following
 
