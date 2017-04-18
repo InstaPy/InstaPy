@@ -6,41 +6,82 @@ from selenium.webdriver.common.keys import Keys
 from .time_util import sleep
 
 
-def get_links_for_tag(browser, tag, amount):
+def get_links_for_tag(browser, tag, amount, media=None):
   """Fetches the number of links specified
   by amount and returns a list of links"""
+  if media is None:
+    # All known media types
+    media = ['', 'Post', 'Video']
+  elif media == 'Photo':
+    # Include posts with multiple images in it
+    media = ['', 'Post']
+  else:
+    # Make it an array to use it in the following part
+    media = [media]
+
   browser.get('https://www.instagram.com/explore/tags/'
               + (tag[1:] if tag[:1] == '#' else tag))
-
   sleep(2)
 
-  # clicking load more till there are 1000 posts
+  # clicking load more
   body_elem = browser.find_element_by_tag_name('body')
-
   sleep(2)
 
-  load_button = body_elem.find_element_by_xpath \
-    ('//a[contains(@class, "_8imhp _glz1g")]')
-  body_elem.send_keys(Keys.END)
-  sleep(2)
-
-  load_button.click()
+  abort = True
+  try:
+    load_button = body_elem.find_element_by_xpath \
+      ('//a[contains(@class, "_8imhp _glz1g")]')
+  except:
+    print('Load button not found, working with current images!')
+  else:
+    abort = False
+    body_elem.send_keys(Keys.END)
+    sleep(2)
+    load_button.click()
 
   body_elem.send_keys(Keys.HOME)
   sleep(1)
 
+  # Get links
   main_elem = browser.find_element_by_tag_name('main')
-
-  new_needed = int(ceil((amount - 33) / 12))
-
-  for _ in range(new_needed):  # add images x * 12
-    body_elem.send_keys(Keys.END)
-    sleep(1)
-    body_elem.send_keys(Keys.HOME)
-    sleep(1)
-
   link_elems = main_elem.find_elements_by_tag_name('a')
-  links = [link_elem.get_attribute('href') for link_elem in link_elems]
+  total_links = len(link_elems)
+  links = [link_elem.get_attribute('href') for link_elem in link_elems
+           if link_elem.text in media]
+  filtered_links = len(links)
+
+  while (filtered_links < amount) and not abort:
+    amount_left = amount - filtered_links
+    # Average items of the right media per page loaded
+    new_per_page = ceil(12 * filtered_links / total_links)
+    if new_per_page == 0:
+      # Avoid division by zero
+      new_per_page = 1. / 12.
+    # Number of page load needed
+    new_needed = int(ceil(amount_left / new_per_page))
+
+    if new_needed > 12:
+      # Don't go bananas trying to get all of instagram!
+      new_needed = 12
+
+    for i in range(new_needed):  # add images x * 12
+      # Keep the latest window active while loading more posts
+      before_load = total_links
+      browser.switch_to.window(browser.window_handles[-1])
+      body_elem.send_keys(Keys.END)
+      sleep(1)
+      browser.switch_to.window(browser.window_handles[-1])
+      body_elem.send_keys(Keys.HOME)
+      sleep(1)
+      link_elems = main_elem.find_elements_by_tag_name('a')
+      total_links = len(link_elems)
+      abort = (before_load == total_links)
+      if abort:
+        break
+
+    links = [link_elem.get_attribute('href') for link_elem in link_elems
+             if link_elem.text in media]
+    filtered_links = len(links)
 
   return links[:amount]
 
@@ -53,9 +94,10 @@ def check_link(browser, link, dont_like, ignore_if_contains, ignore_users,
   post_page = browser.execute_script("return window._sharedData.entry_data.PostPage")
   if post_page is None:
     print('Unavailable Page: {}'.format(link.encode('utf-8')))
-    return True, None, 'Unavailable Page'
+    return True, None, None, 'Unavailable Page'
 
   """Gets the description of the link and checks for the dont_like tags"""
+  is_video = browser.execute_script("return window._sharedData.entry_data.PostPage[0].media.is_video")
   user_name = browser.execute_script("return window._sharedData.entry_data.PostPage[0].media.owner.username")
   image_text = browser.execute_script("return window._sharedData.entry_data.PostPage[0].media.caption")
 
@@ -100,24 +142,25 @@ def check_link(browser, link, dont_like, ignore_if_contains, ignore_users,
     print('Number of Followers: {}'.format(num_followers))
 
     if like_by_followers_upper_limit and num_followers > like_by_followers_upper_limit:
-      return True, user_name, 'Number of followers exceeds limit'
+      return True, user_name, is_video, 'Number of followers exceeds limit'
     if like_by_followers_lower_limit and num_followers < like_by_followers_lower_limit:
-      return True, user_name, 'Number of followers does not reach minimum'
-
+      return True, user_name, is_video, 'Number of followers does not reach minimum'
+    
   print('Link: {}'.format(link.encode('utf-8')))
   print('Description: {}'.format(image_text.encode('utf-8')))
 
   """Check if the user_name is in the ignore_users list"""
   if (user_name in ignore_users) or (user_name == username):
-    return True, user_name, 'Username'
+    return True, user_name, is_video, 'Username'
 
   if any((word in image_text for word in ignore_if_contains)):
-      return False, user_name, 'None'
+      print('--> Ignoring content: ' + tag)
+      return False, user_name, is_video, 'None'
 
-  if any((tag in image_text for tag in dont_like)):
-      return True, user_name, 'Inappropriate'
+  image_text = image_text.lower()
+  if any((tag.lower() in image_text for tag in dont_like)):
+      return True, user_name, is_video, 'Inappropriate'
 
-  return False, user_name, 'None'
 
 def like_image(browser):
   """Likes the browser opened image"""
@@ -135,6 +178,7 @@ def like_image(browser):
   else:
     print('--> Invalid Like Element!')
     return False
+
 
 def get_tags(browser, url):
   """Gets all the tags of the given description in the url"""
