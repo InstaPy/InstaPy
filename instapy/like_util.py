@@ -173,7 +173,6 @@ def check_link(browser, link, dont_like, ignore_if_contains, ignore_users,
     return True, user_name, is_video, 'Username'
 
   if any((word in image_text for word in ignore_if_contains)):
-      print('--> Ignoring content: ' + tag)
       return False, user_name, is_video, 'None'
 
   image_text = image_text.lower()
