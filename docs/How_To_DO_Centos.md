@@ -41,5 +41,6 @@ $ unzip chromedriver_linux64
 $ mv chromedriver InstaPy/assets/chromedriver
 $ chmod +x InstaPy/assets/chromedriver
 $ chmod 755 InstaPy/assets/chromedriver
+$ cd InstaPy 
 $ pip install .
 ```

@@ -12,6 +12,9 @@ session.login()
 #default enabled=False, ~ every 4th image will be commented on
 session.set_do_comment(enabled=True, percentage=25)
 session.set_comments(['Awesome', 'Really Cool', 'I like your stuff'])
+# you can also set comments for specific media types (Photo / Video)
+session.set_comments(['Nice shot!'], media='Photo')
+session.set_comments(['Great Video!'], media='Video')
 
 """Follow util"""
 #default enabled=False, follows ~ every 10th user from the images
@@ -39,12 +42,15 @@ session.clarifai_check_img_for(['food', 'lunch'], comment=True, comments=['Tasty
 session.clarifai_check_img_for(['dog', 'cat', 'cute'], comment=True, comments=['Sweet!', 'Cutie!!!'])
 
 """Like util"""
-#searches the description for the given words and won't
-# like the image if one of the words are in there
+#completely ignore liking images from certain users
+session.set_ignore_users(['random_user', 'another_username'])
+#searches the description and owner comments for the given words
+# and won't like the image if one of the words are in there
 session.set_dont_like(['food', 'eat', 'meal'])
 #will ignore the don't like if the description contains
 # one of the given words
 session.set_ignore_if_contains(['glutenfree', 'french', 'tasty'])
+
 
 """Unfollow util"""
 #will prevent commenting and unfollowing your good friends
@@ -53,9 +59,13 @@ session.set_dont_include(['friend1', 'friend2', 'friend3'])
 """Different tasks"""
 # you can put in as much tags as you want, likes 100 of each tag
 session.like_by_tags(['#test'], amount=100)
+# you can also set to like a specific media (Photo / Video)
+session.like_by_tags(['#test'], amount=10, media='Photo')
 
 #get's the tags from the description and likes 100 images of each tag
 session.like_from_image(url='www.instagram.com/image', amount=100)
+# media filtering works here as well
+session.like_by_tags(['#test'], amount=10, media='Video')
 
 session.unfollow_users(amount=10) #unfollows 10 of the accounts your following -> instagram will only unfollow 10 before you'll be 'blocked
 #  for 10 minutes' (if you enter a higher number than 10 it will unfollow 10, then wait 10 minutes and will continue then)
