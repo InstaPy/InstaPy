@@ -65,6 +65,9 @@ If you want the script to get the username and password for your environment, yo
 export INSTA_USER="<Your username>"
 export INSTA_PW="<Your password>"
 ```
+
+> If you're not too familiar with code and you're working on Windows, try out this tool to set up the settings: [InstaPy Windows GUI](https://github.com/Nemixalone/GUI-tool-for-InstaPy-script)
+
 --- 
 
 ### Usage and Components
@@ -134,13 +137,22 @@ session.set_comments(['Awesome', 'Really Cool', 'I like your stuff'])
 session.set_comments(['Nice shot!'], media='Photo')
 session.set_comments(['Great Video!'], media='Video')
 ```
-
-<h5>Following</h5>
+##### Following
 
 ```python
 #default enabled=False, follows ~ every 10th user from the images, times=1 (only follows a user once (if unfollowed again))
 
 session.set_do_follow(enabled=True, percentage=10, times=2)
+```
+
+##### Following by a list
+
+```python
+#follows each account from a list of instagram nicknames (only follows a user once (if unfollowed again))
+# would be useful for the precise targeting. For example, if one needs to get followbacks from followers of a chosen account/group of accounts.
+
+accs = ['therock','natgeo'] 
+session.follow_by_list(accs, times=1)
 ```
 
 ##### Excluding friends
@@ -245,7 +257,7 @@ docker build instapy .
 
 After the build succeeded, you can simply run the container with:
 ```bash
-docker run --name=instapy -e INSTAGRAM_USER=<your-user> -e INSTAGRAM_PW=<your-pw> -d instapy
+docker run --name=instapy -e INSTA_USER=<your-user> -e INSTA_PW=<your-pw> -d instapy
 ```
 
 --- 
