@@ -1,5 +1,3 @@
-
-
 # <img src="http://i.imgur.com/9ZjtveL.png" width="150" align="right"> InstaPy
 [![GitHub license](https://img.shields.io/github/license/mashape/apistatus.svg)](https://github.com/timgrossmann/InstaPy/blob/master/LICENSE)
 [![built with Selenium](https://img.shields.io/badge/built%20with-Selenium-red.svg)](https://github.com/SeleniumHQ/selenium)
@@ -245,6 +243,8 @@ session.clarifai_check_img_for(['food', 'lunch'], comment=True, comments=['Tasty
 ###### Check out https://clarifai.com/demo to see some of the available tags.
 
 ### Running it with Docker
+
+> Make sure to have all the lines with `self.display` uncommented in instapy.py
 
 #### Build the Image
 
