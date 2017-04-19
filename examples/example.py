@@ -67,7 +67,7 @@ session.like_from_image(url='www.instagram.com/image', amount=100)
 # media filtering works here as well
 session.like_by_tags(['#test'], amount=10, media='Video')
 
-session.unfollow_users(amount=10) #unfollows 10 of the accounts your following -> instagram will only unfollow 10 before you'll be 'blocked
+session.unfollow_users(amount=10) #unfollows 10 of the oldest accounts your are following -> instagram will only unfollow 10 before you'll be 'blocked
 #  for 10 minutes' (if you enter a higher number than 10 it will unfollow 10, then wait 10 minutes and will continue then)
 
 """Ending the script"""

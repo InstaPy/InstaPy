@@ -10,26 +10,65 @@ def unfollow(browser, username, amount, dont_include):
 
   browser.get('https://www.instagram.com/' + username)
 
-  following_link_div = browser.find_elements_by_class_name('_218yx')[2]
-  following_link = following_link_div.find_element_by_tag_name('a')
-  following_link.click()
+  # Make sure the necessary element is loaded (try 10 times)
+  following_link_div = browser.find_elements_by_class_name('_218yx')
+  sleep(1)
+  num_of_tries = 0
 
+  while len(following_link_div) < 3 and num_of_tries < 10:
+      following_link_div = browser.find_elements_by_class_name('_218yx')
+      sleep(1)
+      num_of_tries += 1
+
+  # Failed to unfollow
+  if len(following_link_div) < 3:
+      return unfollowNum
+
+  following_link = following_link_div[2].find_element_by_tag_name('a')
+  following_link.click()
+  
   sleep(2)
 
   person_list_div = browser.find_element_by_class_name('_4gt3b')
   person_list = person_list_div.find_elements_by_class_name('_cx1ua')
-
-  person_list = [x.find_element_by_class_name('_gzjax').text for x in person_list]
-
   follow_div = browser.find_element_by_class_name('_4gt3b')
-  follow_buttons = follow_div.find_elements_by_tag_name('button')
 
-  for button, person in zip(follow_buttons[:amount], person_list[:amount]):
+  temp_list = []
+  actions = ActionChains(browser)
+  actions.move_to_element(follow_div)
+  actions.click()
+  actions.send_keys()
+  actions.perform()
+
+  # Load ALL followed users first (or until list is so long 1 second
+  # is not enough to reach the end to load more)
+  actions.send_keys(Keys.END).perform()
+  sleep(1)
+  actions.send_keys(Keys.HOME).perform()
+  sleep(1)
+  temp_list = person_list_div.find_elements_by_class_name('_cx1ua')
+
+  while len(person_list) < len(temp_list):
+    actions.send_keys(Keys.END).perform()
+    sleep(1)
+    person_list = temp_list
+    temp_list = person_list_div.find_elements_by_class_name('_cx1ua')
+
+  # Finally, extract the names of users from the list in reversed order (and buttons)
+  follow_div = browser.find_element_by_class_name('_4gt3b')
+  person_list = reversed([x.find_element_by_class_name('_gzjax').text for x in person_list])
+  follow_buttons = reversed(follow_div.find_elements_by_tag_name('button'))
+
+  for button, person in zip(follow_buttons, person_list):
     if person not in dont_include:
       unfollowNum += 1
       button.click()
       print('--> Now unfollowing: {}'.format(person.encode('utf-8')))
       sleep(15)
+
+      # Stop if reached amount or if reached a maximum of 10
+      if unfollowNum >= amount or unfollowNum == 10:
+          break
 
   return unfollowNum
 
