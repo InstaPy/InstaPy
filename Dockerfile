@@ -13,6 +13,7 @@ RUN apt-get update \
         apt-utils \
         locales \
         unzip \
+	sed \
         python3-pip \
         python3-dev \
         build-essential \
@@ -69,6 +70,7 @@ RUN git clone https://github.com/timgrossmann/InstaPy.git \
     && chmod 755 InstaPy/assets/chromedriver \
     && cd InstaPy \
     && pip install .
+    && sed -ie 's/#self.display/self.display/g' instapy/instapy.py
 
 # Copying the your quickstart file into the container and setting directory
 COPY quickstart.py ./InstaPy
