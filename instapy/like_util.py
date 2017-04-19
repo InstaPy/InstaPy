@@ -122,7 +122,7 @@ def check_link(browser, link, dont_like, ignore_if_contains, ignore_users,
       latest_comments = window._sharedData.entry_data.PostPage[0].media.comments.nodes;
       if (latest_comments === undefined) latest_comments = Array();
       owner_comments = latest_comments
-        .filter(item => item.node.owner.username == '{}')
+        .filter(item => item.user.username == '{}')
         .map(item => item.text)
         .reduce((item, total) => item + '\\n' + total, '');
       return owner_comments;
@@ -141,7 +141,7 @@ def check_link(browser, link, dont_like, ignore_if_contains, ignore_users,
   if image_text is None:
     if graphql:
       image_text = media['edge_media_to_comment']['edges']
-      image_text = image_text[0]['nodes']['text'] if image_text else None
+      image_text = image_text[0]['node']['text'] if image_text else None
     else:
       image_text = media['comments']['nodes']
       image_text = image_text[0]['text'] if image_text else None
@@ -164,7 +164,7 @@ def check_link(browser, link, dont_like, ignore_if_contains, ignore_users,
       return True, user_name, is_video, 'Number of followers exceeds limit'
     if like_by_followers_lower_limit and num_followers < like_by_followers_lower_limit:
       return True, user_name, is_video, 'Number of followers does not reach minimum'
-    
+
   print('Link: {}'.format(link.encode('utf-8')))
   print('Description: {}'.format(image_text.encode('utf-8')))
 
@@ -178,7 +178,7 @@ def check_link(browser, link, dont_like, ignore_if_contains, ignore_users,
   image_text = image_text.lower()
   if any((tag.lower() in image_text for tag in dont_like)):
       return True, user_name, is_video, 'Inappropriate'
-    
+
   return False, user_name, is_video, 'None'
 
 
