@@ -239,8 +239,6 @@ session.clarifai_check_img_for(['food', 'lunch'], comment=True, comments=['Tasty
 
 #### Build the Image
 
-> Make sure to have all the lines with `self.display` uncommented in instapy.py
-
 You first need to build the image by running this in the Terminal:
 ```bash
 docker build -t instapy .
