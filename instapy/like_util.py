@@ -67,10 +67,8 @@ def get_links_for_tag(browser, tag, amount, media=None):
     for i in range(new_needed):  # add images x * 12
       # Keep the latest window active while loading more posts
       before_load = total_links
-      browser.switch_to.window(browser.window_handles[-1])
       body_elem.send_keys(Keys.END)
       sleep(1)
-      browser.switch_to.window(browser.window_handles[-1])
       body_elem.send_keys(Keys.HOME)
       sleep(1)
       link_elems = main_elem.find_elements_by_tag_name('a')
