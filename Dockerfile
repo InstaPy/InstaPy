@@ -69,7 +69,7 @@ RUN git clone https://github.com/timgrossmann/InstaPy.git \
     && chmod +x InstaPy/assets/chromedriver \
     && chmod 755 InstaPy/assets/chromedriver \
     && cd InstaPy \
-    && pip install .
+    && pip install . \
     && sed -ie 's/#self.display/self.display/g' instapy/instapy.py
 
 # Copying the your quickstart file into the container and setting directory
