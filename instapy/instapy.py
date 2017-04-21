@@ -24,9 +24,11 @@ from .unfollow_util import dump_follow_restriction
 
 class InstaPy:
   """Class to be instantiated to use the script"""
-  def __init__(self, username=None, password=None):
-    #self.display = Display(visible=0, size=(800, 600))
-    #self.display.start()
+  def __init__(self, username=None, password=None, nogui=False):
+    if nogui:
+      self.display = Display(visible=0, size=(800, 600))
+      self.display.start()
+
     chrome_options = Options()
     chrome_options.add_argument('--dns-prefetch-disable')
     chrome_options.add_argument('--no-sandbox')
@@ -41,6 +43,7 @@ class InstaPy:
 
     self.username = username or environ.get('INSTA_USER')
     self.password = password or environ.get('INSTA_PW')
+    self.nogui = nogui
 
 
     self.do_comment = False
@@ -381,7 +384,9 @@ class InstaPy:
     dump_follow_restriction(self.follow_restrict)
     self.browser.delete_all_cookies()
     self.browser.close()
-    #self.display.stop()
+
+    if self.nogui:
+      self.display.stop()
 
     print('')
     print('Session ended')
