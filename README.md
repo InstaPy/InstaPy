@@ -183,6 +183,14 @@ session.set_lower_follower_count(limit = 1)
 session.unfollow_users(amount=10)
 ```
 
+##### Running on a server ?
+
+```python
+#you can use the nogui parameter to use a virtual display
+
+session = InstaPy(username='test', password='test', nogui=True)
+```
+
 ### Clarifai ImageAPI
 <img src="https://d1qb2nb5cznatu.cloudfront.net/startups/i/396673-2fb6e8026b393dddddc093c23d8cd866-medium_jpg.jpg?buster=1399901540" width="200" align="right">
 
