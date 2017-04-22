@@ -40,7 +40,11 @@ InstaPy(username='test', password='test')\
 
 ### Getting started
 
+#### You need to have [Python](https://www.python.org/downloads/) 2.7 or 3.6 installed. Setted up path for PY command. Installed [Selenium](http://selenium-python.readthedocs.io/) and [pyvirtualdriver](https://pypi.python.org/pypi/PyVirtualDisplay).
+
 #### Make sure to get the right ```chromedriver``` for your system from here: [https://sites.google.com/a/chromium.org/chromedriver/downloads](https://sites.google.com/a/chromium.org/chromedriver/downloads). Just put it in ```/assets```.
+
+> If you're not too familiar with code and you're working on Windows, try out this tool to set up the settings: [InstaPy Windows GUI](https://github.com/Nemixalone/GUI-tool-for-InstaPy-script)
 
 ```bash
 cd InstaPy
@@ -60,9 +64,6 @@ If you want the script to get the username and password for your environment, yo
 export INSTA_USER="<Your username>"
 export INSTA_PW="<Your password>"
 ```
-
-> If you're not too familiar with code and you're working on Windows, try out this tool to set up the settings: [InstaPy Windows GUI](https://github.com/Nemixalone/GUI-tool-for-InstaPy-script)
-
 ---
 
 ```python
