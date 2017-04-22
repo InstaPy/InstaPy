@@ -69,7 +69,8 @@ class Tag(BaseMixin):
         abort = False
         load_more = self.click_by_xpath("//a[text() = 'Load more']")
         if load_more is None:
-            print('Load button not found, working with current images!')
+            self.logger.info('Load button not found,'
+                             ' working with current images!')
             abort = True
         sleep(2)
 

@@ -16,7 +16,7 @@ from .views.user import user
 class InstaPy:
     """Class to be instantiated to use the script."""
 
-    def __init__(self, username=None, password=None, virtual=False):
+    def __init__(self, username=None, password=None, nogui=False):
         """Start InstaPy with some defaults.
 
         set virtual = True to enable VirtualDisplay in servers.
@@ -29,24 +29,28 @@ class InstaPy:
             )
         )
 
-        self.display = None
-        if virtual:
+        self.username = username or environ.get('INSTA_USER')
+        self.password = password or environ.get('INSTA_PW')
+
+        # Check if we should use a virtual display or not
+        self.nogui = nogui
+        if nogui:
             self.logger.debug("Starting virtual display")
             self.display = Display(visible=0, size=(800, 600))
             self.display.start()
 
+        # Fire up the browser
         self._init_webdriver_browser()
-
-        self.username = username or environ.get('INSTA_USER')
-        self.password = password or environ.get('INSTA_PW')
 
         self.followed = 0
 
+        # Load page classes
         self.landing = landing.set_browser(self.browser)
         self.image = image.set_browser(self.browser)
         self.user = user.set_browser(self.browser)
         self.tag = tag.set_browser(self.browser)
 
+        # Start up all the settings
         self.aborting = False
 
         self.set_ignore_users()
@@ -95,15 +99,15 @@ class InstaPy:
 
         # Cicle through tags
         for index, tag_name in enumerate(self.like_tags):
-            self.logger.info(u'\nTag [{}/{}]'.format(index + 1,
-                                                     len(self.like_tags)))
+            self.logger.info(u'\n\nTag [{}/{}]'.format(index + 1,
+                                                       len(self.like_tags)))
             self.logger.info(u'--> {}'.format(tag_name))
             self.tag.get_page(tag_name)
             links = self.tag.get_links(amount)
 
             # Cicle through image links
             for i, link in enumerate(links):
-                self.logger.info(u'\n[{}/{}]'.format(i + 1, len(links)))
+                self.logger.info(u'\n\n[{}/{}]'.format(i + 1, len(links)))
 
                 # Get image page, continue if not available
                 if self.image.get_page(link) is None:
@@ -189,7 +193,7 @@ class InstaPy:
         self.browser.delete_all_cookies()
         self.logger.debug("  Closing Chrome webdriver")
         self.browser.close()
-        if self.display is not None:
+        if self.nogui:
             self.logger.debug("  Closing virtual display")
             self.display.stop()
 
