@@ -12,6 +12,9 @@ session.login()
 #default enabled=False, ~ every 4th image will be commented on
 session.set_do_comment(enabled=True, percentage=25)
 session.set_comments(['Awesome', 'Really Cool', 'I like your stuff'])
+# you can also set comments for specific media types (Photo / Video)
+session.set_comments(['Nice shot!'], media='Photo')
+session.set_comments(['Great Video!'], media='Video')
 
 """Follow util"""
 #default enabled=False, follows ~ every 10th user from the images
@@ -56,9 +59,13 @@ session.set_dont_include(['friend1', 'friend2', 'friend3'])
 """Different tasks"""
 # you can put in as much tags as you want, likes 100 of each tag
 session.like_by_tags(['#test'], amount=100)
+# you can also set to like a specific media (Photo / Video)
+session.like_by_tags(['#test'], amount=10, media='Photo')
 
 #get's the tags from the description and likes 100 images of each tag
 session.like_from_image(url='www.instagram.com/image', amount=100)
+# media filtering works here as well
+session.like_by_tags(['#test'], amount=10, media='Video')
 
 session.unfollow_users(amount=10) #unfollows 10 of the accounts your following -> instagram will only unfollow 10 before you'll be 'blocked
 #  for 10 minutes' (if you enter a higher number than 10 it will unfollow 10, then wait 10 minutes and will continue then)
