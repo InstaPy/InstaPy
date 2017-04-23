@@ -39,7 +39,7 @@ It will like images that have been tagged with dog or food and will like 100 ima
 ## Getting started
 
 > Guides:
-**[How to Ubuntu](./How_To_DO_Ubuntu.md) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [How to CentOS](How_To_DO_Centos.md)**
+**[How to Ubuntu](./How_To_DO_Ubuntu.md) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [How to CentOS](./How_To_DO_Centos.md) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [How to Windows](How_to_Windows.md)**
 
 ### Setting Up
 
@@ -135,11 +135,13 @@ session.set_comments(['Awesome', 'Really Cool', 'I like your stuff'])
 session.set_comments(['Nice shot!'], media='Photo')
 session.set_comments(['Great Video!'], media='Video')
 ```
-##### Emoji Support
 
-You can use Unicode characters (like Emoji) in your comments, but there are some limitations.
-1. You can use only Unicode characters with no more than 4 characters and you have to use the unicode code (e. g. ```\u1234```). You find a list of emoji with unicode codes on [Wikipedia](https://en.wikipedia.org/wiki/Emoji#Unicode_blocks), but there is also a list of working emoji in ```/assets```
-2. You have to convert your comment to Unicode. This can safely be done by adding an u in front of the opening apostrophe: ```u'\u1234 some comment'```
+> **Emoji Support**  
+>
+> You can use Unicode characters (like Emoji) in your comments, but there are some limitations.
+> 1. You can use only Unicode characters with no more than 4 characters and you have to use the unicode code (e. g. ```\u1234```). You find a list of emoji with unicode codes on [Wikipedia](https://en.wikipedia.org/wiki/Emoji#Unicode_blocks), but there is also a list of working emoji in ```/assets```  
+>
+> 2. You have to convert your comment to Unicode. This can safely be done by adding an u in front of the opening apostrophe: ```u'\u1234 some comment'```
 
 ##### Following
 
@@ -187,6 +189,14 @@ session.set_lower_follower_count(limit = 1)
 #unfollows 10 of the accounts your following -> instagram will only unfollow 10 before you'll be 'blocked for 10 minutes' (if you enter a higher number than 10 it will unfollow 10, then wait 10 minutes and will continue then)
 
 session.unfollow_users(amount=10)
+```
+
+##### Running on a server ?
+
+```python
+#you can use the nogui parameter to use a virtual display
+
+session = InstaPy(username='test', password='test', nogui=True)
 ```
 <br />
 ### Clarifai ImageAPI
@@ -240,10 +250,10 @@ session.clarifai_check_img_for(['nsfw'])
 
 ```python
 #checks the image for keywords food and lunch, if both are found,
-#comments with the given comments. If match_all is False (default), it only
+#comments with the given comments. If full_match is False (default), it only
 # requires a single tag to match Clarifai results.
 
-session.clarifai_check_img_for(['food', 'lunch'], comment=True, comments=['Tasty!', 'Yum!'], match_all=True)
+session.clarifai_check_img_for(['food', 'lunch'], comment=True, comments=['Tasty!', 'Yum!'], full_match=True)
 ```
 
 ###### Check out https://clarifai.com/demo to see some of the available tags.
