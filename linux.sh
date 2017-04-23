@@ -1,4 +1,4 @@
-echo "InstaPy Setup"
+echo "Unix InstaPy Setup"
 echo =============================================================================================
 echo "Downloading Chrome Driver..."
 arch=$(getconf LONG_BIT)
