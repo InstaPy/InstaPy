@@ -1,7 +1,7 @@
 > **Think this tool is worth supporting?**  
 Feel free to contribute to the project in whatever way!  
-If you’re not familiar with python, you could e.g. build a github page for this project (Just head over to the issues, there might be a task for you). You're a marketer? Perfect! hit me with a message on contact.timgrossmann@gmail.com.  
-If you don’t have the time or skills to contribute, you can help spread the word via Facebook, Twitter and Co.!
+If you’re not familiar with python, you could build a github page for this project (Just head over to the issues, there might be a task for you). You're a marketer? Perfect! hit me with a message on contact.timgrossmann@gmail.com.  
+If you don’t have the time or skills to contribute, you can also support us through Patreon!  
 **Become a part of InstaPy!**  
 
 > **Disclaimer**: Please Note that this is a research project. I am by no means responsible for any usage of this tool. Use on your own behalf. I’m also not responsible if your accounts get banned due to extensive use of this tool.
@@ -40,11 +40,7 @@ InstaPy(username='test', password='test')\
 
 ### Getting started
 
-#### You need to have [Python](https://www.python.org/downloads/) 2.7 or 3.6 installed. Setted up path for PY command. Installed [Selenium](http://selenium-python.readthedocs.io/) and [pyvirtualdriver](https://pypi.python.org/pypi/PyVirtualDisplay).
-
 #### Make sure to get the right ```chromedriver``` for your system from here: [https://sites.google.com/a/chromium.org/chromedriver/downloads](https://sites.google.com/a/chromium.org/chromedriver/downloads). Just put it in ```/assets```.
-
-> If you're not too familiar with code and you're working on Windows, try out this tool to set up the settings: [InstaPy Windows GUI](https://github.com/Nemixalone/GUI-tool-for-InstaPy-script)
 
 ```bash
 cd InstaPy
@@ -81,16 +77,6 @@ session.like_by_tags(['#dog', 'cat'], amount=100)
 #gets tags from image passed as instagram-url and likes specified amount of images for each tag
 session.like_from_image(url='www.instagram.com/p/BSrfITEFUAM/', amount=100)
 
-#likes 50 photos of other animals
-
-session.like_by_tags(['#animals'], amount=50, media='Photo')
-session.like_from_image(url='www.instagram.com/image', amount=50, media='Photo')
-
-#likes 15 videos of cats
-
-session.like_by_tags(['#cat'], amount=15, media='Video')
-session.like_from_image(url='www.instagram.com/image', amount=15, media='Video')
-
 session.end()
 ```
 
@@ -124,18 +110,7 @@ session.set_ignore_if_contains(['glutenfree', 'french', 'tasty'])
 
 session.set_do_comment(enabled=True, percentage=25)
 session.set_comments(['Awesome', 'Really Cool', 'I like your stuff'])
-
-# you can also set comments for specific media types (Photo / Video)
-session.set_comments(['Nice shot!'], media='Photo')
-session.set_comments(['Great Video!'], media='Video')
 ```
-
-> **Emoji Support**  
->
-> You can use Unicode characters (like Emoji) in your comments, but there are some limitations.
-> 1. You can use only Unicode characters with no more than 4 characters and you have to use the unicode code (e. g. ```\u1234```). You find a list of emoji with unicode codes on [Wikipedia](https://en.wikipedia.org/wiki/Emoji#Unicode_blocks), but there is also a list of working emoji in ```/assets```  
->
-> 2. You have to convert your comment to Unicode. This can safely be done by adding an u in front of the opening apostrophe: ```u'\u1234 some comment'```
 
 ##### Following
 
@@ -143,16 +118,6 @@ session.set_comments(['Great Video!'], media='Video')
 #default enabled=False, follows ~ every 10th user from the images, times=1 (only follows a user once (if unfollowed again))
 
 session.set_do_follow(enabled=True, percentage=10, times=2)
-```
-
-##### Following by a list
-
-```python
-#follows each account from a list of instagram nicknames (only follows a user once (if unfollowed again))
-# would be useful for the precise targeting. For example, if one needs to get followbacks from followers of a chosen account/group of accounts.
-
-accs = ['therock','natgeo'] 
-session.follow_by_list(accs, times=1)
 ```
 
 ##### Excluding friends
@@ -183,14 +148,6 @@ session.set_lower_follower_count(limit = 1)
 #unfollows 10 of the accounts you're following -> instagram will only unfollow 10 before you'll be 'blocked for 10 minutes' (if you enter a higher number than 10 it will unfollow 10, then wait 10 minutes and will continue then)
 
 session.unfollow_users(amount=10)
-```
-
-##### Running on a server ?
-
-```python
-#you can use the nogui parameter to use a virtual display
-
-session = InstaPy(username='test', password='test', nogui=True)
 ```
 
 ### Clarifai ImageAPI
@@ -264,7 +221,7 @@ docker build -t instapy .
 
 After the build succeeded, you can simply run the container with:
 ```bash
-docker run --name=instapy -e INSTA_USER=<your-user> -e INSTA_PW=<your-pw> -d instapy
+docker run --name=instapy -e INSTAGRAM_USER=<your-user> -e INSTAGRAM_PW=<your-pw> -d instapy
 ```
 
 ---
