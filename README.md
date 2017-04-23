@@ -200,10 +200,10 @@ session.clarifai_check_img_for(['nsfw'])
 
 ```python
 #checks the image for keywords food and lunch, if both are found,
-#comments with the given comments. If match_all is False (default), it only
+#comments with the given comments. If full_match is False (default), it only
 # requires a single tag to match Clarifai results.
 
-session.clarifai_check_img_for(['food', 'lunch'], comment=True, comments=['Tasty!', 'Yum!'], match_all=True)
+session.clarifai_check_img_for(['food', 'lunch'], comment=True, comments=['Tasty!', 'Yum!'], full_match=True)
 ```
 
 ###### Check out [https://clarifai.com/demo](https://clarifai.com/demo) to see some of the available tags.</h6>
