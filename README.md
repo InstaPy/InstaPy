@@ -1,6 +1,6 @@
 > **Think this tool is worth supporting?**  
 Feel free to contribute to the project in whatever way!  
-If you’re not familiar with python, you could build a github page for this project (Just head over to the issues, there might be a task for you). You're a marketer? Perfect! hit me with a message on contact.timgrossmann@gmail.com.  
+If you’re not familiar with python, you could e.g. build a github page for this project (Just head over to the issues, there might be a task for you). You're a marketer? Perfect! hit me with a message on contact.timgrossmann@gmail.com.  
 If you don’t have the time or skills to contribute, you can also support us through Patreon!  
 **Become a part of InstaPy!**  
 
