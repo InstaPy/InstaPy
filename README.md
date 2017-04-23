@@ -1,7 +1,7 @@
 > **Think this tool is worth supporting?**  
 Feel free to contribute to the project in whatever way!  
 If you’re not familiar with python, you could e.g. build a github page for this project (Just head over to the issues, there might be a task for you). You're a marketer? Perfect! hit me with a message on contact.timgrossmann@gmail.com.  
-If you don’t have the time or skills to contribute, you can also support us through Patreon!  
+If you don’t have the time or skills to contribute, you can help spread the word via Facebook, Twitter and Co.!
 **Become a part of InstaPy!**  
 
 > **Disclaimer**: Please Note that this is a research project. I am by no means responsible for any usage of this tool. Use on your own behalf. I’m also not responsible if your accounts get banned due to extensive use of this tool.
