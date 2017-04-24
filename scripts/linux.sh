@@ -16,13 +16,14 @@ echo "Chrome Driver download completed."
 echo " "
 echo "Unzipping Chrome Driver..."
 unzip chromedriver.zip
-mv ./chromedriver ./assets/chromedriver
+mv ./chromedriver ../assets/chromedriver
 echo "Unzipping completed."
 echo " "
 echo "Removing unneeded files..."
 rm chromedriver.zip
 echo "Removal completed."
 echo " "
+cd ../
 if [ $kernel == "Darwin" ]; then
   sudo python setup.py install
 else
