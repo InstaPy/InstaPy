@@ -19,7 +19,7 @@ def unfollow(browser, username, amount, dont_include):
   person_list_div = browser.find_element_by_class_name('_4gt3b')
   person_list = person_list_div.find_elements_by_class_name('_cx1ua')
 
-  person_list = [x.find_element_by_class_name('_gzjax').text for x in person_list]
+  person_list = [x.find_element_by_xpath('//div[@class="_gzjax"]/a').text for x in person_list]
 
   follow_div = browser.find_element_by_class_name('_4gt3b')
   follow_buttons = follow_div.find_elements_by_tag_name('button')
