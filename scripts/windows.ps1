@@ -11,15 +11,16 @@ $shell = new-object -com shell.application
 $zip = $shell.NameSpace("$pwd\chromedriver.zip")
 foreach($item in $zip.items())
 {
-$shell.Namespace("$pwd\assets\").copyhere($item)
+$shell.Namespace("$pwd\..\assets\").copyhere($item)
 }
-mv "$pwd\assets\chromedriver.exe" "$pwd\assets\chromedriver"
+mv "$pwd\..\assets\chromedriver.exe" "$pwd\..\assets\chromedriver"
 echo "Unzipping completed."
 echo " "
 echo "Removing unneeded files..."
 rm chromedriver.zip
 echo "Removal completed."
 echo " "
-echo "Setup is completed."
+cd ..\
 python setup.py install
+echo "Setup is completed."
 pause
