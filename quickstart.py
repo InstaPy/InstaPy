@@ -1,5 +1,4 @@
 from instapy import InstaPy
-import os
 
 # Write your automation here
 # Stuck ? Look at the github page or the examples in the examples folder
