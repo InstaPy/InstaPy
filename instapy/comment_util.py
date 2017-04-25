@@ -14,6 +14,6 @@ def comment_image(browser, comments):
   comment_input.send_keys(rand_comment)
   comment_input.submit()
 
-  print(u'--> Commented: {}'.format(rand_comment))
+  print('--> Commented: ' + rand_comment)
   sleep(2)
   return 1

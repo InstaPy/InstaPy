@@ -18,17 +18,14 @@ from .print_log_writer import log_follower_num
 from .time_util import sleep
 from .unfollow_util import unfollow
 from .unfollow_util import follow_user
-from .unfollow_util import follow_given_user
 from .unfollow_util import load_follow_restriction
 from .unfollow_util import dump_follow_restriction
 
 class InstaPy:
   """Class to be instantiated to use the script"""
-  def __init__(self, username=None, password=None, nogui=False):
-    if nogui:
-      self.display = Display(visible=0, size=(800, 600))
-      self.display.start()
-
+  def __init__(self, username=None, password=None):
+    #self.display = Display(visible=0, size=(800, 600))
+    #self.display.start()
     chrome_options = Options()
     chrome_options.add_argument('--dns-prefetch-disable')
     chrome_options.add_argument('--no-sandbox')
@@ -43,14 +40,11 @@ class InstaPy:
 
     self.username = username or environ.get('INSTA_USER')
     self.password = password or environ.get('INSTA_PW')
-    self.nogui = nogui
 
 
     self.do_comment = False
     self.comment_percentage = 0
     self.comments = ['Cool!', 'Nice!', 'Looks good!']
-    self.photo_comments = []
-    self.video_comments = []
 
     self.followed = 0
     self.follow_restrict = load_follow_restriction()
@@ -100,23 +94,12 @@ class InstaPy:
 
     return self
 
-  def set_comments(self, comments=None, media=None):
+  def set_comments(self, comments=None):
     """Changes the possible comments"""
     if self.aborting:
       return self
 
-    if (media not in [None, 'Photo', 'Video']):
-      print('Unkown media type! Treating as "any".')
-      media = None
-
     self.comments = comments or []
-
-    if media is None:
-      self.comments = comments
-    else:
-      attr = '{}_comments'.format(media.lower())
-      setattr(self, attr, comments)
-
     return self
 
   def set_do_follow(self, enabled=False, percentage=0, times=1):
@@ -203,27 +186,6 @@ class InstaPy:
 
     return self
 
-  def follow_by_list(self, followlist, times=1):
-    """Allows to follow by any scrapped list"""
-    self.follow_times = times or 0
-    if self.aborting:
-      return self
-
-    followed = 0
-
-    for acc_to_follow in followlist:
-      if self.follow_restrict.get(acc_to_follow, 0) < self.follow_times:
-        followed += follow_given_user(self.browser, acc_to_follow, self.follow_restrict)
-        self.followed += followed
-        self.logFile.write('Followed: {}\n'.format(str(followed)))
-        followed = 0
-      else:
-        print('---> {} has already been followed more than {} times'.format(acc_to_follow,
-              str(self.follow_times)))
-        sleep(1)
-
-    return self
-
   def set_upper_follower_count(self, limit=None):
     """Used to chose if a post is liked by the number of likes"""
     self.like_by_followers_upper_limit = limit or 0
@@ -234,8 +196,7 @@ class InstaPy:
     self.like_by_followers_lower_limit = limit or 0
     return self
 
-  def like_by_tags(self, tags=None, amount=50, media=None):
-
+  def like_by_tags(self, tags=None, amount=50):
     """Likes (default) 50 images per given tag"""
     if self.aborting:
       return self
@@ -249,13 +210,13 @@ class InstaPy:
     tags = tags or []
 
     for index, tag in enumerate(tags):
-      print('Tag [{}/{}]'.format(index + 1, len(tags)))
-      print('--> {}'.format(tag.encode('utf-8')))
-      self.logFile.write('Tag [{}/[]]'.format(index + 1, len(tags)))
-      self.logFile.write('--> {}\n'.format(tag.encode('utf-8')))
+      print('Tag [%d/%d]' % (index + 1, len(tags)))
+      print('--> ' + tag)
+      self.logFile.write('Tag [%d/%d]' % (index + 1, len(tags)))
+      self.logFile.write('--> ' + tag + '\n')
 
       try:
-        links = get_links_for_tag(self.browser, tag, amount, media)
+        links = get_links_for_tag(self.browser, tag, amount)
       except NoSuchElementException:
         print('Too few images, aborting')
         self.logFile.write('Too few images, aborting\n')
@@ -264,12 +225,12 @@ class InstaPy:
         return self
 
       for i, link in enumerate(links):
-        print('[{}/{}]'.format(i + 1, len(links)))
-        self.logFile.write('[{}/{}]'.format(i + 1, len(links)))
+        print('[%d/%d]' % (i + 1, len(links)))
+        self.logFile.write('[%d/%d]' % (i + 1, len(links)))
         self.logFile.write(link)
 
         try:
-          inappropriate, user_name, is_video, reason = \
+          inappropriate, user_name, reason = \
             check_link(self.browser, link, self.dont_like, self.ignore_if_contains, self.ignore_users,
                        self.username, self.like_by_followers_upper_limit, self.like_by_followers_lower_limit)
 
@@ -291,19 +252,14 @@ class InstaPy:
                                 self.clarifai_img_tags,
                                 self.clarifai_full_match)
                 except Exception as err:
-                  print('Image check error: {}'.format(err))
-                  self.logFile.write('Image check error: {}\n'.format(err))
+                  print('Image check error: ' + str(err))
+                  self.logFile.write('Image check error: ' + str(err) + '\n')
 
               if self.do_comment and user_name not in self.dont_include \
                   and checked_img and commenting:
-                if temp_comments:
-                  # Use clarifai related comments only!
-                  comments = temp_comments
-                elif is_video:
-                  comments = self.comments + self.video_comments
-                else:
-                  comments = self.comments + self.photo_comments
-                commented += comment_image(self.browser, comments)
+                commented += comment_image(self.browser,
+                                           temp_comments if temp_comments
+                                           else self.comments)
               else:
                 print('--> Not commented')
                 sleep(1)
@@ -318,32 +274,32 @@ class InstaPy:
             else:
               already_liked += 1
           else:
-            print('--> Image not liked: {}'.format(reason))
+            print('Image not liked: ', reason)
             inap_img += 1
         except NoSuchElementException as err:
-          print('Invalid Page: {}'.format(err))
-          self.logFile.write('Invalid Page: {}\n'.format(err))
+          print('Invalid Page: ' + str(err))
+          self.logFile.write('Invalid Page: ' + str(err))
 
         print('')
         self.logFile.write('\n')
 
-    print('Liked: {}'.format(liked_img))
-    print('Already Liked: {}'.format(already_liked))
-    print('Inappropriate: {}'.format(inap_img))
-    print('Commented: {}'.format(commented))
-    print('Followed: {}'.format(followed))
+    print('Liked: ' + str(liked_img))
+    print('Already Liked: ' + str(already_liked))
+    print('Inappropriate: ' + str(inap_img))
+    print('Commented: ' + str(commented))
+    print('Followed: ' + str(followed))
 
-    self.logFile.write('Liked: {}\n'.format(liked_img))
-    self.logFile.write('Already Liked: {}\n'.format(already_liked))
-    self.logFile.write('Inappropriate: {}\n'.format(inap_img))
-    self.logFile.write('Commented: {}\n'.format(commented))
-    self.logFile.write('Followed: {}\n'.format(followed))
+    self.logFile.write('Liked: ' + str(liked_img) + '\n')
+    self.logFile.write('Already Liked: ' + str(already_liked) + '\n')
+    self.logFile.write('Inappropriate: ' + str(inap_img) + '\n')
+    self.logFile.write('Commented: ' + str(commented) + '\n')
+    self.logFile.write('Followed: ' + str(followed) + '\n')
 
     self.followed += followed
 
     return self
 
-  def like_from_image(self, url, amount=50, media=None):
+  def like_from_image(self, url, amount=50):
     """Gets the tags from an image and likes 50 images for each tag"""
     if self.aborting:
       return self
@@ -351,10 +307,10 @@ class InstaPy:
     try:
       tags = get_tags(self.browser, url)
       print(tags)
-      self.like_by_tags(tags, amount, media)
+      self.like_by_tags(tags, amount)
     except TypeError as err:
-      print('Sorry, an error occured: {}'.format(err))
-      self.logFile.write('Sorry, an error occured: {}\n'.format(err))
+      print('Sorry, an error occured: ' + str(err))
+      self.logFile.write('Sorry, an error occured: ' + str(err) + '\n')
 
       self.aborting = True
       return self
@@ -367,15 +323,15 @@ class InstaPy:
       try:
         amount -= unfollow(self.browser, self.username, amount, self.dont_include)
       except TypeError as err:
-        print('Sorry, an error occured: {}'.format(err))
-        self.logFile.write('Sorry, an error occured: {}\n'.format(err))
+        print('Sorry, an error occured: ' + str(err))
+        self.logFile.write('Sorry, an error occured: ' + str(err) + '\n')
 
         self.aborting = True
         return self
 
       if amount > 10:
         sleep(600)
-        print('Sleeping for about 10min')
+        print('Sleeping for 10min')
 
     return self
 
@@ -384,19 +340,14 @@ class InstaPy:
     dump_follow_restriction(self.follow_restrict)
     self.browser.delete_all_cookies()
     self.browser.close()
-
-    if self.nogui:
-      self.display.stop()
+    #self.display.stop()
 
     print('')
     print('Session ended')
     print('-------------')
 
-    self.logFile.write(
-      '\nSession ended - {}\n'.format(
-        datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-      )
-    )
+    self.logFile.write('\nSession ended - %s\n' \
+                       % (datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
     self.logFile.write('-' * 20 + '\n\n')
     self.logFile.close()
 
