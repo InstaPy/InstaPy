@@ -191,14 +191,28 @@ session.set_lower_follower_count(limit = 1)
 session.unfollow_users(amount=10)
 ```
 
-##### Running on a server ?
+##### Running on a server?
 
 ```python
 #you can use the nogui parameter to use a virtual display
 
 session = InstaPy(username='test', password='test', nogui=True)
 ```
-<br />
+
+##### Running InstaPy automated
+
+You can add InstaPy to crontab, so that the script will be executed regularly. This is especially useful for servers, but be sure not to break Instagrams follow and like limits.
+
+**An example:**
+
+```
+# Edit or create a crontab
+crontab -e
+# Add information to execute your InstaPy regularly.
+# With cd you navigate to your InstaPy folder, with the part after && you execute your quickstart.py with python. Make sure that those paths match your environment.
+45 */4 * * * cd /home/user/InstaPy && /usr/bin/python ./quickstart.py
+```
+
 ### Clarifai ImageAPI
 <img src="https://d1qb2nb5cznatu.cloudfront.net/startups/i/396673-2fb6e8026b393dddddc093c23d8cd866-medium_jpg.jpg?buster=1399901540" width="200" align="right">
 
