@@ -174,7 +174,9 @@ def check_link(browser, link, dont_like, ignore_if_contains, ignore_users,
       return False, user_name, is_video, 'None'
 
   image_text = image_text.lower()
-  if any((tag.lower() in image_text for tag in dont_like)):
+  dont_like_set = set(dont_like)
+  image_text_set = set(image_text.split())
+  if dont_like_set.intersection(image_text_set):
       return True, user_name, is_video, 'Inappropriate'
 
   return False, user_name, is_video, 'None'
