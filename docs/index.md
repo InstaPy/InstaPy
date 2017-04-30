@@ -135,6 +135,14 @@ session.set_comments(['Awesome', 'Really Cool', 'I like your stuff'])
 session.set_comments(['Nice shot!'], media='Photo')
 session.set_comments(['Great Video!'], media='Video')
 ```
+
+> **Emoji Support**  
+>
+> You can use Unicode characters (like Emoji) in your comments, but there are some limitations.
+> 1. You can use only Unicode characters with no more than 4 characters and you have to use the unicode code (e. g. ```\u1234```). You find a list of emoji with unicode codes on [Wikipedia](https://en.wikipedia.org/wiki/Emoji#Unicode_blocks), but there is also a list of working emoji in ```/assets```  
+>
+> 2. You have to convert your comment to Unicode. This can safely be done by adding an u in front of the opening apostrophe: ```u'\u1234 some comment'```
+
 ##### Following
 
 ```python
@@ -181,6 +189,14 @@ session.set_lower_follower_count(limit = 1)
 #unfollows 10 of the accounts your following -> instagram will only unfollow 10 before you'll be 'blocked for 10 minutes' (if you enter a higher number than 10 it will unfollow 10, then wait 10 minutes and will continue then)
 
 session.unfollow_users(amount=10)
+```
+
+##### Running on a server ?
+
+```python
+#you can use the nogui parameter to use a virtual display
+
+session = InstaPy(username='test', password='test', nogui=True)
 ```
 <br />
 ### Clarifai ImageAPI

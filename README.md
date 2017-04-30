@@ -40,7 +40,11 @@ InstaPy(username='test', password='test')\
 
 ### Getting started
 
+#### You need to have [Python](https://www.python.org/downloads/) 2.7 or 3.6 installed. Setted up path for PY command. Installed [Selenium](http://selenium-python.readthedocs.io/) and [pyvirtualdriver](https://pypi.python.org/pypi/PyVirtualDisplay).
+
 #### Make sure to get the right ```chromedriver``` for your system from here: [https://sites.google.com/a/chromium.org/chromedriver/downloads](https://sites.google.com/a/chromium.org/chromedriver/downloads). Just put it in ```/assets```.
+
+> If you're not too familiar with code and you're working on Windows, try out this tool to set up the settings: [InstaPy Windows GUI](https://github.com/Nemixalone/GUI-tool-for-InstaPy-script)
 
 ```bash
 cd InstaPy
@@ -60,9 +64,6 @@ If you want the script to get the username and password for your environment, yo
 export INSTA_USER="<Your username>"
 export INSTA_PW="<Your password>"
 ```
-
-> If you're not too familiar with code and you're working on Windows, try out this tool to set up the settings: [InstaPy Windows GUI](https://github.com/Nemixalone/GUI-tool-for-InstaPy-script)
-
 ---
 
 ```python
@@ -129,6 +130,13 @@ session.set_comments(['Nice shot!'], media='Photo')
 session.set_comments(['Great Video!'], media='Video')
 ```
 
+> **Emoji Support**  
+>
+> You can use Unicode characters (like Emoji) in your comments, but there are some limitations.
+> 1. You can use only Unicode characters with no more than 4 characters and you have to use the unicode code (e. g. ```\u1234```). You find a list of emoji with unicode codes on [Wikipedia](https://en.wikipedia.org/wiki/Emoji#Unicode_blocks), but there is also a list of working emoji in ```/assets```  
+>
+> 2. You have to convert your comment to Unicode. This can safely be done by adding an u in front of the opening apostrophe: ```u'\u1234 some comment'```
+
 ##### Following
 
 ```python
@@ -175,6 +183,14 @@ session.set_lower_follower_count(limit = 1)
 #unfollows 10 of the accounts you're following -> instagram will only unfollow 10 before you'll be 'blocked for 10 minutes' (if you enter a higher number than 10 it will unfollow 10, then wait 10 minutes and will continue then)
 
 session.unfollow_users(amount=10)
+```
+
+##### Running on a server ?
+
+```python
+#you can use the nogui parameter to use a virtual display
+
+session = InstaPy(username='test', password='test', nogui=True)
 ```
 
 ### Clarifai ImageAPI
