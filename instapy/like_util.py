@@ -185,7 +185,7 @@ def check_link(browser, link, dont_like, ignore_if_contains, ignore_users,
     elif dont_likes.startswith("]"):
       dont_like_regex.append("#[\d\w]+" + dont_likes[1:] + "([^\d\w]|$)")
     else:
-      dont_like_regex.append("#[\d\w]+" + dont_likes + "[\d\w]+([^\d\w]|$)")
+      dont_like_regex.append("#[\d\w]*" + dont_likes + "[\d\w]*([^\d\w]|$)")
 
   for dont_likes_regex in dont_like_regex:
     if re.search(dont_likes_regex, image_text, re.IGNORECASE):
