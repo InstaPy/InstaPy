@@ -175,9 +175,20 @@ def check_link(browser, link, dont_like, ignore_if_contains, ignore_users,
   if any((word in image_text for word in ignore_if_contains)):
       return False, user_name, is_video, 'None'
 
+  dont_like_regex = []
+
   for dont_likes in dont_like:
-    hashtag_regex = dont_likes + "([^\d\w]|$)"
-    if re.search(hashtag_regex, image_text, re.IGNORECASE):
+    if dont_likes.startswith("#"):
+      dont_like_regex.append(dont_likes + "([^\d\w]|$)")
+    elif dont_likes.startswith("["):
+      dont_like_regex.append("#" + dont_likes[1:] + "[\d\w]+([^\d\w]|$)")
+    elif dont_likes.startswith("]"):
+      dont_like_regex.append("#[\d\w]+" + dont_likes[1:] + "([^\d\w]|$)")
+    else:
+      dont_like_regex.append("#[\d\w]+" + dont_likes + "[\d\w]+([^\d\w]|$)")
+
+  for dont_likes_regex in dont_like_regex:
+    if re.search(dont_likes_regex, image_text, re.IGNORECASE):
       return True, user_name, is_video, 'Inappropriate'
 
   return False, user_name, is_video, 'None'
