@@ -1,3 +1,5 @@
+import re
+
 """Module that handles the like features"""
 from math import ceil
 from re import findall
@@ -173,10 +175,9 @@ def check_link(browser, link, dont_like, ignore_if_contains, ignore_users,
   if any((word in image_text for word in ignore_if_contains)):
       return False, user_name, is_video, 'None'
 
-  image_text = image_text.lower()
-  dont_like_set = set(dont_like)
-  image_text_set = set(image_text.split())
-  if dont_like_set.intersection(image_text_set):
+  for dont_likes in dont_like:
+    hashtag_regex = dont_likes + "([^\d\w]|$)"
+    if re.search(hashtag_regex, image_text, re.IGNORECASE):
       return True, user_name, is_video, 'Inappropriate'
 
   return False, user_name, is_video, 'None'
