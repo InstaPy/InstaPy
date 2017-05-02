@@ -112,8 +112,7 @@ You have 4 options to exclude posts from your InstaPy session:
 * words starting with `]` will match all hashtags ending with your word (e. g. `]cat` matches `#mycat`, `#instacat` and so on)
 * words without these prefixes will match all hashtags that contain your word regardless if it is placed at the beginning, middle or end of the hashtag (e. g. `cat` will match `#cat`, `#mycat`, `#caturday`, `#rainingcatsanddogs` and so on)
 
-```
-python
+```python
 session.set_dont_like('#exactmatch', '[startswith', ']endswith', 'broadmatch')
 ```
 ##### Ignoring Restrictions
