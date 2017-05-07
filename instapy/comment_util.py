@@ -9,10 +9,12 @@ def comment_image(browser, comments):
   """Checks if it should comment on the image"""
   rand_comment = (choice(comments))
 
-  comment_input = browser.find_element_by_xpath\
+  comment_input = browser.find_elements_by_xpath\
     ('//input[@placeholder = "Add a comment…"]')
-  comment_input.send_keys(rand_comment)
-  comment_input.submit()
+
+  if len(comment_input) > 0:  
+    comment_input[0].send_keys(rand_comment)
+    comment_input[0].submit()
 
   print(u'--> Commented: {}'.format(rand_comment))
   sleep(2)
