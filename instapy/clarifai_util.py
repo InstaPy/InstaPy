@@ -8,7 +8,7 @@ def check_image(browser, clarifai_id, clarifai_secret, img_tags, full_match=Fals
 
   img_link = get_imagelink(browser)
   result = clarifai_api.tag_image_urls(img_link)
-  result_tags = result['results'][0]['result']['tag']['classes']
+  clarifia_tags = result['results'][0]['result']['tag']['classes']
 
   for (tags, should_comment, comments) in img_tags:
     if should_comment:
