@@ -22,6 +22,7 @@ from .unfollow_util import follow_given_user
 from .unfollow_util import load_follow_restriction
 from .unfollow_util import dump_follow_restriction
 
+
 class InstaPy:
   """Class to be instantiated to use the script"""
   def __init__(self, username=None, password=None, nogui=False):
@@ -34,7 +35,8 @@ class InstaPy:
     chrome_options.add_argument('--no-sandbox')
     chrome_options.add_argument('--lang=en-US')
     chrome_options.add_experimental_option('prefs', {'intl.accept_languages': 'en-US'})
-    self.browser = webdriver.Chrome('./assets/chromedriver', chrome_options=chrome_options)
+    #self.browser = webdriver.Chrome('./assets/chromedriver', chrome_options=chrome_options)
+    self.browser = webdriver.Firefox()
     self.browser.implicitly_wait(25)
 
     self.logFile = open('./logs/logFile.txt', 'a')
