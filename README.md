@@ -276,6 +276,13 @@ session.clarifai_check_img_for(['food', 'lunch'], comment=True, comments=['Tasty
 
 #### Build the Image
 
+Make sure to use the `nogui` feature:
+```python
+#you can use the nogui parameter to use a virtual display
+
+session = InstaPy(username='test', password='test', nogui=True)
+```
+
 You first need to build the image by running this in the Terminal:
 ```bash
 docker build -t instapy .
