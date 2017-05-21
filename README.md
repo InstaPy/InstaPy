@@ -192,16 +192,12 @@ session.set_lower_follower_count(limit = 1)
 session.unfollow_users(amount=10)
 ```
 
-##### Follow/UnFollow/exclude not working?
+##### Follow/Unfollow/exclude not working?
 If you notice that one or more of the above functionalities are not working as expected - e.g. you have specified:
 ```python
 session.set_do_follow(enabled=True, percentage=10, times=2)
 ```
-but none of the profiles are being followed - or any such functionality is misbehaving - then one thing you should check is the position/order of such methods in your script. 
-
-Essentially, all the ```set_*``` methods have to be before ```like_by_tags``` or ```unfollow```.
-
-This is also implicit in all the exmples and quickstart.py
+but none of the profiles are being followed - or any such functionality is misbehaving - then one thing you should check is the position/order of such methods in your script. Essentially, all the ```set_*``` methods have to be before ```like_by_tags``` or ```unfollow```. This is also implicit in all the exmples and quickstart.py
 
 
 ##### Running on a server?
