@@ -24,12 +24,15 @@ from .unfollow_util import dump_follow_restriction
 
 class InstaPy:
   """Class to be instantiated to use the script"""
-  def __init__(self, username=None, password=None, nogui=False):
+  def __init__(self, username=None, password=None, nogui=False, proxy=False):
     if nogui:
       self.display = Display(visible=0, size=(800, 600))
       self.display.start()
 
+    self.proxy = proxy or environ.get('INSTA_PROXY')
     chrome_options = Options()
+    if self.proxy:
+      chrome_options.add_argument('--proxy-server=http://%s' % self.proxy)
     chrome_options.add_argument('--dns-prefetch-disable')
     chrome_options.add_argument('--no-sandbox')
     chrome_options.add_argument('--lang=en-US')
