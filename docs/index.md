@@ -114,10 +114,11 @@ Example:
 * Search 'Salton Sea' and select the result with a location icon
 * The url is: https://www.instagram.com/explore/locations/224442573/salton-sea/
 * Use everything after 'locations/' or just the number
-```
+```python
 #both of these work
-.like_by_locations(['224442573/salton-sea/'], amount=100)
-.like_by_locations(['224442573'], amount=100)
+
+session.like_by_locations(['224442573/salton-sea/'], amount=100)
+session.like_by_locations(['224442573'], amount=100)
 ```
 
 ##### Restricting Likes
