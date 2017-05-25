@@ -79,6 +79,10 @@ session.login()
 #in this case: 100 dog-posts and 100 cat-posts
 session.like_by_tags(['#dog', 'cat'], amount=100)
 
+#likes specified amount of posts for each location in the array
+#in this case: 100 posts geotagged at the chrysler building and 100 posts geotagged at the salton sea
+session.like_by_locations(['26429/chrysler-building/', '224442573/salton-sea/'], amount=100)
+
 #gets tags from image passed as instagram-url and likes specified amount of images for each tag
 session.like_from_image(url='www.instagram.com/p/BSrfITEFUAM/', amount=100)
 
@@ -95,6 +99,24 @@ session.like_from_image(url='www.instagram.com/image', amount=15, media='Video')
 session.end()
 ```
 
+##### Locations
+ 
+To you can find locations for the like_by_locations function by browsing here:
+https://www.instagram.com/explore/locations/
+OR by regular instagram search.
+
+Example:
+* Search 'Salton Sea' and select the result with a location icon
+* The url is: https://www.instagram.com/explore/locations/224442573/salton-sea/
+* Use everything after 'locations/' or just the number
+```python
+#both of these work
+
+session.like_by_locations(['224442573/salton-sea/'], amount=100)
+session.like_by_locations(['224442573'], amount=100)
+```
+ 
+ 
 ##### Restricting Likes
 
 ```python
@@ -197,7 +219,7 @@ If you notice that one or more of the above functionalities are not working as e
 ```python
 session.set_do_follow(enabled=True, percentage=10, times=2)
 ```
-but none of the profiles are being followed - or any such functionality is misbehaving - then one thing you should check is the position/order of such methods in your script. Essentially, all the ```set_*``` methods have to be before ```like_by_tags``` or ```unfollow```. This is also implicit in all the exmples and quickstart.py
+but none of the profiles are being followed - or any such functionality is misbehaving - then one thing you should check is the position/order of such methods in your script. Essentially, all the ```set_*``` methods have to be before ```like_by_tags``` or ```like_by_locations``` or ```unfollow```. This is also implicit in all the exmples and quickstart.py
 
 
 ##### Running on a server?
