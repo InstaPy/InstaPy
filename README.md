@@ -139,10 +139,10 @@ session.set_comments(['Great Video!'], media='Video')
 
 ##### Emoji Support  
 
-You can use Unicode characters (like Emoji) in your comments
- 1. You have to convert your comment to Unicode. This can safely be done by adding an u in front of the opening apostrophe: 
+>You can use Unicode characters (like Emoji) in your comments
+> 1. You have to convert your comment to Unicode. This can safely be done by adding an u in front of the opening apostrophe: 
 
-```session.set_comments([u'This post is 🔥',u'More emojis is always better 💯',u'I love your posts 😍😍😍']);```
+>```session.set_comments([u'This post is 🔥',u'More emojis is always better 💯',u'I love your posts 😍😍😍']);```
 
 
 
