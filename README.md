@@ -140,16 +140,19 @@ session.set_comments(['Great Video!'], media='Video')
 ##### Emoji Support  
 
 You can use Unicode characters (like Emoji) in your comments
- 1. You have to convert your comment to Unicode. This can safely be done by adding an u in front of the opening apostrophe: ```python
-session.set_comments([u'This post is 🔥',u'More emojis is always better 💯',u'I love your posts 😍😍😍']);```
+ 1. You have to convert your comment to Unicode. This can safely be done by adding an u in front of the opening apostrophe: 
+
+```session.set_comments([u'This post is 🔥',u'More emojis is always better 💯',u'I love your posts 😍😍😍']);```
+
 
 
 > **Legacy Emoji Support**  
 >
-> You can also use Unicode characters (like Emoji) in your comments, but there are some limitations.
+> You can still use Unicode strings in your comments, but there are some limitations.
 > 1. You can use only Unicode characters with no more than 4 characters and you have to use the unicode code (e. g. ```\u1234```). You find a list of emoji with unicode codes on [Wikipedia](https://en.wikipedia.org/wiki/Emoji#Unicode_blocks), but there is also a list of working emoji in ```/assets```  
 >
 > 2. You have to convert your comment to Unicode. This can safely be done by adding an u in front of the opening apostrophe: ```u'\u1234 some comment'```
+
 
 ##### Following
 
