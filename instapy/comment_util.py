@@ -12,10 +12,13 @@ def comment_image(browser, comments):
   comment_input = browser.find_elements_by_xpath\
     ('//input[@placeholder = "Add a comment…"]')
 
-  if len(comment_input) > 0:  
-    comment_input[0].send_keys(rand_comment)
-    comment_input[0].submit()
+  browser.execute_script("arguments[0].value = '" + rand_comment + " ';", comment_input[0]);
 
-  print(u'--> Commented: {}'.format(rand_comment))
+  #An extra space is added here and then deleted. This forces the input box to update the reactJS core
+  comment_input[0].send_keys("\b")
+  comment_input[0].submit()
+
+  # print(u'--> Commented: {}'.format(rand_comment))
+  print("--> Commented: " + rand_comment.encode('utf-8'))
   sleep(2)
   return 1
