@@ -1,9 +1,16 @@
 echo "InstaPy Windows Setup"
 echo =============================================================================================
-echo "Downloading Chrome Driver..."
+echo "Installing Selenium"
+pip install selenium
+python -m pip install pyvirtualdisplay
+py get-pip.py
+echo " "
+echo "Installing GUI Tool"
 $webclient = New-Object System.Net.WebClient
+$webclient.DownloadFile("https://github.com/Nemixalone/GUI-tool-for-InstaPy-script/releases/download/0.4/InstaPy-GUI.exe","$pwd\InstaPy-GUI.exe")
+echo " "
+echo "Downloading Chrome Driver..."
 $webclient.DownloadFile("https://chromedriver.storage.googleapis.com/2.29/chromedriver_win32.zip","$pwd\chromedriver.zip")
-$shell = new-object -com shell.application
 echo "Chrome Driver download completed."
 echo " "
 echo "Unzipping Chrome Driver..."
