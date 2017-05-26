@@ -66,7 +66,7 @@ export INSTA_PW="<Your password>"
 
 > If you're not too familiar with code and you're working on Windows, try out this tool to set up the settings: [InstaPy Windows GUI](https://github.com/Nemixalone/GUI-tool-for-InstaPy-script)
 
---- 
+---
 
 ### Usage and Components
 
@@ -169,7 +169,7 @@ session.set_do_follow(enabled=True, percentage=10, times=2)
 #follows each account from a list of instagram nicknames (only follows a user once (if unfollowed again))
 # would be useful for the precise targeting. For example, if one needs to get followbacks from followers of a chosen account/group of accounts.
 
-accs = ['therock','natgeo'] 
+accs = ['therock','natgeo']
 session.follow_by_list(accs, times=1)
 ```
 
@@ -314,7 +314,7 @@ After the build succeeded, you can simply run the container with:
 docker run --name=instapy -e INSTA_USER=<your-user> -e INSTA_PW=<your-pw> -d instapy
 ```
 
---- 
+---
 
 ###### Have Fun & Feel Free to report any issues
 
