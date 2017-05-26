@@ -163,13 +163,14 @@ session.set_comments(['Great Video!'], media='Video')
 ```
 
 ##### Emoji Support  
-
 You can use Unicode characters (like Emoji) in your comments
 1. You have to convert your comment to Unicode. This can safely be done by adding an u in front of the opening apostrophe:
 
 ```session.set_comments([u'This post is 🔥',u'More emojis are always better 💯',u'I love your posts 😍😍😍']);```
 
+```session.set_comments([u'Emoji text codes are also supported :100: :thumbsup: :thumbs_up: \u2764 💯💯']);```
 
+Emoji text codes are implemented using 2 different naming codes. A complete list of emojis codes can be found on the [Python Emoji Github](https://github.com/carpedm20/emoji/blob/master/emoji/unicode_codes.py), but you can use the alternate shorted naming scheme found for Emoji text codes [here](https://www.webpagefx.com/tools/emoji-cheat-sheet). Note: Every Emoji has not been tested. Please report any inconsistancies. 
 
 > **Legacy Emoji Support**  
 >
