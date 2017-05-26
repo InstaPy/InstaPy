@@ -62,7 +62,7 @@ cd InstaPy
 python setup.py install
 ```
 
-If you want the script to get the username and password for your environment, you can do:
+If you want the script to get the username and password from your environment, you can do:
 
 ```
 export INSTA_USER="<Your username>"
@@ -102,6 +102,23 @@ session.like_from_image(url='www.instagram.com/image', amount=15, media='Video')
 session.end()
 ```
 
+##### Proxy
+
+If you want the script to get the proxy from your environment, you can do:
+
+```
+export INSTA_PROXY="<your proxy>"
+```
+---
+
+```python
+from instapy import InstaPy
+
+#if you don't provide arguments, the script will look for INSTA_PROXY in the environment
+session = InstaPy(proxy='xx.xx.xx.xx:port')
+...
+```
+
 ##### Locations
  
 To you can find locations for the like_by_locations function by browsing here:
@@ -118,8 +135,7 @@ Example:
 session.like_by_locations(['224442573/salton-sea/'], amount=100)
 session.like_by_locations(['224442573'], amount=100)
 ```
- 
- 
+
 ##### Restricting Likes
 
 ```python

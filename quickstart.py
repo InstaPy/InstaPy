@@ -11,6 +11,9 @@ friend_list = ['friend1', 'friend2', 'friend3']
 # username=<your-username-here> and password=<your-password> into InstaPy
 # e.g like so InstaPy(username="instagram", password="test1234")
 
+# If you want to use a proxy, use:
+# InstaPy(proxy="xx.xx.xx.xx:port")
+
 InstaPy()\
   .login()\
   .set_upper_follower_count(limit = 2500) \
