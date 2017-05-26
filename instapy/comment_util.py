@@ -15,7 +15,6 @@ def comment_image(browser, comments):
     ('//input[@placeholder = "Add a comment…"]')
 
   browser.execute_script("arguments[0].value = '" + rand_comment + " ';", comment_input[0]);
-
   #An extra space is added here and then deleted. This forces the input box to update the reactJS core
   comment_input[0].send_keys("\b")
   comment_input[0].submit()
