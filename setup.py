@@ -7,7 +7,8 @@ __author__ = 'Tim Grossmann'
 requirements = [
     'selenium==2.53.6',
     'clarifai==2.0.20',
-    'pyvirtualdisplay'
+    'pyvirtualdisplay',
+    'emoji'
 ]
 
 description = 'Instagram Like, Comment and Follow Automation Script'
