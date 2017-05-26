@@ -12,6 +12,7 @@ from .comment_util import comment_image
 from .like_util import check_link
 from .like_util import get_links_for_tag
 from .like_util import get_tags
+from .like_util import get_links_for_location
 from .like_util import like_image
 from .login_util import login_user
 from .print_log_writer import log_follower_num
@@ -232,6 +233,114 @@ class InstaPy:
   def set_lower_follower_count(self, limit=None):
     """Used to chose if a post is liked by the number of likes"""
     self.like_by_followers_lower_limit = limit or 0
+    return self
+
+  def like_by_locations(self, locations=None, amount=50, media=None):
+    """Likes (default) 50 images per given locations"""
+    if self.aborting:
+      return self
+
+    liked_img = 0
+    already_liked = 0
+    inap_img = 0
+    commented = 0
+    followed = 0
+
+    locations = locations or []
+
+    for index, location in enumerate(locations):
+      print('Location [{}/{}]'.format(index + 1, len(locations)))
+      print('--> {}'.format(location.encode('utf-8')))
+      self.logFile.write('Location [{}/[]]'.format(index + 1, len(locations)))
+      self.logFile.write('--> {}\n'.format(location.encode('utf-8')))
+
+      try:
+        links = get_links_for_location(self.browser, location, amount, media)
+      except NoSuchElementException:
+        print('Too few images, aborting')
+        self.logFile.write('Too few images, aborting\n')
+
+        self.aborting = True
+        return self
+
+      for i, link in enumerate(links):
+        print('[{}/{}]'.format(i + 1, len(links)))
+        self.logFile.write('[{}/{}]'.format(i + 1, len(links)))
+        self.logFile.write(link)
+
+        try:
+          inappropriate, user_name, is_video, reason = \
+            check_link(self.browser, link, self.dont_like, self.ignore_if_contains, self.ignore_users,
+                       self.username, self.like_by_followers_upper_limit, self.like_by_followers_lower_limit)
+
+          if not inappropriate:
+            liked = like_image(self.browser)
+
+            if liked:
+              liked_img += 1
+              checked_img = True
+              temp_comments = []
+              commenting = randint(0, 100) <= self.comment_percentage
+              following = randint(0, 100) <= self.follow_percentage
+
+              if self.use_clarifai and (following or commenting):
+                try:
+                  checked_img, temp_comments =\
+                    check_image(self.browser, self.clarifai_id,
+                                self.clarifai_secret,
+                                self.clarifai_img_tags,
+                                self.clarifai_full_match)
+                except Exception as err:
+                  print('Image check error: {}'.format(err))
+                  self.logFile.write('Image check error: {}\n'.format(err))
+
+              if self.do_comment and user_name not in self.dont_include \
+                  and checked_img and commenting:
+                if temp_comments:
+                  # Use clarifai related comments only!
+                  comments = temp_comments
+                elif is_video:
+                  comments = self.comments + self.video_comments
+                else:
+                  comments = self.comments + self.photo_comments
+                commented += comment_image(self.browser, comments)
+              else:
+                print('--> Not commented')
+                sleep(1)
+
+              if self.do_follow and user_name not in self.dont_include \
+                  and checked_img and following \
+                  and self.follow_restrict.get(user_name, 0) < self.follow_times:
+                followed += follow_user(self.browser, user_name, self.follow_restrict)
+              else:
+                print('--> Not following')
+                sleep(1)
+            else:
+              already_liked += 1
+          else:
+            print('--> Image not liked: {}'.format(reason))
+            inap_img += 1
+        except NoSuchElementException as err:
+          print('Invalid Page: {}'.format(err))
+          self.logFile.write('Invalid Page: {}\n'.format(err))
+
+        print('')
+        self.logFile.write('\n')
+
+    print('Liked: {}'.format(liked_img))
+    print('Already Liked: {}'.format(already_liked))
+    print('Inappropriate: {}'.format(inap_img))
+    print('Commented: {}'.format(commented))
+    print('Followed: {}'.format(followed))
+
+    self.logFile.write('Liked: {}\n'.format(liked_img))
+    self.logFile.write('Already Liked: {}\n'.format(already_liked))
+    self.logFile.write('Inappropriate: {}\n'.format(inap_img))
+    self.logFile.write('Commented: {}\n'.format(commented))
+    self.logFile.write('Followed: {}\n'.format(followed))
+
+    self.followed += followed
+
     return self
 
   def like_by_tags(self, tags=None, amount=50, media=None):
