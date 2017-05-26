@@ -3,11 +3,13 @@
 from random import choice
 
 from .time_util import sleep
-
+import emoji
 
 def comment_image(browser, comments):
   """Checks if it should comment on the image"""
   rand_comment = (choice(comments))
+  rand_comment = emoji.demojize(rand_comment)
+  rand_comment = emoji.emojize(rand_comment, use_aliases=True)
 
   comment_input = browser.find_elements_by_xpath\
     ('//input[@placeholder = "Add a comment…"]')

@@ -103,7 +103,7 @@ session.end()
 ```
 
 ##### Locations
- 
+
 To you can find locations for the like_by_locations function by browsing here:
 https://www.instagram.com/explore/locations/
 OR by regular instagram search.
@@ -118,8 +118,8 @@ Example:
 session.like_by_locations(['224442573/salton-sea/'], amount=100)
 session.like_by_locations(['224442573'], amount=100)
 ```
- 
- 
+
+
 ##### Restricting Likes
 
 ```python
@@ -165,7 +165,7 @@ session.set_comments(['Great Video!'], media='Video')
 ##### Emoji Support  
 
 You can use Unicode characters (like Emoji) in your comments
-1. You have to convert your comment to Unicode. This can safely be done by adding an u in front of the opening apostrophe: 
+1. You have to convert your comment to Unicode. This can safely be done by adding an u in front of the opening apostrophe:
 
 ```session.set_comments([u'This post is 🔥',u'More emojis are always better 💯',u'I love your posts 😍😍😍']);```
 
