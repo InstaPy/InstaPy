@@ -24,6 +24,7 @@ else
   pushd -0
 fi
 echo
+pushd ../
 echo "Downloading Chrome Driver..."
 if [ $kernel == "Darwin" ]; then
   curl -o chromedriver.zip -O https://chromedriver.storage.googleapis.com/2.29/chromedriver_mac64.zip
@@ -53,5 +54,6 @@ else
   sudo apt-get install python-dev
   sudo pip install ./
 fi
+pushd -0
 echo "Setup is completed."
 read -n1 -r -p "Press any key to continue..." key
