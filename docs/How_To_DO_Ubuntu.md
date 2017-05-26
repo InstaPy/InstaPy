@@ -5,7 +5,18 @@
 
 - #### Make sure to set ```nogui=True``` in your InstaPy file
 
-## General dependencies
+## Express Installation
+
+```sh
+$ git clone https://github.com/timgrossmann/InstaPy.git
+$ cd scripts
+$ ./unix.sh
+```
+
+
+## Advanced Installation
+
+### General dependencies
 
 ```sh
 $ sudo apt-get update
@@ -20,7 +31,7 @@ $ sudo dpkg-reconfigure locales
 $ pip3 install --upgrade pip
 ```
 
-## Chrome-stable
+### Chrome-stable
 
 ```sh
 $ cd ~
@@ -30,7 +41,7 @@ $ sudo apt-get install -y -f
 $ sudo rm google-chrome-stable_current_amd64.deb
 ```
 
-## InstaPy
+### InstaPy
 
 ```bash
 $ git clone https://github.com/timgrossmann/InstaPy.git
@@ -42,4 +53,3 @@ $ chmod 755 InstaPy/assets/chromedriver
 $ cd InstaPy
 $ pip install .
 ```
-
