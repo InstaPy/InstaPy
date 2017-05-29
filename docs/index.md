@@ -1,7 +1,7 @@
 # <img src="http://i.imgur.com/9ZjtveL.png" width="150" align="right"> InstaPy
 [![GitHub license](https://img.shields.io/github/license/mashape/apistatus.svg)](https://github.com/timgrossmann/InstaPy/blob/master/LICENSE)
 [![built with Selenium](https://img.shields.io/badge/built%20with-Selenium-red.svg)](https://github.com/SeleniumHQ/selenium)
-[![built with Python3](https://img.shields.io/badge/Built%20with-Python3-green.svg)](https://www.python.org/)
+[![built with Python3](https://img.shields.io/badge/built%20with-Python3-green.svg)](https://www.python.org/)
 
 > **Think this tool is worth supporting?**
 Feel free to contribute to the project in whatever way!
@@ -13,6 +13,7 @@ If you're not familiar with python, you could build a github page for this proje
 Implemented in Python using the Selenium module.
 
 ### [Read about how it works on Medium](https://medium.freecodecamp.com/my-open-source-instagram-bot-got-me-2-500-real-followers-for-5-in-server-costs-e40491358340)
+### [Check out the talk](https://twitter.com/timigrossmann/status/869222353166839812)
 
 ## Example Script
 
