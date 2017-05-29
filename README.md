@@ -80,7 +80,7 @@ session.login()
 session.like_by_tags(['#dog', 'cat'], amount=100)
 
 #likes 50 photos using 2 tags from total tags
-session.like_by_tags.like_by_tags(['dog', 'cat', 'dogs', 'cats', amount=50, sort=2)
+session.like_by_tags(['dog', 'cat', 'dogs', 'cats'], amount=50, sort=2)
 
 #gets tags from image passed as instagram-url and likes specified amount of images for each tag
 session.like_from_image(url='www.instagram.com/p/BSrfITEFUAM/', amount=100)
