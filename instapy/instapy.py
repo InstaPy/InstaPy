@@ -2,6 +2,7 @@
 from datetime import datetime
 from os import environ
 from random import randint
+from random import sample
 from pyvirtualdisplay import Display
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
@@ -35,8 +36,7 @@ class InstaPy:
     chrome_options.add_argument('--no-sandbox')
     chrome_options.add_argument('--lang=en-US')
     chrome_options.add_experimental_option('prefs', {'intl.accept_languages': 'en-US'})
-    #self.browser = webdriver.Chrome('./assets/chromedriver', chrome_options=chrome_options)
-    self.browser = webdriver.Firefox()
+    self.browser = webdriver.Chrome('./assets/chromedriver', chrome_options=chrome_options)
     self.browser.implicitly_wait(25)
 
     self.logFile = open('./logs/logFile.txt', 'a')
@@ -236,7 +236,7 @@ class InstaPy:
     self.like_by_followers_lower_limit = limit or 0
     return self
 
-  def like_by_tags(self, tags=None, amount=50, media=None):
+  def like_by_tags(self, tags=None, amount=50, sort=None, media=None):
 
     """Likes (default) 50 images per given tag"""
     if self.aborting:
@@ -247,6 +247,9 @@ class InstaPy:
     inap_img = 0
     commented = 0
     followed = 0
+
+    if sort is not None:
+        tags = sample(set(tags), sort)
 
     tags = tags or []
 
