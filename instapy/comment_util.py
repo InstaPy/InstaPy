@@ -15,7 +15,7 @@ def comment_image(browser, comments):
   rand_comment = emoji.demojize(rand_comment)
   rand_comment = emoji.emojize(rand_comment, use_aliases=True)
 
-  
+
   try:
     #Explicitly will wait up to 10 seconds to find the element but may return sooner
     comment_input = WebDriverWait(browser,10).until(EC.presence_of_element_located((By.XPATH,'//input[@placeholder = "Add a comment…"]')))
@@ -28,7 +28,7 @@ def comment_image(browser, comments):
     # print(u'--> Commented: {}'.format(rand_comment))
     print("--> Commented: " + rand_comment.encode('utf-8'))
     sleep(2)
-  except TimeoutError:
+  except TimeoutException:
     print("--> Warning: Comment box could not be found within an acceptable ammount of time, skipping comment")
 
 
