@@ -18,7 +18,7 @@ def comment_image(browser, comments):
 
 
   comment_input = browser.find_elements_by_xpath('//textarea[@placeholder = "Add a comment…"]')
-  if len(comment_input) < 0:
+  if len(comment_input) <= 0:
     comment_input = browser.find_elements_by_xpath('//input[@placeholder = "Add a comment…"]')
 
   if len(comment_input) > 0:
@@ -27,7 +27,7 @@ def comment_image(browser, comments):
     comment_input[0].send_keys("\b")
     comment_input[0].submit()
   else:
-      print(u'--> Warning: Comment Action Likely Failed: Comment Element not found')
+    print(u'--> Warning: Comment Action Likely Failed: Comment Element not found')
     # print(u'--> Commented: {}'.format(rand_comment))
   #print("--> Commented: " + rand_comment.encode('utf-8'))
   print("--> Commented: {}".format(rand_comment.encode('utf-8')))
