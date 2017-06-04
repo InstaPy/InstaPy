@@ -10,7 +10,15 @@ def unfollow(browser, username, amount, dont_include):
 
   browser.get('https://www.instagram.com/' + username)
 
+  #  check how many poeple we are following
+  following_span = browser.find_elements_by_xpath("//*[contains(text(), 'following')]")
+
+  #  throw RuntimeWarning if we are 0 people following
+  if (following_span[0].text == '0 following'):
+      raise RuntimeWarning('There are 0 people to unfollow')
+
   following_link_div = browser.find_elements_by_class_name('_218yx')[2]
+
   following_link = following_link_div.find_element_by_tag_name('a')
   following_link.click()
 

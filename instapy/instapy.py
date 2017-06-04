@@ -475,12 +475,18 @@ class InstaPy:
     while amount > 0:
       try:
         amount -= unfollow(self.browser, self.username, amount, self.dont_include)
-      except TypeError as err:
-        print('Sorry, an error occured: {}'.format(err))
-        self.logFile.write('Sorry, an error occured: {}\n'.format(err))
+      except (TypeError, RuntimeWarning) as err:
+        if type(err) == RuntimeWarning:
+          print(u'Warning: {} , stopping unfollow_users'.format(err))
+          self.logFile.write('Warning: {} , stopping unfollow_users\n'.format(err))
 
-        self.aborting = True
-        return self
+          return self
+        else:
+          print('Sorry, an error occured: {}'.format(err))
+          self.logFile.write('Sorry, an error occured: {}\n'.format(err))
+          self.aborting = True
+
+          return self
 
       if amount > 10:
         sleep(600)
