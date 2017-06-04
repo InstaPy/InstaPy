@@ -124,7 +124,7 @@ class InstaPy:
                 if followers is not None:
                     self.logger.info("  {} followers".format(followers))
                 self.logger.info(u'Link: {}'.format(link))
-                self.logger.info(u'Description: {}'.format(image_text))
+                self.logger.info(u'Description: {}'.format(image_text.encode('utf-8')))
 
                 # If image isn't good, go to the next one
                 if not good:
