@@ -225,7 +225,7 @@ class Image(BaseMixin):
                 "//a[@role = 'button']/span[text()='Like']")
         if liked is None:
             unliked = self.find_by_xpath(
-                "//a[@role = 'button']/span[text()='Like']")
+                "//a[@role = 'button']/span[text()='Unlike']")
             liked = False if unliked else None
             return liked
 
