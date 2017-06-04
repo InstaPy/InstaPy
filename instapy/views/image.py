@@ -23,6 +23,7 @@ class Image(BaseMixin):
         self.set_object_url('/p/')
         self.media = None
         self.graphql = None
+        self.is_video = None
 
         self.user = None
         self.ignore_users = []
@@ -104,6 +105,7 @@ class Image(BaseMixin):
         """
         self.page_check()
         username = self.get_username()
+        self.is_video = self.get_is_video()
         if self.graphql:
             comments = self.media['edge_media_to_comment']['edges']
             if mode == 'first':
@@ -225,7 +227,7 @@ class Image(BaseMixin):
                 "//a[@role = 'button']/span[text()='Like']")
         if liked is None:
             unliked = self.find_by_xpath(
-                "//a[@role = 'button']/span[text()='Like']")
+                "//a[@role = 'button']/span[text()='Unlike']")
             liked = False if unliked else None
             return liked
 
