@@ -23,6 +23,7 @@ class Image(BaseMixin):
         self.set_object_url('/p/')
         self.media = None
         self.graphql = None
+        self.is_video = None
 
         self.user = None
         self.ignore_users = []
@@ -104,6 +105,7 @@ class Image(BaseMixin):
         """
         self.page_check()
         username = self.get_username()
+        self.is_video = self.get_is_video()
         if self.graphql:
             comments = self.media['edge_media_to_comment']['edges']
             if mode == 'first':
