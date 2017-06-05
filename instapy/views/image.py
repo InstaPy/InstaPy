@@ -237,12 +237,20 @@ class Image(BaseMixin):
         """Make a comment on the current page."""
         media = 'Video' if self.is_video else 'Photo'
         rand_comment = self.comments.get_random_comment(media)
-        self.submit_form_by_xpath(
-            '//input[@placeholder = "Add a comment…"]',
+
+        comment_xpath = '//textarea[@placeholder = "Add a comment…"]'
+        comment_input = self.find_multiple_by_xpath(comment_xpath)
+        if len(comment_input) <= 0:
+            comment_xpath = '//input[@placeholder = "Add a comment…"]'
+            comment_input = self.find_multiple_by_xpath(comment_xpath)
+        if len(comment_input) > 0:
+          self.submit_form_by_xpath(
+            comment_xpath,
             [rand_comment]
         )
-
-        return rand_comment
+          return True, rand_comment
+        else:
+          return False, rand_comment
 
     def get_tags(self):
         """Get all tags from current image_text."""
