@@ -150,9 +150,12 @@ class InstaPy:
                               randint(0, 100) <= self.comment_percentage and
                               username not in self.dont_comment_users)
                 if commenting:
-                    commented += 1
-                    comment = self.image.comment_image()
-                    self.logger.info(u"--> Commented: {}".format(comment))
+                    good, comment = self.image.comment_image()
+                    if good:
+                      commented += 1
+                      self.logger.info(u"--> Commented: {}".format(comment))
+                    else:
+                      self.logger.warning(u"--> Commente failed: Comment Element not found")
                 else:
                     self.logger.info("--> Not commented")
 
