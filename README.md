@@ -22,7 +22,7 @@ Head over to https://github.com/timgrossmann/InstaPy/wiki/Reporting-An-Issue to 
 #### [How it works (Medium)](https://medium.freecodecamp.com/my-open-source-instagram-bot-got-me-2-500-real-followers-for-5-in-server-costs-e40491358340)
 #### [Check out the talk (Twitter)](https://twitter.com/timigrossmann/status/869222353166839812)
 
-#### Example
+### Example
 
 ```python
 from instapy import InstaPy
@@ -43,11 +43,11 @@ Built in delays prevent your account from getting banned. (Just make sure you do
 ## Getting started
 
 ### Guides:
-**- [How to Ubuntu](./docs/How_To_DO_Ubuntu.md) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**
+**[How to Ubuntu](./docs/How_To_DO_Ubuntu.md) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**
 
-**- [ How to CentOS](./docs/How_To_DO_Centos.md) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**
+**[ How to CentOS](./docs/How_To_DO_Centos.md) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**
 
-**- [How to Windows](./docs/How_to_Windows.md)**
+**[How to Windows](./docs/How_to_Windows.md)**
 
 ### For a start you need:
 1. To have [Python](https://www.python.org/downloads/) 2.7 or 3.6 installed.
