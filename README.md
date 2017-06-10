@@ -1,3 +1,13 @@
+<img src="http://i.imgur.com/9ZjtveL.png" width="150" align="right">
+
+# InstaPy
+[![MIT license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/timgrossmann/InstaPy/blob/master/LICENSE)
+[![built with Selenium](https://img.shields.io/badge/built%20with-Selenium-red.svg)](https://github.com/SeleniumHQ/selenium)
+[![built with Python3](https://img.shields.io/badge/built%20with-Python3-green.svg)](https://www.python.org/)
+
+### Automation Script for “farming” Likes, Comments and Followers on Instagram
+Implemented in Python using the Selenium module.
+
 > **Think this tool is worth supporting?**  
 Head over to https://github.com/timgrossmann/InstaPy/wiki/How-to-Contribute to find out how you can help.
 **Become a part of InstaPy!**  
@@ -7,23 +17,12 @@ Head over to https://github.com/timgrossmann/InstaPy/wiki/Reporting-An-Issue to 
 
 > **Disclaimer**: Please Note that this is a research project. I am by no means responsible for any usage of this tool. Use on your own behalf. I’m also not responsible if your accounts get banned due to extensive use of this tool.
 
-<img src="http://i.imgur.com/9ZjtveL.png" width="150" align="right">
+### Social
 
-# InstaPy
-[![MIT license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/timgrossmann/InstaPy/blob/master/LICENSE)
-[![built with Selenium](https://img.shields.io/badge/built%20with-Selenium-red.svg)](https://github.com/SeleniumHQ/selenium)
-[![built with Python3](https://img.shields.io/badge/built%20with-Python3-green.svg)](https://www.python.org/)
+#### [How it works (Medium)](https://medium.freecodecamp.com/my-open-source-instagram-bot-got-me-2-500-real-followers-for-5-in-server-costs-e40491358340)
+#### [Check out the talk (Twitter)](https://twitter.com/timigrossmann/status/869222353166839812)
 
-### [Read about how it works on Medium](https://medium.freecodecamp.com/my-open-source-instagram-bot-got-me-2-500-real-followers-for-5-in-server-costs-e40491358340)
-### [Check out the talk](https://twitter.com/timigrossmann/status/869222353166839812)
-
-### Instagram Like, Comment and Follow Automation Script
-
-> Automation Script for “farming” Likes, Comments and Followers on Instagram.  
-
-Implemented in Python using the Selenium module.
-
-#### Example
+### Example
 
 ```python
 from instapy import InstaPy
@@ -38,38 +37,40 @@ InstaPy(username='test', password='test')\
   .like_by_tags(['dog', '#cat'], amount=100)\
   .end()
 ```
-## It’s easy to use and the built in delays prevent your account from getting banned. (Just make sure you don't like 1000s of post/day)
+### How not to be banned ?
+Built in delays prevent your account from getting banned. (Just make sure you don't like 1000s of post/day)
 
-### Getting started
+## Getting started
 
-> Guides:
-**[How to Ubuntu](./docs/How_To_DO_Ubuntu.md) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [How to CentOS](./docs/How_To_DO_Centos.md) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [How to Windows](./docs/How_to_Windows.md)**
+### Guides:
+**[How to Ubuntu](./docs/How_To_DO_Ubuntu.md) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**
 
-#### You need to have [Python](https://www.python.org/downloads/) 2.7 or 3.6 installed. Setted up path for PY command. Installed [Selenium](http://selenium-python.readthedocs.io/) and [pyvirtualdriver](https://pypi.python.org/pypi/PyVirtualDisplay).
+**[ How to CentOS](./docs/How_To_DO_Centos.md) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**
 
-#### Make sure to get the right ```chromedriver``` for your system from here: [https://sites.google.com/a/chromium.org/chromedriver/downloads](https://sites.google.com/a/chromium.org/chromedriver/downloads). Just put it in ```/assets```.
+**[How to Windows](./docs/How_to_Windows.md)**
+
+### For a start you need:
+1. To have [Python](https://www.python.org/downloads/) 2.7 or 3.6 installed.
+2. Setted up path for PY command.
+3. Installed [Selenium](http://selenium-python.readthedocs.io/) and [pyvirtualdriver](https://pypi.python.org/pypi/PyVirtualDisplay).
+
+Make sure to get the right ```chromedriver``` for your system [from here](https://sites.google.com/a/chromium.org/chromedriver/downloads). Just put it in ```/assets```.
 
 > If you're not too familiar with code and you're working on Windows, try out this tool to set up the settings: [InstaPy Windows GUI](https://github.com/Nemixalone/GUI-tool-for-InstaPy-script)
 
-```bash
-cd InstaPy
-pip install .
-```
+### Start
 
+```bash
+1. git clone https://github.com/timgrossmann/InstaPy.git
+2. cd InstaPy
+3. pip install .
 or
-
-```bash
-cd InstaPy
-python setup.py install
+3. python setup.py install
 ```
 
-If you want the script to get the username and password for your environment, you can do:
+## API
 
-```
-export INSTA_USER="<Your username>"
-export INSTA_PW="<Your password>"
-```
----
+### Script file example
 
 ```python
 from instapy import InstaPy
@@ -103,54 +104,14 @@ session.like_from_image(url='www.instagram.com/image', amount=15, media='Video')
 session.end()
 ```
 
-##### Locations
+If you want the script to get the username and password for your environment, you can do:
 
-To you can find locations for the like_by_locations function by browsing here:
-https://www.instagram.com/explore/locations/
-OR by regular instagram search.
-
-Example:
-* Search 'Salton Sea' and select the result with a location icon
-* The url is: https://www.instagram.com/explore/locations/224442573/salton-sea/
-* Use everything after 'locations/' or just the number
-```python
-#both of these work
-
-session.like_by_locations(['224442573/salton-sea/'], amount=100)
-session.like_by_locations(['224442573'], amount=100)
+```
+export INSTA_USER="<Your username>"
+export INSTA_PW="<Your password>"
 ```
 
-
-##### Restricting Likes
-
-```python
-#completely ignore liking images from certain users
-
-session.set_ignore_users(['random_user', 'another_username'])
-```
-
-
-`.set_dont_like` searches the description and owner comments for hashtags and won't like the image if one of those hashtags are in there
-
-You have 4 options to exclude posts from your InstaPy session:
-* words starting with `#` will match only exact hashtags (e. g. `#cat` matches `#cat`, but not `#catpic`)
-* words starting with `[` will match all hashtags starting with your word (e. g. `[cat` matches `#catpic`, `#caturday` and so on)
-* words starting with `]` will match all hashtags ending with your word (e. g. `]cat` matches `#mycat`, `#instacat` and so on)
-* words without these prefixes will match all hashtags that contain your word regardless if it is placed at the beginning, middle or end of the hashtag (e. g. `cat` will match `#cat`, `#mycat`, `#caturday`, `#rainingcatsanddogs` and so on)
-
-```python
-session.set_dont_like('#exactmatch', '[startswith', ']endswith', 'broadmatch')
-```
-##### Ignoring Restrictions
-
-```python
-#will ignore the don't like if the description contains
-# one of the given words
-
-session.set_ignore_if_contains(['glutenfree', 'french', 'tasty'])
-```
-
-##### Commenting
+### Commenting
 
 ```python
 #default enabled=False, ~ every 4th image will be commented on
@@ -163,25 +124,7 @@ session.set_comments(['Nice shot!'], media='Photo')
 session.set_comments(['Great Video!'], media='Video')
 ```
 
-##### Emoji Support  
-You can use Unicode characters (like Emoji) in your comments
-1. You have to convert your comment to Unicode. This can safely be done by adding an u in front of the opening apostrophe:
-
-```session.set_comments([u'This post is 🔥',u'More emojis are always better 💯',u'I love your posts 😍😍😍']);```
-
-```session.set_comments([u'Emoji text codes are also supported :100: :thumbsup: :thumbs_up: \u2764 💯💯']);```
-
-Emoji text codes are implemented using 2 different naming codes. A complete list of emojis codes can be found on the [Python Emoji Github](https://github.com/carpedm20/emoji/blob/master/emoji/unicode_codes.py), but you can use the alternate shorted naming scheme found for Emoji text codes [here](https://www.webpagefx.com/tools/emoji-cheat-sheet). Note: Every Emoji has not been tested. Please report any inconsistancies.
-
-> **Legacy Emoji Support**  
->
-> You can still use Unicode strings in your comments, but there are some limitations.
-> 1. You can use only Unicode characters with no more than 4 characters and you have to use the unicode code (e. g. ```\u1234```). You find a list of emoji with unicode codes on [Wikipedia](https://en.wikipedia.org/wiki/Emoji#Unicode_blocks), but there is also a list of working emoji in ```/assets```  
->
-> 2. You have to convert your comment to Unicode. This can safely be done by adding an u in front of the opening apostrophe: ```u'\u1234 some comment'```
-
-
-##### Following
+### Following
 
 ```python
 #default enabled=False, follows ~ 10% of the users from the images, times=1 (only follows a user once (if unfollowed again))
@@ -189,7 +132,7 @@ Emoji text codes are implemented using 2 different naming codes. A complete list
 session.set_do_follow(enabled=True, percentage=10, times=2)
 ```
 
-##### Following by a list
+### Following by a list
 
 ```python
 #follows each account from a list of instagram nicknames (only follows a user once (if unfollowed again))
@@ -199,15 +142,15 @@ accs = ['therock','natgeo']
 session.follow_by_list(accs, times=1)
 ```
 
-##### Excluding friends
+### Unfollowing
 
 ```python
-#will prevent commenting on and unfollowing your good friends (the images will still be liked)
+#unfollows 10 of the accounts you're following -> instagram will only unfollow 10 before you'll be 'blocked for 10 minutes' (if you enter a higher number than 10 it will unfollow 10, then wait 10 minutes and will continue then)
 
-session.set_dont_include(['friend1', 'friend2', 'friend3'])
+session.unfollow_users(amount=10)
 ```
 
-##### Interactions based on the number of followers a user has
+### Interactions based on the number of followers a user has
 
 ```python
 #This is used to check the number of followers a user has and if this number exceeds the number set then no further interaction happens
@@ -221,35 +164,98 @@ session.set_upper_follower_count(limit = 250)
 session.set_lower_follower_count(limit = 1)
 ```
 
-##### Unfollowing
+### Locations
 
 ```python
-#unfollows 10 of the accounts you're following -> instagram will only unfollow 10 before you'll be 'blocked for 10 minutes' (if you enter a higher number than 10 it will unfollow 10, then wait 10 minutes and will continue then)
-
-session.unfollow_users(amount=10)
+session.like_by_locations(['224442573/salton-sea/'], amount=100)
+or
+session.like_by_locations(['224442573'], amount=100)
 ```
 
-##### Follow/Unfollow/exclude not working?
+You can find locations for the `like_by_locations` function by:
+- Browsing https://www.instagram.com/explore/locations/
+- Regular instagram search.
+
+Example:
+* Search 'Salton Sea' and select the result with a location icon
+* The url is: https://www.instagram.com/explore/locations/224442573/salton-sea/
+* Use everything after 'locations/' or just the number
+
+### Restricting Likes
+
+```python
+session.set_dont_like('#exactmatch', '[startswith', ']endswith', 'broadmatch')
+```
+
+`.set_dont_like` searches the description and owner comments for hashtags and won't like the image if one of those hashtags are in there
+
+You have 4 options to exclude posts from your InstaPy session:
+* words starting with `#` will match only exact hashtags (e. g. `#cat` matches `#cat`, but not `#catpic`)
+* words starting with `[` will match all hashtags starting with your word (e. g. `[cat` matches `#catpic`, `#caturday` and so on)
+* words starting with `]` will match all hashtags ending with your word (e. g. `]cat` matches `#mycat`, `#instacat` and so on)
+* words without these prefixes will match all hashtags that contain your word regardless if it is placed at the beginning, middle or end of the hashtag (e. g. `cat` will match `#cat`, `#mycat`, `#caturday`, `#rainingcatsanddogs` and so on)
+
+### Ignoring Users
+
+```python
+#completely ignore liking images from certain users
+
+session.set_ignore_users(['random_user', 'another_username'])
+```
+
+### Ignoring Restrictions
+
+```python
+#will ignore the don't like if the description contains
+# one of the given words
+
+session.set_ignore_if_contains(['glutenfree', 'french', 'tasty'])
+```
+
+### Excluding friends
+
+```python
+#will prevent commenting on and unfollowing your good friends (the images will still be liked)
+
+session.set_dont_include(['friend1', 'friend2', 'friend3'])
+```
+
+### Follow/Unfollow/exclude not working?
 If you notice that one or more of the above functionalities are not working as expected - e.g. you have specified:
 ```python
 session.set_do_follow(enabled=True, percentage=10, times=2)
 ```
 but none of the profiles are being followed - or any such functionality is misbehaving - then one thing you should check is the position/order of such methods in your script. Essentially, all the ```set_*``` methods have to be before ```like_by_tags``` or ```like_by_locations``` or ```unfollow```. This is also implicit in all the exmples and quickstart.py
 
+### Emoji Support  
+To use an emoji just add an `u` in front of the opening apostrophe:
 
-##### Running on a server?
+```
+session.set_comments([u'This post is 🔥',u'More emojis are always better 💯',u'I love your posts 😍😍😍']);
+or
+session.set_comments([u'Emoji text codes are also supported :100: :thumbsup: :thumbs_up: \u2764 💯💯']);
+```
 
-```python
-#you can use the nogui parameter to use a virtual display
+Emoji text codes are implemented using 2 different naming codes. A complete list of emojis codes can be found on the [Python Emoji Github](https://github.com/carpedm20/emoji/blob/master/emoji/unicode_codes.py), but you can use the alternate shorted naming scheme found for Emoji text codes [here](https://www.webpagefx.com/tools/emoji-cheat-sheet). Note: Every Emoji has not been tested. Please report any inconsistancies.
 
+> **Legacy Emoji Support**  
+>
+> You can still use Unicode strings in your comments, but there are some limitations.
+> 1. You can use only Unicode characters with no more than 4 characters and you have to use the unicode code (e. g. ```\u1234```). You find a list of emoji with unicode codes on [Wikipedia](https://en.wikipedia.org/wiki/Emoji#Unicode_blocks), but there is also a list of working emoji in ```/assets```  
+>
+> 2. You have to convert your comment to Unicode. This can safely be done by adding an u in front of the opening apostrophe: ```u'\u1234 some comment'```
+
+## Running on a server
+
+Use the `nogui` parameter to interact with virtual display
+
+```
 session = InstaPy(username='test', password='test', nogui=True)
 ```
 
-##### Running InstaPy automated
+### Automate
 
 You can add InstaPy to your crontab, so that the script will be executed regularly. This is especially useful for servers, but be sure not to break Instagrams follow and like limits.
-
-**An example:**
 
 ```
 # Edit or create a crontab
@@ -259,7 +265,7 @@ crontab -e
 45 */4 * * * cd /home/user/InstaPy && /usr/bin/python ./quickstart.py
 ```
 
-### Clarifai ImageAPI
+## Clarifai ImageAPI
 <img src="https://d1qb2nb5cznatu.cloudfront.net/startups/i/396673-2fb6e8026b393dddddc093c23d8cd866-medium_jpg.jpg?buster=1399901540" width="200" align="right">
 
 ###### Note: Head over to [https://developer.clarifai.com/signup/](https://developer.clarifai.com/signup/) and create a free account, once you’re logged in go to [https://developer.clarifai.com/account/applications/](https://developer.clarifai.com/account/applications/) and create a new application. You can find the client ID and Secret there. You get 5000 API-calls free/month.
@@ -270,7 +276,7 @@ If you want the script to get your Clarifai_ID and Clarifai_Secret for your envi
 export CLARIFAI_ID="<ProjectID>"
 export CLARIFAI_SECRET="<Project Secret>"
 ```
-#### Example with Imagecontent handling
+### Example with Imagecontent handling
 
 ```python
 from instapy import InstaPy
@@ -288,7 +294,7 @@ InstaPy(username='test', password='test')\
   .like_by_tags(['dog', '#cat'], amount=100)\
   .end()
 ```
-##### Enabling Imagechecking
+### Enabling Imagechecking
 
 ```python
 #default enabled=False , enables the checking with the clarifai api (image tagging)
@@ -297,7 +303,7 @@ InstaPy(username='test', password='test')\
 
 session.set_use_clarifai(enabled=True, secret='xyz', proj_id='123')
 ```
-##### Filtering inappropriate images
+### Filtering inappropriate images
 
 ```python
 # uses the clarifai api to check if the image contains nsfw content
@@ -305,7 +311,7 @@ session.set_use_clarifai(enabled=True, secret='xyz', proj_id='123')
 
 session.clarifai_check_img_for(['nsfw'])
 ```
-##### Specialized comments for images with specific content
+### Specialized comments for images with specific content
 
 ```python
 #checks the image for keywords food and lunch, if both are found,
@@ -317,9 +323,14 @@ session.clarifai_check_img_for(['food', 'lunch'], comment=True, comments=['Tasty
 
 ###### Check out [https://clarifai.com/demo](https://clarifai.com/demo) to see some of the available tags.</h6>
 
-### Running it with Docker
+## Running with Docker
 
-#### Build the Image
+### 1. Build the Image
+
+First you need to build the image by running this in the Terminal:
+```bash
+docker build -t instapy .
+```
 
 Make sure to use the `nogui` feature:
 ```python
@@ -328,12 +339,7 @@ Make sure to use the `nogui` feature:
 session = InstaPy(username='test', password='test', nogui=True)
 ```
 
-You first need to build the image by running this in the Terminal:
-```bash
-docker build -t instapy .
-```
-
-#### Run in a Container
+### 2. Run in a Container
 
 After the build succeeded, you can simply run the container with:
 ```bash
