@@ -125,7 +125,7 @@ def get_links_for_tag(browser, tag, amount, media=None):
   link_elems = main_elem.find_elements_by_tag_name('a')
   total_links = len(link_elems)
   links = [link_elem.get_attribute('href') for link_elem in link_elems
-           if link_elem.text in media]
+           if link_elem and link_elem.text in media]
   filtered_links = len(links)
 
   while (filtered_links < amount) and not abort:
