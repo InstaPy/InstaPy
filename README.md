@@ -91,6 +91,9 @@ session.like_by_locations(['26429/chrysler-building/', '224442573/salton-sea/'],
 #gets tags from image passed as instagram-url and likes specified amount of images for each tag
 session.like_from_image(url='www.instagram.com/p/BSrfITEFUAM/', amount=100)
 
+#likes 100 posts for each tag of your latest image
+session.like_from_image(amount=100)
+
 #likes 50 photos of other animals
 
 session.like_by_tags(['#animals'], amount=50, media='Photo')
