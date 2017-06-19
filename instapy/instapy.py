@@ -22,6 +22,7 @@ from .unfollow_util import follow_user
 from .unfollow_util import follow_given_user
 from .unfollow_util import load_follow_restriction
 from .unfollow_util import dump_follow_restriction
+from .unfollow_util import setAutomatedFollowedPool
 
 class InstaPy:
   """Class to be instantiated to use the script"""
@@ -59,6 +60,7 @@ class InstaPy:
     self.do_follow = False
     self.follow_percentage = 0
     self.dont_include = []
+    self.automatedFollowedPool = []
 
     self.dont_like = ['sex', 'nsfw']
     self.ignore_if_contains = []
@@ -311,7 +313,7 @@ class InstaPy:
               if self.do_follow and user_name not in self.dont_include \
                   and checked_img and following \
                   and self.follow_restrict.get(user_name, 0) < self.follow_times:
-                followed += follow_user(self.browser, user_name, self.follow_restrict)
+                followed += follow_user(self, user_name)
               else:
                 print('--> Not following')
                 sleep(1)
@@ -420,7 +422,7 @@ class InstaPy:
               if self.do_follow and user_name not in self.dont_include \
                   and checked_img and following \
                   and self.follow_restrict.get(user_name, 0) < self.follow_times:
-                followed += follow_user(self.browser, user_name, self.follow_restrict)
+                followed += follow_user(self, user_name)
               else:
                 print('--> Not following')
                 sleep(1)
@@ -476,10 +478,10 @@ class InstaPy:
 
   def unfollow_users(self, amount=10):
     """Unfollows (default) 10 users from your following list"""
-    while amount > 0:
-      try:
-        amount -= unfollow(self.browser, self.username, amount, self.dont_include)
-      except (TypeError, RuntimeWarning) as err:
+    self.automatedFollowedPool = setAutomatedFollowedPool(self.username)
+    try:
+        unfollowNumber = unfollow(self.browser, self.username, amount, self.dont_include, self.automatedFollowedPool)
+    except (TypeError, RuntimeWarning) as err:
         if type(err) == RuntimeWarning:
           print(u'Warning: {} , stopping unfollow_users'.format(err))
           self.logFile.write('Warning: {} , stopping unfollow_users\n'.format(err))
@@ -491,10 +493,6 @@ class InstaPy:
           self.aborting = True
 
           return self
-
-      if amount > 10:
-        sleep(600)
-        print('Sleeping for about 10min')
 
     return self
 
