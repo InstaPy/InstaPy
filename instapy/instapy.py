@@ -458,6 +458,10 @@ class InstaPy:
       return self
 
     try:
+      if not url:
+        urls = self.browser.find_elements_by_xpath("//main//article//div//div[1]//div[1]//a[1]")
+        url = urls[0].get_attribute("href")
+        print("new url ", url)
       tags = get_tags(self.browser, url)
       print(tags)
       self.like_by_tags(tags, amount, media)
