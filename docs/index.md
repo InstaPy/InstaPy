@@ -22,6 +22,10 @@ Head over to https://github.com/timgrossmann/InstaPy/wiki/Reporting-An-Issue to 
 #### [How it works (Medium)](https://medium.freecodecamp.com/my-open-source-instagram-bot-got-me-2-500-real-followers-for-5-in-server-costs-e40491358340)
 #### [Check out the talk (Twitter)](https://twitter.com/timigrossmann/status/869222353166839812)
 
+#### [Support InstaPy!](https://www.patreon.com/InstaPy)
+
+[<img src="http://www.comixlaunch.com/wp-content/uploads/2016/08/patreon-logo-05.jpg" width="100">](https://www.patreon.com/InstaPy)
+
 ### Example
 
 ```python
