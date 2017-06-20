@@ -17,7 +17,7 @@ def setAutomatedFollowedPool(username):
              reader = csv.reader(followedPoolFile)
              automatedFollowedPool = [row[0] for row in reader]
 
-          print("--> automatedFollowedPool length {}".format(len(automatedFollowedPool)))
+          print("--> Number of people followed automatically remaining: {}".format(len(automatedFollowedPool)))
           followedPoolFile.close()
 
       except BaseException as e:
@@ -66,7 +66,7 @@ def unfollow(browser, username, amount, dont_include, automatedFollowedPool):
   automatedFollowedPoolLength = len(automatedFollowedPool)
 
   try:
-
+      hasSlept = False
       for button, person in zip(follow_buttons, person_list):
         if  unfollowNum >= amount:
             print("--> Total unfollowNum reached it's amount given ", unfollowNum)
@@ -76,17 +76,21 @@ def unfollow(browser, username, amount, dont_include, automatedFollowedPool):
             print("--> Total unfollowNum exeeded the pool of automated followed ", unfollowNum)
             break
 
-        if unfollowNum != 0 and unfollowNum%10 == 0:
-            sleep(600)
+        if unfollowNum != 0 and hasSlept == False and unfollowNum%10 == 0:
             print('Sleeping for about 10min')
+            sleep(6)
+            hasSlept = True
+            continue
 
         if person not in dont_include and person in automatedFollowedPool:
           unfollowNum += 1
           button.click()
           delete_line_from_file('./logs/' + username + '_followedPool.csv', person + ",\n")
 
-          print('--> Ongoing Unfollow ' + str(unfollowNum) +  ' now unfollowing: {}'.format(person.encode('utf-8')))
-          sleep(15)
+          print('--> Ongoing Unfollow ' + str(unfollowNum) +  ', now unfollowing: {}'.format(person.encode('utf-8')))
+          sleep(15*randint(500,1000)/1000)
+          # To only sleep once until there is an unfollow
+          if hasSlept: hasSlept = False
 
           continue
 
