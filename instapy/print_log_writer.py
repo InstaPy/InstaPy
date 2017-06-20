@@ -14,21 +14,26 @@ def log_follower_num(browser, username):
 
 
 def log_followed_pool(login, followed):
-  """Prints and logs the followed to
-  a seperate file"""
-
-  with open('./logs/' + login + '_followedPool.csv', 'a') as followPool:
-    followPool.write(followed + ",\n")
-    followPool.close()
+    """Prints and logs the followed to
+    a seperate file"""
+    try:
+      with open('./logs/' + login + '_followedPool.csv', 'a') as followPool:
+        followPool.write(followed + ",\n")
+        followPool.close()
+    except BaseException as e:
+        print("log_followed_pool error \n", str(e))
 
 def delete_line_from_file(filepath, lineToDelete):
-    f = open(filepath,"r")
-    lines = f.readlines()
-    f.close()
-    f = open(filepath,"w")
+    try:
+        f = open(filepath,"r")
+        lines = f.readlines()
+        f.close()
+        f = open(filepath,"w")
 
-    for line in lines:
+        for line in lines:
 
-      if line!= lineToDelete:
-        f.write(line)
-    f.close()
+          if line!= lineToDelete:
+            f.write(line)
+        f.close()
+    except BaseException as e:
+        print("delete_line_from_file error \n", str(e))
