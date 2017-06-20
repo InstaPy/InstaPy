@@ -10,12 +10,9 @@ def setAutomatedFollowedPool(username):
       automatedFollowedPool = []
       with open('./logs/' + username + '_followedPool.csv') as followedPoolFile:
          reader = csv.reader(followedPoolFile)
-        # TODO quicker way automatedFollowedPool = [row[0] for row in reader]
-         for i, row in enumerate(reader):
-             if row[0]:
-                 automatedFollowedPool.append(row[0])
+         automatedFollowedPool = [row[0] for row in reader]
 
-      print("->>> automatedFollowedPool " , automatedFollowedPool)
+      print("->>> automatedFollowedPool length " , len(automatedFollowedPool))
       followedPoolFile.close()
       return automatedFollowedPool
 
@@ -33,15 +30,12 @@ def unfollow(browser, username, amount, dont_include, automatedFollowedPool):
   if (following_span[0].text == '0 following'):
       raise RuntimeWarning('There are 0 people to unfollow')
 
-
   following_link = browser.find_elements_by_xpath('//header/div[2]//li[3]')
   following_link[0].click()
 
   sleep(2)
 
-  #TODO scroll to bottom
-  person_list_div = browser.find_element_by_class_name('_4gt3b')
-  person_list = person_list_div.find_elements_by_xpath("//a[contains(concat(' ', normalize-space(@class), ' '), ' _4zhc5 ')]")
+  person_list = person_list_div.find_elements_by_xpath("//div[2]//a")
   person_list = [x.text for x in person_list]
 
   follow_div = browser.find_element_by_class_name('_4gt3b')
@@ -62,7 +56,7 @@ def unfollow(browser, username, amount, dont_include, automatedFollowedPool):
         print("--> total unfollowNum reached it's maximum ", unfollowNum)
         break
 
-    if unfollowNum > 10:
+    if unfollowNum != 0 and unfollowNum%10 == 0:
         sleep(600)
         print('Sleeping for about 10min')
 
