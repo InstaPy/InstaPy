@@ -479,8 +479,11 @@ class InstaPy:
   def unfollow_users(self, amount=10):
     """Unfollows (default) 10 users from your following list"""
     self.automatedFollowedPool = setAutomatedFollowedPool(self.username)
+
     try:
         unfollowNumber = unfollow(self.browser, self.username, amount, self.dont_include, self.automatedFollowedPool)
+        print("--> Total people unfollowed : {} ".format(unfollowNumber))
+
     except (TypeError, RuntimeWarning) as err:
         if type(err) == RuntimeWarning:
           print(u'Warning: {} , stopping unfollow_users'.format(err))
