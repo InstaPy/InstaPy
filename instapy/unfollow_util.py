@@ -10,6 +10,7 @@ def setAutomatedFollowedPool(username):
       automatedFollowedPool = []
       with open('./logs/' + username + '_followedPool.csv') as followedPoolFile:
          reader = csv.reader(followedPoolFile)
+        # TODO quicker way automatedFollowedPool = [row[0] for row in reader]
          for i, row in enumerate(reader):
              if row[0]:
                  automatedFollowedPool.append(row[0])
@@ -38,6 +39,7 @@ def unfollow(browser, username, amount, dont_include, automatedFollowedPool):
 
   sleep(2)
 
+  #TODO scroll to bottom
   person_list_div = browser.find_element_by_class_name('_4gt3b')
   person_list = person_list_div.find_elements_by_xpath("//a[contains(concat(' ', normalize-space(@class), ' '), ' _4zhc5 ')]")
   person_list = [x.text for x in person_list]
