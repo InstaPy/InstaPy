@@ -124,9 +124,15 @@ def get_links_for_tag(browser, tag, amount, media=None):
   main_elem = browser.find_element_by_tag_name('main')
   link_elems = main_elem.find_elements_by_tag_name('a')
   total_links = len(link_elems)
-  links = [link_elem.get_attribute('href') for link_elem in link_elems
+  links = []
+  try:
+      if link_elems:
+        links = [link_elem.get_attribute('href') for link_elem in link_elems
            if link_elem and link_elem.text in media]
-  filtered_links = len(links)
+
+      filtered_links = len(links)
+  except BaseException as e:
+      print("link_elems error \n", str(e))
 
   while (filtered_links < amount) and not abort:
     amount_left = amount - filtered_links
