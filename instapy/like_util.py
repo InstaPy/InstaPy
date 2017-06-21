@@ -130,10 +130,12 @@ def get_links_for_tag(browser, tag, amount, media=None):
         links = [link_elem.get_attribute('href') for link_elem in link_elems
            if link_elem and link_elem.text in media]
 
-      filtered_links = len(links)
+
   except BaseException as e:
       print("link_elems error \n", str(e))
 
+  filtered_links = len(links)
+  
   while (filtered_links < amount) and not abort:
     amount_left = amount - filtered_links
     # Average items of the right media per page loaded
