@@ -22,18 +22,3 @@ def log_followed_pool(login, followed):
         followPool.close()
     except BaseException as e:
         print("log_followed_pool error \n", str(e))
-
-def delete_line_from_file(filepath, lineToDelete):
-    try:
-        f = open(filepath,"r")
-        lines = f.readlines()
-        f.close()
-        f = open(filepath,"w")
-
-        for line in lines:
-
-          if line!= lineToDelete:
-            f.write(line)
-        f.close()
-    except BaseException as e:
-        print("delete_line_from_file error \n", str(e))
