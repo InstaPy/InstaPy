@@ -56,11 +56,9 @@ def unfollow(browser, username, amount, dont_include, automatedFollowedPool):
     sleep(randint(500,1000)/1000)
 
   #get persons and unfollow buttons
-  person_list_div = browser.find_element_by_class_name('_4gt3b')
   person_list = dialog.find_elements_by_tag_name("a")
   person_list = [x.text for x in person_list]
 
-  follow_div = browser.find_element_by_class_name('_4gt3b')
   follow_buttons = dialog.find_elements_by_tag_name('button')
 
   automatedFollowedPoolLength = len(automatedFollowedPool)
@@ -76,9 +74,9 @@ def unfollow(browser, username, amount, dont_include, automatedFollowedPool):
             print("--> Total unfollowNum exeeded the pool of automated followed ", unfollowNum)
             break
 
-        if unfollowNum != 0 and hasSlept == False and unfollowNum%10 == 0:
+        if unfollowNum != 0 and hasSlept == False and unfollowNum%30 == 0:
             print('Sleeping for about 10min')
-            sleep(6)
+            sleep(600)
             hasSlept = True
             continue
 
