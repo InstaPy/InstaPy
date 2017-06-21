@@ -22,7 +22,7 @@ from .unfollow_util import follow_user
 from .unfollow_util import follow_given_user
 from .unfollow_util import load_follow_restriction
 from .unfollow_util import dump_follow_restriction
-from .unfollow_util import setAutomatedFollowedPool
+from .unfollow_util import set_automated_followed_pool
 
 class InstaPy:
   """Class to be instantiated to use the script"""
@@ -478,7 +478,7 @@ class InstaPy:
 
   def unfollow_users(self, amount=10):
     """Unfollows (default) 10 users from your following list"""
-    self.automatedFollowedPool = setAutomatedFollowedPool(self.username)
+    self.automatedFollowedPool = set_automated_followed_pool(self.username)
 
     try:
         unfollowNumber = unfollow(self.browser, self.username, amount, self.dont_include, self.automatedFollowedPool)
