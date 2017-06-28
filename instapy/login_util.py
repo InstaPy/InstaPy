@@ -7,8 +7,6 @@ def login_user(browser, username, password):
   browser.get('https://www.instagram.com')
 
   # Changes instagram language to english, to ensure no errors ensue from having the site on a different language
-
-  # Changes instagram language to english, to ensure no errors ensue from having the site on a different language
   browser.find_element_by_xpath("//footer[@class='_oofbn']/div[@class='_mhrsk _pcuq6']/nav["
                                 "@class='_p1gbi']/ul[@class='_fh0f2']/li[@class='_fw3ds'][10]/"
                                 "span[@class='_17z9g _c4mil']/select[@class='_nif11']/option"
