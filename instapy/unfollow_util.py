@@ -15,7 +15,6 @@ from .print_log_writer import log_followed_pool
 def set_automated_followed_pool(username):
 
       automatedFollowedPool = []
-
       try:
           with open('./logs/' + username + '_followedPool.csv') as followedPoolFile:
              reader = csv.reader(followedPoolFile)
@@ -53,6 +52,7 @@ def unfollow(browser, username, amount, dont_include, automatedFollowedPool):
 
   # find dialog box
   dialog = browser.find_element_by_xpath('/html/body/div[2]/div/div[2]/div/div[2]')
+
 
   #scroll down the page
   scroll_bottom(browser, dialog, allfollowing)
