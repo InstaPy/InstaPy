@@ -21,7 +21,8 @@ def get_like_on_feed(
 
 		--------------------------------------
 		The function takes in the total amount of likes to perform 
-		and what is the probability to cast the like on an image
+		and then sends buttons to be liked, if it has run out of like
+		buttons it will perform a scroll
 	'''
 
 	global SLEEP_AMOUNT

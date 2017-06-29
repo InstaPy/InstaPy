@@ -499,7 +499,7 @@ class InstaPy:
 
     return self
 
-  def like_feed(self, amount):
+  def like_by_feed(self, amount):
     """Like the users feed"""
 
     # go to feeds page
@@ -512,9 +512,6 @@ class InstaPy:
         sleep(3)
       except:
         print ('Unable to perform Like')
-
-    _ = raw_input()
-
 
   def end(self):
     """Closes the current session"""
