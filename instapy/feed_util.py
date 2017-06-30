@@ -11,10 +11,7 @@ import random
 
 LIKE_TAG_CLASS = 'coreSpriteHeartOpen'
 
-def get_like_on_feed(
-	browser,
-	amount,
-	):
+def get_like_on_feed(browser, amount):
 	'''
 		browser - the selenium browser element
 		amount - total amount of likes to perform
@@ -25,19 +22,22 @@ def get_like_on_feed(
 		buttons it will perform a scroll
 	'''
 
-	global SLEEP_AMOUNT
-
 	# get like buttons
 	likes_performed = 0
 
 	while likes_performed <= amount:
 		# get the like buttons
 		like_buttons = []
+
+		abort = False
 		try:
 			like_buttons = browser.find_elements_by_class_name(LIKE_TAG_CLASS)
 		except selenium.common.exceptions.NoSuchElementException:
-			print ('Unale to find the like buttons')
-			exit(0)
+			print ('Unale to find the like buttons, Aborting')
+			abort = True
+
+		if abort:
+			break
 
 		for button in like_buttons:
 			likes_performed += 1
