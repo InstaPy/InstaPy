@@ -188,6 +188,14 @@ Example:
 * The url is: https://www.instagram.com/explore/locations/224442573/salton-sea/
 * Use everything after 'locations/' or just the number
 
+### Feeds
+
+```python
+#This is used to perform likes on your own feeds, amount specifies how many total like your want to perform
+
+session.like_by_feed(amount=100)
+```
+
 ### Restricting Likes
 
 ```python
