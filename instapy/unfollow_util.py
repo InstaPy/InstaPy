@@ -77,12 +77,14 @@ def follow_given_user(browser, acc_to_follow, follow_restrict):
         sleep(3)
         return  0
 
-def dump_follow_restriction(followRes):
+def dump_follow_restriction(followRes, username):
   """Dumps the given dictionary to a file using the json format"""
-  with open('./logs/followRestriction.json', 'w') as followResFile:
+  follow_res_json = './logs/followRestriction_' + username + '.json'
+  with open(follow_res_json, 'w') as followResFile:
     json.dump(followRes, followResFile)
 
-def load_follow_restriction():
+def load_follow_restriction(username):
   """Loads the saved """
-  with open('./logs/followRestriction.json') as followResFile:
+  follow_res_json = './logs/followRestriction_' + username + '.json'
+  with open(follow_res_json) as followResFile:
     return json.load(followResFile)

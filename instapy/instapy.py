@@ -39,15 +39,16 @@ class InstaPy:
     self.browser = webdriver.Chrome('./assets/chromedriver', chrome_options=chrome_options)
     self.browser.implicitly_wait(25)
 
-    self.logFile = open('./logs/logFile.txt', 'a')
-    self.logFile.write('Session started - %s\n' \
-                       % (datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
-
     self.username = username or environ.get('INSTA_USER')
     self.password = password or environ.get('INSTA_PW')
     self.nogui = nogui
 
-
+    logfile_name = './logs/logfile_' + self.username + '.txt'
+    self.logFile = open(logfile_name, 'a')
+    self.logFile.write('Session started - %s\n' \
+                       % (datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
+					   
+	
     self.do_comment = False
     self.comment_percentage = 0
     self.comments = ['Cool!', 'Nice!', 'Looks good!']
@@ -55,7 +56,16 @@ class InstaPy:
     self.video_comments = []
 
     self.followed = 0
-    self.follow_restrict = load_follow_restriction()
+
+    follow_res_json = './logs/followRestriction_' + self.username + '.json'
+    try:
+        file = open(follow_res_json, 'r')
+    except FileNotFoundError:
+        file = open(follow_res_json, 'w')
+        file.write("{}")
+        file.close()
+
+    self.follow_restrict = load_follow_restriction(self.username)
     self.follow_times = 1
     self.do_follow = False
     self.follow_percentage = 0
@@ -515,7 +525,7 @@ class InstaPy:
 
   def end(self):
     """Closes the current session"""
-    dump_follow_restriction(self.follow_restrict)
+    dump_follow_restriction(self.follow_restrict, self.username)
     self.browser.delete_all_cookies()
     self.browser.close()
 
@@ -533,6 +543,7 @@ class InstaPy:
     )
     self.logFile.write('-' * 20 + '\n\n')
     self.logFile.close()
-
-    with open('./logs/followed.txt', 'w') as followFile:
+    
+    followed_logfile_name = './logs/followed_' + self.username + '.txt'
+    with open(followed_logfile_name, 'w') as followFile:
       followFile.write(str(self.followed))
