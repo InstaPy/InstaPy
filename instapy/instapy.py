@@ -22,6 +22,7 @@ from .unfollow_util import follow_user
 from .unfollow_util import follow_given_user
 from .unfollow_util import load_follow_restriction
 from .unfollow_util import dump_follow_restriction
+from .feed_util import get_like_on_feed
 
 class InstaPy:
   """Class to be instantiated to use the script"""
@@ -497,6 +498,20 @@ class InstaPy:
         print('Sleeping for about 10min')
 
     return self
+
+  def like_by_feed(self, amount):
+    """Like the users feed"""
+
+    # go to feeds page
+    self.browser.get('https://www.instagram.com')
+
+    for button in get_like_on_feed(self.browser, amount):
+      try:
+        button.click()
+        print ('---> Image Liked')
+        sleep(3)
+      except:
+        print ('Unable to perform Like')
 
   def end(self):
     """Closes the current session"""
