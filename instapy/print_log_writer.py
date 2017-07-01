@@ -19,6 +19,5 @@ def log_followed_pool(login, followed):
     try:
       with open('./logs/' + login + '_followedPool.csv', 'a') as followPool:
         followPool.write(followed + ",\n")
-        followPool.close()
     except BaseException as e:
         print("log_followed_pool error \n", str(e))
