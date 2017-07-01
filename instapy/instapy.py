@@ -313,7 +313,8 @@ class InstaPy:
               if self.do_follow and user_name not in self.dont_include \
                   and checked_img and following \
                   and self.follow_restrict.get(user_name, 0) < self.follow_times:
-                followed += follow_user(self, user_name)
+                followed += follow_user(self.browser, self.follow_restrict, self.username, user_name)
+
               else:
                 print('--> Not following')
                 sleep(1)
@@ -422,7 +423,7 @@ class InstaPy:
               if self.do_follow and user_name not in self.dont_include \
                   and checked_img and following \
                   and self.follow_restrict.get(user_name, 0) < self.follow_times:
-                followed += follow_user(self, user_name)
+                followed += follow_user(self.browser, self.follow_restrict, self.username, user_name)
               else:
                 print('--> Not following')
                 sleep(1)

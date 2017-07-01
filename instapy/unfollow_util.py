@@ -102,11 +102,9 @@ def unfollow(browser, username, amount, dont_include, automatedFollowedPool):
 
   return unfollowNum
 
-def follow_user(self, user_name):
+def follow_user(browser, follow_restrict, login, user_name):
   """Follows the user of the currently opened image"""
-  browser = self.browser
-  follow_restrict = self.follow_restrict
-  login = self.username
+  
 
   follow_button = browser.find_element_by_xpath("//article/header/span/button")
   sleep(2)
