@@ -3,7 +3,6 @@ import json
 import csv
 from .time_util import sleep
 from random import randint
-from .util import average_sleep
 from .util import delete_line_from_file
 from .util import scroll_bottom
 import locale
@@ -48,7 +47,7 @@ def unfollow(browser, username, amount, dont_include, automatedFollowedPool):
   except BaseException as e:
       print("following_link error \n", str(e))
 
-  average_sleep(2)
+  sleep(2)
 
   # find dialog box
   dialog = browser.find_element_by_xpath('/html/body/div[2]/div/div[2]/div/div[2]')
@@ -79,7 +78,7 @@ def unfollow(browser, username, amount, dont_include, automatedFollowedPool):
 
         if unfollowNum != 0 and hasSlept == False and unfollowNum%10 == 0:
             print('sleeping for about 10min')
-            average_sleep(600)
+            sleep(600)
             hasSlept = True
             continue
 
@@ -110,19 +109,19 @@ def follow_user(self, user_name):
   login = self.username
 
   follow_button = browser.find_element_by_xpath("//article/header/span/button")
-  average_sleep(2)
+  sleep(2)
 
   if follow_button.text == 'Follow':
     follow_button.click()
     print('--> Now following')
     log_followed_pool(login, user_name)
     follow_restrict[user_name] = follow_restrict.get(user_name, 0) + 1
-    average_sleep(3)
+    sleep(3)
     return 1
 
   else:
     print('--> Already following')
-    average_sleep(1)
+    sleep(1)
     return 0
 
 def follow_given_user(browser, acc_to_follow, follow_restrict):
@@ -130,18 +129,18 @@ def follow_given_user(browser, acc_to_follow, follow_restrict):
     browser.get('https://www.instagram.com/' + acc_to_follow)
     print('--> {} instagram account is opened...'.format(acc_to_follow))
     follow_button = browser.find_element_by_xpath("//*[contains(text(), 'Follow')]")
-    average_sleep(10)
+    sleep(10)
     if follow_button.text == 'Follow':
         follow_button.click()
         print('---> Now following: {}'.format(acc_to_follow))
         print('*' * 20)
         follow_restrict[acc_to_follow] = follow_restrict.get(acc_to_follow, 0) + 1
-        average_sleep(3)
+        sleep(3)
         return 1
     else:
         print('---> {} is already followed'.format(acc_to_follow))
         print('*' * 20)
-        average_sleep(3)
+        sleep(3)
         return  0
 
 def dump_follow_restriction(followRes):
