@@ -9,7 +9,7 @@ def login_user(browser, username, password):
   # Changes instagram language to english, to ensure no errors ensue from having the site on a different language
   browser.find_element_by_xpath("//footer[@class='_oofbn']/div[@class='_mhrsk _pcuq6']/nav["
                                 "@class='_p1gbi']/ul[@class='_fh0f2']/li[@class='_fw3ds'][10]/"
-                                "span[@class='_17z9g']/select[@class='_nif11']/option"
+                                "span[@class='_17z9g _c4mil']/select[@class='_nif11']/option"
                                 "[text()='English']").click()
   #Check if the first div is 'Create an Account' or 'Log In'
   login_elem = browser.find_element_by_xpath("//article/div/div/p/a[text()='Log in']")
@@ -26,7 +26,7 @@ def login_user(browser, username, password):
   action = ActionChains(browser).move_to_element(login_button).click().perform()
 
   sleep(2)
-  
+
   #Check if user is logged-in (If there's two 'nav' elements)
   nav = browser.find_elements_by_xpath('//nav')
   if len(nav) == 2:
