@@ -27,7 +27,7 @@ def set_automated_followed_pool(username):
 
       return automatedFollowedPool
 
-def unfollow(browser, username, amount, dont_include, automatedFollowedPool):
+def unfollow(browser, username, amount, dont_include, onlyInstapyFollowed, automatedFollowedPool):
 
   """unfollows the given amount of users"""
   unfollowNum = 0
@@ -52,27 +52,31 @@ def unfollow(browser, username, amount, dont_include, automatedFollowedPool):
   # find dialog box
   dialog = browser.find_element_by_xpath('/html/body/div[2]/div/div[2]/div/div[2]')
 
-
   #scroll down the page
   scroll_bottom(browser, dialog, allfollowing)
 
   #get persons, unfollow buttons, and length of followed pool
-  person_list = dialog.find_elements_by_tag_name("a")
-  person_list = [x.text for x in person_list]
+  person_list_a = dialog.find_elements_by_tag_name("a")
+  person_list =[]
+
+  for person in person_list_a:
+
+      if person and hasattr(person, 'text') and person.text:
+          person_list.append(person.text)
 
   follow_buttons = dialog.find_elements_by_tag_name('button')
-
   automatedFollowedPoolLength = len(automatedFollowedPool)
 
   # unfollow loop
   try:
       hasSlept = False
+
       for button, person in zip(follow_buttons, person_list):
         if  unfollowNum >= amount:
             print("--> Total unfollowNum reached it's amount given ", unfollowNum)
             break
 
-        if  unfollowNum >= automatedFollowedPoolLength:
+        if  onlyInstapyFollowed == True and unfollowNum >= automatedFollowedPoolLength:
             print("--> Total unfollowNum exeeded the pool of automated followed ", unfollowNum)
             break
 
@@ -82,17 +86,29 @@ def unfollow(browser, username, amount, dont_include, automatedFollowedPool):
             hasSlept = True
             continue
 
-        if person not in dont_include and person in automatedFollowedPool:
-          unfollowNum += 1
-          button.click()
-          delete_line_from_file('./logs/' + username + '_followedPool.csv', person + ",\n")
+        if person not in dont_include:
+            if onlyInstapyFollowed == True and person in automatedFollowedPool:
+              unfollowNum += 1
+              button.click()
+              delete_line_from_file('./logs/' + username + '_followedPool.csv', person + ",\n")
 
-          print('--> Ongoing Unfollow ' + str(unfollowNum) +  ', now unfollowing: {}'.format(person.encode('utf-8')))
-          sleep(15)
-          # To only sleep once until there is the next unfollow
-          if hasSlept: hasSlept = False
+              print('--> Ongoing Unfollow From InstaPy ' + str(unfollowNum) +  ', now unfollowing: {}'.format(person.encode('utf-8')))
+              sleep(15)
+              # To only sleep once until there is the next unfollow
+              if hasSlept: hasSlept = False
 
-          continue
+              continue
+
+            elif onlyInstapyFollowed != True:
+              unfollowNum += 1
+              button.click()
+
+              print('--> Ongoing Unfollow ' + str(unfollowNum) +  ', now unfollowing: {}'.format(person.encode('utf-8')))
+              sleep(15)
+              # To only sleep once until there is the next unfollow
+              if hasSlept: hasSlept = False
+
+              continue
 
         else:
           continue
@@ -104,7 +120,7 @@ def unfollow(browser, username, amount, dont_include, automatedFollowedPool):
 
 def follow_user(browser, follow_restrict, login, user_name):
   """Follows the user of the currently opened image"""
-  
+
 
   follow_button = browser.find_element_by_xpath("//article/header/span/button")
   sleep(2)
