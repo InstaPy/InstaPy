@@ -11,6 +11,7 @@ def login_user(browser, username, password):
                                 "@class='_p1gbi']/ul[@class='_fh0f2']/li[@class='_fw3ds'][10]/"
                                 "span[@class='_17z9g _c4mil']/select[@class='_nif11']/option"
                                 "[text()='English']").click()
+  
   #Check if the first div is 'Create an Account' or 'Log In'
   login_elem = browser.find_element_by_xpath("//article/div/div/p/a[text()='Log in']")
   if login_elem is not None:
