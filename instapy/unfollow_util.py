@@ -6,7 +6,6 @@ from random import randint
 from .util import delete_line_from_file
 from .util import scroll_bottom
 import locale
-locale.setlocale( locale.LC_ALL, 'en_US.UTF-8' )
 
 from .print_log_writer import log_followed_pool
 
