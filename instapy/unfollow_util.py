@@ -5,8 +5,6 @@ from .time_util import sleep
 from random import randint
 from .util import delete_line_from_file
 from .util import scroll_bottom
-import locale
-locale.setlocale( locale.LC_ALL, 'English_United States.1252' )
 
 from .print_log_writer import log_followed_pool
 
@@ -35,7 +33,9 @@ def unfollow(browser, username, amount, dont_include, onlyInstapyFollowed, autom
   browser.get('https://www.instagram.com/' + username)
 
   #  check how many poeple we are following
-  allfollowing = locale.atoi(browser.find_element_by_xpath("//li[3]/a/span").text)
+  allfollowing = browser.find_element_by_xpath("//li[3]/a/span").text
+  allfollowing = allfollowing.replace(',', '').replace('.', '')
+  allfollowing = int(allfollowing.replace('k', '00').replace('m', '00000'))
 
   #  throw RuntimeWarning if we are 0 people following
   if (allfollowing == 0):
