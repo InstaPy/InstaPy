@@ -5,9 +5,7 @@ from .time_util import sleep
 from random import randint
 from .util import delete_line_from_file
 from .util import scroll_bottom
-
 from .print_log_writer import log_followed_pool
-
 
 def set_automated_followed_pool(username):
 
