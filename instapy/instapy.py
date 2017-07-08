@@ -28,10 +28,13 @@ from .feed_util import get_like_on_feed
 
 class InstaPy:
   """Class to be instantiated to use the script"""
-  def __init__(self, username=None, password=None, nogui=False):
+  def __init__(self, username=None, password=None, nogui=False, selenium_local_session=True):
     if nogui:
       self.display = Display(visible=0, size=(800, 600))
       self.display.start()
+
+    if selenium_local_session:
+      self.set_selenium_local_session()
 
     self.logFile = open('./logs/logFile.txt', 'a')
     self.logFile.write('Session started - %s\n' \
