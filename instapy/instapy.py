@@ -37,8 +37,6 @@ class InstaPy:
       self.set_selenium_local_session()
 
     self.logFile = open('./logs/logFile.txt', 'a')
-    self.logFile.write('Session started - %s\n' \
-                       % (datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
 
     self.username = username or environ.get('INSTA_USER')
     self.password = password or environ.get('INSTA_PW')
@@ -82,11 +80,15 @@ class InstaPy:
     chrome_options.add_experimental_option('prefs', {'intl.accept_languages': 'en-US'})
     self.browser = webdriver.Chrome('./assets/chromedriver', chrome_options=chrome_options)
     self.browser.implicitly_wait(25)
+    self.logFile.write('Session started - %s\n' \
+                       % (datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
 
   def set_selenium_remote_session(self, selenium_adress=''):
     self.browser = webdriver.Remote(command_executor=selenium_adress,
                                     desired_capabilities=DesiredCapabilities.CHROME)
     self.browser.maximize_window()
+    self.logFile.write('Session started - %s\n' \
+                       % (datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
 
   def login(self):
     """Used to login the user either with the username and password"""
