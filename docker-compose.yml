@@ -1,0 +1,14 @@
+ version: '3'
+ services:
+   web:
+     #command: python run_bot.py
+     environment:
+       - PYTHONUNBUFFERED=0
+     build:
+       context: .
+       dockerfile: ./docker_conf/python/Dockerfile
+   selenium:
+       image: selenium/standalone-chrome-debug
+       ports:
+         - "5900:5900"
+       shm_size: 512M
