@@ -35,8 +35,8 @@ class InstaPy:
             self.display = Display(visible=0, size=(800, 600))
             self.display.start()
 
-    if selenium_local_session:
-      self.set_selenium_local_session()
+        if selenium_local_session:
+            self.set_selenium_local_session()
 
         self.logFile = open('./logs/logFile.txt', 'a')
 
@@ -73,7 +73,8 @@ class InstaPy:
 
         self.aborting = False
 
-  def set_selenium_local_session(self):
+
+def set_selenium_local_session(self):
     chromedriver_location = './assets/chromedriver'
     chrome_options = Options()
     chrome_options.add_argument('--dns-prefetch-disable')
@@ -86,18 +87,21 @@ class InstaPy:
     self.logFile.write('Session started - %s\n' \
                        % (datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
 
-  def set_selenium_remote_session(self, selenium_adress=''):
+
+def set_selenium_remote_session(self, selenium_adress=''):
     self.browser = webdriver.Remote(command_executor=selenium_adress,
                                     desired_capabilities=DesiredCapabilities.CHROME)
     self.browser.maximize_window()
     self.logFile.write('Session started - %s\n' \
                        % (datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
 
-  def login(self):
+
+def login(self):
     """Used to login the user either with the username and password"""
     if not login_user(self.browser, self.username, self.password):
-      print('Wrong login data!')
-      self.logFile.write('Wrong login data!\n')
+        print('Wrong login data!')
+        self.logFile.write('Wrong login data!\n')
+
     def login(self):
         """Used to login the user either with the username and password"""
         if not login_user(self.browser, self.username, self.password):
