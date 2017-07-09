@@ -34,12 +34,14 @@ class InstaPy:
             self.display = Display(visible=0, size=(800, 600))
             self.display.start()
 
+        chromedriver_location = './assets/chromedriver'
         chrome_options = Options()
         chrome_options.add_argument('--dns-prefetch-disable')
         chrome_options.add_argument('--no-sandbox')
         chrome_options.add_argument('--lang=en-US')
         chrome_options.add_experimental_option('prefs', {'intl.accept_languages': 'en-US'})
-        self.browser = webdriver.Chrome('./assets/chromedriver', chrome_options=chrome_options)
+        chrome_options.binary_location = chromedriver_location
+        self.browser = webdriver.Chrome(chromedriver_location, chrome_options=chrome_options)
         self.browser.implicitly_wait(25)
 
         self.logFile = open('./logs/logFile.txt', 'a')
