@@ -73,34 +73,25 @@ class InstaPy:
 
         self.aborting = False
 
+    def set_selenium_local_session(self):
+        chromedriver_location = './assets/chromedriver'
+        chrome_options = Options()
+        chrome_options.add_argument('--dns-prefetch-disable')
+        chrome_options.add_argument('--no-sandbox')
+        chrome_options.add_argument('--lang=en-US')
+        chrome_options.add_experimental_option('prefs', {'intl.accept_languages': 'en-US'})
+        chrome_options.binary_location = chromedriver_location
+        self.browser = webdriver.Chrome(chromedriver_location, chrome_options=chrome_options)
+        self.browser.implicitly_wait(25)
+        self.logFile.write('Session started - %s\n' \
+                           % (datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
 
-def set_selenium_local_session(self):
-    chromedriver_location = './assets/chromedriver'
-    chrome_options = Options()
-    chrome_options.add_argument('--dns-prefetch-disable')
-    chrome_options.add_argument('--no-sandbox')
-    chrome_options.add_argument('--lang=en-US')
-    chrome_options.add_experimental_option('prefs', {'intl.accept_languages': 'en-US'})
-    chrome_options.binary_location = chromedriver_location
-    self.browser = webdriver.Chrome(chromedriver_location, chrome_options=chrome_options)
-    self.browser.implicitly_wait(25)
-    self.logFile.write('Session started - %s\n' \
-                       % (datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
-
-
-def set_selenium_remote_session(self, selenium_adress=''):
-    self.browser = webdriver.Remote(command_executor=selenium_adress,
-                                    desired_capabilities=DesiredCapabilities.CHROME)
-    self.browser.maximize_window()
-    self.logFile.write('Session started - %s\n' \
-                       % (datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
-
-
-def login(self):
-    """Used to login the user either with the username and password"""
-    if not login_user(self.browser, self.username, self.password):
-        print('Wrong login data!')
-        self.logFile.write('Wrong login data!\n')
+    def set_selenium_remote_session(self, selenium_adress=''):
+        self.browser = webdriver.Remote(command_executor=selenium_adress,
+                                        desired_capabilities=DesiredCapabilities.CHROME)
+        self.browser.maximize_window()
+        self.logFile.write('Session started - %s\n' \
+                           % (datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
 
     def login(self):
         """Used to login the user either with the username and password"""
