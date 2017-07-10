@@ -75,6 +75,10 @@ class InstaPy:
         self.aborting = False
 
     def set_selenium_local_session(self):
+        """Starts local session for a selenium server. Default case scenario."""
+        if self.aborting:
+            return self
+
         chromedriver_location = './assets/chromedriver'
         chrome_options = Options()
         chrome_options.add_argument('--dns-prefetch-disable')
@@ -87,12 +91,20 @@ class InstaPy:
         self.logFile.write('Session started - %s\n' \
                            % (datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
 
+        return self
+
     def set_selenium_remote_session(self, selenium_url=''):
+        """Starts remote session for a selenium server. Useful for docker setup."""
+        if self.aborting:
+            return self
+
         self.browser = webdriver.Remote(command_executor=selenium_url,
                                         desired_capabilities=DesiredCapabilities.CHROME)
         self.browser.maximize_window()
         self.logFile.write('Session started - %s\n' \
                            % (datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
+
+        return self
 
     def login(self):
         """Used to login the user either with the username and password"""
