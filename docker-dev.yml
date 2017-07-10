@@ -5,8 +5,7 @@
        context: .
        dockerfile: ./docker_conf/dev_python/Dockerfile
      volumes:
-       - ./django:/code
-       - .pycharm_helpers:/root/.pycharm_helpers/
+       - .:/code
      ports:
        - "22:22"
      depends_on:
