@@ -366,7 +366,7 @@ That's all! At this step you are already successfully run you personal bot!
 
 ### 3. See what your bot do right now 
 
-Run yout VNC viewer, and type adress and port `localhost:5900`. The password is `secret`.
+Run your VNC viewer, and type adress and port `localhost:5900`. The password is `secret`.
 
 ### 4. Stop your instapy bot
 
@@ -393,7 +393,7 @@ After strike this command, you can access your bot by VNC on the adress  `localh
 
 But there is more! There is fully accessible bash console with all code mounted at the path `/code`. When you hack some files they are dynamically updated inside your container.
 
-To access yor container console to run bot type `localhost:22` in your favorite ssh client.
+To access yor container console to run bot type `localhost:22` in your favorite ssh client. The User is `root` and the password is `root` also.
 
 #### Run in production without opened VNC port
 
@@ -409,7 +409,7 @@ docker-compose -f docker-prod.yml up -d
 
 First you need to build the image by running this in the Terminal:
 ```bash
-docker build -t instapy ./docker_conf/all_in_one
+docker build -t instapy ./docker_conf/all_in_one/Dockerfile
 ```
 
 Make sure to use the `nogui` feature:
