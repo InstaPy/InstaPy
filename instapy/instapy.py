@@ -35,6 +35,7 @@ class InstaPy:
             self.display = Display(visible=0, size=(800, 600))
             self.display.start()
 
+        self.browser = None
         if selenium_local_session:
             self.set_selenium_local_session()
 

@@ -1,7 +1,6 @@
 FROM python:3.6
 RUN mkdir /code
 WORKDIR /code
-#ADD . /code/
 
 # install openssh
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get -y install openssh-server
