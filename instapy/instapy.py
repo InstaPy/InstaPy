@@ -6,6 +6,7 @@ from pyvirtualdisplay import Display
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.chrome.options import Options
+from selenium.webdriver import DesiredCapabilities
 
 from .clarifai_util import check_image
 from .comment_util import comment_image
@@ -29,24 +30,16 @@ from .feed_util import get_like_on_feed
 class InstaPy:
     """Class to be instantiated to use the script"""
 
-    def __init__(self, username=None, password=None, nogui=False):
+    def __init__(self, username=None, password=None, nogui=False, selenium_local_session=True):
         if nogui:
             self.display = Display(visible=0, size=(800, 600))
             self.display.start()
 
-        chromedriver_location = './assets/chromedriver'
-        chrome_options = Options()
-        chrome_options.add_argument('--dns-prefetch-disable')
-        chrome_options.add_argument('--no-sandbox')
-        chrome_options.add_argument('--lang=en-US')
-        chrome_options.add_experimental_option('prefs', {'intl.accept_languages': 'en-US'})
-        chrome_options.binary_location = chromedriver_location
-        self.browser = webdriver.Chrome(chromedriver_location, chrome_options=chrome_options)
-        self.browser.implicitly_wait(25)
+        self.browser = None
+        if selenium_local_session:
+            self.set_selenium_local_session()
 
         self.logFile = open('./logs/logFile.txt', 'a')
-        self.logFile.write('Session started - %s\n' \
-                           % (datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
 
         self.username = username or environ.get('INSTA_USER')
         self.password = password or environ.get('INSTA_PW')
@@ -80,6 +73,26 @@ class InstaPy:
         self.like_by_followers_lower_limit = 0
 
         self.aborting = False
+
+    def set_selenium_local_session(self):
+        chromedriver_location = './assets/chromedriver'
+        chrome_options = Options()
+        chrome_options.add_argument('--dns-prefetch-disable')
+        chrome_options.add_argument('--no-sandbox')
+        chrome_options.add_argument('--lang=en-US')
+        chrome_options.add_experimental_option('prefs', {'intl.accept_languages': 'en-US'})
+        chrome_options.binary_location = chromedriver_location
+        self.browser = webdriver.Chrome(chromedriver_location, chrome_options=chrome_options)
+        self.browser.implicitly_wait(25)
+        self.logFile.write('Session started - %s\n' \
+                           % (datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
+
+    def set_selenium_remote_session(self, selenium_url=''):
+        self.browser = webdriver.Remote(command_executor=selenium_url,
+                                        desired_capabilities=DesiredCapabilities.CHROME)
+        self.browser.maximize_window()
+        self.logFile.write('Session started - %s\n' \
+                           % (datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
 
     def login(self):
         """Used to login the user either with the username and password"""

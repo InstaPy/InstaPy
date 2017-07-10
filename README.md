@@ -339,13 +339,77 @@ session.clarifai_check_img_for(['food', 'lunch'], comment=True, comments=['Tasty
 
 ###### Check out [https://clarifai.com/demo](https://clarifai.com/demo) to see some of the available tags.</h6>
 
-## Running with Docker
+## Running with Docker microservices manual
+
+Docker allows very easy and fast run instapy bot without any pain and tears.
+
+### 0. Preparations
+
+Install docker from official website [https://www.docker.com/](https://www.docker.com/)
+
+Install VNC viewer if you haven't one. For windows good program is  [http://www.tightvnc.com/](http://www.tightvnc.com/)
+
+### 1. Set your instagram login and password
+
+Open `docker_quickstart.py` and fill quotes after insta_username and insta_password with your credentials.
+
+Don't forget to make other changes for the file as you want to. Read documentation above for info.
+
+### 2. Run and build containers with docker-compose
+
+First you need to open your terminal, move to the root folder (usually with `cd` command) of instapy project and then type:
+```bash
+docker-compose up -d --build
+```
+
+That's all! At this step you are already successfully run you personal bot!
+
+### 3. See what your bot do right now 
+
+Run yout VNC viewer, and type adress and port `localhost:5900`. The password is `secret`.
+
+### 4. Stop your instapy bot
+
+Use your terminal again, type in the same window:
+```bash
+docker-compose down
+```
+
+Your bot is stopped!
+
+### 5. Further steps
+
+That's just a basic steps for run instapy bot on your PC with docker. There are other docker-compose settings file in the root of project.
+
+#### Development environment to run, test and debug by SSH
+
+Use it to help us with development and test instapy! `docker-dev.yml` file.
+
+```bash
+docker-compose -f docker-dev.yml up -d
+```
+
+After strike this command, you can access your bot by VNC on the adress  `localhost:5901`, the password is `secret`. 
+
+But there is more! There is fully accessible bash console with all code mounted at the path `/code`. When you hack some files they are dynamically updated inside your container.
+
+To access yor container console to run bot type `localhost:22` in your favorite ssh client.
+
+#### Run in production without opened VNC port
+
+ Suitable to run in a remote server. Attention! You can not view what happened through VNC on this configuration `docker-prod.yml` file.
+
+```bash
+docker-compose -f docker-prod.yml up -d
+```
+
+## Running all-in-one with Docker (obsolete)
 
 ### 1. Build the Image
 
 First you need to build the image by running this in the Terminal:
 ```bash
-docker build -t instapy .
+docker build -t instapy ./docker_conf/all_in_one
 ```
 
 Make sure to use the `nogui` feature:
