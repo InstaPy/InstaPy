@@ -15,5 +15,5 @@
    d_selenium:
      image: selenium/standalone-chrome-debug
      ports:
-       - "5900:5900"
+       - "5901:5900"
      shm_size: 128M
