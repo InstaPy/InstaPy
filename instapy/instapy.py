@@ -510,6 +510,9 @@ class InstaPy:
     def like_by_feed(self, amount):
         """Like the users feed"""
 
+        if self.aborting:
+            return self
+        
         # go to feeds page
         self.browser.get('https://www.instagram.com')
 
@@ -520,6 +523,8 @@ class InstaPy:
                 sleep(3)
             except:
                 print('Unable to perform Like')
+        
+        return self
 
     def end(self):
         """Closes the current session"""
