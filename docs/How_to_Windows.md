@@ -42,7 +42,7 @@
 - Open Control Panel » System » Advanced » Environment Variables.
 - Click New and type the path where you have installed Python + /Scripts
 - Usually PATH: C:\\Program Files (x86)\\Python36-32\\Scripts\\ and C:\\Program Files (x86)\\Python36-32\\
-- Win10 PATH: C:\\Users\\YOUR_USER_NAME\\AppData\\Local\\Programs\\Python\\Python36\\ and C:\\Users\\YOUR_USER_NAME\\AppData\\Local\\Programs\\Python\\Python36\\Scripts\\
+- Win7 and Win10 PATH: C:\\Users\\YOUR_USER_NAME\\AppData\\Local\\Programs\\Python\\Python36\\ and C:\\Users\\YOUR_USER_NAME\\AppData\\Local\\Programs\\Python\\Python36\\Scripts\\
 - Restart PC (recommended).
 
 
