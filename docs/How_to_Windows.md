@@ -27,7 +27,7 @@
 
 ##### 0.5 GitHub Desktop 
 - Download and install newest version of GitHub Desktop. 
-> [https://www.google.it/chrome/browser/desktop/index.html]
+> [https://desktop.github.com/]
 
 
 #### 1. Install python:
