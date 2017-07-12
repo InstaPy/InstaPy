@@ -36,8 +36,6 @@ class InstaPy:
             self.display.start()
 
         self.browser = None
-        if selenium_local_session:
-            self.set_selenium_local_session()
 
         self.logFile = open('./logs/logFile.txt', 'a')
 
@@ -73,6 +71,9 @@ class InstaPy:
         self.like_by_followers_lower_limit = 0
 
         self.aborting = False
+
+        if selenium_local_session:
+            self.set_selenium_local_session()
 
     def set_selenium_local_session(self):
         """Starts local session for a selenium server. Default case scenario."""
@@ -536,7 +537,7 @@ class InstaPy:
 
         if self.aborting:
             return self
-        
+
         # go to feeds page
         self.browser.get('https://www.instagram.com')
 
@@ -547,7 +548,7 @@ class InstaPy:
                 sleep(3)
             except:
                 print('Unable to perform Like')
-        
+
         return self
 
     def end(self):
