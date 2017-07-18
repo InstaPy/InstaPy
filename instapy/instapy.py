@@ -85,7 +85,20 @@ class InstaPy:
         chrome_options.add_argument('--dns-prefetch-disable')
         chrome_options.add_argument('--no-sandbox')
         chrome_options.add_argument('--lang=en-US')
-        chrome_options.add_experimental_option('prefs', {'intl.accept_languages': 'en-US'})
+        
+        # managed_default_content_settings.images = 2: Disable images load, this setting can improve pageload & save bandwidth
+        # default_content_setting_values.notifications = 2: Disable notifications
+        # credentials_enable_service & password_manager_enabled = false: Ignore save password prompt from chrome
+        chrome_prefs = {
+            'intl.accept_languages': 'en-US', 
+            'profile.managed_default_content_settings.images': 2,
+            'profile.default_content_setting_values.notifications' : 2,
+            'credentials_enable_service': False,
+            'profile': {
+                'password_manager_enabled': False
+            }
+        }
+        chrome_options.add_experimental_option('prefs', chrome_prefs)
         self.browser = webdriver.Chrome(chromedriver_location, chrome_options=chrome_options)
         self.browser.implicitly_wait(25)
         self.logFile.write('Session started - %s\n' \
