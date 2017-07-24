@@ -42,7 +42,7 @@ InstaPy(username='test', password='test')\
   .end()
 ```
 ### How not to be banned ?
-Built in delays prevent your account from getting banned. (Just make sure you don't like 1000s of post/day)
+Built-in delays prevent your account from getting banned. (Just make sure you don't like 1000s of post/day)
 
 ## Getting started
 
@@ -55,7 +55,7 @@ Built in delays prevent your account from getting banned. (Just make sure you do
 
 ### For a start you need:
 1. To have [Python](https://www.python.org/downloads/) 2.7 or 3.6 installed.
-2. Setted up path for PY command.
+2. Set up path for PY command.
 3. Installed [Selenium](http://selenium-python.readthedocs.io/) and [pyvirtualdriver](https://pypi.python.org/pypi/PyVirtualDisplay).
 
 Make sure to get the right ```chromedriver``` for your system [from here](https://sites.google.com/a/chromium.org/chromedriver/downloads). Just put it in ```/assets```.
@@ -192,7 +192,7 @@ Example:
 ### Feeds
 
 ```python
-#This is used to perform likes on your own feeds, amount specifies how many total like your want to perform
+#This is used to perform likes on your own feeds, amount specifies how many total likes you want to perform
 
 session.like_by_feed(amount=100)
 ```
@@ -252,7 +252,7 @@ or
 session.set_comments([u'Emoji text codes are also supported :100: :thumbsup: :thumbs_up: \u2764 💯💯']);
 ```
 
-Emoji text codes are implemented using 2 different naming codes. A complete list of emojis codes can be found on the [Python Emoji Github](https://github.com/carpedm20/emoji/blob/master/emoji/unicode_codes.py), but you can use the alternate shorted naming scheme found for Emoji text codes [here](https://www.webpagefx.com/tools/emoji-cheat-sheet). Note: Every Emoji has not been tested. Please report any inconsistancies.
+Emoji text codes are implemented using 2 different naming codes. A complete list of emojis codes can be found on the [Python Emoji Github](https://github.com/carpedm20/emoji/blob/master/emoji/unicode_codes.py), but you can use the alternate shorted naming scheme found for Emoji text codes [here](https://www.webpagefx.com/tools/emoji-cheat-sheet). Note: Every Emoji has not been tested. Please report any inconsistencies.
 
 > **Legacy Emoji Support**  
 >
@@ -341,32 +341,32 @@ session.clarifai_check_img_for(['food', 'lunch'], comment=True, comments=['Tasty
 
 ## Running with Docker microservices manual
 
-Docker allows very easy and fast run instapy bot without any pain and tears.
+Docker allows very easy and fast run of the instapy bot without any pain and tears.
 
 ### 0. Preparations
 
-Install docker from official website [https://www.docker.com/](https://www.docker.com/)
+Install docker from the official website [https://www.docker.com/](https://www.docker.com/)
 
-Install VNC viewer if you haven't one. For windows good program is  [http://www.tightvnc.com/](http://www.tightvnc.com/)
+Install VNC viewer if you do not have one. For windows, a good program is  [http://www.tightvnc.com/](http://www.tightvnc.com/)
 
 ### 1. Set your instagram login and password
 
-Open `docker_quickstart.py` and fill quotes after insta_username and insta_password with your credentials.
+Open `docker_quickstart.py` and fill the quotes after insta_username and insta_password with your credentials.
 
-Don't forget to make other changes for the file as you want to. Read documentation above for info.
+Don't forget to make other changes for the file as you want to. Read the documentation above for info.
 
 ### 2. Run and build containers with docker-compose
 
-First you need to open your terminal, move to the root folder (usually with `cd` command) of instapy project and then type:
+First you need to open your terminal, move to the root folder (usually with the `cd` command) of instapy project and then type:
 ```bash
 docker-compose up -d --build
 ```
 
-That's all! At this step you are already successfully run you personal bot!
+That's all! At this step, you are already successfully running your personal bot!
 
-### 3. See what your bot do right now 
+### 3. See what your bot can do right now 
 
-Run your VNC viewer, and type adress and port `localhost:5900`. The password is `secret`.
+Run your VNC viewer, and type address and port `localhost:5900`. The password is `secret`.
 
 ### 4. Stop your instapy bot
 
@@ -379,7 +379,7 @@ Your bot is stopped!
 
 ### 5. Further steps
 
-That's just a basic steps for run instapy bot on your PC with docker. There are other docker-compose settings file in the root of project.
+Those are just basic steps to run instapy bot on your PC with docker. There are other docker-compose settings file in the root of project.
 
 #### Development environment to run, test and debug by SSH
 
@@ -389,9 +389,9 @@ Use it to help us with development and test instapy! `docker-dev.yml` file.
 docker-compose -f docker-dev.yml up -d
 ```
 
-After strike this command, you can access your bot by VNC on the adress  `localhost:5901`, the password is `secret`. 
+After striking this command, you can access your bot by VNC on the adress  `localhost:5901`, the password is `secret`. 
 
-But there is more! There is fully accessible bash console with all code mounted at the path `/code`. When you hack some files they are dynamically updated inside your container.
+But there is more! There is a fully accessible bash console with all code mounted at the path `/code`. When you hack some files they are dynamically updated inside your container.
 
 To access yor container console to run bot type `localhost:22` in your favorite ssh client. The User is `root` and the password is `root` also.
 
@@ -421,7 +421,7 @@ session = InstaPy(username='test', password='test', nogui=True)
 
 ### 2. Run in a Container
 
-After the build succeeded, you can simply run the container with:
+After the build succeeds, you can simply run the container with:
 ```bash
 docker run --name=instapy -e INSTA_USER=<your-user> -e INSTA_PW=<your-pw> -d instapy
 ```
