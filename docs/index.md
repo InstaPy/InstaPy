@@ -20,7 +20,7 @@ Head over to https://github.com/timgrossmann/InstaPy/wiki/Reporting-An-Issue to 
 ### Social
 
 #### [How it works (Medium)](https://medium.freecodecamp.com/my-open-source-instagram-bot-got-me-2-500-real-followers-for-5-in-server-costs-e40491358340)
-#### [Check out the talk (Twitter)](https://twitter.com/timigrossmann/status/869222353166839812)
+#### [Check out the talk](https://youtu.be/4TmKFZy-ioQ)
 
 #### [Support InstaPy!](https://www.patreon.com/InstaPy)
 
