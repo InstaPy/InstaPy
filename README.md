@@ -409,7 +409,7 @@ docker-compose -f docker-prod.yml up -d
 
 First you need to build the image by running this in the Terminal:
 ```bash
-docker build -t instapy ./docker_conf/all_in_one/Dockerfile
+docker build -t instapy ./docker_conf/all_in_one
 ```
 
 Make sure to use the `nogui` feature:
@@ -423,7 +423,7 @@ session = InstaPy(username='test', password='test', nogui=True)
 
 After the build succeeds, you can simply run the container with:
 ```bash
-docker run --name=instapy -e INSTA_USER=<your-user> -e INSTA_PW=<your-pw> -d instapy
+docker run --name=instapy -e INSTA_USER=<your-user> -e INSTA_PW=<your-pw> -d --rm instapy
 ```
 
 ---
