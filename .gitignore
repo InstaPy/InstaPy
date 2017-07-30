@@ -93,3 +93,6 @@ ENV/
 
 # Mac files
 .DS_Store
+
+# Editors
+.idea
