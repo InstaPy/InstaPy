@@ -23,18 +23,30 @@
 18. wget -nv -O- http://q4os.org/qextrepo/q4a-q4os.gpg.pub | sudo apt-key add -
 19. sudo apt-get update
 20. sudo apt-get install firefox
-21. open instapy.py in a text editor and change the line that states: self.browser = webdriver.Chrome() to webdriver.Firefox()
 
 > Encountered some errors when trying to run the quickstart.py and ran the next 3 commands (all may not be necessary)
 
-22. sudo pip install future
-23. sudo apt-get install xvfb
-24. sudo pip install pyvirtualdisplay
-25. sudo reboot (may not be required, but no harm)
+21. sudo pip install future
+22. sudo apt-get install xvfb
+23. sudo pip install pyvirtualdisplay
+24. sudo reboot (may not be required, but no harm)
+
 
 > Assuming you've modified quickstart.py to your liking and added your Instagram login to instapy.py
 
-26.sudo xvfb-run python quickstart.py
+25.sudo xvfb-run python quickstart.py
 >I installed TMUX to help run this headless, so that I can disconnect from the session and have the program continue to run on the rpi3
 
-27. sudo apt-get install tmux (more info found here: https://github.com/tmux/tmux)
+26. sudo apt-get install tmux (more info found here: https://github.com/tmux/tmux)
+
+27. follow the example seen in `examples\firefoxExample.py` to set the default browser as Firefox
+
+
+
+# How to update GeckoDriver on Raspbian
+
+> New releases can be found in https://github.com/mozilla/geckodriver/releases
+28. wget https://github.com/mozilla/geckodriver/releases/download/v0.18.0/geckodriver-v0.18.0-arm7hf.tar.gz
+29. tar -xvzf geckodriver*
+30. chmod +x geckodriver
+31. sudo cp geckodriver /usr/local/bin/
