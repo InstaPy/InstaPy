@@ -32,7 +32,7 @@ from .feed_util import get_like_on_feed
 class InstaPy:
     """Class to be instantiated to use the script"""
 
-    def __init__(self, username=None, password=None, nogui=False, selenium_local_session=True, use_firefox=False):
+    def __init__(self, username=None, password=None, nogui=False, selenium_local_session=True, use_firefox=False, page_delay=25):
         if nogui:
             self.display = Display(visible=0, size=(800, 600))
             self.display.start()
@@ -45,7 +45,7 @@ class InstaPy:
         self.password = password or environ.get('INSTA_PW')
         self.nogui = nogui
 
-        self.page_delay = 25
+        self.page_delay = page_delay
         self.switch_language = True
         self.use_firefox = use_firefox
         self.firefox_profile_path = None
@@ -86,7 +86,7 @@ class InstaPy:
         """Starts local session for a selenium server. Default case scenario."""
         if self.aborting:
             return self
-        print("Firefox: " + str(self.use_firefox))
+        
         if self.use_firefox:
             firefox_capabilities = DesiredCapabilities.FIREFOX
             firefox_capabilities['marionette'] = True
