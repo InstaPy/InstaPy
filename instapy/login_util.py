@@ -22,10 +22,13 @@ def login_user(browser, username, password, switch_language = True):
 
     # Enter username and password and logs the user in
     # Sometimes the element name isn't 'Username' and 'Password' (valid for placeholder too)
-    inputs = browser.find_elements_by_xpath("//form/div/input")
-    action = ActionChains(browser).move_to_element(inputs[0]).click().send_keys(username).perform()
+    input_username = browser.find_elements_by_xpath("//input[@name='username']")
+
+
+    action = ActionChains(browser).move_to_element(input_username[0]).click().send_keys(username).perform()
     sleep(1)
-    ActionChains(browser).move_to_element(inputs[1]).click().send_keys(password).perform()
+    input_password = browser.find_elements_by_xpath("//input[@name='password']")
+    ActionChains(browser).move_to_element(input_password[0]).click().send_keys(password).perform()
 
     login_button = browser.find_element_by_xpath("//form/span/button[text()='Log in']")
     action = ActionChains(browser).move_to_element(login_button).click().perform()
