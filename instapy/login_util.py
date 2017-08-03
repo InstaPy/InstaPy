@@ -20,7 +20,7 @@ def login_user(browser, username, password):
 
     # Enter username and password and logs the user in
     # Sometimes the element name isn't 'Username' and 'Password' (valid for placeholder too)
-    inputs = browser.find_elements_by_xpath("//form/div/input")
+    inputs = browser.find_elements_by_xpath("//input")
     action = ActionChains(browser).move_to_element(inputs[0]).click().send_keys(username) \
         .move_to_element(inputs[1]).click().send_keys(password).perform()
 
