@@ -33,7 +33,7 @@ def login_user(browser, username, password, switch_language = True):
     login_button = browser.find_element_by_xpath("//form/span/button[text()='Log in']")
     action = ActionChains(browser).move_to_element(login_button).click().perform()
 
-    sleep(2)
+    sleep(5)
 
     # Check if user is logged-in (If there's two 'nav' elements)
     nav = browser.find_elements_by_xpath('//nav')
