@@ -17,36 +17,42 @@
 1. sudo pip install .
 1. sudo apt-get install tightvncserver (to view GUI from MacBook)
 
-> found the following commands to install Firefox here (17-20); https://www.q4os.org/forum/viewtopic.php?id=912
+> Remove any versions of Firefox as it will conflict with the correct one installed below:
+17. sudo apt-get remove firefox-esr
+18. sudo apt-get remove iceweasel
+19. sudo apt-get remove firefox
 
-17. echo 'deb http://q4os.org/qextrepo q4os-rpi-firefox-cn main' | sudo tee /etc/apt/sources.list.d/qextrepo.list
-18. wget -nv -O- http://q4os.org/qextrepo/q4a-q4os.gpg.pub | sudo apt-key add -
-19. sudo apt-get update
-20. sudo apt-get install firefox
+> found the following commands to install Firefox here; https://www.q4os.org/forum/viewtopic.php?id=912
+
+20. echo 'deb http://q4os.org/qextrepo q4os-rpi-firefox-cn main' | sudo tee /etc/apt/sources.list.d/qextrepo.list
+21. wget -nv -O- http://q4os.org/qextrepo/q4a-q4os.gpg.pub | sudo apt-key add -
+22. sudo apt-get update
+23. sudo apt-get install firefox
+> Update GeckoDriver if needed. Instructions at the end of this document.
 
 > Encountered some errors when trying to run the quickstart.py and ran the next 3 commands (all may not be necessary)
 
-21. sudo pip install future
-22. sudo apt-get install xvfb
-23. sudo pip install pyvirtualdisplay
-24. sudo reboot (may not be required, but no harm)
+24. sudo pip install future
+25. sudo apt-get install xvfb
+26. sudo pip install pyvirtualdisplay
+27. sudo reboot (may not be required, but no harm)
 
 
 > Assuming you've modified quickstart.py to your liking and added your Instagram login to instapy.py
 
-25.sudo xvfb-run python quickstart.py
+28. sudo xvfb-run python quickstart.py
 >I installed TMUX to help run this headless, so that I can disconnect from the session and have the program continue to run on the rpi3
 
-26. sudo apt-get install tmux (more info found here: https://github.com/tmux/tmux)
+29. sudo apt-get install tmux (more info found here: https://github.com/tmux/tmux)
 
-27. follow the example seen in `examples\firefoxExample.py` to set the default browser as Firefox
+30. follow the example seen in `examples\firefoxExample.py` to set the default browser as Firefox
 
 
 
 # How to update GeckoDriver on Raspbian
 
 > New releases can be found in https://github.com/mozilla/geckodriver/releases
-28. wget https://github.com/mozilla/geckodriver/releases/download/v0.18.0/geckodriver-v0.18.0-arm7hf.tar.gz
-29. tar -xvzf geckodriver-v*
-30. chmod +x geckodriver
-31. sudo cp geckodriver /usr/local/bin/
+31. wget https://github.com/mozilla/geckodriver/releases/download/v0.18.0/geckodriver-v0.18.0-arm7hf.tar.gz
+32. tar -xvzf geckodriver-v*
+33. chmod +x geckodriver
+34. sudo cp geckodriver /usr/local/bin/
