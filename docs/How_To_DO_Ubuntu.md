@@ -5,17 +5,6 @@
 
 - #### Make sure to set ```nogui=True``` in your InstaPy file
 
-## Express Installation
-
-```sh
-$ git clone https://github.com/timgrossmann/InstaPy.git
-$ cd InstaPy/scripts
-$ ./unix.sh
-```
-
-
-## Advanced Installation
-
 ### General dependencies
 
 ```sh
