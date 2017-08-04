@@ -28,3 +28,8 @@ def scroll_bottom(browser, element, range_int):
         sleep(1)
 
     return
+
+def formatNumber(number):
+    formattedNum = number.replace(',', '').replace('.', '')
+    formattedNum = int(formattedNum.replace('k', '00').replace('m', '00000'))
+    return formattedNum
