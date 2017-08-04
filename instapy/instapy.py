@@ -1,12 +1,14 @@
 """OS Modules environ method to get the setup vars from the Environment"""
 from datetime import datetime
 from os import environ
+
 from random import randint
 from pyvirtualdisplay import Display
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver import DesiredCapabilities
+from selenium.webdriver.firefox.webdriver import FirefoxProfile
 
 from .clarifai_util import check_image
 from .comment_util import comment_image
@@ -30,7 +32,7 @@ from .feed_util import get_like_on_feed
 class InstaPy:
     """Class to be instantiated to use the script"""
 
-    def __init__(self, username=None, password=None, nogui=False, selenium_local_session=True):
+    def __init__(self, username=None, password=None, nogui=False, selenium_local_session=True, use_firefox=False, page_delay=25):
         if nogui:
             self.display = Display(visible=0, size=(800, 600))
             self.display.start()
@@ -42,6 +44,11 @@ class InstaPy:
         self.username = username or environ.get('INSTA_USER')
         self.password = password or environ.get('INSTA_PW')
         self.nogui = nogui
+
+        self.page_delay = page_delay
+        self.switch_language = True
+        self.use_firefox = use_firefox
+        self.firefox_profile_path = None
 
         self.do_comment = False
         self.comment_percentage = 0
@@ -79,28 +86,42 @@ class InstaPy:
         """Starts local session for a selenium server. Default case scenario."""
         if self.aborting:
             return self
-
-        chromedriver_location = './assets/chromedriver'
-        chrome_options = Options()
-        chrome_options.add_argument('--dns-prefetch-disable')
-        chrome_options.add_argument('--no-sandbox')
-        chrome_options.add_argument('--lang=en-US')
         
-        # managed_default_content_settings.images = 2: Disable images load, this setting can improve pageload & save bandwidth
-        # default_content_setting_values.notifications = 2: Disable notifications
-        # credentials_enable_service & password_manager_enabled = false: Ignore save password prompt from chrome
-        chrome_prefs = {
-            'intl.accept_languages': 'en-US', 
-            'profile.managed_default_content_settings.images': 2,
-            'profile.default_content_setting_values.notifications' : 2,
-            'credentials_enable_service': False,
-            'profile': {
-                'password_manager_enabled': False
+        if self.use_firefox:
+            firefox_capabilities = DesiredCapabilities.FIREFOX
+            firefox_capabilities['marionette'] = True
+            if self.firefox_profile_path is not None:
+                firefox_profile = webdriver.FirefoxProfile(self.firefox_profile_path)
+            else:
+                firefox_profile = webdriver.FirefoxProfile()
+
+            # permissions.default.image = 2: Disable images load, this setting can improve pageload & save bandwidth
+            firefox_profile.set_preference('permissions.default.image', 2)
+
+            self.browser = webdriver.Firefox(firefox_profile=firefox_profile, capabilities=firefox_capabilities)
+
+        else:
+            chromedriver_location = './assets/chromedriver'
+            chrome_options = Options()
+            chrome_options.add_argument('--dns-prefetch-disable')
+            chrome_options.add_argument('--no-sandbox')
+            chrome_options.add_argument('--lang=en-US')
+
+            # managed_default_content_settings.images = 2: Disable images load, this setting can improve pageload & save bandwidth
+            # default_content_setting_values.notifications = 2: Disable notifications
+            # credentials_enable_service & password_manager_enabled = false: Ignore save password prompt from chrome
+            chrome_prefs = {
+                'intl.accept_languages': 'en-US',
+                'profile.managed_default_content_settings.images': 2,
+                'profile.default_content_setting_values.notifications' : 2,
+                'credentials_enable_service': False,
+                'profile': {
+                    'password_manager_enabled': False
+                }
             }
-        }
-        chrome_options.add_experimental_option('prefs', chrome_prefs)
-        self.browser = webdriver.Chrome(chromedriver_location, chrome_options=chrome_options)
-        self.browser.implicitly_wait(25)
+            chrome_options.add_experimental_option('prefs', chrome_prefs)
+            self.browser = webdriver.Chrome(chromedriver_location, chrome_options=chrome_options)
+        self.browser.implicitly_wait(self.page_delay)
         self.logFile.write('Session started - %s\n' \
                            % (datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
 
@@ -121,7 +142,7 @@ class InstaPy:
 
     def login(self):
         """Used to login the user either with the username and password"""
-        if not login_user(self.browser, self.username, self.password):
+        if not login_user(self.browser, self.username, self.password, self.switch_language):
             print('Wrong login data!')
             self.logFile.write('Wrong login data!\n')
 
@@ -212,6 +233,10 @@ class InstaPy:
 
         self.dont_include = friends or []
 
+        return self
+
+    def set_switch_language(self, option=True):
+        self.switch_language = option
         return self
 
     def set_use_clarifai(self, enabled=False, secret=None, proj_id=None, full_match=False):
