@@ -47,6 +47,6 @@
 
 > New releases can be found in https://github.com/mozilla/geckodriver/releases
 28. wget https://github.com/mozilla/geckodriver/releases/download/v0.18.0/geckodriver-v0.18.0-arm7hf.tar.gz
-29. tar -xvzf geckodriver*
+29. tar -xvzf geckodriver-v*
 30. chmod +x geckodriver
 31. sudo cp geckodriver /usr/local/bin/
