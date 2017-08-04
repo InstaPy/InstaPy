@@ -9,7 +9,7 @@
 
 ```sh
 $ git clone https://github.com/timgrossmann/InstaPy.git
-$ cd scripts
+$ cd InstaPy/scripts
 $ ./unix.sh
 ```
 
