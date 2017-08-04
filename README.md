@@ -281,6 +281,26 @@ crontab -e
 45 */4 * * * cd /home/user/InstaPy && /usr/bin/python ./quickstart.py
 ```
 
+## Switching to Firefox
+
+Chrome and ChromeDriver might be an issue on some ARM based systems. Alternatively, InstaPy provides support for Firefox as well. Most of the operating systems distributions already include Firefox and geckodriver.
+
+### Example with Firefox browser
+
+```python
+from instapy import InstaPy
+
+InstaPy(username='test', password='test', use_firefox=True, page_delay=25)\
+    .set_switch_language(False)\
+    .login()\
+    .set_do_comment(True, percentage=10) \
+    .set_comments(['Cool!', 'Awesome!', 'Nice!']) \
+    .set_dont_include(['friend1', 'friend2', 'friend3']) \
+    .set_dont_like(['food', 'girl', 'hot']) \
+    .like_by_tags(['dog', '#cat'], amount=2) \
+    .end()
+```
+
 ## Clarifai ImageAPI
 <img src="https://d1qb2nb5cznatu.cloudfront.net/startups/i/396673-2fb6e8026b393dddddc093c23d8cd866-medium_jpg.jpg?buster=1399901540" width="200" align="right">
 
