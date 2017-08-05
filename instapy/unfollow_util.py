@@ -159,6 +159,88 @@ def follow_given_user(browser, acc_to_follow, follow_restrict):
         sleep(3)
         return 0
 
+def follow_follower(browser, user, amount, dont_include, login, interval, follow_restrict, random):
+    """follows the given amount of users"""
+    followNum = 0
+
+    browser.get('https://www.instagram.com/' + user)
+    print('--> {} instagram account is opened...'.format(user))
+
+    #  check how many poeple we are following
+    followers = browser.find_element_by_xpath("//li[2]/a/span").text
+    followers = followers.replace(',', '').replace('.', '')
+    followers = int(followers.replace('k', '00').replace('m', '00000'))
+    sleep(3)
+
+    #  throw RuntimeWarning if we are 0 people following
+    if (followers == 0):
+        raise RuntimeWarning('There are 0 people to follow')
+
+    print('Followers: {}'.format(followers))
+
+    try:
+        followers_link = browser.find_elements_by_xpath('//header/div[2]//li[2]')
+        followers_link[0].click()
+    except BaseException as e:
+        print("followers_link error \n", str(e))
+
+    sleep(2)
+
+    # find dialog box
+    dialog = browser.find_element_by_xpath('/html/body/div[4]/div/div[2]/div/div[2]/div/div[2]')
+
+    # # scroll down the page
+    scroll_bottom(browser, dialog, amount)
+
+    # get persons, follow buttons, and length of follower pool
+    follower_list_a = dialog.find_elements_by_tag_name("a")
+    follower_list = []
+
+    for follower in follower_list_a:
+
+        if follower and hasattr(follower, 'text') and follower.text:
+            follower_list.append(follower.text)
+
+    follow_buttons = dialog.find_elements_by_tag_name('button')
+
+    # follow loop
+    try:
+        for button, follower in zip(follow_buttons, follower_list):
+            if followNum >= amount:
+                print('-------------')
+                print("--> Total unfollowNum reached it's amount given: ", followNum)
+                break
+
+            if random:
+                random_follow = randint(0,100) <= 40
+            else: 
+                random_follow = True
+
+            if follower not in dont_include and random_follow:
+                if button.text == 'Follow':
+                    button.click()
+                    followNum += 1
+                    print('--> Ongoing Follow ' + str(followNum) + ', now following: {}'.format(
+                    follower.encode('utf-8')))
+                    
+                    log_followed_pool(login, follower)
+                    sleep(interval)
+                    follow_restrict[follower] = follow_restrict.get(follower, 0) + 1
+                    sleep(3)
+
+                else:
+                    print('--> Already following: {}'.format(follower.encode('utf-8')))
+                    sleep(1)
+
+                continue
+
+            else:
+                continue
+
+    except BaseException as e:
+        print("follow loop error \n", str(e))
+
+    return followNum
 
 def dump_follow_restriction(followRes):
     """Dumps the given dictionary to a file using the json format"""

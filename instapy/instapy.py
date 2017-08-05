@@ -26,6 +26,7 @@ from .unfollow_util import follow_given_user
 from .unfollow_util import load_follow_restriction
 from .unfollow_util import dump_follow_restriction
 from .unfollow_util import set_automated_followed_pool
+from .unfollow_util import follow_follower
 from .feed_util import get_like_on_feed
 
 
@@ -612,3 +613,35 @@ class InstaPy:
 
         with open('./logs/followed.txt', 'w') as followFile:
             followFile.write(str(self.followed))
+
+    def follow_user_follower(self, users=None, amount=50, interval=40, random=False):
+        if self.aborting:
+            return self
+
+        followed = 0
+
+        users = users or []
+
+        for index, user in enumerate(users):
+            print('User [{}/{}]'.format(index + 1, len(users)))
+            print('--> {}'.format(user.encode('utf-8')))
+            self.logFile.write('User [{}/[]]'.format(index + 1, len(users)))
+            self.logFile.write('--> {}\n'.format(user.encode('utf-8')))
+
+            try:
+                followed += follow_follower(self.browser, user, amount, self.dont_include, self.automatedFollowedPool, self.username, interval, self.follow_restrict, random)
+
+            except NoSuchElementException:
+                print('Too few followers, aborting')
+                self.logFile.write('Too few followers, aborting\n')
+
+                self.aborting = True
+                return self
+            # followed +=1
+            # print('-------------')
+            # print('--> Followed from this user: {}'.format(follow))
+            print('')
+
+        print('Followed: {}'.format(followed))
+
+        return self
