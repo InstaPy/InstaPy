@@ -161,24 +161,8 @@ def follow_given_user(browser, acc_to_follow, follow_restrict):
         sleep(3)
         return 0
 
-def follow_given_user_followers(browser, user_name, amount, dont_include, login, follow_restrict):
-    browser.get('https://www.instagram.com/' + user_name)
-
+def follow_through_dialog(browser, user_name, amount, dont_include, login, follow_restrict, allfollowing):
     followNum = 0
-
-    #  check how many poeple are following this user.
-    allfollowing = formatNumber(browser.find_element_by_xpath("//li[2]/a/span").text)
-
-    #  throw RuntimeWarning if we are 0 people following this user
-    if (allfollowing == 0):
-        raise RuntimeWarning('There are 0 people to follow')
-
-    try:
-        following_link = browser.find_elements_by_xpath('//header/div[2]//li[2]')
-        following_link[0].click()
-    except BaseException as e:
-        print("following_link error \n", str(e))
-
     sleep(2)
 
     # find dialog box
@@ -234,6 +218,26 @@ def follow_given_user_followers(browser, user_name, amount, dont_include, login,
 
     except BaseException as e:
         print("follow loop error \n", str(e))
+
+    return followNum
+
+def follow_given_user_followers(browser, user_name, amount, dont_include, login, follow_restrict):
+    browser.get('https://www.instagram.com/' + user_name)
+
+    #  check how many poeple are following this user.
+    allfollowing = formatNumber(browser.find_element_by_xpath("//li[2]/a/span").text)
+
+    #  throw RuntimeWarning if we are 0 people following this user
+    if (allfollowing == 0):
+        raise RuntimeWarning('There are 0 people to follow')
+
+    try:
+        following_link = browser.find_elements_by_xpath('//header/div[2]//li[2]')
+        following_link[0].click()
+    except BaseException as e:
+        print("following_link error \n", str(e))
+
+    followNum = follow_through_dialog(browser, user_name, amount, dont_include, login, follow_restrict, allfollowing)
 
     return followNum
 
