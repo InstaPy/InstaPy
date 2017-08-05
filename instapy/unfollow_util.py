@@ -7,7 +7,7 @@ from .util import delete_line_from_file
 from .util import scroll_bottom
 from .util import formatNumber
 from .print_log_writer import log_followed_pool
-
+import random
 
 def set_automated_followed_pool(username):
     automatedFollowedPool = []
@@ -161,7 +161,7 @@ def follow_given_user(browser, acc_to_follow, follow_restrict):
         sleep(3)
         return 0
 
-def follow_through_dialog(browser, user_name, amount, dont_include, login, follow_restrict, allfollowing):
+def follow_through_dialog(browser, user_name, amount, dont_include, login, follow_restrict, allfollowing, is_random):
     followNum = 0
     sleep(2)
 
@@ -182,12 +182,22 @@ def follow_through_dialog(browser, user_name, amount, dont_include, login, follo
         if person and hasattr(person, 'text') and person.text:
             person_list.append(person.find_element_by_xpath("../../../*").find_elements_by_tag_name("a")[1].text)
 
+    if amount >= len(follow_buttons):
+        amount = len(follow_buttons)
+        print(user_name+" -> Less users to follow than requested.")
 
     # follow loop
     try:
         hasSlept = False
-
-        for button, person in zip(follow_buttons, person_list):
+        btnPerson = list(zip(follow_buttons, person_list))
+        if is_random:
+            sample = random.sample(range(0, len(follow_buttons)), amount)
+            finalBtnPerson = []
+            for num in sample:
+                finalBtnPerson.append(btnPerson[num])
+        else:
+            finalBtnPerson = btnPerson
+        for button, person in finalBtnPerson:
             if followNum >= amount:
                 print("--> Total followNum reached: ", followNum)
                 break
@@ -214,6 +224,12 @@ def follow_through_dialog(browser, user_name, amount, dont_include, login, follo
                 continue
 
             else:
+                if is_random:
+                    repickedNum = -1
+                    while repickedNum not in sample and repickedNum != -1:
+                        repickedNum = random.randint(0, len(btnPerson))
+                    sample.append(repickedNum)
+                    finalBtnPerson.append(btnPerson[repickedNum])
                 continue
 
     except BaseException as e:
@@ -221,7 +237,7 @@ def follow_through_dialog(browser, user_name, amount, dont_include, login, follo
 
     return followNum
 
-def follow_given_user_followers(browser, user_name, amount, dont_include, login, follow_restrict):
+def follow_given_user_followers(browser, user_name, amount, dont_include, login, follow_restrict, random):
     browser.get('https://www.instagram.com/' + user_name)
 
     #  check how many poeple are following this user.
@@ -237,11 +253,11 @@ def follow_given_user_followers(browser, user_name, amount, dont_include, login,
     except BaseException as e:
         print("following_link error \n", str(e))
 
-    followNum = follow_through_dialog(browser, user_name, amount, dont_include, login, follow_restrict, allfollowing)
+    followNum = follow_through_dialog(browser, user_name, amount, dont_include, login, follow_restrict, allfollowing, random)
 
     return followNum
 
-def follow_given_user_following(browser, user_name, amount, dont_include, login, follow_restrict):
+def follow_given_user_following(browser, user_name, amount, dont_include, login, follow_restrict, random):
     browser.get('https://www.instagram.com/' + user_name)
 
     #  check how many poeple are following this user.
@@ -257,7 +273,7 @@ def follow_given_user_following(browser, user_name, amount, dont_include, login,
     except BaseException as e:
         print("following_link error \n", str(e))
 
-    followNum = follow_through_dialog(browser, user_name, amount, dont_include, login, follow_restrict, allfollowing)
+    followNum = follow_through_dialog(browser, user_name, amount, dont_include, login, follow_restrict, allfollowing, random)
 
     return followNum
 
