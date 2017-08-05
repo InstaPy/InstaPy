@@ -153,8 +153,9 @@ session.follow_by_list(accs, times=1)
 
 ```python
 #follows specified amount from each given user 
-#one follow action every specified time interval
+#one follow action every specified time interval, default interval=40sec (assuming 100 follows/hour)
 #if random = True, will pick random user to follow instead of top-down sequence
+
 session.follow_user_follower(['friend1', 'friend2', 'friend3'], amount=10, interval=30, random=False)
 ```
 
