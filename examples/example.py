@@ -67,9 +67,13 @@ session.like_from_image(url='www.instagram.com/image', amount=100)
 session.like_by_tags(['#test'], amount=10, media='Video')
 
 # follows the followers of a given user
-session.follow_user_followers('friend1', amount=10)
+# The usernames can be either a list or a string
+# The amount is for each account, in this case 30 users will be followed
+# If random is false it will pick in a top-down fashion
+session.follow_user_followers(['friend1', 'friend2', 'friend3'], amount=10, random=False)
 # follows the people that a given user is following
-session.follow_user_following('friend2', amount=10)
+# Same rules as the function above
+session.follow_user_following('friend2', amount=10, random=True)
 
 session.unfollow_users(
     amount=10)  # unfollows 10 of the accounts your following -> instagram will only unfollow 10 before you'll be 'blocked
