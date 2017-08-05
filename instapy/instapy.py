@@ -629,7 +629,7 @@ class InstaPy:
             self.logFile.write('--> {}\n'.format(user.encode('utf-8')))
 
             try:
-                followed += follow_follower(self.browser, user, amount, self.dont_include, self.automatedFollowedPool, self.username, interval, self.follow_restrict, random)
+                followed += follow_follower(self.browser, user, amount, self.dont_include, self.username, interval, self.follow_restrict, random)
 
             except NoSuchElementException:
                 print('Too few followers, aborting')

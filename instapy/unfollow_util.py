@@ -158,6 +158,7 @@ def follow_given_user(browser, acc_to_follow, follow_restrict):
         print('*' * 20)
         sleep(3)
         return 0
+    
 
 def follow_follower(browser, user, amount, dont_include, login, interval, follow_restrict, random):
     """follows the given amount of users"""
