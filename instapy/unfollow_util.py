@@ -241,6 +241,25 @@ def follow_given_user_followers(browser, user_name, amount, dont_include, login,
 
     return followNum
 
+def follow_given_user_following(browser, user_name, amount, dont_include, login, follow_restrict):
+    browser.get('https://www.instagram.com/' + user_name)
+
+    #  check how many poeple are following this user.
+    allfollowing = formatNumber(browser.find_element_by_xpath("//li[3]/a/span").text)
+
+    #  throw RuntimeWarning if we are 0 people following this user
+    if (allfollowing == 0):
+        raise RuntimeWarning('There are 0 people to follow')
+
+    try:
+        following_link = browser.find_elements_by_xpath('//header/div[2]//li[3]')
+        following_link[0].click()
+    except BaseException as e:
+        print("following_link error \n", str(e))
+
+    followNum = follow_through_dialog(browser, user_name, amount, dont_include, login, follow_restrict, allfollowing)
+
+    return followNum
 
 def dump_follow_restriction(followRes):
     """Dumps the given dictionary to a file using the json format"""
