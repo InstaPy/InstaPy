@@ -88,8 +88,6 @@ class InstaPy:
             return self
         
         if self.use_firefox:
-            firefox_capabilities = DesiredCapabilities.FIREFOX
-            firefox_capabilities['marionette'] = True
             if self.firefox_profile_path is not None:
                 firefox_profile = webdriver.FirefoxProfile(self.firefox_profile_path)
             else:
@@ -98,7 +96,7 @@ class InstaPy:
             # permissions.default.image = 2: Disable images load, this setting can improve pageload & save bandwidth
             firefox_profile.set_preference('permissions.default.image', 2)
 
-            self.browser = webdriver.Firefox(firefox_profile=firefox_profile, capabilities=firefox_capabilities)
+            self.browser = webdriver.Firefox(firefox_profile=firefox_profile)
 
         else:
             chromedriver_location = './assets/chromedriver'
