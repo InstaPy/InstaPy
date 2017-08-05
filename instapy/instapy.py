@@ -21,6 +21,8 @@ from .login_util import login_user
 from .print_log_writer import log_follower_num
 from .time_util import sleep
 from .unfollow_util import unfollow
+from .unfollow_util import follow_given_user_followers
+from .unfollow_util import follow_given_user_following
 from .unfollow_util import follow_user
 from .unfollow_util import follow_given_user
 from .unfollow_util import load_follow_restriction
@@ -86,7 +88,7 @@ class InstaPy:
         """Starts local session for a selenium server. Default case scenario."""
         if self.aborting:
             return self
-        
+
         if self.use_firefox:
             firefox_capabilities = DesiredCapabilities.FIREFOX
             firefox_capabilities['marionette'] = True
@@ -543,6 +545,48 @@ class InstaPy:
 
             self.aborting = True
             return self
+
+        return self
+
+    def follow_user_followers(self, username, amount=10):
+
+        try:
+            unfollowNumber = follow_given_user_followers(self.browser, username, amount, self.dont_include, self.username, self.follow_restrict)
+            print("--> Total people followed : {} ".format(unfollowNumber))
+
+        except (TypeError, RuntimeWarning) as err:
+            if type(err) == RuntimeWarning:
+                print(u'Warning: {} , stopping follow_users'.format(err))
+                self.logFile.write('Warning: {} , stopping follow_users\n'.format(err))
+
+                return self
+            else:
+                print('Sorry, an error occured: {}'.format(err))
+                self.logFile.write('Sorry, an error occured: {}\n'.format(err))
+                self.aborting = True
+
+                return self
+
+        return self
+
+    def follow_user_following(self, username, amount=10):
+
+        try:
+            unfollowNumber = follow_given_user_following(self.browser, username, amount, self.dont_include, self.username, self.follow_restrict)
+            print("--> Total people followed : {} ".format(unfollowNumber))
+
+        except (TypeError, RuntimeWarning) as err:
+            if type(err) == RuntimeWarning:
+                print(u'Warning: {} , stopping follow_users'.format(err))
+                self.logFile.write('Warning: {} , stopping follow_users\n'.format(err))
+
+                return self
+            else:
+                print('Sorry, an error occured: {}'.format(err))
+                self.logFile.write('Sorry, an error occured: {}\n'.format(err))
+                self.aborting = True
+
+                return self
 
         return self
 
