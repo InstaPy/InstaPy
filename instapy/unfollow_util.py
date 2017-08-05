@@ -161,7 +161,7 @@ def follow_given_user(browser, acc_to_follow, follow_restrict):
         sleep(3)
         return 0
 
-def follow_through_dialog(browser, user_name, amount, dont_include, login, follow_restrict, allfollowing, is_random):
+def follow_through_dialog(browser, user_name, amount, dont_include, login, follow_restrict, allfollowing, is_random, callbacks = []):
     followNum = 0
     sleep(2)
 
@@ -217,6 +217,8 @@ def follow_through_dialog(browser, user_name, amount, dont_include, login, follo
 
                 print('--> Ongoing follow ' + str(followNum) + ', now following: {}'.format(
                     person.encode('utf-8')))
+                for callback in callbacks:
+                    callback(person.encode('utf-8'))
                 sleep(15)
                 # To only sleep once until there is the next follow
                 if hasSlept: hasSlept = False
@@ -253,7 +255,7 @@ def follow_given_user_followers(browser, user_name, amount, dont_include, login,
     except BaseException as e:
         print("following_link error \n", str(e))
 
-    followNum = follow_through_dialog(browser, user_name, amount, dont_include, login, follow_restrict, allfollowing, random)
+    followNum = follow_through_dialog(browser, user_name, amount, dont_include, login, follow_restrict, allfollowing, random, callbacks=[])
 
     return followNum
 
