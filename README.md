@@ -149,6 +149,28 @@ accs = ['therock','natgeo']
 session.follow_by_list(accs, times=1)
 ```
 
+### Follow someone else's followers
+
+```python
+# Follows the followers of each given user
+# The usernames can be either a list or a string
+# The amount is for each account, in this case 30 users will be followed
+# If random is false it will pick in a top-down fashion
+ 
+session.follow_user_followers(['friend1', 'friend2', 'friend3'], amount=10, random=False)
+```
+
+### Follow users that someone else is following
+
+```python
+# Follows the people that a given users are following
+# The usernames can be either a list or a string
+# The amount is for each account, in this case 30 users will be followed
+# If random is false it will pick in a top-down fashion
+ 
+session.follow_user_following(['friend1', 'friend2', 'friend3'], amount=10, random=False)
+```
+
 ### Unfollowing
 
 ```python
