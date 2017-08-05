@@ -19,6 +19,10 @@ session.set_comments(['Great Video!'], media='Video')
 """Follow util"""
 # default enabled=False, follows ~ every 10th user from the images
 session.set_do_follow(enabled=True, percentage=10)
+# follow some amount of user from given username's follower
+# one follow every specified interval, default interval=40 (second)
+# if random = True, will pick random user to follow instead of top-down sequence
+session.follow_user_follower(['friend1', 'friend2', 'friend3'], amount=10, interval=30, random=False)
 
 """Image Check with Image tagging api"""
 # default enabled=False , enables the checking with the clarifai api (image tagging)
