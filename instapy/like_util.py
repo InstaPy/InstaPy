@@ -170,6 +170,87 @@ def get_links_for_tag(browser, tag, amount, media=None):
 
     return links[:amount]
 
+def get_links_for_username(browser, username, amount, media=None):
+
+    print('flag 2')
+    if media is None:
+        media = ['', 'Post','Video']
+    elif media == 'Photo':
+        media = ['','Post']
+    else:
+        media = [media]
+    print('getting ', username, 'link list...')
+    browser.get('https://www.instagram.com/' + username)
+    sleep(2)
+    
+    # Clicking load more
+    body_elem = browser.find_element_by_tag_name('body')
+    sleep(2)
+
+    abort = True
+    try:
+        load_button = body_elem.find_element_by_xpath \
+            ('//a[contains(@class, "_8imhp _glz1g")]')
+    except:
+        print('Load button not found, working with current images!')
+    else:
+        abort = False
+        body_elem.send_keys(Keys.END)
+        sleep(2)
+        load_button.click()
+
+    body_elem.send_keys(Keys.HOME)
+    sleep(1)
+
+    # Get Links
+    main_elem = browser.find_element_by_tag_name('main')
+    link_elems = main_elem.find_elements_by_tag_name('a')
+    total_links = len(link_elems)
+    links = []
+    filtered_links = 0
+    try:
+        if link_elems:
+            links = [link_elem.get_attribute('href') for link_elem in link_elems
+                     if link_elem and link_elem.text in media]
+            filtered_links = len(links)
+
+    except BaseException as e:
+        print("link_elems error \n", str(e))
+
+    while (filtered_links < amount) and not abort:
+        amount_left = amount - filtered_links
+        # Average items of the right media per page loaded
+        new_per_page = ceil(12 * filtered_links / total_links)
+        if new_per_page == 0:
+            # Avoid division by zero
+            new_per_page = 1. / 12.
+        # Number of page load needed
+        new_needed = int(ceil(amount_left / new_per_page))
+
+        if new_needed > 12:
+            # Don't go bananas trying to get all of instagram!
+            new_needed = 12
+
+        for i in range(new_needed):  # add images x * 12
+            # Keep the latest window active while loading more posts
+            before_load = total_links
+            body_elem.send_keys(Keys.END)
+            sleep(1)
+            body_elem.send_keys(Keys.HOME)
+            sleep(1)
+            link_elems = main_elem.find_elements_by_tag_name('a')
+            total_links = len(link_elems)
+            abort = (before_load == total_links)
+            if abort:
+                break
+
+        links = [link_elem.get_attribute('href') for link_elem in link_elems
+                 if link_elem.text in media]
+        filtered_links = len(links)
+
+    return links[:amount]
+    
+
 
 def check_link(browser, link, dont_like, ignore_if_contains, ignore_users,
                username, like_by_followers_upper_limit, like_by_followers_lower_limit):
