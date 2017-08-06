@@ -1,4 +1,5 @@
 import re
+import random
 
 """Module that handles the like features"""
 from math import ceil
@@ -170,16 +171,21 @@ def get_links_for_tag(browser, tag, amount, media=None):
 
     return links[:amount]
 
-def get_links_for_username(browser, username, amount, media=None):
-
-    print('flag 2')
+def get_links_for_username(browser, username, amount, is_random=False, media=None):
+    """Fetches the number of links specified
+    by amount and returns a list of links""" 
     if media is None:
+        # All known media types
         media = ['', 'Post','Video']
     elif media == 'Photo':
+        # Include posts with multiple images in it
         media = ['','Post']
     else:
+        # Make it an array to use it in the following part
         media = [media]
-    print('getting ', username, 'link list...')
+
+    print('Getting ', username, 'image list...')
+    # Get  user profile page
     browser.get('https://www.instagram.com/' + username)
     sleep(2)
     
@@ -217,6 +223,10 @@ def get_links_for_username(browser, username, amount, media=None):
     except BaseException as e:
         print("link_elems error \n", str(e))
 
+    if is_random:
+        # Expanding the pooulation for better random distribution
+        amount = amount * 5
+
     while (filtered_links < amount) and not abort:
         amount_left = amount - filtered_links
         # Average items of the right media per page loaded
@@ -247,6 +257,10 @@ def get_links_for_username(browser, username, amount, media=None):
         links = [link_elem.get_attribute('href') for link_elem in link_elems
                  if link_elem.text in media]
         filtered_links = len(links)
+
+    if is_random:
+        # Shuffle the popultaion sequence
+        links = random.sample(links, amount)
 
     return links[:amount]
     
