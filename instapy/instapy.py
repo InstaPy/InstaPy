@@ -535,8 +535,8 @@ class InstaPy:
 
         return self
 
-    def like_by_user(self, usernames, amount=10, random=False):
-
+    def like_by_user(self, usernames, amount=10, random=False, media=None):
+        """Likes some amounts of images for each usernames"""
         if self.aborting:
             return self
 
@@ -554,8 +554,7 @@ class InstaPy:
             self.logFile.write('--> {}\n'.format(username.encode('utf-8')))
 
             try:
-                print('flag 1')
-                links = get_links_for_username(self.browser, username, amount)
+                links = get_links_for_username(self.browser, username, amount, random, media)
             except NoSuchElementException:
                 print('Too few images, aborting')
                 self.logFile.write('Too few images, aborting\n')
@@ -563,9 +562,17 @@ class InstaPy:
                 self.aborting = True
                 return self
 
+                print(links)
+
             for i, link in enumerate(links):
-                print('[{}/{}]'.format(i + 1, len(links)))
-                self.logFile.write('[{}/{}]'.format(i + 1, len(links)))
+                # Check if target has reached
+                if liked_img >= amount:
+                    print('-------------')
+                    print("--> Total liked image reached it's amount given: ", liked_img)
+                    break
+
+                print('[{}/{}]'.format(liked_img + 1, amount))
+                self.logFile.write('[{}/{}]'.format(liked_img + 1, amount))
                 self.logFile.write(link)
 
                 try:
@@ -593,7 +600,8 @@ class InstaPy:
                                 except Exception as err:
                                     print('Image check error: {}'.format(err))
                                     self.logFile.write('Image check error: {}\n'.format(err))
-                            if self.do_comment and username not in self.dont_include \ and checked_img and commenting:
+                            if self.do_comment and user_name not in self.dont_include \
+                                    and checked_img and commenting:
                                 if temp_comments:
                                      # Use clarifai related comments only!
                                     comments = temp_comments
@@ -606,13 +614,6 @@ class InstaPy:
                                 print('--> Not commented')
                                 sleep(1)
 
-                            if self.do_follow and user_name not in self.dont_include \
-                                    and checked_img and following \
-                                    and self.follow_restrict.get(user_name, 0) < self.follow_times:
-                                followed += follow_user(self.browser, self.follow_restrict, self.username, user_name)
-                            else:
-                                print('--> Not following')
-                                sleep(1)
                         else:
                             already_liked += 1
                     
@@ -626,6 +627,10 @@ class InstaPy:
                 print('')
                 self.logFile.write('\n')
 
+            if liked_img < amount:
+                print('-------------')
+                print("--> Given amount not fullfilled, image pool reached its end")
+
         print('Liked: {}'.format(liked_img))
         print('Already Liked: {}'.format(already_liked))
         print('Inappropriate: {}'.format(inap_img))
@@ -635,8 +640,6 @@ class InstaPy:
         self.logFile.write('Already Liked: {}\n'.format(already_liked))
         self.logFile.write('Inappropriate: {}\n'.format(inap_img))
         self.logFile.write('Commented: {}\n'.format(commented))
-
-        self.followed += followed
 
         return self
 
