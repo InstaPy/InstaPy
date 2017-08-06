@@ -176,7 +176,7 @@ def follow_through_dialog(browser, user_name, amount, dont_include, login, follo
     follow_buttons = dialog.find_elements_by_xpath("//div/div/span/button[text()='Follow']")
 
     person_list = []
-
+    followed_person_list = []
     for person in follow_buttons:
 
         if person and hasattr(person, 'text') and person.text:
@@ -211,6 +211,7 @@ def follow_through_dialog(browser, user_name, amount, dont_include, login, follo
             if person not in dont_include:
 
                 followNum += 1
+                followed_person_list.append(str(person))
                 button.click()
                 log_followed_pool(login, user_name)
                 follow_restrict[user_name] = follow_restrict.get(user_name, 0) + 1
@@ -237,7 +238,7 @@ def follow_through_dialog(browser, user_name, amount, dont_include, login, follo
     except BaseException as e:
         print("follow loop error \n", str(e))
 
-    return followNum
+    return followed_person_list
 
 def follow_given_user_followers(browser, user_name, amount, dont_include, login, follow_restrict, random):
     browser.get('https://www.instagram.com/' + user_name)
