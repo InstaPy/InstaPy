@@ -29,7 +29,7 @@ from .unfollow_util import load_follow_restriction
 from .unfollow_util import dump_follow_restriction
 from .unfollow_util import set_automated_followed_pool
 from .feed_util import get_like_on_feed
-
+from .text_user import text_msg
 
 class InstaPy:
     """Class to be instantiated to use the script"""
@@ -646,6 +646,7 @@ class InstaPy:
         if self.nogui:
             self.display.stop()
 
+        text_msg()
         print('')
         print('Session ended')
         print('-------------')
