@@ -71,9 +71,27 @@ session.like_by_tags(['#test'], amount=10, media='Video')
 # The amount is for each account, in this case 30 users will be followed
 # If random is false it will pick in a top-down fashion
 session.follow_user_followers(['friend1', 'friend2', 'friend3'], amount=10, random=False)
+
+# For every user of the 20 randomly selected, move to their profile
+# and randomly choose 10 pictures to be liked.
+# Take into account the other set options like the comment rate
+# and the filtering for inappropriate words or users
+session.set_user_interact(amount=10, random=True)
+session.follow_user_followers(['friend1', 'friend2', 'friend3'], amount=20, random=False, interact=True)
+
+
+
 # follows the people that a given user is following
 # Same rules as the function above
 session.follow_user_following('friend2', amount=10, random=True)
+
+# For every user of the 20 randomly selected, move to their profile
+# and randomly choose 10 pictures to be liked.
+# Take into account the other set options like the comment rate
+# and the filtering for inappropriate words or users
+session.set_user_interact(amount=10, random=True)
+session.follow_user_following(['friend1', 'friend2', 'friend3'], amount=20, random=False, interact=True)
+
 
 session.unfollow_users(
     amount=10)  # unfollows 10 of the accounts your following -> instagram will only unfollow 10 before you'll be 'blocked
