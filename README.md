@@ -108,6 +108,10 @@ session.like_from_image(url='www.instagram.com/image', amount=50, media='Photo')
 session.like_by_tags(['#cat'], amount=15, media='Video')
 session.like_from_image(url='www.instagram.com/image', amount=15, media='Video')
 
+#Likes 10 random photo of geach given user
+
+session.like_by_user(usernames=['friend1', 'friend2', 'friend3'], amount=10, random=True, media='photo')
+
 session.end()
 ```
 
@@ -169,6 +173,21 @@ session.follow_user_followers(['friend1', 'friend2', 'friend3'], amount=10, rand
 # If random is false it will pick in a top-down fashion
  
 session.follow_user_following(['friend1', 'friend2', 'friend3'], amount=10, random=False)
+```
+
+### Interact with someone else's followers/following
+
+```python
+# Follows the people that a given users are following
+# The usernames can be either a list or a string
+# The amount is for each account, in this case 30 users will be followed
+# Like and comment 5 random posts of each new followed users
+# If random is false it will like and comment posts in a top-down fashion
+
+session.set_do_comment(enabled=True, percentage=25)
+session.set_comments(['Awesome', 'Really Cool', 'I like your stuff'])
+session.set_user_interact(amount=5, random=True) 
+session.follow_user_followers(['friend1', 'friend2', 'friend3'], amount=10, random=False, interact=True)
 ```
 
 ### Unfollowing
