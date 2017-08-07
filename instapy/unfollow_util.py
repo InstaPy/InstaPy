@@ -164,9 +164,9 @@ def follow_given_user(browser, acc_to_follow, follow_restrict):
 def follow_through_dialog(browser, user_name, amount, dont_include, login, follow_restrict, allfollowing, is_random, callbacks = []):
     followNum = 0
     sleep(2)
+    person_followed = []
 
     # find dialog box
-
     dialog = browser.find_element_by_xpath('/html/body/div[4]/div/div[2]/div/div[2]/div/div[2]')
 
     # scroll down the page
@@ -209,8 +209,9 @@ def follow_through_dialog(browser, user_name, amount, dont_include, login, follo
                 continue
 
             if person not in dont_include:
-
                 followNum += 1
+                # Register this session's followed user for further interaction
+                person_followed.append(person)
                 button.click()
                 log_followed_pool(login, user_name)
                 follow_restrict[user_name] = follow_restrict.get(user_name, 0) + 1
@@ -233,11 +234,11 @@ def follow_through_dialog(browser, user_name, amount, dont_include, login, follo
                     sample.append(repickedNum)
                     finalBtnPerson.append(btnPerson[repickedNum])
                 continue
-
+       
     except BaseException as e:
         print("follow loop error \n", str(e))
 
-    return followNum
+    return person_followed
 
 def follow_given_user_followers(browser, user_name, amount, dont_include, login, follow_restrict, random):
     browser.get('https://www.instagram.com/' + user_name)
@@ -255,9 +256,9 @@ def follow_given_user_followers(browser, user_name, amount, dont_include, login,
     except BaseException as e:
         print("following_link error \n", str(e))
 
-    followNum = follow_through_dialog(browser, user_name, amount, dont_include, login, follow_restrict, allfollowing, random, callbacks=[])
+    personFollowed = follow_through_dialog(browser, user_name, amount, dont_include, login, follow_restrict, allfollowing, random, callbacks=[])
 
-    return followNum
+    return personFollowed
 
 def follow_given_user_following(browser, user_name, amount, dont_include, login, follow_restrict, random):
     browser.get('https://www.instagram.com/' + user_name)
@@ -275,9 +276,9 @@ def follow_given_user_following(browser, user_name, amount, dont_include, login,
     except BaseException as e:
         print("following_link error \n", str(e))
 
-    followNum = follow_through_dialog(browser, user_name, amount, dont_include, login, follow_restrict, allfollowing, random)
+    personFollowed = follow_through_dialog(browser, user_name, amount, dont_include, login, follow_restrict, allfollowing, random)
 
-    return followNum
+    return personFollowed
 
 def dump_follow_restriction(followRes):
     """Dumps the given dictionary to a file using the json format"""

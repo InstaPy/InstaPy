@@ -17,6 +17,7 @@ from .like_util import get_links_for_tag
 from .like_util import get_tags
 from .like_util import get_links_for_location
 from .like_util import like_image
+from .like_util import get_links_for_username
 from .login_util import login_user
 from .print_log_writer import log_follower_num
 from .time_util import sleep
@@ -206,13 +207,13 @@ class InstaPy:
 
         return self
 
-    def set_like_by_user(self, amount=10, random=False):
-        """Define if posts of given user should be interacted""""
+    def set_user_interact(self, amount=10, random=False):
+        """Define if posts of given user should be interacted"""
         if self.aborting:
             return self
 
-        self.like_by_user_amount = amount
-        self.like_by_user_random = random
+        self.user_interact_amount = amount
+        self.user_interact_random = random
 
         return self
 
@@ -540,7 +541,7 @@ class InstaPy:
         if self.aborting:
             return self
 
-        liked_img = 0
+        total_liked_img = 0
         already_liked = 0
         inap_img = 0 
         commented = 0
@@ -562,16 +563,21 @@ class InstaPy:
                 self.aborting = True
                 return self
 
-                print(links)
+            if links == False:
+                continue
+
+            # Reset like counter for every username 
+            liked_img = 0
 
             for i, link in enumerate(links):
                 # Check if target has reached
                 if liked_img >= amount:
                     print('-------------')
                     print("--> Total liked image reached it's amount given: ", liked_img)
+                    print('')
                     break
 
-                print('[{}/{}]'.format(liked_img + 1, amount))
+                print('Post [{}/{}]'.format(liked_img + 1, amount))
                 self.logFile.write('[{}/{}]'.format(liked_img + 1, amount))
                 self.logFile.write(link)
 
@@ -585,8 +591,9 @@ class InstaPy:
                         liked = like_image(self.browser)
 
                         if liked:
+                            total_liked_img += 1
                             liked_img += 1
-                            check_image = True
+                            checked_img = True
                             temp_comments = []
                             commenting = randint(0, 100) <= self.comment_percentage
 
@@ -630,8 +637,9 @@ class InstaPy:
             if liked_img < amount:
                 print('-------------')
                 print("--> Given amount not fullfilled, image pool reached its end")
+                print('')
 
-        print('Liked: {}'.format(liked_img))
+        print('Liked: {}'.format(total_liked_img))
         print('Already Liked: {}'.format(already_liked))
         print('Inappropriate: {}'.format(inap_img))
         print('Commented: {}'.format(commented))
@@ -666,13 +674,15 @@ class InstaPy:
 
         return self
 
-    def follow_user_followers(self, usernames, amount=10, random=False):
+    def follow_user_followers(self, usernames, amount=10, random=False, interact=False):
         unfollowNumber = 0
+        userFollowed = []
         if not isinstance(usernames, list):
             usernames = [usernames]
         try:
             for user in usernames:
-                unfollowNumber += follow_given_user_followers(self.browser, user, amount, self.dont_include, self.username, self.follow_restrict, random)
+                userFollowed += follow_given_user_followers(self.browser, user, amount, self.dont_include, self.username, self.follow_restrict, random)
+                unfollowNumber += len(userFollowed)
             print("--> Total people followed : {} ".format(unfollowNumber))
 
         except (TypeError, RuntimeWarning) as err:
@@ -687,16 +697,23 @@ class InstaPy:
                 self.aborting = True
 
                 return self
+
+        if interact:
+            print('--> User followed: {}'.format(userFollowed))
+            print('')
+            self.like_by_user(userFollowed, self.user_interact_amount, self.user_interact_random)
 
         return self
 
-    def follow_user_following(self, usernames, amount=10, random=False):
+    def follow_user_following(self, usernames, amount=10, random=False, interact=False):
         unfollowNumber = 0
+        userFollowed = []
         if not isinstance(usernames, list):
             usernames = [usernames]
         try:
             for user in usernames:
-                unfollowNumber += follow_given_user_following(self.browser, user, amount, self.dont_include, self.username, self.follow_restrict, random)
+                userFollowed += follow_given_user_following(self.browser, user, amount, self.dont_include, self.username, self.follow_restrict, random)
+                unfollowNumber += len(userFollowed)
             print("--> Total people followed : {} ".format(unfollowNumber))
 
         except (TypeError, RuntimeWarning) as err:
@@ -711,6 +728,11 @@ class InstaPy:
                 self.aborting = True
 
                 return self
+
+        if interact:
+            print('--> User followed: {}'.format(userFollowed))
+            print('')
+            self.like_by_user(userFollowed, self.user_interact_amount, self.user_interact_random)
 
         return self
 
