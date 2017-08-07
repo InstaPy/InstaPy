@@ -141,6 +141,17 @@ def follow_user(browser, follow_restrict, login, user_name):
         sleep(1)
         return 0
 
+def unfollow_user(browser):
+    """Unfollows the user of the currently opened image"""
+
+    unfollow_button = browser.find_element_by_xpath("//article/header/span/button")
+
+    if unfollow_button.text == 'Following':
+        unfollow_button.click()
+        print('--> User unfollowed due to Inappropriate Content')
+        sleep(3)
+        return 1
+
 
 def follow_given_user(browser, acc_to_follow, follow_restrict):
     """Follows a given user."""
