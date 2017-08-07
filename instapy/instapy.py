@@ -3,6 +3,8 @@ from datetime import datetime
 from os import environ
 
 from random import randint
+from random import sample
+from math import ceil
 from pyvirtualdisplay import Display
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
@@ -70,6 +72,11 @@ class InstaPy:
         self.dont_like = ['sex', 'nsfw']
         self.ignore_if_contains = []
         self.ignore_users = []
+
+        self.user_interact_amount = 0
+        self.user_interact_media = None
+        self.user_interact_percentage = 0
+        self.user_interact_random = False
 
         self.use_clarifai = False
         self.clarifai_secret = None
@@ -207,13 +214,15 @@ class InstaPy:
 
         return self
 
-    def set_user_interact(self, amount=10, random=False):
+    def set_user_interact(self, amount=10, percentage=50, random=False, media=None):
         """Define if posts of given user should be interacted"""
         if self.aborting:
             return self
 
         self.user_interact_amount = amount
         self.user_interact_random = random
+        self.user_interact_percentage = percentage
+        self.user_interact_media = media
 
         return self
 
@@ -536,7 +545,7 @@ class InstaPy:
 
         return self
 
-    def like_by_user(self, usernames, amount=10, random=False, media=None):
+    def like_by_users(self, usernames, amount=10, random=False, media=None):
         """Likes some amounts of images for each usernames"""
         if self.aborting:
             return self
@@ -557,11 +566,10 @@ class InstaPy:
             try:
                 links = get_links_for_username(self.browser, username, amount, random, media)
             except NoSuchElementException:
-                print('Too few images, aborting')
-                self.logFile.write('Too few images, aborting\n')
+                print('Element not found, skipping this username')
+                self.logFile.write('Element not found, skipping this username\n')
 
-                self.aborting = True
-                return self
+                continue
 
             if links == False:
                 continue
@@ -644,7 +652,7 @@ class InstaPy:
         print('Inappropriate: {}'.format(inap_img))
         print('Commented: {}'.format(commented))
 
-        self.logFile.write('Liked: {}\n'.format(liked_img))
+        self.logFile.write('Liked: {}\n'.format(total_liked_img))
         self.logFile.write('Already Liked: {}\n'.format(already_liked))
         self.logFile.write('Inappropriate: {}\n'.format(inap_img))
         self.logFile.write('Commented: {}\n'.format(commented))
@@ -699,7 +707,8 @@ class InstaPy:
         if interact:
             print('--> User followed: {}'.format(userFollowed))
             print('')
-            self.like_by_user(userFollowed, self.user_interact_amount, self.user_interact_random)
+            userFollowed = sample(userFollowed, ceil(self.user_interact_percentage*len(userFollowed)/100))
+            self.like_by_users(userFollowed, self.user_interact_amount, self.user_interact_random, self.user_interact_media)
 
         return self
 
@@ -728,7 +737,8 @@ class InstaPy:
         if interact:
             print('--> User followed: {}'.format(userFollowed))
             print('')
-            self.like_by_user(userFollowed, self.user_interact_amount, self.user_interact_random)
+            userFollowed = sample(userFollowed, ceil(self.user_interact_percentage*len(userFollowed)/100))
+            self.like_by_users(userFollowed, self.user_interact_amount, self.user_interact_random, self.user_interact_media)
 
         return self
 
