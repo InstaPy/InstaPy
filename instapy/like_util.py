@@ -185,15 +185,30 @@ def get_links_for_username(browser, username, amount, is_random=False, media=Non
         media = [media]
 
     print('Getting ', username, 'image list...')
+
     # Get  user profile page
     browser.get('https://www.instagram.com/' + username)
     sleep(2)
     
-    # Clicking load more
     body_elem = browser.find_element_by_tag_name('body')
+
+    try:
+        is_private = body_elem.find_element_by_xpath \
+                ('//h2[@class="_glq0k"]')
+    except:
+        print('Interaction begin...')
+        print('')
+    else:
+        if is_private:
+            print('This user is private...')
+            print('')
+            return False
+
     sleep(2)
 
     abort = True
+    
+    # Clicking load more
     try:
         load_button = body_elem.find_element_by_xpath \
             ('//a[contains(@class, "_8imhp _glz1g")]')
@@ -206,7 +221,7 @@ def get_links_for_username(browser, username, amount, is_random=False, media=Non
         load_button.click()
 
     body_elem.send_keys(Keys.HOME)
-    sleep(1)
+    sleep(2)
 
     # Get Links
     main_elem = browser.find_element_by_tag_name('main')
@@ -259,8 +274,8 @@ def get_links_for_username(browser, username, amount, is_random=False, media=Non
         filtered_links = len(links)
 
     if is_random:
-        # Shuffle the popultaion sequence
-        links = random.sample(links, amount)
+        # Shuffle the population index
+        links = random.sample(links, filtered_links)
 
     return links[:amount]
     
