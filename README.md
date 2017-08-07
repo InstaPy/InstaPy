@@ -109,7 +109,7 @@ session.like_by_tags(['#cat'], amount=15, media='Video')
 session.like_from_image(url='www.instagram.com/image', amount=15, media='Video')
 
 #Likes 10 random pictures of user's profiles
-session.like_by_users(['natgeo', 'geo'], amount=10, random=True)
+session.like_by_user(['natgeo', 'geo'], amount=10, random=True)
 
 session.end()
 ```

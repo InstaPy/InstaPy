@@ -10,18 +10,10 @@ import random
 
 def get_posts_by_user(browser, user_name, amount=10, random=False):
     userlink = 'https://www.instagram.com/' + user_name
-    browser.get(userlink) #//*[@id="react-root"]/section/main/article/ul/li[1]/span/span
+    browser.get(userlink)
     postCount = formatNumber(browser.find_element_by_xpath("//li[1]/span/span").text)
 
     body_elem = browser.find_element_by_tag_name('body')
-
-
-    #//*[@id="react-root"]/section/main/article/div[2]/div[1]/div[1]/div[1]/a/div
-    #//*[@id="react-root"]/section/main/article/div[2]/div[1]/div[1]/div[1]/a/div/div[1]/img
-    #browser.find_elements_by_xpath("//div/div/div/a/div")
-
-    #posts = browser.find_elements_by_xpath("//div/div/div/a/div")
-
 
     oldPosY = -1
     posY = int(browser.execute_script("return window.scrollY;"))
@@ -37,13 +29,9 @@ def get_posts_by_user(browser, user_name, amount=10, random=False):
         posY = int(browser.execute_script("return window.scrollY;"))
 
 
-
-
     posts = browser.find_elements_by_xpath('//*[@id="react-root"]/section/main/article/div/div/div/div/a')
     posts = [x.get_attribute('href') for x in posts]
 
-    #posts[x].get_attribute('href')
-    #print("POST COUNT: " + str(len(posts)))
     return posts
 
 

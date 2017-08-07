@@ -66,6 +66,9 @@ session.like_from_image(url='www.instagram.com/image', amount=100)
 # media filtering works here as well
 session.like_by_tags(['#test'], amount=10, media='Video')
 
+# Likes 10 random posts from friend1
+session.like_by_user(["friend1"], amount=10, random=True)
+
 # follows the followers of a given user
 # The usernames can be either a list or a string
 # The amount is for each account, in this case 30 users will be followed
