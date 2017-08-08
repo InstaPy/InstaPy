@@ -12,7 +12,7 @@ import random
 LIKE_TAG_CLASS = 'coreSpriteHeartOpen'
 
 
-def get_like_on_feed(browser, amount):
+def get_like_on_feed(browser, amount, scrolls = 10 ):
     '''
         browser - the selenium browser element
         amount - total amount of likes to perform
@@ -26,7 +26,7 @@ def get_like_on_feed(browser, amount):
     # get like buttons
     likes_performed = 0
 
-    while likes_performed <= amount:
+    while (likes_performed <= amount and scrolls > 0):
         # get the like buttons
         like_buttons = []
 
@@ -49,3 +49,4 @@ def get_like_on_feed(browser, amount):
 
         print('---> Total Likes uptil now ->', likes_performed)
         browser.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+        scrolls -=1 
