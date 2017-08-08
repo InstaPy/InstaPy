@@ -4,8 +4,36 @@ import re
 from math import ceil
 from re import findall
 from selenium.webdriver.common.keys import Keys
-
+from .util import formatNumber
 from .time_util import sleep
+import random
+
+def get_posts_by_user(browser, user_name, amount=10, random=False):
+    userlink = 'https://www.instagram.com/' + user_name
+    browser.get(userlink)
+    postCount = formatNumber(browser.find_element_by_xpath("//li[1]/span/span").text)
+
+    body_elem = browser.find_element_by_tag_name('body')
+
+    oldPosY = -1
+    posY = int(browser.execute_script("return window.scrollY;"))
+    while oldPosY != posY:
+        oldPosY = posY
+        loadMoreBtn = browser.find_elements_by_xpath("//a[text()='Load more']")
+        if len(loadMoreBtn) > 0:
+            print("---> Load more button found.")
+            loadMoreBtn[0].click()
+            sleep(1)
+        body_elem.send_keys(Keys.END)
+        sleep(1)
+        posY = int(browser.execute_script("return window.scrollY;"))
+
+
+    posts = browser.find_elements_by_xpath('//*[@id="react-root"]/section/main/article/div/div/div/div/a')
+    posts = [x.get_attribute('href') for x in posts]
+
+    return posts
+
 
 
 def get_links_for_location(browser, location, amount, media=None):
@@ -298,6 +326,7 @@ def like_image(browser):
     else:
         print('--> Invalid Like Element!')
         return False
+
 
 
 def get_tags(browser, url):

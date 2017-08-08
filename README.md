@@ -108,6 +108,9 @@ session.like_from_image(url='www.instagram.com/image', amount=50, media='Photo')
 session.like_by_tags(['#cat'], amount=15, media='Video')
 session.like_from_image(url='www.instagram.com/image', amount=15, media='Video')
 
+#Likes 10 random pictures of user's profiles
+session.like_by_user(['natgeo', 'geo'], amount=10, random=True)
+
 session.end()
 ```
 
@@ -156,8 +159,18 @@ session.follow_by_list(accs, times=1)
 # The usernames can be either a list or a string
 # The amount is for each account, in this case 30 users will be followed
 # If random is false it will pick in a top-down fashion
- 
+
 session.follow_user_followers(['friend1', 'friend2', 'friend3'], amount=10, random=False)
+```
+
+
+```python
+# For every user of the 20 randomly selected, move to their profile
+# and randomly choose 10 pictures to be liked.
+# Take into account the other set options like the comment rate
+# and the filtering for inappropriate words or users
+session.set_user_interact(amount=10, random=True)
+session.follow_user_followers(['friend1', 'friend2', 'friend3'], amount=20, random=False, interact=True)
 ```
 
 ### Follow users that someone else is following
@@ -167,8 +180,18 @@ session.follow_user_followers(['friend1', 'friend2', 'friend3'], amount=10, rand
 # The usernames can be either a list or a string
 # The amount is for each account, in this case 30 users will be followed
 # If random is false it will pick in a top-down fashion
- 
+
 session.follow_user_following(['friend1', 'friend2', 'friend3'], amount=10, random=False)
+```
+
+
+```python
+# For every user of the 20 randomly selected, move to their profile
+# and randomly choose 10 pictures to be liked.
+# Take into account the other set options like the comment rate
+# and the filtering for inappropriate words or users
+session.set_user_interact(amount=10, random=True)
+session.follow_user_following(['friend1', 'friend2', 'friend3'], amount=20, random=False, interact=True)
 ```
 
 ### Unfollowing
@@ -406,7 +429,7 @@ docker-compose up -d --build
 
 That's all! At this step, you are already successfully running your personal bot!
 
-### 3. See what your bot can do right now 
+### 3. See what your bot can do right now
 
 Run your VNC viewer, and type address and port `localhost:5900`. The password is `secret`.
 
@@ -431,7 +454,7 @@ Use it to help us with development and test instapy! `docker-dev.yml` file.
 docker-compose -f docker-dev.yml up -d
 ```
 
-After striking this command, you can access your bot by VNC on the adress  `localhost:5901`, the password is `secret`. 
+After striking this command, you can access your bot by VNC on the adress  `localhost:5901`, the password is `secret`.
 
 But there is more! There is a fully accessible bash console with all code mounted at the path `/code`. When you hack some files they are dynamically updated inside your container.
 
