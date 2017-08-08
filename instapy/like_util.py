@@ -33,7 +33,7 @@ def get_links_for_location(browser, location, amount, media=None):
     abort = True
     try:
         load_button = body_elem.find_element_by_xpath \
-            ('//a[contains(@class, "_8imhp _glz1g")]')
+            ('//a[contains(@class, "_1cr2e _epyes")]')
     except:
         print('Load button not found, working with current images!')
     else:
@@ -111,7 +111,7 @@ def get_links_for_tag(browser, tag, amount, media=None):
     abort = True
     try:
         load_button = body_elem.find_element_by_xpath \
-            ('//a[contains(@class, "_8imhp _glz1g")]')
+            ('//a[contains(@class, "_1cr2e _epyes")]')
     except:
         print('Load button not found, working with current images!')
     else:
