@@ -214,9 +214,12 @@ Example:
 ### Feeds
 
 ```python
-#This is used to perform likes on your own feeds, amount specifies how many total likes you want to perform
+# This is used to perform likes on your own feeds
+# amount=100  specifies how many total likes you want to perform
+# randomize=True randomly skips posts to be liked on your feed
+# unfollow=True unfollows the author of a post which was considered inappropriate
 
-session.like_by_feed(amount=100)
+session.like_by_feed(amount=100, randomize=True, unfollow=True)
 ```
 
 ### Restricting Likes
