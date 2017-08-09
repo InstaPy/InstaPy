@@ -3,9 +3,9 @@ the image for invalid content"""
 from clarifai.client import ClarifaiApi
 
 
-def check_image(browser, clarifai_id, clarifai_secret, img_tags, full_match=False):
+def check_image(browser, clarifai_api_key, img_tags, full_match=False):
     """Uses the link to the image to check for invalid content in the image"""
-    clarifai_api = ClarifaiApi(clarifai_id, clarifai_secret)
+    clarifai_api = ClarifaiApi(clarifai_api_key)
 
     img_link = get_imagelink(browser)
     result = clarifai_api.tag_image_urls(img_link)
