@@ -605,6 +605,7 @@ class InstaPy:
                             checked_img = True
                             temp_comments = []
                             commenting = randint(0, 100) <= self.comment_percentage
+                            following = randint(0, 100) <= self.follow_percentage
 
                             if self.use_clarifai and (following or commenting):
                                 try:
