@@ -21,6 +21,8 @@ Head over to https://github.com/timgrossmann/InstaPy/wiki/Reporting-An-Issue to 
 
 #### [InstaPy Twitter](https://twitter.com/InstaPy) | [My Twitter](https://twitter.com/timigrossmann)
 
+#### [SignUp for the InstaPy Newsletter here!](http://eepurl.com/cZbV_v)
+
 #### [How it works (Medium)](https://medium.freecodecamp.com/my-open-source-instagram-bot-got-me-2-500-real-followers-for-5-in-server-costs-e40491358340)
 #### [Check out the talk](https://youtu.be/4TmKFZy-ioQ)
 
