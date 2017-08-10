@@ -372,8 +372,8 @@ class InstaPy:
                             if self.use_clarifai and (following or commenting):
                                 try:
                                     checked_img, temp_comments = \
-                                        check_image(self.browser, self.clarifai_api_key,
-                                                    self.clarifai_secret,
+                                        check_image(self.browser,
+                                                    self.clarifai_api_key,
                                                     self.clarifai_img_tags,
                                                     self.clarifai_full_match)
                                 except Exception as err:
@@ -483,8 +483,8 @@ class InstaPy:
                             if self.use_clarifai and (following or commenting):
                                 try:
                                     checked_img, temp_comments = \
-                                        check_image(self.browser, self.clarifai_api_key,
-                                                    self.clarifai_secret,
+                                        check_image(self.browser,
+                                                    self.clarifai_api_key,
                                                     self.clarifai_img_tags,
                                                     self.clarifai_full_match)
                                 except Exception as err:
@@ -603,8 +603,8 @@ class InstaPy:
                             if self.use_clarifai and (following or commenting):
                                 try:
                                     checked_img, temp_comments = \
-                                        check_image(self.browser, self.clarifai_api_key,
-                                                    self.clarifai_secret,
+                                        check_image(self.browser,
+                                                    self.clarifai_api_key,
                                                     self.clarifai_img_tags,
                                                     self.clarifai_full_match)
                                 except Exception as err:
