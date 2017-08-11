@@ -315,7 +315,7 @@ InstaPy(username='test', password='test')\
 #if api_key is not set, it will get the environment Variables
 # 'CLARIFAI_API_KEY'
 
-session.set_use_clarifai(enabled=True, secret='xyz', proj_id='123')
+session.set_use_clarifai(enabled=True, api_key='xxx')
 ```
 ### Filtering inappropriate images
 
@@ -645,7 +645,7 @@ InstaPy(username='test', password='test')\
 #if secret and proj_id are not set, it will get the environment Variables
 # 'CLARIFAI_API_KEY'
 
-session.set_use_clarifai(enabled=True, secret='xyz', proj_id='123')
+session.set_use_clarifai(enabled=True, api_key='xxx')
 ```
 ##### Filtering inappropriate images
 

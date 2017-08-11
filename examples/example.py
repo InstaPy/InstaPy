@@ -24,7 +24,7 @@ session.set_do_follow(enabled=True, percentage=10)
 # default enabled=False , enables the checking with the clarifai api (image tagging)
 # if secret and proj_id are not set, it will get the environment Variables
 # 'CLARIFAI_API_KEY'
-session.set_use_clarifai(enabled=True, secret='xyz', proj_id='123')
+session.set_use_clarifai(enabled=True, api_key='xxx')
 #                                        ^
 # ^If specified once, you don't need to add them again
 
