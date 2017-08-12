@@ -7,6 +7,7 @@ from .util import delete_line_from_file
 from .util import scroll_bottom
 from .util import formatNumber
 from .print_log_writer import log_followed_pool
+from selenium.webdriver.common.keys import Keys
 import random
 
 def set_automated_followed_pool(username):
@@ -125,7 +126,13 @@ def unfollow(browser, username, amount, dont_include, onlyInstapyFollowed, autom
 def follow_user(browser, follow_restrict, login, user_name):
     """Follows the user of the currently opened image"""
 
-    follow_button = browser.find_element_by_xpath("//article/header/span/button")
+    follow_button = None
+    flwBtn = browser.find_elements_by_xpath("//article/header/span/button")
+    if len(flwBtn) == 0:
+        flwBtn = browser.find_elements_by_xpath('//*[@id="react-root"]/section/main/article/header/div[2]/div[1]/span/span[1]/button')
+        body_elem = browser.find_element_by_tag_name('body')
+        body_elem.send_keys(Keys.HOME)
+    follow_button = flwBtn[0]
     sleep(2)
 
     if follow_button.text == 'Follow':
@@ -245,11 +252,110 @@ def follow_through_dialog(browser, user_name, amount, dont_include, login, follo
                     sample.append(repickedNum)
                     finalBtnPerson.append(btnPerson[repickedNum])
                 continue
-       
+
     except BaseException as e:
         print("follow loop error \n", str(e))
 
     return person_followed
+
+def get_given_user_followers(browser, user_name, amount, dont_include, login, follow_restrict, is_random):
+    browser.get('https://www.instagram.com/' + user_name)
+
+    #  check how many poeple are following this user.
+    allfollowing = formatNumber(browser.find_element_by_xpath("//li[2]/a/span").text)
+
+    #  throw RuntimeWarning if we are 0 people following this user
+    if (allfollowing == 0):
+        raise RuntimeWarning('There are 0 people to follow')
+
+    try:
+        following_link = browser.find_elements_by_xpath('//header/div[2]//li[2]')
+        following_link[0].click()
+    except BaseException as e:
+        print("following_link error \n", str(e))
+
+    followNum = 0
+    sleep(2)
+    person_followed = []
+
+    # find dialog box
+    dialog = browser.find_element_by_xpath('/html/body/div[4]/div/div[2]/div/div[2]/div/div[2]')
+
+    # scroll down the page
+    scroll_bottom(browser, dialog, allfollowing)
+
+    #Get follow buttons. This approch will find the follow buttons and ignore the Unfollow/Requested buttons.
+    follow_buttons = dialog.find_elements_by_xpath("//div/div/span/button[text()='Follow']")
+    person_list = []
+
+    if amount >= len(follow_buttons):
+        amount = len(follow_buttons)
+        print(user_name+" -> Less users to follow than requested.")
+
+    finalBtnPerson = []
+    if is_random:
+        sample = random.sample(range(0, len(follow_buttons)), amount)
+
+        for num in sample:
+            finalBtnPerson.append(follow_buttons[num])
+    else:
+        finalBtnPerson = follow_buttons[0:amount]
+    for person in finalBtnPerson:
+
+        if person and hasattr(person, 'text') and person.text:
+            person_list.append(person.find_element_by_xpath("../../../*").find_elements_by_tag_name("a")[1].text)
+
+    return person_list
+
+
+def get_given_user_following(browser, user_name, amount, dont_include, login, follow_restrict, is_random):
+    browser.get('https://www.instagram.com/' + user_name)
+
+    #  check how many poeple are following this user.
+    allfollowing = formatNumber(browser.find_element_by_xpath("//li[3]/a/span").text)
+
+    #  throw RuntimeWarning if we are 0 people following this user
+    if (allfollowing == 0):
+        raise RuntimeWarning('There are 0 people to follow')
+
+    try:
+        following_link = browser.find_elements_by_xpath('//header/div[2]//li[3]')
+        following_link[0].click()
+    except BaseException as e:
+        print("following_link error \n", str(e))
+
+    followNum = 0
+    sleep(2)
+    person_followed = []
+
+    # find dialog box
+    dialog = browser.find_element_by_xpath('/html/body/div[4]/div/div[2]/div/div[2]/div/div[2]')
+
+    # scroll down the page
+    scroll_bottom(browser, dialog, allfollowing)
+
+    #Get follow buttons. This approch will find the follow buttons and ignore the Unfollow/Requested buttons.
+    follow_buttons = dialog.find_elements_by_xpath("//div/div/span/button[text()='Follow']")
+    person_list = []
+
+    if amount >= len(follow_buttons):
+        amount = len(follow_buttons)
+        print(user_name+" -> Less users to follow than requested.")
+
+    finalBtnPerson = []
+    if is_random:
+        sample = random.sample(range(0, len(follow_buttons)), amount)
+
+        for num in sample:
+            finalBtnPerson.append(follow_buttons[num])
+    else:
+        finalBtnPerson = follow_buttons[0:amount]
+    for person in finalBtnPerson:
+
+        if person and hasattr(person, 'text') and person.text:
+            person_list.append(person.find_element_by_xpath("../../../*").find_elements_by_tag_name("a")[1].text)
+
+    return person_list
 
 def follow_given_user_followers(browser, user_name, amount, dont_include, login, follow_restrict, random):
     browser.get('https://www.instagram.com/' + user_name)
