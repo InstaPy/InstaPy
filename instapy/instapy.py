@@ -768,7 +768,7 @@ class InstaPy:
 
         return self
 
-    def like_by_feed(self, amount):
+    def like_by_feed(self, amount, scrollLimit=None):
         """Like the users feed"""
 
         if self.aborting:
@@ -777,7 +777,7 @@ class InstaPy:
         # go to feeds page
         self.browser.get('https://www.instagram.com')
 
-        for button in get_like_on_feed(self.browser, amount):
+        for button in get_like_on_feed(self.browser, amount, scrollLimit):
             try:
                 button.click()
                 print('---> Image Liked')
