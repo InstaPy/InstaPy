@@ -27,7 +27,7 @@ def get_like_on_feed(browser, amount, scrollLimit=None ):
     # get like buttons
     likes_performed = 0
 
-    while (likes_performed <= amount):
+    while likes_performed <= amount:
         # get the like buttons
         like_buttons = []
 
