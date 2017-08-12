@@ -979,7 +979,7 @@ class InstaPy:
 
         return self
 
-    def like_by_feed(self, amount=50, randomize = False, unfollow = False):
+    def like_by_feed(self, amount=50, random = False, unfollow = False):
         """Like the users feed"""
 
         if self.aborting:
@@ -1012,7 +1012,8 @@ class InstaPy:
                 if liked_img == amount:
                    done = True
                    break
-                if randomize and random.choice([True, False]):
+                if random
+                and random.choice([True, False]):
                     print('Post Randomly Skipped...\n')
                     skipped_img += 1
                 else:
