@@ -2,8 +2,10 @@
 
 # InstaPy
 [![MIT license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/timgrossmann/InstaPy/blob/master/LICENSE)
-[![built with Selenium](https://img.shields.io/badge/built%20with-Selenium-red.svg)](https://github.com/SeleniumHQ/selenium)
-[![built with Python3](https://img.shields.io/badge/built%20with-Python3-green.svg)](https://www.python.org/)
+[![built with Selenium](https://img.shields.io/badge/built%20with-Selenium-yellow.svg)](https://github.com/SeleniumHQ/selenium)
+[![built with Python3](https://img.shields.io/badge/built%20with-Python3-red.svg)](https://www.python.org/)
+
+## [SignUp for the Newsletter here!](http://eepurl.com/cZbV_v)
 
 ### Automation Script for “farming” Likes, Comments and Followers on Instagram
 Implemented in Python using the Selenium module.
@@ -18,6 +20,8 @@ Head over to https://github.com/timgrossmann/InstaPy/wiki/Reporting-An-Issue to 
 > **Disclaimer**: Please Note that this is a research project. I am by no means responsible for any usage of this tool. Use on your own behalf. I’m also not responsible if your accounts get banned due to extensive use of this tool.
 
 ### Social
+
+#### [InstaPy Twitter](https://twitter.com/InstaPy) | [My Twitter](https://twitter.com/timigrossmann)
 
 #### [How it works (Medium)](https://medium.freecodecamp.com/my-open-source-instagram-bot-got-me-2-500-real-followers-for-5-in-server-costs-e40491358340)
 #### [Check out the talk](https://youtu.be/4TmKFZy-ioQ)
@@ -108,6 +112,10 @@ session.like_from_image(url='www.instagram.com/image', amount=50, media='Photo')
 session.like_by_tags(['#cat'], amount=15, media='Video')
 session.like_from_image(url='www.instagram.com/image', amount=15, media='Video')
 
+#Likes 10 random photo of geach given user
+
+session.like_by_users(usernames=['friend1', 'friend2', 'friend3'], amount=10, random=True, media='Photo')
+
 session.end()
 ```
 
@@ -156,7 +164,7 @@ session.follow_by_list(accs, times=1)
 # The usernames can be either a list or a string
 # The amount is for each account, in this case 30 users will be followed
 # If random is false it will pick in a top-down fashion
- 
+
 session.follow_user_followers(['friend1', 'friend2', 'friend3'], amount=10, random=False)
 ```
 
@@ -167,8 +175,44 @@ session.follow_user_followers(['friend1', 'friend2', 'friend3'], amount=10, rand
 # The usernames can be either a list or a string
 # The amount is for each account, in this case 30 users will be followed
 # If random is false it will pick in a top-down fashion
- 
+
 session.follow_user_following(['friend1', 'friend2', 'friend3'], amount=10, random=False)
+```
+
+### Follow someone else's followers/following
+
+```python
+# For 50% of the 30 newly followed, move to their profile
+# and randomly choose 5 pictures to be liked.
+# Take into account the other set options like the comment rate
+# and the filtering for inappropriate words or users
+
+session.set_user_interact(amount=5, random=True, percentage=50, media='Photo')
+session.follow_user_followers(['friend1', 'friend2', 'friend3'], amount=10, random=False, interact=True)
+```
+
+### Interact with users that someone else is following
+```python
+#Interact with the people that a given user is following
+#set_do_comment, set_do_follow and set_do_like are applicable
+session.set_user_interact(amount=5, random=True, percentage=50, media='Photo')
+session.set_do_follow(enabled=False, percentage=70)
+session.set_do_like(enabled=False, percentage=70)
+session.set_comments(["Cool", "Super!"])
+session.set_do_comment(enabled=True, percentage=80)
+session.interact_user_following(['natgeo'], amount=10, random=True)
+```
+
+### Interact with someone else's followers
+```python
+#Interact with the people that a given user is following
+#set_do_comment, set_do_follow and set_do_like are applicable
+session.set_user_interact(amount=5, random=True, percentage=50, media='Photo')
+session.set_do_follow(enabled=False, percentage=70)
+session.set_do_like(enabled=False, percentage=70)
+session.set_comments(["Cool", "Super!"])
+session.set_do_comment(enabled=True, percentage=80)
+session.interact_user_followers(['natgeo'], amount=10, random=True)
 ```
 
 ### Unfollowing
@@ -216,10 +260,11 @@ Example:
 ```python
 # This is used to perform likes on your own feeds
 # amount=100  specifies how many total likes you want to perform
-# randomize=True randomly skips posts to be liked on your feed
+# random=True randomly skips posts to be liked on your feed
 # unfollow=True unfollows the author of a post which was considered inappropriate
+# interact=True visits the author's profile page of a certain post and likes a given number of his pictures, then returns to feed
 
-session.like_by_feed(amount=100, randomize=True, unfollow=True)
+session.like_by_feed(amount=100, randomize=True, unfollow=True, interact=True)
 ```
 
 ### Restricting Likes
@@ -409,7 +454,7 @@ docker-compose up -d --build
 
 That's all! At this step, you are already successfully running your personal bot!
 
-### 3. See what your bot can do right now 
+### 3. See what your bot can do right now
 
 Run your VNC viewer, and type address and port `localhost:5900`. The password is `secret`.
 
@@ -434,7 +479,7 @@ Use it to help us with development and test instapy! `docker-dev.yml` file.
 docker-compose -f docker-dev.yml up -d
 ```
 
-After striking this command, you can access your bot by VNC on the adress  `localhost:5901`, the password is `secret`. 
+After striking this command, you can access your bot by VNC on the adress  `localhost:5901`, the password is `secret`.
 
 But there is more! There is a fully accessible bash console with all code mounted at the path `/code`. When you hack some files they are dynamically updated inside your container.
 
