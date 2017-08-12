@@ -979,7 +979,7 @@ class InstaPy:
 
         return self
 
-    def like_by_feed(self, amount=50, randomize = False, unfollow = False, interact=True):
+    def like_by_feed(self, amount=50, randomize = False, unfollow = False, interact=False):
         """Like the users feed"""
 
         if self.aborting:
