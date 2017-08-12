@@ -231,7 +231,7 @@ class InstaPy:
 
         return self
 
-    def set_user_interact(self, amount=10, percentage=50, random=False, media=None):
+    def set_user_interact(self, amount=10, percentage=100, random=False, media=None):
         """Define if posts of given user should be interacted"""
         if self.aborting:
             return self
