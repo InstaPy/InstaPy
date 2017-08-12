@@ -92,7 +92,7 @@ session.follow_user_following(['friend1', 'friend2', 'friend3'], amount=10, rand
 
 
 #Interact with the people that a given user is following
-#set_do_comment, set_do_follow and set_do_like are aplicable
+#set_do_comment, set_do_follow and set_do_like are applicable
 session.set_user_interact(amount=5, random=True, percentage=50, media='Photo')
 session.set_do_follow(enabled=False, percentage=70)
 session.set_do_like(enabled=False, percentage=70)
@@ -102,7 +102,7 @@ session.interact_user_following(['natgeo'], amount=10, random=True)
 
 
 #Interact with the people that is following a given user
-#set_do_comment, set_do_follow and set_do_like are aplicable
+#set_do_comment, set_do_follow and set_do_like are applicable
 session.set_user_interact(amount=5, random=True, percentage=50, media='Photo')
 session.set_do_follow(enabled=False, percentage=70)
 session.set_do_like(enabled=False, percentage=70)

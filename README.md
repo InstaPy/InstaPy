@@ -164,7 +164,7 @@ session.follow_by_list(accs, times=1)
 # The usernames can be either a list or a string
 # The amount is for each account, in this case 30 users will be followed
 # If random is false it will pick in a top-down fashion
- 
+
 session.follow_user_followers(['friend1', 'friend2', 'friend3'], amount=10, random=False)
 ```
 
@@ -175,11 +175,11 @@ session.follow_user_followers(['friend1', 'friend2', 'friend3'], amount=10, rand
 # The usernames can be either a list or a string
 # The amount is for each account, in this case 30 users will be followed
 # If random is false it will pick in a top-down fashion
- 
+
 session.follow_user_following(['friend1', 'friend2', 'friend3'], amount=10, random=False)
 ```
 
-### Interact with someone else's followers/following
+### Follow someone else's followers/following
 
 ```python
 # For 50% of the 30 newly followed, move to their profile
@@ -187,8 +187,32 @@ session.follow_user_following(['friend1', 'friend2', 'friend3'], amount=10, rand
 # Take into account the other set options like the comment rate
 # and the filtering for inappropriate words or users
 
-session.set_user_interact(amount=5, random=True, percentage=50, media='Photo') 
+session.set_user_interact(amount=5, random=True, percentage=50, media='Photo')
 session.follow_user_followers(['friend1', 'friend2', 'friend3'], amount=10, random=False, interact=True)
+```
+
+### Interact with users that someone else is following
+```python
+#Interact with the people that a given user is following
+#set_do_comment, set_do_follow and set_do_like are applicable
+session.set_user_interact(amount=5, random=True, percentage=50, media='Photo')
+session.set_do_follow(enabled=False, percentage=70)
+session.set_do_like(enabled=False, percentage=70)
+session.set_comments(["Cool", "Super!"])
+session.set_do_comment(enabled=True, percentage=80)
+session.interact_user_following(['natgeo'], amount=10, random=True)
+```
+
+### Interact with someone else's followers
+```python
+#Interact with the people that a given user is following
+#set_do_comment, set_do_follow and set_do_like are applicable
+session.set_user_interact(amount=5, random=True, percentage=50, media='Photo')
+session.set_do_follow(enabled=False, percentage=70)
+session.set_do_like(enabled=False, percentage=70)
+session.set_comments(["Cool", "Super!"])
+session.set_do_comment(enabled=True, percentage=80)
+session.interact_user_followers(['natgeo'], amount=10, random=True)
 ```
 
 ### Unfollowing
@@ -426,7 +450,7 @@ docker-compose up -d --build
 
 That's all! At this step, you are already successfully running your personal bot!
 
-### 3. See what your bot can do right now 
+### 3. See what your bot can do right now
 
 Run your VNC viewer, and type address and port `localhost:5900`. The password is `secret`.
 
@@ -451,7 +475,7 @@ Use it to help us with development and test instapy! `docker-dev.yml` file.
 docker-compose -f docker-dev.yml up -d
 ```
 
-After striking this command, you can access your bot by VNC on the adress  `localhost:5901`, the password is `secret`. 
+After striking this command, you can access your bot by VNC on the adress  `localhost:5901`, the password is `secret`.
 
 But there is more! There is a fully accessible bash console with all code mounted at the path `/code`. When you hack some files they are dynamically updated inside your container.
 
