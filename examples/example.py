@@ -86,7 +86,7 @@ session.follow_user_followers(['friend1', 'friend2', 'friend3'], amount=10, rand
 # and randomly choose 5 pictures to be liked.
 # Take into account the other set options like the comment rate
 # and the filtering for inappropriate words or users
-session.set_user_interact(amount=5, random=True, percentage=50, media='Photo') 
+session.set_user_interact(amount=5, random=True, percentage=50, media='Photo')
 session.follow_user_followers(['friend1', 'friend2', 'friend3'], amount=10, random=False, interact=True)
 
 # follows the people that a given user is following
@@ -96,8 +96,28 @@ session.follow_user_following('friend2', amount=10, random=True)
 # and randomly choose 5 pictures to be liked.
 # Take into account the other set options like the comment rate
 # and the filtering for inappropriate words or users
-session.set_user_interact(amount=5, random=True, percentage=50, media='Photo') 
+session.set_user_interact(amount=5, random=True, percentage=50, media='Photo')
 session.follow_user_following(['friend1', 'friend2', 'friend3'], amount=10, random=False, interact=True)
+
+
+#Interact with the people that a given user is following
+#set_do_comment, set_do_follow and set_do_like are applicable
+session.set_user_interact(amount=5, random=True, percentage=50, media='Photo')
+session.set_do_follow(enabled=False, percentage=70)
+session.set_do_like(enabled=False, percentage=70)
+session.set_comments(["Cool", "Super!"])
+session.set_do_comment(enabled=True, percentage=80)
+session.interact_user_following(['natgeo'], amount=10, random=True)
+
+
+#Interact with the people that is following a given user
+#set_do_comment, set_do_follow and set_do_like are applicable
+session.set_user_interact(amount=5, random=True, percentage=50, media='Photo')
+session.set_do_follow(enabled=False, percentage=70)
+session.set_do_like(enabled=False, percentage=70)
+session.set_comments(["Cool", "Super!"])
+session.set_do_comment(enabled=True, percentage=80)
+session.interact_user_followers(['natgeo'], amount=10, random=True)
 
 
 session.unfollow_users(
