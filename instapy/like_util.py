@@ -9,6 +9,38 @@ from selenium.webdriver.common.keys import Keys
 from .time_util import sleep
 
 
+def get_links_from_feed(browser, amount, num_of_search):
+    """Fetches a random number of links from feed and returns a list of links"""
+
+    browser.get('https://www.instagram.com')
+    sleep(2)
+
+    for i in range (num_of_search + 1):
+        browser.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+        sleep(2)
+
+    # Get links
+    main_elem = browser.find_element_by_tag_name('main')
+    link_elems = main_elem.find_elements_by_class_name('_5l4x8')
+    total_links = len(link_elems)
+    print("\nTotal of links feched for analysis:", total_links)
+    links = []
+    filtered_links = 0
+    try:
+        if link_elems:
+            links = [link_elem.get_attribute('href') for link_elem in link_elems]
+            filtered_links = len(links)
+            print("~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+            for i, link in enumerate(links):
+                print(i, link)
+            print("~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+
+    except BaseException as e:
+        print("link_elems error \n", str(e))
+
+    return links
+
+
 def get_links_for_location(browser, location, amount, media=None):
     """Fetches the number of links specified
     by amount and returns a list of links"""
