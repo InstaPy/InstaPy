@@ -16,6 +16,7 @@ from .clarifai_util import check_image
 from .comment_util import comment_image
 from .like_util import check_link
 from .like_util import get_links_for_tag
+from .like_util import get_links_from_feed
 from .like_util import get_tags
 from .like_util import get_links_for_location
 from .like_util import like_image
@@ -24,6 +25,7 @@ from .login_util import login_user
 from .print_log_writer import log_follower_num
 from .time_util import sleep
 from .unfollow_util import unfollow
+from .unfollow_util import unfollow_user
 from .unfollow_util import follow_given_user_followers
 from .unfollow_util import follow_given_user_following
 from .unfollow_util import follow_user
@@ -31,7 +33,7 @@ from .unfollow_util import follow_given_user
 from .unfollow_util import load_follow_restriction
 from .unfollow_util import dump_follow_restriction
 from .unfollow_util import set_automated_followed_pool
-from .feed_util import get_like_on_feed
+import random
 
 
 class InstaPy:
@@ -768,24 +770,131 @@ class InstaPy:
 
         return self
 
-    def like_by_feed(self, amount):
+    def like_by_feed(self, amount=50, randomize = False, unfollow = False):
         """Like the users feed"""
 
         if self.aborting:
             return self
 
-        # go to feeds page
-        self.browser.get('https://www.instagram.com')
+        liked_img = 0
+        already_liked = 0
+        inap_img = 0
+        commented = 0
+        followed = 0
+        skipped_img = 0
+        num_of_search = 0
+        history = []
+        done = False
 
-        for button in get_like_on_feed(self.browser, amount):
+        while liked_img < amount:      
             try:
-                button.click()
-                print('---> Image Liked')
-                sleep(3)
-            except:
-                print('Unable to perform Like')
+                # Gets another load of links to be tested
+                links = get_links_from_feed(self.browser, amount, num_of_search)
+            except NoSuchElementException:
+                print('Too few images, aborting')
+                self.logFile.write('Too few images, aborting\n')
+
+                self.aborting = True
+                return self
+
+            num_of_search += 1
+
+            for i, link in enumerate(links):
+                if liked_img == amount:
+                   done = True
+                   break
+                if randomize and random.choice([True, False]):
+                    print('Post Randomly Skipped...\n')
+                    skipped_img += 1
+                else:
+                    if link in history:
+                        print('This link has already been visited:\n', link, '\n')
+                    else:
+                        print('New link found...')
+                        history.append(link)
+                        print('[{} posts liked /{} amount]'.format(liked_img, amount))
+                        self.logFile.write('[{}/{} links feched to be tested]'.format(i + 1, len(links)))
+                        self.logFile.write(link)
+        
+                        try:
+                            inappropriate, user_name, is_video, reason = \
+                                check_link(self.browser, link, self.dont_like, self.ignore_if_contains, self.ignore_users,
+                                           self.username, self.like_by_followers_upper_limit,
+                                           self.like_by_followers_lower_limit)
+        
+                            if not inappropriate:
+                                liked = like_image(self.browser)
+        
+                                if liked:
+                                    liked_img += 1
+                                    checked_img = True
+                                    temp_comments = []
+                                    commenting = randint(0, 100) <= self.comment_percentage
+                                    following = randint(0, 100) <= self.follow_percentage
+        
+                                    if self.use_clarifai and (following or commenting):
+                                        try:
+                                            checked_img, temp_comments = \
+                                                check_image(self.browser, self.clarifai_id,
+                                                            self.clarifai_secret,
+                                                            self.clarifai_img_tags,
+                                                            self.clarifai_full_match)
+                                        except Exception as err:
+                                            print('Image check error: {}'.format(err))
+                                            self.logFile.write('Image check error: {}\n'.format(err))
+        
+                                    if self.do_comment and user_name not in self.dont_include \
+                                            and checked_img and commenting:
+                                        if temp_comments:
+                                            # Use clarifai related comments only!
+                                            comments = temp_comments
+                                        elif is_video:
+                                            comments = self.comments + self.video_comments
+                                        else:
+                                            comments = self.comments + self.photo_comments
+                                        commented += comment_image(self.browser, comments)
+                                    else:
+                                        print('--> Not commented')
+                                        sleep(1)
+        
+                                    if self.do_follow and user_name not in self.dont_include \
+                                            and checked_img and following \
+                                            and self.follow_restrict.get(user_name, 0) < self.follow_times:
+                                        followed += follow_user(self.browser, self.follow_restrict, self.username, user_name)
+                                    else:
+                                        print('--> Not following')
+                                        sleep(1)
+                                else:
+                                    already_liked += 1
+                            else:
+                                print('--> Image not liked: {}'.format(reason))
+                                inap_img += 1
+                                if reason == 'Inappropriate':
+                                    unfollow_user(self.browser)
+                        except NoSuchElementException as err:
+                            print('Invalid Page: {}'.format(err))
+                            self.logFile.write('Invalid Page: {}\n'.format(err))
+        
+                        print('')
+                        self.logFile.write('\n')
+    
+        print('Liked: {}'.format(liked_img))
+        print('Already Liked: {}'.format(already_liked))
+        print('Inappropriate: {}'.format(inap_img))
+        print('Commented: {}'.format(commented))
+        print('Followed: {}'.format(followed))
+        print('Randomly Skipped: {}'.format(skipped_img))
+
+        self.logFile.write('Liked: {}\n'.format(liked_img))
+        self.logFile.write('Already Liked: {}\n'.format(already_liked))
+        self.logFile.write('Inappropriate: {}\n'.format(inap_img))
+        self.logFile.write('Commented: {}\n'.format(commented))
+        self.logFile.write('Followed: {}\n'.format(followed))
+
+        self.followed += followed
 
         return self
+
 
     def end(self):
         """Closes the current session"""

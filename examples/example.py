@@ -68,6 +68,15 @@ session.like_by_tags(['#test'], amount=10, media='Video')
 # like 10 random posts of each given username
 session.like_by_users(usernames=['friend1', 'friend2', 'friend3'], amount=10, random=True)
 
+""""Like by feed"""
+# likes a given amount of posts on your feed, taking into account settings of commenting, like restrictions etc.
+session.like_by_feed(amount=100)
+# can also randomly skips posts to be liked
+session.like_by_feed(amount=100, randomize=True)
+# if it comes across some posts I declared as inappropriate it will automatically unfollow its author user
+session.like_by_feed(amount=100, randomize=True, unfollow=True)
+
+
 # follows the followers of a given user
 # The usernames can be either a list or a string
 # The amount is for each account, in this case 30 users will be followed
