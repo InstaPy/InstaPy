@@ -12,10 +12,11 @@ import random
 LIKE_TAG_CLASS = 'coreSpriteHeartOpen'
 
 
-def get_like_on_feed(browser, amount, scrolls = 10 ):
+def get_like_on_feed(browser, amount, scrollLimit=None ):
     '''
         browser - the selenium browser element
         amount - total amount of likes to perform
+        scroll_limit - limit the number of scrolls performed
 
         --------------------------------------
         The function takes in the total amount of likes to perform
@@ -26,7 +27,7 @@ def get_like_on_feed(browser, amount, scrolls = 10 ):
     # get like buttons
     likes_performed = 0
 
-    while (likes_performed <= amount and scrolls > 0):
+    while (likes_performed <= amount):
         # get the like buttons
         like_buttons = []
 
@@ -40,6 +41,12 @@ def get_like_on_feed(browser, amount, scrolls = 10 ):
         if abort:
             break
 
+        if scrollLimit is not None:
+            if scrollLimit > 0:
+                scrollLimit-=1
+            else:
+                break
+
         for button in like_buttons:
             likes_performed += 1
             if not (likes_performed <= amount):
@@ -49,4 +56,4 @@ def get_like_on_feed(browser, amount, scrolls = 10 ):
 
         print('---> Total Likes uptil now ->', likes_performed)
         browser.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-        scrolls -=1 
+

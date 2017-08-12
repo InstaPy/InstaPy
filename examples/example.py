@@ -61,6 +61,12 @@ session.like_by_tags(['#test'], amount=100)
 # you can also set to like a specific media (Photo / Video)
 session.like_by_tags(['#test'], amount=10, media='Photo')
 
+# keep scrolling through feed, until 50 likes are performed
+session.like_by_feed(amount=50)
+# exits after 20 scrolls, whether or not the 50 likes are performed
+session.like_by_feed(amount=50, scrollLimit=20)
+
+
 # get's the tags from the description and likes 100 images of each tag
 session.like_from_image(url='www.instagram.com/image', amount=100)
 # media filtering works here as well

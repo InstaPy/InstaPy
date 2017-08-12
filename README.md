@@ -235,9 +235,9 @@ Example:
 
 ```python
 #This is used to perform likes on your own feeds, amount specifies how many total likes you want to perform
-
-session.like_by_feed(amount=100)
+session.like_by_feed(amount=100, scrollLimit=None)
 ```
+`.like_by_feed` keeps scrolling through your feed until the likes are performed. You can optionally pass `scrollLimit` parameter to limit the number of scrolls performed.
 
 ### Restricting Likes
 
