@@ -1012,8 +1012,7 @@ class InstaPy:
                 if liked_img == amount:
                    done = True
                    break
-                if random
-                and random.choice([True, False]):
+                if random and random.choice([True, False]):
                     print('Post Randomly Skipped...\n')
                     skipped_img += 1
                 else:
