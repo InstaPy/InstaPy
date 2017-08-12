@@ -748,7 +748,7 @@ class InstaPy:
 
                     if not inappropriate:
                         liking = randint(0, 100) <= self.like_percentage
-                        if self.do_like:
+                        if self.do_like and liking:
                             liked = like_image(self.browser)
                         else:
                             like = True
