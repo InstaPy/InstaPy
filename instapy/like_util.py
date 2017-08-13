@@ -20,8 +20,8 @@ def get_links_from_feed(browser, amount, num_of_search):
         sleep(2)
 
     # Get links
-    main_elem = browser.find_element_by_tag_name('main')
-    link_elems = main_elem.find_elements_by_class_name('_5l4x8')
+    link_elems = browser.find_elements_by_xpath("//main//article//div[2]//div[2]//a")
+
     total_links = len(link_elems)
     print("\nTotal of links feched for analysis:", total_links)
     links = []

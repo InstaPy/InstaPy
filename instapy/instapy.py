@@ -979,7 +979,7 @@ class InstaPy:
 
         return self
 
-    def like_by_feed(self, amount=50, random = False, unfollow = False):
+    def like_by_feed(self, amount=50, randomize = False, unfollow = False, interact=False):
         """Like the users feed"""
 
         if self.aborting:
@@ -1012,7 +1012,7 @@ class InstaPy:
                 if liked_img == amount:
                    done = True
                    break
-                if random and random.choice([True, False]):
+                if randomize and random.choice([True, False]):
                     print('Post Randomly Skipped...\n')
                     skipped_img += 1
                 else:
@@ -1035,6 +1035,15 @@ class InstaPy:
                                 liked = like_image(self.browser)
         
                                 if liked:
+                                    username = self.browser.find_element_by_xpath("//main//div//div//article//header//div//a")
+                                    username = username.get_attribute("title")
+                                    name = []
+                                    name.append(username)
+
+                                    if interact:
+                                        print('--> User followed: {}'.format(name))
+                                        self.like_by_users(name, self.user_interact_amount, self.user_interact_random, self.user_interact_media)
+
                                     liked_img += 1
                                     checked_img = True
                                     temp_comments = []
