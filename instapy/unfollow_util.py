@@ -179,7 +179,7 @@ def follow_given_user(browser, acc_to_follow, follow_restrict):
         sleep(3)
         return 0
 
-def follow_through_dialog(browser, user_name, amount, dont_include, login, follow_restrict, allfollowing, is_random, callbacks = []):
+def follow_through_dialog(browser, user_name, amount, dont_include, login, follow_restrict, allfollowing, is_random, delay, callbacks = []):
     followNum = 0
     sleep(2)
     person_followed = []
@@ -222,7 +222,7 @@ def follow_through_dialog(browser, user_name, amount, dont_include, login, follo
 
             if followNum != 0 and hasSlept == False and followNum % 10 == 0:
                 print('sleeping for about 10min')
-                sleep(600)
+                sleep(delay)
                 hasSlept = True
                 continue
 
@@ -357,7 +357,7 @@ def get_given_user_following(browser, user_name, amount, dont_include, login, fo
 
     return person_list
 
-def follow_given_user_followers(browser, user_name, amount, dont_include, login, follow_restrict, random):
+def follow_given_user_followers(browser, user_name, amount, dont_include, login, follow_restrict, random, delay):
     browser.get('https://www.instagram.com/' + user_name)
 
     #  check how many poeple are following this user.
@@ -373,11 +373,11 @@ def follow_given_user_followers(browser, user_name, amount, dont_include, login,
     except BaseException as e:
         print("following_link error \n", str(e))
 
-    personFollowed = follow_through_dialog(browser, user_name, amount, dont_include, login, follow_restrict, allfollowing, random, callbacks=[])
+    personFollowed = follow_through_dialog(browser, user_name, amount, dont_include, login, follow_restrict, allfollowing, random, delay, callbacks=[])
 
     return personFollowed
 
-def follow_given_user_following(browser, user_name, amount, dont_include, login, follow_restrict, random):
+def follow_given_user_following(browser, user_name, amount, dont_include, login, follow_restrict, random, delay):
     browser.get('https://www.instagram.com/' + user_name)
 
     #  check how many poeple are following this user.
@@ -393,7 +393,7 @@ def follow_given_user_following(browser, user_name, amount, dont_include, login,
     except BaseException as e:
         print("following_link error \n", str(e))
 
-    personFollowed = follow_through_dialog(browser, user_name, amount, dont_include, login, follow_restrict, allfollowing, random)
+    personFollowed = follow_through_dialog(browser, user_name, amount, dont_include, login, follow_restrict, allfollowing, random, delay)
 
     return personFollowed
 
