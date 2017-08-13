@@ -993,7 +993,6 @@ class InstaPy:
         skipped_img = 0
         num_of_search = 0
         history = []
-        name = []
         done = False
 
         while liked_img < amount:      
@@ -1038,6 +1037,7 @@ class InstaPy:
                                 if liked:
                                     username = self.browser.find_element_by_xpath("//main//div//div//article//header//div//a")
                                     username = username.get_attribute("title")
+                                    name = []
                                     name.append(username)
 
                                     if interact:
