@@ -895,13 +895,13 @@ class InstaPy:
 
         return self
 
-    def follow_user_followers(self, usernames, amount=10, random=False, interact=False):
+    def follow_user_followers(self, usernames, amount=10, random=False, interact=False, sleep_delay=600):
         userFollowed = []
         if not isinstance(usernames, list):
             usernames = [usernames]
         try:
             for user in usernames:
-                userFollowed += follow_given_user_followers(self.browser, user, amount, self.dont_include, self.username, self.follow_restrict, random)
+                userFollowed += follow_given_user_followers(self.browser, user, amount, self.dont_include, self.username, self.follow_restrict, random, sleep_delay)
             print("--> Total people followed : {} ".format(len(userFollowed)))
 
         except (TypeError, RuntimeWarning) as err:
@@ -925,13 +925,13 @@ class InstaPy:
 
         return self
 
-    def follow_user_following(self, usernames, amount=10, random=False, interact=False):
+    def follow_user_following(self, usernames, amount=10, random=False, interact=False, sleep_delay=600):
         userFollowed = []
         if not isinstance(usernames, list):
             usernames = [usernames]
         try:
             for user in usernames:
-                userFollowed += follow_given_user_following(self.browser, user, amount, self.dont_include, self.username, self.follow_restrict, random)
+                userFollowed += follow_given_user_following(self.browser, user, amount, self.dont_include, self.username, self.follow_restrict, random, sleep_delay)
             print("--> Total people followed : {} ".format(len(userFollowed)))
 
         except (TypeError, RuntimeWarning) as err:
