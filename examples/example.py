@@ -69,12 +69,14 @@ session.like_by_tags(['#test'], amount=10, media='Video')
 session.like_by_users(usernames=['friend1', 'friend2', 'friend3'], amount=10, random=True)
 
 """"Like by feed"""
-# likes a given amount of posts on your feed, taking into account settings of commenting, like restrictions etc.
+# likes a given amount of posts on your feed, taking into account settings of commenting, like restrictions etc
 session.like_by_feed(amount=100)
 # can also randomly skips posts to be liked
 session.like_by_feed(amount=100, randomize=True)
 # if it comes across some posts I declared as inappropriate it will automatically unfollow its author user
 session.like_by_feed(amount=100, randomize=True, unfollow=True)
+# visits the author's profile page of a certain post and likes a given number of his pictures, then returns to feed
+session.like_by_feed(amount=100, randomize=True, unfollow=True, interact=True)
 
 
 # follows the followers of a given user

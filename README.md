@@ -262,8 +262,9 @@ Example:
 # amount=100  specifies how many total likes you want to perform
 # random=True randomly skips posts to be liked on your feed
 # unfollow=True unfollows the author of a post which was considered inappropriate
+# interact=True visits the author's profile page of a certain post and likes a given number of his pictures, then returns to feed
 
-session.like_by_feed(amount=100, random=True, unfollow=True)
+session.like_by_feed(amount=100, randomize=True, unfollow=True, interact=True)
 ```
 
 ### Restricting Likes
