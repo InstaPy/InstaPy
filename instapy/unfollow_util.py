@@ -1,6 +1,7 @@
 """Module which handles the follow features like unfollowing and following"""
 import json
 import csv
+from math import ceil
 from .time_util import sleep
 from random import randint
 from .util import delete_line_from_file
@@ -221,7 +222,10 @@ def follow_through_dialog(browser, user_name, amount, dont_include, login, follo
                 break
 
             if followNum != 0 and hasSlept == False and followNum % 10 == 0:
-                print('sleeping for about 10min')
+                if delay < 60:
+                    print('sleeping for about {} seconds'.format(delay))
+                else:
+                    print('sleeping for about {} minutes'.format(ceil(delay/60)))
                 sleep(delay)
                 hasSlept = True
                 continue
