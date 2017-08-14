@@ -164,8 +164,9 @@ session.follow_by_list(accs, times=1)
 # The usernames can be either a list or a string
 # The amount is for each account, in this case 30 users will be followed
 # If random is false it will pick in a top-down fashion
+# default sleep_delay=600 (10min) for every 10 user following, in this case sleep for 60 seconds  
 
-session.follow_user_followers(['friend1', 'friend2', 'friend3'], amount=10, random=False)
+session.follow_user_followers(['friend1', 'friend2', 'friend3'], amount=10, random=False, sleep_delay=60)
 ```
 
 ### Follow users that someone else is following
@@ -175,8 +176,9 @@ session.follow_user_followers(['friend1', 'friend2', 'friend3'], amount=10, rand
 # The usernames can be either a list or a string
 # The amount is for each account, in this case 30 users will be followed
 # If random is false it will pick in a top-down fashion
+# default sleep_delay=600 (10min) for every 10 user following, in this case sleep for 60 seconds
 
-session.follow_user_following(['friend1', 'friend2', 'friend3'], amount=10, random=False)
+session.follow_user_following(['friend1', 'friend2', 'friend3'], amount=10, random=False, sleep_delay=60)
 ```
 
 ### Follow someone else's followers/following
