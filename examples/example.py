@@ -83,23 +83,25 @@ session.like_by_feed(amount=100, randomize=True, unfollow=True, interact=True)
 # The usernames can be either a list or a string
 # The amount is for each account, in this case 30 users will be followed
 # If random is false it will pick in a top-down fashion
-session.follow_user_followers(['friend1', 'friend2', 'friend3'], amount=10, random=False)
+# default sleep_delay=600 (10min) for every 10 user following, in this case sleep for 60 seconds
+session.follow_user_followers(['friend1', 'friend2', 'friend3'], amount=10, random=False, sleep_delay=60)
 # For 50% of the 30 newly followed, move to their profile
 # and randomly choose 5 pictures to be liked.
 # Take into account the other set options like the comment rate
 # and the filtering for inappropriate words or users
+# default sleep_delay=600 (10min) for every 10 user following, in this case sleep for 60 seconds
 session.set_user_interact(amount=5, random=True, percentage=50, media='Photo')
-session.follow_user_followers(['friend1', 'friend2', 'friend3'], amount=10, random=False, interact=True)
+session.follow_user_followers(['friend1', 'friend2', 'friend3'], amount=10, random=False, interact=True, sleep_delay=60)
 
 # follows the people that a given user is following
 # Same rules as the function above
-session.follow_user_following('friend2', amount=10, random=True)
+session.follow_user_following('friend2', amount=10, random=True, sleep_delay=60)
 # For 50% of the 30 newly followed, move to their profile
 # and randomly choose 5 pictures to be liked.
 # Take into account the other set options like the comment rate
 # and the filtering for inappropriate words or users
 session.set_user_interact(amount=5, random=True, percentage=50, media='Photo')
-session.follow_user_following(['friend1', 'friend2', 'friend3'], amount=10, random=False, interact=True)
+session.follow_user_following(['friend1', 'friend2', 'friend3'], amount=10, random=False, interact=True, sleep_delay=60)
 
 
 #Interact with the people that a given user is following
