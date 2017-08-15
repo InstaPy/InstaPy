@@ -225,7 +225,7 @@ def follow_through_dialog(browser, user_name, amount, dont_include, login, follo
                 if delay < 60:
                     print('sleeping for about {} seconds'.format(delay))
                 else:
-                    print('sleeping for about {} minutes'.format(ceil(delay/60)))
+                    print('sleeping for about {} minutes'.format(delay/60))
                 sleep(delay)
                 hasSlept = True
                 continue
