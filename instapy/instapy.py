@@ -862,7 +862,7 @@ class InstaPy:
 
         print('--> Users: {}'.format(len(userToInteract)))
         print('')
-        userToInteract = sample(userToInteract, ceil(self.user_interact_percentage*len(userToInteract)/100))
+        userToInteract = sample(userToInteract, int(ceil(self.user_interact_percentage*len(userToInteract)/100)))
         self.like_by_users(userToInteract, self.user_interact_amount, self.user_interact_random, self.user_interact_media)
 
         return self
@@ -890,7 +890,7 @@ class InstaPy:
 
         print('--> Users: {}'.format(len(userToInteract)))
         print('')
-        userToInteract = sample(userToInteract, ceil(self.user_interact_percentage*len(userToInteract)/100))
+        userToInteract = sample(userToInteract, int(ceil(self.user_interact_percentage*len(userToInteract)/100)))
         self.like_by_users(userToInteract, self.user_interact_amount, self.user_interact_random, self.user_interact_media)
 
         return self
@@ -920,7 +920,7 @@ class InstaPy:
         if interact:
             print('--> User followed: {}'.format(userFollowed))
             print('')
-            userFollowed = sample(userFollowed, ceil(self.user_interact_percentage*len(userFollowed)/100))
+            userFollowed = sample(userFollowed, int(ceil(self.user_interact_percentage*len(userFollowed)/100)))
             self.like_by_users(userFollowed, self.user_interact_amount, self.user_interact_random, self.user_interact_media)
 
         return self
@@ -950,7 +950,7 @@ class InstaPy:
         if interact:
             print('--> User followed: {}'.format(userFollowed))
             print('')
-            userFollowed = sample(userFollowed, ceil(self.user_interact_percentage*len(userFollowed)/100))
+            userFollowed = sample(userFollowed, int(ceil(self.user_interact_percentage*len(userFollowed)/100)))
             self.like_by_users(userFollowed, self.user_interact_amount, self.user_interact_random, self.user_interact_media)
 
         return self
