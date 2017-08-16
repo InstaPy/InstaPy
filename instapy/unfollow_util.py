@@ -185,6 +185,10 @@ def follow_through_dialog(browser, user_name, amount, dont_include, login, follo
     sleep(2)
     person_followed = []
 
+    if random:
+        # expanding the popultaion for better sampling distribution
+        amount = amount * 3
+
     # find dialog box
     dialog = browser.find_element_by_xpath('/html/body/div[4]/div/div[2]/div/div[2]/div/div[2]')
 
@@ -195,14 +199,26 @@ def follow_through_dialog(browser, user_name, amount, dont_include, login, follo
     follow_buttons = dialog.find_elements_by_xpath("//div/div/span/button[text()='Follow']")
 
     person_list = []
+    abort = False
+    total_list = len(follow_buttons)
+
+    while (total_list < amount) and not abort:
+        amount_left = amount - total_list
+        before_scroll = total_list
+        scroll_bottom(browser, dialog, amount_left)
+        sleep(1)
+        follow_buttons = dialog.find_elements_by_xpath("//div/div/span/button[text()='Follow']")
+        total_list = len(follow_buttons)
+        abort = (before_scroll == total_list)
 
     for person in follow_buttons:
 
         if person and hasattr(person, 'text') and person.text:
-            person_list.append(person.find_element_by_xpath("../../../*").find_elements_by_tag_name("a")[1].text)
+            person_list.append(person.find_element_by_xpath("../../../*")
+                               .find_elements_by_tag_name("a")[1].text)
 
-    if amount >= len(follow_buttons):
-        amount = len(follow_buttons)
+    if amount >= total_list:
+        amount = total_list
         print(user_name+" -> Less users to follow than requested.")
 
     # follow loop
