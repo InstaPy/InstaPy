@@ -88,6 +88,10 @@ from instapy import InstaPy
 session = InstaPy(username='test', password='test')
 session.login()
 
+#Reduces the amount of time under sleep to a given percentage
+#It might be useful to test the tool or to increase the time for slower connections (percentage > 100)
+session.set_sleep_reduce(95)
+
 #likes specified amount of posts for each hashtag in the array (the '#' is optional)
 #in this case: 100 dog-posts and 100 cat-posts
 session.like_by_tags(['#dog', 'cat'], amount=100)

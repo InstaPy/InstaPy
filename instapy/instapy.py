@@ -24,6 +24,7 @@ from .like_util import get_links_for_username
 from .login_util import login_user
 from .print_log_writer import log_follower_num
 from .time_util import sleep
+from .time_util import set_sleep_percentage
 from .util import formatNumber
 from .unfollow_util import get_given_user_followers
 from .unfollow_util import get_given_user_following
@@ -168,6 +169,11 @@ class InstaPy:
             self.logFile.write('Logged in successfully!\n')
 
         log_follower_num(self.browser, self.username)
+
+        return self
+
+    def set_sleep_reduce(self, percentage):
+        set_sleep_percentage(percentage)
 
         return self
 
@@ -995,7 +1001,7 @@ class InstaPy:
         history = []
         done = False
 
-        while liked_img < amount:      
+        while liked_img < amount:
             try:
                 # Gets another load of links to be tested
                 links = get_links_from_feed(self.browser, amount, num_of_search)
@@ -1024,16 +1030,16 @@ class InstaPy:
                         print('[{} posts liked /{} amount]'.format(liked_img, amount))
                         self.logFile.write('[{}/{} links feched to be tested]'.format(i + 1, len(links)))
                         self.logFile.write(link)
-        
+
                         try:
                             inappropriate, user_name, is_video, reason = \
                                 check_link(self.browser, link, self.dont_like, self.ignore_if_contains, self.ignore_users,
                                            self.username, self.like_by_followers_upper_limit,
                                            self.like_by_followers_lower_limit)
-        
+
                             if not inappropriate:
                                 liked = like_image(self.browser)
-        
+
                                 if liked:
                                     username = self.browser.find_element_by_xpath("//main//div//div//article//header//div//a")
                                     username = username.get_attribute("title")
@@ -1049,7 +1055,7 @@ class InstaPy:
                                     temp_comments = []
                                     commenting = randint(0, 100) <= self.comment_percentage
                                     following = randint(0, 100) <= self.follow_percentage
-        
+
                                     if self.use_clarifai and (following or commenting):
                                         try:
                                             checked_img, temp_comments = \
@@ -1060,7 +1066,7 @@ class InstaPy:
                                         except Exception as err:
                                             print('Image check error: {}'.format(err))
                                             self.logFile.write('Image check error: {}\n'.format(err))
-        
+
                                     if self.do_comment and user_name not in self.dont_include \
                                             and checked_img and commenting:
                                         if temp_comments:
@@ -1074,7 +1080,7 @@ class InstaPy:
                                     else:
                                         print('--> Not commented')
                                         sleep(1)
-        
+
                                     if self.do_follow and user_name not in self.dont_include \
                                             and checked_img and following \
                                             and self.follow_restrict.get(user_name, 0) < self.follow_times:
@@ -1092,10 +1098,10 @@ class InstaPy:
                         except NoSuchElementException as err:
                             print('Invalid Page: {}'.format(err))
                             self.logFile.write('Invalid Page: {}\n'.format(err))
-        
+
                         print('')
                         self.logFile.write('\n')
-    
+
         print('Liked: {}'.format(liked_img))
         print('Already Liked: {}'.format(already_liked))
         print('Inappropriate: {}'.format(inap_img))
