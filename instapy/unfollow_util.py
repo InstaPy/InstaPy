@@ -169,7 +169,7 @@ def follow_given_user(browser, acc_to_follow, follow_restrict):
     follow_button = browser.find_element_by_xpath("//*[contains(text(), 'Follow')]")
     sleep(10)
     if follow_button.text == 'Follow':
-        follow_button..send_keys("\n")
+        follow_button.send_keys("\n")
         print('---> Now following: {}'.format(acc_to_follow))
         print('*' * 20)
         follow_restrict[acc_to_follow] = follow_restrict.get(acc_to_follow, 0) + 1
