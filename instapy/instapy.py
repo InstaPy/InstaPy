@@ -100,6 +100,13 @@ class InstaPy:
         if selenium_local_session:
             self.set_selenium_local_session()
 
+        self.total_liked_img=0
+        self.total_already_liked=0
+        self.total_inap_img=0
+        self.total_commented=0
+        self.total_followed=0
+
+
     def set_selenium_local_session(self):
         """Starts local session for a selenium server. Default case scenario."""
         if self.aborting:
@@ -454,6 +461,12 @@ class InstaPy:
         self.logFile.write('Commented: {}\n'.format(commented))
         self.logFile.write('Followed: {}\n'.format(followed))
 
+        self.total_liked_img+=liked_img
+        self.total_already_liked+=already_liked
+        self.total_inap_img+=inap_img
+        self.total_commented+=commented
+        self.total_followed+=followed
+
         self.followed += followed
 
         return self
@@ -563,6 +576,13 @@ class InstaPy:
         self.logFile.write('Inappropriate: {}\n'.format(inap_img))
         self.logFile.write('Commented: {}\n'.format(commented))
         self.logFile.write('Followed: {}\n'.format(followed))
+
+       
+        self.total_liked_img+=liked_img
+        self.total_already_liked+=already_liked
+        self.total_inap_img+=inap_img
+        self.total_commented+=commented
+        self.total_followed+=followed
 
         self.followed += followed
 
@@ -689,6 +709,12 @@ class InstaPy:
         self.logFile.write('Already Liked: {}\n'.format(already_liked))
         self.logFile.write('Inappropriate: {}\n'.format(inap_img))
         self.logFile.write('Commented: {}\n'.format(commented))
+
+        self.total_liked_img+=liked_img
+        self.total_already_liked+=already_liked
+        self.total_inap_img+=inap_img
+        self.total_commented+=commented
+        self.total_followed+=followed
 
         return self
 
@@ -820,6 +846,12 @@ class InstaPy:
         self.logFile.write('Already Liked: {}\n'.format(already_liked))
         self.logFile.write('Inappropriate: {}\n'.format(inap_img))
         self.logFile.write('Commented: {}\n'.format(commented))
+
+        self.total_liked_img+=liked_img
+        self.total_already_liked+=already_liked
+        self.total_inap_img+=inap_img
+        self.total_commented+=commented
+        self.total_followed+=followed
 
         return self
 
@@ -1115,10 +1147,19 @@ class InstaPy:
         self.logFile.write('Commented: {}\n'.format(commented))
         self.logFile.write('Followed: {}\n'.format(followed))
 
+        self.total_liked_img+=liked_img
+        self.total_already_liked+=already_liked
+        self.total_inap_img+=inap_img
+        self.total_commented+=commented
+        self.total_followed+=followed
+
         self.followed += followed
 
         return self
 
+    def get_results_data(self):
+        res_array=[self.total_liked_img, self.total_already_liked, self.total_inap_img, self.total_commented, self.total_followed]
+        return res_array
 
     def end(self):
         """Closes the current session"""
