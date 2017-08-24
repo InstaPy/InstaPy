@@ -128,12 +128,9 @@ def follow_user(browser, follow_restrict, login, user_name):
     """Follows the user of the currently opened image"""
 
     follow_button = None
-    flwBtn = browser.find_elements_by_xpath("//article/header/span/button")
-    if len(flwBtn) == 0:
-        flwBtn = browser.find_elements_by_xpath('//*[@id="react-root"]/section/main/article/header/div[2]/div[1]/span/span[1]/button')
-        body_elem = browser.find_element_by_tag_name('body')
-        body_elem.send_keys(Keys.HOME)
-    follow_button = flwBtn[0]
+    flwBtn = browser.find_element_by_xpath("//*[contains(text(), 'Follow')]")
+
+    follow_button = flwBtn
     sleep(2)
 
     if follow_button.text == 'Follow':
@@ -152,7 +149,7 @@ def follow_user(browser, follow_restrict, login, user_name):
 def unfollow_user(browser):
     """Unfollows the user of the currently opened image"""
 
-    unfollow_button = browser.find_element_by_xpath("//article/header/span/button")
+    unfollow_button = browser.find_element_by_xpath("//*[contains(text(), 'Following')]")
 
     if unfollow_button.text == 'Following':
         unfollow_button.click()
