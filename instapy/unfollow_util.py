@@ -127,24 +127,16 @@ def unfollow(browser, username, amount, dont_include, onlyInstapyFollowed, autom
 def follow_user(browser, follow_restrict, login, user_name):
     """Follows the user of the currently opened image"""
 
-    follow_button = None
-    flwBtn = browser.find_elements_by_xpath("//article/header/span/button")
-    if len(flwBtn) == 0:
-        flwBtn = browser.find_elements_by_xpath('//*[@id="react-root"]/section/main/article/header/div[2]/div[1]/span/span[1]/button')
-        body_elem = browser.find_element_by_tag_name('body')
-        body_elem.send_keys(Keys.HOME)
-    follow_button = flwBtn[0]
-    sleep(2)
-
-    if follow_button.text == 'Follow':
+    try:
+        follow_button = browser.find_element_by_xpath("//*[contains(text(), 'Follow')]")
+        sleep(2) # Do we still need this sleep?
         follow_button.click()
         print('--> Now following')
         log_followed_pool(login, user_name)
         follow_restrict[user_name] = follow_restrict.get(user_name, 0) + 1
         sleep(3)
         return 1
-
-    else:
+    except NoSuchElementException:
         print('--> Already following')
         sleep(1)
         return 0
@@ -165,16 +157,17 @@ def follow_given_user(browser, acc_to_follow, follow_restrict):
     """Follows a given user."""
     browser.get('https://www.instagram.com/' + acc_to_follow)
     print('--> {} instagram account is opened...'.format(acc_to_follow))
-    follow_button = browser.find_element_by_xpath("//*[contains(text(), 'Follow')]")
-    sleep(10)
-    if follow_button.text == 'Follow':
+
+    try:
+        follow_button = browser.find_element_by_xpath("//*[contains(text(), 'Follow')]")
+        sleep(10)
         follow_button.click()
         print('---> Now following: {}'.format(acc_to_follow))
         print('*' * 20)
         follow_restrict[acc_to_follow] = follow_restrict.get(acc_to_follow, 0) + 1
         sleep(3)
         return 1
-    else:
+    except NoSuchElementException:
         print('---> {} is already followed'.format(acc_to_follow))
         print('*' * 20)
         sleep(3)
