@@ -9,6 +9,7 @@ from .util import scroll_bottom
 from .util import formatNumber
 from .print_log_writer import log_followed_pool
 from selenium.webdriver.common.keys import Keys
+from selenium.common.exceptions import NoSuchElementException
 import random
 
 def set_automated_followed_pool(username):
