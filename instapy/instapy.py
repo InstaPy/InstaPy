@@ -370,11 +370,10 @@ class InstaPy:
             try:
                 links = get_links_for_location(self.browser, location, amount, media)
             except NoSuchElementException:
-                print('Too few images, aborting')
-                self.logFile.write('Too few images, aborting\n')
+                print('Too few images, skipping this location')
+                self.logFile.write('Too few images, skipping this location\n')
 
-                self.aborting = True
-                return self
+                continue
 
             for i, link in enumerate(links):
                 print('[{}/{}]'.format(i + 1, len(links)))
@@ -481,11 +480,10 @@ class InstaPy:
             try:
                 links = get_links_for_tag(self.browser, tag, amount, media)
             except NoSuchElementException:
-                print('Too few images, aborting')
-                self.logFile.write('Too few images, aborting\n')
+                print('Too few images, skipping this tag')
+                self.logFile.write('Too few images, skipping this tag\n')
 
-                self.aborting = True
-                return self
+                continue
 
             for i, link in enumerate(links):
                 print('[{}/{}]'.format(i + 1, len(links)))
