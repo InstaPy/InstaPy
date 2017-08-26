@@ -232,7 +232,7 @@ def follow_through_dialog(browser, user_name, amount, dont_include, login, follo
                 # Register this session's followed user for further interaction
                 person_followed.append(person)
                 button.click()
-                log_followed_pool(login, user_name)
+                log_followed_pool(login, person)
                 follow_restrict[user_name] = follow_restrict.get(user_name, 0) + 1
 
                 print('--> Ongoing follow ' + str(followNum) + ', now following: {}'.format(
