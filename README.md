@@ -2,8 +2,10 @@
 
 # InstaPy
 [![MIT license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/timgrossmann/InstaPy/blob/master/LICENSE)
-[![built with Selenium](https://img.shields.io/badge/built%20with-Selenium-red.svg)](https://github.com/SeleniumHQ/selenium)
-[![built with Python3](https://img.shields.io/badge/built%20with-Python3-green.svg)](https://www.python.org/)
+[![built with Selenium](https://img.shields.io/badge/built%20with-Selenium-yellow.svg)](https://github.com/SeleniumHQ/selenium)
+[![built with Python3](https://img.shields.io/badge/built%20with-Python3-red.svg)](https://www.python.org/)
+
+## [SignUp for the Newsletter here!](http://eepurl.com/cZbV_v)
 
 ### Automation Script for “farming” Likes, Comments and Followers on Instagram
 Implemented in Python using the Selenium module.
@@ -18,6 +20,8 @@ Head over to https://github.com/timgrossmann/InstaPy/wiki/Reporting-An-Issue to 
 > **Disclaimer**: Please Note that this is a research project. I am by no means responsible for any usage of this tool. Use on your own behalf. I’m also not responsible if your accounts get banned due to extensive use of this tool.
 
 ### Social
+
+#### [InstaPy Twitter](https://twitter.com/InstaPy) | [My Twitter](https://twitter.com/timigrossmann)
 
 #### [How it works (Medium)](https://medium.freecodecamp.com/my-open-source-instagram-bot-got-me-2-500-real-followers-for-5-in-server-costs-e40491358340)
 #### [Check out the talk](https://youtu.be/4TmKFZy-ioQ)
@@ -83,6 +87,10 @@ from instapy import InstaPy
 
 session = InstaPy(username='test', password='test')
 session.login()
+
+#Reduces the amount of time under sleep to a given percentage
+#It might be useful to test the tool or to increase the time for slower connections (percentage > 100)
+session.set_sleep_reduce(95)
 
 #likes specified amount of posts for each hashtag in the array (the '#' is optional)
 #in this case: 100 dog-posts and 100 cat-posts
@@ -160,8 +168,10 @@ session.follow_by_list(accs, times=1)
 # The usernames can be either a list or a string
 # The amount is for each account, in this case 30 users will be followed
 # If random is false it will pick in a top-down fashion
-
 session.follow_user_followers(['friend1', 'friend2', 'friend3'], amount=10, random=False)
+
+# default sleep_delay=600 (10min) for every 10 user following, in this case sleep for 60 seconds  
+session.follow_user_followers(['friend1', 'friend2', 'friend3'], amount=10, random=False, sleep_delay=60)
 ```
 
 ### Follow users that someone else is following
@@ -171,11 +181,13 @@ session.follow_user_followers(['friend1', 'friend2', 'friend3'], amount=10, rand
 # The usernames can be either a list or a string
 # The amount is for each account, in this case 30 users will be followed
 # If random is false it will pick in a top-down fashion
-
 session.follow_user_following(['friend1', 'friend2', 'friend3'], amount=10, random=False)
+
+# default sleep_delay=600 (10min) for every 10 user following, in this case sleep for 60 seconds
+session.follow_user_following(['friend1', 'friend2', 'friend3'], amount=10, random=False, sleep_delay=60)
 ```
 
-### Interact with someone else's followers/following
+### Follow someone else's followers/following
 
 ```python
 # For 50% of the 30 newly followed, move to their profile
@@ -185,6 +197,30 @@ session.follow_user_following(['friend1', 'friend2', 'friend3'], amount=10, rand
 
 session.set_user_interact(amount=5, random=True, percentage=50, media='Photo')
 session.follow_user_followers(['friend1', 'friend2', 'friend3'], amount=10, random=False, interact=True)
+```
+
+### Interact with users that someone else is following
+```python
+#Interact with the people that a given user is following
+#set_do_comment, set_do_follow and set_do_like are applicable
+session.set_user_interact(amount=5, random=True, percentage=50, media='Photo')
+session.set_do_follow(enabled=False, percentage=70)
+session.set_do_like(enabled=False, percentage=70)
+session.set_comments(["Cool", "Super!"])
+session.set_do_comment(enabled=True, percentage=80)
+session.interact_user_following(['natgeo'], amount=10, random=True)
+```
+
+### Interact with someone else's followers
+```python
+#Interact with the people that a given user is following
+#set_do_comment, set_do_follow and set_do_like are applicable
+session.set_user_interact(amount=5, random=True, percentage=50, media='Photo')
+session.set_do_follow(enabled=False, percentage=70)
+session.set_do_like(enabled=False, percentage=70)
+session.set_comments(["Cool", "Super!"])
+session.set_do_comment(enabled=True, percentage=80)
+session.interact_user_followers(['natgeo'], amount=10, random=True)
 ```
 
 ### Unfollowing
@@ -230,9 +266,13 @@ Example:
 ### Feeds
 
 ```python
-#This is used to perform likes on your own feeds, amount specifies how many total likes you want to perform
+# This is used to perform likes on your own feeds
+# amount=100  specifies how many total likes you want to perform
+# random=True randomly skips posts to be liked on your feed
+# unfollow=True unfollows the author of a post which was considered inappropriate
+# interact=True visits the author's profile page of a certain post and likes a given number of his pictures, then returns to feed
 
-session.like_by_feed(amount=100)
+session.like_by_feed(amount=100, randomize=True, unfollow=True, interact=True)
 ```
 
 ### Restricting Likes

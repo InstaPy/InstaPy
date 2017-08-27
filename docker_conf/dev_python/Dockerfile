@@ -14,5 +14,5 @@ RUN mkdir -p /var/run/sshd && sed -i "s/UsePrivilegeSeparation.*/UsePrivilegeSep
   && true
 
 COPY ./requirements.txt /config/
-RUN pip install -r requirements.txt
+RUN pip install -r /config/requirements.txt
 CMD ["/usr/sbin/sshd", "-D"]
