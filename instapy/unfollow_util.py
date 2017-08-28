@@ -130,7 +130,7 @@ def follow_user(browser, follow_restrict, login, user_name):
     follow_button = None
     flwBtn = browser.find_elements_by_xpath("//article/header/span/button")
     if len(flwBtn) == 0:
-        flwBtn = browser.find_elements_by_xpath('//*[@id="react-root"]/section/main/article/header/div[2]/div[1]/span/span[1]/button')
+        flwBtn = browser.find_elements_by_xpath('//*[@id="react-root"]/section/main/div/div/article/header/div[2]/div[1]/div[2]/span[2]/button')
         body_elem = browser.find_element_by_tag_name('body')
         body_elem.send_keys(Keys.HOME)
     follow_button = flwBtn[0]
