@@ -10,6 +10,7 @@ from .util import formatNumber
 from .print_log_writer import log_followed_pool
 from selenium.webdriver.common.keys import Keys
 from selenium.common.exceptions import NoSuchElementException
+from selenium.webdriver.common.action_chains import ActionChains
 import random
 
 def set_automated_followed_pool(username):
@@ -92,7 +93,7 @@ def unfollow(browser, username, amount, dont_include, onlyInstapyFollowed, autom
             if person not in dont_include:
                 if onlyInstapyFollowed == True and person in automatedFollowedPool:
                     unfollowNum += 1
-                    button.click()
+                    button.send_keys("\n")
                     delete_line_from_file('./logs/' + username + '_followedPool.csv', person + ",\n")
 
                     print('--> Ongoing Unfollow From InstaPy ' + str(unfollowNum) + ', now unfollowing: {}'.format(
@@ -105,7 +106,7 @@ def unfollow(browser, username, amount, dont_include, onlyInstapyFollowed, autom
 
                 elif onlyInstapyFollowed != True:
                     unfollowNum += 1
-                    button.click()
+                    button.send_keys("\n")
 
                     print('--> Ongoing Unfollow ' + str(unfollowNum) + ', now unfollowing: {}'.format(
                         person.encode('utf-8')))
@@ -131,7 +132,8 @@ def follow_user(browser, follow_restrict, login, user_name):
     try:
         follow_button = browser.find_element_by_xpath("//*[contains(text(), 'Follow')]")
         sleep(2) # Do we still need this sleep?
-        browser.execute_script("arguments[0].click();", follow_button)
+        follow_button.send_keys("\n")
+        
         print('--> Now following')
         log_followed_pool(login, user_name)
         follow_restrict[user_name] = follow_restrict.get(user_name, 0) + 1
@@ -145,10 +147,10 @@ def follow_user(browser, follow_restrict, login, user_name):
 def unfollow_user(browser):
     """Unfollows the user of the currently opened image"""
 
-    unfollow_button = browser.find_element_by_xpath("//article/header/span/button")
+    unfollow_button = browser.find_element_by_xpath("//*[contains(text(), 'Following')]")
 
     if unfollow_button.text == 'Following':
-        unfollow_button.click()
+        unfollow_button.send_keys("\n")
         print('--> User unfollowed due to Inappropriate Content')
         sleep(3)
         return 1
@@ -162,7 +164,8 @@ def follow_given_user(browser, acc_to_follow, follow_restrict):
     try:
         follow_button = browser.find_element_by_xpath("//*[contains(text(), 'Follow')]")
         sleep(10)
-        follow_button.click()
+        follow_button.send_keys("\n")
+        
         print('---> Now following: {}'.format(acc_to_follow))
         print('*' * 20)
         follow_restrict[acc_to_follow] = follow_restrict.get(acc_to_follow, 0) + 1
@@ -244,8 +247,10 @@ def follow_through_dialog(browser, user_name, amount, dont_include, login, follo
                 followNum += 1
                 # Register this session's followed user for further interaction
                 person_followed.append(person)
-                button.click()
+
+                button.send_keys("\n")
                 log_followed_pool(login, user_name)
+                
                 follow_restrict[user_name] = follow_restrict.get(user_name, 0) + 1
 
                 print('--> Ongoing follow ' + str(followNum) + ', now following: {}'.format(
@@ -284,7 +289,7 @@ def get_given_user_followers(browser, user_name, amount, dont_include, login, fo
 
     try:
         following_link = browser.find_elements_by_xpath('//header/div[2]//li[2]')
-        following_link[0].click()
+        following_link[0].send_keys("\n")
     except BaseException as e:
         print("following_link error \n", str(e))
 
@@ -334,7 +339,7 @@ def get_given_user_following(browser, user_name, amount, dont_include, login, fo
 
     try:
         following_link = browser.find_elements_by_xpath('//header/div[2]//li[3]')
-        following_link[0].click()
+        following_link[0].send_keys("\n")
     except BaseException as e:
         print("following_link error \n", str(e))
 
@@ -383,7 +388,7 @@ def follow_given_user_followers(browser, user_name, amount, dont_include, login,
 
     try:
         following_link = browser.find_elements_by_xpath('//header/div[2]//li[2]')
-        following_link[0].click()
+        following_link[0].send_keys("\n")
     except BaseException as e:
         print("following_link error \n", str(e))
 
@@ -403,7 +408,7 @@ def follow_given_user_following(browser, user_name, amount, dont_include, login,
 
     try:
         following_link = browser.find_elements_by_xpath('//header/div[2]//li[3]')
-        following_link[0].click()
+        following_link[0].send_keys("\n")
     except BaseException as e:
         print("following_link error \n", str(e))
 
