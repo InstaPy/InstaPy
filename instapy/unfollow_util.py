@@ -9,6 +9,7 @@ from .util import scroll_bottom
 from .util import formatNumber
 from .print_log_writer import log_followed_pool
 from selenium.webdriver.common.keys import Keys
+from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.action_chains import ActionChains
 import random
 
@@ -128,18 +129,17 @@ def unfollow(browser, username, amount, dont_include, onlyInstapyFollowed, autom
 def follow_user(browser, follow_restrict, login, user_name):
     """Follows the user of the currently opened image"""
 
-    follow_button = browser.find_element_by_xpath("//*[contains(text(), 'Follow')]")
-    sleep(2)
-
-    if follow_button.text == 'Follow':
+    try:
+        follow_button = browser.find_element_by_xpath("//*[contains(text(), 'Follow')]")
+        sleep(2) # Do we still need this sleep?
         follow_button.send_keys("\n")
+        
         print('--> Now following')
         log_followed_pool(login, user_name)
         follow_restrict[user_name] = follow_restrict.get(user_name, 0) + 1
         sleep(3)
         return 1
-
-    else:
+    except NoSuchElementException:
         print('--> Already following')
         sleep(1)
         return 0
@@ -160,16 +160,18 @@ def follow_given_user(browser, acc_to_follow, follow_restrict):
     """Follows a given user."""
     browser.get('https://www.instagram.com/' + acc_to_follow)
     print('--> {} instagram account is opened...'.format(acc_to_follow))
-    follow_button = browser.find_element_by_xpath("//*[contains(text(), 'Follow')]")
-    sleep(10)
-    if follow_button.text == 'Follow':
+
+    try:
+        follow_button = browser.find_element_by_xpath("//*[contains(text(), 'Follow')]")
+        sleep(10)
         follow_button.send_keys("\n")
+        
         print('---> Now following: {}'.format(acc_to_follow))
         print('*' * 20)
         follow_restrict[acc_to_follow] = follow_restrict.get(acc_to_follow, 0) + 1
         sleep(3)
         return 1
-    else:
+    except NoSuchElementException:
         print('---> {} is already followed'.format(acc_to_follow))
         print('*' * 20)
         sleep(3)
