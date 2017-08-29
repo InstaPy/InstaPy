@@ -347,7 +347,7 @@ Use the `nogui` parameter to interact with virtual display
 session = InstaPy(username='test', password='test', nogui=True)
 ```
 
-### Automate
+### Automate with `cron`
 
 You can add InstaPy to your crontab, so that the script will be executed regularly. This is especially useful for servers, but be sure not to break Instagrams follow and like limits.
 
@@ -357,6 +357,41 @@ crontab -e
 # Add information to execute your InstaPy regularly.
 # With cd you navigate to your InstaPy folder, with the part after && you execute your quickstart.py with python. Make sure that those paths match your environment.
 45 */4 * * * cd /home/user/InstaPy && /usr/bin/python ./quickstart.py
+```
+
+### Automate with [Schedule](https://github.com/dbader/schedule)
+
+> Schedule is an in-process scheduler for periodic jobs that uses the builder pattern for configuration. Schedule lets you run Python functions periodically at pre-determined intervals using a simple, human-friendly syntax.
+
+```shell
+pip install schedule
+```
+
+```python
+from instapy import InstaPy
+import schedule
+import time
+
+def job():
+    try:
+        session = InstaPy(selenium_local_session=False) # Assuming running in Compose
+        session.set_selenium_remote_session(selenium_url='http://selenium:4444/wd/hub')
+        session.login()
+        session.set_do_comment(enabled=True, percentage=20)
+        session.set_comments(['Well done!'])
+        session.set_do_follow(enabled=True, percentage=5, times=2)
+        session.like_by_tags(['love'], amount=100, media='Photo')
+        session.end()
+    except:
+        import traceback
+        print(traceback.format_exc())
+
+schedule.every().day.at("6:35").do(job)
+schedule.every().day.at("16:22").do(job)
+
+while True:
+    schedule.run_pending()
+    time.sleep(1)
 ```
 
 ## Switching to Firefox
