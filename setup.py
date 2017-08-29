@@ -5,7 +5,7 @@ __author__ = 'Tim Grossmann'
 
 requirements = [
     'selenium==2.53.6',
-    'clarifai==2.0.20',
+    'clarifai==2.0.31',
     'pyvirtualdisplay',
     'emoji'
 ]

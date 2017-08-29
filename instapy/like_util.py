@@ -226,7 +226,7 @@ def get_links_for_username(browser, username, amount, is_random=False, media=Non
 
     try:
         is_private = body_elem.find_element_by_xpath \
-                ('//h2[@class="_glq0k"]')
+                ('//h2[@class="_kcrwx"]')
     except:
         print('Interaction begin...')
         print('')

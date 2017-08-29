@@ -23,8 +23,8 @@ session.set_do_follow(enabled=True, percentage=10)
 """Image Check with Image tagging api"""
 # default enabled=False , enables the checking with the clarifai api (image tagging)
 # if secret and proj_id are not set, it will get the environment Variables
-# 'Clarifai_SECRET' and 'CLARIFAI_ID'
-session.set_use_clarifai(enabled=True, secret='xyz', proj_id='123')
+# 'CLARIFAI_API_KEY'
+session.set_use_clarifai(enabled=True, api_key='xxx')
 #                                        ^
 # ^If specified once, you don't need to add them again
 
@@ -89,8 +89,9 @@ session.follow_user_followers(['friend1', 'friend2', 'friend3'], amount=10, rand
 # and randomly choose 5 pictures to be liked.
 # Take into account the other set options like the comment rate
 # and the filtering for inappropriate words or users
-# default sleep_delay=600 (10min) for every 10 user following, in this case sleep for 60 seconds
 session.set_user_interact(amount=5, random=True, percentage=50, media='Photo')
+session.follow_user_followers(['friend1', 'friend2', 'friend3'], amount=10, random=False, interact=True)
+# default sleep_delay=600 (10min) for every 10 user following, in this case sleep for 60 seconds
 session.follow_user_followers(['friend1', 'friend2', 'friend3'], amount=10, random=False, interact=True, sleep_delay=60)
 
 # follows the people that a given user is following
@@ -101,6 +102,7 @@ session.follow_user_following('friend2', amount=10, random=True, sleep_delay=60)
 # Take into account the other set options like the comment rate
 # and the filtering for inappropriate words or users
 session.set_user_interact(amount=5, random=True, percentage=50, media='Photo')
+session.follow_user_following(['friend1', 'friend2', 'friend3'], amount=10, random=False, interact=True)
 session.follow_user_following(['friend1', 'friend2', 'friend3'], amount=10, random=False, interact=True, sleep_delay=60)
 
 

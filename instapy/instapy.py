@@ -87,8 +87,7 @@ class InstaPy:
         self.user_interact_random = False
 
         self.use_clarifai = False
-        self.clarifai_secret = None
-        self.clarifai_id = None
+        self.clarifai_api_key = None
         self.clarifai_img_tags = []
         self.clarifai_full_match = False
 
@@ -283,7 +282,7 @@ class InstaPy:
         self.switch_language = option
         return self
 
-    def set_use_clarifai(self, enabled=False, secret=None, proj_id=None, full_match=False):
+    def set_use_clarifai(self, enabled=False, api_key=None, full_match=False):
         """Defines if the clarifai img api should be used
         Which 'project' will be used (only 5000 calls per month)"""
         if self.aborting:
@@ -291,15 +290,10 @@ class InstaPy:
 
         self.use_clarifai = enabled
 
-        if secret is None and self.clarifai_secret is None:
-            self.clarifai_secret = environ.get('CLARIFAI_SECRET')
-        elif secret:
-            self.clarifai_secret = secret
-
-        if proj_id is None and self.clarifai_id is None:
-            self.clarifai_id = environ.get('CLARIFAI_ID')
-        elif proj_id is not None:
-            self.clarifai_id = proj_id
+        if api_key is None and self.clarifai_api_key is None:
+            self.clarifai_api_key = environ.get('CLARIFAI_API_KEY')
+        elif api_key is not None:
+            self.clarifai_api_key = api_key
 
         self.clarifai_full_match = full_match
 
@@ -370,11 +364,10 @@ class InstaPy:
             try:
                 links = get_links_for_location(self.browser, location, amount, media)
             except NoSuchElementException:
-                print('Too few images, aborting')
-                self.logFile.write('Too few images, aborting\n')
+                print('Too few images, skipping this location')
+                self.logFile.write('Too few images, skipping this location\n')
 
-                self.aborting = True
-                return self
+                continue
 
             for i, link in enumerate(links):
                 print('[{}/{}]'.format(i + 1, len(links)))
@@ -400,8 +393,8 @@ class InstaPy:
                             if self.use_clarifai and (following or commenting):
                                 try:
                                     checked_img, temp_comments = \
-                                        check_image(self.browser, self.clarifai_id,
-                                                    self.clarifai_secret,
+                                        check_image(self.browser,
+                                                    self.clarifai_api_key,
                                                     self.clarifai_img_tags,
                                                     self.clarifai_full_match)
                                 except Exception as err:
@@ -481,11 +474,10 @@ class InstaPy:
             try:
                 links = get_links_for_tag(self.browser, tag, amount, media)
             except NoSuchElementException:
-                print('Too few images, aborting')
-                self.logFile.write('Too few images, aborting\n')
+                print('Too few images, skipping this tag')
+                self.logFile.write('Too few images, skipping this tag\n')
 
-                self.aborting = True
-                return self
+                continue
 
             for i, link in enumerate(links):
                 print('[{}/{}]'.format(i + 1, len(links)))
@@ -511,8 +503,8 @@ class InstaPy:
                             if self.use_clarifai and (following or commenting):
                                 try:
                                     checked_img, temp_comments = \
-                                        check_image(self.browser, self.clarifai_id,
-                                                    self.clarifai_secret,
+                                        check_image(self.browser,
+                                                    self.clarifai_api_key,
                                                     self.clarifai_img_tags,
                                                     self.clarifai_full_match)
                                 except Exception as err:
@@ -641,8 +633,8 @@ class InstaPy:
                             if self.use_clarifai and (following or commenting):
                                 try:
                                     checked_img, temp_comments = \
-                                        check_image(self.browser, self.clarifai_id,
-                                                    self.clarifai_secret,
+                                        check_image(self.browser,
+                                                    self.clarifai_api_key,
                                                     self.clarifai_img_tags,
                                                     self.clarifai_full_match)
                                 except Exception as err:
