@@ -45,7 +45,7 @@ def unfollow(browser, username, amount, dont_include, onlyInstapyFollowed, autom
 
     try:
         following_link = browser.find_elements_by_xpath('//header/div[2]//li[3]')
-        following_link[0].send_keys("\n")
+        following_link[0].click()
     except BaseException as e:
         print("following_link error \n", str(e))
 
