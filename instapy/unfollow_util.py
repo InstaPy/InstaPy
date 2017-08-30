@@ -45,7 +45,7 @@ def unfollow(browser, username, amount, dont_include, onlyInstapyFollowed, autom
         raise RuntimeWarning('There are 0 people to unfollow')
 
     try:
-        following_link = browser.find_elements_by_xpath('//header/div[2]//li[3]')
+        following_link = browser.find_elements_by_xpath('//a[@href="/' + user_name + '/following/"]')
         following_link[0].click()
     except BaseException as e:
         print("following_link error \n", str(e))
@@ -53,8 +53,7 @@ def unfollow(browser, username, amount, dont_include, onlyInstapyFollowed, autom
     sleep(2)
 
     # find dialog box
-
-    dialog = browser.find_element_by_xpath('/html/body/div[4]/div/div[2]/div/div[2]/div/div[2]')
+    dialog = browser.find_element_by_xpath("//div[text()='Following']/following-sibling::div")
 
     # scroll down the page
     scroll_bottom(browser, dialog, allfollowing)
@@ -187,7 +186,7 @@ def follow_through_dialog(browser, user_name, amount, dont_include, login, follo
         amount = amount * 3
 
     # find dialog box
-    dialog = browser.find_element_by_xpath('/html/body/div[4]/div/div[2]/div/div[2]/div/div[2]')
+    dialog = browser.find_element_by_xpath("//div[text()='Followers' or text()='Following']/following-sibling::div")
 
     # scroll down the page
     scroll_bottom(browser, dialog, allfollowing)
@@ -288,7 +287,7 @@ def get_given_user_followers(browser, user_name, amount, dont_include, login, fo
         raise RuntimeWarning('There are 0 people to follow')
 
     try:
-        following_link = browser.find_elements_by_xpath('//header/div[2]//li[2]')
+        following_link = browser.find_elements_by_xpath('//a[@href="/' + user_name + '/followers/"]')
         following_link[0].send_keys("\n")
     except BaseException as e:
         print("following_link error \n", str(e))
@@ -298,7 +297,7 @@ def get_given_user_followers(browser, user_name, amount, dont_include, login, fo
     person_followed = []
 
     # find dialog box
-    dialog = browser.find_element_by_xpath('/html/body/div[4]/div/div[2]/div/div[2]/div/div[2]')
+    dialog = browser.find_element_by_xpath("//div[text()='Followers']/following-sibling::div")
 
     # scroll down the page
     scroll_bottom(browser, dialog, allfollowing)
@@ -338,7 +337,7 @@ def get_given_user_following(browser, user_name, amount, dont_include, login, fo
         raise RuntimeWarning('There are 0 people to follow')
 
     try:
-        following_link = browser.find_elements_by_xpath('//header/div[2]//li[3]')
+        following_link = browser.find_elements_by_xpath('//a[@href="/' + user_name + '/following/"]')
         following_link[0].send_keys("\n")
     except BaseException as e:
         print("following_link error \n", str(e))
@@ -348,7 +347,7 @@ def get_given_user_following(browser, user_name, amount, dont_include, login, fo
     person_followed = []
 
     # find dialog box
-    dialog = browser.find_element_by_xpath('/html/body/div[4]/div/div[2]/div/div[2]/div/div[2]')
+    dialog = browser.find_element_by_xpath("//div[text()='Following']/following-sibling::div")
 
     # scroll down the page
     scroll_bottom(browser, dialog, allfollowing)
@@ -387,7 +386,7 @@ def follow_given_user_followers(browser, user_name, amount, dont_include, login,
         raise RuntimeWarning('There are 0 people to follow')
 
     try:
-        following_link = browser.find_elements_by_xpath('//header/div[2]//li[2]')
+        following_link = browser.find_elements_by_xpath('//a[@href="/' + user_name + '/followers/"]')
         following_link[0].send_keys("\n")
     except BaseException as e:
         print("following_link error \n", str(e))
@@ -407,7 +406,7 @@ def follow_given_user_following(browser, user_name, amount, dont_include, login,
         raise RuntimeWarning('There are 0 people to follow')
 
     try:
-        following_link = browser.find_elements_by_xpath('//header/div[2]//li[3]')
+        following_link = browser.find_elements_by_xpath('//a[@href="/' + user_name + '/following/"]')
         following_link[0].send_keys("\n")
     except BaseException as e:
         print("following_link error \n", str(e))
