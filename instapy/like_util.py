@@ -425,12 +425,11 @@ def check_link(browser, link, dont_like, ignore_if_contains, ignore_users,
 
 def like_image(browser):
     """Likes the browser opened image"""
-    like_elem = browser.find_elements_by_xpath("//a[@role = 'button']/span[text()='Like']")
-    liked_elem = browser.find_elements_by_xpath("//a[@role = 'button']/span[text()='Unlike']")
+    like_elem = browser.find_elements_by_xpath("//a[@role='button']/span[text()='Like']")
+    liked_elem = browser.find_elements_by_xpath("//a[@role='button']/span[text()='Unlike']")
 
     if len(like_elem) == 1:
-        browser.execute_script(
-            "document.getElementsByClassName('" + like_elem[0].get_attribute("class") + "')[0].click()")
+        like_elem[0].send_keys("\n")
         print('--> Image Liked!')
         sleep(2)
         return True
