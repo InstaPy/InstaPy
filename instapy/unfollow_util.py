@@ -45,7 +45,7 @@ def unfollow(browser, username, amount, dont_include, onlyInstapyFollowed, autom
         raise RuntimeWarning('There are 0 people to unfollow')
 
     try:
-        following_link = browser.find_elements_by_xpath('//a[@href="/' + user_name + '/following/"]')
+        following_link = browser.find_elements_by_xpath('//a[@href="/' + username + '/following/"]')
         following_link[0].click()
     except BaseException as e:
         print("following_link error \n", str(e))
