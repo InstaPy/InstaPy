@@ -181,7 +181,7 @@ def follow_through_dialog(browser, user_name, amount, dont_include, login, follo
     sleep(2)
     person_followed = []
 
-    if random:
+    if is_random:
         # expanding the popultaion for better sampling distribution
         amount = amount * 3
 
