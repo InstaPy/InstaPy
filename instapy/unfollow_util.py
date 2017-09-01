@@ -248,7 +248,7 @@ def follow_through_dialog(browser, user_name, amount, dont_include, login, follo
                 person_followed.append(person)
 
                 button.send_keys("\n")
-                log_followed_pool(login, user_name)
+                log_followed_pool(login, person) 
                 
                 follow_restrict[user_name] = follow_restrict.get(user_name, 0) + 1
 
