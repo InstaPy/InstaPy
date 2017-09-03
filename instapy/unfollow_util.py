@@ -130,8 +130,13 @@ def follow_user(browser, follow_restrict, login, user_name):
 
     try:
         follow_button = browser.find_element_by_xpath("//*[contains(text(), 'Follow')]")
+        
         sleep(2) # Do we still need this sleep?
-        follow_button.send_keys("\n")
+        if follow_button.is_displayed():
+            follow_button.send_keys("\n")
+        else:
+            driver.execute_script("arguments[0].style.visibility = 'visible'; arguments[0].style.height = '10px'; arguments[0].style.width = '10px'; arguments[0].style.opacity = 1", follow_button)
+            follow_button.click()
         
         print('--> Now following')
         log_followed_pool(login, user_name)
