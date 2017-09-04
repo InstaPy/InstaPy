@@ -135,7 +135,7 @@ def follow_user(browser, follow_restrict, login, user_name):
         if follow_button.is_displayed():
             follow_button.send_keys("\n")
         else:
-            driver.execute_script("arguments[0].style.visibility = 'visible'; arguments[0].style.height = '10px'; arguments[0].style.width = '10px'; arguments[0].style.opacity = 1", follow_button)
+            browser.execute_script("arguments[0].style.visibility = 'visible'; arguments[0].style.height = '10px'; arguments[0].style.width = '10px'; arguments[0].style.opacity = 1", follow_button)
             follow_button.click()
         
         print('--> Now following')
