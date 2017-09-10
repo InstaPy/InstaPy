@@ -228,8 +228,8 @@ session.interact_user_followers(['natgeo'], amount=10, random=True)
 ```python
 #unfollows 10 of the accounts you're following -> instagram will only unfollow 10 before you'll be 'blocked for 10 minutes' (if you enter a higher number than 10 it will unfollow 10, then wait 10 minutes and will continue then)
 # You can choose to only unfollow the user that Insta has followed by adding onlyInstapyFollowed = True otherwise it will unfollow all users
-
-session.unfollow_users(amount=10, onlyInstapyFollowed = True )
+# You can choose unfollow method as FIFO (First-Input-First-Output) or LIFO (Last-Input-First-Output). The default is FIFO method. onlyInstapyMethod is using only when onlyInstapyFollowed = True
+session.unfollow_users(amount=10, onlyInstapyFollowed = True, onlyInstapyMethod = 'FIFO' )
 ```
 
 ### Interactions based on the number of followers a user has

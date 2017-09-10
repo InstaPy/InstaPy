@@ -953,13 +953,13 @@ class InstaPy:
 
         return self
 
-    def unfollow_users(self, amount=10, onlyInstapyFollowed=False):
+    def unfollow_users(self, amount=10, onlyInstapyFollowed=False, onlyInstapyMethod='FIFO'):
         """Unfollows (default) 10 users from your following list"""
         self.automatedFollowedPool = set_automated_followed_pool(self.username)
 
         try:
             unfollowNumber = unfollow(self.browser, self.username, amount, self.dont_include, onlyInstapyFollowed,
-                                      self.automatedFollowedPool)
+                                      onlyInstapyMethod, self.automatedFollowedPool)
             print("--> Total people unfollowed : {} ".format(unfollowNumber))
 
         except (TypeError, RuntimeWarning) as err:
