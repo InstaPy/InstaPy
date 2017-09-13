@@ -18,7 +18,7 @@ def set_automated_followed_pool(username):
     try:
         with open('./logs/' + username + '_followedPool.csv') as followedPoolFile:
             reader = csv.reader(followedPoolFile)
-            automatedFollowedPool = [row[0] for row in reader]
+            automatedFollowedPool = [row[0] for row in reversed(list(reader))]
 
         print("Number of people followed automatically remaining: {}".format(len(automatedFollowedPool)))
         followedPoolFile.close()
