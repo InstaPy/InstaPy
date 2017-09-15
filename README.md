@@ -51,7 +51,7 @@ Built-in delays prevent your account from getting banned. (Just make sure you do
 ## Getting started
 
 ### Guides:
-**[How to Ubuntu](./docs/How_To_DO_Ubuntu.md) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**
+**[How to Ubuntu (64-bit)](./docs/How_To_DO_Ubuntu.md) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**
 
 **[ How to CentOS](./docs/How_To_DO_Centos.md) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**
 
@@ -61,6 +61,7 @@ Built-in delays prevent your account from getting banned. (Just make sure you do
 1. To have [Python](https://www.python.org/downloads/) 2.7 or 3.6 installed.
 2. Set up path for PY command.
 3. Installed [Selenium](http://selenium-python.readthedocs.io/) and [pyvirtualdriver](https://pypi.python.org/pypi/PyVirtualDisplay).
+4. 64-bit system is a requirement for current versions of chrome browser. 
 
 Make sure to get the right ```chromedriver``` for your system [from here](https://sites.google.com/a/chromium.org/chromedriver/downloads). Just put it in ```/assets```.
 
