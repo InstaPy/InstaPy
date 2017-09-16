@@ -4,6 +4,7 @@
 - #### Make sure to use the 1GB RAM version (or better)
 
 - #### Make sure to set ```nogui=True``` in your InstaPy file
+- #### Note that current Chrome browser and chromedriver needed for the install only support 64-bit architecture. 
 
 ### General dependencies
 
