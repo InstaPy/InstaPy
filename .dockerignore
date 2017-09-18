@@ -4,7 +4,6 @@
 /docker_conf/
 /assets/
 /setup.py
-/requirements.txt
 /LICENSE
 /.gitignore
 /docker-prod.yml
