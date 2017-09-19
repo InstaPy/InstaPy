@@ -10,6 +10,7 @@
      depends_on:
        - selenium
    selenium:
+       container_name: selenium
        image: selenium/standalone-chrome-debug
        ports:
          - "5900:5900"
