@@ -1,0 +1,7 @@
+create table likes (
+	id        	integer primary key autoincrement not null,
+    	insta_user    	text,
+  	insta_name    	text,
+    	link    	text,
+    	liked        	datetime
+);

@@ -1,7 +1,8 @@
 """Module only used to log the number of followers to a file"""
 from datetime import datetime
 from selenium.common.exceptions import NoSuchElementException
-
+import os
+import sqlite3
 
 def log_follower_num(browser, username):
     """Prints and logs the current number of followers to
@@ -22,3 +23,25 @@ def log_followed_pool(login, followed):
             followPool.write(followed + ",\n")
     except BaseException as e:
         print("log_followed_pool error \n", str(e))
+
+def log_likes(insta_user, insta_name, link):
+    """Saves this like in sqlite-db"""
+    conn = sqlite3.connect('./db/instapy.db')
+    cur = conn.cursor()
+    cur.execute(''' INSERT INTO likes(liked, insta_user, insta_name, link) VALUES(date('now'),?,?,?) ''', (insta_user,insta_name,link,) )
+    conn.commit()
+    likes = cur.execute("SELECT COUNT(*) counting FROM likes WHERE insta_user = '"+ os.environ['instapy_user'] +"' AND liked = date('now')").fetchone()
+    if likes[0] > self.limit_likes:
+        print "Enough likes for today - EXIT"
+        sys.exit(0)
+
+def init_log_writer():
+    """Initialize instapy db"""
+    db_path = './db/instapy'
+    db_is_new = not os.path.exists(db_path + '.db')
+    conn = sqlite3.connect(db_path + '.db')
+    if db_is_new:
+        print('Creating schema in: ' + db_path + '.db')
+        with open(db_path + '.schema', 'rt') as f:
+            schema = f.read()
+        conn.executescript(schema)
