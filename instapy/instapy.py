@@ -170,10 +170,6 @@ class InstaPy:
             self.logFile.write('Wrong login data!\n')
             self.aborting = True
 
-        elif likes[0] > self.limit_likes:
-            print("Enough likes for today - EXIT")
-            self.aborting = True
-
         else:
             print('Logged in successfully!')
             self.logFile.write('Logged in successfully!\n')
