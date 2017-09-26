@@ -30,7 +30,7 @@ def log_likes(insta_user, insta_name, link):
     cur = conn.cursor()
     cur.execute(''' INSERT INTO likes(liked, insta_user, insta_name, link) VALUES(date('now'),?,?,?) ''', (insta_user,insta_name,link,) )
     conn.commit()
-    likes = cur.execute("SELECT COUNT(*) counting FROM likes WHERE insta_user = '"+ os.environ['instapy_user'] +"' AND liked = date('now')").fetchone()
+    likes = cur.execute("SELECT COUNT(*) counting FROM likes WHERE insta_user = '"+ insta_user +"' AND liked = date('now')").fetchone()
     if likes[0] > self.limit_likes:
         print "Enough likes for today - EXIT"
         sys.exit(0)
