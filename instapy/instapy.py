@@ -42,7 +42,6 @@ from .unfollow_util import set_automated_followed_pool
 import random
 import os
 
-
 class InstaPy:
     """Class to be instantiated to use the script"""
 
@@ -391,7 +390,7 @@ class InstaPy:
                         liked = like_image(self.browser)
 
                         if liked:
-                            log_likes(self.username,user_name,link)
+                            log_likes(self,user_name,link)
                             liked_img += 1
                             checked_img = True
                             temp_comments = []
@@ -502,7 +501,7 @@ class InstaPy:
                         liked = like_image(self.browser)
 
                         if liked:
-                            log_likes(self.username,user_name,link)
+                            log_likes(self,user_name,link)
                             liked_img += 1
                             checked_img = True
                             temp_comments = []
@@ -632,7 +631,7 @@ class InstaPy:
                         liked = like_image(self.browser)
 
                         if liked:
-                            log_likes(self.username,user_name,link)
+                            log_likes(self,user_name,link)
                             total_liked_img += 1
                             liked_img += 1
                             checked_img = True
@@ -764,7 +763,7 @@ class InstaPy:
                             like = True
 
                         if liked:
-                            log_likes(self.username,user_name,link)
+                            log_likes(self,user_name,link)
                             total_liked_img += 1
                             liked_img += 1
                             checked_img = True
@@ -1044,7 +1043,7 @@ class InstaPy:
                                 liked = like_image(self.browser)
 
                                 if liked:
-                                    log_likes(self.username,user_name,link)
+                                    log_likes(self,user_name,link)
                                     username = self.browser.find_element_by_xpath("//main//div//div//article//header//div//a")
                                     username = username.get_attribute("title")
                                     name = []
