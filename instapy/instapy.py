@@ -150,7 +150,6 @@ class InstaPy:
 
         self.browser = webdriver.Remote(command_executor=selenium_url,
                                         desired_capabilities=DesiredCapabilities.CHROME)
-        self.browser.maximize_window()
         self.logFile.write('Session started - %s\n' \
                            % (datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
 
