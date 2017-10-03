@@ -450,7 +450,7 @@ class InstaPy:
 
         return self
 
-    def like_by_tags(self, tags=None, amount=50, media=None):
+    def like_by_tags(self, tags=None, amount=50, media=None, skip_top_posts=True):
 
         """Likes (default) 50 images per given tag"""
         if self.aborting:
@@ -471,7 +471,7 @@ class InstaPy:
             self.logFile.write('--> {}\n'.format(tag.encode('utf-8')))
 
             try:
-                links = get_links_for_tag(self.browser, tag, amount, media)
+                links = get_links_for_tag(self.browser, tag, amount, media, skip_top_posts)
             except NoSuchElementException:
                 print('Too few images, skipping this tag')
                 self.logFile.write('Too few images, skipping this tag\n')
