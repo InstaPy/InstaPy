@@ -202,8 +202,8 @@ def follow_given_user(browser, acc_to_follow, follow_restrict):
     print('--> {} instagram account is opened...'.format(acc_to_follow))
 
     try:
-        follow_button = browser.find_element_by_xpath("//*[contains(text(), 'Follow')]")
         sleep(10)
+        follow_button = browser.find_element_by_xpath("//*[text()='Follow']")
         follow_button.send_keys("\n")
         
         print('---> Now following: {}'.format(acc_to_follow))
