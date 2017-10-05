@@ -33,7 +33,7 @@ def get_like_on_feed(browser, amount):
         abort = False
         try:
             like_buttons = browser.find_elements_by_class_name(LIKE_TAG_CLASS)
-        except selenium.common.exceptions.NoSuchElementException:
+        except NoSuchElementException:
             print('Unale to find the like buttons, Aborting')
             abort = True
 
