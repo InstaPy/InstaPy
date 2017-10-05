@@ -704,9 +704,9 @@ class InstaPy:
             self.logFile.write('--> {}\n'.format(username.encode('utf-8')))
 
             following = randint(0, 100) <= self.follow_percentage
-            if self.do_follow and username not in self.dont_include \
-                    and checked_img and following \
-                    and self.follow_restrict.get(user_name, 0) < self.follow_times:
+            if (self.do_follow and username not in self.dont_include
+                    and checked_img and following
+                    and self.follow_restrict.get(username, 0) < self.follow_times):
                 followed += follow_user(self.browser, self.follow_restrict, self.username, username)
             else:
                 print('--> Not following')
