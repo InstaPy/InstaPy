@@ -97,9 +97,17 @@ session.set_sleep_reduce(95)
 #in this case: 100 dog-posts and 100 cat-posts
 session.like_by_tags(['#dog', 'cat'], amount=100)
 
+#likes specified amount of posts for each hashtag in the array (the '#' is optional)
+#in this case: 100 dog-posts and 100 cat-posts including media entities from top posts section (skip top posts y default)
+session.like_by_tags(['#dog', 'cat'], amount=100, skip_top_posts=False)
+
 #likes specified amount of posts for each location in the array
 #in this case: 100 posts geotagged at the chrysler building and 100 posts geotagged at the salton sea
 session.like_by_locations(['26429/chrysler-building/', '224442573/salton-sea/'], amount=100)
+
+#likes specified amount of posts for each location in the array including top posts
+#in this case: 100 posts geotagged at the chrysler building and 100 posts geotagged at the salton sea and include media entities from top posts section (skip top posts by default)
+session.like_by_locations(['26429/chrysler-building/', '224442573/salton-sea/'], amount=100, skip_top_posts=False)
 
 #gets tags from image passed as instagram-url and likes specified amount of images for each tag
 session.like_from_image(url='www.instagram.com/p/BSrfITEFUAM/', amount=100)
@@ -117,7 +125,7 @@ session.like_from_image(url='www.instagram.com/image', amount=50, media='Photo')
 session.like_by_tags(['#cat'], amount=15, media='Video')
 session.like_from_image(url='www.instagram.com/image', amount=15, media='Video')
 
-#Likes 10 random photo of geach given user
+#Likes 10 random photo of each given user
 
 session.like_by_users(usernames=['friend1', 'friend2', 'friend3'], amount=10, random=True, media='Photo')
 
@@ -253,6 +261,9 @@ session.set_lower_follower_count(limit = 1)
 session.like_by_locations(['224442573/salton-sea/'], amount=100)
 or
 session.like_by_locations(['224442573'], amount=100)
+or
+# Include media entities from top posts section
+session.like_by_locations(['224442573'], amount=5, skip_top_posts=False)
 ```
 
 You can find locations for the `like_by_locations` function by:
