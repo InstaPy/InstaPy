@@ -65,7 +65,12 @@ Built-in delays prevent your account from getting banned. (Just make sure you do
 
 Make sure to get the right ```chromedriver``` for your system [from here](https://sites.google.com/a/chromium.org/chromedriver/downloads). Just put it in ```/assets```.
 
-> If you're not too familiar with code and you're working on Windows, try out this tool to set up the settings: [InstaPy Windows GUI](https://github.com/Nemixalone/GUI-tool-for-InstaPy-script)
+#### Make sure to use one of the GUIs for easiest setup!
+**[Official Cross Platform GUI](https://github.com/ahmadudin/electron-instaPy-GUI)**
+
+[<img src="https://raw.githubusercontent.com/ahmadudin/ahmadudin.github.io/master/assets/images/screencapture1.PNG" width="400" />](https://github.com/ahmadudin/electron-instaPy-GUI)
+
+[Third Party InstaPy GUI for Windows](https://github.com/Nemixalone/GUI-tool-for-InstaPy-script)
 
 ### Start
 
