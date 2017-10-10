@@ -1,4 +1,4 @@
-<img src="https://i.imgur.com/Md0zAI3.jpg" width="150" align="right">
+<img src="https://i.imgur.com/sJzfZsL.jpg" width="150" align="right">
 
 # InstaPy
 [![MIT license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/timgrossmann/InstaPy/blob/master/LICENSE)
