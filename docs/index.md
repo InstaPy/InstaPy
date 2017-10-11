@@ -1,4 +1,4 @@
-<img src="http://i.imgur.com/9ZjtveL.png" width="150" align="right">
+<img src="https://i.imgur.com/0Q9O7Zs.jpg" width="150" align="right">
 
 # InstaPy
 [![MIT license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/timgrossmann/InstaPy/blob/master/LICENSE)
@@ -47,9 +47,9 @@ Built in delays prevent your account from getting banned. (Just make sure you do
 ## Getting started
 
 ### Guides:
-**[How to Ubuntu](./docs/How_To_DO_Ubuntu.md) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**
+**[How to Ubuntu](./docs/How_To_DO_Ubuntu_on_Digital_Ocean.md) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**
 
-**[ How to CentOS](./docs/How_To_DO_Centos.md) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**
+**[How to RaspberryPi](./docs/How_to_Raspberry.md) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**
 
 **[How to Windows](./docs/How_to_Windows.md)**
 
