@@ -41,7 +41,7 @@ def get_links_from_feed(browser, amount, num_of_search):
     return links
 
 
-def get_links_for_location(browser, location, amount, media=None):
+def get_links_for_location(browser, location, amount, media=None, skip_top_posts=True):
     """Fetches the number of links specified
     by amount and returns a list of links"""
     if media is None:
@@ -78,7 +78,11 @@ def get_links_for_location(browser, location, amount, media=None):
     sleep(1)
 
     # Get links
-    main_elem = browser.find_element_by_tag_name('main')
+    if skip_top_posts:
+        main_elem = browser.find_element_by_xpath('//main/article/div[2]')
+    else:
+        main_elem = browser.find_element_by_tag_name('main')
+
     link_elems = main_elem.find_elements_by_tag_name('a')
     total_links = len(link_elems)
     links = [link_elem.get_attribute('href') for link_elem in link_elems
@@ -119,7 +123,7 @@ def get_links_for_location(browser, location, amount, media=None):
     return links[:amount]
 
 
-def get_links_for_tag(browser, tag, amount, media=None):
+def get_links_for_tag(browser, tag, amount, media=None, skip_top_posts=True):
     """Fetches the number of links specified
     by amount and returns a list of links"""
     if media is None:
@@ -156,7 +160,11 @@ def get_links_for_tag(browser, tag, amount, media=None):
     sleep(1)
 
     # Get links
-    main_elem = browser.find_element_by_tag_name('main')
+    if skip_top_posts:
+        main_elem = browser.find_element_by_xpath('//main/article/div[2]')
+    else:
+        main_elem = browser.find_element_by_tag_name('main')
+
     link_elems = main_elem.find_elements_by_tag_name('a')
     total_links = len(link_elems)
     links = []
