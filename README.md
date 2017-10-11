@@ -1,4 +1,4 @@
-<img src="http://i.imgur.com/9ZjtveL.png" width="150" align="right">
+<img src="https://i.imgur.com/sJzfZsL.jpg" width="150" align="right">
 
 # InstaPy
 [![MIT license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/timgrossmann/InstaPy/blob/master/LICENSE)
@@ -26,9 +26,9 @@ Head over to https://github.com/timgrossmann/InstaPy/wiki/Reporting-An-Issue to 
 #### [How it works (Medium)](https://medium.freecodecamp.com/my-open-source-instagram-bot-got-me-2-500-real-followers-for-5-in-server-costs-e40491358340)
 #### [Check out the talk](https://youtu.be/4TmKFZy-ioQ)
 
-#### [Support InstaPy!](https://www.patreon.com/InstaPy)
+#### [Support InstaPy!](https://www.paypal.me/supportInstaPy)
 
-[<img src="http://www.comixlaunch.com/wp-content/uploads/2016/08/patreon-logo-05.jpg" width="100">](https://www.patreon.com/InstaPy)
+[![paypal](https://img.shields.io/badge/-PayPal-blue.svg)](https://www.paypal.me/supportInstaPy)
 
 ### Example
 
@@ -51,9 +51,9 @@ Built-in delays prevent your account from getting banned. (Just make sure you do
 ## Getting started
 
 ### Guides:
-**[How to Ubuntu](./docs/How_To_DO_Ubuntu.md) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**
+**[How to Ubuntu (64-Bit)](./docs/How_To_DO_Ubuntu_on_Digital_Ocean.md) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**
 
-**[ How to CentOS](./docs/How_To_DO_Centos.md) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**
+**[How to RaspberryPi](./docs/How_to_Raspberry.md) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**
 
 **[How to Windows](./docs/How_to_Windows.md)**
 
@@ -61,10 +61,16 @@ Built-in delays prevent your account from getting banned. (Just make sure you do
 1. To have [Python](https://www.python.org/downloads/) 2.7 or 3.6 installed.
 2. Set up path for PY command.
 3. Installed [Selenium](http://selenium-python.readthedocs.io/) and [pyvirtualdriver](https://pypi.python.org/pypi/PyVirtualDisplay).
+4. 64-bit system is a requirement for current versions of chrome browser. 
 
 Make sure to get the right ```chromedriver``` for your system [from here](https://sites.google.com/a/chromium.org/chromedriver/downloads). Just put it in ```/assets```.
 
-> If you're not too familiar with code and you're working on Windows, try out this tool to set up the settings: [InstaPy Windows GUI](https://github.com/Nemixalone/GUI-tool-for-InstaPy-script)
+#### Make sure to use one of the GUIs for easiest setup!
+**[Official Cross Platform GUI](https://github.com/ahmadudin/electron-instaPy-GUI)**
+
+[<img src="https://raw.githubusercontent.com/ahmadudin/ahmadudin.github.io/master/assets/images/screencapture1.PNG" width="400" />](https://github.com/ahmadudin/electron-instaPy-GUI)
+
+[Third Party InstaPy GUI for Windows](https://github.com/Nemixalone/GUI-tool-for-InstaPy-script)
 
 ### Start
 
@@ -96,9 +102,17 @@ session.set_sleep_reduce(95)
 #in this case: 100 dog-posts and 100 cat-posts
 session.like_by_tags(['#dog', 'cat'], amount=100)
 
+#likes specified amount of posts for each hashtag in the array (the '#' is optional)
+#in this case: 100 dog-posts and 100 cat-posts including media entities from top posts section (skip top posts y default)
+session.like_by_tags(['#dog', 'cat'], amount=100, skip_top_posts=False)
+
 #likes specified amount of posts for each location in the array
 #in this case: 100 posts geotagged at the chrysler building and 100 posts geotagged at the salton sea
 session.like_by_locations(['26429/chrysler-building/', '224442573/salton-sea/'], amount=100)
+
+#likes specified amount of posts for each location in the array including top posts
+#in this case: 100 posts geotagged at the chrysler building and 100 posts geotagged at the salton sea and include media entities from top posts section (skip top posts by default)
+session.like_by_locations(['26429/chrysler-building/', '224442573/salton-sea/'], amount=100, skip_top_posts=False)
 
 #gets tags from image passed as instagram-url and likes specified amount of images for each tag
 session.like_from_image(url='www.instagram.com/p/BSrfITEFUAM/', amount=100)
@@ -116,7 +130,7 @@ session.like_from_image(url='www.instagram.com/image', amount=50, media='Photo')
 session.like_by_tags(['#cat'], amount=15, media='Video')
 session.like_from_image(url='www.instagram.com/image', amount=15, media='Video')
 
-#Likes 10 random photo of geach given user
+#Likes 10 random photo of each given user
 
 session.like_by_users(usernames=['friend1', 'friend2', 'friend3'], amount=10, random=True, media='Photo')
 
@@ -228,8 +242,8 @@ session.interact_user_followers(['natgeo'], amount=10, random=True)
 ```python
 #unfollows 10 of the accounts you're following -> instagram will only unfollow 10 before you'll be 'blocked for 10 minutes' (if you enter a higher number than 10 it will unfollow 10, then wait 10 minutes and will continue then)
 # You can choose to only unfollow the user that Insta has followed by adding onlyInstapyFollowed = True otherwise it will unfollow all users
-
-session.unfollow_users(amount=10, onlyInstapyFollowed = True )
+# You can choose unfollow method as FIFO (First-Input-First-Output) or LIFO (Last-Input-First-Output). The default is FIFO method. onlyInstapyMethod is using only when onlyInstapyFollowed = True
+session.unfollow_users(amount=10, onlyInstapyFollowed = True, onlyInstapyMethod = 'FIFO' )
 ```
 
 ### Interactions based on the number of followers a user has
@@ -252,6 +266,9 @@ session.set_lower_follower_count(limit = 1)
 session.like_by_locations(['224442573/salton-sea/'], amount=100)
 or
 session.like_by_locations(['224442573'], amount=100)
+or
+# Include media entities from top posts section
+session.like_by_locations(['224442573'], amount=5, skip_top_posts=False)
 ```
 
 You can find locations for the `like_by_locations` function by:

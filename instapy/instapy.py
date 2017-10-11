@@ -156,7 +156,7 @@ class InstaPy:
             self.browser = webdriver.Remote(
                 command_executor=selenium_url,
                 desired_capabilities=DesiredCapabilities.CHROME)
-        self.browser.maximize_window()
+
         self.logFile.write('Session started - %s\n' \
                            % (datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
 
@@ -348,7 +348,7 @@ class InstaPy:
         self.like_by_followers_lower_limit = limit or 0
         return self
 
-    def like_by_locations(self, locations=None, amount=50, media=None):
+    def like_by_locations(self, locations=None, amount=50, media=None, skip_top_posts=True):
         """Likes (default) 50 images per given locations"""
         if self.aborting:
             return self
@@ -368,7 +368,7 @@ class InstaPy:
             self.logFile.write('--> {}\n'.format(location.encode('utf-8')))
 
             try:
-                links = get_links_for_location(self.browser, location, amount, media)
+                links = get_links_for_location(self.browser, location, amount, media, skip_top_posts)
             except NoSuchElementException:
                 print('Too few images, skipping this location')
                 self.logFile.write('Too few images, skipping this location\n')
@@ -457,7 +457,7 @@ class InstaPy:
 
         return self
 
-    def like_by_tags(self, tags=None, amount=50, media=None):
+    def like_by_tags(self, tags=None, amount=50, media=None, skip_top_posts=True):
 
         """Likes (default) 50 images per given tag"""
         if self.aborting:
@@ -478,7 +478,7 @@ class InstaPy:
             self.logFile.write('--> {}\n'.format(tag.encode('utf-8')))
 
             try:
-                links = get_links_for_tag(self.browser, tag, amount, media)
+                links = get_links_for_tag(self.browser, tag, amount, media, skip_top_posts)
             except NoSuchElementException:
                 print('Too few images, skipping this tag')
                 self.logFile.write('Too few images, skipping this tag\n')
@@ -711,9 +711,9 @@ class InstaPy:
             self.logFile.write('--> {}\n'.format(username.encode('utf-8')))
 
             following = randint(0, 100) <= self.follow_percentage
-            if self.do_follow and username not in self.dont_include \
-                    and checked_img and following \
-                    and self.follow_restrict.get(user_name, 0) < self.follow_times:
+            if (self.do_follow and username not in self.dont_include
+                    and checked_img and following
+                    and self.follow_restrict.get(username, 0) < self.follow_times):
                 followed += follow_user(self.browser, self.follow_restrict, self.username, username)
             else:
                 print('--> Not following')
@@ -959,13 +959,13 @@ class InstaPy:
 
         return self
 
-    def unfollow_users(self, amount=10, onlyInstapyFollowed=False):
+    def unfollow_users(self, amount=10, onlyInstapyFollowed=False, onlyInstapyMethod='FIFO'):
         """Unfollows (default) 10 users from your following list"""
         self.automatedFollowedPool = set_automated_followed_pool(self.username)
 
         try:
             unfollowNumber = unfollow(self.browser, self.username, amount, self.dont_include, onlyInstapyFollowed,
-                                      self.automatedFollowedPool)
+                                      onlyInstapyMethod, self.automatedFollowedPool)
             print("--> Total people unfollowed : {} ".format(unfollowNumber))
 
         except (TypeError, RuntimeWarning) as err:
