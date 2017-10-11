@@ -24,6 +24,7 @@ from .like_util import get_links_for_username
 from .login_util import login_user
 from .print_log_writer import log_follower_num
 from .print_log_writer import log_likes
+from .print_log_writer import log_comments
 from .print_log_writer import init_log_writer
 from .time_util import sleep
 from .time_util import set_sleep_percentage
@@ -96,9 +97,10 @@ class InstaPy:
         self.like_by_followers_upper_limit = 0
         self.like_by_followers_lower_limit = 0
 
-        self.limit_likes = str(randint(850, 999))
+        self.limit_likes_daily = str(randint(850, 999))
+        self.limit_likes_hourly = str(randint(200,249))
 
-        init_log_writer()
+        init_log_writer(self)
 
         self.aborting = False
 
@@ -529,6 +531,7 @@ class InstaPy:
                                 else:
                                     comments = self.comments + self.photo_comments
                                 commented += comment_image(self.browser, comments)
+                                log_comments(self,user_name,link)
                             else:
                                 print('--> Not commented')
                                 sleep(1)

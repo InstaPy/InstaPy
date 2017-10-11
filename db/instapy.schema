@@ -1,7 +1,24 @@
-create table likes (
-	id        	integer primary key autoincrement not null,
-    	insta_user    	text,
-  	insta_name    	text,
-    	link    	text,
-    	liked        	datetime
+CREATE TABLE IF NOT EXISTS likes (
+	id integer primary key autoincrement not null,
+	insta_user	text,
+  insta_name	text,
+	link	text,
+	liked  datetime
 );
+
+CREATE TABLE IF NOT EXISTS comments (
+	id integer primary key autoincrement not null,
+	insta_user	text,
+  insta_name	text,
+	link	text,
+	commented  datetime,
+  comment text
+);
+
+CREATE VIEW IF NOT EXISTS v_today 
+AS 
+    SELECT * FROM 
+        (SELECT COUNT(*) AS likes_today FROM likes b WHERE date('now') = date(b.liked)), 
+        (SELECT COUNT(*) AS likes_hourly FROM likes WHERE strftime('%H', liked) = strftime('%H', 'now') and date(liked) = date('now')),
+        (SELECT COUNT(*) AS comments_today FROM comments a WHERE date('now') = date(a.commented)),
+        (SELECT COUNT(*) AS comments_hourly FROM comments WHERE strftime('%H', commented) = strftime('%H', 'now') and date(commented) = date('now'))
