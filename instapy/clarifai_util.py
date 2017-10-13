@@ -1,7 +1,7 @@
 """Module which handles the clarifai api and checks
 the image for invalid content"""
-from clarifai import rest
 from clarifai.rest import ClarifaiApp, Image as ClImage
+
 
 def check_image(browser, clarifai_api_key, img_tags, full_match=False):
     """Uses the link to the image to check for invalid content in the image"""
@@ -12,7 +12,8 @@ def check_image(browser, clarifai_api_key, img_tags, full_match=False):
     model = clarifai_api.models.get('general-v1.3')
     image = ClImage(url=img_link)
     result = model.predict([image])
-    clarifai_tags = [concept.get('name').lower() for concept in result['outputs'][0]['data']['concepts']]
+    clarifai_tags = [concept.get('name').lower() for concept in result[
+        'outputs'][0]['data']['concepts']]
 
     for (tags, should_comment, comments) in img_tags:
         if should_comment:
