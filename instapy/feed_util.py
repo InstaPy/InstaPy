@@ -1,13 +1,7 @@
-import re
 
 """Module that handles the like features"""
-from math import ceil
-from re import findall
-from selenium.webdriver.common.keys import Keys
 from selenium.common.exceptions import NoSuchElementException
 
-from .time_util import sleep
-import random
 
 LIKE_TAG_CLASS = 'coreSpriteHeartOpen'
 
@@ -48,4 +42,5 @@ def get_like_on_feed(browser, amount):
             yield button
 
         print('---> Total Likes uptil now ->', likes_performed)
-        browser.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+        browser.execute_script(
+            "window.scrollTo(0, document.body.scrollHeight);")

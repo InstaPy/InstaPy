@@ -10,26 +10,26 @@ from .time_util import sleep
 
 
 def get_links_from_feed(browser, amount, num_of_search):
-    """Fetches a random number of links from feed and returns a list of links"""
+    """Fetches random number of links from feed and returns a list of links"""
 
     browser.get('https://www.instagram.com')
     sleep(2)
 
-    for i in range (num_of_search + 1):
-        browser.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+    for i in range(num_of_search + 1):
+        browser.execute_script(
+            "window.scrollTo(0, document.body.scrollHeight);")
         sleep(2)
 
-    # Get links
-    link_elems = browser.find_elements_by_xpath("//main//article//div[2]//div[2]//a")
+    # get links
+    link_elems = browser.find_elements_by_xpath(
+        "//main//article//div[2]//div[2]//a")
 
     total_links = len(link_elems)
     print("\nTotal of links feched for analysis:", total_links)
     links = []
-    filtered_links = 0
     try:
         if link_elems:
             links = [link_elem.get_attribute('href') for link_elem in link_elems]
-            filtered_links = len(links)
             print("~~~~~~~~~~~~~~~~~~~~~~~~~~~")
             for i, link in enumerate(links):
                 print(i, link)
@@ -41,7 +41,12 @@ def get_links_from_feed(browser, amount, num_of_search):
     return links
 
 
-def get_links_for_location(browser, location, amount, media=None, skip_top_posts=True):
+def get_links_for_location(browser,
+                           location,
+                           amount,
+                           media=None,
+                           skip_top_posts=True):
+
     """Fetches the number of links specified
     by amount and returns a list of links"""
     if media is None:
@@ -64,8 +69,8 @@ def get_links_for_location(browser, location, amount, media=None, skip_top_posts
 
     abort = True
     try:
-        load_button = body_elem.find_element_by_xpath \
-            ('//a[contains(@class, "_1cr2e _epyes")]')
+        load_button = body_elem.find_element_by_xpath(
+            '//a[contains(@class, "_1cr2e _epyes")]')
     except:
         print('Load button not found, working with current images!')
     else:
@@ -146,8 +151,8 @@ def get_links_for_tag(browser, tag, amount, media=None, skip_top_posts=True):
 
     abort = True
     try:
-        load_button = body_elem.find_element_by_xpath \
-            ('//a[contains(@class, "_1cr2e _epyes")]')
+        load_button = body_elem.find_element_by_xpath(
+            '//a[contains(@class, "_1cr2e _epyes")]')
     except:
         print('Load button not found, working with current images!')
     else:
@@ -211,15 +216,21 @@ def get_links_for_tag(browser, tag, amount, media=None, skip_top_posts=True):
 
     return links[:amount]
 
-def get_links_for_username(browser, username, amount, is_random=False, media=None):
+
+def get_links_for_username(browser,
+                           username,
+                           amount,
+                           is_random=False,
+                           media=None):
+
     """Fetches the number of links specified
-    by amount and returns a list of links""" 
+    by amount and returns a list of links"""
     if media is None:
         # All known media types
-        media = ['', 'Post','Video']
+        media = ['', 'Post', 'Video']
     elif media == 'Photo':
         # Include posts with multiple images in it
-        media = ['','Post']
+        media = ['', 'Post']
     else:
         # Make it an array to use it in the following part
         media = [media]
@@ -229,12 +240,12 @@ def get_links_for_username(browser, username, amount, is_random=False, media=Non
     # Get  user profile page
     browser.get('https://www.instagram.com/' + username)
     sleep(2)
-    
+
     body_elem = browser.find_element_by_tag_name('body')
 
     try:
-        is_private = body_elem.find_element_by_xpath \
-                ('//h2[@class="_kcrwx"]')
+        is_private = body_elem.find_element_by_xpath(
+            '//h2[@class="_kcrwx"]')
     except:
         print('Interaction begin...')
         print('')
@@ -247,11 +258,11 @@ def get_links_for_username(browser, username, amount, is_random=False, media=Non
     sleep(2)
 
     abort = True
-    
+
     # Clicking load more
     try:
-        load_button = body_elem.find_element_by_xpath \
-            ('//a[contains(@class, "_1cr2e _epyes")]')
+        load_button = body_elem.find_element_by_xpath(
+            '//a[contains(@class, "_1cr2e _epyes")]')
     except:
         print('Load button not found, working with current images!')
     else:
@@ -318,16 +329,23 @@ def get_links_for_username(browser, username, amount, is_random=False, media=Non
         links = random.sample(links, filtered_links)
 
     return links[:amount]
-    
 
 
-def check_link(browser, link, dont_like, ignore_if_contains, ignore_users,
-               username, like_by_followers_upper_limit, like_by_followers_lower_limit):
+def check_link(browser,
+               link,
+               dont_like,
+               ignore_if_contains,
+               ignore_users,
+               username,
+               like_by_followers_upper_limit,
+               like_by_followers_lower_limit):
+
     browser.get(link)
     sleep(2)
 
     """Check if the Post is Valid/Exists"""
-    post_page = browser.execute_script("return window._sharedData.entry_data.PostPage")
+    post_page = browser.execute_script(
+        "return window._sharedData.entry_data.PostPage")
     if post_page is None:
         print('Unavailable Page: {}'.format(link.encode('utf-8')))
         return True, None, None, 'Unavailable Page'
@@ -392,15 +410,21 @@ def check_link(browser, link, dont_like, ignore_if_contains, ignore_users,
         browser.get(userlink)
         sleep(1)
         num_followers = browser.execute_script(
-            "return window._sharedData.entry_data.ProfilePage[0].user.followed_by.count")
+            "return window._sharedData.entry_data."
+            "ProfilePage[0].user.followed_by.count")
         browser.get(link)
         sleep(1)
         print('Number of Followers: {}'.format(num_followers))
 
-        if like_by_followers_upper_limit and num_followers > like_by_followers_upper_limit:
-            return True, user_name, is_video, 'Number of followers exceeds limit'
-        if like_by_followers_lower_limit and num_followers < like_by_followers_lower_limit:
-            return True, user_name, is_video, 'Number of followers does not reach minimum'
+        if like_by_followers_upper_limit and \
+           num_followers > like_by_followers_upper_limit:
+                return True, user_name, is_video, \
+                    'Number of followers exceeds limit'
+
+        if like_by_followers_lower_limit and \
+           num_followers < like_by_followers_lower_limit:
+                return True, user_name, is_video, \
+                    'Number of followers does not reach minimum'
 
     print('Link: {}'.format(link.encode('utf-8')))
     print('Description: {}'.format(image_text.encode('utf-8')))
@@ -422,7 +446,8 @@ def check_link(browser, link, dont_like, ignore_if_contains, ignore_users,
         elif dont_likes.startswith("]"):
             dont_like_regex.append("#[\d\w]+" + dont_likes[1:] + "([^\d\w]|$)")
         else:
-            dont_like_regex.append("#[\d\w]*" + dont_likes + "[\d\w]*([^\d\w]|$)")
+            dont_like_regex.append(
+                "#[\d\w]*" + dont_likes + "[\d\w]*([^\d\w]|$)")
 
     for dont_likes_regex in dont_like_regex:
         if re.search(dont_likes_regex, image_text, re.IGNORECASE):
@@ -433,8 +458,10 @@ def check_link(browser, link, dont_like, ignore_if_contains, ignore_users,
 
 def like_image(browser):
     """Likes the browser opened image"""
-    like_elem = browser.find_elements_by_xpath("//a[@role='button']/span[text()='Like']/..")
-    liked_elem = browser.find_elements_by_xpath("//a[@role='button']/span[text()='Unlike']")
+    like_elem = browser.find_elements_by_xpath(
+        "//a[@role='button']/span[text()='Like']/..")
+    liked_elem = browser.find_elements_by_xpath(
+        "//a[@role='button']/span[text()='Unlike']")
 
     if len(like_elem) == 1:
         like_elem[0].send_keys("\n")
@@ -454,12 +481,16 @@ def get_tags(browser, url):
     browser.get(url)
     sleep(1)
 
-    graphql = browser.execute_script("return ('graphql' in window._sharedData.entry_data.PostPage[0])")
+    graphql = browser.execute_script(
+        "return ('graphql' in window._sharedData.entry_data.PostPage[0])")
     if graphql:
         image_text = browser.execute_script(
-            "return window._sharedData.entry_data.PostPage[0].graphql.shortcode_media.edge_media_to_caption.edges[0].node.text")
+            "return window._sharedData.entry_data.PostPage[0].graphql."
+            "shortcode_media.edge_media_to_caption.edges[0].node.text")
     else:
-        image_text = browser.execute_script("return window._sharedData.entry_data.PostPage[0].media.caption.text")
+        image_text = browser.execute_script(
+            "return window._sharedData.entry_data."
+            "PostPage[0].media.caption.text")
 
     tags = findall(r'#\w*', image_text)
     return tags
