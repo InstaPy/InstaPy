@@ -166,14 +166,14 @@ def follow_user(browser, follow_restrict, login, user_name):
 
     try:
         follow_button = browser.find_element_by_xpath("//*[contains(text(), 'Follow')]")
-
+        
         sleep(2) # Do we still need this sleep?
         if follow_button.is_displayed():
             follow_button.send_keys("\n")
         else:
             browser.execute_script("arguments[0].style.visibility = 'visible'; arguments[0].style.height = '10px'; arguments[0].style.width = '10px'; arguments[0].style.opacity = 1", follow_button)
             follow_button.click()
-
+        
         print('--> Now following')
         log_followed_pool(login, user_name)
         follow_restrict[user_name] = follow_restrict.get(user_name, 0) + 1
@@ -205,7 +205,7 @@ def follow_given_user(browser, acc_to_follow, follow_restrict):
         sleep(10)
         follow_button = browser.find_element_by_xpath("//*[text()='Follow']")
         follow_button.send_keys("\n")
-
+        
         print('---> Now following: {}'.format(acc_to_follow))
         print('*' * 20)
         follow_restrict[acc_to_follow] = follow_restrict.get(acc_to_follow, 0) + 1
@@ -292,8 +292,8 @@ def follow_through_dialog(browser, user_name, amount, dont_include, login, follo
                 person_followed.append(person)
 
                 button.send_keys("\n")
-                log_followed_pool(login, person)
-
+                log_followed_pool(login, person) 
+                
                 follow_restrict[user_name] = follow_restrict.get(user_name, 0) + 1
 
                 print('--> Ongoing follow ' + str(followNum) + ', now following: {}'.format(
