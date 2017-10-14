@@ -23,6 +23,9 @@ from .like_util import like_image
 from .like_util import get_links_for_username
 from .login_util import login_user
 from .print_log_writer import log_follower_num
+from .print_log_writer import log_likes
+from .print_log_writer import log_comments
+from .print_log_writer import init_log_writer
 from .time_util import sleep
 from .time_util import set_sleep_percentage
 from .util import formatNumber
@@ -38,7 +41,7 @@ from .unfollow_util import load_follow_restriction
 from .unfollow_util import dump_follow_restriction
 from .unfollow_util import set_automated_followed_pool
 import random
-
+import os
 
 class InstaPy:
     """Class to be instantiated to use the script"""
@@ -93,6 +96,11 @@ class InstaPy:
 
         self.like_by_followers_upper_limit = 0
         self.like_by_followers_lower_limit = 0
+
+        self.limit_likes_daily = str(randint(850, 999))
+        self.limit_likes_hourly = str(randint(200,249))
+
+        init_log_writer(self)
 
         self.aborting = False
 
@@ -167,8 +175,8 @@ class InstaPy:
         if not login_user(self.browser, self.username, self.password, self.switch_language):
             print('Wrong login data!')
             self.logFile.write('Wrong login data!\n')
-
             self.aborting = True
+
         else:
             print('Logged in successfully!')
             self.logFile.write('Logged in successfully!\n')
@@ -396,6 +404,7 @@ class InstaPy:
                         liked = like_image(self.browser)
 
                         if liked:
+                            log_likes(self,user_name,link)
                             liked_img += 1
                             checked_img = True
                             temp_comments = []
@@ -506,6 +515,7 @@ class InstaPy:
                         liked = like_image(self.browser)
 
                         if liked:
+                            log_likes(self,user_name,link)
                             liked_img += 1
                             checked_img = True
                             temp_comments = []
@@ -533,6 +543,7 @@ class InstaPy:
                                 else:
                                     comments = self.comments + self.photo_comments
                                 commented += comment_image(self.browser, comments)
+                                log_comments(self,user_name,link)
                             else:
                                 print('--> Not commented')
                                 sleep(1)
@@ -635,6 +646,7 @@ class InstaPy:
                         liked = like_image(self.browser)
 
                         if liked:
+                            log_likes(self,user_name,link)
                             total_liked_img += 1
                             liked_img += 1
                             checked_img = True
@@ -766,6 +778,7 @@ class InstaPy:
                             like = True
 
                         if liked:
+                            log_likes(self,user_name,link)
                             total_liked_img += 1
                             liked_img += 1
                             checked_img = True
@@ -1060,6 +1073,7 @@ class InstaPy:
                                 liked = like_image(self.browser)
 
                                 if liked:
+                                    log_likes(self,user_name,link)
                                     username = self.browser.find_element_by_xpath("//main//div//div//article//header//div//a")
                                     username = username.get_attribute("title")
                                     name = []
