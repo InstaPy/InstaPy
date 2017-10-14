@@ -148,8 +148,15 @@ class InstaPy:
         if self.aborting:
             return self
 
-        self.browser = webdriver.Remote(command_executor=selenium_url,
-                                        desired_capabilities=DesiredCapabilities.CHROME)
+        if self.use_firefox:
+            self.browser = webdriver.Remote(
+                command_executor=selenium_url,
+                desired_capabilities=DesiredCapabilities.FIREFOX)
+        else:
+            self.browser = webdriver.Remote(
+                command_executor=selenium_url,
+                desired_capabilities=DesiredCapabilities.CHROME)
+
         self.logFile.write('Session started - %s\n' \
                            % (datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
 
