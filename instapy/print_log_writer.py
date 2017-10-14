@@ -1,6 +1,5 @@
 """Module only used to log the number of followers to a file"""
 from datetime import datetime
-from selenium.common.exceptions import NoSuchElementException
 
 
 def log_follower_num(browser, username):
@@ -8,10 +7,13 @@ def log_follower_num(browser, username):
     a seperate file"""
     browser.get('https://www.instagram.com/' + username)
 
-    followed_by = browser.execute_script("return window._sharedData.entry_data.ProfilePage[0].user.followed_by.count")
+    followed_by = browser.execute_script(
+        "return window._sharedData.""entry_data.ProfilePage[0]."
+        "user.followed_by.count")
 
     with open('./logs/followerNum.txt', 'a') as numFile:
-        numFile.write('{:%Y-%m-%d %H:%M} {}\n'.format(datetime.now(), followed_by or 0))
+        numFile.write(
+            '{:%Y-%m-%d %H:%M} {}\n'.format(datetime.now(), followed_by or 0))
 
 
 def log_followed_pool(login, followed):
