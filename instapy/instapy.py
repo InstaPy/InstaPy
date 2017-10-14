@@ -26,7 +26,6 @@ from .print_log_writer import log_follower_num
 from .time_util import sleep
 from .time_util import set_sleep_percentage
 from .util import formatNumber
-from .util import scroll_bottom
 from .unfollow_util import get_given_user_followers
 from .unfollow_util import get_given_user_following
 from .unfollow_util import unfollow
@@ -151,7 +150,6 @@ class InstaPy:
 
         self.browser = webdriver.Remote(command_executor=selenium_url,
                                         desired_capabilities=DesiredCapabilities.CHROME)
-        self.browser.maximize_window()
         self.logFile.write('Session started - %s\n' \
                            % (datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
 
@@ -838,20 +836,6 @@ class InstaPy:
 
         return self
 
-    def populate_friends_list(self):
-        urls = self.browser.find_elements_by_xpath("//main//article//div//div[1]//div[1]//a[1]")
-        url = urls[0].get_attribute("href")
-        print("latest post ", url)
-        self.browser.get(url)
-
-        sleep(2)
-
-        tmp = self.browser.find_elements_by_xpath("//article//header//div[2]")
-        # //article//header//div[2]//section[2]//div[1]//a[1]
-        print tmp
-
-        sleep(10)
-
     def interact_user_followers(self, usernames, amount=10, random=False):
 
         userToInteract = []
@@ -1125,83 +1109,6 @@ class InstaPy:
         self.followed += followed
 
         return self
-
-    # create a my followers profile list, create my following profile list
-    # if I am following someone that doesnt follow me, unfoollow!
-    def unfollow_if_not_following_me(self, amount):
-
-        self.browser.get('https://www.instagram.com/' + self.username)
-        sleep(2)
-
-        # ??? check how many poeple are following this user.
-        allfollowers = formatNumber(self.browser.find_element_by_xpath("//li[2]/a/span").text)
-        sleep(2)
-
-        followers_link = self.browser.find_element_by_xpath("//li[2]/a/span")
-        followers_link.click()
-        sleep(2)
-
-        # find dialog box
-        dialog = self.browser.find_element_by_xpath('/html/body/div[4]/div/div[2]/div/div[2]/div/div[2]')
-
-        # get full list of followers
-        scroll_bottom(self.browser, dialog, allfollowers, full_scroll = True)
-
-        followers = self.browser.find_elements_by_class_name("_6e4x5")
-
-        followers_list = []
-
-        for userinfo in followers:
-            username = userinfo.find_element_by_class_name('_2nunc').find_element_by_tag_name('a').text
-            followers_list.append(username)
-
-        print 'followers list'
-        print len(followers_list)
-        sleep(2)
-
-        self.browser.back()
-        sleep(1)
-
-        following_link = self.browser.find_element_by_xpath("//li[3]/a/span")
-        following_link.click()
-        sleep(2)
-
-        # find dialog box
-        dialog = self.browser.find_element_by_xpath('/html/body/div[4]/div/div[2]/div/div[2]/div/div[2]')
-
-        # get 50 pages of following profiles
-        scroll_bottom(self.browser, dialog, allfollowers)
-
-        following = self.browser.find_elements_by_class_name("_6e4x5")
-
-        following_list = {}
-
-        for userinfo in following:
-            username = userinfo.find_element_by_class_name('_2nunc').find_element_by_tag_name('a').text
-            status = userinfo.find_element_by_class_name('_ov9ai').find_element_by_tag_name('button').text
-            following_list[username] = status
-
-        print 'following:'
-        print len(following_list)
-        sleep(2)
-
-        unfollow_num = 1
-        for person in following_list:
-            if unfollow_num > amount:
-                print("--> Total unfollow number reached it's amount given")
-                break
-
-            if person not in followers_list:
-                self.browser.get('https://www.instagram.com/' + person)
-                sleep(5)
-                follow_button = self.browser.find_element_by_xpath("//*[contains(text(), 'Follow')]")
-
-                if follow_button.text == 'Following':
-                    print('--> #' + str(unfollow_num) + ' {}'.format(person.encode('utf-8')) + 'is not following me, unfollowing!')
-                    follow_button.click()
-                    unfollow_num += 1
-                    sleep(3)
-
 
 
     def end(self):

@@ -18,19 +18,15 @@ def delete_line_from_file(filepath, lineToDelete):
         print("delete_line_from_file error \n", str(e))
 
 
-def scroll_bottom(browser, element, range_int, full_scroll=False):
-
+def scroll_bottom(browser, element, range_int):
     # put a limit to the scrolling
-    sleep_time = 1
-    if range_int > 50 and full_scroll is False:
+    if range_int > 50:
         range_int = 50
-    else:
-        sleep_time = randint(3, 7)
 
     for i in range(int(range_int / 2)):
         browser.execute_script(
             "arguments[0].scrollTop = arguments[0].scrollHeight", element)
-        sleep(sleep_time)
+        sleep(1)
 
     return
 
