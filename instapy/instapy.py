@@ -231,6 +231,12 @@ class InstaPy:
         if self.aborting:
             return self
 
+        if type(tags) != list:
+            self.logFile.write('Unable to use your set_dont_like '
+                               'configuration!\n')
+            print ('Unable to use your set_dont_like configuration!')
+            self.aborting = True
+
         self.dont_like = tags or []
 
         return self
