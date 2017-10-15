@@ -383,21 +383,20 @@ def get_given_user_followers(browser,
                              is_random):
 
     browser.get('https://www.instagram.com/' + user_name)
-
-    #  check how many poeple we are following
-    #  throw RuntimeWarning if we are 0 people following
+    
+    # check how many poeple are following this user.
+    # throw RuntimeWarning if we are 0 people following this user or
+    # if its a private account
     try:
         allfollowing = formatNumber(
             browser.find_element_by_xpath("//li[2]/a/span").text)
     except NoSuchElementException:
-        raise RuntimeWarning('There are 0 people to unfollow')
+        print ('Can\'t interact with private account')
+        return
 
-    try:
-        following_link = browser.find_elements_by_xpath(
-            '//a[@href="/' + user_name + '/followers/"]')
-        following_link[0].send_keys("\n")
-    except BaseException as e:
-        print("following_link error \n", str(e))
+    following_link = browser.find_elements_by_xpath(
+        '//a[@href="/' + user_name + '/followers/"]')
+    following_link[0].send_keys("\n")
 
     sleep(2)
 

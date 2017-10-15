@@ -1,6 +1,5 @@
 from .time_util import sleep
 from random import randint
-from random import choice
 
 
 def delete_line_from_file(filepath, lineToDelete):
@@ -21,13 +20,16 @@ def delete_line_from_file(filepath, lineToDelete):
 
 def scroll_bottom(browser, element, range_int):
     # put a limit to the scrolling
-    if range_int > 50: range_int = 50
+    if range_int > 50:
+        range_int = 50
 
     for i in range(int(range_int / 2)):
-        browser.execute_script("arguments[0].scrollTop = arguments[0].scrollHeight", element)
+        browser.execute_script(
+            "arguments[0].scrollTop = arguments[0].scrollHeight", element)
         sleep(1)
 
     return
+
 
 def formatNumber(number):
     formattedNum = number.replace(',', '').replace('.', '')
