@@ -428,7 +428,6 @@ from instapy import InstaPy
 insta_username = ''
 insta_password = ''
 
-InstaPy(username='test', password='test', use_firefox=True, page_delay=25)\
 session = InstaPy(username=insta_username, password=insta_password, use_firefox=True, page_delay=25)
 session.set_switch_language(False)
 session.login()
