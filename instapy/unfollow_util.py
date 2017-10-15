@@ -36,7 +36,7 @@ def unfollow(browser, username, amount, dont_include, onlyInstapyFollowed, onlyI
     browser.get('https://www.instagram.com/' + username)
 
     #  check how many poeple we are following
-    allfollowing = browser.find_element_by_xpath("//li[3]/a/span").text
+    allfollowing = browser.find_element_by_xpath("//li[3]/child::node()/span").text
     allfollowing = allfollowing.replace(',', '').replace('.', '')
     allfollowing = int(allfollowing.replace('k', '00').replace('m', '00000'))
 
@@ -336,7 +336,7 @@ def get_given_user_followers(browser,
     # if its a private account
     try:
         allfollowing = formatNumber(
-            browser.find_element_by_xpath("//li[2]/a/span").text)
+            browser.find_element_by_xpath("//li[2]/child::node()/span").text)
     except NoSuchElementException:
         print ('Can\'t interact with private account')
         return
@@ -385,7 +385,7 @@ def get_given_user_following(browser, user_name, amount, dont_include, login, fo
     browser.get('https://www.instagram.com/' + user_name)
 
     #  check how many poeple are following this user.
-    allfollowing = formatNumber(browser.find_element_by_xpath("//li[3]/a/span").text)
+    allfollowing = formatNumber(browser.find_element_by_xpath("//li[3]/child::node()/span").text)
 
     #  throw RuntimeWarning if we are 0 people following this user
     if (allfollowing == 0):
@@ -434,7 +434,7 @@ def follow_given_user_followers(browser, user_name, amount, dont_include, login,
     browser.get('https://www.instagram.com/' + user_name)
 
     #  check how many poeple are following this user.
-    allfollowing = formatNumber(browser.find_element_by_xpath("//li[2]/a/span").text)
+    allfollowing = formatNumber(browser.find_element_by_xpath("//li[2]/child::node()/span").text)
 
     #  throw RuntimeWarning if we are 0 people following this user
     if (allfollowing == 0):
@@ -454,7 +454,7 @@ def follow_given_user_following(browser, user_name, amount, dont_include, login,
     browser.get('https://www.instagram.com/' + user_name)
 
     #  check how many poeple are following this user.
-    allfollowing = formatNumber(browser.find_element_by_xpath("//li[3]/a/span").text)
+    allfollowing = formatNumber(browser.find_element_by_xpath("//li[3]/child::node()/span").text)
 
     #  throw RuntimeWarning if we are 0 people following this user
     if (allfollowing == 0):
