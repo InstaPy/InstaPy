@@ -43,7 +43,7 @@ import random
 class InstaPy:
     """Class to be instantiated to use the script"""
 
-    def __init__(self, username=None, password=None, nogui=False, selenium_local_session=True, use_firefox=False, page_delay=25):
+    def __init__(self, username=None, password=None, nogui=False, selenium_local_session=True, use_firefox=False, incognito_mode=False, page_delay=25):
         if nogui:
             self.display = Display(visible=0, size=(800, 600))
             self.display.start()
@@ -59,6 +59,7 @@ class InstaPy:
         self.page_delay = page_delay
         self.switch_language = True
         self.use_firefox = use_firefox
+        self.incognito_mode = incognito_mode
         self.firefox_profile_path = None
 
         self.do_comment = False
@@ -121,6 +122,7 @@ class InstaPy:
             chrome_options.add_argument('--dns-prefetch-disable')
             chrome_options.add_argument('--no-sandbox')
             chrome_options.add_argument('--lang=en-US')
+            chrome_options.add_argument("--incognito") if self.incognito_mode else None
 
             # managed_default_content_settings.images = 2: Disable images load, this setting can improve pageload & save bandwidth
             # default_content_setting_values.notifications = 2: Disable notifications
