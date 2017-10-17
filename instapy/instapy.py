@@ -105,8 +105,8 @@ class InstaPy:
             self.set_selenium_local_session()
 
     def set_selenium_local_session(self):
-        """Starts local session for a selenium server."""
-        """Default case scenario."""
+        """Starts local session for a selenium server.
+        Default case scenario."""
         if self.aborting:
             return self
 
@@ -156,8 +156,8 @@ class InstaPy:
         return self
 
     def set_selenium_remote_session(self, selenium_url=''):
-        """Starts remote session for a selenium server."""
-        """ Useful for docker setup."""
+        """Starts remote session for a selenium server.
+         Useful for docker setup."""
         if self.aborting:
             return self
 
@@ -417,7 +417,7 @@ class InstaPy:
                 self.logFile.write(link)
 
                 try:
-                    inappropriate, user_name, is_video, reason = \
+                    inappropriate, user_name, is_video, reason = (
                         check_link(self.browser,
                                    link,
                                    self.dont_like,
@@ -426,6 +426,7 @@ class InstaPy:
                                    self.username,
                                    self.like_by_followers_upper_limit,
                                    self.like_by_followers_lower_limit)
+                    )
 
                     if not inappropriate:
                         liked = like_image(self.browser)
@@ -441,11 +442,12 @@ class InstaPy:
 
                             if self.use_clarifai and (following or commenting):
                                 try:
-                                    checked_img, temp_comments = \
+                                    checked_img, temp_comments = (
                                         check_image(self.browser,
                                                     self.clarifai_api_key,
                                                     self.clarifai_img_tags,
                                                     self.clarifai_full_match)
+                                    )
                                 except Exception as err:
                                     print('Image check error: {}'.format(err))
                                     self.logFile.write(
@@ -460,11 +462,11 @@ class InstaPy:
                                     # Use clarifai related comments only!
                                     comments = temp_comments
                                 elif is_video:
-                                    comments = self.comments + \
-                                               self.video_comments
+                                    comments = (self.comments +
+                                                self.video_comments)
                                 else:
-                                    comments = self.comments + \
-                                               self.photo_comments
+                                    comments = (self.comments +
+                                                self.photo_comments)
                                 commented += comment_image(
                                     self.browser, comments)
                             else:
@@ -555,7 +557,7 @@ class InstaPy:
                 self.logFile.write(link)
 
                 try:
-                    inappropriate, user_name, is_video, reason = \
+                    inappropriate, user_name, is_video, reason = (
                         check_link(self.browser,
                                    link,
                                    self.dont_like,
@@ -564,6 +566,7 @@ class InstaPy:
                                    self.username,
                                    self.like_by_followers_upper_limit,
                                    self.like_by_followers_lower_limit)
+                    )
 
                     if not inappropriate:
                         liked = like_image(self.browser)
@@ -572,18 +575,19 @@ class InstaPy:
                             liked_img += 1
                             checked_img = True
                             temp_comments = []
-                            commenting = randint(0, 100) <= \
-                                self.comment_percentage
-                            following = randint(0, 100) <= \
-                                self.follow_percentage
+                            commenting = (randint(0, 100) <=
+                                          self.comment_percentage)
+                            following = (randint(0, 100) <=
+                                         self.follow_percentage)
 
                             if self.use_clarifai and (following or commenting):
                                 try:
-                                    checked_img, temp_comments = \
+                                    checked_img, temp_comments = (
                                         check_image(self.browser,
                                                     self.clarifai_api_key,
                                                     self.clarifai_img_tags,
                                                     self.clarifai_full_match)
+                                    )
                                 except Exception as err:
                                     print('Image check error: {}'.format(err))
                                     self.logFile.write(
@@ -598,11 +602,11 @@ class InstaPy:
                                     # Use clarifai related comments only!
                                     comments = temp_comments
                                 elif is_video:
-                                    comments = self.comments + \
-                                        self.video_comments
+                                    comments = (self.comments +
+                                                self.video_comments)
                                 else:
-                                    comments = self.comments + \
-                                        self.photo_comments
+                                    comments = (self.comments +
+                                                self.photo_comments)
                                 commented += comment_image(
                                     self.browser, comments)
                             else:
@@ -712,7 +716,7 @@ class InstaPy:
                 self.logFile.write(link)
 
                 try:
-                    inappropriate, user_name, is_video, reason = \
+                    inappropriate, user_name, is_video, reason = (
                         check_link(self.browser,
                                    link,
                                    self.dont_like,
@@ -721,6 +725,7 @@ class InstaPy:
                                    self.username,
                                    self.like_by_followers_upper_limit,
                                    self.like_by_followers_lower_limit)
+                    )
 
                     if not inappropriate:
                         liked = like_image(self.browser)
@@ -735,11 +740,12 @@ class InstaPy:
 
                             if self.use_clarifai and (following or commenting):
                                 try:
-                                    checked_img, temp_comments = \
+                                    checked_img, temp_comments = (
                                         check_image(self.browser,
                                                     self.clarifai_api_key,
                                                     self.clarifai_img_tags,
                                                     self.clarifai_full_match)
+                                    )
                                 except Exception as err:
                                     print('Image check error: {}'.format(err))
                                     self.logFile.write(
@@ -753,11 +759,11 @@ class InstaPy:
                                     # use clarifai related comments only!
                                     comments = temp_comments
                                 elif is_video:
-                                    comments = self.comments + \
-                                        self.video_comments
+                                    comments = (self.comments +
+                                                self.video_comments)
                                 else:
-                                    comments = self.comments + \
-                                        self.photo_comments
+                                    comments = (self.comments +
+                                                self.photo_comments)
                                 commented += comment_image(self.browser,
                                                            comments)
                             else:
@@ -850,7 +856,7 @@ class InstaPy:
                 self.logFile.write(link)
 
                 try:
-                    inappropriate, user_name, is_video, reason = \
+                    inappropriate, user_name, is_video, reason = (
                         check_link(self.browser,
                                    link,
                                    self.dont_like,
@@ -859,6 +865,7 @@ class InstaPy:
                                    self.username,
                                    self.like_by_followers_upper_limit,
                                    self.like_by_followers_lower_limit)
+                    )
 
                     if not inappropriate:
 
@@ -894,12 +901,13 @@ class InstaPy:
 
                             if self.use_clarifai and (following or commenting):
                                 try:
-                                    checked_img, temp_comments = \
+                                    checked_img, temp_comments = (
                                         check_image(self.browser,
                                                     self.clarifai_id,
                                                     self.clarifai_secret,
                                                     self.clarifai_img_tags,
                                                     self.clarifai_full_match)
+                                    )
                                 except Exception as err:
                                     print('Image check error: {}'.format(err))
                                     self.logFile.write(
@@ -913,11 +921,11 @@ class InstaPy:
                                     # use clarifai related comments only!
                                     comments = temp_comments
                                 elif is_video:
-                                    comments = self.comments + \
-                                        self.video_comments
+                                    comments = (self.comments +
+                                                self.video_comments)
                                 else:
-                                    comments = self.comments + \
-                                        self.photo_comments
+                                    comments = (self.comments +
+                                                self.photo_comments)
                                 commented += comment_image(
                                     self.browser, comments)
                             else:
@@ -1242,7 +1250,7 @@ class InstaPy:
                         self.logFile.write(link)
 
                         try:
-                            inappropriate, user_name, is_video, reason = \
+                            inappropriate, user_name, is_video, reason = (
                                 check_link(self.browser,
                                            link,
                                            self.dont_like,
@@ -1251,15 +1259,16 @@ class InstaPy:
                                            self.username,
                                            self.like_by_followers_upper_limit,
                                            self.like_by_followers_lower_limit)
+                            )
 
                             if not inappropriate:
                                 liked = like_image(self.browser)
 
                                 if liked:
-                                    username = self.browser.\
-                                        find_element_by_xpath(
-                                            "//main//div"
-                                            "//div//article//header//div//a")
+                                    username = (self.browser.
+                                                find_element_by_xpath(
+                                                    "//main//div//div//article"
+                                                    "//header//div//a"))
                                     username = username.get_attribute("title")
                                     name = []
                                     name.append(username)
@@ -1284,13 +1293,14 @@ class InstaPy:
                                     if (self.use_clarifai and
                                        (following or commenting)):
                                         try:
-                                            checked_img, temp_comments = \
+                                            checked_img, temp_comments = (
                                                 check_image(
                                                     self.browser,
                                                     self.clarifai_id,
                                                     self.clarifai_secret,
                                                     self.clarifai_img_tags,
                                                     self.clarifai_full_match)
+                                            )
                                         except Exception as err:
                                             print('Image check error:'
                                                   ' {}'.format(err))
@@ -1306,11 +1316,13 @@ class InstaPy:
                                                 # comments only!
                                                 comments = temp_comments
                                             elif is_video:
-                                                comments = self.comments + \
-                                                    self.video_comments
+                                                comments = (
+                                                    self.comments +
+                                                    self.video_comments)
                                             else:
-                                                comments = self.comments + \
-                                                    self.photo_comments
+                                                comments = (
+                                                    self.comments +
+                                                    self.photo_comments)
                                             commented += comment_image(
                                                 self.browser, comments)
                                     else:
