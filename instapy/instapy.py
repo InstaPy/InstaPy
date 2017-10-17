@@ -26,6 +26,7 @@ from .print_log_writer import log_follower_num
 from .time_util import sleep
 from .time_util import set_sleep_percentage
 from .util import formatNumber
+from .util import get_active_users
 from .unfollow_util import get_given_user_followers
 from .unfollow_util import get_given_user_following
 from .unfollow_util import unfollow
@@ -1138,6 +1139,18 @@ class InstaPy:
 
         return self
 
+    def set_unfollow_active_users(self, enable=False, posts=4):
+
+        # do nothing
+        if enable:
+            return
+
+        # list of user who liked our media
+        active_users = get_active_users(self.browser, self.username, posts)
+
+        for user in active_users:
+            # include active user to not unfollow list
+            self.dont_include.append(user)
 
     def end(self):
         """Closes the current session"""
