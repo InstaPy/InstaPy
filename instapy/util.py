@@ -36,8 +36,6 @@ def get_active_users(browser, username, posts):
 
         except NoSuchElementException:
             raise RuntimeWarning('There is some error finding active users')
-        except IndexError:
-            pass
 
         if len(tmp_list) is not 0:
             for user in tmp_list:
