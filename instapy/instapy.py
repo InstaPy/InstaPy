@@ -1140,12 +1140,14 @@ class InstaPy:
         return self
 
     def set_unfollow_active_users(self, enable=False, posts=4):
+        """Prevents unfollow followers who have liked one of
+        your latest X posts"""
 
         # do nothing
         if enable:
             return
 
-        # list of user who liked our media
+        # list of users who liked our media
         active_users = get_active_users(self.browser, self.username, posts)
 
         for user in active_users:

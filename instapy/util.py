@@ -1,8 +1,10 @@
+import re
 from .time_util import sleep
 from selenium.common.exceptions import NoSuchElementException
 
 
 def get_active_users(browser, username, posts):
+    """Returns a list with users who liked the latest posts"""
 
     browser.get('https://www.instagram.com/' + username)
     sleep(2)
@@ -12,26 +14,37 @@ def get_active_users(browser, username, posts):
 
     active_users = []
 
+    # posts argument is the number of posts to collect usernames
     for count in range(posts):
         try:
-            sleep(1)
+            sleep(2)
+            # if there is no show more likes button
             tmp_list = (browser.find_element_by_class_name('_3gwk6').
                         find_elements_by_tag_name('a'))
-            # need to improve it
-            if len(tmp_list) == 1:
-                if tmp_list[0].text[-5:] == 'likes':
+            # if post has no liked
+            if tmp_list[0].text == 'like this':
+                tmp_list = []
+            else:
+                # if there is a button to show more likes
+                more_likes = (
+                    re.search(r'\b\d+ likes?\b', tmp_list[0].text, re.I)
+                )
+                if more_likes is not None:
                     browser.find_element_by_class_name('_nzn1h').click()
-
                     sleep(1)
                     tmp_list = browser.find_elements_by_class_name('_2g7d5')
 
         except NoSuchElementException:
             raise RuntimeWarning('There is some error finding active users')
+        except IndexError:
+            pass
 
-        for user in tmp_list:
-            active_users.append(user.text)
+        if len(tmp_list) is not 0:
+            for user in tmp_list:
+                print (user.text)
+                active_users.append(user.text)
 
-        sleep(1)
+        sleep(2)
         # go to next media
         if count == 0:
             browser.find_element_by_xpath(
@@ -39,7 +52,6 @@ def get_active_users(browser, username, posts):
         else:
             browser.find_element_by_xpath(
                 '//body/div[4]/div/div/div[1]/div/div/a[2]').click()
-        sleep(1)
 
     # delete duplicated users
     active_users = list(set(active_users))
