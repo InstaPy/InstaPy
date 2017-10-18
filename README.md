@@ -255,7 +255,7 @@ session.unfollow_users(amount=10, onlyInstapyFollowed = True, onlyInstapyMethod 
 
 ```python
 # Prevents unfollow followers who have liked one of your latest 5 posts
-session.set_unfollow_active_users(enable=False, posts=5)
+session.set_unfollow_active_users(enabled=False, posts=5)
 ```
 
 ### Interactions based on the number of followers a user has
