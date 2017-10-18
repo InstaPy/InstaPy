@@ -218,6 +218,17 @@ session.set_user_interact(amount=5, random=True, percentage=50, media='Photo')
 session.follow_user_followers(['friend1', 'friend2', 'friend3'], amount=10, random=False, interact=True)
 ```
 
+### Interact with specific users
+```python
+# Interact with specific users
+# set_do_like, set_do_comment, set_do_follow are applicable
+session.set_do_follow(enabled=False, percentage=50)
+session.set_comments(["Cool", "Super!"])
+session.set_do_comment(enabled=True, percentage=80)
+session.set_do_like(True, percentage=70)
+session.interact_by_users(['user1', 'user2', 'user3'], amount=5, random=True, media='Photo')
+```
+
 ### Interact with users that someone else is following
 ```python
 #Interact with the people that a given user is following
