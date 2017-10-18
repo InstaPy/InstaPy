@@ -1073,35 +1073,34 @@ class InstaPy:
                               random=False,
                               interact=False,
                               sleep_delay=600):
+
         userFollowed = []
         if not isinstance(usernames, list):
             usernames = [usernames]
-        try:
-            for user in usernames:
-                userFollowed += follow_given_user_followers(
-                    self.browser,
-                    user,
-                    amount,
-                    self.dont_include,
-                    self.username,
-                    self.follow_restrict,
-                    random,
-                    sleep_delay)
-            print("--> Total people followed : {} ".format(len(userFollowed)))
 
-        except (TypeError, RuntimeWarning) as err:
-            if type(err) == RuntimeWarning:
-                print(u'Warning: {} , stopping follow_users'.format(err))
-                self.logFile.write(
-                    'Warning: {} , stopping follow_users\n'.format(err))
+        for user in usernames:
+            try:
+                userFollowed += follow_given_user_followers(self.browser,
+                                                            user, amount,
+                                                            self.dont_include,
+                                                            self.username,
+                                                            self.follow_restrict,
+                                                            random,
+                                                            sleep_delay)
 
-                return self
-            else:
-                print('Sorry, an error occured: {}'.format(err))
-                self.logFile.write('Sorry, an error occured: {}\n'.format(err))
-                self.aborting = True
+            except (TypeError, RuntimeWarning) as err:
+                if type(err) == RuntimeWarning:
+                    print(u'Warning: {} , skipping to next user'.format(err))
+                    self.logFile.write('Warning: {} , skipping to next user\n'.format(err))
 
-                return self
+                    continue
+                else:
+                    print('Sorry, an error occured: {}'.format(err))
+                    self.logFile.write('Sorry, an error occured: {}\n'.format(err))
+                    self.aborting = True
+
+                    return self
+        print("--> Total people followed : {} ".format(len(userFollowed)))
 
         if interact:
             print('--> User followed: {}'.format(userFollowed))
@@ -1124,32 +1123,31 @@ class InstaPy:
         userFollowed = []
         if not isinstance(usernames, list):
             usernames = [usernames]
-        try:
-            for user in usernames:
-                userFollowed += follow_given_user_following(
-                    self.browser,
-                    user,
-                    amount,
-                    self.dont_include,
-                    self.username,
-                    self.follow_restrict,
-                    random,
-                    sleep_delay)
-            print("--> Total people followed : {} ".format(len(userFollowed)))
 
-        except (TypeError, RuntimeWarning) as err:
-            if type(err) == RuntimeWarning:
-                print(u'Warning: {} , stopping follow_users'.format(err))
-                self.logFile.write(
-                    'Warning: {} , stopping follow_users\n'.format(err))
+        for user in usernames:
+            try:
+                userFollowed += follow_given_user_following(self.browser,
+                                                            user,
+                                                            amount,
+                                                            self.dont_include,
+                                                            self.username,
+                                                            self.follow_restrict,
+                                                            random,
+                                                            sleep_delay)
 
-                return self
-            else:
-                print('Sorry, an error occured: {}'.format(err))
-                self.logFile.write('Sorry, an error occured: {}\n'.format(err))
-                self.aborting = True
+            except (TypeError, RuntimeWarning) as err:
+                if type(err) == RuntimeWarning:
+                    print(u'Warning: {} , skipping to next user'.format(err))
+                    self.logFile.write('Warning: {} , skipping to next user\n'.format(err))
 
-                return self
+                    continue
+                else:
+                    print('Sorry, an error occured: {}'.format(err))
+                    self.logFile.write('Sorry, an error occured: {}\n'.format(err))
+                    self.aborting = True
+
+                    return self
+        print("--> Total people followed : {} ".format(len(userFollowed)))
 
         if interact:
             print('--> User followed: {}'.format(userFollowed))
