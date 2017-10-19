@@ -532,6 +532,9 @@ class InstaPy:
         commented = 0
         followed = 0
 
+        # deletes white spaces in tags
+        tags = list(map(str.strip, tags))
+
         tags = tags or []
 
         for index, tag in enumerate(tags):
