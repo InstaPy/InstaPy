@@ -1381,7 +1381,7 @@ class InstaPy:
         your latest X posts"""
 
         # do nothing
-        if enabled:
+        if not enabled:
             return
 
         # list of users who liked our media
