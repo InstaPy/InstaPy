@@ -55,7 +55,7 @@ Built-in delays prevent your account from getting banned. (Just make sure you do
 
 ## Getting started
 
-### Video tutorial
+### Video tutorials:
 **[Setting up InstaPy for OSX](https://www.youtube.com/watch?v=I025CEBJCvQ)**
 
 ### Guides:
