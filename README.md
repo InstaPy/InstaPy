@@ -55,6 +55,9 @@ Built-in delays prevent your account from getting banned. (Just make sure you do
 
 ## Getting started
 
+### Video tutorial
+**[Setting up InstaPy for OSX](https://www.youtube.com/watch?v=I025CEBJCvQ)**
+
 ### Guides:
 **[How to Ubuntu (64-Bit)](./docs/How_To_DO_Ubuntu_on_Digital_Ocean.md) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**
 
