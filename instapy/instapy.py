@@ -255,7 +255,7 @@ class InstaPy:
         if self.aborting:
             return self
 
-        if type(tags) != list:
+        if not isinstance(tags, list):
             self.logFile.write('Unable to use your set_dont_like '
                                'configuration!\n')
             print ('Unable to use your set_dont_like configuration!')
@@ -455,9 +455,9 @@ class InstaPy:
                                         'Image check error: {}\n'.format(err))
 
                             if (self.do_comment and
-                               user_name not in self.dont_include and
-                               checked_img and
-                               commenting):
+                                user_name not in self.dont_include and
+                                checked_img and
+                                    commenting):
 
                                 if temp_comments:
                                     # Use clarifai related comments only!
@@ -475,11 +475,11 @@ class InstaPy:
                                 sleep(1)
 
                             if (self.do_follow and
-                               user_name not in self.dont_include and
-                               checked_img and
-                               following and
-                               self.follow_restrict.get(user_name, 0) <
-                               self.follow_times):
+                                user_name not in self.dont_include and
+                                checked_img and
+                                following and
+                                self.follow_restrict.get(user_name, 0) <
+                                    self.follow_times):
 
                                 followed += follow_user(self.browser,
                                                         self.follow_restrict,
@@ -522,7 +522,6 @@ class InstaPy:
                      amount=50,
                      media=None,
                      skip_top_posts=True):
-
         """Likes (default) 50 images per given tag"""
         if self.aborting:
             return self
@@ -595,9 +594,9 @@ class InstaPy:
                                         'Image check error: {}\n'.format(err))
 
                             if (self.do_comment and
-                               user_name not in self.dont_include and
-                               checked_img and
-                               commenting):
+                                user_name not in self.dont_include and
+                                checked_img and
+                                    commenting):
 
                                 if temp_comments:
                                     # Use clarifai related comments only!
@@ -615,11 +614,11 @@ class InstaPy:
                                 sleep(1)
 
                             if (self.do_follow and
-                               user_name not in self.dont_include and
-                               checked_img and
-                               following and
-                               self.follow_restrict.get(user_name, 0) <
-                               self.follow_times):
+                                user_name not in self.dont_include and
+                                checked_img and
+                                following and
+                                self.follow_restrict.get(user_name, 0) <
+                                    self.follow_times):
 
                                 followed += follow_user(self.browser,
                                                         self.follow_restrict,
@@ -687,12 +686,12 @@ class InstaPy:
                 continue
 
             if (self.do_follow and
-               username not in self.dont_include and
-               following and
-               self.follow_restrict.get(username, 0) < self.follow_times):
-                    followed += follow_user(self.browser,
-                                            self.follow_restrict,
-                                            self.username, username)
+                username not in self.dont_include and
+                following and
+                    self.follow_restrict.get(username, 0) < self.follow_times):
+                followed += follow_user(self.browser,
+                                        self.follow_restrict,
+                                        self.username, username)
             else:
                 print('--> Not following')
                 sleep(1)
@@ -752,9 +751,9 @@ class InstaPy:
                                     self.logFile.write(
                                         'Image check error: {}\n'.format(err))
                             if (self.do_comment and
-                               user_name not in self.dont_include and
-                               checked_img and
-                               commenting):
+                                user_name not in self.dont_include and
+                                checked_img and
+                                    commenting):
 
                                 if temp_comments:
                                     # use clarifai related comments only!
@@ -872,16 +871,16 @@ class InstaPy:
 
                         following = randint(0, 100) <= self.follow_percentage
                         if (self.do_follow and
-                           username not in self.dont_include and
-                           following and
-                           self.follow_restrict.get(
+                            username not in self.dont_include and
+                            following and
+                            self.follow_restrict.get(
                                 username, 0) < self.follow_times):
 
-                                    followed += follow_user(
-                                        self.browser,
-                                        self.follow_restrict,
-                                        self.username,
-                                        username)
+                            followed += follow_user(
+                                self.browser,
+                                self.follow_restrict,
+                                self.username,
+                                username)
                         else:
                             print('--> Not following')
                             sleep(1)
@@ -914,9 +913,9 @@ class InstaPy:
                                     self.logFile.write(
                                         'Image check error: {}\n'.format(err))
                             if (self.do_comment and
-                               user_name not in self.dont_include and
-                               checked_img and
-                               commenting):
+                                user_name not in self.dont_include and
+                                checked_img and
+                                    commenting):
 
                                 if temp_comments:
                                     # use clarifai related comments only!
@@ -1000,10 +999,10 @@ class InstaPy:
                                                 self.username,
                                                 self.follow_restrict,
                                                 random)
-                if type(user) is list:
+                if isinstance(user, list):
                     userToInteract += user
         except (TypeError, RuntimeWarning) as err:
-            if type(err) == RuntimeWarning:
+            if isinstance(err, RuntimeWarning):
                 print(u'Warning: {} , stopping follow_users'.format(err))
                 self.logFile.write(
                     'Warning: {} , stopping follow_users\n'.format(err))
@@ -1019,7 +1018,7 @@ class InstaPy:
         print('--> Users: {} \n'.format(len(userToInteract)))
         userToInteract = sample(
             userToInteract,
-            int(ceil(self.user_interact_percentage*len(userToInteract)/100)))
+            int(ceil(self.user_interact_percentage * len(userToInteract) / 100)))
 
         self.like_by_users(userToInteract,
                            self.user_interact_amount,
@@ -1044,7 +1043,7 @@ class InstaPy:
                     self.follow_restrict,
                     random)
         except (TypeError, RuntimeWarning) as err:
-            if type(err) == RuntimeWarning:
+            if isinstance(err, RuntimeWarning):
                 print(u'Warning: {} , stopping follow_users'.format(err))
                 self.logFile.write(
                     'Warning: {} , stopping follow_users\n'.format(err))
@@ -1060,7 +1059,7 @@ class InstaPy:
         print('--> Users: {}'.format(len(userToInteract)))
         print('')
         userToInteract = sample(userToInteract, int(ceil(
-            self.user_interact_percentage*len(userToInteract)/100)))
+            self.user_interact_percentage * len(userToInteract) / 100)))
         self.like_by_users(userToInteract,
                            self.user_interact_amount,
                            self.user_interact_random,
@@ -1074,41 +1073,42 @@ class InstaPy:
                               random=False,
                               interact=False,
                               sleep_delay=600):
+
         userFollowed = []
         if not isinstance(usernames, list):
             usernames = [usernames]
-        try:
-            for user in usernames:
-                userFollowed += follow_given_user_followers(
-                    self.browser,
-                    user,
-                    amount,
-                    self.dont_include,
-                    self.username,
-                    self.follow_restrict,
-                    random,
-                    sleep_delay)
-            print("--> Total people followed : {} ".format(len(userFollowed)))
+        for user in usernames:
 
-        except (TypeError, RuntimeWarning) as err:
-            if type(err) == RuntimeWarning:
-                print(u'Warning: {} , stopping follow_users'.format(err))
-                self.logFile.write(
-                    'Warning: {} , stopping follow_users\n'.format(err))
+            try:
+                userFollowed += follow_given_user_followers(self.browser,
+                                                            user, amount,
+                                                            self.dont_include,
+                                                            self.username,
+                                                            self.follow_restrict,
+                                                            random,
+                                                            sleep_delay)
 
-                return self
-            else:
-                print('Sorry, an error occured: {}'.format(err))
-                self.logFile.write('Sorry, an error occured: {}\n'.format(err))
-                self.aborting = True
+            except (TypeError, RuntimeWarning) as err:
+                if isinstance(err, RuntimeWarning):
+                    print(u'Warning: {} , skipping to next user'.format(err))
+                    self.logFile.write(
+                        'Warning: {} , skipping to next user\n'.format(err))
 
-                return self
+                    continue
+                else:
+                    print('Sorry, an error occured: {}'.format(err))
+                    self.logFile.write(
+                        'Sorry, an error occured: {}\n'.format(err))
+                    self.aborting = True
+
+                    return self
+        print("--> Total people followed : {} ".format(len(userFollowed)))
 
         if interact:
             print('--> User followed: {}'.format(userFollowed))
             print('')
             userFollowed = sample(userFollowed, int(ceil(
-                self.user_interact_percentage*len(userFollowed)/100)))
+                self.user_interact_percentage * len(userFollowed) / 100)))
             self.like_by_users(userFollowed,
                                self.user_interact_amount,
                                self.user_interact_random,
@@ -1125,38 +1125,39 @@ class InstaPy:
         userFollowed = []
         if not isinstance(usernames, list):
             usernames = [usernames]
-        try:
-            for user in usernames:
-                userFollowed += follow_given_user_following(
-                    self.browser,
-                    user,
-                    amount,
-                    self.dont_include,
-                    self.username,
-                    self.follow_restrict,
-                    random,
-                    sleep_delay)
-            print("--> Total people followed : {} ".format(len(userFollowed)))
 
-        except (TypeError, RuntimeWarning) as err:
-            if type(err) == RuntimeWarning:
-                print(u'Warning: {} , stopping follow_users'.format(err))
-                self.logFile.write(
-                    'Warning: {} , stopping follow_users\n'.format(err))
+        for user in usernames:
+            try:
+                userFollowed += follow_given_user_following(self.browser,
+                                                            user,
+                                                            amount,
+                                                            self.dont_include,
+                                                            self.username,
+                                                            self.follow_restrict,
+                                                            random,
+                                                            sleep_delay)
 
-                return self
-            else:
-                print('Sorry, an error occured: {}'.format(err))
-                self.logFile.write('Sorry, an error occured: {}\n'.format(err))
-                self.aborting = True
+            except (TypeError, RuntimeWarning) as err:
+                if isinstance(err, RuntimeWarning):
+                    print(u'Warning: {} , skipping to next user'.format(err))
+                    self.logFile.write(
+                        'Warning: {} , skipping to next user\n'.format(err))
 
-                return self
+                    continue
+                else:
+                    print('Sorry, an error occured: {}'.format(err))
+                    self.logFile.write(
+                        'Sorry, an error occured: {}\n'.format(err))
+                    self.aborting = True
+
+                    return self
+        print("--> Total people followed : {} ".format(len(userFollowed)))
 
         if interact:
             print('--> User followed: {}'.format(userFollowed))
             print('')
             userFollowed = sample(userFollowed, int(ceil(
-                self.user_interact_percentage*len(userFollowed)/100)))
+                self.user_interact_percentage * len(userFollowed) / 100)))
             self.like_by_users(userFollowed,
                                self.user_interact_amount,
                                self.user_interact_random,
@@ -1182,7 +1183,7 @@ class InstaPy:
             print("--> Total people unfollowed : {} ".format(unfollowNumber))
 
         except (TypeError, RuntimeWarning) as err:
-            if type(err) == RuntimeWarning:
+            if isinstance(err, RuntimeWarning):
                 print(u'Warning: {} , stopping unfollow_users'.format(err))
                 self.logFile.write(
                     'Warning: {} , stopping unfollow_users\n'.format(err))
@@ -1292,7 +1293,7 @@ class InstaPy:
                                         0, 100) <= self.follow_percentage
 
                                     if (self.use_clarifai and
-                                       (following or commenting)):
+                                            (following or commenting)):
                                         try:
                                             checked_img, temp_comments = (
                                                 check_image(
@@ -1310,22 +1311,22 @@ class InstaPy:
                                                 '{}\n'.format(err))
 
                                     if (self.do_comment and
-                                       user_name not in self.dont_include and
-                                       checked_img and commenting):
-                                            if temp_comments:
-                                                # use clarifai related
-                                                # comments only!
-                                                comments = temp_comments
-                                            elif is_video:
-                                                comments = (
-                                                    self.comments +
-                                                    self.video_comments)
-                                            else:
-                                                comments = (
-                                                    self.comments +
-                                                    self.photo_comments)
-                                            commented += comment_image(
-                                                self.browser, comments)
+                                        user_name not in self.dont_include and
+                                            checked_img and commenting):
+                                        if temp_comments:
+                                            # use clarifai related
+                                            # comments only!
+                                            comments = temp_comments
+                                        elif is_video:
+                                            comments = (
+                                                self.comments +
+                                                self.video_comments)
+                                        else:
+                                            comments = (
+                                                self.comments +
+                                                self.photo_comments)
+                                        commented += comment_image(
+                                            self.browser, comments)
                                     else:
                                         print('--> Not commented')
                                         sleep(1)
@@ -1336,11 +1337,11 @@ class InstaPy:
                                         following and
                                         self.follow_restrict.get(
                                             user_name, 0) < self.follow_times):
-                                            followed += follow_user(
-                                                self.browser,
-                                                self.follow_restrict,
-                                                self.username,
-                                                user_name)
+                                        followed += follow_user(
+                                            self.browser,
+                                            self.follow_restrict,
+                                            self.username,
+                                            user_name)
                                     else:
                                         print('--> Not following')
                                         sleep(1)
