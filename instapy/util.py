@@ -39,7 +39,6 @@ def get_active_users(browser, username, posts):
 
         if len(tmp_list) is not 0:
             for user in tmp_list:
-                print (user.text)
                 active_users.append(user.text)
 
         sleep(2)
