@@ -35,7 +35,8 @@ def unfollow(browser,
              dont_include,
              onlyInstapyFollowed,
              onlyInstapyMethod,
-             automatedFollowedPool):
+             automatedFollowedPool,
+             sleep_delay):
 
     """unfollows the given amount of users"""
     unfollowNum = 0
@@ -74,8 +75,9 @@ def unfollow(browser,
                 if unfollowNum != 0 and \
                    hasSlept is False and \
                    unfollowNum % 10 == 0:
-                        print('sleeping for about 10min')
-                        sleep(600)
+                        print('sleeping for about {}min'
+                              .format(int(sleep_delay/60)))
+                        sleep(sleep_delay)
                         hasSlept = True
                         continue
 
@@ -130,7 +132,7 @@ def unfollow(browser,
 
         # find dialog box
         dialog = browser.find_element_by_xpath(
-            '/html/body/div[4]/div/div/div[2]/div')
+            '/html/body/div[4]/div/div/div[2]/div/div[2]')
 
         # scroll down the page
         scroll_bottom(browser, dialog, allfollowing)
@@ -158,9 +160,10 @@ def unfollow(browser,
 
                 if unfollowNum != 0 and \
                    hasSlept is False and \
-                   unfollowNum % 10 == 0:
-                        print('sleeping for about 10min')
-                        sleep(600)
+                   unfollowNum % 1 == 0:
+                        print('sleeping for about {}min'
+                              .format(int(sleep_delay/60)))
+                        sleep(sleep_delay)
                         hasSlept = True
                         continue
 
