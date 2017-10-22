@@ -1,22 +1,24 @@
 from instapy import InstaPy
 
-insta_username = ''
-insta_password = ''
+session = InstaPy(username='', password='',)
 
-# if you want to run this script on a server, 
-# simply add nogui=True to the InstaPy() constructor
-session = InstaPy(username=insta_username, password=insta_password)
 session.login()
 
-# set up all the settings
-session.set_upper_follower_count(limit=2500)
-session.set_do_comment(True, percentage=10)
-session.set_comments(['aMEIzing!', 'So much fun!!', 'Nicey!'])
-session.set_dont_include(['friend1', 'friend2', 'friend3'])
-session.set_dont_like(['pizza', 'girl'])
+#Interact with the people that a given user is following
+#set_do_comment, set_do_follow and set_do_like are applicable
+session.set_lower_follower_count(limit=70)
+session.set_upper_follower_count(limit=900)
+session.set_user_interact(amount=4, random=False, percentage=100, media='Photo')
+session.set_do_follow(enabled=True, percentage=10)
+session.set_do_like(enabled=True, percentage=100)
+session.set_comments(['Epic', 'Radical', 'Dope',])
+session.set_do_comment(enabled=True, percentage=25)
+session.interact_user_followers(['', '', '', '', ''], amount=10, random=False,)
 
-# do the actual liking
-session.like_by_tags(['natgeo', 'world'], amount=100)
 
-# end the bot session
-session.end()
+session.like_by_feed(amount=50, randomize=False, unfollow=False, interact=True)
+session.set_user_interact(amount=3, random=False, percentage=25, media='Photo')
+
+session.unfollow_users(amount=10, onlyInstapyFollowed = True, onlyInstapyMethod = 'FIFO' )
+session.set_unfollow_active_users(enabled=False, posts=5)
+session.end( )
