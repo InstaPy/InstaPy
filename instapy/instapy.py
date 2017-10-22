@@ -45,7 +45,7 @@ class InstaPy:
     def __init__(self,
                  username=None,
                  password=None,
-                 nogui=False,
+                 nogui=True,
                  selenium_local_session=True,
                  use_firefox=False,
                  page_delay=25):
