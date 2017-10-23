@@ -396,7 +396,7 @@ class InstaPy:
         for index, location in enumerate(locations):
             print('Location [{}/{}]'.format(index + 1, len(locations)))
             print('--> {}'.format(location.encode('utf-8')))
-            self.logFile.write('Location [{}/[]]'
+            self.logFile.write('Location [{}/{}]'
                                .format(index + 1, len(locations)))
             self.logFile.write('--> {}\n'.format(location.encode('utf-8')))
 
@@ -540,7 +540,7 @@ class InstaPy:
         for index, tag in enumerate(tags):
             print('Tag [{}/{}]'.format(index + 1, len(tags)))
             print('--> {}'.format(tag.encode('utf-8')))
-            self.logFile.write('Tag [{}/[]]'.format(index + 1, len(tags)))
+            self.logFile.write('Tag [{}/{}]'.format(index + 1, len(tags)))
             self.logFile.write('--> {}\n'.format(tag.encode('utf-8')))
 
             try:
@@ -674,7 +674,7 @@ class InstaPy:
             print('Username [{}/{}]'.format(index + 1, len(usernames)))
             print('--> {}'.format(username.encode('utf-8')))
             self.logFile.write(
-                'Username [{}/[]]'.format(index + 1, len(usernames)))
+                'Username [{}/{}]'.format(index + 1, len(usernames)))
             self.logFile.write('--> {}\n'.format(username.encode('utf-8')))
             following = randint(0, 100) <= self.follow_percentage
 
@@ -824,7 +824,7 @@ class InstaPy:
             print('Username [{}/{}]'.format(index + 1, len(usernames)))
             print('--> {}'.format(username.encode('utf-8')))
             self.logFile.write(
-                'Username [{}/[]]'.format(index + 1, len(usernames)))
+                'Username [{}/{}]'.format(index + 1, len(usernames)))
             self.logFile.write('--> {}\n'.format(username.encode('utf-8')))
 
             try:

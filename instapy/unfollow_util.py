@@ -262,8 +262,9 @@ def follow_through_dialog(browser,
                           allfollowing,
                           is_random,
                           delay,
-                          callbacks=[]):
-    followNum = 0
+                          callbacks=[],
+                          followNumber=0):
+    followNum = followNumber
     sleep(2)
     person_followed = []
 
@@ -370,8 +371,31 @@ def follow_through_dialog(browser,
 
     except BaseException as e:
         print("follow loop error \n", str(e))
+        print("Trying to continue...")
+        try:
+            following_link = browser.find_elements_by_xpath(
+                '//a[@href="/' + user_name + '/following/"]')
+            following_link[0].send_keys("\n")
+        except BaseException as e:
+            print("following_link error \n", str(e))
 
-    return person_followed
+        cont_person_followed = follow_through_dialog(browser,
+                                                     user_name,
+                                                     amount,
+                                                     dont_include,
+                                                     login,
+                                                     follow_restrict,
+                                                     allfollowing,
+                                                     is_random,
+                                                     delay,
+                                                     callbacks=[],
+                                                     followNumber=followNum-1)
+
+        for person in cont_person_followed:
+            person_followed.append(person)
+
+    finally:
+        return person_followed
 
 
 def get_given_user_followers(browser,
@@ -383,7 +407,7 @@ def get_given_user_followers(browser,
                              is_random):
 
     browser.get('https://www.instagram.com/' + user_name)
-    
+
     # check how many poeple are following this user.
     # throw RuntimeWarning if we are 0 people following this user or
     # if its a private account
