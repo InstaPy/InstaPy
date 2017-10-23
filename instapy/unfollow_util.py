@@ -160,7 +160,7 @@ def unfollow(browser,
 
                 if unfollowNum != 0 and \
                    hasSlept is False and \
-                   unfollowNum % 1 == 0:
+                   unfollowNum % 10 == 0:
                         print('sleeping for about {}min'
                               .format(int(sleep_delay/60)))
                         sleep(sleep_delay)
