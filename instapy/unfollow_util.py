@@ -270,10 +270,6 @@ def follow_through_dialog(browser,
     sleep(2)
     person_followed = []
 
-    if is_random:
-        # expanding the popultaion for better sampling distribution
-        amount = amount * 3
-
     # find dialog box
     dialog = browser.find_element_by_xpath(
       "//div[text()='Followers' or text()='Following']/following-sibling::div")
