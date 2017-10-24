@@ -18,6 +18,8 @@ Head over to https://github.com/timgrossmann/InstaPy/wiki/Reporting-An-Issue to 
 
 **Disclaimer**: Please Note that this is a research project. I am by no means responsible for any usage of this tool. Use on your own behalf. I’m also not responsible if your accounts get banned due to extensive use of this tool.
 
+#### Newsletter: [SignUp for the Newsletter here!](http://eepurl.com/cZbV_v)
+
 ### Social
 
 #### [InstaPy Twitter](https://twitter.com/InstaPy) | [My Twitter](https://twitter.com/timigrossmann) | [How it works (Medium)](https://medium.freecodecamp.com/my-open-source-instagram-bot-got-me-2-500-real-followers-for-5-in-server-costs-e40491358340) | [Check out the talk](https://youtu.be/4TmKFZy-ioQ) | [Support InstaPy!](https://www.paypal.me/supportInstaPy)
@@ -28,7 +30,7 @@ Table of Contents
 =================
 
 * [Getting Started](#getting-started)
-  * [Basic Instalation](#basic-instalation)
+  * [Basic Installation](#basic-installation)
   * [Basic Setup](#basic-setup)
 * [InstaPy Available Features](#instapy-available-features)
   * [Commenting](#commenting)
@@ -73,7 +75,7 @@ Table of Contents
 
 **[How to Windows](./docs/How_to_Windows.md)**
 
-### Basic Instalation:
+### Basic Installation:
 
 ```bash
 1. git clone https://github.com/timgrossmann/InstaPy.git
@@ -597,10 +599,6 @@ while True:
 
 #### How not to be banned ?
 Built-in delays prevent your account from getting banned. (Just make sure you don't like 1000s of post/day)
-
-#### Newsletter
-
-[SignUp for the Newsletter here!](http://eepurl.com/cZbV_v)
 
 ### Chrome Browser
 
