@@ -471,24 +471,23 @@ def get_given_user_following(browser,
     # scroll down the page
     scroll_bottom(browser, dialog, allfollowing)
 
-    # get follow buttons. This approch will find the follow buttons and
-    # ignore the Unfollow/Requested buttons.
-    follow_buttons = dialog.find_elements_by_xpath(
-        "//div/div/span/button[text()='Follow']")
+    # get following buttons. This approch will find the following buttons
+    following_buttons = dialog.find_elements_by_xpath(
+        "//div/div/span/button[text()='Following']")
     person_list = []
 
-    if amount >= len(follow_buttons):
-        amount = len(follow_buttons)
-        print(user_name+" -> Less users to follow than requested.")
+    if amount >= len(following_buttons):
+        amount = len(following_buttons)
+        print(user_name+" -> Less users following than requested.")
 
     finalBtnPerson = []
     if is_random:
-        sample = random.sample(range(0, len(follow_buttons)), amount)
+        sample = random.sample(range(0, len(following_buttons)), amount)
 
         for num in sample:
-            finalBtnPerson.append(follow_buttons[num])
+            finalBtnPerson.append(following_buttons[num])
     else:
-        finalBtnPerson = follow_buttons[0:amount]
+        finalBtnPerson = following_buttons[0:amount]
     for person in finalBtnPerson:
 
         if person and hasattr(person, 'text') and person.text:
