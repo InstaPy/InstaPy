@@ -6,6 +6,7 @@ from .util import delete_line_from_file
 from .util import scroll_bottom
 from .util import formatNumber
 from .util import update_activity
+from .util import add_user_to_blacklist
 from .print_log_writer import log_followed_pool
 from selenium.common.exceptions import NoSuchElementException
 import random
@@ -243,7 +244,7 @@ def unfollow_user(browser):
         return 1
 
 
-def follow_given_user(browser, acc_to_follow, follow_restrict):
+def follow_given_user(browser, acc_to_follow, follow_restrict, blacklist):
     """Follows a given user."""
     browser.get('https://www.instagram.com/' + acc_to_follow)
     # update server calls
@@ -259,6 +260,10 @@ def follow_given_user(browser, acc_to_follow, follow_restrict):
         print('*' * 20)
         follow_restrict[acc_to_follow] = follow_restrict.get(
             acc_to_follow, 0) + 1
+
+        if blacklist:
+            add_user_to_blacklist(browser)
+
         sleep(3)
         return 1
     except NoSuchElementException:
