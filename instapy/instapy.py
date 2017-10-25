@@ -79,6 +79,7 @@ class InstaPy:
         self.do_follow = False
         self.follow_percentage = 0
         self.dont_include = []
+        self.blacklist = False
         self.automatedFollowedPool = []
         self.do_like = False
         self.like_percentage = 0
@@ -352,10 +353,14 @@ class InstaPy:
         followed = 0
 
         for acc_to_follow in followlist:
+            if acc_to_follow in self.dont_include:
+                continue
+
             if self.follow_restrict.get(acc_to_follow, 0) < self.follow_times:
                 followed += follow_given_user(self.browser,
                                               acc_to_follow,
-                                              self.follow_restrict)
+                                              self.follow_restrict,
+                                              self.blacklist)
                 self.followed += followed
                 self.logFile.write('Followed: {}\n'.format(str(followed)))
                 followed = 0
@@ -1396,6 +1401,21 @@ class InstaPy:
         for user in active_users:
             # include active user to not unfollow list
             self.dont_include.append(user)
+
+    def set_blacklist(self, enabled=False):
+        """Enable/disable blacklist. If enabled, adds users to a blacklist after
+        interact with and adds users to dont_include list"""
+        if enabled is True:
+            self.blacklist = True
+
+            try:
+                with open('./logs/blacklist.txt', 'r') as blacklist:
+                    for blist in blacklist:
+                        blist = blist.rstrip('\n')
+                        self.dont_include.append(blist)
+            except:
+                print('There is no users at blacklist yet')
+                self.logFile.write('There is no users at blacklist yet')
 
     def end(self):
         """Closes the current session"""

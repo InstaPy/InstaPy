@@ -3,6 +3,26 @@ from .time_util import sleep
 from selenium.common.exceptions import NoSuchElementException
 
 
+def add_user_to_blacklist(browser):
+
+    # image like dialog
+    try:
+        user_name = browser.find_element_by_xpath(
+            '//article/header/div[2]/div[1]/div[1]/a')
+
+        with open('./logs/blacklist.txt', 'a+') as blacklist:
+            blacklist.write(user_name.text + "\n")
+    except:
+        try:
+            user_name = browser.find_element_by_xpath(
+                '//article/header/div[2]/div[1]/h1')
+
+            with open('./logs/blacklist.txt', 'a+') as blacklist:
+                blacklist.write(user_name.text + "\n")
+        except Exception as err:
+            print(err)
+
+
 def get_active_users(browser, username, posts):
     """Returns a list with users who liked the latest posts"""
 
