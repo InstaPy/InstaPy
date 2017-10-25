@@ -51,6 +51,7 @@ Table of Contents
   * [Ignoring Users](#ignoring-users)
   * [Ignoring Restrictions](#ignoring-restrictions)
   * [Excluding friends](#excluding-friends)
+  * [Blacklist](#blacklist)
   * [Follow/Unfollow/exclude not working?](#followunfollowexclude-not-working)
 * [Third Party InstaPy GUI for Windows](#third-party-instapy-gui-for-windows)
 * [Switching to Firefox](#switching-to-firefox)
@@ -355,6 +356,15 @@ session.set_ignore_if_contains(['glutenfree', 'french', 'tasty'])
 # still be liked)
 
 session.set_dont_include(['friend1', 'friend2', 'friend3'])
+```
+
+### Blacklist
+
+```python
+# If enabled=True, after interact (liked or followed) the user will be stored in
+# the blacklist. Users in the blacklist will not be liked or followed.
+
+session.set_blacklist(enabled=True)
 ```
 
 ### Follow/Unfollow/exclude not working?
