@@ -194,7 +194,7 @@ def follow_user(browser, follow_restrict, login, user_name):
 
     try:
         follow_button = browser.find_element_by_xpath(
-            "//*[contains(text(), 'Follow')]")
+                "//button[text()='Follow']")
 
         # Do we still need this sleep?
         sleep(2)
