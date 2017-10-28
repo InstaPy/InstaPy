@@ -22,7 +22,7 @@ Head over to https://github.com/timgrossmann/InstaPy/wiki/Reporting-An-Issue to 
 
 ### Social
 
-#### [InstaPy Twitter](https://twitter.com/InstaPy) | [My Twitter](https://twitter.com/timigrossmann) | [How it works (Medium)](https://medium.freecodecamp.com/my-open-source-instagram-bot-got-me-2-500-real-followers-for-5-in-server-costs-e40491358340) | [Check out the talk](https://youtu.be/4TmKFZy-ioQ) | [Support InstaPy!](https://www.paypal.me/supportInstaPy)
+#### [Slack Workspace](https://join.slack.com/t/instapy/shared_invite/enQtMjYzNTgwMDg3MDEyLTk2NWI0MjY2MTVjYmM2NjFlYjVmMmE0ZjU1OGQ0OWM2MTQwOTc1NTIyOGVhZDEwMTFkYzFmODE5ZWIxZjhjMTQ) | [InstaPy Twitter](https://twitter.com/InstaPy) | [My Twitter](https://twitter.com/timigrossmann) | [How it works (Medium)](https://medium.freecodecamp.com/my-open-source-instagram-bot-got-me-2-500-real-followers-for-5-in-server-costs-e40491358340) | [Check out the talk](https://youtu.be/4TmKFZy-ioQ) | [Support InstaPy!](https://www.paypal.me/supportInstaPy)
 
 [![paypal](https://img.shields.io/badge/-PayPal-blue.svg)](https://www.paypal.me/supportInstaPy)
 
