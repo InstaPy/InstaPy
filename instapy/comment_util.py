@@ -3,8 +3,10 @@
 from random import choice
 from .time_util import sleep
 from .util import update_activity
+from .util import add_user_to_blacklist
 from selenium.common.exceptions import WebDriverException
 import emoji
+
 
 def get_comment_input(browser):
     comment_input = browser.find_elements_by_xpath(
@@ -13,6 +15,7 @@ def get_comment_input(browser):
         comment_input = browser.find_elements_by_xpath(
             '//input[@placeholder = "Add a comment…"]')
     return comment_input
+
 
 def open_comment_section(browser):
     missing_comment_elem_warning = (
@@ -29,7 +32,8 @@ def open_comment_section(browser):
     else:
         print(missing_comment_elem_warning)
 
-def comment_image(browser, comments):
+
+def comment_image(browser, username, comments, blacklist):
     """Checks if it should comment on the image"""
     rand_comment = (choice(comments))
     rand_comment = emoji.demojize(rand_comment)
@@ -50,6 +54,11 @@ def comment_image(browser, comments):
         comment_input = get_comment_input(browser)
         comment_input[0].submit()
         update_activity('comments')
+        if blacklist['enabled'] is True:
+            action = 'commented'
+            add_user_to_blacklist(
+                browser, username, blacklist['campaign'], action
+            )
     else:
         print('--> Warning: Comment Action Likely Failed:'
               ' Comment Element not found')
