@@ -1,6 +1,31 @@
 import re
+import csv
+import os.path
 from .time_util import sleep
 from selenium.common.exceptions import NoSuchElementException
+
+
+def add_user_to_blacklist(browser, username, campaign, action):
+
+    file_exists = os.path.isfile('./logs/blacklist.csv')
+    fieldnames = ['username', 'campaign', 'action']
+
+    try:
+
+        with open('./logs/blacklist.csv', 'a+') as blacklist:
+            writer = csv.DictWriter(blacklist, fieldnames=fieldnames)
+            if not file_exists:
+                writer.writeheader()
+            writer.writerow({
+                    'username': username,
+                    'campaign': campaign,
+                    'action': action
+            })
+    except Exception as err:
+        print(err)
+
+    print('--> {} added to blacklist for {} campaign (action: {})'
+          .format(username, campaign, action))
 
 
 def get_active_users(browser, username, posts):

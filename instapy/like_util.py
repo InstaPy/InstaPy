@@ -7,6 +7,7 @@ from re import findall
 from selenium.webdriver.common.keys import Keys
 
 from .time_util import sleep
+from .util import add_user_to_blacklist
 
 
 def get_links_from_feed(browser, amount, num_of_search):
@@ -456,7 +457,7 @@ def check_link(browser,
     return False, user_name, is_video, 'None'
 
 
-def like_image(browser):
+def like_image(browser, username, blacklist):
     """Likes the browser opened image"""
     like_elem = browser.find_elements_by_xpath(
         "//a[@role='button']/span[text()='Like']/..")
@@ -466,6 +467,11 @@ def like_image(browser):
     if len(like_elem) == 1:
         like_elem[0].send_keys("\n")
         print('--> Image Liked!')
+        if blacklist['enabled'] is True:
+            action = 'liked'
+            add_user_to_blacklist(
+                browser, username, blacklist['campaign'], action
+            )
         sleep(2)
         return True
     elif len(liked_elem) == 1:
