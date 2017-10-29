@@ -37,6 +37,7 @@ from .unfollow_util import load_follow_restriction
 from .unfollow_util import dump_follow_restriction
 from .unfollow_util import set_automated_followed_pool
 import random
+import csv
 
 
 class InstaPy:
@@ -79,7 +80,7 @@ class InstaPy:
         self.do_follow = False
         self.follow_percentage = 0
         self.dont_include = []
-        self.blacklist = False
+        self.blacklist = {'enabled': 'True', 'campaign': ''}
         self.automatedFollowedPool = []
         self.do_like = False
         self.like_percentage = 0
@@ -435,7 +436,9 @@ class InstaPy:
                     )
 
                     if not inappropriate:
-                        liked = like_image(self.browser)
+                        liked = like_image(
+                            self.browser, user_name, self.blacklist
+                        )
 
                         if liked:
                             liked_img += 1
@@ -577,7 +580,9 @@ class InstaPy:
                     )
 
                     if not inappropriate:
-                        liked = like_image(self.browser)
+                        liked = like_image(
+                            self.browser, user_name, self.blacklist
+                        )
 
                         if liked:
                             liked_img += 1
@@ -736,7 +741,9 @@ class InstaPy:
                     )
 
                     if not inappropriate:
-                        liked = like_image(self.browser)
+                        liked = like_image(
+                            self.browser, user_name, self.blacklist
+                        )
 
                         if liked:
                             total_liked_img += 1
@@ -895,7 +902,9 @@ class InstaPy:
 
                         liking = randint(0, 100) <= self.like_percentage
                         if self.do_like and liking:
-                            liked = like_image(self.browser)
+                            liked = like_image(
+                                self.browser, user_name, self.blacklist
+                            )
                         else:
                             liked = True
 
@@ -1089,12 +1098,14 @@ class InstaPy:
 
             try:
                 userFollowed += follow_given_user_followers(self.browser,
-                                                            user, amount,
+                                                            user,
+                                                            amount,
                                                             self.dont_include,
                                                             self.username,
                                                             self.follow_restrict,
                                                             random,
-                                                            sleep_delay)
+                                                            sleep_delay,
+                                                            self.blacklist)
 
             except (TypeError, RuntimeWarning) as err:
                 if isinstance(err, RuntimeWarning):
@@ -1143,7 +1154,8 @@ class InstaPy:
                                                             self.username,
                                                             self.follow_restrict,
                                                             random,
-                                                            sleep_delay)
+                                                            sleep_delay,
+                                                            self.blacklist)
 
             except (TypeError, RuntimeWarning) as err:
                 if isinstance(err, RuntimeWarning):
@@ -1274,7 +1286,9 @@ class InstaPy:
                             )
 
                             if not inappropriate:
-                                liked = like_image(self.browser)
+                                liked = like_image(
+                                    self.browser, user_name, self.blacklist
+                                )
 
                                 if liked:
                                     username = (self.browser.
@@ -1402,20 +1416,25 @@ class InstaPy:
             # include active user to not unfollow list
             self.dont_include.append(user)
 
-    def set_blacklist(self, enabled=False):
+    def set_blacklist(self, enabled, campaign):
         """Enable/disable blacklist. If enabled, adds users to a blacklist after
         interact with and adds users to dont_include list"""
-        if enabled is True:
-            self.blacklist = True
 
-            try:
-                with open('./logs/blacklist.txt', 'r') as blacklist:
-                    for blist in blacklist:
-                        blist = blist.rstrip('\n')
-                        self.dont_include.append(blist)
-            except:
-                print('There is no users at blacklist yet')
-                self.logFile.write('There is no users at blacklist yet')
+        if enabled is False:
+            return
+
+        self.blacklist['enabled'] = True
+        self.blacklist['campaign'] = campaign
+
+        try:
+            with open('./logs/blacklist.csv', 'r') as blacklist:
+                reader = csv.DictReader(blacklist)
+                for row in reader:
+                    if row['campaign'] == campaign:
+                        self.dont_include.append(row['username'])
+        except:
+            print('Campaign {} first run'.format(campaign))
+            self.logFile.write('Campaign {} first run'.format(campaign))
 
     def end(self):
         """Closes the current session"""

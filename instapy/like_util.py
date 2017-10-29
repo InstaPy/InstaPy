@@ -487,7 +487,7 @@ def check_link(browser,
     return False, user_name, is_video, 'None'
 
 
-def like_image(browser):
+def like_image(browser, username, blacklist):
     """Likes the browser opened image"""
     like_elem = browser.find_elements_by_xpath(
         "//a[@role='button']/span[text()='Like']/..")
@@ -499,6 +499,11 @@ def like_image(browser):
         print('--> Image Liked!')
         update_activity('likes')
         add_user_to_blacklist(browser)
+        if blacklist['enabled'] is True:
+            action = 'liked'
+            add_user_to_blacklist(
+                browser, username, blacklist['campaign'], action
+            )
         sleep(2)
         return True
     elif len(liked_elem) == 1:
