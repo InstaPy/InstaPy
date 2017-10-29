@@ -257,12 +257,14 @@ def follow_given_user(browser, acc_to_follow, follow_restrict, blacklist):
         follow_button.send_keys("\n")
         update_activity('follows')
         print('---> Now following: {}'.format(acc_to_follow))
-        print('*' * 20)
         follow_restrict[acc_to_follow] = follow_restrict.get(
             acc_to_follow, 0) + 1
 
-        if blacklist:
-            add_user_to_blacklist(browser)
+        if blacklist['enabled'] is True:
+            action = 'followed'
+            add_user_to_blacklist(
+                browser, acc_to_follow, blacklist['campaign'], action
+            )
 
         sleep(3)
         return 1
@@ -282,6 +284,7 @@ def follow_through_dialog(browser,
                           allfollowing,
                           is_random,
                           delay,
+                          blacklist,
                           callbacks=[]):
     sleep(2)
     person_followed = []
@@ -374,6 +377,13 @@ def follow_through_dialog(browser,
                 print('--> Ongoing follow ' + str(followNum) +
                       ', now following: {}'
                       .format(person.encode('utf-8')))
+
+                if blacklist['enabled'] is True:
+                    action = 'followed'
+                    add_user_to_blacklist(
+                        browser, person, blacklist['campaign'], action
+                    )
+
                 for callback in callbacks:
                     callback(person.encode('utf-8'))
                 sleep(15)
@@ -535,7 +545,8 @@ def follow_given_user_followers(browser,
                                 login,
                                 follow_restrict,
                                 random,
-                                delay):
+                                delay,
+                                blacklist):
 
     browser.get('https://www.instagram.com/' + user_name)
     # update server calls
@@ -567,6 +578,7 @@ def follow_given_user_followers(browser,
                                            allfollowing,
                                            random,
                                            delay,
+                                           blacklist,
                                            callbacks=[])
 
     return personFollowed
@@ -578,7 +590,9 @@ def follow_given_user_following(browser,
                                 dont_include,
                                 login,
                                 follow_restrict,
-                                random, delay):
+                                random,
+                                delay,
+                                blacklist):
 
     browser.get('https://www.instagram.com/' + user_name)
     # update server calls
@@ -609,7 +623,8 @@ def follow_given_user_following(browser,
                                            follow_restrict,
                                            allfollowing,
                                            random,
-                                           delay)
+                                           delay,
+                                           blacklist)
 
     return personFollowed
 
