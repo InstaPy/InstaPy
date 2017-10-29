@@ -46,8 +46,8 @@ Table of Contents
   * [Prevents unfollow active users](#prevents-unfollow-active-users)
   * [Interactions based on the number of followers a user has](#interactions-based-on-the-number-of-followers-a-user-has)
   * [Like by Locations](#like-by-locations)
-  * [Like by Tags](#like-by-tag)
-  * [Feeds](#feeds)
+  * [Like by Tags](#like-by-tags)
+  * [Like by Feeds](#like-by-feeds)
   * [Restricting Likes](#restricting-likes)
   * [Ignoring Users](#ignoring-users)
   * [Ignoring Restrictions](#ignoring-restrictions)
@@ -311,7 +311,7 @@ Example:
 session.like_by_tags(['natgeo', 'world'], amount=10)
 ```
 
-### Feeds
+### Like by Feeds
 
 ```python
 # This is used to perform likes on your own feeds
