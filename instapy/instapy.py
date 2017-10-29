@@ -492,7 +492,8 @@ class InstaPy:
                                 followed += follow_user(self.browser,
                                                         self.follow_restrict,
                                                         self.username,
-                                                        user_name)
+                                                        user_name,
+                                                        self.blacklist)
 
                             else:
                                 print('--> Not following')
@@ -621,7 +622,10 @@ class InstaPy:
                                     comments = (self.comments +
                                                 self.photo_comments)
                                 commented += comment_image(
-                                    self.browser, comments)
+                                    self.browser,
+                                    user_name,
+                                    comments,
+                                    self.blacklist)
                             else:
                                 print('--> Not commented')
                                 sleep(1)
@@ -636,7 +640,8 @@ class InstaPy:
                                 followed += follow_user(self.browser,
                                                         self.follow_restrict,
                                                         self.username,
-                                                        user_name)
+                                                        user_name,
+                                                        self.blacklist)
                             else:
                                 print('--> Not following')
                                 sleep(1)
@@ -704,7 +709,9 @@ class InstaPy:
                     self.follow_restrict.get(username, 0) < self.follow_times):
                 followed += follow_user(self.browser,
                                         self.follow_restrict,
-                                        self.username, username)
+                                        self.username,
+                                        username,
+                                        self.blacklist)
             else:
                 print('--> Not following')
                 sleep(1)
@@ -895,7 +902,8 @@ class InstaPy:
                                 self.browser,
                                 self.follow_restrict,
                                 self.username,
-                                username)
+                                username,
+                                self.blacklist)
                         else:
                             print('--> Not following')
                             sleep(1)
@@ -1365,7 +1373,8 @@ class InstaPy:
                                             self.browser,
                                             self.follow_restrict,
                                             self.username,
-                                            user_name)
+                                            user_name,
+                                            self.blacklist)
                                     else:
                                         print('--> Not following')
                                         sleep(1)

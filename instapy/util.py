@@ -24,8 +24,8 @@ def add_user_to_blacklist(browser, username, campaign, action):
     except Exception as err:
         print(err)
 
-    print('---> {} added to blacklist for {} campaign'
-          .format(username, campaign))
+    print('--> {} added to blacklist for {} campaign (action: {})'
+          .format(username, campaign, action))
 
 
 def get_active_users(browser, username, posts):

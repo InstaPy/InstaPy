@@ -190,7 +190,7 @@ def unfollow(browser,
     return unfollowNum
 
 
-def follow_user(browser, follow_restrict, login, user_name):
+def follow_user(browser, follow_restrict, login, user_name, blacklist):
     """Follows the user of the currently opened image"""
 
     try:
@@ -213,6 +213,11 @@ def follow_user(browser, follow_restrict, login, user_name):
         print('--> Now following')
         log_followed_pool(login, user_name)
         follow_restrict[user_name] = follow_restrict.get(user_name, 0) + 1
+        if blacklist['enabled'] is True:
+            action = 'followed'
+            add_user_to_blacklist(
+                browser, user_name, blacklist['campaign'], action
+            )
         sleep(3)
         return 1
     except NoSuchElementException:
