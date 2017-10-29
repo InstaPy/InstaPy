@@ -45,7 +45,8 @@ Table of Contents
   * [Unfollowing](#unfollowing)
   * [Prevents unfollow active users](#prevents-unfollow-active-users)
   * [Interactions based on the number of followers a user has](#interactions-based-on-the-number-of-followers-a-user-has)
-  * [Locations](#locations)
+  * [Like by Locations](#like-by-locations)
+  * [Like by Tags](#like-by-tag)
   * [Feeds](#feeds)
   * [Restricting Likes](#restricting-likes)
   * [Ignoring Users](#ignoring-users)
@@ -283,7 +284,7 @@ session.set_upper_follower_count(limit = 250)
 session.set_lower_follower_count(limit = 1)
 ```
 
-### Locations
+### Like by Locations
 
 ```python
 session.like_by_locations(['224442573/salton-sea/'], amount=100)
@@ -302,6 +303,13 @@ Example:
 * Search 'Salton Sea' and select the result with a location icon
 * The url is: https://www.instagram.com/explore/locations/224442573/salton-sea/
 * Use everything after 'locations/' or just the number
+
+### Like by Tags
+
+```python
+# Like posts based on hashtags
+session.like_by_tags(['natgeo', 'world'], amount=10)
+```
 
 ### Feeds
 
