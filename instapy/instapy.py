@@ -476,8 +476,10 @@ class InstaPy:
                                 else:
                                     comments = (self.comments +
                                                 self.photo_comments)
-                                commented += comment_image(
-                                    self.browser, comments)
+                                commented += comment_image(self.browser,
+                                                           user_name,
+                                                           comments,
+                                                           self.blacklist)
                             else:
                                 print('--> Not commented')
                                 sleep(1)
@@ -621,11 +623,10 @@ class InstaPy:
                                 else:
                                     comments = (self.comments +
                                                 self.photo_comments)
-                                commented += comment_image(
-                                    self.browser,
-                                    user_name,
-                                    comments,
-                                    self.blacklist)
+                                commented += comment_image(self.browser,
+                                                           user_name,
+                                                           comments,
+                                                           self.blacklist)
                             else:
                                 print('--> Not commented')
                                 sleep(1)
@@ -787,7 +788,9 @@ class InstaPy:
                                     comments = (self.comments +
                                                 self.photo_comments)
                                 commented += comment_image(self.browser,
-                                                           comments)
+                                                           user_name,
+                                                           comments,
+                                                           self.blacklist)
                             else:
                                 print('--> Not commented')
                                 sleep(1)
@@ -951,8 +954,10 @@ class InstaPy:
                                 else:
                                     comments = (self.comments +
                                                 self.photo_comments)
-                                commented += comment_image(
-                                    self.browser, comments)
+                                commented += comment_image(self.browser,
+                                                           user_name,
+                                                           comments,
+                                                           self.blacklist)
                             else:
                                 print('--> Not commented')
                                 sleep(1)
@@ -1358,7 +1363,10 @@ class InstaPy:
                                                 self.comments +
                                                 self.photo_comments)
                                         commented += comment_image(
-                                            self.browser, comments)
+                                                        self.browser,
+                                                        user_name,
+                                                        comments,
+                                                        self.blacklist)
                                     else:
                                         print('--> Not commented')
                                         sleep(1)
