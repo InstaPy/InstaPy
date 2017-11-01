@@ -1,6 +1,81 @@
 import re
+import os
+import csv
+import datetime
+import shutil
 from .time_util import sleep
 from selenium.common.exceptions import NoSuchElementException
+from tempfile import NamedTemporaryFile
+
+
+def update_activity(action):
+
+    file_exists = os.path.isfile('./logs/activity.csv')
+    fieldnames = [
+        'date', 'likes', 'comments', 'follows', 'unfollows', 'server_calls']
+    today = datetime.date.today().strftime('%m/%d/%y')
+    tmpfile = NamedTemporaryFile(mode='w', delete=False)
+
+    with open('./logs/activity.csv', 'w+') as activity, tmpfile:
+        reader = csv.DictReader(activity, fieldnames=fieldnames)
+        writer = csv.DictWriter(tmpfile, fieldnames=fieldnames)
+
+        if not file_exists:
+            writer.writeheader()
+
+            likes = 0
+            comments = 0
+            follows = 0
+            unfollows = 0
+
+            if action == 'likes':
+                likes = 1
+            elif action == 'comments':
+                comments = 1
+            elif action == 'follows':
+                follows = 1
+            elif action == 'unfollows':
+                unfollows = 1
+
+            # update csv file
+            writer.writerow({
+                'date': today,
+                'likes': likes,
+                'comments': comments,
+                'follows': follows,
+                'unfollows': unfollows,
+                'server_calls': 1
+            })
+        else:
+            # if file exists
+            for row in reader:
+                if row['date'] == today:
+
+                    # update server call
+                    row['server_calls'] = int(row['server_calls']) + 1
+
+                    if action == 'likes':
+                        row['likes'] = int(row['likes']) + 1
+                    elif action == 'comments':
+                        row['comments'] = int(row['comments']) + 1
+                    elif action == 'follows':
+                        row['follows'] = int(row['follows']) + 1
+                    elif action == 'unfollows':
+                        row['unfollows'] = int(row['unfollows']) + 1
+
+                    # add header to the new file (temporary file)
+                    writer.writeheader()
+                    writer.writerow({
+                        'date': today,
+                        'likes': row['likes'],
+                        'comments': row['comments'],
+                        'follows': row['follows'],
+                        'unfollows': row['unfollows'],
+                        'server_calls': row['server_calls']
+                    })
+
+        # move temporary file to activity.csv (updating csv file)
+        shutil.move(tmpfile.name, './logs/activity.csv')
 
 
 def get_active_users(browser, username, posts):

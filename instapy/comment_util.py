@@ -2,6 +2,7 @@
 """Module which handles the commenting features"""
 from random import choice
 from .time_util import sleep
+from .util import update_activity
 from selenium.common.exceptions import WebDriverException
 import emoji
 
@@ -48,6 +49,7 @@ def comment_image(browser, comments):
         comment_input[0].send_keys("\b")
         comment_input = get_comment_input(browser)
         comment_input[0].submit()
+        update_activity('comments')
     else:
         print('--> Warning: Comment Action Likely Failed:'
               ' Comment Element not found')

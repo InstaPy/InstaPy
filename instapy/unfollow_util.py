@@ -5,6 +5,7 @@ from .time_util import sleep
 from .util import delete_line_from_file
 from .util import scroll_bottom
 from .util import formatNumber
+from .util import update_activity
 from .print_log_writer import log_followed_pool
 from selenium.common.exceptions import NoSuchElementException
 import random
@@ -90,6 +91,7 @@ def unfollow(browser,
                     if follow_button.text == 'Following':
                         unfollowNum += 1
                         follow_button.click()
+                        update_activity('unfollows')
 
                         delete_line_from_file('./logs/' + username +
                                               '_followedPool.csv', person +
@@ -201,6 +203,7 @@ def follow_user(browser, follow_restrict, login, user_name):
 
         if follow_button.is_displayed():
             follow_button.send_keys("\n")
+            update_activity('follows')
         else:
             browser.execute_script(
                 "arguments[0].style.visibility = 'visible'; "
@@ -208,6 +211,7 @@ def follow_user(browser, follow_restrict, login, user_name):
                 "arguments[0].style.width = '10px'; "
                 "arguments[0].style.opacity = 1", follow_button)
             follow_button.click()
+            update_activity('follows')
 
         print('--> Now following')
         log_followed_pool(login, user_name)
@@ -228,6 +232,7 @@ def unfollow_user(browser):
 
     if unfollow_button.text == 'Following':
         unfollow_button.send_keys("\n")
+        update_activity('unfollows')
         print('--> User unfollowed due to Inappropriate Content')
         sleep(3)
         return 1
@@ -242,7 +247,7 @@ def follow_given_user(browser, acc_to_follow, follow_restrict):
         sleep(10)
         follow_button = browser.find_element_by_xpath("//*[text()='Follow']")
         follow_button.send_keys("\n")
-
+        update_activity('follows')
         print('---> Now following: {}'.format(acc_to_follow))
         print('*' * 20)
         follow_restrict[acc_to_follow] = follow_restrict.get(
@@ -349,6 +354,7 @@ def follow_through_dialog(browser,
 
                 button.send_keys("\n")
                 log_followed_pool(login, person)
+                update_activity('follows')
 
                 follow_restrict[user_name] = follow_restrict.get(
                     user_name, 0) + 1
