@@ -1,8 +1,8 @@
 import re
-import os
 import csv
 import datetime
 import shutil
+import os
 from .time_util import sleep
 from selenium.common.exceptions import NoSuchElementException
 from tempfile import NamedTemporaryFile
@@ -119,21 +119,6 @@ def add_user_to_blacklist(browser, username, campaign, action):
 
     print('--> {} added to blacklist for {} campaign (action: {})'
           .format(username, campaign, action))
-=======
-                    # add header to the new file (temporary file)
-                    writer.writeheader()
-                    writer.writerow({
-                        'date': today,
-                        'likes': row['likes'],
-                        'comments': row['comments'],
-                        'follows': row['follows'],
-                        'unfollows': row['unfollows'],
-                        'server_calls': row['server_calls']
-                    })
-
-        # move temporary file to activity.csv (updating csv file)
-        shutil.move(tmpfile.name, './logs/activity.csv')
->>>>>>> tracking activities, not recording as expected yet
 
 
 def get_active_users(browser, username, posts):
