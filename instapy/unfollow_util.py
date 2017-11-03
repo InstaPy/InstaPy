@@ -5,6 +5,7 @@ from .time_util import sleep
 from .util import delete_line_from_file
 from .util import scroll_bottom
 from .util import formatNumber
+from .util import update_activity
 from .print_log_writer import log_followed_pool
 from selenium.common.exceptions import NoSuchElementException
 import random
@@ -42,6 +43,8 @@ def unfollow(browser,
     unfollowNum = 0
 
     browser.get('https://www.instagram.com/' + username)
+    # update server calls
+    update_activity()
 
     #  check how many poeple we are following
     #  throw RuntimeWarning if we are 0 people following
@@ -90,6 +93,7 @@ def unfollow(browser,
                     if follow_button.text == 'Following':
                         unfollowNum += 1
                         follow_button.click()
+                        update_activity('unfollows')
 
                         delete_line_from_file('./logs/' + username +
                                               '_followedPool.csv', person +
@@ -125,6 +129,8 @@ def unfollow(browser,
             following_link = browser.find_elements_by_xpath(
                 '//header/div[2]//li[3]')
             following_link[0].click()
+            # update server calls
+            update_activity()
         except BaseException as e:
             print("following_link error \n", str(e))
 
@@ -170,6 +176,7 @@ def unfollow(browser,
                 if person not in dont_include:
                     unfollowNum += 1
                     button.click()
+                    update_activity('unfollows')
 
                     print('--> Ongoing Unfollow ' + str(unfollowNum) +
                           ', now unfollowing: {}'
@@ -201,6 +208,7 @@ def follow_user(browser, follow_restrict, login, user_name):
 
         if follow_button.is_displayed():
             follow_button.send_keys("\n")
+            update_activity('follows')
         else:
             browser.execute_script(
                 "arguments[0].style.visibility = 'visible'; "
@@ -208,6 +216,7 @@ def follow_user(browser, follow_restrict, login, user_name):
                 "arguments[0].style.width = '10px'; "
                 "arguments[0].style.opacity = 1", follow_button)
             follow_button.click()
+            update_activity('follows')
 
         print('--> Now following')
         log_followed_pool(login, user_name)
@@ -228,6 +237,7 @@ def unfollow_user(browser):
 
     if unfollow_button.text == 'Following':
         unfollow_button.send_keys("\n")
+        update_activity('unfollows')
         print('--> User unfollowed due to Inappropriate Content')
         sleep(3)
         return 1
@@ -236,13 +246,15 @@ def unfollow_user(browser):
 def follow_given_user(browser, acc_to_follow, follow_restrict):
     """Follows a given user."""
     browser.get('https://www.instagram.com/' + acc_to_follow)
+    # update server calls
+    update_activity()
     print('--> {} instagram account is opened...'.format(acc_to_follow))
 
     try:
         sleep(10)
         follow_button = browser.find_element_by_xpath("//*[text()='Follow']")
         follow_button.send_keys("\n")
-
+        update_activity('follows')
         print('---> Now following: {}'.format(acc_to_follow))
         print('*' * 20)
         follow_restrict[acc_to_follow] = follow_restrict.get(
@@ -349,6 +361,7 @@ def follow_through_dialog(browser,
 
                 button.send_keys("\n")
                 log_followed_pool(login, person)
+                update_activity('follows')
 
                 follow_restrict[user_name] = follow_restrict.get(
                     user_name, 0) + 1
@@ -390,7 +403,9 @@ def get_given_user_followers(browser,
                              is_random):
 
     browser.get('https://www.instagram.com/' + user_name)
-    
+    # update server calls
+    update_activity()
+
     # check how many poeple are following this user.
     # throw RuntimeWarning if we are 0 people following this user or
     # if its a private account
@@ -404,6 +419,8 @@ def get_given_user_followers(browser,
     following_link = browser.find_elements_by_xpath(
         '//a[@href="/' + user_name + '/followers/"]')
     following_link[0].send_keys("\n")
+    # update server calls
+    update_activity()
 
     sleep(2)
 
@@ -450,6 +467,8 @@ def get_given_user_following(browser,
                              is_random):
 
     browser.get('https://www.instagram.com/' + user_name)
+    # update server calls
+    update_activity()
 
     #  check how many poeple are following this user.
     #  throw RuntimeWarning if we are 0 people following this user
@@ -463,6 +482,8 @@ def get_given_user_following(browser,
         following_link = browser.find_elements_by_xpath(
             '//a[@href="/' + user_name + '/following/"]')
         following_link[0].send_keys("\n")
+        # update server calls
+        update_activity()
     except BaseException as e:
         print("following_link error \n", str(e))
 
@@ -512,6 +533,8 @@ def follow_given_user_followers(browser,
                                 delay):
 
     browser.get('https://www.instagram.com/' + user_name)
+    # update server calls
+    update_activity()
 
     #  check how many poeple are following this user.
     #  throw RuntimeWarning if we are 0 people following this user
@@ -525,6 +548,8 @@ def follow_given_user_followers(browser,
         following_link = browser.find_elements_by_xpath(
             '//a[@href="/' + user_name + '/followers/"]')
         following_link[0].send_keys("\n")
+        # update server calls
+        update_activity()
     except BaseException as e:
         print("following_link error \n", str(e))
 
@@ -551,6 +576,8 @@ def follow_given_user_following(browser,
                                 random, delay):
 
     browser.get('https://www.instagram.com/' + user_name)
+    # update server calls
+    update_activity()
 
     #  check how many poeple are following this user.
     #  throw RuntimeWarning if we are 0 people following this user
@@ -564,6 +591,8 @@ def follow_given_user_following(browser,
         following_link = browser.find_elements_by_xpath(
             '//a[@href="/' + user_name + '/following/"]')
         following_link[0].send_keys("\n")
+        # update server calls
+        update_activity()
     except BaseException as e:
         print("following_link error \n", str(e))
 
