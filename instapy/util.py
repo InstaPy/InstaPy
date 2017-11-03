@@ -7,6 +7,35 @@ from selenium.common.exceptions import NoSuchElementException
 from tempfile import NamedTemporaryFile
 
 
+def check_activity():
+    """Returns activity information"""
+
+    today = datetime.date.today().strftime('%m/%d/%y')
+
+    tmpDict = {
+        'likes': '',
+        'comments': '',
+        'follows': '',
+        'unfollows': '',
+        'server_calls': ''
+    }
+
+    try:
+        with open('./logs/activity.csv', 'r') as activity:
+            reader = csv.DictReader(activity)
+            for row in reader:
+                if row['date'] == today:
+                    tmpDict['likes'] = int(row['likes'])
+                    tmpDict['comments'] = int(row['comments'])
+                    tmpDict['follows'] = int(row['follows'])
+                    tmpDict['unfollows'] = int(row['unfollows'])
+                    tmpDict['server_calls'] = int(row['server_calls'])
+    except IOError as e:
+        print(e)
+
+    return tmpDict
+
+
 def update_activity(action=None):
     """Record every Instagram server call (page load, content load, likes,
     comments, follows, unfollow)."""

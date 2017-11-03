@@ -25,6 +25,7 @@ from .print_log_writer import log_follower_num
 from .time_util import sleep
 from .time_util import set_sleep_percentage
 from .util import get_active_users
+from .util import check_activity
 from .unfollow_util import get_given_user_followers
 from .unfollow_util import get_given_user_following
 from .unfollow_util import unfollow
@@ -1396,6 +1397,37 @@ class InstaPy:
         for user in active_users:
             # include active user to not unfollow list
             self.dont_include.append(user)
+
+    def set_daily_interactions(self,
+                               likes=None,
+                               comments=None,
+                               follows=None,
+                               unfollows=None,
+                               server_calls=None):
+
+        if (likes or comments or follows or unfollows or server_calls) is None:
+            print('Warning: set_daily_interactions is misconfigured')
+            self.logFile.write(
+                'Warning: set_daily_interactions is misconfigured\n')
+            return
+
+        current_activity = check_activity()
+
+        if current_activity['likes'] >= likes:
+            print('Daily likes limit reached, closing...')
+            self.end()
+        elif current_activity['comments'] >= comments:
+            print('Daily comments limit reached, closing...')
+            self.end()
+        elif current_activity['follows'] >= follows:
+            print('Daily follows limit reached, closing...')
+            self.end()
+        elif current_activity['unfollows'] >= unfollows:
+            print('Daily unfollows limit reached, closing...')
+            self.end()
+        elif current_activity['server_calls'] >= server_calls:
+            print('Daily server calls limit reached, closing...')
+            self.end()
 
     def end(self):
         """Closes the current session"""
