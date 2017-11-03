@@ -1,6 +1,100 @@
 import re
+import csv
+import datetime
+import shutil
 from .time_util import sleep
 from selenium.common.exceptions import NoSuchElementException
+from tempfile import NamedTemporaryFile
+
+
+def update_activity(action=None):
+    """Record every Instagram server call (page load, content load, likes,
+    comments, follows, unfollow)."""
+
+    # file header
+    fieldnames = [
+        'date', 'likes', 'comments', 'follows', 'unfollows', 'server_calls']
+    today = datetime.date.today().strftime('%m/%d/%y')
+    tmpfile = NamedTemporaryFile(mode='w', delete=False)
+
+    # csv update file technique, moves activity.csv content to a temporary
+    # file, update needed line, then move temporary file content back to
+    # activity.csv file
+    try:
+        with open('./logs/activity.csv', 'r') as activity, tmpfile:
+            reader = csv.DictReader(activity)
+            writer = csv.DictWriter(tmpfile, fieldnames=fieldnames)
+
+            # add header to the new file (temporary file)
+            writer.writeheader()
+
+            new_day = True
+            for row in reader:
+                if row['date'] == today:
+                    new_day = False
+                    # update server call
+                    row['server_calls'] = int(row['server_calls']) + 1
+
+                    if action == 'likes':
+                        row['likes'] = int(row['likes']) + 1
+                    elif action == 'comments':
+                        row['comments'] = int(row['comments']) + 1
+                    elif action == 'follows':
+                        row['follows'] = int(row['follows']) + 1
+                    elif action == 'unfollows':
+                        row['unfollows'] = int(row['unfollows']) + 1
+
+                # update daily activity
+                writer.writerow({
+                    'date': row['date'],
+                    'likes': row['likes'],
+                    'comments': row['comments'],
+                    'follows': row['follows'],
+                    'unfollows': row['unfollows'],
+                    'server_calls': row['server_calls']
+                })
+
+            # begin new statistics if it's a new day
+            if new_day is True:
+
+                likes = 0
+                comments = 0
+                follows = 0
+                unfollows = 0
+
+                if action == 'likes':
+                    likes = 1
+                elif action == 'comments':
+                    comments = 1
+                elif action == 'follows':
+                    follows = 1
+                elif action == 'unfollows':
+                    unfollows = 1
+
+                writer.writerow({
+                    'date': today,
+                    'likes': likes,
+                    'comments': comments,
+                    'follows': follows,
+                    'unfollows': unfollows,
+                    'server_calls': 1
+                })
+
+            # move temporary file to activity.csv (updating csv file)
+            shutil.move(tmpfile.name, './logs/activity.csv')
+    except IOError:
+        # if file doesnt exist/first run, create activity file
+        with open('./logs/activity.csv', 'w') as activity:
+            writer = csv.DictWriter(activity, fieldnames=fieldnames)
+            writer.writeheader()
+            writer.writerow({
+                'date': today,
+                'likes': 0,
+                'comments': 0,
+                'follows': 0,
+                'unfollows': 0,
+                'server_calls': 1
+            })
 
 
 def get_active_users(browser, username, posts):
@@ -80,6 +174,8 @@ def scroll_bottom(browser, element, range_int):
     for i in range(int(range_int / 2)):
         browser.execute_script(
             "arguments[0].scrollTop = arguments[0].scrollHeight", element)
+        # update server calls
+        update_activity()
         sleep(1)
 
     return

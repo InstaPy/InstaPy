@@ -1,11 +1,14 @@
 """Module only used for the login part of the script"""
 from .time_util import sleep
 from selenium.webdriver.common.action_chains import ActionChains
+from .util import update_activity
 
 
 def login_user(browser, username, password, switch_language=True):
     """Logins the user with the given username and password"""
     browser.get('https://www.instagram.com')
+    # update server calls
+    update_activity()
 
     # Changes instagram language to english, to ensure no errors ensue from
     # having the site on a different language
@@ -40,6 +43,8 @@ def login_user(browser, username, password, switch_language=True):
     login_button = browser.find_element_by_xpath(
         "//form/span/button[text()='Log in']")
     ActionChains(browser).move_to_element(login_button).click().perform()
+    # update server calls
+    update_activity()
 
     sleep(5)
 

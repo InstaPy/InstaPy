@@ -7,12 +7,15 @@ from re import findall
 from selenium.webdriver.common.keys import Keys
 
 from .time_util import sleep
+from .util import update_activity
 
 
 def get_links_from_feed(browser, amount, num_of_search):
     """Fetches random number of links from feed and returns a list of links"""
 
     browser.get('https://www.instagram.com')
+    # update server calls
+    update_activity()
     sleep(2)
 
     for i in range(num_of_search + 1):
@@ -59,8 +62,9 @@ def get_links_for_location(browser,
         # Make it an array to use it in the following part
         media = [media]
 
-    browser.get('https://www.instagram.com/explore/locations/'
-                + location)
+    browser.get('https://www.instagram.com/explore/locations/' + location)
+    # update server calls
+    update_activity()
     sleep(2)
 
     # clicking load more
@@ -78,6 +82,8 @@ def get_links_for_location(browser,
         body_elem.send_keys(Keys.END)
         sleep(2)
         load_button.click()
+        # update server calls
+        update_activity()
 
     body_elem.send_keys(Keys.HOME)
     sleep(1)
@@ -112,6 +118,8 @@ def get_links_for_location(browser,
             # Keep the latest window active while loading more posts
             before_load = total_links
             body_elem.send_keys(Keys.END)
+            # update server calls
+            update_activity()
             sleep(1)
             body_elem.send_keys(Keys.HOME)
             sleep(1)
@@ -143,6 +151,8 @@ def get_links_for_tag(browser, tag, amount, media=None, skip_top_posts=True):
 
     browser.get('https://www.instagram.com/explore/tags/'
                 + (tag[1:] if tag[:1] == '#' else tag))
+    # update server calls
+    update_activity()
     sleep(2)
 
     # clicking load more
@@ -160,6 +170,8 @@ def get_links_for_tag(browser, tag, amount, media=None, skip_top_posts=True):
         body_elem.send_keys(Keys.END)
         sleep(2)
         load_button.click()
+        # update server calls
+        update_activity()
 
     body_elem.send_keys(Keys.HOME)
     sleep(1)
@@ -201,6 +213,8 @@ def get_links_for_tag(browser, tag, amount, media=None, skip_top_posts=True):
             # Keep the latest window active while loading more posts
             before_load = total_links
             body_elem.send_keys(Keys.END)
+            # update server calls
+            update_activity()
             sleep(1)
             body_elem.send_keys(Keys.HOME)
             sleep(1)
@@ -239,6 +253,8 @@ def get_links_for_username(browser,
 
     # Get  user profile page
     browser.get('https://www.instagram.com/' + username)
+    # update server calls
+    update_activity()
     sleep(2)
 
     body_elem = browser.find_element_by_tag_name('body')
@@ -270,6 +286,8 @@ def get_links_for_username(browser,
         body_elem.send_keys(Keys.END)
         sleep(2)
         load_button.click()
+        # update server calls
+        update_activity()
 
     body_elem.send_keys(Keys.HOME)
     sleep(2)
@@ -311,6 +329,8 @@ def get_links_for_username(browser,
             # Keep the latest window active while loading more posts
             before_load = total_links
             body_elem.send_keys(Keys.END)
+            # update server calls
+            update_activity()
             sleep(1)
             body_elem.send_keys(Keys.HOME)
             sleep(1)
@@ -341,6 +361,8 @@ def check_link(browser,
                like_by_followers_lower_limit):
 
     browser.get(link)
+    # update server calls
+    update_activity()
     sleep(2)
 
     """Check if the Post is Valid/Exists"""
@@ -408,11 +430,15 @@ def check_link(browser,
     if like_by_followers_upper_limit or like_by_followers_lower_limit:
         userlink = 'https://www.instagram.com/' + user_name
         browser.get(userlink)
+        # update server calls
+        update_activity()
         sleep(1)
         num_followers = browser.execute_script(
             "return window._sharedData.entry_data."
             "ProfilePage[0].user.followed_by.count")
         browser.get(link)
+        # update server calls
+        update_activity()
         sleep(1)
         print('Number of Followers: {}'.format(num_followers))
 
@@ -466,6 +492,7 @@ def like_image(browser):
     if len(like_elem) == 1:
         like_elem[0].send_keys("\n")
         print('--> Image Liked!')
+        update_activity('likes')
         sleep(2)
         return True
     elif len(liked_elem) == 1:
@@ -479,6 +506,8 @@ def like_image(browser):
 def get_tags(browser, url):
     """Gets all the tags of the given description in the url"""
     browser.get(url)
+    # update server calls
+    update_activity()
     sleep(1)
 
     graphql = browser.execute_script(
