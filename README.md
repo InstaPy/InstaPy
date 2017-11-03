@@ -87,8 +87,7 @@ or
 ```
 4. Download ```chromedriver``` for your system [from here](https://sites.google.com/a/chromium.org/chromedriver/downloads). And put it in ```/assets``` folder.
 
-
-### Basic Setup
+### Set it up yourself with this Basic Setup
 
 Basic setup is a good way to test the tool. At project root folder open `quickstart.py` and update with your username and password.
 
@@ -122,6 +121,16 @@ Execute it:
 ```bash
 $ python quickstart.py
 ```
+
+### Or use one of our GUIs
+
+**[1. Official Cross Platform GUI](https://github.com/ahmadudin/electron-instaPy-GUI)**
+
+[<img src="https://raw.githubusercontent.com/ahmadudin/ahmadudin.github.io/master/assets/images/screencapture1.PNG" width="400" />](https://github.com/ahmadudin/electron-instaPy-GUI)
+
+[2. Third Party InstaPy GUI for Windows](https://github.com/Nemixalone/GUI-tool-for-InstaPy-script)
+
+[3. Session scheduling with Telegram](https://github.com/Tkd-Alex/Telegram-InstaPy-Scheduling)
 
 ## InstaPy Available Features
 
@@ -371,16 +380,6 @@ If you notice that one or more of the above functionalities are not working as e
 session.set_do_follow(enabled=True, percentage=10, times=2)
 ```
 but none of the profiles are being followed - or any such functionality is misbehaving - then one thing you should check is the position/order of such methods in your script. Essentially, all the ```set_*``` methods have to be before ```like_by_tags``` or ```like_by_locations``` or ```unfollow```. This is also implicit in all the exmples and quickstart.py
-
-
-## Third Party InstaPy GUI for Windows
-
-**[1. Official Cross Platform GUI](https://github.com/ahmadudin/electron-instaPy-GUI)**
-
-[<img src="https://raw.githubusercontent.com/ahmadudin/ahmadudin.github.io/master/assets/images/screencapture1.PNG" width="400" />](https://github.com/ahmadudin/electron-instaPy-GUI)
-
-[2. Third Party InstaPy GUI for Windows](https://github.com/Nemixalone/GUI-tool-for-InstaPy-script)
-
 
 ## Switching to Firefox
 
