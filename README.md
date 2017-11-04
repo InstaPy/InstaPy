@@ -52,7 +52,7 @@ Table of Contents
   * [Ignoring Users](#ignoring-users)
   * [Ignoring Restrictions](#ignoring-restrictions)
   * [Excluding friends](#excluding-friends)
-  * [Blacklist](#blacklist)
+  * [Blacklist](#blacklist-campaign)
   * [Follow/Unfollow/exclude not working?](#followunfollowexclude-not-working)
 * [Third Party InstaPy GUI for Windows](#third-party-instapy-gui-for-windows)
 * [Switching to Firefox](#switching-to-firefox)
@@ -336,10 +336,13 @@ session.like_by_feed(amount=100, randomize=True, unfollow=True, interact=True)
 
 ### Blacklist Campaign
 ```python
-# Controls yours interactions by campaigns.
+# Controls your interactions by campaigns.
 # ex. this week InstaPy will like and comment interacting by campaign called
 # 'soccer', next time InstaPy runs, it will not interact again with users in 
 # blacklist
+# In general, this means that once we turn off the soccer_campaign again, InstaPy
+# will have no track of the people it interacted with about soccer.
+# This will help you target people only once but several times for different campaigns
 
 session.set_blacklist(enabled=True, campaign='soccer_campaign')
 session.set_do_comment(True, percentage=50)
