@@ -52,7 +52,7 @@ Table of Contents
   * [Ignoring Users](#ignoring-users)
   * [Ignoring Restrictions](#ignoring-restrictions)
   * [Excluding friends](#excluding-friends)
-  * [Blacklist](#blacklist-campaign)
+  * [Blacklist Campaign](#blacklist-campaign)
   * [Follow/Unfollow/exclude not working?](#followunfollowexclude-not-working)
 * [Third Party InstaPy GUI for Windows](#third-party-instapy-gui-for-windows)
 * [Switching to Firefox](#switching-to-firefox)
