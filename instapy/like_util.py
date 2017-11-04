@@ -498,7 +498,6 @@ def like_image(browser, username, blacklist):
         like_elem[0].send_keys("\n")
         print('--> Image Liked!')
         update_activity('likes')
-        add_user_to_blacklist(browser)
         if blacklist['enabled'] is True:
             action = 'liked'
             add_user_to_blacklist(
