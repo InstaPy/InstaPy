@@ -334,6 +334,20 @@ session.like_by_tags(['natgeo', 'world'], amount=10)
 session.like_by_feed(amount=100, randomize=True, unfollow=True, interact=True)
 ```
 
+### Blacklist Campaign
+```python
+# Controls yours interactions by campaigns.
+# ex. this week InstaPy will like and comment interacting by campaign called
+# 'soccer', next time InstaPy runs, it will not interact again with users in 
+# blacklist
+
+session.set_blacklist(enabled=True, campaign='soccer_campaign')
+session.set_do_comment(True, percentage=50)
+session.set_comments(['Neymar is better than CR7', 'Soccer is cool'])
+session.like_by_tags(['soccer', 'cr7', 'neymar'], amount=100, media='Photo')
+
+```
+
 ### Restricting Likes
 
 ```python
@@ -373,15 +387,6 @@ session.set_ignore_if_contains(['glutenfree', 'french', 'tasty'])
 # still be liked)
 
 session.set_dont_include(['friend1', 'friend2', 'friend3'])
-```
-
-### Blacklist
-
-```python
-# If enabled=True, after interact (liked or followed) the user will be stored in
-# the blacklist. Users in the blacklist will not be liked or followed.
-
-session.set_blacklist(enabled=True)
 ```
 
 ### Follow/Unfollow/exclude not working?
