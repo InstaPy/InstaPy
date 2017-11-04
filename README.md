@@ -52,6 +52,7 @@ Table of Contents
   * [Ignoring Users](#ignoring-users)
   * [Ignoring Restrictions](#ignoring-restrictions)
   * [Excluding friends](#excluding-friends)
+  * [Blacklist](#blacklist)
   * [Follow/Unfollow/exclude not working?](#followunfollowexclude-not-working)
 * [Third Party InstaPy GUI for Windows](#third-party-instapy-gui-for-windows)
 * [Switching to Firefox](#switching-to-firefox)
@@ -331,6 +332,20 @@ session.like_by_tags(['natgeo', 'world'], amount=10)
 # certain post and likes a given number of his pictures, then returns to feed
 
 session.like_by_feed(amount=100, randomize=True, unfollow=True, interact=True)
+```
+
+### Blacklist Campaign
+```python
+# Controls yours interactions by campaigns.
+# ex. this week InstaPy will like and comment interacting by campaign called
+# 'soccer', next time InstaPy runs, it will not interact again with users in 
+# blacklist
+
+session.set_blacklist(enabled=True, campaign='soccer_campaign')
+session.set_do_comment(True, percentage=50)
+session.set_comments(['Neymar is better than CR7', 'Soccer is cool'])
+session.like_by_tags(['soccer', 'cr7', 'neymar'], amount=100, media='Photo')
+
 ```
 
 ### Restricting Likes
