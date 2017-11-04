@@ -43,7 +43,7 @@ Table of Contents
   * [Interact with users that someone else is following](#interact-with-users-that-someone-else-is-following)
   * [Interact with someone else's followers](#interact-with-someone-elses-followers)
   * [Unfollowing](#unfollowing)
-  * [Prevents unfollow active users](#prevents-unfollow-active-users)
+  * [Don't unfollow active users](#dont-unfollow-active-users)
   * [Interactions based on the number of followers a user has](#interactions-based-on-the-number-of-followers-a-user-has)
   * [Like by Locations](#like-by-locations)
   * [Like by Tags](#like-by-tags)
@@ -269,12 +269,12 @@ session.interact_user_followers(['natgeo'], amount=10, random=True)
 session.unfollow_users(amount=10, onlyInstapyFollowed = True, onlyInstapyMethod = 'FIFO', sleep_delay=60 )
 ```
 
-### Prevents unfollow active users
+### Don't unfollow active users
 
 ```python
 # Prevents unfollow followers who have liked one of your latest 5 posts
 
-session.set_unfollow_active_users(enabled=False, posts=5)
+session.set_dont_unfollow_active_users(enabled=False, posts=5)
 ```
 
 ### Interactions based on the number of followers a user has
