@@ -37,6 +37,7 @@ from .unfollow_util import load_follow_restriction
 from .unfollow_util import dump_follow_restriction
 from .unfollow_util import set_automated_followed_pool
 import random
+import csv
 
 
 class InstaPy:
@@ -79,6 +80,7 @@ class InstaPy:
         self.do_follow = False
         self.follow_percentage = 0
         self.dont_include = []
+        self.blacklist = {'enabled': 'True', 'campaign': ''}
         self.automatedFollowedPool = []
         self.do_like = False
         self.like_percentage = 0
@@ -352,10 +354,14 @@ class InstaPy:
         followed = 0
 
         for acc_to_follow in followlist:
+            if acc_to_follow in self.dont_include:
+                continue
+
             if self.follow_restrict.get(acc_to_follow, 0) < self.follow_times:
                 followed += follow_given_user(self.browser,
                                               acc_to_follow,
-                                              self.follow_restrict)
+                                              self.follow_restrict,
+                                              self.blacklist)
                 self.followed += followed
                 self.logFile.write('Followed: {}\n'.format(str(followed)))
                 followed = 0
@@ -430,7 +436,9 @@ class InstaPy:
                     )
 
                     if not inappropriate:
-                        liked = like_image(self.browser)
+                        liked = like_image(
+                            self.browser, user_name, self.blacklist
+                        )
 
                         if liked:
                             liked_img += 1
@@ -468,8 +476,10 @@ class InstaPy:
                                 else:
                                     comments = (self.comments +
                                                 self.photo_comments)
-                                commented += comment_image(
-                                    self.browser, comments)
+                                commented += comment_image(self.browser,
+                                                           user_name,
+                                                           comments,
+                                                           self.blacklist)
                             else:
                                 print('--> Not commented')
                                 sleep(1)
@@ -484,7 +494,8 @@ class InstaPy:
                                 followed += follow_user(self.browser,
                                                         self.follow_restrict,
                                                         self.username,
-                                                        user_name)
+                                                        user_name,
+                                                        self.blacklist)
 
                             else:
                                 print('--> Not following')
@@ -572,7 +583,9 @@ class InstaPy:
                     )
 
                     if not inappropriate:
-                        liked = like_image(self.browser)
+                        liked = like_image(
+                            self.browser, user_name, self.blacklist
+                        )
 
                         if liked:
                             liked_img += 1
@@ -610,8 +623,10 @@ class InstaPy:
                                 else:
                                     comments = (self.comments +
                                                 self.photo_comments)
-                                commented += comment_image(
-                                    self.browser, comments)
+                                commented += comment_image(self.browser,
+                                                           user_name,
+                                                           comments,
+                                                           self.blacklist)
                             else:
                                 print('--> Not commented')
                                 sleep(1)
@@ -626,7 +641,8 @@ class InstaPy:
                                 followed += follow_user(self.browser,
                                                         self.follow_restrict,
                                                         self.username,
-                                                        user_name)
+                                                        user_name,
+                                                        self.blacklist)
                             else:
                                 print('--> Not following')
                                 sleep(1)
@@ -694,7 +710,9 @@ class InstaPy:
                     self.follow_restrict.get(username, 0) < self.follow_times):
                 followed += follow_user(self.browser,
                                         self.follow_restrict,
-                                        self.username, username)
+                                        self.username,
+                                        username,
+                                        self.blacklist)
             else:
                 print('--> Not following')
                 sleep(1)
@@ -731,7 +749,9 @@ class InstaPy:
                     )
 
                     if not inappropriate:
-                        liked = like_image(self.browser)
+                        liked = like_image(
+                            self.browser, user_name, self.blacklist
+                        )
 
                         if liked:
                             total_liked_img += 1
@@ -768,7 +788,9 @@ class InstaPy:
                                     comments = (self.comments +
                                                 self.photo_comments)
                                 commented += comment_image(self.browser,
-                                                           comments)
+                                                           user_name,
+                                                           comments,
+                                                           self.blacklist)
                             else:
                                 print('--> Not commented')
                                 sleep(1)
@@ -883,14 +905,17 @@ class InstaPy:
                                 self.browser,
                                 self.follow_restrict,
                                 self.username,
-                                username)
+                                username,
+                                self.blacklist)
                         else:
                             print('--> Not following')
                             sleep(1)
 
                         liking = randint(0, 100) <= self.like_percentage
                         if self.do_like and liking:
-                            liked = like_image(self.browser)
+                            liked = like_image(
+                                self.browser, user_name, self.blacklist
+                            )
                         else:
                             liked = True
 
@@ -929,8 +954,10 @@ class InstaPy:
                                 else:
                                     comments = (self.comments +
                                                 self.photo_comments)
-                                commented += comment_image(
-                                    self.browser, comments)
+                                commented += comment_image(self.browser,
+                                                           user_name,
+                                                           comments,
+                                                           self.blacklist)
                             else:
                                 print('--> Not commented')
                                 sleep(1)
@@ -1084,12 +1111,14 @@ class InstaPy:
 
             try:
                 userFollowed += follow_given_user_followers(self.browser,
-                                                            user, amount,
+                                                            user,
+                                                            amount,
                                                             self.dont_include,
                                                             self.username,
                                                             self.follow_restrict,
                                                             random,
-                                                            sleep_delay)
+                                                            sleep_delay,
+                                                            self.blacklist)
 
             except (TypeError, RuntimeWarning) as err:
                 if isinstance(err, RuntimeWarning):
@@ -1138,7 +1167,8 @@ class InstaPy:
                                                             self.username,
                                                             self.follow_restrict,
                                                             random,
-                                                            sleep_delay)
+                                                            sleep_delay,
+                                                            self.blacklist)
 
             except (TypeError, RuntimeWarning) as err:
                 if isinstance(err, RuntimeWarning):
@@ -1269,7 +1299,9 @@ class InstaPy:
                             )
 
                             if not inappropriate:
-                                liked = like_image(self.browser)
+                                liked = like_image(
+                                    self.browser, user_name, self.blacklist
+                                )
 
                                 if liked:
                                     username = (self.browser.
@@ -1331,7 +1363,10 @@ class InstaPy:
                                                 self.comments +
                                                 self.photo_comments)
                                         commented += comment_image(
-                                            self.browser, comments)
+                                                        self.browser,
+                                                        user_name,
+                                                        comments,
+                                                        self.blacklist)
                                     else:
                                         print('--> Not commented')
                                         sleep(1)
@@ -1346,7 +1381,8 @@ class InstaPy:
                                             self.browser,
                                             self.follow_restrict,
                                             self.username,
-                                            user_name)
+                                            user_name,
+                                            self.blacklist)
                                     else:
                                         print('--> Not following')
                                         sleep(1)
@@ -1396,6 +1432,26 @@ class InstaPy:
         for user in active_users:
             # include active user to not unfollow list
             self.dont_include.append(user)
+
+    def set_blacklist(self, enabled, campaign):
+        """Enable/disable blacklist. If enabled, adds users to a blacklist after
+        interact with and adds users to dont_include list"""
+
+        if enabled is False:
+            return
+
+        self.blacklist['enabled'] = True
+        self.blacklist['campaign'] = campaign
+
+        try:
+            with open('./logs/blacklist.csv', 'r') as blacklist:
+                reader = csv.DictReader(blacklist)
+                for row in reader:
+                    if row['campaign'] == campaign:
+                        self.dont_include.append(row['username'])
+        except:
+            print('Campaign {} first run'.format(campaign))
+            self.logFile.write('Campaign {} first run'.format(campaign))
 
     def end(self):
         """Closes the current session"""
