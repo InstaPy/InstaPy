@@ -1,7 +1,7 @@
 """OS Modules environ method to get the setup vars from the Environment"""
+from atexit import register
 from datetime import datetime
 from os import environ
-
 from random import randint
 from random import sample
 from math import ceil
@@ -10,6 +10,9 @@ from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver import DesiredCapabilities
+from signal import signal
+from signal import SIGINT
+from sys import exit
 
 from .clarifai_util import check_image
 from .comment_util import comment_image
@@ -104,6 +107,13 @@ class InstaPy:
 
         if selenium_local_session:
             self.set_selenium_local_session()
+
+        # capture CTRL+C and emit atexit event so end method is called
+        signal(SIGINT, self.handle_ctrl_c)
+            
+        # make sure the end method is called on exit (also errors)
+        # and all the descriptors are closed
+        register(self.end)
 
     def set_selenium_local_session(self):
         """Starts local session for a selenium server.
@@ -1397,6 +1407,12 @@ class InstaPy:
             # include active user to not unfollow list
             self.dont_include.append(user)
 
+    def handle_ctrl_c(self, signal, frame):
+        print('CTRL + C was pressed... Aborting')
+        self.logFile.write('CTRL + C was pressed... Aborting')
+        
+        exit(0)
+            
     def end(self):
         """Closes the current session"""
         dump_follow_restriction(self.follow_restrict)
