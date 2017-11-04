@@ -7,33 +7,44 @@ from selenium.common.exceptions import NoSuchElementException
 from tempfile import NamedTemporaryFile
 
 
-def check_activity():
-    """Returns activity information"""
+def check_activity_limits(likes, comments, follows, unfollows, server_calls):
+    """Check activity daily limits"""
+
+    if (likes is None or
+       comments is None or
+       follows is None or
+       unfollows is None or
+       server_calls is None):
+            print('Warning: set_interaction__limits is misconfigured')
+            return
 
     today = datetime.date.today().strftime('%m/%d/%y')
-
-    tmpDict = {
-        'likes': '',
-        'comments': '',
-        'follows': '',
-        'unfollows': '',
-        'server_calls': ''
-    }
 
     try:
         with open('./logs/activity.csv', 'r') as activity:
             reader = csv.DictReader(activity)
             for row in reader:
                 if row['date'] == today:
-                    tmpDict['likes'] = int(row['likes'])
-                    tmpDict['comments'] = int(row['comments'])
-                    tmpDict['follows'] = int(row['follows'])
-                    tmpDict['unfollows'] = int(row['unfollows'])
-                    tmpDict['server_calls'] = int(row['server_calls'])
+
+                    if int(row['likes']) >= likes:
+                        print('Daily likes limit reached, exiting...')
+                        return True
+                    elif int(row['comments']) >= comments:
+                        print('Daily comments limit reached, exiting...')
+                        return True
+                    elif int(row['follows']) >= follows:
+                        print('Daily follows limit reached, exiting...')
+                        return True
+                    elif int(row['unfollows']) >= unfollows:
+                        print('Daily unfollows limit reached, exiting...')
+                        return True
+                    elif int(row['server_calls']) >= server_calls:
+                        print('Daily server calls limit reached, exiting...')
+                        return True
+                    else:
+                        return False
     except IOError as e:
         print(e)
-
-    return tmpDict
 
 
 def update_activity(action=None):

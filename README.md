@@ -333,6 +333,16 @@ session.like_by_tags(['natgeo', 'world'], amount=10)
 session.like_by_feed(amount=100, randomize=True, unfollow=True, interact=True)
 ```
 
+### Limit Daily Interactions
+
+```python
+# You can limit InstaPy actions by day. 
+# likes = 100 means it will stop InstaPy when 100 posts are liked 
+# When some limitation (likes, comments, follows, unfollows or server calls) is 
+# reached, it will stop InstaPy for this day
+
+session.set_interaction_limits(likes=150, comments=25, follows=60, unfollows=30, server_calls=1000)
+
 ### Restricting Likes
 
 ```python
