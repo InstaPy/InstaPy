@@ -164,7 +164,11 @@ def get_links_for_tag(browser, tag, amount, media=None, skip_top_posts=True):
         load_button = body_elem.find_element_by_xpath(
             '//a[contains(@class, "_1cr2e _epyes")]')
     except:
-        print('Load button not found, working with current images!')
+        # print('Load button not found, working with current images!')
+        for i in range(int(ceil(amount/12))):
+            browser.execute_script(
+                "window.scrollTo(0, document.body.scrollHeight);")
+            sleep(2)
     else:
         abort = False
         body_elem.send_keys(Keys.END)
