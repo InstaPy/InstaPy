@@ -12,6 +12,10 @@ def update_activity(action=None):
     """Record every Instagram server call (page load, content load, likes,
     comments, follows, unfollow)."""
 
+    # workaround for windows users, they cant use it in this way, we need to
+    if os.name == 'nt':
+        return
+
     # file header
     fieldnames = [
         'date', 'likes', 'comments', 'follows', 'unfollows', 'server_calls']
