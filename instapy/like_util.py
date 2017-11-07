@@ -276,27 +276,28 @@ def get_links_for_username(browser,
     abort = True
 
     try:
-        # scroll down to load posts
-        for i in range(int(ceil(amount/12))):
-            browser.execute_script(
-                "window.scrollTo(0, document.body.scrollHeight);")
-            sleep(2)
+        load_button = body_elem.find_element_by_xpath(
+            '//a[contains(@class, "_1cr2e _epyes")]')
     except:
         try:
-            load_button = body_elem.find_element_by_xpath(
-                '//a[contains(@class, "_1cr2e _epyes")]')
+            # scroll down to load posts
+            for i in range(int(ceil(amount/12))):
+                browser.execute_script(
+                    "window.scrollTo(0, document.body.scrollHeight);")
+                sleep(2)
         except:
             print('Load button not found, working with current images!')
         else:
             abort = False
             body_elem.send_keys(Keys.END)
             sleep(2)
-            load_button.click()
             # update server calls
             update_activity()
     else:
         abort = False
+        body_elem.send_keys(Keys.END)
         sleep(2)
+        load_button.click()
         # update server calls
         update_activity()
 
