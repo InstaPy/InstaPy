@@ -26,7 +26,7 @@ def get_links_from_feed(browser, amount, num_of_search):
 
     # get links
     link_elems = browser.find_elements_by_xpath(
-        "//main//article//div[2]//div[2]//a")
+        "//article/div[2]/div[2]/a")
 
     total_links = len(link_elems)
     print("\nTotal of links feched for analysis:", total_links)
@@ -254,13 +254,12 @@ def get_links_for_username(browser,
         # Make it an array to use it in the following part
         media = [media]
 
-    print('Getting ', username, 'image list...')
+    print('Getting', username, 'image list...')
 
     # Get  user profile page
     browser.get('https://www.instagram.com/' + username)
     # update server calls
     update_activity()
-    sleep(2)
 
     body_elem = browser.find_element_by_tag_name('body')
 
@@ -269,28 +268,35 @@ def get_links_for_username(browser,
             '//h2[@class="_kcrwx"]')
     except:
         print('Interaction begin...')
-        print('')
     else:
         if is_private:
             print('This user is private...')
-            print('')
             return False
-
-    sleep(2)
 
     abort = True
 
-    # Clicking load more
     try:
-        load_button = body_elem.find_element_by_xpath(
-            '//a[contains(@class, "_1cr2e _epyes")]')
+        # scroll down to load posts
+        for i in range(int(ceil(amount/12))):
+            browser.execute_script(
+                "window.scrollTo(0, document.body.scrollHeight);")
+            sleep(2)
     except:
-        print('Load button not found, working with current images!')
+        try:
+            load_button = body_elem.find_element_by_xpath(
+                '//a[contains(@class, "_1cr2e _epyes")]')
+        except:
+            print('Load button not found, working with current images!')
+        else:
+            abort = False
+            body_elem.send_keys(Keys.END)
+            sleep(2)
+            load_button.click()
+            # update server calls
+            update_activity()
     else:
         abort = False
-        body_elem.send_keys(Keys.END)
         sleep(2)
-        load_button.click()
         # update server calls
         update_activity()
 
