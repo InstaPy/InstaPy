@@ -2,11 +2,7 @@
 """Module which handles the commenting features"""
 from random import choice
 from .time_util import sleep
-from .util import update_activity
-from .util import add_user_to_blacklist
-from selenium.common.exceptions import WebDriverException
 import emoji
-
 
 def get_comment_input(browser):
     comment_input = browser.find_elements_by_xpath(
@@ -16,24 +12,16 @@ def get_comment_input(browser):
             '//input[@placeholder = "Add a comment…"]')
     return comment_input
 
-
 def open_comment_section(browser):
-    missing_comment_elem_warning = (
-        '--> Warning: Comment Button Not Found:'
-        ' May cause issues with browser windows of smaller widths')
     comment_elem = browser.find_elements_by_xpath(
         "//a[@role='button']/span[text()='Comment']/..")
     if len(comment_elem) > 0:
-        try:
-            browser.execute_script(
-                "arguments[0].click();", comment_elem[0])
-        except WebDriverException:
-            print(missing_comment_elem_warning)
+        comment_elem[0].click()
     else:
-        print(missing_comment_elem_warning)
+        print('--> Warning: Comment Button Not Found:'
+              ' May cause issues with browser windows of smaller widths')
 
-
-def comment_image(browser, username, comments, blacklist):
+def comment_image(browser, comments):
     """Checks if it should comment on the image"""
     rand_comment = (choice(comments))
     rand_comment = emoji.demojize(rand_comment)
@@ -51,14 +39,7 @@ def comment_image(browser, username, comments, blacklist):
         # An extra space is added here and then deleted.
         # This forces the input box to update the reactJS core
         comment_input[0].send_keys("\b")
-        comment_input = get_comment_input(browser)
         comment_input[0].submit()
-        update_activity('comments')
-        if blacklist['enabled'] is True:
-            action = 'commented'
-            add_user_to_blacklist(
-                browser, username, blacklist['campaign'], action
-            )
     else:
         print('--> Warning: Comment Action Likely Failed:'
               ' Comment Element not found')
