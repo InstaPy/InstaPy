@@ -1306,8 +1306,9 @@ class InstaPy:
                                 if liked:
                                     username = (self.browser.
                                                 find_element_by_xpath(
-                                                    "//main//div//div//article"
-                                                    "//header//div//a"))
+                                                    '//article/header/div[2]/'
+                                                    'div[1]/div/a'))
+
                                     username = username.get_attribute("title")
                                     name = []
                                     name.append(username)
