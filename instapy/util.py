@@ -2,7 +2,7 @@ import re
 import csv
 import datetime
 import shutil
-import os.path
+import os
 from .time_util import sleep
 from selenium.common.exceptions import NoSuchElementException
 from tempfile import NamedTemporaryFile
@@ -11,6 +11,10 @@ from tempfile import NamedTemporaryFile
 def update_activity(action=None):
     """Record every Instagram server call (page load, content load, likes,
     comments, follows, unfollow)."""
+
+    # workaround for windows users, they cant use it in this way, we need to
+    if os.name == 'nt':
+        return
 
     # file header
     fieldnames = [
