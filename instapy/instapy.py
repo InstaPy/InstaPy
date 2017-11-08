@@ -38,6 +38,7 @@ from .unfollow_util import dump_follow_restriction
 from .unfollow_util import set_automated_followed_pool
 import random
 import csv
+import os
 
 
 class InstaPy:
@@ -106,6 +107,12 @@ class InstaPy:
 
         if selenium_local_session:
             self.set_selenium_local_session()
+
+        if os.name == 'nt':
+            error_msg = ('Sorry, Record Activity is not working on Windows. '
+                         'We\'re working to fix this soon!')
+            print(error_msg)
+            self.logFile.write('error_msg\n')
 
     def set_selenium_local_session(self):
         """Starts local session for a selenium server.
