@@ -5,27 +5,28 @@ import shutil
 import os
 from .time_util import sleep
 from selenium.common.exceptions import NoSuchElementException
-from tempfile import NamedTemporaryFile
+import sqlite3
 
 
 def update_activity(action=None):
     """Record every Instagram server call (page load, content load, likes,
     comments, follows, unfollow)."""
-
-    # workaround for windows users, they cant use it in this way, we need to
-    if os.name == 'nt':
-        return
-
-    # file header
-    fieldnames = [
-        'date', 'likes', 'comments', 'follows', 'unfollows', 'server_calls']
+    
     today = datetime.date.today().strftime('%m/%d/%y')
-    tmpfile = NamedTemporaryFile(mode='w', delete=False)
 
-    # csv update file technique, moves activity.csv content to a temporary
-    # file, update needed line, then move temporary file content back to
-    # activity.csv file
     try:
+
+        conn = sqlite3.connect('./db/instapy.db')
+        c = conn.cursor()
+        
+        c.execite("SELECT * FROM statistics WHERE created == '09-01-2017')")
+        print(c.fetchone())
+
+        c.execute("INSERT OR REPLACE INTO statistics VALUES (1, 1, 1, 1, 1, '09-01-2017', '09-01-2017')")
+        c.close()
+        conn.commit()
+        
+        
         with open('./logs/activity.csv', 'r') as activity, tmpfile:
             reader = csv.DictReader(activity)
             writer = csv.DictWriter(tmpfile, fieldnames=fieldnames)
