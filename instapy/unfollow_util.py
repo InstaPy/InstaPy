@@ -128,7 +128,7 @@ def unfollow(browser,
         # Unfollow from profile
         try:
             following_link = browser.find_elements_by_xpath(
-                '//header/div[2]//li[3]')
+                '//header/section/ul/li[3]')
             following_link[0].click()
             # update server calls
             update_activity()
