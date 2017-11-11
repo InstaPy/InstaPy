@@ -38,7 +38,8 @@ def unfollow(browser,
              onlyInstapyFollowed,
              onlyInstapyMethod,
              automatedFollowedPool,
-             sleep_delay):
+             sleep_delay,
+             onlyNotFollowMe):
 
     """unfollows the given amount of users"""
     unfollowNum = 0
@@ -125,74 +126,162 @@ def unfollow(browser,
             print("unfollow loop error \n", str(e))
 
     elif onlyInstapyFollowed is not True:
-        # Unfollow from profile
-        try:
-            following_link = browser.find_elements_by_xpath(
-                '//header/section/ul/li[3]')
-            following_link[0].click()
-            # update server calls
-            update_activity()
-        except BaseException as e:
-            print("following_link error \n", str(e))
+        if onlyNotFollowMe is True:
+            # Unfollow only not follow me
+            try:
+                browser.get('https://www.instagram.com/' + username + '/?__a=1')
+                pre = browser.find_element_by_tag_name("pre").text
+                user_data = json.loads(pre)['user']
+            except BaseException as e:
+                print("get user information error \n", str(e))
 
-        sleep(2)
+            GRAPHQL_ENDPOINT = 'https://www.instagram.com/graphql/query/'
+            GRAPHQL_FOLLOWERS = GRAPHQL_ENDPOINT + '?query_id=17851374694183129'
+            GRAPHQL_FOLLOWING = GRAPHQL_ENDPOINT + '?query_id=17874545323001329'
 
-        # find dialog box
-        dialog = browser.find_element_by_xpath(
-            '/html/body/div[4]/div/div/div[2]/div/div[2]')
+            all_follower_user = []
+            all_following_user = []
+            unfollow_list = []
 
-        # scroll down the page
-        scroll_bottom(browser, dialog, allfollowing)
+            variables = {}
+            variables['id'] = user_data['id']
+            variables['first'] = 100
 
-        # get persons, unfollow buttons, and length of followed pool
-        person_list_a = dialog.find_elements_by_tag_name("a")
-        person_list = []
+            # get follower and following user loop
+            try:
+                for i in range(0, 2):
+                    has_next_data = True
 
-        for person in person_list_a:
+                    browser.get((GRAPHQL_FOLLOWERS if i == 0 else GRAPHQL_FOLLOWING) +
+                                    '&variables=' + str(json.dumps(variables)))
 
-            if person and hasattr(person, 'text') and person.text:
-                person_list.append(person.text)
+                    # fetch all user while still has data
+                    while has_next_data:
+                        pre = browser.find_element_by_tag_name("pre").text
+                        data = json.loads(pre)['data']
 
-        follow_buttons = dialog.find_elements_by_tag_name('button')
+                        if i == 0:
+                            page_info = data['user']['edge_followed_by']['page_info']
+                            for user in data['user']['edge_followed_by']['edges']:
+                                all_follower_user.append(user['node']['username'])
+                        elif i == 1:
+                            page_info = data['user']['edge_follow']['page_info']
+                            for user in data['user']['edge_follow']['edges']:
+                                all_following_user.append(user['node']['username'])
 
-        # unfollow loop
-        try:
-            hasSlept = False
+                        has_next_data = page_info['has_next_page']
+                        if has_next_data:
+                            variables['after'] = page_info['end_cursor']
+                            browser.get((GRAPHQL_FOLLOWERS if i == 0 else GRAPHQL_FOLLOWING) +
+                                            '&variables=' + str(json.dumps(variables)))
+            except BaseException as e:
+                print("get follower, following user error \n", str(e))
 
-            for button, person in zip(follow_buttons, person_list):
-                if unfollowNum >= amount:
-                    print("--> Total unfollowNum reached it's amount given ",
-                          unfollowNum)
-                    break
+            unfollow_list = set(all_following_user) - set(all_follower_user)
 
-                if unfollowNum != 0 and \
-                   hasSlept is False and \
-                   unfollowNum % 10 == 0:
-                        print('sleeping for about {}min'
-                              .format(int(sleep_delay/60)))
-                        sleep(sleep_delay)
-                        hasSlept = True
+            # unfollow loop
+            try:
+                hasSlept = False
+                for person in unfollow_list:
+                    if unfollowNum >= amount:
+                        print("--> Total unfollowNum reached it's amount given ", unfollowNum)
+                        break
+
+                    if unfollowNum != 0 and \
+                    hasSlept is False and \
+                    unfollowNum % 10 == 0:
+                            print('sleeping for about {}min'
+                                .format(int(sleep_delay/60)))
+                            sleep(sleep_delay)
+                            hasSlept = True
+
+                    browser.get('https://www.instagram.com/' + person)
+                    sleep(2)
+                    follow_button = browser.find_element_by_xpath(
+                        "//*[contains(text(), 'Follow')]")
+
+                    if follow_button.text == 'Following':
+                        unfollowNum += 1
+                        follow_button.click()
+                        print('--> Ongoing Unfollow ' + str(unfollowNum) +
+                            ', now unfollowing: {}'
+                            .format(person.encode('utf-8')))
+                        sleep(15)
+                        if hasSlept:
+                            hasSlept = False
+
+            except BaseException as e:
+                print("unfollow loop error \n", str(e))
+
+        elif onlyNotFollowMe is not True:
+            # Unfollow from profile
+            try:
+                following_link = browser.find_elements_by_xpath(
+                    '//header/section/ul/li[3]')
+                following_link[0].click()
+                # update server calls
+                update_activity()
+            except BaseException as e:
+                print("following_link error \n", str(e))
+
+            sleep(2)
+
+            # find dialog box
+            dialog = browser.find_element_by_xpath(
+                '/html/body/div[4]/div/div/div[2]/div/div[2]')
+
+            # scroll down the page
+            scroll_bottom(browser, dialog, allfollowing)
+
+            # get persons, unfollow buttons, and length of followed pool
+            person_list_a = dialog.find_elements_by_tag_name("a")
+            person_list = []
+
+            for person in person_list_a:
+
+                if person and hasattr(person, 'text') and person.text:
+                    person_list.append(person.text)
+
+            follow_buttons = dialog.find_elements_by_tag_name('button')
+
+            # unfollow loop
+            try:
+                hasSlept = False
+
+                for button, person in zip(follow_buttons, person_list):
+                    if unfollowNum >= amount:
+                        print("--> Total unfollowNum reached it's amount given ",
+                            unfollowNum)
+                        break
+
+                    if unfollowNum != 0 and \
+                    hasSlept is False and \
+                    unfollowNum % 10 == 0:
+                            print('sleeping for about {}min'
+                                .format(int(sleep_delay/60)))
+                            sleep(sleep_delay)
+                            hasSlept = True
+                            continue
+
+                    if person not in dont_include:
+                        unfollowNum += 1
+                        button.click()
+                        update_activity('unfollows')
+
+                        print('--> Ongoing Unfollow ' + str(unfollowNum) +
+                            ', now unfollowing: {}'
+                            .format(person.encode('utf-8')))
+                        sleep(15)
+                        # To only sleep once until there is the next unfollow
+                        if hasSlept:
+                            hasSlept = False
+
+                        continue
+                    else:
                         continue
 
-                if person not in dont_include:
-                    unfollowNum += 1
-                    button.click()
-                    update_activity('unfollows')
-
-                    print('--> Ongoing Unfollow ' + str(unfollowNum) +
-                          ', now unfollowing: {}'
-                          .format(person.encode('utf-8')))
-                    sleep(15)
-                    # To only sleep once until there is the next unfollow
-                    if hasSlept:
-                        hasSlept = False
-
-                    continue
-                else:
-                    continue
-
-        except BaseException as e:
-            print("unfollow loop error \n", str(e))
+            except BaseException as e:
+                print("unfollow loop error \n", str(e))
 
     return unfollowNum
 
