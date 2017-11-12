@@ -38,7 +38,50 @@ from .unfollow_util import dump_follow_restriction
 from .unfollow_util import set_automated_followed_pool
 import random
 import csv
+import pickle
+import datetime as _datetime
+
+import sys
+
 import os
+
+class InstaPyStorage(object):
+    TOTAL_START_DAY = '16/10/2017'
+    with open('./logs/maxday.txt', 'r') as file:
+	    MAX_PER_DAY = int(file.readline())
+    with open('./logs/maxhour.txt', 'r') as file:
+	    MAX_PER_HOUR = int(file.readline())
+    def __init__(self):
+        self.total = 0
+        self.thisDayTotal = 0
+        self.thisHourTotal = 0
+        self.lastDayExecuted = _datetime.date.today()
+        self.lastHourExecuted = _datetime.datetime.now().hour
+    def updateStatistics(self):
+        # read today's date in 2008-11-22 format, and now time
+        today = _datetime.date.today()
+        now = _datetime.datetime.now()
+        self.total += 1
+        if self.lastDayExecuted == today:
+            self.thisDayTotal += 1
+            if self.lastHourExecuted == now.hour:
+                self.thisHourTotal += 1
+            else:
+                self.lastHourExecuted = now.hour
+                self.thisHourTotal = 1
+        else:
+            self.lastDayExecuted = today
+            self.lastHourExecuted == now.hour
+            self.thisHourTotal = 1
+            self.thisDayTotal = 1
+
+        if self.thisDayTotal >= self.MAX_PER_DAY:
+            print('reached MAX_PER_DAY')
+            sleep(3600)
+
+        if self.thisHourTotal >= self.MAX_PER_HOUR:
+            print('reached MAX_PER_HOUR')
+            sleep(600)
 
 
 class InstaPy:
@@ -449,6 +492,7 @@ class InstaPy:
 
                         if liked:
                             liked_img += 1
+                            self.save_do_like_statistics()
                             checked_img = True
                             temp_comments = []
                             commenting = randint(
@@ -503,6 +547,7 @@ class InstaPy:
                                                         self.username,
                                                         user_name,
                                                         self.blacklist)
+                                self.save_do_follow_statistics()
 
                             else:
                                 print('--> Not following')
@@ -596,6 +641,7 @@ class InstaPy:
 
                         if liked:
                             liked_img += 1
+                            self.save_do_like_statistics()
                             checked_img = True
                             temp_comments = []
                             commenting = (randint(0, 100) <=
@@ -650,6 +696,7 @@ class InstaPy:
                                                         self.username,
                                                         user_name,
                                                         self.blacklist)
+                                self.save_do_follow_statistics()
                             else:
                                 print('--> Not following')
                                 sleep(1)
@@ -720,6 +767,8 @@ class InstaPy:
                                         self.username,
                                         username,
                                         self.blacklist)
+                self.save_do_follow_statistics()
+
             else:
                 print('--> Not following')
                 sleep(1)
@@ -763,6 +812,7 @@ class InstaPy:
                         if liked:
                             total_liked_img += 1
                             liked_img += 1
+                            self.save_do_like_statistics()
                             checked_img = True
                             temp_comments = []
                             commenting = randint(
@@ -929,6 +979,7 @@ class InstaPy:
                         if liked:
                             total_liked_img += 1
                             liked_img += 1
+                            self.save_do_like_statistics()
                             checked_img = True
                             temp_comments = []
                             commenting = randint(
@@ -1330,6 +1381,7 @@ class InstaPy:
                                             self.user_interact_media)
 
                                     liked_img += 1
+                                    self.save_do_like_statistics()
                                     checked_img = True
                                     temp_comments = []
                                     commenting = randint(
@@ -1379,6 +1431,7 @@ class InstaPy:
                                         print('--> Not commented')
                                         sleep(1)
 
+
                                     if (self.do_follow and
                                         user_name not in self.dont_include and
                                         checked_img and
@@ -1391,6 +1444,8 @@ class InstaPy:
                                             self.username,
                                             user_name,
                                             self.blacklist)
+                                        self.save_do_follow_statistics()
+
                                     else:
                                         print('--> Not following')
                                         sleep(1)
@@ -1425,6 +1480,7 @@ class InstaPy:
         self.followed += followed
 
         return self
+
 
     def set_unfollow_active_users(self, enabled=False, posts=4):
         """Prevents unfollow followers who have liked one of
@@ -1484,3 +1540,54 @@ class InstaPy:
 
         with open('./logs/followed.txt', 'w') as followFile:
             followFile.write(str(self.followed))
+
+    def save_do_like_statistics(self):
+        """run date information to not exceed the daily/hourly limits"""
+        # read today's date in 2008-11-22 format, and now time
+        try:
+            with open('./logs/likesLimitLogFile.pkl', 'rb') as input:
+                likes = pickle.load(input)
+        except FileNotFoundError:
+            likes = InstaPyStorage()
+        except:
+            pass
+        # update
+        likes.updateStatistics()
+        # save after updates
+        with open('./logs/likesLimitLogFile.pkl', 'wb') as output:
+            pickle.dump(likes, output, pickle.HIGHEST_PROTOCOL)
+
+    def save_do_follow_statistics(self):
+        """run date information to not exceed the daily/hourly limits"""
+        # read today's date in 2008-11-22 format, and now time
+        try:
+            with open('./logs/followsLimitLogFile.pkl', 'rb') as input:
+                follows = pickle.load(input)
+        except FileNotFoundError:
+            follows = InstaPyStorage()
+        except:
+            pass
+        # update
+        follows.updateStatistics()
+        # save after updates
+        with open('./logs/followsLimitLogFile.pkl', 'wb') as output:
+            pickle.dump(follows, output, pickle.HIGHEST_PROTOCOL)
+
+    def read_likes_statistics(self):
+        with open('./logs/likesLimitLogFile.pkl', 'rb') as input:
+            likes = pickle.load(input)
+        print('--\ntotal Likes',likes.total, 'from date:', likes.TOTAL_START_DAY)
+        print('this Day Total Likes:', likes.thisDayTotal)
+        print('this Hour Total Likes:', likes.thisHourTotal)
+        print('Day Executed last Likes:', likes.lastDayExecuted)
+        print('Hour Executed last Likes:', likes.lastHourExecuted)
+        print('--')
+    def read_follows_statistics(self):
+        with open('./logs/followsLimitLogFile.pkl', 'rb') as input:
+            follows = pickle.load(input)
+        print('MAX_PER_HOUR', follows.MAX_PER_HOUR, 'MAX_PER_DAY', follows.MAX_PER_DAY)
+        print('--\ntotal follows', follows.total, 'from date:', follows.TOTAL_START_DAY)
+        print('this Day Total follows:', follows.thisDayTotal)
+        print('this Hour Total follows:', follows.thisHourTotal)
+        print('Day Executed last follow:', follows.lastDayExecuted)
+        print('Hour Executed last follow:', follows.lastHourExecuted)
