@@ -459,7 +459,7 @@ def get_given_user_followers(browser,
 
     if amount >= len(follow_buttons):
         amount = len(follow_buttons)
-        print(user_name+" -> Less users to follow than requested.")
+        print(user_name+" -> Less users to follow than requested. == "+str(amount))
 
     finalBtnPerson = []
     if is_random:
