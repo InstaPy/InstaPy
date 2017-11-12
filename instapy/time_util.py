@@ -18,9 +18,11 @@ def randomize_time(mean):
 
     return t
 
+
 def set_sleep_percentage(percentage):
     global sleep_percentage
     sleep_percentage = percentage/100
+
 
 def sleep(t, custom_percentage=None):
     if custom_percentage is None:
