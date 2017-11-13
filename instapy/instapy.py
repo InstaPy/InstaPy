@@ -39,6 +39,7 @@ from .unfollow_util import set_automated_followed_pool
 import random
 import csv
 import os
+import logging
 
 
 class InstaPy:
@@ -51,6 +52,15 @@ class InstaPy:
                  selenium_local_session=True,
                  use_firefox=False,
                  page_delay=25):
+
+        # initialize and setup logging system
+        self.logger = logging.getLogger(__name__)
+        self.logger.setLevel(logging.DEBUG)
+        logger_handler = logging.FileHandler('./logs/general.log')
+        logger_handler.setLevel(logging.DEBUG)
+        logger_formatter = logging.Formatter('%(levelname)s - %(message)s')
+        logger_handler.setFormatter(logger_formatter)
+        self.logger.addHandler(logger_handler)
 
         if nogui:
             self.display = Display(visible=0, size=(800, 600))
@@ -160,8 +170,8 @@ class InstaPy:
             self.browser = webdriver.Chrome(chromedriver_location,
                                             chrome_options=chrome_options)
         self.browser.implicitly_wait(self.page_delay)
-        self.logFile.write('Session started - %s\n'
-                           % (datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
+        self.logger.info('Session started - %s\n'
+                         % (datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
 
         return self
 
@@ -180,8 +190,8 @@ class InstaPy:
                 command_executor=selenium_url,
                 desired_capabilities=DesiredCapabilities.CHROME)
 
-        self.logFile.write('Session started - %s\n'
-                           % (datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
+        self.logger.info('Session started - %s\n'
+                         % (datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
 
         return self
 
@@ -191,13 +201,11 @@ class InstaPy:
                           self.username,
                           self.password,
                           self.switch_language):
-            print('Wrong login data!')
-            self.logFile.write('Wrong login data!\n')
+            self.logger.warning('Wrong login data!\n')
 
             self.aborting = True
         else:
-            print('Logged in successfully!')
-            self.logFile.write('Logged in successfully!\n')
+            self.logger.info('Logged in successfully!\n')
 
         log_follower_num(self.browser, self.username)
 
