@@ -53,6 +53,7 @@ Table of Contents
   * [Ignoring Restrictions](#ignoring-restrictions)
   * [Excluding friends](#excluding-friends)
   * [Blacklist Campaign](#blacklist-campaign)
+  * [Smart Hashtags](#smart-hashtags)
   * [Follow/Unfollow/exclude not working?](#followunfollowexclude-not-working)
 * [Third Party InstaPy GUI for Windows](#third-party-instapy-gui-for-windows)
 * [Switching to Firefox](#switching-to-firefox)
@@ -349,6 +350,19 @@ session.set_do_comment(True, percentage=50)
 session.set_comments(['Neymar is better than CR7', 'Soccer is cool'])
 session.like_by_tags(['soccer', 'cr7', 'neymar'], amount=100, media='Photo')
 
+```
+
+### Smart Hashtags
+
+```python
+# Generate smart hashtags based on https://displaypurposes.com ranking,
+# banned and spammy tags are filtered out.
+# (limit) defines amount limit of generated hashtags by hashtag
+# (sort) sort generated hashtag list 'top' and 'random' are available
+# (log_tags) shows generated hashtags before use it
+session.set_smart_hashtags(['cycling', 'roadbike'], limit=3, sort='top', log_tags=True)
+# (use_smart_hashtags) activates like_by_tag to use smart hashtags
+session.like_by_tags(amount=10, use_smart_hashtags=True)
 ```
 
 ### Restricting Likes
