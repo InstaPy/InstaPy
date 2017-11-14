@@ -25,13 +25,14 @@ def open_comment_section(browser):
         "//a[@role='button']/span[text()='Comment']/..")
     if len(comment_elem) > 0:
         try:
-            browser.execute_script(
-                "arguments[0].click();", comment_elem[0])
+            browser.execute_script("arguments[0].click();", comment_elem[0])
+            return True
         except WebDriverException:
             print(missing_comment_elem_warning)
+            return False
     else:
         print(missing_comment_elem_warning)
-
+        return False
 
 def comment_image(browser, username, comments, blacklist):
     """Checks if it should comment on the image"""
@@ -39,31 +40,33 @@ def comment_image(browser, username, comments, blacklist):
     rand_comment = emoji.demojize(rand_comment)
     rand_comment = emoji.emojize(rand_comment, use_aliases=True)
 
-    open_comment_section(browser)
-    comment_input = get_comment_input(browser)
+    comment_section_found = open_comment_section(browser)
 
-    if len(comment_input) > 0:
-        comment_input[0].clear()
-        comment_input = get_comment_input(browser)
+    if comment_section_found:
+       comment_input = get_comment_input(browser)
 
-        browser.execute_script(
-            "arguments[0].value = '" + rand_comment + " ';", comment_input[0])
-        # An extra space is added here and then deleted.
-        # This forces the input box to update the reactJS core
-        comment_input[0].send_keys("\b")
-        comment_input = get_comment_input(browser)
-        comment_input[0].submit()
-        update_activity('comments')
-        if blacklist['enabled'] is True:
-            action = 'commented'
-            add_user_to_blacklist(
-                browser, username, blacklist['campaign'], action
-            )
-    else:
-        print('--> Warning: Comment Action Likely Failed:'
-              ' Comment Element not found')
+       if len(comment_input) > 0:
+           comment_input[0].clear()
+           comment_input = get_comment_input(browser)
 
-    print("--> Commented: {}".format(rand_comment.encode('utf-8')))
+           browser.execute_script(
+               "arguments[0].value = '" + rand_comment + " ';", comment_input[0])
+           # An extra space is added here and then deleted.
+           # This forces the input box to update the reactJS core
+           comment_input[0].send_keys("\b")
+           comment_input = get_comment_input(browser)
+           comment_input[0].submit()
+           update_activity('comments')
+           print("--> Commented: {}".format(rand_comment.encode('utf-8')))
+           if blacklist['enabled'] is True:
+               action = 'commented'
+               add_user_to_blacklist(
+                   browser, username, blacklist['campaign'], action
+               )
+       else:
+           print('--> Warning: Comment Action Likely Failed:'
+                 ' Comment Element not found')
+
     sleep(2)
 
     return 1
