@@ -360,8 +360,9 @@ session.like_by_tags(['soccer', 'cr7', 'neymar'], amount=100, media='Photo')
 # (limit) defines amount limit of generated hashtags by hashtag
 # (sort) sort generated hashtag list 'top' and 'random' are available
 # (log_tags) shows generated hashtags before use it
-session.set_smart_hashtags(['cycling', 'roadbike'], limit=3, sort='top', log_tags=True)
 # (use_smart_hashtags) activates like_by_tag to use smart hashtags
+
+session.set_smart_hashtags(['cycling', 'roadbike'], limit=3, sort='top', log_tags=True)
 session.like_by_tags(amount=10, use_smart_hashtags=True)
 ```
 
