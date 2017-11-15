@@ -4,6 +4,7 @@ from selenium.webdriver.common.action_chains import ActionChains
 from .util import update_activity
 
 
+
 def login_user(browser, username, password, switch_language=True):
     """Logins the user with the given username and password"""
     browser.get('https://www.instagram.com')
@@ -54,3 +55,18 @@ def login_user(browser, username, password, switch_language=True):
         return True
     else:
         return False
+
+def check_from_image_user_logged_in(browser):
+   xpath_selector='//*[@id="react-root"]/section/nav/div[2]/div/div/div[3]/div/a[2]'
+   login_link = browser.find_elements_by_xpath(xpath_selector)
+   if len(login_link) > 0:
+      return False
+   else:
+      return True
+
+
+
+
+
+
+

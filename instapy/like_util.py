@@ -9,6 +9,7 @@ from selenium.webdriver.common.keys import Keys
 from .time_util import sleep
 from .util import update_activity
 from .util import add_user_to_blacklist
+from .login_util import check_from_image_user_logged_in
 
 
 def get_links_from_feed(browser, amount, num_of_search):
@@ -26,7 +27,7 @@ def get_links_from_feed(browser, amount, num_of_search):
 
     # get links
     link_elems = browser.find_elements_by_xpath(
-        "//article/div[2]/div[2]/a")
+        "//main//article//div[2]//div[2]//a")
 
     total_links = len(link_elems)
     print("\nTotal of links feched for analysis:", total_links)
@@ -282,6 +283,7 @@ def get_links_for_username(browser,
     browser.get('https://www.instagram.com/' + username)
     # update server calls
     update_activity()
+    sleep(2)
 
     body_elem = browser.find_element_by_tag_name('body')
 
@@ -290,12 +292,17 @@ def get_links_for_username(browser,
             '//h2[@class="_kcrwx"]')
     except:
         print('Interaction begin...')
+
     else:
         if is_private:
             print('This user is private...')
+
             return False
 
+
+
     abort = True
+
 
     try:
         load_button = body_elem.find_element_by_xpath(
@@ -398,6 +405,11 @@ def check_link(browser,
     # update server calls
     update_activity()
     sleep(2)
+
+    """Check if the user is still logged in"""
+    loggedin = check_from_image_user_logged_in(browser)
+    if not loggedin:
+      raise AppError("Likely been kicked out of Instagram")
 
     """Check if the Post is Valid/Exists"""
     post_page = browser.execute_script(
