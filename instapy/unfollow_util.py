@@ -137,17 +137,19 @@ def unfollow(browser,
 
         try:
             following_link = browser.find_elements_by_xpath(following_xpath1)
+            following_link[0].click()
         except BaseException as e:
             try:
                 following_link = browser.find_elements_by_xpath(following_xpath2)
+                following_link[0].click()
             except BaseException as er:
                 try:
                     following_link = browser.find_elements_by_xpath(following_xpath3)
+                    following_link[0].click()
                 except BaseException as err:
                     print("Can't locate the following link \n", str(err))
                     return 0
                 
-        following_link[0].click()
         # update server calls
         update_activity()
         sleep(2)
