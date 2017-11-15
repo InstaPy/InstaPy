@@ -130,6 +130,14 @@ def get_active_users(browser, username, posts):
 
     browser.get('https://www.instagram.com/' + username)
     sleep(2)
+
+    total_posts = formatNumber(browser.find_element_by_xpath(
+        '//header/div[2]/ul/li[1]/span/span').text)
+
+    if posts > total_posts:
+        # reaches all user posts
+        posts = total_posts
+
     # click latest post
     browser.find_element_by_xpath(
         '//article/div/div[1]/div[1]/div[1]/a').click()
@@ -140,7 +148,6 @@ def get_active_users(browser, username, posts):
     for count in range(posts):
         try:
             sleep(2)
-            # if there is no show more likes button
             tmp_list = (browser.find_element_by_class_name('_3gwk6').
                         find_elements_by_tag_name('a'))
             # if post has no liked
@@ -157,18 +164,19 @@ def get_active_users(browser, username, posts):
                     tmp_list = browser.find_elements_by_class_name('_2g7d5')
 
         except NoSuchElementException:
-            raise RuntimeWarning('There is some error finding active users')
+            raise RuntimeWarning('There is some error searching active users')
 
         if len(tmp_list) is not 0:
             for user in tmp_list:
                 active_users.append(user.text)
 
         sleep(2)
-        # go to next media
+        # trick to find the right button after 1st posts
         if count == 0:
             browser.find_element_by_xpath(
                 '//body/div[4]/div/div/div[1]/div/div/a').click()
-        else:
+        elif count is not (total_posts-1):
+            # don't click next posts on last post
             browser.find_element_by_xpath(
                 '//body/div[4]/div/div/div[1]/div/div/a[2]').click()
 
