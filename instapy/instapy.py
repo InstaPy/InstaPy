@@ -665,7 +665,7 @@ class InstaPy:
 
                             else:
                                 print('--> Not following')
-                                sleep(2)
+                                sleep(1)
                         else:
                             already_liked += 1
                     else:
@@ -683,7 +683,7 @@ class InstaPy:
                 
                 sleep(5)
             
-            sleep_amount = 900
+            sleep_amount = 800
             log_action(self.username,"like_by_tags",'{:%Y-%m-%d %H:%M} {}'.format(datetime.now(), "[Sleeping] "+str(sleep_amount)))
             sleep(sleep_amount)
 
