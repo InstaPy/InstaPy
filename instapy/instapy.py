@@ -938,8 +938,7 @@ class InstaPy:
                                 try:
                                     checked_img, temp_comments = (
                                         check_image(self.browser,
-                                                    self.clarifai_id,
-                                                    self.clarifai_secret,
+                                                    self.clarifai_api_key,
                                                     self.clarifai_img_tags,
                                                     self.clarifai_full_match)
                                     )
