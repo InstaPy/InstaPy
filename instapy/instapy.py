@@ -1,7 +1,7 @@
 """OS Modules environ method to get the setup vars from the Environment"""
-from datetime import datetime
-from os import environ
 
+from os import environ
+from datetime import datetime
 from random import randint
 from random import sample
 from math import ceil
@@ -11,7 +11,7 @@ from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver import DesiredCapabilities
 
-from .clarifai_util import check_image
+#from .clarifai_util import check_image
 from .comment_util import comment_image
 from .like_util import check_link
 from .like_util import get_links_for_tag
@@ -36,52 +36,13 @@ from .unfollow_util import follow_given_user
 from .unfollow_util import load_follow_restriction
 from .unfollow_util import dump_follow_restriction
 from .unfollow_util import set_automated_followed_pool
+from .statistics import InstaPyStorage
 import random
 import csv
 import pickle
-import datetime as _datetime
-
-import sys
-
+from passlib.hash import pbkdf2_sha256
+import getpass
 import os
-
-class InstaPyStorage(object):
-    TOTAL_START_DAY = '16/10/2017'
-    with open('./logs/maxday.txt', 'r') as file:
-	    MAX_PER_DAY = int(file.readline())
-    with open('./logs/maxhour.txt', 'r') as file:
-	    MAX_PER_HOUR = int(file.readline())
-    def __init__(self):
-        self.total = 0
-        self.thisDayTotal = 0
-        self.thisHourTotal = 0
-        self.lastDayExecuted = _datetime.date.today()
-        self.lastHourExecuted = _datetime.datetime.now().hour
-    def updateStatistics(self):
-        # read today's date in 2008-11-22 format, and now time
-        today = _datetime.date.today()
-        now = _datetime.datetime.now()
-        self.total += 1
-        if self.lastDayExecuted == today:
-            self.thisDayTotal += 1
-            if self.lastHourExecuted == now.hour:
-                self.thisHourTotal += 1
-            else:
-                self.lastHourExecuted = now.hour
-                self.thisHourTotal = 1
-        else:
-            self.lastDayExecuted = today
-            self.lastHourExecuted == now.hour
-            self.thisHourTotal = 1
-            self.thisDayTotal = 1
-
-        if self.thisDayTotal >= self.MAX_PER_DAY:
-            print('reached MAX_PER_DAY')
-            sleep(3600)
-
-        if self.thisHourTotal >= self.MAX_PER_HOUR:
-            print('reached MAX_PER_HOUR')
-            sleep(600)
 
 
 class InstaPy:
