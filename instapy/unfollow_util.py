@@ -38,7 +38,8 @@ def unfollow(browser,
              onlyInstapyFollowed,
              onlyInstapyMethod,
              automatedFollowedPool,
-             sleep_delay):
+             sleep_delay,
+             logger):
 
     """unfollows the given amount of users"""
     unfollowNum = 0
@@ -53,7 +54,7 @@ def unfollow(browser,
         allfollowing = formatNumber(
             browser.find_element_by_xpath('//li[3]/a/span').text)
     except NoSuchElementException:
-        raise RuntimeWarning('There are 0 people to unfollow')
+        logger.warning('There are 0 people to unfollow')
 
     automatedFollowedPoolLength = len(automatedFollowedPool)
 
@@ -67,20 +68,22 @@ def unfollow(browser,
             hasSlept = False
             for person in automatedFollowedPool:
                 if unfollowNum >= amount:
-                    print("--> Total unfollowNum reached it's amount given ",
-                          unfollowNum)
+                    logger.warning(
+                        "--> Total unfollowNum reached it's amount given ",
+                        unfollowNum)
                     break
 
                 if unfollowNum >= automatedFollowedPoolLength:
-                    print("--> Total unfollowNum exeeded the pool of automated"
-                          "followed ", unfollowNum)
+                    logger.warning(
+                        "--> Total unfollowNum exeeded the pool of automated"
+                        "followed ", unfollowNum)
                     break
 
                 if unfollowNum != 0 and \
                    hasSlept is False and \
                    unfollowNum % 10 == 0:
-                        print('sleeping for about {}min'
-                              .format(int(sleep_delay/60)))
+                        logger.warning('sleeping for about {}min'
+                                       .format(int(sleep_delay/60)))
                         sleep(sleep_delay)
                         hasSlept = True
                         continue
@@ -100,10 +103,9 @@ def unfollow(browser,
                                               '_followedPool.csv', person +
                                               ",\n")
 
-                        print('--> Ongoing Unfollow From InstaPy ' +
-                              str(unfollowNum) +
-                              ', now unfollowing: {}'
-                              .format(person.encode('utf-8')))
+                        logger.info('--> Ongoing Unfollow From InstaPy ' +
+                                    str(unfollowNum) + ', now unfollowing: {}'
+                                    .format(person.encode('utf-8')))
 
                         sleep(15)
 
@@ -115,14 +117,14 @@ def unfollow(browser,
                                               '_followedPool.csv',
                                               person + ",\n")
 
-                        print('--> Cannot Unfollow From InstaPy ' +
-                              str(unfollowNum) +
-                              ', now unfollowing: {}'
-                              .format(person.encode('utf-8')))
+                        logger.warning('--> Cannot Unfollow From InstaPy ' +
+                                       str(unfollowNum) +
+                                       ', now unfollowing: {}'
+                                       .format(person.encode('utf-8')))
                         sleep(2)
 
         except BaseException as e:
-            print("unfollow loop error \n", str(e))
+            logger.error("unfollow loop error \n", str(e))
 
     elif onlyInstapyFollowed is not True:
         # Unfollow from profile
@@ -133,7 +135,7 @@ def unfollow(browser,
             # update server calls
             update_activity()
         except BaseException as e:
-            print("following_link error \n", str(e))
+            logger.error("following_link error \n", str(e))
 
         sleep(2)
 
@@ -161,15 +163,16 @@ def unfollow(browser,
 
             for button, person in zip(follow_buttons, person_list):
                 if unfollowNum >= amount:
-                    print("--> Total unfollowNum reached it's amount given ",
-                          unfollowNum)
+                    logger.warning(
+                        "--> Total unfollowNum reached it's amount given ",
+                        unfollowNum)
                     break
 
                 if unfollowNum != 0 and \
                    hasSlept is False and \
                    unfollowNum % 10 == 0:
-                        print('sleeping for about {}min'
-                              .format(int(sleep_delay/60)))
+                        logger.info('sleeping for about {}min'
+                                    .format(int(sleep_delay/60)))
                         sleep(sleep_delay)
                         hasSlept = True
                         continue
@@ -179,9 +182,9 @@ def unfollow(browser,
                     button.click()
                     update_activity('unfollows')
 
-                    print('--> Ongoing Unfollow ' + str(unfollowNum) +
-                          ', now unfollowing: {}'
-                          .format(person.encode('utf-8')))
+                    logger.info('--> Ongoing Unfollow ' + str(unfollowNum) +
+                                ', now unfollowing: {}'
+                                .format(person.encode('utf-8')))
                     sleep(15)
                     # To only sleep once until there is the next unfollow
                     if hasSlept:
@@ -192,7 +195,7 @@ def unfollow(browser,
                     continue
 
         except BaseException as e:
-            print("unfollow loop error \n", str(e))
+            logger.error("unfollow loop error \n", str(e))
 
     return unfollowNum
 
