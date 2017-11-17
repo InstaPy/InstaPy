@@ -51,7 +51,8 @@ class InstaPy:
                  nogui=False,
                  selenium_local_session=True,
                  use_firefox=False,
-                 page_delay=25):
+                 page_delay=25,
+                 show_logs=True):
 
         if nogui:
             self.display = Display(visible=0, size=(800, 600))
@@ -103,15 +104,21 @@ class InstaPy:
         self.like_by_followers_lower_limit = 0
 
         self.aborting = False
-        
+
         # initialize and setup logging system
         self.logger = logging.getLogger(__name__)
         self.logger.setLevel(logging.DEBUG)
-        logger_handler = logging.FileHandler('./logs/general.log')
-        logger_handler.setLevel(logging.DEBUG)
+        file_handler = logging.FileHandler('./logs/general.log')
+        file_handler.setLevel(logging.DEBUG)
         logger_formatter = logging.Formatter('%(levelname)s - %(message)s')
-        logger_handler.setFormatter(logger_formatter)
-        self.logger.addHandler(logger_handler)
+        file_handler.setFormatter(logger_formatter)
+        self.logger.addHandler(file_handler)
+
+        if show_logs is True:
+            console_handler = logging.StreamHandler()
+            console_handler.setLevel(logging.DEBUG)
+            console_handler.setFormatter(logger_formatter)
+            self.logger.addHandler(console_handler)
 
         if selenium_local_session:
             self.set_selenium_local_session()
