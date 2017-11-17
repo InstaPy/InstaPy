@@ -372,7 +372,8 @@ class InstaPy:
                 followed += follow_given_user(self.browser,
                                               acc_to_follow,
                                               self.follow_restrict,
-                                              self.blacklist)
+                                              self.blacklist,
+                                              self.logger)
                 self.followed += followed
                 self.logger.info('Followed: {}'.format(str(followed)))
                 followed = 0
@@ -420,6 +421,7 @@ class InstaPy:
                 links = get_links_for_location(self.browser,
                                                location,
                                                amount,
+                                               self.logger,
                                                media,
                                                skip_top_posts)
             except NoSuchElementException:
@@ -439,13 +441,15 @@ class InstaPy:
                                    self.ignore_users,
                                    self.username,
                                    self.like_by_followers_upper_limit,
-                                   self.like_by_followers_lower_limit)
+                                   self.like_by_followers_lower_limit,
+                                   self.logger)
                     )
 
                     if not inappropriate:
-                        liked = like_image(
-                            self.browser, user_name, self.blacklist
-                        )
+                        liked = like_image(self.browser,
+                                           user_name,
+                                           self.blacklist,
+                                           self.logger)
 
                         if liked:
                             liked_img += 1
@@ -462,6 +466,7 @@ class InstaPy:
                                         check_image(self.browser,
                                                     self.clarifai_api_key,
                                                     self.clarifai_img_tags,
+                                                    self.logger,
                                                     self.clarifai_full_match)
                                     )
                                 except Exception as err:
@@ -485,7 +490,8 @@ class InstaPy:
                                 commented += comment_image(self.browser,
                                                            user_name,
                                                            comments,
-                                                           self.blacklist)
+                                                           self.blacklist,
+                                                           self.logger)
                             else:
                                 self.logger.info('--> Not commented')
                                 sleep(1)
@@ -501,7 +507,8 @@ class InstaPy:
                                                         self.follow_restrict,
                                                         self.username,
                                                         user_name,
-                                                        self.blacklist)
+                                                        self.blacklist,
+                                                        self.logger)
 
                             else:
                                 self.logger.info('--> Not following')
@@ -551,7 +558,9 @@ class InstaPy:
 
             try:
                 links = get_links_for_tag(self.browser,
-                                          tag, amount,
+                                          tag,
+                                          amount,
+                                          self.logger,
                                           media,
                                           skip_top_posts)
             except NoSuchElementException:
@@ -571,13 +580,15 @@ class InstaPy:
                                    self.ignore_users,
                                    self.username,
                                    self.like_by_followers_upper_limit,
-                                   self.like_by_followers_lower_limit)
+                                   self.like_by_followers_lower_limit,
+                                   self.logger)
                     )
 
                     if not inappropriate:
-                        liked = like_image(
-                            self.browser, user_name, self.blacklist
-                        )
+                        liked = like_image(self.browser,
+                                           user_name,
+                                           self.blacklist,
+                                           self.logger)
 
                         if liked:
                             liked_img += 1
@@ -594,6 +605,7 @@ class InstaPy:
                                         check_image(self.browser,
                                                     self.clarifai_api_key,
                                                     self.clarifai_img_tags,
+                                                    self.logger,
                                                     self.clarifai_full_match)
                                     )
                                 except Exception as err:
@@ -617,7 +629,8 @@ class InstaPy:
                                 commented += comment_image(self.browser,
                                                            user_name,
                                                            comments,
-                                                           self.blacklist)
+                                                           self.blacklist,
+                                                           self.logger)
                             else:
                                 self.logger.info('--> Not commented')
                                 sleep(1)
@@ -633,7 +646,8 @@ class InstaPy:
                                                         self.follow_restrict,
                                                         self.username,
                                                         user_name,
-                                                        self.blacklist)
+                                                        self.blacklist,
+                                                        self.logger)
                             else:
                                 self.logger.info('--> Not following')
                                 sleep(1)
@@ -676,7 +690,7 @@ class InstaPy:
 
             try:
                 links = get_links_for_username(
-                    self.browser, username, amount, random, media)
+                    self.browser, username, amount, self.logger, random, media)
             except NoSuchElementException:
                 self.logger.error('Element not found, skipping this username')
                 continue
@@ -689,7 +703,8 @@ class InstaPy:
                                         self.follow_restrict,
                                         self.username,
                                         username,
-                                        self.blacklist)
+                                        self.blacklist,
+                                        self.logger)
             else:
                 self.logger.info('--> Not following')
                 sleep(1)
@@ -705,7 +720,7 @@ class InstaPy:
                 if liked_img >= amount:
                     self.logger.info('-------------')
                     self.logger.info("--> Total liked image reached it's "
-                                     "amount given: ", liked_img)
+                                     "amount given: {}".format(liked_img))
                     break
 
                 self.logger.info('Post [{}/{}]'.format(liked_img + 1, amount))
@@ -720,13 +735,15 @@ class InstaPy:
                                    self.ignore_users,
                                    self.username,
                                    self.like_by_followers_upper_limit,
-                                   self.like_by_followers_lower_limit)
+                                   self.like_by_followers_lower_limit,
+                                   self.logger)
                     )
 
                     if not inappropriate:
-                        liked = like_image(
-                            self.browser, user_name, self.blacklist
-                        )
+                        liked = like_image(self.browser,
+                                           user_name,
+                                           self.blacklist,
+                                           self.logger)
 
                         if liked:
                             total_liked_img += 1
@@ -742,6 +759,7 @@ class InstaPy:
                                         check_image(self.browser,
                                                     self.clarifai_api_key,
                                                     self.clarifai_img_tags,
+                                                    self.logger,
                                                     self.clarifai_full_match)
                                     )
                                 except Exception as err:
@@ -764,7 +782,8 @@ class InstaPy:
                                 commented += comment_image(self.browser,
                                                            user_name,
                                                            comments,
-                                                           self.blacklist)
+                                                           self.blacklist,
+                                                           self.logger)
                             else:
                                 self.logger.info('--> Not commented')
                                 sleep(1)
@@ -834,7 +853,7 @@ class InstaPy:
                 if liked_img >= amount:
                     self.logger.info('-------------')
                     self.logger.info("--> Total liked image reached it's "
-                                     "amount given: ", liked_img)
+                                     "amount given: {}".format(liked_img))
                     break
 
                 self.logger.info('Post [{}/{}]'.format(liked_img + 1, amount))
@@ -849,7 +868,8 @@ class InstaPy:
                                    self.ignore_users,
                                    self.username,
                                    self.like_by_followers_upper_limit,
-                                   self.like_by_followers_lower_limit)
+                                   self.like_by_followers_lower_limit,
+                                   self.logger)
                     )
 
                     if not inappropriate:
@@ -866,16 +886,18 @@ class InstaPy:
                                 self.follow_restrict,
                                 self.username,
                                 username,
-                                self.blacklist)
+                                self.blacklist,
+                                self.logger)
                         else:
                             self.logger.info('--> Not following')
                             sleep(1)
 
                         liking = randint(0, 100) <= self.like_percentage
                         if self.do_like and liking:
-                            liked = like_image(
-                                self.browser, user_name, self.blacklist
-                            )
+                            liked = like_image(self.browser,
+                                               user_name,
+                                               self.blacklist,
+                                               self.logger)
                         else:
                             liked = True
 
@@ -893,6 +915,7 @@ class InstaPy:
                                         check_image(self.browser,
                                                     self.clarifai_api_key,
                                                     self.clarifai_img_tags,
+                                                    self.logger,
                                                     self.clarifai_full_match)
                                     )
                                 except Exception as err:
@@ -915,7 +938,8 @@ class InstaPy:
                                 commented += comment_image(self.browser,
                                                            user_name,
                                                            comments,
-                                                           self.blacklist)
+                                                           self.blacklist,
+                                                           self.logger)
                             else:
                                 self.logger.info('--> Not commented')
                                 sleep(1)
@@ -951,9 +975,9 @@ class InstaPy:
                 urls = self.browser.find_elements_by_xpath(
                     "//main//article//div//div[1]//div[1]//a[1]")
                 url = urls[0].get_attribute("href")
-                print("new url ", url)
+                self.logger.info("new url {}".format(url))
             tags = get_tags(self.browser, url)
-            print(tags)
+            self.logger.info(tags)
             self.like_by_tags(tags, amount, media)
         except TypeError as err:
             self.logger.error('Sorry, an error occured: {}'.format(err))
@@ -976,7 +1000,8 @@ class InstaPy:
                                                 self.dont_include,
                                                 self.username,
                                                 self.follow_restrict,
-                                                random)
+                                                random,
+                                                self.logger)
                 if isinstance(user, list):
                     userToInteract += user
         except (TypeError, RuntimeWarning) as err:
@@ -989,7 +1014,7 @@ class InstaPy:
                 self.aborting = True
                 return self
 
-        print('--> Users: {} \n'.format(len(userToInteract)))
+        self.logger.info('--> Users: {} \n'.format(len(userToInteract)))
         userToInteract = sample(
             userToInteract,
             int(ceil(self.user_interact_percentage * len(userToInteract) / 100)))
@@ -1015,7 +1040,8 @@ class InstaPy:
                     self.dont_include,
                     self.username,
                     self.follow_restrict,
-                    random)
+                    random,
+                    self.logger)
         except (TypeError, RuntimeWarning) as err:
             if isinstance(err, RuntimeWarning):
                 self.logger.warning(
@@ -1059,7 +1085,8 @@ class InstaPy:
                                                             self.follow_restrict,
                                                             random,
                                                             sleep_delay,
-                                                            self.blacklist)
+                                                            self.blacklist,
+                                                            self.logger)
 
             except (TypeError, RuntimeWarning) as err:
                 if isinstance(err, RuntimeWarning):
@@ -1104,7 +1131,8 @@ class InstaPy:
                                                             self.follow_restrict,
                                                             random,
                                                             sleep_delay,
-                                                            self.blacklist)
+                                                            self.blacklist,
+                                                            self.logger)
 
             except (TypeError, RuntimeWarning) as err:
                 if isinstance(err, RuntimeWarning):
@@ -1136,7 +1164,8 @@ class InstaPy:
                        onlyInstapyMethod='FIFO',
                        sleep_delay=600):
         """Unfollows (default) 10 users from your following list"""
-        self.automatedFollowedPool = set_automated_followed_pool(self.username)
+        self.automatedFollowedPool = set_automated_followed_pool(self.username,
+                                                                 self.logger)
 
         try:
             unfollowNumber = unfollow(self.browser,
@@ -1187,7 +1216,8 @@ class InstaPy:
                 # Gets another load of links to be tested
                 links = get_links_from_feed(self.browser,
                                             amount,
-                                            num_of_search)
+                                            num_of_search,
+                                            self.logger)
             except NoSuchElementException:
                 self.logger.warning('Too few images, aborting')
                 self.aborting = True
@@ -1221,13 +1251,15 @@ class InstaPy:
                                            self.ignore_users,
                                            self.username,
                                            self.like_by_followers_upper_limit,
-                                           self.like_by_followers_lower_limit)
+                                           self.like_by_followers_lower_limit,
+                                           self.logger)
                             )
 
                             if not inappropriate:
-                                liked = like_image(
-                                    self.browser, user_name, self.blacklist
-                                )
+                                liked = like_image(self.browser,
+                                                   user_name,
+                                                   self.blacklist,
+                                                   self.logger)
 
                                 if liked:
                                     username = (self.browser.
@@ -1265,6 +1297,7 @@ class InstaPy:
                                                     self.browser,
                                                     self.clarifai_api_key,
                                                     self.clarifai_img_tags,
+                                                    self.logger,
                                                     self.clarifai_full_match)
                                             )
                                         except Exception as err:
@@ -1291,7 +1324,8 @@ class InstaPy:
                                                         self.browser,
                                                         user_name,
                                                         comments,
-                                                        self.blacklist)
+                                                        self.blacklist,
+                                                        self.logger)
                                     else:
                                         self.logger.info('--> Not commented')
                                         sleep(1)
@@ -1307,7 +1341,8 @@ class InstaPy:
                                             self.follow_restrict,
                                             self.username,
                                             user_name,
-                                            self.blacklist)
+                                            self.blacklist,
+                                            self.logger)
                                     else:
                                         self.logger.info('--> Not following')
                                         sleep(1)
@@ -1318,7 +1353,7 @@ class InstaPy:
                                     '--> Image not liked: {}'.format(reason))
                                 inap_img += 1
                                 if reason == 'Inappropriate':
-                                    unfollow_user(self.browser)
+                                    unfollow_user(self.browser, self.logger)
                         except NoSuchElementException as err:
                             self.logger.error('Invalid Page: {}'.format(err))
                             
@@ -1342,7 +1377,10 @@ class InstaPy:
             return
 
         # list of users who liked our media
-        active_users = get_active_users(self.browser, self.username, posts)
+        active_users = get_active_users(self.browser,
+                                        self.username,
+                                        posts,
+                                        self.logger)
 
         for user in active_users:
             # include active user to not unfollow list

@@ -3,7 +3,7 @@ the image for invalid content"""
 from clarifai.rest import ClarifaiApp, Image as ClImage
 
 
-def check_image(browser, clarifai_api_key, img_tags, full_match=False):
+def check_image(browser, clarifai_api_key, img_tags, logger, full_match=False):
     """Uses the link to the image to check for invalid content in the image"""
     clarifai_api = ClarifaiApp(api_key=clarifai_api_key)
 
