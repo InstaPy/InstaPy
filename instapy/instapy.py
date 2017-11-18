@@ -394,6 +394,7 @@ class InstaPy:
 
         # delete duplicated tags
         self.smart_hashtags = list(set(self.smart_hashtags))
+        return self
 
     def clarifai_check_img_for(self, tags=None, comment=False, comments=None):
         """Defines the tags, the images should be checked for"""
