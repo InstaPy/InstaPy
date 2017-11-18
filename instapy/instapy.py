@@ -5,7 +5,7 @@ import logging
 from math import ceil
 import os
 from datetime import datetime
-from sys import maxint
+from sys import maxsize
 import random
 
 from pyvirtualdisplay import Display
@@ -437,7 +437,7 @@ class InstaPy:
 
     def set_upper_follower_count(self, limit=None):
         """Used to chose if a post is liked by the number of likes"""
-        self.like_by_followers_upper_limit = limit or maxint
+        self.like_by_followers_upper_limit = limit or maxsize
         return self
 
     def set_lower_follower_count(self, limit=None):
