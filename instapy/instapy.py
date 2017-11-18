@@ -1,15 +1,19 @@
 """OS Modules environ method to get the setup vars from the Environment"""
-from datetime import datetime
-from os import environ
-
-from random import randint
-from random import sample
+import csv
+import json
+import logging
 from math import ceil
+import os
+from datetime import datetime
+from sys import maxint
+import random
+
 from pyvirtualdisplay import Display
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver import DesiredCapabilities
+import requests
 
 from .clarifai_util import check_image
 from .comment_util import comment_image
@@ -36,12 +40,6 @@ from .unfollow_util import follow_given_user
 from .unfollow_util import load_follow_restriction
 from .unfollow_util import dump_follow_restriction
 from .unfollow_util import set_automated_followed_pool
-import random
-import csv
-import os
-import logging
-import requests
-import json
 
 
 class InstaPy:
@@ -62,8 +60,8 @@ class InstaPy:
 
         self.browser = None
 
-        self.username = username or environ.get('INSTA_USER')
-        self.password = password or environ.get('INSTA_PW')
+        self.username = username or os.environ.get('INSTA_USER')
+        self.password = password or os.environ.get('INSTA_PW')
         self.nogui = nogui
 
         self.page_delay = page_delay
@@ -346,7 +344,7 @@ class InstaPy:
         self.use_clarifai = enabled
 
         if api_key is None and self.clarifai_api_key is None:
-            self.clarifai_api_key = environ.get('CLARIFAI_API_KEY')
+            self.clarifai_api_key = os.environ.get('CLARIFAI_API_KEY')
         elif api_key is not None:
             self.clarifai_api_key = api_key
 
@@ -382,7 +380,7 @@ class InstaPy:
                         self.smart_hashtags.append(item['tag'])
 
                 elif sort == 'random':
-                    random_tags = sample(data['results'], limit)
+                    random_tags = random.sample(data['results'], limit)
                     for item in random_tags:
                         self.smart_hashtags.append(item['tag'])
 
@@ -439,7 +437,7 @@ class InstaPy:
 
     def set_upper_follower_count(self, limit=None):
         """Used to chose if a post is liked by the number of likes"""
-        self.like_by_followers_upper_limit = limit or 0
+        self.like_by_followers_upper_limit = limit or maxint
         return self
 
     def set_lower_follower_count(self, limit=None):
@@ -507,9 +505,9 @@ class InstaPy:
                             liked_img += 1
                             checked_img = True
                             temp_comments = []
-                            commenting = randint(
+                            commenting = random.randint(
                                 0, 100) <= self.comment_percentage
-                            following = randint(
+                            following = random.randint(
                                 0, 100) <= self.follow_percentage
 
                             if self.use_clarifai and (following or commenting):
@@ -652,9 +650,9 @@ class InstaPy:
                             liked_img += 1
                             checked_img = True
                             temp_comments = []
-                            commenting = (randint(0, 100) <=
+                            commenting = (random.randint(0, 100) <=
                                           self.comment_percentage)
-                            following = (randint(0, 100) <=
+                            following = (random.randint(0, 100) <=
                                          self.follow_percentage)
 
                             if self.use_clarifai and (following or commenting):
@@ -744,7 +742,7 @@ class InstaPy:
             self.logger.info(
                 'Username [{}/{}]'.format(index + 1, len(usernames)))
             self.logger.info('--> {}'.format(username.encode('utf-8')))
-            following = randint(0, 100) <= self.follow_percentage
+            following = random.randint(0, 100) <= self.follow_percentage
 
             try:
                 links = get_links_for_username(
@@ -808,7 +806,7 @@ class InstaPy:
                             liked_img += 1
                             checked_img = True
                             temp_comments = []
-                            commenting = randint(
+                            commenting = random.randint(
                                 0, 100) <= self.comment_percentage
 
                             if self.use_clarifai and (following or commenting):
@@ -932,7 +930,7 @@ class InstaPy:
 
                     if not inappropriate:
 
-                        following = randint(0, 100) <= self.follow_percentage
+                        following = random.randint(0, 100) <= self.follow_percentage
                         if (self.do_follow and
                             username not in self.dont_include and
                             following and
@@ -950,7 +948,7 @@ class InstaPy:
                             self.logger.info('--> Not following')
                             sleep(1)
 
-                        liking = randint(0, 100) <= self.like_percentage
+                        liking = random.randint(0, 100) <= self.like_percentage
                         if self.do_like and liking:
                             liked = like_image(self.browser,
                                                user_name,
@@ -964,7 +962,7 @@ class InstaPy:
                             liked_img += 1
                             checked_img = True
                             temp_comments = []
-                            commenting = randint(
+                            commenting = random.randint(
                                 0, 100) <= self.comment_percentage
 
                             if self.use_clarifai and (following or commenting):
@@ -1073,7 +1071,7 @@ class InstaPy:
                 return self
 
         self.logger.info('--> Users: {} \n'.format(len(userToInteract)))
-        userToInteract = sample(
+        userToInteract = random.sample(
             userToInteract,
             int(ceil(self.user_interact_percentage * len(userToInteract) / 100)))
 
@@ -1112,7 +1110,7 @@ class InstaPy:
 
         self.logger.info('--> Users: {}'.format(len(userToInteract)))
 
-        userToInteract = sample(userToInteract, int(ceil(
+        userToInteract = random.sample(userToInteract, int(ceil(
             self.user_interact_percentage * len(userToInteract) / 100)))
 
         self.like_by_users(userToInteract,
@@ -1160,7 +1158,7 @@ class InstaPy:
 
         if interact:
             self.logger.info('--> User followed: {}'.format(userFollowed))
-            userFollowed = sample(userFollowed, int(ceil(
+            userFollowed = random.sample(userFollowed, int(ceil(
                 self.user_interact_percentage * len(userFollowed) / 100)))
             self.like_by_users(userFollowed,
                                self.user_interact_amount,
@@ -1207,7 +1205,7 @@ class InstaPy:
 
         if interact:
             self.logger.info('--> User followed: {}'.format(userFollowed))
-            userFollowed = sample(userFollowed, int(ceil(
+            userFollowed = random.sample(userFollowed, int(ceil(
                 self.user_interact_percentage * len(userFollowed) / 100)))
             self.like_by_users(userFollowed,
                                self.user_interact_amount,
@@ -1342,9 +1340,9 @@ class InstaPy:
                                     liked_img += 1
                                     checked_img = True
                                     temp_comments = []
-                                    commenting = randint(
+                                    commenting = random.randint(
                                         0, 100) <= self.comment_percentage
-                                    following = randint(
+                                    following = random.randint(
                                         0, 100) <= self.follow_percentage
 
                                     if (self.use_clarifai and
