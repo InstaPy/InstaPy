@@ -269,6 +269,11 @@ session.interact_user_followers(['natgeo'], amount=10, random=True)
 # is 10min
 
 session.unfollow_users(amount=10, onlyInstapyFollowed = True, onlyInstapyMethod = 'FIFO', sleep_delay=60 )
+
+# You can only unfollow user that won't follow you back by adding
+# onlyNotFollowMe = True it still only support on profile following 
+# you should disable onlyInstapyFollowed when use this 
+session.unfollow_users(amount=10, onlyNotFollowMe=True, sleep_delay=60)
 ```
 
 ### Don't unfollow active users
