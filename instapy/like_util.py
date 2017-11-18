@@ -11,7 +11,7 @@ from .util import update_activity
 from .util import add_user_to_blacklist
 
 
-def get_links_from_feed(browser, amount, num_of_search):
+def get_links_from_feed(browser, amount, num_of_search, logger):
     """Fetches random number of links from feed and returns a list of links"""
 
     browser.get('https://www.instagram.com')
@@ -29,18 +29,18 @@ def get_links_from_feed(browser, amount, num_of_search):
         "//article/div[2]/div[2]/a")
 
     total_links = len(link_elems)
-    print("\nTotal of links feched for analysis:", total_links)
+    logger.info("Total of links feched for analysis: {}".format(total_links))
     links = []
     try:
         if link_elems:
             links = [link_elem.get_attribute('href') for link_elem in link_elems]
-            print("~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+            logger.info("~~~~~~~~~~~~~~~~~~~~~~~~~~~")
             for i, link in enumerate(links):
                 print(i, link)
-            print("~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+            logger.info("~~~~~~~~~~~~~~~~~~~~~~~~~~~")
 
     except BaseException as e:
-        print("link_elems error \n", str(e))
+        logger.error("link_elems error {}".format(str(e)))
 
     return links
 
@@ -48,6 +48,7 @@ def get_links_from_feed(browser, amount, num_of_search):
 def get_links_for_location(browser,
                            location,
                            amount,
+                           logger,
                            media=None,
                            skip_top_posts=True):
 
@@ -84,7 +85,8 @@ def get_links_for_location(browser,
                     "window.scrollTo(0, document.body.scrollHeight);")
                 sleep(2)
         except:
-            print('Load button not found, working with current images!')
+            logger.warning(
+                'Load button not found, working with current images!')
         else:
             abort = False
             body_elem.send_keys(Keys.END)
@@ -150,7 +152,12 @@ def get_links_for_location(browser,
     return links[:amount]
 
 
-def get_links_for_tag(browser, tag, amount, media=None, skip_top_posts=True):
+def get_links_for_tag(browser,
+                      tag,
+                      amount,
+                      logger,
+                      media=None,
+                      skip_top_posts=True):
     """Fetches the number of links specified
     by amount and returns a list of links"""
     if media is None:
@@ -185,7 +192,8 @@ def get_links_for_tag(browser, tag, amount, media=None, skip_top_posts=True):
                     "window.scrollTo(0, document.body.scrollHeight);")
                 sleep(2)
         except:
-            print('Load button not found, working with current images!')
+            logger.warning(
+                'Load button not found, working with current images!')
         else:
             abort = False
             body_elem.send_keys(Keys.END)
@@ -220,7 +228,7 @@ def get_links_for_tag(browser, tag, amount, media=None, skip_top_posts=True):
             filtered_links = len(links)
 
     except BaseException as e:
-        print("link_elems error \n", str(e))
+        logger.error("link_elems error {}".format(str(e)))
 
     while (filtered_links < amount) and not abort:
         amount_left = amount - filtered_links
@@ -261,6 +269,7 @@ def get_links_for_tag(browser, tag, amount, media=None, skip_top_posts=True):
 def get_links_for_username(browser,
                            username,
                            amount,
+                           logger,
                            is_random=False,
                            media=None):
 
@@ -276,7 +285,7 @@ def get_links_for_username(browser,
         # Make it an array to use it in the following part
         media = [media]
 
-    print('Getting', username, 'image list...')
+    logger.info('Getting {} image list...'.format(username))
 
     # Get  user profile page
     browser.get('https://www.instagram.com/' + username)
@@ -289,10 +298,10 @@ def get_links_for_username(browser,
         is_private = body_elem.find_element_by_xpath(
             '//h2[@class="_kcrwx"]')
     except:
-        print('Interaction begin...')
+        logger.info('Interaction begin...')
     else:
         if is_private:
-            print('This user is private...')
+            logger.warning('This user is private...')
             return False
 
     abort = True
@@ -308,7 +317,7 @@ def get_links_for_username(browser,
                     "window.scrollTo(0, document.body.scrollHeight);")
                 sleep(2)
         except:
-            print('Load button not found, working with current images!')
+            logger.warning('Load button not found, working with current images!')
         else:
             abort = False
             body_elem.send_keys(Keys.END)
@@ -339,7 +348,7 @@ def get_links_for_username(browser,
             filtered_links = len(links)
 
     except BaseException as e:
-        print("link_elems error \n", str(e))
+        logger.error("link_elems error {}}".format(str(e)))
 
     if is_random:
         # Expanding the pooulation for better random distribution
@@ -392,7 +401,8 @@ def check_link(browser,
                ignore_users,
                username,
                like_by_followers_upper_limit,
-               like_by_followers_lower_limit):
+               like_by_followers_lower_limit,
+               logger):
 
     browser.get(link)
     # update server calls
@@ -403,7 +413,7 @@ def check_link(browser,
     post_page = browser.execute_script(
         "return window._sharedData.entry_data.PostPage")
     if post_page is None:
-        print('Unavailable Page: {}'.format(link.encode('utf-8')))
+        logger.warning('Unavailable Page: {}'.format(link.encode('utf-8')))
         return True, None, None, 'Unavailable Page'
 
     """Gets the description of the link and checks for the dont_like tags"""
@@ -458,7 +468,7 @@ def check_link(browser,
     if image_text is None:
         image_text = "No description"
 
-    print('Image from: {}'.format(user_name.encode('utf-8')))
+    logger.info('Image from: {}'.format(user_name.encode('utf-8')))
 
     """Find the number of followes the user has"""
     if like_by_followers_upper_limit or like_by_followers_lower_limit:
@@ -474,7 +484,7 @@ def check_link(browser,
         # update server calls
         update_activity()
         sleep(1)
-        print('Number of Followers: {}'.format(num_followers))
+        logger.info('Number of Followers: {}'.format(num_followers))
 
         if like_by_followers_upper_limit and \
            num_followers > like_by_followers_upper_limit:
@@ -486,8 +496,8 @@ def check_link(browser,
                 return True, user_name, is_video, \
                     'Number of followers does not reach minimum'
 
-    print('Link: {}'.format(link.encode('utf-8')))
-    print('Description: {}'.format(image_text.encode('utf-8')))
+    logger.info('Link: {}'.format(link.encode('utf-8')))
+    logger.info('Description: {}'.format(image_text.encode('utf-8')))
 
     """Check if the user_name is in the ignore_users list"""
     if (user_name in ignore_users) or (user_name == username):
@@ -516,7 +526,7 @@ def check_link(browser,
     return False, user_name, is_video, 'None'
 
 
-def like_image(browser, username, blacklist):
+def like_image(browser, username, blacklist, logger):
     """Likes the browser opened image"""
     like_elem = browser.find_elements_by_xpath(
         "//a[@role='button']/span[text()='Like']/..")
@@ -525,20 +535,20 @@ def like_image(browser, username, blacklist):
 
     if len(like_elem) == 1:
         like_elem[0].send_keys("\n")
-        print('--> Image Liked!')
+        logger.info('--> Image Liked!')
         update_activity('likes')
         if blacklist['enabled'] is True:
             action = 'liked'
             add_user_to_blacklist(
-                browser, username, blacklist['campaign'], action
+                browser, username, blacklist['campaign'], action, logger
             )
         sleep(2)
         return True
     elif len(liked_elem) == 1:
-        print('--> Already Liked!')
+        logger.info('--> Already Liked!')
         return False
     else:
-        print('--> Invalid Like Element!')
+        logger.info('--> Invalid Like Element!')
         return False
 
 

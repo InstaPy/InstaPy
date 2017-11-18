@@ -102,7 +102,7 @@ def update_activity(action=None):
             })
 
 
-def add_user_to_blacklist(browser, username, campaign, action):
+def add_user_to_blacklist(browser, username, campaign, action, logger):
 
     file_exists = os.path.isfile('./logs/blacklist.csv')
     fieldnames = ['username', 'campaign', 'action']
@@ -119,13 +119,13 @@ def add_user_to_blacklist(browser, username, campaign, action):
                     'action': action
             })
     except Exception as err:
-        print(err)
+        logger.error(err)
 
-    print('--> {} added to blacklist for {} campaign (action: {})'
-          .format(username, campaign, action))
+    logger.info('--> {} added to blacklist for {} campaign (action: {})'
+                .format(username, campaign, action))
 
 
-def get_active_users(browser, username, posts):
+def get_active_users(browser, username, posts, logger):
     """Returns a list with users who liked the latest posts"""
 
     browser.get('https://www.instagram.com/' + username)
@@ -164,7 +164,7 @@ def get_active_users(browser, username, posts):
                     tmp_list = browser.find_elements_by_class_name('_2g7d5')
 
         except NoSuchElementException:
-            raise RuntimeWarning('There is some error searching active users')
+            logger.error('There is some error searching active users')
 
         if len(tmp_list) is not 0:
             for user in tmp_list:
@@ -186,7 +186,7 @@ def get_active_users(browser, username, posts):
     return active_users
 
 
-def delete_line_from_file(filepath, lineToDelete):
+def delete_line_from_file(filepath, lineToDelete, logger):
     try:
         f = open(filepath, "r")
         lines = f.readlines()
@@ -199,7 +199,7 @@ def delete_line_from_file(filepath, lineToDelete):
                 f.write(line)
         f.close()
     except BaseException as e:
-        print("delete_line_from_file error \n", str(e))
+        logger.error("delete_line_from_file error {}".format(str(e)))
 
 
 def scroll_bottom(browser, element, range_int):
