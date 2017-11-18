@@ -40,6 +40,8 @@ import random
 import csv
 import os
 import logging
+import requests
+import json
 
 
 class InstaPy:
@@ -85,6 +87,7 @@ class InstaPy:
         self.automatedFollowedPool = []
         self.do_like = False
         self.like_percentage = 0
+        self.smart_hashtags = []
 
         self.dont_like = ['sex', 'nsfw']
         self.ignore_if_contains = []
@@ -351,6 +354,47 @@ class InstaPy:
 
         return self
 
+    def set_smart_hashtags(self,
+                           tags=None,
+                           limit=3,
+                           sort='top',
+                           log_tags=True):
+        """Generate smart hashtags based on https://displaypurposes.com/"""
+        """ranking, banned and spammy tags are filtered out."""
+
+        if tags is None:
+            print('set_smart_hashtags is misconfigured')
+            return
+
+        for tag in tags:
+            req = requests.get(
+                'https://d212rkvo8t62el.cloudfront.net/tag/{}'.format(tag))
+            data = json.loads(req.text)
+
+            if data['tagExists'] is True:
+                if sort == 'top':
+                    # sort by ranking
+                    ordered_tags_by_rank = sorted(
+                        data['results'], key=lambda d: d['rank'], reverse=True)
+                    ranked_tags = (ordered_tags_by_rank[:limit])
+                    for item in ranked_tags:
+                        # add smart hashtag to like list
+                        self.smart_hashtags.append(item['tag'])
+
+                elif sort == 'random':
+                    random_tags = sample(data['results'], limit)
+                    for item in random_tags:
+                        self.smart_hashtags.append(item['tag'])
+
+                if log_tags is True:
+                    for item in self.smart_hashtags:
+                        print('[smart hashtag generated: {}]'.format(item))
+            else:
+                print('Too few results for #{} tag'.format(tag))
+
+        # delete duplicated tags
+        self.smart_hashtags = list(set(self.smart_hashtags))
+
     def clarifai_check_img_for(self, tags=None, comment=False, comments=None):
         """Defines the tags, the images should be checked for"""
         if self.aborting:
@@ -543,7 +587,8 @@ class InstaPy:
                      tags=None,
                      amount=50,
                      media=None,
-                     skip_top_posts=True):
+                     skip_top_posts=True,
+                     use_smart_hashtags=False):
         """Likes (default) 50 images per given tag"""
         if self.aborting:
             return self
@@ -554,8 +599,13 @@ class InstaPy:
         commented = 0
         followed = 0
 
+        # if smart hashtag is enabled
+        if use_smart_hashtags is True and self.smart_hashtags is not []:
+            print('Using smart hashtags')
+            tags = self.smart_hashtags
+
         # deletes white spaces in tags
-        tags = list(map(str.strip, tags))
+        tags = [tag.strip() for tag in tags]
 
         tags = tags or []
 
