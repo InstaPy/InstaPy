@@ -1,105 +1,50 @@
 import re
 import csv
-import datetime
-import shutil
 import os
 from .time_util import sleep
 from selenium.common.exceptions import NoSuchElementException
-from tempfile import NamedTemporaryFile
+import sqlite3
 
 
 def update_activity(action=None):
     """Record every Instagram server call (page load, content load, likes,
     comments, follows, unfollow)."""
 
-    # workaround for windows users, they cant use it in this way, we need to
-    if os.name == 'nt':
-        return
+    conn = sqlite3.connect('./db/instapy.db')
+    with conn:
+        conn.row_factory = sqlite3.Row
+        cur = conn.cursor()
+        # collect today data
+        cur.execute("SELECT * FROM statistics WHERE created == date('now')")
+        data = cur.fetchone()
 
-    # file header
-    fieldnames = [
-        'date', 'likes', 'comments', 'follows', 'unfollows', 'server_calls']
-    today = datetime.date.today().strftime('%m/%d/%y')
-    tmpfile = NamedTemporaryFile(mode='w', delete=False)
+        if data is None:
+            # create a new record for the new day
+            cur.execute("INSERT INTO statistics VALUES "
+                        "(0, 0, 0, 0, 1, date('now'))")
+        else:
+            # sqlite3.Row' object does not support item assignment -> so,
+            # convert it into a new dict
+            data = dict(data)
+            # update
+            data['server_calls'] += 1
 
-    # csv update file technique, moves activity.csv content to a temporary
-    # file, update needed line, then move temporary file content back to
-    # activity.csv file
-    try:
-        with open('./logs/activity.csv', 'r') as activity, tmpfile:
-            reader = csv.DictReader(activity)
-            writer = csv.DictWriter(tmpfile, fieldnames=fieldnames)
+            if action == 'likes':
+                data['likes'] += 1
+            elif action == 'comments':
+                data['comments'] += 1
+            elif action == 'follows':
+                data['follows'] += 1
+            elif action == 'unfollows':
+                data['unfollows'] += 1
 
-            # add header to the new file (temporary file)
-            writer.writeheader()
-
-            new_day = True
-            for row in reader:
-                if row['date'] == today:
-                    new_day = False
-                    # update server call
-                    row['server_calls'] = int(row['server_calls']) + 1
-
-                    if action == 'likes':
-                        row['likes'] = int(row['likes']) + 1
-                    elif action == 'comments':
-                        row['comments'] = int(row['comments']) + 1
-                    elif action == 'follows':
-                        row['follows'] = int(row['follows']) + 1
-                    elif action == 'unfollows':
-                        row['unfollows'] = int(row['unfollows']) + 1
-
-                # update daily activity
-                writer.writerow({
-                    'date': row['date'],
-                    'likes': row['likes'],
-                    'comments': row['comments'],
-                    'follows': row['follows'],
-                    'unfollows': row['unfollows'],
-                    'server_calls': row['server_calls']
-                })
-
-            # begin new statistics if it's a new day
-            if new_day is True:
-
-                likes = 0
-                comments = 0
-                follows = 0
-                unfollows = 0
-
-                if action == 'likes':
-                    likes = 1
-                elif action == 'comments':
-                    comments = 1
-                elif action == 'follows':
-                    follows = 1
-                elif action == 'unfollows':
-                    unfollows = 1
-
-                writer.writerow({
-                    'date': today,
-                    'likes': likes,
-                    'comments': comments,
-                    'follows': follows,
-                    'unfollows': unfollows,
-                    'server_calls': 1
-                })
-
-            # move temporary file to activity.csv (updating csv file)
-            shutil.move(tmpfile.name, './logs/activity.csv')
-    except IOError:
-        # if file doesnt exist/first run, create activity file
-        with open('./logs/activity.csv', 'w') as activity:
-            writer = csv.DictWriter(activity, fieldnames=fieldnames)
-            writer.writeheader()
-            writer.writerow({
-                'date': today,
-                'likes': 0,
-                'comments': 0,
-                'follows': 0,
-                'unfollows': 0,
-                'server_calls': 1
-            })
+            sql = ("UPDATE statistics set likes = ?, comments = ?, "
+                   "follows = ?, unfollows = ?, server_calls = ? "
+                   "WHERE created = date('now')")
+            cur.execute(sql, (data['likes'], data['comments'], data['follows'],
+                              data['unfollows'], data['server_calls']))
+        # commit
+        conn.commit()
 
 
 def add_user_to_blacklist(browser, username, campaign, action, logger):
