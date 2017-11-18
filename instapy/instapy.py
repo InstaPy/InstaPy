@@ -938,8 +938,7 @@ class InstaPy:
                                 try:
                                     checked_img, temp_comments = (
                                         check_image(self.browser,
-                                                    self.clarifai_id,
-                                                    self.clarifai_secret,
+                                                    self.clarifai_api_key,
                                                     self.clarifai_img_tags,
                                                     self.clarifai_full_match)
                                     )
@@ -1209,7 +1208,8 @@ class InstaPy:
                        amount=10,
                        onlyInstapyFollowed=False,
                        onlyInstapyMethod='FIFO',
-                       sleep_delay=600):
+                       sleep_delay=600,
+                       onlyNotFollowMe=False):
         """Unfollows (default) 10 users from your following list"""
         self.automatedFollowedPool = set_automated_followed_pool(self.username)
 
@@ -1221,7 +1221,8 @@ class InstaPy:
                                       onlyInstapyFollowed,
                                       onlyInstapyMethod,
                                       self.automatedFollowedPool,
-                                      sleep_delay)
+                                      sleep_delay,
+                                      onlyNotFollowMe)
             print("--> Total people unfollowed : {} ".format(unfollowNumber))
 
         except (TypeError, RuntimeWarning) as err:
@@ -1343,8 +1344,7 @@ class InstaPy:
                                             checked_img, temp_comments = (
                                                 check_image(
                                                     self.browser,
-                                                    self.clarifai_id,
-                                                    self.clarifai_secret,
+                                                    self.clarifai_api_key,
                                                     self.clarifai_img_tags,
                                                     self.clarifai_full_match)
                                             )
@@ -1426,7 +1426,7 @@ class InstaPy:
 
         return self
 
-    def set_unfollow_active_users(self, enabled=False, posts=4):
+    def set_dont_unfollow_active_users(self, enabled=False, posts=4):
         """Prevents unfollow followers who have liked one of
         your latest X posts"""
 
