@@ -601,7 +601,7 @@ class InstaPy:
             tags = self.smart_hashtags
 
         # deletes white spaces in tags
-        tags = list(map(str.strip, tags))
+        tags = [tag.strip() for tag in tags]
 
         tags = tags or []
 
