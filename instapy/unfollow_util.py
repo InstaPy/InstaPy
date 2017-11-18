@@ -39,6 +39,7 @@ def unfollow(browser,
              onlyInstapyMethod,
              automatedFollowedPool,
              sleep_delay,
+             onlyNotFollowMe,
              logger):
 
     """unfollows the given amount of users"""
@@ -127,8 +128,128 @@ def unfollow(browser,
         except BaseException as e:
             logger.error("unfollow loop error {}".format(str(e)))
 
-    elif onlyInstapyFollowed is not True:
-        # Unfollow from profile
+    elif onlyInstapyFollowed is not True and onlyNotFollowMe is True:
+        # unfollow only not follow me
+        try:
+            browser.get(
+                'https://www.instagram.com/' + username + '/?__a=1')
+            pre = browser.find_element_by_tag_name("pre").text
+            user_data = json.loads(pre)['user']
+        except BaseException as e:
+            print("unable to get user information\n", str(e))
+
+        graphql_endpoint = 'https://www.instagram.com/graphql/query/'
+        graphql_followers = (
+            graphql_endpoint + '?query_id=17851374694183129')
+        graphql_following = (
+            graphql_endpoint + '?query_id=17874545323001329')
+
+        all_followers = []
+        all_following = []
+        unfollow_list = []
+
+        variables = {}
+        variables['id'] = user_data['id']
+        variables['first'] = 100
+
+        # get follower and following user loop
+        try:
+            for i in range(0, 2):
+                has_next_data = True
+
+                url = (
+                    '{}&variables={}'
+                    .format(graphql_followers, str(json.dumps(variables)))
+                )
+                if i != 0:
+                    url = (
+                        '{}&variables={}'
+                        .format(graphql_following, str(json.dumps(variables)))
+                    )
+                browser.get(url)
+
+                # fetch all user while still has data
+                while has_next_data:
+                    pre = browser.find_element_by_tag_name("pre").text
+                    data = json.loads(pre)['data']
+
+                    if i == 0:
+                        # get followers
+                        page_info = (
+                            data['user']['edge_followed_by']['page_info'])
+                        edges = data['user']['edge_followed_by']['edges']
+                        for user in edges:
+                            all_followers.append(user['node']['username'])
+                    elif i == 1:
+                        # get following
+                        page_info = (
+                            data['user']['edge_follow']['page_info'])
+                        edges = data['user']['edge_follow']['edges']
+                        for user in edges:
+                            all_following.append(user['node']['username'])
+
+                    has_next_data = page_info['has_next_page']
+                    if has_next_data:
+                        variables['after'] = page_info['end_cursor']
+
+                        url = (
+                            '{}&variables={}'
+                            .format(
+                                graphql_followers, str(json.dumps(variables)))
+                        )
+                        if i != 0:
+                            url = (
+                                '{}&variables={}'
+                                .format(
+                                    graphql_following,
+                                    str(json.dumps(variables))
+                                )
+                            )
+                        browser.get(url)
+        except BaseException as e:
+            print(
+                "unable to get followers and following information \n", str(e))
+
+        unfollow_list = set(all_following) - set(all_followers)
+
+        # unfollow loop
+        try:
+            hasSlept = False
+            for person in unfollow_list:
+                if unfollowNum >= amount:
+                    print("--> Total unfollowNum reached it's amount "
+                          "given {}".format(unfollowNum))
+                    break
+
+                if (unfollowNum != 0 and
+                   hasSlept is False and
+                   unfollowNum % 10 == 0):
+
+                        print('sleeping for about {}min'
+                              .format(int(sleep_delay/60)))
+                        sleep(sleep_delay)
+                        hasSlept = True
+
+                browser.get('https://www.instagram.com/{}'.format(person))
+                sleep(2)
+                follow_button = browser.find_element_by_xpath(
+                    "//*[contains(text(), 'Follow')]")
+
+                if follow_button.text == 'Following':
+                    unfollowNum += 1
+                    follow_button.click()
+                    print('--> Ongoing Unfollow ' + str(unfollowNum) +
+                          ', now unfollowing: {}'
+                          .format(person.encode('utf-8')))
+                    sleep(15)
+                    if hasSlept:
+                        hasSlept = False
+
+        except BaseException as e:
+            print("unfollow loop error \n", str(e))
+
+    elif onlyNotFollowMe is not True:
+        # unfollow from profile
         try:
             following_link = browser.find_elements_by_xpath(
                 '//article//ul//li[3]')
