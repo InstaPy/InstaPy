@@ -57,7 +57,7 @@ def comment_image(browser, username, comments, blacklist, logger):
         if blacklist['enabled'] is True:
             action = 'commented'
             add_user_to_blacklist(
-                browser, username, blacklist['campaign'], action
+                browser, username, blacklist['campaign'], action, logger
             )
     else:
         logger.warning('--> Warning: Comment Action Likely Failed:'
