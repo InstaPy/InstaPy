@@ -76,7 +76,7 @@ def get_active_users(browser, username, posts, logger):
     sleep(2)
 
     total_posts = formatNumber(browser.find_element_by_xpath(
-        "//span[@class='_fd86t']").text)
+        "//span[(@class='_t98z6')]//span").text)
 
     # if posts > total user posts, assume total posts
     if posts >= total_posts:
