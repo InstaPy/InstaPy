@@ -33,7 +33,7 @@ def open_comment_section(browser):
         print(missing_comment_elem_warning)
 
 
-def comment_image(browser, username, comments, blacklist):
+def comment_image(browser, username, comments, blacklist, logger):
     """Checks if it should comment on the image"""
     rand_comment = (choice(comments))
     rand_comment = emoji.demojize(rand_comment)
@@ -60,10 +60,10 @@ def comment_image(browser, username, comments, blacklist):
                 browser, username, blacklist['campaign'], action
             )
     else:
-        print('--> Warning: Comment Action Likely Failed:'
-              ' Comment Element not found')
+        logger.warning('--> Warning: Comment Action Likely Failed:'
+                       ' Comment Element not found')
 
-    print("--> Commented: {}".format(rand_comment.encode('utf-8')))
+    logger.info("--> Commented: {}".format(rand_comment.encode('utf-8')))
     sleep(2)
 
     return 1
