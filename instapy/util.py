@@ -76,7 +76,7 @@ def get_active_users(browser, username, posts, logger):
     sleep(2)
 
     total_posts = formatNumber(browser.find_element_by_xpath(
-        "//span[(@class='_t98z6')]//span").text)
+        "//span[contains(@class,'_t98z6')]//span").text)
 
     # if posts > total user posts, assume total posts
     if posts >= total_posts:
@@ -85,7 +85,7 @@ def get_active_users(browser, username, posts, logger):
 
     # click latest post
     browser.find_element_by_xpath(
-        "//article/div[2]/div[1]/div[1]/div[1]/a").click()
+        "(//div[contains(@class, '_si7dy')])[1]").click()
 
     active_users = []
 
@@ -93,14 +93,14 @@ def get_active_users(browser, username, posts, logger):
     for count in range(1, posts):
         try:
             browser.find_element_by_xpath(
-                "//a[@class='_nzn1h _gu6vm']").click()
+                "//a[contains(@class, '_nzn1h')]").click()
             sleep(1)
             tmp_list = browser.find_elements_by_xpath(
                 "//a[contains(@class, '_2g7d5')]")
         except NoSuchElementException:
             try:
                 tmp_list = browser.find_elements_by_xpath(
-                    "//div[@class='_3gwk6 _nt9ow']/a")
+                    "//div[contains(@class, '_3gwk6')]/a")
             except NoSuchElementException:
                 logger.error('There is some error searching active users')
 
@@ -110,7 +110,7 @@ def get_active_users(browser, username, posts, logger):
 
         sleep(1)
         # if not reached posts(parameter) value, continue
-        if count != total_posts:
+        if count+1 != posts:
             try:
                 # click next button
                 browser.find_element_by_xpath(
