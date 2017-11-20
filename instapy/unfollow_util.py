@@ -415,7 +415,7 @@ def follow_through_dialog(browser,
                           login,
                           follow_restrict,
                           allfollowing,
-                          is_random,
+                          randomize,
                           delay,
                           blacklist,
                           logger,
@@ -423,7 +423,7 @@ def follow_through_dialog(browser,
     sleep(2)
     person_followed = []
     real_amount = amount
-    if is_random and amount >= 3:
+    if randomize and amount >= 3:
         # expanding the popultaion for better sampling distribution
         amount = amount * 3
 
@@ -473,7 +473,7 @@ def follow_through_dialog(browser,
     try:
         hasSlept = False
         btnPerson = list(zip(follow_buttons, person_list))
-        if is_random:
+        if randomize:
             sample = random.sample(range(0, len(follow_buttons)), real_amount)
             finalBtnPerson = []
             for num in sample:
@@ -531,7 +531,7 @@ def follow_through_dialog(browser,
                 continue
 
             else:
-                if is_random:
+                if randomize:
                     repickedNum = -1
                     while repickedNum not in sample and repickedNum != -1:
                         repickedNum = random.randint(0, len(btnPerson))
@@ -551,7 +551,7 @@ def get_given_user_followers(browser,
                              dont_include,
                              login,
                              follow_restrict,
-                             is_random,
+                             randomize,
                              logger):
 
     browser.get('https://www.instagram.com/' + user_name)
@@ -595,7 +595,7 @@ def get_given_user_followers(browser,
                        .format(user_name))
 
     finalBtnPerson = []
-    if is_random:
+    if randomize:
         sample = random.sample(range(0, len(follow_buttons)), amount)
 
         for num in sample:
@@ -617,7 +617,7 @@ def get_given_user_following(browser,
                              dont_include,
                              login,
                              follow_restrict,
-                             is_random,
+                             randomize,
                              logger):
 
     browser.get('https://www.instagram.com/' + user_name)
@@ -662,7 +662,7 @@ def get_given_user_following(browser,
                        .formart(user_name))
 
     finalBtnPerson = []
-    if is_random:
+    if randomize:
         sample = random.sample(range(0, len(follow_buttons)), amount)
 
         for num in sample:
