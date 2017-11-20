@@ -289,14 +289,14 @@ class InstaPy:
     def set_user_interact(self,
                           amount=10,
                           percentage=100,
-                          random=False,
+                          randomize=False,
                           media=None):
         """Define if posts of given user should be interacted"""
         if self.aborting:
             return self
 
         self.user_interact_amount = amount
-        self.user_interact_random = random
+        self.user_interact_random = randomize
         self.user_interact_percentage = percentage
         self.user_interact_media = media
 
@@ -726,7 +726,7 @@ class InstaPy:
 
         return self
 
-    def like_by_users(self, usernames, amount=10, random=False, media=None):
+    def like_by_users(self, usernames, amount=10, randomize=False, media=None):
         """Likes some amounts of images for each usernames"""
         if self.aborting:
             return self
@@ -746,7 +746,12 @@ class InstaPy:
 
             try:
                 links = get_links_for_username(
-                    self.browser, username, amount, self.logger, random, media)
+                    self.browser,
+                    username,
+                    amount,
+                    self.logger,
+                    randomize,
+                    media)
             except NoSuchElementException:
                 self.logger.error('Element not found, skipping this username')
                 continue
@@ -863,13 +868,13 @@ class InstaPy:
         self.logger.info('Already Liked: {}'.format(already_liked))
         self.logger.info('Inappropriate: {}'.format(inap_img))
         self.logger.info('Commented: {}'.format(commented))
-        
+
         return self
 
     def interact_by_users(self,
                           usernames,
                           amount=10,
-                          random=False,
+                          randomize=False,
                           media=None):
         """Likes some amounts of images for each usernames"""
         if self.aborting:
@@ -892,7 +897,7 @@ class InstaPy:
                 links = get_links_for_username(self.browser,
                                                username,
                                                amount,
-                                               random,
+                                               randomize,
                                                media)
             except NoSuchElementException:
                 self.logger.error('Element not found, skipping this username')
@@ -930,7 +935,8 @@ class InstaPy:
 
                     if not inappropriate:
 
-                        following = random.randint(0, 100) <= self.follow_percentage
+                        following = (
+                            random.randint(0, 100) <= self.follow_percentage)
                         if (self.do_follow and
                             username not in self.dont_include and
                             following and
@@ -1042,7 +1048,7 @@ class InstaPy:
 
         return self
 
-    def interact_user_followers(self, usernames, amount=10, random=False):
+    def interact_user_followers(self, usernames, amount=10, randomize=False):
 
         userToInteract = []
         if not isinstance(usernames, list):
@@ -1056,7 +1062,7 @@ class InstaPy:
                                                 self.dont_include,
                                                 self.username,
                                                 self.follow_restrict,
-                                                random,
+                                                randomize,
                                                 self.logger)
                 if isinstance(user, list):
                     userToInteract += user
@@ -1082,7 +1088,7 @@ class InstaPy:
 
         return self
 
-    def interact_user_following(self, usernames, amount=10, random=False):
+    def interact_user_following(self, usernames, amount=10, randomize=False):
 
         userToInteract = []
         if not isinstance(usernames, list):
@@ -1096,7 +1102,7 @@ class InstaPy:
                     self.dont_include,
                     self.username,
                     self.follow_restrict,
-                    random,
+                    randomize,
                     self.logger)
         except (TypeError, RuntimeWarning) as err:
             if isinstance(err, RuntimeWarning):
@@ -1123,7 +1129,7 @@ class InstaPy:
     def follow_user_followers(self,
                               usernames,
                               amount=10,
-                              random=False,
+                              randomize=False,
                               interact=False,
                               sleep_delay=600):
 
@@ -1139,7 +1145,7 @@ class InstaPy:
                                                             self.dont_include,
                                                             self.username,
                                                             self.follow_restrict,
-                                                            random,
+                                                            randomize,
                                                             sleep_delay,
                                                             self.blacklist,
                                                             self.logger)
@@ -1154,7 +1160,8 @@ class InstaPy:
                         'Sorry, an error occured: {}'.format(err))
                     self.aborting = True
                     return self
-        self.logger.info("--> Total people followed : {} ".format(len(userFollowed)))
+        self.logger.info(
+            "--> Total people followed : {} ".format(len(userFollowed)))
 
         if interact:
             self.logger.info('--> User followed: {}'.format(userFollowed))
@@ -1170,7 +1177,7 @@ class InstaPy:
     def follow_user_following(self,
                               usernames,
                               amount=10,
-                              random=False,
+                              randomize=False,
                               interact=False,
                               sleep_delay=600):
         userFollowed = []
@@ -1185,7 +1192,7 @@ class InstaPy:
                                                             self.dont_include,
                                                             self.username,
                                                             self.follow_restrict,
-                                                            random,
+                                                            randomize,
                                                             sleep_delay,
                                                             self.blacklist,
                                                             self.logger)
@@ -1414,7 +1421,7 @@ class InstaPy:
                                     unfollow_user(self.browser, self.logger)
                         except NoSuchElementException as err:
                             self.logger.error('Invalid Page: {}'.format(err))
-                            
+
         self.logger.info('Liked: {}'.format(liked_img))
         self.logger.info('Already Liked: {}'.format(already_liked))
         self.logger.info('Inappropriate: {}'.format(inap_img))
