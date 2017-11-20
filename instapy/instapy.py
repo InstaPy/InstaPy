@@ -752,7 +752,7 @@ class InstaPy:
                                            self.like_by_followers_upper_limit,
                                            self.like_by_followers_lower_limit)
             if valid_user is not True:
-                print(valid_user)
+                self.logger.info(valid_user)
                 continue
 
             try:
