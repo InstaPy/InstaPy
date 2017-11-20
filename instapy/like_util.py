@@ -270,7 +270,7 @@ def get_links_for_username(browser,
                            username,
                            amount,
                            logger,
-                           is_random=False,
+                           randomize=False,
                            media=None):
 
     """Fetches the number of links specified
@@ -350,7 +350,7 @@ def get_links_for_username(browser,
     except BaseException as e:
         logger.error("link_elems error {}}".format(str(e)))
 
-    if is_random:
+    if randomize:
         # Expanding the pooulation for better random distribution
         amount = amount * 5
 
@@ -387,7 +387,7 @@ def get_links_for_username(browser,
                  if link_elem.text in media]
         filtered_links = len(links)
 
-    if is_random:
+    if randomize:
         # Shuffle the population index
         links = random.sample(links, filtered_links)
 
