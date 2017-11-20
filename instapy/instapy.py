@@ -29,6 +29,7 @@ from .print_log_writer import log_follower_num
 from .time_util import sleep
 from .time_util import set_sleep_percentage
 from .util import get_active_users
+from .util import validate_username
 from .unfollow_util import get_given_user_followers
 from .unfollow_util import get_given_user_following
 from .unfollow_util import unfollow
@@ -743,6 +744,16 @@ class InstaPy:
                 'Username [{}/{}]'.format(index + 1, len(usernames)))
             self.logger.info('--> {}'.format(username.encode('utf-8')))
             following = random.randint(0, 100) <= self.follow_percentage
+
+            valid_user = validate_username(self.browser,
+                                           username,
+                                           self.ignore_users,
+                                           self.blacklist,
+                                           self.like_by_followers_upper_limit,
+                                           self.like_by_followers_lower_limit)
+            if valid_user is not True:
+                self.logger.info(valid_user)
+                continue
 
             try:
                 links = get_links_for_username(
