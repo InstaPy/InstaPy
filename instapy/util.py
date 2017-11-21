@@ -4,6 +4,7 @@ import os
 from .time_util import sleep
 from selenium.common.exceptions import NoSuchElementException
 import sqlite3
+import datetime
 
 
 def validate_username(browser,
@@ -82,15 +83,16 @@ def update_activity(action=None):
 def add_user_to_blacklist(browser, username, campaign, action, logger):
 
     file_exists = os.path.isfile('./logs/blacklist.csv')
-    fieldnames = ['username', 'campaign', 'action']
+    fieldnames = ['date', 'username', 'campaign', 'action']
+    today = datetime.date.today().strftime('%m/%d/%y')
 
     try:
-
         with open('./logs/blacklist.csv', 'a+') as blacklist:
             writer = csv.DictWriter(blacklist, fieldnames=fieldnames)
             if not file_exists:
                 writer.writeheader()
             writer.writerow({
+                    'date': today,
                     'username': username,
                     'campaign': campaign,
                     'action': action
