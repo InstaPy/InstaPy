@@ -1,4 +1,3 @@
-import re
 import csv
 import os
 from .time_util import sleep
@@ -111,53 +110,48 @@ def get_active_users(browser, username, posts, logger):
     sleep(2)
 
     total_posts = formatNumber(browser.find_element_by_xpath(
-        '//header/div[2]/ul/li[1]/span/span').text)
+        "//span[contains(@class,'_t98z6')]//span").text)
 
-    if posts > total_posts:
+    # if posts > total user posts, assume total posts
+    if posts >= total_posts:
         # reaches all user posts
         posts = total_posts
 
     # click latest post
     browser.find_element_by_xpath(
-        '//article/div/div[1]/div[1]/div[1]/a').click()
+        "(//div[contains(@class, '_si7dy')])[1]").click()
 
     active_users = []
 
     # posts argument is the number of posts to collect usernames
-    for count in range(posts):
+    for count in range(1, posts):
         try:
-            sleep(2)
-            tmp_list = (browser.find_element_by_class_name('_3gwk6').
-                        find_elements_by_tag_name('a'))
-            # if post has no liked
-            if tmp_list[0].text == 'like this':
-                tmp_list = []
-            else:
-                # if there is a button to show more likes
-                more_likes = (
-                    re.search(r'\b\d+ likes?\b', tmp_list[0].text, re.I)
-                )
-                if more_likes is not None:
-                    browser.find_element_by_class_name('_nzn1h').click()
-                    sleep(1)
-                    tmp_list = browser.find_elements_by_class_name('_2g7d5')
-
+            browser.find_element_by_xpath(
+                "//a[contains(@class, '_nzn1h')]").click()
+            sleep(1)
+            tmp_list = browser.find_elements_by_xpath(
+                "//a[contains(@class, '_2g7d5')]")
         except NoSuchElementException:
-            logger.error('There is some error searching active users')
+            try:
+                tmp_list = browser.find_elements_by_xpath(
+                    "//div[contains(@class, '_3gwk6')]/a")
+            except NoSuchElementException:
+                logger.error('There is some error searching active users')
 
         if len(tmp_list) is not 0:
             for user in tmp_list:
                 active_users.append(user.text)
 
-        sleep(2)
-        # trick to find the right button after 1st posts
-        if count == 0:
-            browser.find_element_by_xpath(
-                '//body/div[4]/div/div/div[1]/div/div/a').click()
-        elif count is not (total_posts-1):
-            # don't click next posts on last post
-            browser.find_element_by_xpath(
-                '//body/div[4]/div/div/div[1]/div/div/a[2]').click()
+        sleep(1)
+        # if not reached posts(parameter) value, continue
+        if count+1 != posts:
+            try:
+                # click next button
+                browser.find_element_by_xpath(
+                    "//a[@class='_3a693 coreSpriteRightPaginationArrow']"
+                    "[text()='Next']").click()
+            except:
+                logger.error('Unable to go to next profile post')
 
     # delete duplicated users
     active_users = list(set(active_users))
