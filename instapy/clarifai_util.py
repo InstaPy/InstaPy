@@ -21,7 +21,7 @@ def check_image(browser, clarifai_api_key, img_tags, logger, full_match=False):
                 return True, comments
         else:
             if given_tags_in_result(tags, clarifai_tags, full_match):
-                print('Inappropriate content in Image, not commenting')
+                logger.info('Not Commenting, Possibly contains: "{}".'.format(', '.join(list(set(clarifai_tags)&set(tags)))))
                 return False, []
 
     return True, []
