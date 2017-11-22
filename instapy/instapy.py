@@ -102,6 +102,9 @@ class InstaPy:
         self.clarifai_img_tags = []
         self.clarifai_full_match = False
 
+        self.facebook_access_token = None
+        self.locations_found = []
+
         self.like_by_followers_upper_limit = 0
         self.like_by_followers_lower_limit = 0
 
@@ -336,6 +339,28 @@ class InstaPy:
         self.switch_language = option
         return self
 
+    def search_locations(self, search="", center="", distance="", amount=5, shuffle=False, access_token=''):
+
+        if access_token is None and self.facebook_access_token is None:
+            self.facebook_access_token = os.environ.get('FACEBOOK_ACCESS_TOKEN')
+        elif access_token is not None:
+            self.facebook_access_token = access_token
+
+        req = requests.get(
+            'https://graph.facebook.com/search?type=place&q={}&center={}&distance={}&fields=name,id&access_token={}'.format(
+                search, center, distance, self.facebook_access_token))
+        dataJson = json.loads(req.text)
+        if isinstance(dataJson['data'], list):
+            rawData = dataJson['data']
+            if shuffle:
+                random.shuffle(rawData)
+
+        for item in rawData[0:amount]:
+            self.logger.info('[Locations Found: {}]'.format(item['id'] + '/' + item['name']))
+
+        self.locations_found = [data['id'] for data in rawData[0:amount]]
+        return self
+
     def set_use_clarifai(self, enabled=False, api_key=None, full_match=False):
         """Defines if the clarifai img api should be used
         Which 'project' will be used (only 5000 calls per month)"""
@@ -451,7 +476,8 @@ class InstaPy:
                           locations=None,
                           amount=50,
                           media=None,
-                          skip_top_posts=True):
+                          skip_top_posts=True,
+                          use_locations_found=False):
         """Likes (default) 50 images per given locations"""
         if self.aborting:
             return self
@@ -463,6 +489,10 @@ class InstaPy:
         followed = 0
 
         locations = locations or []
+
+        if use_locations_found is True and self.locations_found is not []:
+            self.logger.info('Using locations found')
+            locations = self.locations_found
 
         for index, location in enumerate(locations):
             self.logger.info('Location [{}/{}]'

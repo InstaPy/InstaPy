@@ -46,6 +46,7 @@ Table of Contents
   * [Don't unfollow active users](#dont-unfollow-active-users)
   * [Interactions based on the number of followers a user has](#interactions-based-on-the-number-of-followers-a-user-has)
   * [Like by Locations](#like-by-locations)
+  * [Search a Locations](#search-locations)
   * [Like by Tags](#like-by-tags)
   * [Like by Feeds](#like-by-feeds)
   * [Restricting Likes](#restricting-likes)
@@ -321,6 +322,29 @@ Example:
 * Search 'Salton Sea' and select the result with a location icon
 * The url is: https://www.instagram.com/explore/locations/224442573/salton-sea/
 * Use everything after 'locations/' or just the number
+
+### Search Locations
+###### Note: This method use the [Facebook Places Search API](https://developers.facebook.com/docs/places/web/search/) and you need a Facebook Access Token (https://developers.facebook.com/tools/accesstoken/) you can found the documentation about the Facebook Access Token [here](https://developers.facebook.com/docs/facebook-login/access-tokens/).
+
+If you want the script to get your FACEBOOK_ACCESS_TOKEN for your environment, you can do:
+
+```sh
+export FACEBOOK_ACCESS_TOKEN="<access_token>"
+```
+####Example:
+```python
+# search: The name of the place to search for. If you don't specify a name to search for, then you must specify the center of the search. In that case, the response will contain places that are around the given location.
+
+# center: The coordinates for the center of the search, in the format: [latitude],[longitude]; e.g., 140.7307,-73.9918. If you don't specify this parameter, then search is required, and the places in the response will not be associated with any particular location.
+
+# distance: The maximum distance from the center, in meters. This parameter can only be used in conjunction with center.
+
+# shuffle: Randomly chooses the location between the results returned from the API.
+
+session.search_locations(search="cafe", center='49.281277,-123.087957', distance=1000, amount=5, shuffle=False, access_token=facebook_access_token)
+
+# Like 10 posts for each location found.
+session.like_by_locations(use_locations_found=True, amount=10, skip_top_posts=False)
 
 ### Like by Tags
 
