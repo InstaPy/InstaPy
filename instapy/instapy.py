@@ -396,19 +396,18 @@ class InstaPy:
             data = json.loads(req.text)
 
             if data['tagExists'] is True:
-                if sort == 'random':
-                    random_tags = random.sample(data['results'], limit)
-                    for item in random_tags:
-                        self.smart_hashtags.append(item['tag'])
-                elif sort == 'top' | sort == 'rank' | sort == 's' :
-                    if sort == 'top':
-                        sort = 'rank'
+                if sort == 'top':
                     # sort by ranking
                     ordered_tags_by_rank = sorted(
-                        data['results'], key=lambda d: d[sort], reverse=True)
+                        data['results'], key=lambda d: d['rank'], reverse=True)
                     ranked_tags = (ordered_tags_by_rank[:limit])
                     for item in ranked_tags:
                         # add smart hashtag to like list
+                        self.smart_hashtags.append(item['tag'])
+
+                elif sort == 'random':
+                    random_tags = random.sample(data['results'], limit)
+                    for item in random_tags:
                         self.smart_hashtags.append(item['tag'])
 
                 if log_tags is True:
