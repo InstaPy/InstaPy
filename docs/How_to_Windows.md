@@ -74,8 +74,8 @@
 
 #### 4. Edit the instapy.py file
 - Open file instapy.py an disabling the clarifai import
-- comment the line "from clarifai.client import ClarifaiApi"
-> `from clarifai.client import ClarifaiApi`
+- comment the line "from .clarifai_util import check_image"
+> `from .clarifai_util import check_image`
 
 
 #### 5. Starting the script

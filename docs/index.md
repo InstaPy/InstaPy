@@ -1,4 +1,4 @@
-<img src="http://i.imgur.com/9ZjtveL.png" width="150" align="right">
+<img src="https://i.imgur.com/0Q9O7Zs.jpg" width="150" align="right">
 
 # InstaPy
 [![MIT license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/timgrossmann/InstaPy/blob/master/LICENSE)
@@ -47,9 +47,9 @@ Built in delays prevent your account from getting banned. (Just make sure you do
 ## Getting started
 
 ### Guides:
-**[How to Ubuntu](./docs/How_To_DO_Ubuntu.md) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**
+**[How to Ubuntu](./docs/How_To_DO_Ubuntu_on_Digital_Ocean.md) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**
 
-**[ How to CentOS](./docs/How_To_DO_Centos.md) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**
+**[How to RaspberryPi](./docs/How_to_Raspberry.md) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**
 
 **[How to Windows](./docs/How_to_Windows.md)**
 
@@ -285,11 +285,10 @@ crontab -e
 
 ###### Note: Head over to [https://developer.clarifai.com/signup/](https://developer.clarifai.com/signup/) and create a free account, once you’re logged in go to [https://developer.clarifai.com/account/applications/](https://developer.clarifai.com/account/applications/) and create a new application. You can find the client ID and Secret there. You get 5000 API-calls free/month.
 
-If you want the script to get your Clarifai_ID and Clarifai_Secret for your environment, you can do:
+If you want the script to get your Clarifai_API_KEY from your environment, you can do:
 
 ```
-export CLARIFAI_ID="<ProjectID>"
-export CLARIFAI_SECRET="<Project Secret>"
+export CLARIFAI_API_KEY="<API Key>"
 ```
 ### Example with Imagecontent handling
 
@@ -313,10 +312,10 @@ InstaPy(username='test', password='test')\
 
 ```python
 #default enabled=False , enables the checking with the clarifai api (image tagging)
-#if secret and proj_id are not set, it will get the environment Variables
-# 'Clarifai_SECRET' and 'CLARIFAI_ID'
+#if api_key is not set, it will get the environment Variables
+# 'CLARIFAI_API_KEY'
 
-session.set_use_clarifai(enabled=True, secret='xyz', proj_id='123')
+session.set_use_clarifai(enabled=True, api_key='xxx')
 ```
 ### Filtering inappropriate images
 
@@ -518,16 +517,16 @@ session.set_comments(['Great Video!'], media='Video')
 
 ##### Emoji Support  
 You can use Unicode characters (like Emoji) in your comments
-1. You have to convert your comment to Unicode. This can safely be done by adding an u in front of the opening apostrophe: 
+1. You have to convert your comment to Unicode. This can safely be done by adding an u in front of the opening apostrophe:
 
 ```session.set_comments([u'This post is 🔥',u'More emojis are always better 💯',u'I love your posts 😍😍😍']);```
 
 ```session.set_comments([u'Emoji text codes are also supported :100: :thumbsup: :thumbs_up: \u2764 💯💯']);```
 
-Emoji text codes are implemented using 2 different naming codes. A complete list of emojis codes can be found on the [Python Emoji Github](https://github.com/carpedm20/emoji/blob/master/emoji/unicode_codes.py), but you can use the alternate shorted naming scheme found for Emoji text codes [here](https://www.webpagefx.com/tools/emoji-cheat-sheet). Note: Every Emoji has not been tested. Please report any inconsistancies. 
+Emoji text codes are implemented using 2 different naming codes. A complete list of emojis codes can be found on the [Python Emoji Github](https://github.com/carpedm20/emoji/blob/master/emoji/unicode_codes.py), but you can use the alternate shorted naming scheme found for Emoji text codes [here](https://www.webpagefx.com/tools/emoji-cheat-sheet). Note: Every Emoji has not been tested. Please report any inconsistancies.
 
 
-> **Legacy Emoji Support** 
+> **Legacy Emoji Support**
 >
 > You can still use Unicode strings in your comments, but there are some limitations.
 > 1. You can use only Unicode characters with no more than 4 characters and you have to use the unicode code (e. g. ```\u1234```). You find a list of emoji with unicode codes on [Wikipedia](https://en.wikipedia.org/wiki/Emoji#Unicode_blocks), but there is also a list of working emoji in ```/assets```  
@@ -616,11 +615,10 @@ crontab -e
 
 ###### Note: Head over to https://developer.clarifai.com/signup/ and create a free account, once you're logged in go to https://developer.clarifai.com/account/applications/ and create a new application. You can find the client ID and Secret there. You get 5000 API-calls free/month.  
 
-If you want the script to get your Clarifai_ID and Clarifai_Secret for your environment, you can do:
+If you want the script to get your CLARIFAI_API_KEY from your environment, you can do:
 
 ```
-export CLARIFAI_ID="<ProjectID>"
-export CLARIFAI_SECRET="<Project Secret>"
+export CLARIFAI_API_KEY="<API KEY>"
 ```
 #### Example with Imagecontent handling
 
@@ -645,9 +643,9 @@ InstaPy(username='test', password='test')\
 ```python
 #default enabled=False , enables the checking with the clarifai api (image tagging)
 #if secret and proj_id are not set, it will get the environment Variables
-# 'Clarifai_SECRET' and 'CLARIFAI_ID'
+# 'CLARIFAI_API_KEY'
 
-session.set_use_clarifai(enabled=True, secret='xyz', proj_id='123')
+session.set_use_clarifai(enabled=True, api_key='xxx')
 ```
 ##### Filtering inappropriate images
 

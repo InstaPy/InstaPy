@@ -5,6 +5,7 @@ from time import sleep as original_sleep
 # Amount of variance to be introduced
 # i.e. random time will be in the range: TIME +/- STDEV %
 STDEV = 0.5
+sleep_percentage = 1
 
 
 def randomize_time(mean):
@@ -18,5 +19,13 @@ def randomize_time(mean):
     return t
 
 
-def sleep(t):
-    original_sleep(randomize_time(t))
+def set_sleep_percentage(percentage):
+    global sleep_percentage
+    sleep_percentage = percentage/100
+
+
+def sleep(t, custom_percentage=None):
+    if custom_percentage is None:
+        custom_percentage = sleep_percentage
+    time = randomize_time(t)*custom_percentage
+    original_sleep(time)
