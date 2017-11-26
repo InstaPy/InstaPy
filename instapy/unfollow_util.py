@@ -146,7 +146,6 @@ def unfollow(browser,
 
         all_followers = []
         all_following = []
-        unfollow_list = []
 
         variables = {}
         variables['id'] = user_data['id']
@@ -210,7 +209,8 @@ def unfollow(browser,
             print(
                 "unable to get followers and following information \n", str(e))
 
-        unfollow_list = set(all_following) - set(all_followers)
+        # make sure to unfollow users who don't follow back and don't unfollow whitelisted users
+        unfollow_list = set(all_following) - set(all_followers) - set(dont_include)
 
         # unfollow loop
         try:
