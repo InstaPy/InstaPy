@@ -659,7 +659,7 @@ def get_given_user_following(browser,
     if amount >= len(follow_buttons):
         amount = len(follow_buttons)
         logger.warning("{} -> Less users to follow than requested."
-                       .formart(user_name))
+                       .format(user_name))
 
     finalBtnPerson = []
     if randomize:
@@ -708,7 +708,7 @@ def follow_given_user_followers(browser,
         # update server calls
         update_activity()
     except BaseException as e:
-        logger.error("following_link error {}".formart(str(e)))
+        logger.error("following_link error {}".format(str(e)))
 
     personFollowed = follow_through_dialog(browser,
                                            user_name,
