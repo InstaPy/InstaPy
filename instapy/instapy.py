@@ -1,3 +1,5 @@
+# -*- coding: UTF-8 -*-
+
 """OS Modules environ method to get the setup vars from the Environment"""
 import csv
 import json
@@ -7,6 +9,9 @@ import os
 from datetime import datetime
 from sys import maxsize
 import random
+import sys
+reload(sys)
+sys.setdefaultencoding('utf-8')
 
 from pyvirtualdisplay import Display
 from selenium import webdriver
