@@ -155,6 +155,7 @@ class InstaPy:
             chrome_options.add_argument('--dns-prefetch-disable')
             chrome_options.add_argument('--no-sandbox')
             chrome_options.add_argument('--lang=en-US')
+            chrome_options.add_argument('--disable-setuid-sandbox')
 
             # managed_default_content_settings.images = 2: Disable images load,
             # this setting can improve pageload & save bandwidth
