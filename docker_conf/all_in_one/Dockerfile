@@ -40,6 +40,7 @@ RUN apt-get update \
         libappindicator1 \
         xdg-utils \
         git \
+	lsb-release \
     && pip3 install --upgrade pip \
     && locale-gen en_US.UTF-8 \
     && dpkg-reconfigure locales \
