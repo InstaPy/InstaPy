@@ -71,6 +71,8 @@ Table of Contents
 ### Video tutorials:
 **[Setting up InstaPy for OSX](https://www.youtube.com/watch?v=I025CEBJCvQ)**
 
+**[Setting up InstaPy at Digital Ocean (for Debian)](https://www.youtube.com/watch?v=2Ci-hXU1IEY)**
+
 ### Guides:
 **[How to Ubuntu (64-Bit)](./docs/How_To_DO_Ubuntu_on_Digital_Ocean.md) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**
 
@@ -177,14 +179,14 @@ session.follow_by_list(accs, times=1)
 # Follows the followers of each given user
 # The usernames can be either a list or a string
 # The amount is for each account, in this case 30 users will be followed
-# If random is false it will pick in a top-down fashion
+# If randomize is false it will pick in a top-down fashion
 
-session.follow_user_followers(['friend1', 'friend2', 'friend3'], amount=10, random=False)
+session.follow_user_followers(['friend1', 'friend2', 'friend3'], amount=10, randomize=False)
 
 # default sleep_delay=600 (10min) for every 10 user following, in this case
 # sleep for 60 seconds  
 
-session.follow_user_followers(['friend1', 'friend2', 'friend3'], amount=10, random=False, sleep_delay=60)
+session.follow_user_followers(['friend1', 'friend2', 'friend3'], amount=10, randomize=False, sleep_delay=60)
 ```
 
 ### Follow users that someone else is following
@@ -193,14 +195,14 @@ session.follow_user_followers(['friend1', 'friend2', 'friend3'], amount=10, rand
 # Follows the people that a given users are following
 # The usernames can be either a list or a string
 # The amount is for each account, in this case 30 users will be followed
-# If random is false it will pick in a top-down fashion
+# If randomize is false it will pick in a top-down fashion
 
-session.follow_user_following(['friend1', 'friend2', 'friend3'], amount=10, random=False)
+session.follow_user_following(['friend1', 'friend2', 'friend3'], amount=10, randomize=False)
 
 # default sleep_delay=600 (10min) for every 10 user following, in this case
 # sleep for 60 seconds
 
-session.follow_user_following(['friend1', 'friend2', 'friend3'], amount=10, random=False, sleep_delay=60)
+session.follow_user_following(['friend1', 'friend2', 'friend3'], amount=10, randomize=False, sleep_delay=60)
 ```
 
 ### Follow someone else's followers/following
@@ -211,8 +213,8 @@ session.follow_user_following(['friend1', 'friend2', 'friend3'], amount=10, rand
 # Take into account the other set options like the comment rate
 # and the filtering for inappropriate words or users
 
-session.set_user_interact(amount=5, random=True, percentage=50, media='Photo')
-session.follow_user_followers(['friend1', 'friend2', 'friend3'], amount=10, random=False, interact=True)
+session.set_user_interact(amount=5, randomize=True, percentage=50, media='Photo')
+session.follow_user_followers(['friend1', 'friend2', 'friend3'], amount=10, randomize=False, interact=True)
 ```
 
 ### Interact with specific users
@@ -224,7 +226,7 @@ session.set_do_follow(enabled=False, percentage=50)
 session.set_comments(["Cool", "Super!"])
 session.set_do_comment(enabled=True, percentage=80)
 session.set_do_like(True, percentage=70)
-session.interact_by_users(['user1', 'user2', 'user3'], amount=5, random=True, media='Photo')
+session.interact_by_users(['user1', 'user2', 'user3'], amount=5, randomize=True, media='Photo')
 ```
 
 ### Interact with users that someone else is following
@@ -232,12 +234,12 @@ session.interact_by_users(['user1', 'user2', 'user3'], amount=5, random=True, me
 # Interact with the people that a given user is following
 # set_do_comment, set_do_follow and set_do_like are applicable
 
-session.set_user_interact(amount=5, random=True, percentage=50, media='Photo')
+session.set_user_interact(amount=5, randomize=True, percentage=50, media='Photo')
 session.set_do_follow(enabled=False, percentage=70)
 session.set_do_like(enabled=False, percentage=70)
 session.set_comments(["Cool", "Super!"])
 session.set_do_comment(enabled=True, percentage=80)
-session.interact_user_following(['natgeo'], amount=10, random=True)
+session.interact_user_following(['natgeo'], amount=10, randomize=True)
 ```
 
 ### Interact with someone else's followers
@@ -245,12 +247,12 @@ session.interact_user_following(['natgeo'], amount=10, random=True)
 # Interact with the people that a given user is following
 # set_do_comment, set_do_follow and set_do_like are applicable
 
-session.set_user_interact(amount=5, random=True, percentage=50, media='Photo')
+session.set_user_interact(amount=5, randomize=True, percentage=50, media='Photo')
 session.set_do_follow(enabled=False, percentage=70)
 session.set_do_like(enabled=False, percentage=70)
 session.set_comments(["Cool", "Super!"])
 session.set_do_comment(enabled=True, percentage=80)
-session.interact_user_followers(['natgeo'], amount=10, random=True)
+session.interact_user_followers(['natgeo'], amount=10, randomize=True)
 ```
 
 ### Unfollowing
@@ -281,7 +283,7 @@ session.unfollow_users(amount=10, onlyNotFollowMe=True, sleep_delay=60)
 ```python
 # Prevents unfollow followers who have liked one of your latest 5 posts
 
-session.set_dont_unfollow_active_users(enabled=False, posts=5)
+session.set_dont_unfollow_active_users(enabled=True, posts=5)
 ```
 
 ### Interactions based on the number of followers a user has
@@ -332,7 +334,7 @@ session.like_by_tags(['natgeo', 'world'], amount=10)
 ```python
 # This is used to perform likes on your own feeds
 # amount=100  specifies how many total likes you want to perform
-# random=True randomly skips posts to be liked on your feed
+# randomize=True randomly skips posts to be liked on your feed
 # unfollow=True unfollows the author of a post which was considered 
 # inappropriate interact=True visits the author's profile page of a 
 # certain post and likes a given number of his pictures, then returns to feed

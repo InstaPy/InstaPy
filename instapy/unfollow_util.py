@@ -263,7 +263,7 @@ def unfollow(browser,
 
         # find dialog box
         dialog = browser.find_element_by_xpath(
-            '/html/body/div[4]/div/div/div[2]/div/div[2]')
+            '/html/body/div[4]/div/div[2]/div')
 
         # scroll down the page
         scroll_bottom(browser, dialog, allfollowing)
@@ -415,7 +415,7 @@ def follow_through_dialog(browser,
                           login,
                           follow_restrict,
                           allfollowing,
-                          is_random,
+                          randomize,
                           delay,
                           blacklist,
                           logger,
@@ -423,7 +423,7 @@ def follow_through_dialog(browser,
     sleep(2)
     person_followed = []
     real_amount = amount
-    if is_random and amount >= 3:
+    if randomize and amount >= 3:
         # expanding the popultaion for better sampling distribution
         amount = amount * 3
 
@@ -473,7 +473,7 @@ def follow_through_dialog(browser,
     try:
         hasSlept = False
         btnPerson = list(zip(follow_buttons, person_list))
-        if is_random:
+        if randomize:
             sample = random.sample(range(0, len(follow_buttons)), real_amount)
             finalBtnPerson = []
             for num in sample:
@@ -531,7 +531,7 @@ def follow_through_dialog(browser,
                 continue
 
             else:
-                if is_random:
+                if randomize:
                     repickedNum = -1
                     while repickedNum not in sample and repickedNum != -1:
                         repickedNum = random.randint(0, len(btnPerson))
@@ -551,7 +551,7 @@ def get_given_user_followers(browser,
                              dont_include,
                              login,
                              follow_restrict,
-                             is_random,
+                             randomize,
                              logger):
 
     browser.get('https://www.instagram.com/' + user_name)
@@ -599,7 +599,7 @@ def get_given_user_followers(browser,
 >>>>>>> upstream/master
 
     finalBtnPerson = []
-    if is_random:
+    if randomize:
         sample = random.sample(range(0, len(follow_buttons)), amount)
 
         for num in sample:
@@ -621,7 +621,7 @@ def get_given_user_following(browser,
                              dont_include,
                              login,
                              follow_restrict,
-                             is_random,
+                             randomize,
                              logger):
 
     browser.get('https://www.instagram.com/' + user_name)
@@ -663,10 +663,10 @@ def get_given_user_following(browser,
     if amount >= len(follow_buttons):
         amount = len(follow_buttons)
         logger.warning("{} -> Less users to follow than requested."
-                       .formart(user_name))
+                       .format(user_name))
 
     finalBtnPerson = []
-    if is_random:
+    if randomize:
         sample = random.sample(range(0, len(follow_buttons)), amount)
 
         for num in sample:
@@ -712,7 +712,7 @@ def follow_given_user_followers(browser,
         # update server calls
         update_activity()
     except BaseException as e:
-        logger.error("following_link error {}".formart(str(e)))
+        logger.error("following_link error {}".format(str(e)))
 
     personFollowed = follow_through_dialog(browser,
                                            user_name,
