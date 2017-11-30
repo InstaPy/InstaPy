@@ -1,8 +1,8 @@
 import datetime as _datetime
 from .time_util import sleep
 
-HOUR_START_DAY = 7
-HOUR_END_DAY = 20
+HOUR_START_DAY = 5
+HOUR_END_DAY = 22
 
 class InstaPyStorage(object):
     TOTAL_START_DAY = '16/10/2017'
@@ -35,17 +35,24 @@ class InstaPyStorage(object):
             self.thisDayTotal = 1
 
         # stop actions until time is
-        if not (_datetime.time(HOUR_START_DAY, 1) <= now.time() <= _datetime.time(HOUR_END_DAY, 30)):
-            hoursTillNextStart = (24+HOUR_START_DAY-self.lastHourExecuted)
+        if not (_datetime.time(HOUR_START_DAY, 0) <= now.time() <= _datetime.time(HOUR_END_DAY, 0)):
+            # set the diff
+            hoursTillNextStart = (HOUR_START_DAY-now.hour)
+            # wrap around the hour
+            if (_datetime.time(HOUR_END_DAY, 0) < now.time()):
+                hoursTillNextStart += 24
+                
+            secsTillNextStart = (HOUR_START_DAY-self.lastHourExecuted)*3600
             print("hoursTillNextStart:", hoursTillNextStart)
-            sleep(hoursTillNextStart)
+            #sleep(secsTillNextStart)
+            return 0
         else:
             # stop actions since the maximum actions per day reached
             if self.thisDayTotal >= self.MAX_PER_DAY:
                 print('reached MAX_PER_DAY')
-                sleep(1)
+                sleep(3600)
 
             # stop actions since the maximum actions per this hour reached
             if self.thisHourTotal >= self.MAX_PER_HOUR:
                 print('reached MAX_PER_HOUR')
-                sleep(1)
+                sleep(600)
