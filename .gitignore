@@ -98,3 +98,5 @@ ENV/
 
 # Editors
 .idea
+logs/password.txt
+logs/user.txt

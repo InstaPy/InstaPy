@@ -1,4 +1,12 @@
 """OS Modules environ method to get the setup vars from the Environment"""
+<<<<<<< HEAD
+
+from os import environ
+from datetime import datetime
+from random import randint
+from random import sample
+from math import ceil
+=======
 import csv
 import json
 import logging
@@ -8,6 +16,7 @@ from datetime import datetime
 from sys import maxsize
 import random
 
+>>>>>>> upstream/master
 from pyvirtualdisplay import Display
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
@@ -15,7 +24,7 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver import DesiredCapabilities
 import requests
 
-from .clarifai_util import check_image
+#from .clarifai_util import check_image
 from .comment_util import comment_image
 from .like_util import check_link
 from .like_util import get_links_for_tag
@@ -41,6 +50,16 @@ from .unfollow_util import follow_given_user
 from .unfollow_util import load_follow_restriction
 from .unfollow_util import dump_follow_restriction
 from .unfollow_util import set_automated_followed_pool
+<<<<<<< HEAD
+from .statistics import InstaPyStorage
+import random
+import csv
+import pickle
+from passlib.hash import pbkdf2_sha256
+import getpass
+import os
+=======
+>>>>>>> upstream/master
 
 
 class InstaPy:
@@ -505,6 +524,7 @@ class InstaPy:
 
                         if liked:
                             liked_img += 1
+                            self.save_do_like_statistics()
                             checked_img = True
                             temp_comments = []
                             commenting = random.randint(
@@ -559,8 +579,13 @@ class InstaPy:
                                                         self.follow_restrict,
                                                         self.username,
                                                         user_name,
+<<<<<<< HEAD
+                                                        self.blacklist)
+                                self.save_do_follow_statistics()
+=======
                                                         self.blacklist,
                                                         self.logger)
+>>>>>>> upstream/master
 
                             else:
                                 self.logger.info('--> Not following')
@@ -650,6 +675,7 @@ class InstaPy:
 
                         if liked:
                             liked_img += 1
+                            self.save_do_like_statistics()
                             checked_img = True
                             temp_comments = []
                             commenting = (random.randint(0, 100) <=
@@ -704,8 +730,13 @@ class InstaPy:
                                                         self.follow_restrict,
                                                         self.username,
                                                         user_name,
+<<<<<<< HEAD
+                                                        self.blacklist)
+                                self.save_do_follow_statistics()
+=======
                                                         self.blacklist,
                                                         self.logger)
+>>>>>>> upstream/master
                             else:
                                 self.logger.info('--> Not following')
                                 sleep(1)
@@ -776,8 +807,14 @@ class InstaPy:
                                         self.follow_restrict,
                                         self.username,
                                         username,
+<<<<<<< HEAD
+                                        self.blacklist)
+                self.save_do_follow_statistics()
+
+=======
                                         self.blacklist,
                                         self.logger)
+>>>>>>> upstream/master
             else:
                 self.logger.info('--> Not following')
                 sleep(1)
@@ -821,6 +858,7 @@ class InstaPy:
                         if liked:
                             total_liked_img += 1
                             liked_img += 1
+                            self.save_do_like_statistics()
                             checked_img = True
                             temp_comments = []
                             commenting = random.randint(
@@ -979,6 +1017,7 @@ class InstaPy:
                         if liked:
                             total_liked_img += 1
                             liked_img += 1
+                            self.save_do_like_statistics()
                             checked_img = True
                             temp_comments = []
                             commenting = random.randint(
@@ -1360,6 +1399,7 @@ class InstaPy:
                                             self.user_interact_media)
 
                                     liked_img += 1
+                                    self.save_do_like_statistics()
                                     checked_img = True
                                     temp_comments = []
                                     commenting = random.randint(
@@ -1408,6 +1448,7 @@ class InstaPy:
                                         self.logger.info('--> Not commented')
                                         sleep(1)
 
+
                                     if (self.do_follow and
                                         user_name not in self.dont_include and
                                         checked_img and
@@ -1419,8 +1460,14 @@ class InstaPy:
                                             self.follow_restrict,
                                             self.username,
                                             user_name,
+<<<<<<< HEAD
+                                            self.blacklist)
+                                        self.save_do_follow_statistics()
+
+=======
                                             self.blacklist,
                                             self.logger)
+>>>>>>> upstream/master
                                     else:
                                         self.logger.info('--> Not following')
                                         sleep(1)
@@ -1445,6 +1492,7 @@ class InstaPy:
         self.followed += followed
 
         return self
+
 
     def set_dont_unfollow_active_users(self, enabled=False, posts=4):
         """Prevents unfollow followers who have liked one of
@@ -1498,3 +1546,54 @@ class InstaPy:
 
         with open('./logs/followed.txt', 'w') as followFile:
             followFile.write(str(self.followed))
+
+    def save_do_like_statistics(self):
+        """run date information to not exceed the daily/hourly limits"""
+        # read today's date in 2008-11-22 format, and now time
+        try:
+            with open('./logs/likesLimitLogFile.pkl', 'rb') as input:
+                likes = pickle.load(input)
+        except FileNotFoundError:
+            likes = InstaPyStorage()
+        except:
+            pass
+        # update
+        likes.updateStatistics()
+        # save after updates
+        with open('./logs/likesLimitLogFile.pkl', 'wb') as output:
+            pickle.dump(likes, output, pickle.HIGHEST_PROTOCOL)
+
+    def save_do_follow_statistics(self):
+        """run date information to not exceed the daily/hourly limits"""
+        # read today's date in 2008-11-22 format, and now time
+        try:
+            with open('./logs/followsLimitLogFile.pkl', 'rb') as input:
+                follows = pickle.load(input)
+        except FileNotFoundError:
+            follows = InstaPyStorage()
+        except:
+            pass
+        # update
+        follows.updateStatistics()
+        # save after updates
+        with open('./logs/followsLimitLogFile.pkl', 'wb') as output:
+            pickle.dump(follows, output, pickle.HIGHEST_PROTOCOL)
+
+    def read_likes_statistics(self):
+        with open('./logs/likesLimitLogFile.pkl', 'rb') as input:
+            likes = pickle.load(input)
+        print('--\ntotal Likes',likes.total, 'from date:', likes.TOTAL_START_DAY)
+        print('this Day Total Likes:', likes.thisDayTotal)
+        print('this Hour Total Likes:', likes.thisHourTotal)
+        print('Day Executed last Likes:', likes.lastDayExecuted)
+        print('Hour Executed last Likes:', likes.lastHourExecuted)
+        print('--')
+    def read_follows_statistics(self):
+        with open('./logs/followsLimitLogFile.pkl', 'rb') as input:
+            follows = pickle.load(input)
+        print('MAX_PER_HOUR', follows.MAX_PER_HOUR, 'MAX_PER_DAY', follows.MAX_PER_DAY)
+        print('--\ntotal follows', follows.total, 'from date:', follows.TOTAL_START_DAY)
+        print('this Day Total follows:', follows.thisDayTotal)
+        print('this Hour Total follows:', follows.thisHourTotal)
+        print('Day Executed last follow:', follows.lastDayExecuted)
+        print('Hour Executed last follow:', follows.lastHourExecuted)
