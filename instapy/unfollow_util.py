@@ -92,8 +92,11 @@ def unfollow(browser,
                 if person not in dont_include:
                     browser.get('https://www.instagram.com/' + person)
                     sleep(2)
-                    follow_button = browser.find_element_by_xpath(
-                        "//*[contains(text(), 'Follow')]")
+                    try:
+                        follow_button = browser.find_element_by_xpath(
+                            "//*[contains(text(), 'Follow')]")
+                    except:
+                        follow_button.text = 'none'
 
                     if follow_button.text == 'Following':
                         unfollowNum += 1
@@ -109,7 +112,7 @@ def unfollow(browser,
                             ' now unfollowing: {}'
                             .format(str(unfollowNum), person.encode('utf-8')))
 
-                        sleep(15)
+                        sleep(25)
 
                         if hasSlept:
                             hasSlept = False
@@ -331,8 +334,15 @@ def follow_user(browser, follow_restrict, login, user_name, blacklist, logger):
 
         # Do we still need this sleep?
         sleep(2)
+		
+        errorSkip = False
+		
+        try:
+            follow_button.is_displayed()
+        except:
+            errorSkip = True
 
-        if follow_button.is_displayed():
+        if not errorSkip and follow_button.is_displayed():
             follow_button.send_keys("\n")
             update_activity('follows')
         else:
@@ -356,6 +366,10 @@ def follow_user(browser, follow_restrict, login, user_name, blacklist, logger):
         return 1
     except NoSuchElementException:
         logger.info('--> Already following')
+        sleep(1)
+        return 0
+    except:
+        print('--> SION:Not following since error occuered')
         sleep(1)
         return 0
 
@@ -581,7 +595,13 @@ def get_given_user_followers(browser,
         "//div[text()='Followers']/following-sibling::div")
 
     # scroll down the page
-    scroll_bottom(browser, dialog, allfollowing)
+    try:
+        print('0')
+        scroll_bottom(browser, dialog, allfollowing)
+        scroll_bottom(browser, dialog, allfollowing)
+        scroll_bottom(browser, dialog, allfollowing)
+    except:
+        pass
 
     # get follow buttons. This approch will find the follow buttons and
     # ignore the Unfollow/Requested buttons.
@@ -591,12 +611,9 @@ def get_given_user_followers(browser,
 
     if amount >= len(follow_buttons):
         amount = len(follow_buttons)
-<<<<<<< HEAD
-        print(user_name+" -> Less users to follow than requested. == "+str(amount))
-=======
+        print(str(amount))
         logger.warning("{} -> Less users to follow than requested."
                        .format(user_name))
->>>>>>> upstream/master
 
     finalBtnPerson = []
     if randomize:
@@ -787,3 +804,6 @@ def load_follow_restriction():
     """Loads the saved """
     with open('./logs/followRestriction.json') as followResFile:
         return json.load(followResFile)
+
+
+

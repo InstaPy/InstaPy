@@ -13,11 +13,11 @@ requirements = [
 description = 'Instagram Like, Comment and Follow Automation Script'
 
 setup(
-    name='instagram_py',
+    name='instagram_sion_',
     version=__version__,
     author=__author__,
-    author_email='contact.timgrossmann@gmail.com',
-    url='https://github.com/timgrossmann/InstaPy',
+    author_email='SC@SC.SC',
+    url='www.bomb.com',
     py_modules='instapy',
     description=description,
     install_requires=requirements

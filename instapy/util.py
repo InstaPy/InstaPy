@@ -3,6 +3,8 @@ import os
 from .time_util import sleep
 from selenium.common.exceptions import NoSuchElementException
 import sqlite3
+import json
+import pickle
 import datetime
 
 
@@ -36,7 +38,6 @@ def validate_username(browser,
 
     # if everything ok
     return True
-
 
 def update_activity(action=None):
     """Record every Instagram server call (page load, content load, likes,
@@ -161,16 +162,33 @@ def get_active_users(browser, username, posts, logger):
 
 def delete_line_from_file(filepath, lineToDelete, logger):
     try:
+        filepathOld = filepath+".old"
+        filepathTemp = filepath+".temp"
+
         f = open(filepath, "r")
         lines = f.readlines()
         f.close()
-        f = open(filepath, "w")
 
+        f = open(filepathTemp, "w")
         for line in lines:
-
             if line != lineToDelete:
                 f.write(line)
+            else:
+                print("123")
         f.close()
+
+        # File leftovers that should not exist, but if so remove it
+        try:
+            os.remove(filepathOld)
+        except:
+            pass
+        # rename original file to _old
+        os.rename(filepath, filepathOld)
+        # rename new temp file to filepath
+        os.rename(filepathTemp, filepath)
+       # remove old and temp file
+        os.remove(filepathOld)
+
     except BaseException as e:
         logger.error("delete_line_from_file error {}".format(str(e)))
 
@@ -194,3 +212,106 @@ def formatNumber(number):
     formattedNum = number.replace(',', '').replace('.', '')
     formattedNum = int(formattedNum.replace('k', '00').replace('m', '00000'))
     return formattedNum
+
+def getFollowerList(browser,
+             username,
+             logger):
+
+    browser.get('https://www.instagram.com/' + username)
+
+    #  check how many people we are following
+    #  throw RuntimeWarning if we are 0 people following
+    try:
+        allfollowing = formatNumber(
+            browser.find_element_by_xpath('//li[3]/a/span').text)
+    except NoSuchElementException:
+        logger.warning('There are 0 people to unfollow')
+
+    if True:
+        try:
+            browser.get(
+                'https://www.instagram.com/' + username + '/?__a=1')
+            pre = browser.find_element_by_tag_name("pre").text
+            user_data = json.loads(pre)['user']
+        except BaseException as e:
+            print("unable to get user information\n", str(e))
+
+        graphql_endpoint = 'https://www.instagram.com/graphql/query/'
+        graphql_followers = (
+            graphql_endpoint + '?query_id=17851374694183129')
+        graphql_following = (
+            graphql_endpoint + '?query_id=17874545323001329')
+
+        all_followers = []
+        all_following = []
+        unfollow_list = []
+
+        variables = {}
+        variables['id'] = user_data['id']
+        variables['first'] = 100
+
+        # get follower and following user loop
+        try:
+            for i in range(1, 2):
+                has_next_data = True
+
+                url = (
+                    '{}&variables={}'
+                    .format(graphql_followers, str(json.dumps(variables)))
+                )
+                if i != 0:
+                    url = (
+                        '{}&variables={}'
+                        .format(graphql_following, str(json.dumps(variables)))
+                    )
+                browser.get(url)
+
+                # fetch all user while still has data
+                while has_next_data:
+                    sleep(10)
+                    pre = browser.find_element_by_tag_name("pre").text
+                    data = json.loads(pre)['data']
+
+                    if i == 0:
+                        # get followers
+                        page_info = (
+                            data['user']['edge_followed_by']['page_info'])
+                        edges = data['user']['edge_followed_by']['edges']
+                        for user in edges:
+                            all_followers.append(user['node']['username'])
+                    elif i == 1:
+                        # get following
+                        page_info = (
+                            data['user']['edge_follow']['page_info'])
+                        edges = data['user']['edge_follow']['edges']
+                        for user in edges:
+                            all_following.append(user['node']['username'])
+
+                    has_next_data = page_info['has_next_page']
+                    if has_next_data:
+                        variables['after'] = page_info['end_cursor']
+
+                        url = (
+                            '{}&variables={}'
+                            .format(
+                                graphql_followers, str(json.dumps(variables)))
+                        )
+                        if i != 0:
+                            url = (
+                                '{}&variables={}'
+                                .format(
+                                    graphql_following,
+                                    str(json.dumps(variables))
+                                )
+                            )
+                        browser.get(url)
+        except BaseException as e:
+            print(
+                "unable to get followers and following information \n", str(e))
+
+        unfollow_list = set(all_following) - set(all_followers)
+        print(len(all_following))
+        #with open('./logs/all_followers.pkl', 'wb') as output:
+        #    pickle.dump(all_followers, output, pickle.HIGHEST_PROTOCOL)
+        with open('./logs/all_following.pkl', 'wb') as output:
+            pickle.dump(all_following, output, pickle.HIGHEST_PROTOCOL)
