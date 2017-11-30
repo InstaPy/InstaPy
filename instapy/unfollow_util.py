@@ -263,7 +263,7 @@ def unfollow(browser,
 
         # find dialog box
         dialog = browser.find_element_by_xpath(
-            '/html/body/div[4]/div/div[2]/div')
+            "//div[text()='Following']/following-sibling::div")
 
         # scroll down the page
         scroll_bottom(browser, dialog, allfollowing)
