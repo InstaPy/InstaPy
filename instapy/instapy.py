@@ -164,7 +164,7 @@ class InstaPy:
             if self.headless_browser:
                 chrome_options.add_argument('--headless')
                 user_agent = "Chrome" # Replaces browser User Agent from "HeadlessChrome".
-                chrome_options.add_argument(f'user-agent={user_agent}')
+                chrome_options.add_argument('user-agent={user_agent}'.format(user_agent=user_agent))
 
             # managed_default_content_settings.images = 2: Disable images load,
             # this setting can improve pageload & save bandwidth
