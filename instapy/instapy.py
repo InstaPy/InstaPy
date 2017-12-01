@@ -53,13 +53,15 @@ class InstaPy:
                  selenium_local_session=True,
                  use_firefox=False,
                  page_delay=25,
-                 show_logs=True):
+                 show_logs=True,
+                 headless_browser=False):
 
         if nogui:
             self.display = Display(visible=0, size=(800, 600))
             self.display.start()
 
         self.browser = None
+        self.headless_browser = headless_browser
 
         self.username = username or os.environ.get('INSTA_USER')
         self.password = password or os.environ.get('INSTA_PW')
@@ -156,6 +158,13 @@ class InstaPy:
             chrome_options.add_argument('--no-sandbox')
             chrome_options.add_argument('--lang=en-US')
             chrome_options.add_argument('--disable-setuid-sandbox')
+            
+            ## This option implements Chrome Headless, a new (late 2017) GUI-less browser
+            ## Must be Chromedriver 2.9 and above.
+            if self.headless_browser:
+                chrome_options.add_argument('--headless')
+                user_agent = "Chrome" # Replaces browser User Agent from "HeadlessChrome".
+                chrome_options.add_argument('user-agent={user_agent}'.format(user_agent=user_agent))
 
             # managed_default_content_settings.images = 2: Disable images load,
             # this setting can improve pageload & save bandwidth
