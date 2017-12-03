@@ -617,8 +617,11 @@ class InstaPy:
                                 else:
                                     comments = (self.comments +
                                                 self.photo_comments)
-                                commented += comment_image(
-                                    self.browser, comments)
+                                commented += comment_image(self.browser,
+                                                           user_name,
+                                                           comments,
+                                                           self.blacklist,
+                                                           self.logger)
                                 if (check_activity_limits(
                                         self.likes_limit,
                                         self.comments_limit,
