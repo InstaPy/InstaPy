@@ -1,8 +1,4 @@
-# pylint: disable=C0103
-import datetime
-import random
 from instapy import InstaPy
-from instapy.time_util import sleep
 
 insta_username = ''
 insta_password = ''
@@ -12,18 +8,15 @@ insta_password = ''
 session = InstaPy(username=insta_username, password=insta_password)
 session.login()
 
-amountLike = random.randint(10, 30)
-unfollowUserFollow = random.randint(20, 30)
-followbyLikes = random.randint(10, 20)
-
-session.set_interaction_limits(likes=15, comments=25, follows=10, unfollows=30, server_calls=1000)
+# set up all the settings
 session.set_upper_follower_count(limit=2500)
-session.set_blacklist(enabled=True, campaign='mezar_campaign')
-session.set_do_follow(enabled=True, percentage=followbyLikes, times=2)
-#session.unfollow_users(amount=unfollowUserFollow, onlyNotFollowMe=True)
-session.set_dont_like(['pizza', 'girl', 'nsfw'])
+session.set_do_comment(True, percentage=10)
+session.set_comments(['aMEIzing!', 'So much fun!!', 'Nicey!'])
+session.set_dont_include(['friend1', 'friend2', 'friend3'])
+session.set_dont_like(['pizza', 'girl'])
+
 # do the actual liking
-session.like_by_tags(['like4like'], amount=amountLike)
+session.like_by_tags(['natgeo', 'world'], amount=100)
 
 # end the bot session
 session.end()
