@@ -30,6 +30,7 @@ from .time_util import sleep
 from .time_util import set_sleep_percentage
 from .util import get_active_users
 from .util import validate_username
+from .util import check_activity_limits
 from .unfollow_util import get_given_user_followers
 from .unfollow_util import get_given_user_following
 from .unfollow_util import unfollow
@@ -106,6 +107,12 @@ class InstaPy:
 
         self.like_by_followers_upper_limit = 0
         self.like_by_followers_lower_limit = 0
+
+        self.likes_limit = None
+        self.comments_limit = None
+        self.follows_limit = None
+        self.unfollows_limit = None
+        self.server_calls_limit = None
 
         self.aborting = False
 
@@ -213,6 +220,7 @@ class InstaPy:
 
     def login(self):
         """Used to login the user either with the username and password"""
+
         if not login_user(self.browser,
                           self.username,
                           self.password,
@@ -404,6 +412,25 @@ class InstaPy:
         # delete duplicated tags
         self.smart_hashtags = list(set(self.smart_hashtags))
         return self
+    def set_interaction_limits(self,
+                               likes=None,
+                               comments=None,
+                               follows=None,
+                               unfollows=None,
+                               server_calls=None):
+        """Set daily interactions limit"""
+
+        if (likes or comments or follows or unfollows or server_calls) is None:
+            print('Warning: set_interaction__limits is misconfigured')
+            self.logFile.write(
+                'Warning: set_interaction__limits is misconfigured')
+            return
+        else:
+            self.likes_limit = likes
+            self.comments_limit = comments
+            self.follows_limit = follows
+            self.unfollows_limit = unfollows
+            self.server_calls_limit = server_calls
 
     def clarifai_check_img_for(self, tags=None, comment=False, comments=None):
         """Defines the tags, the images should be checked for"""
@@ -419,6 +446,18 @@ class InstaPy:
 
     def follow_by_list(self, followlist, times=1):
         """Allows to follow by any scrapped list"""
+
+        # checks set_interaction_limits before start
+        if (check_activity_limits(
+                self.likes_limit,
+                self.comments_limit,
+                self.follows_limit,
+                self.unfollows_limit,
+                self.server_calls_limit
+                )):
+                    # force exit
+                    self.end(True)
+
         self.follow_times = times or 0
         if self.aborting:
             return self
@@ -438,6 +477,15 @@ class InstaPy:
                 self.followed += followed
                 self.logger.info('Followed: {}'.format(str(followed)))
                 followed = 0
+                if (check_activity_limits(
+                        self.likes_limit,
+                        self.comments_limit,
+                        self.follows_limit,
+                        self.unfollows_limit,
+                        self.server_calls_limit
+                        )):
+                            # force exit
+                            self.end(True)
             else:
                 self.logger.info('---> {} has already been followed more than '
                                  '{} times'.format(
@@ -462,6 +510,18 @@ class InstaPy:
                           media=None,
                           skip_top_posts=True):
         """Likes (default) 50 images per given locations"""
+
+        # checks set_interaction_limits before start
+        if (check_activity_limits(
+                self.likes_limit,
+                self.comments_limit,
+                self.follows_limit,
+                self.unfollows_limit,
+                self.server_calls_limit
+                )):
+                    # force exit
+                    self.end(True)
+
         if self.aborting:
             return self
 
@@ -513,6 +573,15 @@ class InstaPy:
                                            self.logger)
 
                         if liked:
+                            if (check_activity_limits(
+                                    self.likes_limit,
+                                    self.comments_limit,
+                                    self.follows_limit,
+                                    self.unfollows_limit,
+                                    self.server_calls_limit
+                                    )):
+                                        # force exit
+                                        self.end(True)
                             liked_img += 1
                             checked_img = True
                             temp_comments = []
@@ -548,11 +617,17 @@ class InstaPy:
                                 else:
                                     comments = (self.comments +
                                                 self.photo_comments)
-                                commented += comment_image(self.browser,
-                                                           user_name,
-                                                           comments,
-                                                           self.blacklist,
-                                                           self.logger)
+                                commented += comment_image(
+                                    self.browser, comments)
+                                if (check_activity_limits(
+                                        self.likes_limit,
+                                        self.comments_limit,
+                                        self.follows_limit,
+                                        self.unfollows_limit,
+                                        self.server_calls_limit
+                                        )):
+                                            # force exit
+                                            self.end(True)
                             else:
                                 self.logger.info('--> Not commented')
                                 sleep(1)
@@ -570,6 +645,15 @@ class InstaPy:
                                                         user_name,
                                                         self.blacklist,
                                                         self.logger)
+                                if (check_activity_limits(
+                                        self.likes_limit,
+                                        self.comments_limit,
+                                        self.follows_limit,
+                                        self.unfollows_limit,
+                                        self.server_calls_limit
+                                        )):
+                                            # force exit
+                                            self.end(True)
 
                             else:
                                 self.logger.info('--> Not following')
@@ -600,6 +684,16 @@ class InstaPy:
                      skip_top_posts=True,
                      use_smart_hashtags=False):
         """Likes (default) 50 images per given tag"""
+
+        # checks set_interaction_limits before start
+        if (check_activity_limits(self.likes_limit,
+                                  self.comments_limit,
+                                  self.follows_limit,
+                                  self.unfollows_limit,
+                                  self.server_calls_limit)):
+                                    # force exit
+                                    self.end(True)
+
         if self.aborting:
             return self
 
@@ -658,6 +752,14 @@ class InstaPy:
                                            self.logger)
 
                         if liked:
+                            if (check_activity_limits(self.likes_limit,
+                                                      self.comments_limit,
+                                                      self.follows_limit,
+                                                      self.unfollows_limit,
+                                                      self.server_calls_limit
+                                                      )):
+                                                        # force exit
+                                                        self.end(True)
                             liked_img += 1
                             checked_img = True
                             temp_comments = []
@@ -698,6 +800,15 @@ class InstaPy:
                                                            comments,
                                                            self.blacklist,
                                                            self.logger)
+                                if (check_activity_limits(
+                                        self.likes_limit,
+                                        self.comments_limit,
+                                        self.follows_limit,
+                                        self.unfollows_limit,
+                                        self.server_calls_limit
+                                        )):
+                                            # force exit
+                                            self.end(True)
                             else:
                                 self.logger.info('--> Not commented')
                                 sleep(1)
@@ -715,6 +826,15 @@ class InstaPy:
                                                         user_name,
                                                         self.blacklist,
                                                         self.logger)
+                                if (check_activity_limits(
+                                        self.likes_limit,
+                                        self.comments_limit,
+                                        self.follows_limit,
+                                        self.unfollows_limit,
+                                        self.server_calls_limit
+                                        )):
+                                            # force exit
+                                            self.end(True)
                             else:
                                 self.logger.info('--> Not following')
                                 sleep(1)
@@ -739,6 +859,18 @@ class InstaPy:
 
     def like_by_users(self, usernames, amount=10, randomize=False, media=None):
         """Likes some amounts of images for each usernames"""
+
+        # checks set_interaction_limits before start
+        if (check_activity_limits(
+                self.likes_limit,
+                self.comments_limit,
+                self.follows_limit,
+                self.unfollows_limit,
+                self.server_calls_limit
+                )):
+                    # force exit
+                    self.end(True)
+
         if self.aborting:
             return self
 
@@ -787,6 +919,15 @@ class InstaPy:
                                         username,
                                         self.blacklist,
                                         self.logger)
+                if (check_activity_limits(
+                        self.likes_limit,
+                        self.comments_limit,
+                        self.follows_limit,
+                        self.unfollows_limit,
+                        self.server_calls_limit
+                        )):
+                            # force exit
+                            self.end(True)
             else:
                 self.logger.info('--> Not following')
                 sleep(1)
@@ -828,6 +969,15 @@ class InstaPy:
                                            self.logger)
 
                         if liked:
+                            if (check_activity_limits(
+                                    self.likes_limit,
+                                    self.comments_limit,
+                                    self.follows_limit,
+                                    self.unfollows_limit,
+                                    self.server_calls_limit
+                                    )):
+                                        # force exit
+                                        self.end(True)
                             total_liked_img += 1
                             liked_img += 1
                             checked_img = True
@@ -866,6 +1016,15 @@ class InstaPy:
                                                            comments,
                                                            self.blacklist,
                                                            self.logger)
+                                if (check_activity_limits(
+                                        self.likes_limit,
+                                        self.comments_limit,
+                                        self.follows_limit,
+                                        self.unfollows_limit,
+                                        self.server_calls_limit
+                                        )):
+                                            # force exit
+                                            self.end(True)
                             else:
                                 self.logger.info('--> Not commented')
                                 sleep(1)
@@ -898,6 +1057,18 @@ class InstaPy:
                           randomize=False,
                           media=None):
         """Likes some amounts of images for each usernames"""
+
+        # checks set_interaction_limits before start
+        if (check_activity_limits(
+                self.likes_limit,
+                self.comments_limit,
+                self.follows_limit,
+                self.unfollows_limit,
+                self.server_calls_limit
+                )):
+                    # force exit
+                    self.end(True)
+
         if self.aborting:
             return self
 
@@ -972,6 +1143,16 @@ class InstaPy:
                                 username,
                                 self.blacklist,
                                 self.logger)
+                            # checks set_interaction_limits before start
+                            if (check_activity_limits(
+                                    self.likes_limit,
+                                    self.comments_limit,
+                                    self.follows_limit,
+                                    self.unfollows_limit,
+                                    self.server_calls_limit
+                                    )):
+                                        # force exit
+                                        self.end(True)
                         else:
                             self.logger.info('--> Not following')
                             sleep(1)
@@ -986,6 +1167,15 @@ class InstaPy:
                             liked = True
 
                         if liked:
+                            if (check_activity_limits(
+                                    self.likes_limit,
+                                    self.comments_limit,
+                                    self.follows_limit,
+                                    self.unfollows_limit,
+                                    self.server_calls_limit
+                                    )):
+                                        # force exit
+                                        self.end(True)
                             total_liked_img += 1
                             liked_img += 1
                             checked_img = True
@@ -1024,6 +1214,16 @@ class InstaPy:
                                                            comments,
                                                            self.blacklist,
                                                            self.logger)
+                                # checks set_interaction_limits before start
+                                if (check_activity_limits(
+                                        self.likes_limit,
+                                        self.comments_limit,
+                                        self.follows_limit,
+                                        self.unfollows_limit,
+                                        self.server_calls_limit
+                                        )):
+                                            # force exit
+                                            self.end(True)
                             else:
                                 self.logger.info('--> Not commented')
                                 sleep(1)
@@ -1072,6 +1272,17 @@ class InstaPy:
 
     def interact_user_followers(self, usernames, amount=10, randomize=False):
 
+        # checks set_interaction_limits before start
+        if (check_activity_limits(
+                self.likes_limit,
+                self.comments_limit,
+                self.follows_limit,
+                self.unfollows_limit,
+                self.server_calls_limit
+                )):
+                    # force exit
+                    self.end(True)
+
         userToInteract = []
         if not isinstance(usernames, list):
             usernames = [usernames]
@@ -1111,6 +1322,17 @@ class InstaPy:
         return self
 
     def interact_user_following(self, usernames, amount=10, randomize=False):
+
+        # checks set_interaction_limits before start
+        if (check_activity_limits(
+                self.likes_limit,
+                self.comments_limit,
+                self.follows_limit,
+                self.unfollows_limit,
+                self.server_calls_limit
+                )):
+                    # force exit
+                    self.end(True)
 
         userToInteract = []
         if not isinstance(usernames, list):
@@ -1154,6 +1376,17 @@ class InstaPy:
                               randomize=False,
                               interact=False,
                               sleep_delay=600):
+
+        # checks set_interaction_limits before start
+        if (check_activity_limits(
+                self.likes_limit,
+                self.comments_limit,
+                self.follows_limit,
+                self.unfollows_limit,
+                self.server_calls_limit
+                )):
+                    # force exit
+                    self.end(True)
 
         userFollowed = []
         if not isinstance(usernames, list):
@@ -1202,6 +1435,18 @@ class InstaPy:
                               randomize=False,
                               interact=False,
                               sleep_delay=600):
+
+        # checks set_interaction_limits before start
+        if (check_activity_limits(
+                self.likes_limit,
+                self.comments_limit,
+                self.follows_limit,
+                self.unfollows_limit,
+                self.server_calls_limit
+                )):
+                    # force exit
+                    self.end(True)
+
         userFollowed = []
         if not isinstance(usernames, list):
             usernames = [usernames]
@@ -1253,6 +1498,17 @@ class InstaPy:
         self.automatedFollowedPool = set_automated_followed_pool(self.username,
                                                                  self.logger)
 
+        # checks set_interaction_limits before start
+        if (check_activity_limits(
+                self.likes_limit,
+                self.comments_limit,
+                self.follows_limit,
+                self.unfollows_limit,
+                self.server_calls_limit
+                )):
+                    # force exit
+                    self.end(True)
+
         try:
             unfollowNumber = unfollow(self.browser,
                                       self.username,
@@ -1285,6 +1541,17 @@ class InstaPy:
                      unfollow=False,
                      interact=False):
         """Like the users feed"""
+
+        # checks set_interaction_limits before start
+        if (check_activity_limits(
+                self.likes_limit,
+                self.comments_limit,
+                self.follows_limit,
+                self.unfollows_limit,
+                self.server_calls_limit
+                )):
+                    # force exit
+                    self.end(True)
 
         if self.aborting:
             return self
@@ -1349,6 +1616,16 @@ class InstaPy:
                                                    self.logger)
 
                                 if liked:
+                                    if (check_activity_limits(
+                                            self.likes_limit,
+                                            self.comments_limit,
+                                            self.follows_limit,
+                                            self.unfollows_limit,
+                                            self.server_calls_limit
+                                            )):
+                                                # force exit
+                                                self.end(True)
+
                                     username = (self.browser.
                                                 find_element_by_xpath(
                                                     '//article/header/div[2]/'
@@ -1413,6 +1690,14 @@ class InstaPy:
                                                         comments,
                                                         self.blacklist,
                                                         self.logger)
+                                        if (check_activity_limits(
+                                                self.likes_limit,
+                                                self.comments_limit,
+                                                self.follows_limit,
+                                                self.unfollows_limit,
+                                                self.server_calls_limit)):
+                                                    # force exit
+                                                    self.end(True)
                                     else:
                                         self.logger.info('--> Not commented')
                                         sleep(1)
@@ -1430,6 +1715,15 @@ class InstaPy:
                                             user_name,
                                             self.blacklist,
                                             self.logger)
+                                        if (check_activity_limits(
+                                                self.likes_limit,
+                                                self.comments_limit,
+                                                self.follows_limit,
+                                                self.unfollows_limit,
+                                                self.server_calls_limit
+                                                )):
+                                                    # force exit
+                                                    self.end(True)
                                     else:
                                         self.logger.info('--> Not following')
                                         sleep(1)
@@ -1492,7 +1786,7 @@ class InstaPy:
         except:
             self.logger.info('Campaign {} first run'.format(campaign))
 
-    def end(self):
+    def end(self, force_exit=False):
         """Closes the current session"""
         dump_follow_restriction(self.follow_restrict)
         self.browser.delete_all_cookies()
@@ -1507,3 +1801,6 @@ class InstaPy:
 
         with open('./logs/followed.txt', 'w') as followFile:
             followFile.write(str(self.followed))
+
+        if force_exit is True:
+            exit()
