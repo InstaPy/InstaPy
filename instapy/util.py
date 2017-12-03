@@ -38,6 +38,45 @@ def validate_username(browser,
     return True
 
 
+def check_activity_limits(likes, comments, follows, unfollows, server_calls):
+    """Check activity daily limits"""
+
+    if (likes is None or
+            comments is None or
+            follows is None or
+            unfollows is None or
+            server_calls is None):
+        print('Warning: set_interaction__limits is misconfigured')
+        return
+
+    try:
+        conn = sqlite3.connect('./db/instapy.db')
+        conn.row_factory = sqlite3.Row
+        cur = conn.cursor()
+        # collect today data
+        cur.execute("SELECT * FROM statistics WHERE created == date('now')")
+        data = cur.fetchone()
+        if data['likes'] >= likes:
+            print('Daily likes limit reached, exiting...')
+            return True
+        elif data['comments'] >= comments:
+            print('Daily comments limit reached, exiting...')
+            return True
+        elif data['follows'] >= follows:
+            print('Daily follows limit reached, exiting...')
+            return True
+        elif data['unfollows'] >= unfollows:
+            print('Daily unfollows limit reached, exiting...')
+            return True
+        elif data['server_calls'] >= server_calls:
+            print('Daily server calls limit reached, exiting...')
+            return True
+        else:
+            return False
+    except IOError as e:
+        print(e)
+
+
 def update_activity(action=None):
     """Record every Instagram server call (page load, content load, likes,
     comments, follows, unfollow)."""
