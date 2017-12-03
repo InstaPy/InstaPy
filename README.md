@@ -377,7 +377,7 @@ session.like_by_tags(amount=10, use_smart_hashtags=True)
 ### Restricting Likes
 
 ```python
-session.set_dont_like('#exactmatch', '[startswith', ']endswith', 'broadmatch')
+session.set_dont_like(['#exactmatch', '[startswith', ']endswith', 'broadmatch'])
 ```
 
 `.set_dont_like` searches the description and owner comments for hashtags and 
