@@ -422,8 +422,6 @@ class InstaPy:
 
         if (likes or comments or follows or unfollows or server_calls) is None:
             self.logger.warning("set_interaction__limits is misconfigured")
-            self.logFile.write(
-                'Warning: set_interaction__limits is misconfigured')
             return
         else:
             self.likes_limit = likes
