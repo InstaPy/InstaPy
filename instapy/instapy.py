@@ -421,7 +421,7 @@ class InstaPy:
         """Set daily interactions limit"""
 
         if (likes or comments or follows or unfollows or server_calls) is None:
-            print('Warning: set_interaction__limits is misconfigured')
+            self.logger.warning("set_interaction__limits is misconfigured")
             self.logFile.write(
                 'Warning: set_interaction__limits is misconfigured')
             return
@@ -453,7 +453,8 @@ class InstaPy:
                 self.comments_limit,
                 self.follows_limit,
                 self.unfollows_limit,
-                self.server_calls_limit
+                self.server_calls_limit,
+                self.logger
                 )):
                     # force exit
                     self.end(True)
@@ -482,7 +483,8 @@ class InstaPy:
                         self.comments_limit,
                         self.follows_limit,
                         self.unfollows_limit,
-                        self.server_calls_limit
+                        self.server_calls_limit,
+                        self.logger
                         )):
                             # force exit
                             self.end(True)
@@ -517,7 +519,8 @@ class InstaPy:
                 self.comments_limit,
                 self.follows_limit,
                 self.unfollows_limit,
-                self.server_calls_limit
+                self.server_calls_limit,
+                self.logger
                 )):
                     # force exit
                     self.end(True)
@@ -578,7 +581,8 @@ class InstaPy:
                                     self.comments_limit,
                                     self.follows_limit,
                                     self.unfollows_limit,
-                                    self.server_calls_limit
+                                    self.server_calls_limit,
+                                    self.logger
                                     )):
                                         # force exit
                                         self.end(True)
@@ -627,7 +631,8 @@ class InstaPy:
                                         self.comments_limit,
                                         self.follows_limit,
                                         self.unfollows_limit,
-                                        self.server_calls_limit
+                                        self.server_calls_limit,
+                                        self.logger
                                         )):
                                             # force exit
                                             self.end(True)
@@ -653,7 +658,8 @@ class InstaPy:
                                         self.comments_limit,
                                         self.follows_limit,
                                         self.unfollows_limit,
-                                        self.server_calls_limit
+                                        self.server_calls_limit,
+                                        self.logger
                                         )):
                                             # force exit
                                             self.end(True)
@@ -693,7 +699,8 @@ class InstaPy:
                                   self.comments_limit,
                                   self.follows_limit,
                                   self.unfollows_limit,
-                                  self.server_calls_limit)):
+                                  self.server_calls_limit,
+                                  self.logger)):
                                     # force exit
                                     self.end(True)
 
@@ -759,7 +766,8 @@ class InstaPy:
                                                       self.comments_limit,
                                                       self.follows_limit,
                                                       self.unfollows_limit,
-                                                      self.server_calls_limit
+                                                      self.server_calls_limit,
+                                                      self.logger
                                                       )):
                                                         # force exit
                                                         self.end(True)
@@ -808,7 +816,8 @@ class InstaPy:
                                         self.comments_limit,
                                         self.follows_limit,
                                         self.unfollows_limit,
-                                        self.server_calls_limit
+                                        self.server_calls_limit,
+                                        self.logger
                                         )):
                                             # force exit
                                             self.end(True)
@@ -834,7 +843,8 @@ class InstaPy:
                                         self.comments_limit,
                                         self.follows_limit,
                                         self.unfollows_limit,
-                                        self.server_calls_limit
+                                        self.server_calls_limit,
+                                        self.logger
                                         )):
                                             # force exit
                                             self.end(True)
@@ -869,7 +879,8 @@ class InstaPy:
                 self.comments_limit,
                 self.follows_limit,
                 self.unfollows_limit,
-                self.server_calls_limit
+                self.server_calls_limit,
+                self.logger
                 )):
                     # force exit
                     self.end(True)
@@ -927,7 +938,8 @@ class InstaPy:
                         self.comments_limit,
                         self.follows_limit,
                         self.unfollows_limit,
-                        self.server_calls_limit
+                        self.server_calls_limit,
+                        self.logger
                         )):
                             # force exit
                             self.end(True)
@@ -977,7 +989,8 @@ class InstaPy:
                                     self.comments_limit,
                                     self.follows_limit,
                                     self.unfollows_limit,
-                                    self.server_calls_limit
+                                    self.server_calls_limit,
+                                    self.logger
                                     )):
                                         # force exit
                                         self.end(True)
@@ -1024,7 +1037,8 @@ class InstaPy:
                                         self.comments_limit,
                                         self.follows_limit,
                                         self.unfollows_limit,
-                                        self.server_calls_limit
+                                        self.server_calls_limit,
+                                        self.logger
                                         )):
                                             # force exit
                                             self.end(True)
@@ -1067,7 +1081,8 @@ class InstaPy:
                 self.comments_limit,
                 self.follows_limit,
                 self.unfollows_limit,
-                self.server_calls_limit
+                self.server_calls_limit,
+                self.logger
                 )):
                     # force exit
                     self.end(True)
@@ -1152,7 +1167,8 @@ class InstaPy:
                                     self.comments_limit,
                                     self.follows_limit,
                                     self.unfollows_limit,
-                                    self.server_calls_limit
+                                    self.server_calls_limit,
+                                    self.logger
                                     )):
                                         # force exit
                                         self.end(True)
@@ -1175,7 +1191,8 @@ class InstaPy:
                                     self.comments_limit,
                                     self.follows_limit,
                                     self.unfollows_limit,
-                                    self.server_calls_limit
+                                    self.server_calls_limit,
+                                    self.logger
                                     )):
                                         # force exit
                                         self.end(True)
@@ -1223,7 +1240,8 @@ class InstaPy:
                                         self.comments_limit,
                                         self.follows_limit,
                                         self.unfollows_limit,
-                                        self.server_calls_limit
+                                        self.server_calls_limit,
+                                        self.logger
                                         )):
                                             # force exit
                                             self.end(True)
@@ -1281,7 +1299,8 @@ class InstaPy:
                 self.comments_limit,
                 self.follows_limit,
                 self.unfollows_limit,
-                self.server_calls_limit
+                self.server_calls_limit,
+                self.logger
                 )):
                     # force exit
                     self.end(True)
@@ -1332,7 +1351,8 @@ class InstaPy:
                 self.comments_limit,
                 self.follows_limit,
                 self.unfollows_limit,
-                self.server_calls_limit
+                self.server_calls_limit,
+                self.logger
                 )):
                     # force exit
                     self.end(True)
@@ -1386,7 +1406,8 @@ class InstaPy:
                 self.comments_limit,
                 self.follows_limit,
                 self.unfollows_limit,
-                self.server_calls_limit
+                self.server_calls_limit,
+                self.logger
                 )):
                     # force exit
                     self.end(True)
@@ -1445,7 +1466,8 @@ class InstaPy:
                 self.comments_limit,
                 self.follows_limit,
                 self.unfollows_limit,
-                self.server_calls_limit
+                self.server_calls_limit,
+                self.logger
                 )):
                     # force exit
                     self.end(True)
@@ -1506,7 +1528,8 @@ class InstaPy:
                 self.comments_limit,
                 self.follows_limit,
                 self.unfollows_limit,
-                self.server_calls_limit
+                self.server_calls_limit,
+                self.logger
                 )):
                     # force exit
                     self.end(True)
@@ -1549,7 +1572,8 @@ class InstaPy:
                 self.comments_limit,
                 self.follows_limit,
                 self.unfollows_limit,
-                self.server_calls_limit
+                self.server_calls_limit,
+                self.logger
                 )):
                     # force exit
                     self.end(True)
@@ -1622,7 +1646,8 @@ class InstaPy:
                                             self.comments_limit,
                                             self.follows_limit,
                                             self.unfollows_limit,
-                                            self.server_calls_limit
+                                            self.server_calls_limit,
+                                            self.logger
                                             )):
                                                 # force exit
                                                 self.end(True)
@@ -1696,7 +1721,8 @@ class InstaPy:
                                                 self.comments_limit,
                                                 self.follows_limit,
                                                 self.unfollows_limit,
-                                                self.server_calls_limit)):
+                                                self.server_calls_limit,
+                                                self.logger)):
                                                     # force exit
                                                     self.end(True)
                                     else:
@@ -1721,7 +1747,8 @@ class InstaPy:
                                                 self.comments_limit,
                                                 self.follows_limit,
                                                 self.unfollows_limit,
-                                                self.server_calls_limit
+                                                self.server_calls_limit,
+                                                self.logger
                                                 )):
                                                     # force exit
                                                     self.end(True)

@@ -1,5 +1,6 @@
 import csv
 import os
+import logging
 from .time_util import sleep
 from selenium.common.exceptions import NoSuchElementException
 import sqlite3
@@ -38,7 +39,7 @@ def validate_username(browser,
     return True
 
 
-def check_activity_limits(likes, comments, follows, unfollows, server_calls):
+def check_activity_limits(likes, comments, follows, unfollows, server_calls, logger):
     """Check activity daily limits"""
 
     if (likes is None or
@@ -46,7 +47,7 @@ def check_activity_limits(likes, comments, follows, unfollows, server_calls):
             follows is None or
             unfollows is None or
             server_calls is None):
-        print('Warning: set_interaction__limits is misconfigured')
+        logger.warning('Warning: set_interaction__limits is misconfigured')
         return
 
     conn = sqlite3.connect('./db/instapy.db')
@@ -56,19 +57,19 @@ def check_activity_limits(likes, comments, follows, unfollows, server_calls):
     cur.execute("SELECT * FROM statistics WHERE created == date('now')")
     data = cur.fetchone()
     if data['likes'] >= likes:
-        print('Daily likes limit reached, exiting...')
+        logger.info("Daily likes limit reached, exiting...")
         return True
     elif data['comments'] >= comments:
-        print('Daily comments limit reached, exiting...')
+        logger.info('Daily comments limit reached, exiting...')
         return True
     elif data['follows'] >= follows:
-        print('Daily follows limit reached, exiting...')
+        logger.info('Daily follows limit reached, exiting...')
         return True
     elif data['unfollows'] >= unfollows:
-        print('Daily unfollows limit reached, exiting...')
+        logger.info('Daily unfollows limit reached, exiting...')
         return True
     elif data['server_calls'] >= server_calls:
-        print('Daily server calls limit reached, exiting...')
+        logger.info('Daily server calls limit reached, exiting...')
         return True
     else:
         return False
