@@ -15,7 +15,7 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver import DesiredCapabilities
 import requests
 
-#from .clarifai_util import check_image
+from .clarifai_util import check_image
 from .comment_util import comment_image
 from .like_util import check_link
 from .like_util import get_links_for_tag
