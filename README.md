@@ -60,6 +60,7 @@ Table of Contents
 * [Emoji Support](#emoji-support)
 * [Clarifai ImageAPI](#clarifai-imageapi)
 * [Running on a Server](#running-on-a-server)
+* [Running on a Headless Browser](#running-on-a-headless-browser)
 * [Running with Docker microservices manual](#running-with-docker-microservices-manual)
 * [Running all-in-one with Docker (obsolete)](#running-all-in-one-with-docker-obsolete)
 * [Automate with cron](#automate-with-cron)
@@ -376,7 +377,7 @@ session.like_by_tags(amount=10, use_smart_hashtags=True)
 ### Restricting Likes
 
 ```python
-session.set_dont_like('#exactmatch', '[startswith', ']endswith', 'broadmatch')
+session.set_dont_like(['#exactmatch', '[startswith', ']endswith', 'broadmatch'])
 ```
 
 `.set_dont_like` searches the description and owner comments for hashtags and 
@@ -504,6 +505,16 @@ Use the `nogui` parameter to interact with virtual display
 
 ```
 session = InstaPy(username='test', password='test', nogui=True)
+```
+
+## Running on a Headless Browser
+
+**Note:** Chrome only! Must user chromedriver v2.9+ 
+
+Use `headless_browser` parameter to run the bot via the CLI. Works great if running the scripts locally, or to deploy on a server. No GUI, less CPU intensive. [Example](http://g.recordit.co/BhEgXANLhJ.gif)
+
+```
+session = InstaPy(username='test', password='test', headless_browser=True)
 ```
 
 ## Running with Docker microservices manual
