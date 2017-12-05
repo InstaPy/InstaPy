@@ -60,28 +60,14 @@ class InstaPy:
                  use_firefox=False,
                  page_delay=25,
                  show_logs=True,
-                 passwordinput=None):
+                 headless_browser=False):
 
         if nogui:
             self.display = Display(visible=0, size=(800, 600))
             self.display.start()
 
-		# read the hash file check it she256 eq
-        with open('./logs/pbkdf2_sha256.pkl', 'rb') as _input:
-                hash = pickle.load(_input)
-        if (not pbkdf2_sha256.verify("aass1", hash)):
-            quit()
-        # create the hash file check it she256 eq
-        hash = pbkdf2_sha256.encrypt("as3", rounds=200000, salt_size=16)
-        passwordinput = passwordinput or getpass.getpass('Password:')
-        isCorrentPassword = pbkdf2_sha256.verify(passwordinput, hash)
-        isCorrentPassword = True
-        if (isCorrentPassword == True):
-            print('password match')
-        else:
-            quit()
-			
         self.browser = None
+        self.headless_browser = headless_browser
 
         self.username = username or os.environ.get('INSTA_USER')
         self.password = password or os.environ.get('INSTA_PW')
@@ -136,9 +122,10 @@ class InstaPy:
         file_handler.setLevel(logging.DEBUG)
         logger_formatter = logging.Formatter('%(levelname)s - %(message)s')
         file_handler.setFormatter(logger_formatter)
+        if (self.logger.hasHandlers()):
+            self.logger.handlers.clear()
         self.logger.addHandler(file_handler)
-        #self.logger.update(dict(name=self.logger))
-
+        
         if show_logs is True:
             console_handler = logging.StreamHandler()
             console_handler.setLevel(logging.DEBUG)
@@ -179,6 +166,13 @@ class InstaPy:
             chrome_options.add_argument('--no-sandbox')
             chrome_options.add_argument('--lang=en-US')
             chrome_options.add_argument('--disable-setuid-sandbox')
+            
+            ## This option implements Chrome Headless, a new (late 2017) GUI-less browser
+            ## Must be Chromedriver 2.9 and above.
+            if self.headless_browser:
+                chrome_options.add_argument('--headless')
+                user_agent = "Chrome" # Replaces browser User Agent from "HeadlessChrome".
+                chrome_options.add_argument('user-agent={user_agent}'.format(user_agent=user_agent))
 
             # managed_default_content_settings.images = 2: Disable images load,
             # this setting can improve pageload & save bandwidth
@@ -1293,6 +1287,10 @@ class InstaPy:
                        onlyInstapyMethod='FIFO',
                        sleep_delay=600,
                        onlyNotFollowMe=False):
+
+        if self.aborting:
+            return self
+        
         """Unfollows (default) 10 users from your following list"""
         self.automatedFollowedPool = set_automated_followed_pool(self.username,
                                                                  self.logger)
@@ -1506,10 +1504,12 @@ class InstaPy:
 
         return self
 
-    def getFollowerList_user(self):
+    def getFollowerList_user(self, following=True, followers=False):
         unfollowNumber = getFollowerList(self.browser,
-                                  self.username,
-                                self.logger)
+                                         self.username,
+                                         self.logger,
+                                         following,
+                                         followers)
         return self
 
     def set_dont_unfollow_active_users(self, enabled=False, posts=4):
@@ -1582,7 +1582,7 @@ class InstaPy:
         except:
             pass
         # update
-        res = likes.updateStatistics()
+        res = likes.update_statistics()
         # save after updates
         with open('./logs/likesLimitLogFile.pkl', 'wb') as output:
             pickle.dump(likes, output, pickle.HIGHEST_PROTOCOL)
@@ -1599,7 +1599,7 @@ class InstaPy:
         except:
             pass
         # update
-        res = follows.updateStatistics()
+        res = follows.update_statistics()
         # save after updates
         with open('./logs/followsLimitLogFile.pkl', 'wb') as output:
             pickle.dump(follows, output, pickle.HIGHEST_PROTOCOL)
@@ -1614,6 +1614,7 @@ class InstaPy:
         print('Day Executed last Likes:', likes.lastDayExecuted)
         print('Hour Executed last Likes:', likes.lastHourExecuted)
         print('--')
+
     def read_follows_statistics(self):
         with open('./logs/followsLimitLogFile.pkl', 'rb') as input:
             follows = pickle.load(input)

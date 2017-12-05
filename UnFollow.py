@@ -26,7 +26,7 @@ def job():
         session.set_dont_include(original_all_following)
         # start the process
         #session.set_dont_unfollow_active_users(enabled=True, posts=2)
-        session.unfollow_users(amount=100, onlyInstapyFollowed=True, onlyInstapyMethod='FIFO', sleep_delay=240 )
+        session.unfollow_users(amount=100, onlyInstapyFollowed=True, onlyInstapyMethod='FIFO', sleep_delay=440 )
         # end the bot session
         session.end()
     except KeyboardInterrupt:
@@ -42,10 +42,10 @@ schedule.every().day.at("10:23").do(job)
 schedule.every().day.at("12:08").do(job)
 schedule.every().day.at("13:02").do(job)
 schedule.every().day.at("14:13").do(job)
-schedule.every().day.at("15:13").do(job)
-schedule.every().day.at("16:14").do(job)
-schedule.every().day.at("17:23").do(job)
-schedule.every().day.at("18:13").do(job)
+schedule.every().day.at("15:33").do(job)
+schedule.every().day.at("16:25").do(job)
+schedule.every().day.at("17:28").do(job)
+schedule.every().day.at("18:29").do(job)
 schedule.every().day.at("19:00").do(job)
 schedule.every().day.at("20:25").do(job)
 

@@ -4,19 +4,22 @@ from .time_util import sleep
 HOUR_START_DAY = 5
 HOUR_END_DAY = 22
 
+
 class InstaPyStorage(object):
     TOTAL_START_DAY = '16/10/2017'
     with open('./logs/maxday.txt', 'r') as file:
         MAX_PER_DAY = int(file.readline())
     with open('./logs/maxhour.txt', 'r') as file:
         MAX_PER_HOUR = int(file.readline())
+
     def __init__(self):
         self.total = 0
         self.thisDayTotal = 0
         self.thisHourTotal = 0
         self.lastDayExecuted = _datetime.date.today()
         self.lastHourExecuted = _datetime.datetime.now().hour
-    def updateStatistics(self):
+
+    def update_statistics(self):
         # read today's date in 2008-11-22 format, and now time
         today = _datetime.date.today()
         now = _datetime.datetime.now()
@@ -34,7 +37,15 @@ class InstaPyStorage(object):
             self.thisHourTotal = 1
             self.thisDayTotal = 1
 
-        # stop actions until time is
+        reach_limit = self.check_limit()
+        if reach_limit is True:
+            return 0
+        else:
+            return 1
+
+    def check_limit(self):
+        now = _datetime.datetime.now()
+        # restrict actions to certain hours in the day
         if not (_datetime.time(HOUR_START_DAY, 0) <= now.time() <= _datetime.time(HOUR_END_DAY, 0)):
             # set the diff
             hoursTillNextStart = (HOUR_START_DAY-now.hour)
@@ -43,9 +54,9 @@ class InstaPyStorage(object):
                 hoursTillNextStart += 24
                 
             secsTillNextStart = (HOUR_START_DAY-self.lastHourExecuted)*3600
-            print("hoursTillNextStart:", hoursTillNextStart)
+            print("hoursTillNextPossibleStart:", hoursTillNextStart)
             #sleep(secsTillNextStart)
-            return 0
+            return True
         else:
             # stop actions since the maximum actions per day reached
             if self.thisDayTotal >= self.MAX_PER_DAY:
@@ -56,3 +67,5 @@ class InstaPyStorage(object):
             if self.thisHourTotal >= self.MAX_PER_HOUR:
                 print('reached MAX_PER_HOUR')
                 sleep(600)
+
+        return False
