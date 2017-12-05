@@ -39,6 +39,7 @@ def validate_username(browser,
     # if everything ok
     return True
 
+
 def update_activity(action=None):
     """Record every Instagram server call (page load, content load, likes,
     comments, follows, unfollow)."""
@@ -214,8 +215,10 @@ def formatNumber(number):
     return formattedNum
 
 def getFollowerList(browser,
-             username,
-             logger):
+                    username,
+                    logger,
+                    following,
+                    followers):
 
     browser.get('https://www.instagram.com/' + username)
 
@@ -252,66 +255,75 @@ def getFollowerList(browser,
 
         # get follower and following user loop
         try:
-            for i in range(1, 2):
-                has_next_data = True
+            if following is True:
+                i = 1
+            elif followers is True:
+                i = 0
+            else:
+                return 0
+            has_next_data = True
+            url = (
+                '{}&variables={}'
+                .format(graphql_followers, str(json.dumps(variables)))
+            )
+            if i != 0:
 
                 url = (
                     '{}&variables={}'
-                    .format(graphql_followers, str(json.dumps(variables)))
+                    .format(graphql_following, str(json.dumps(variables)))
                 )
-                if i != 0:
+            sleep(2)
+            browser.get(url)
+
+            # fetch all user while still has data
+            while has_next_data:
+                sleep(10)
+                pre = browser.find_element_by_tag_name("pre").text
+                data = json.loads(pre)['data']
+
+                if i == 0:
+                    # get followers
+                    page_info = (
+                        data['user']['edge_followed_by']['page_info'])
+                    edges = data['user']['edge_followed_by']['edges']
+                    for user in edges:
+                        all_followers.append(user['node']['username'])
+                elif i == 1:
+                    # get following
+                    page_info = (
+                        data['user']['edge_follow']['page_info'])
+                    edges = data['user']['edge_follow']['edges']
+                    for user in edges:
+                        all_following.append(user['node']['username'])
+
+                has_next_data = page_info['has_next_page']
+                if has_next_data:
+                    variables['after'] = page_info['end_cursor']
+
                     url = (
                         '{}&variables={}'
-                        .format(graphql_following, str(json.dumps(variables)))
+                        .format(
+                            graphql_followers, str(json.dumps(variables)))
                     )
-                browser.get(url)
-
-                # fetch all user while still has data
-                while has_next_data:
-                    sleep(10)
-                    pre = browser.find_element_by_tag_name("pre").text
-                    data = json.loads(pre)['data']
-
-                    if i == 0:
-                        # get followers
-                        page_info = (
-                            data['user']['edge_followed_by']['page_info'])
-                        edges = data['user']['edge_followed_by']['edges']
-                        for user in edges:
-                            all_followers.append(user['node']['username'])
-                    elif i == 1:
-                        # get following
-                        page_info = (
-                            data['user']['edge_follow']['page_info'])
-                        edges = data['user']['edge_follow']['edges']
-                        for user in edges:
-                            all_following.append(user['node']['username'])
-
-                    has_next_data = page_info['has_next_page']
-                    if has_next_data:
-                        variables['after'] = page_info['end_cursor']
-
+                    if i != 0:
                         url = (
                             '{}&variables={}'
                             .format(
-                                graphql_followers, str(json.dumps(variables)))
-                        )
-                        if i != 0:
-                            url = (
-                                '{}&variables={}'
-                                .format(
-                                    graphql_following,
-                                    str(json.dumps(variables))
-                                )
+                                graphql_following,
+                                str(json.dumps(variables))
                             )
-                        browser.get(url)
+                        )
+                    sleep(2)
+                    browser.get(url)
         except BaseException as e:
             print(
                 "unable to get followers and following information \n", str(e))
 
-        unfollow_list = set(all_following) - set(all_followers)
-        print(len(all_following))
-        #with open('./logs/all_followers.pkl', 'wb') as output:
-        #    pickle.dump(all_followers, output, pickle.HIGHEST_PROTOCOL)
-        with open('./logs/all_following.pkl', 'wb') as output:
-            pickle.dump(all_following, output, pickle.HIGHEST_PROTOCOL)
+        if following is True:
+            print(len(all_following))
+            with open('./logs/all_following.pkl', 'wb') as output:
+                pickle.dump(all_following, output, pickle.HIGHEST_PROTOCOL)
+        elif followers is True:
+            print(len(all_following))
+            with open('./logs/all_followers.pkl', 'wb') as output:
+                pickle.dump(all_followers, output, pickle.HIGHEST_PROTOCOL)

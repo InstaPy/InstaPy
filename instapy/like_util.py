@@ -204,10 +204,7 @@ def get_links_for_tag(browser,
         abort = False
         body_elem.send_keys(Keys.END)
         sleep(2)
-        try:
-            load_button.click()
-        except:
-            pass
+        load_button.click()
         # update server calls
         update_activity()
 
@@ -413,11 +410,8 @@ def check_link(browser,
     sleep(2)
 
     """Check if the Post is Valid/Exists"""
-    try:
-        post_page = browser.execute_script(
-        	"return window._sharedData.entry_data.PostPage")
-    except:
-        post_page = None
+    post_page = browser.execute_script(
+        "return window._sharedData.entry_data.PostPage")
     if post_page is None:
         logger.warning('Unavailable Page: {}'.format(link.encode('utf-8')))
         return True, None, None, 'Unavailable Page'
@@ -536,8 +530,8 @@ def like_image(browser, username, blacklist, logger):
     """Likes the browser opened image"""
     like_elem = browser.find_elements_by_xpath(
         "//a[@role='button']/span[text()='Like']/..")
-    #liked_elem = browser.find_elements_by_xpath(
-    #    "//a[@role='button']/span[text()='Unlike']")
+    liked_elem = browser.find_elements_by_xpath(
+        "//a[@role='button']/span[text()='Unlike']")
 
     if len(like_elem) == 1:
         like_elem[0].send_keys("\n")
@@ -550,9 +544,9 @@ def like_image(browser, username, blacklist, logger):
             )
         sleep(2)
         return True
-    #elif len(liked_elem) == 1:
-    #    print('--> Already Liked!')
-    #    return False
+    elif len(liked_elem) == 1:
+        logger.info('--> Already Liked!')
+        return False
     else:
         logger.info('--> Invalid Like Element!')
         return False

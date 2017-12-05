@@ -92,11 +92,8 @@ def unfollow(browser,
                 if person not in dont_include:
                     browser.get('https://www.instagram.com/' + person)
                     sleep(2)
-                    try:
-                        follow_button = browser.find_element_by_xpath(
-                            "//*[contains(text(), 'Follow')]")
-                    except:
-                        follow_button.text = 'none'
+                    follow_button = browser.find_element_by_xpath(
+                        "//*[contains(text(), 'Follow')]")
 
                     if follow_button.text == 'Following':
                         unfollowNum += 1
@@ -112,7 +109,7 @@ def unfollow(browser,
                             ' now unfollowing: {}'
                             .format(str(unfollowNum), person.encode('utf-8')))
 
-                        sleep(25)
+                        sleep(15)
 
                         if hasSlept:
                             hasSlept = False
@@ -131,7 +128,7 @@ def unfollow(browser,
         except BaseException as e:
             logger.error("unfollow loop error {}".format(str(e)))
 
-    elif onlyInstapyFollowed is not True and onlyNotFollowMe is True:
+    elif onlyInstapyFollowed is False and onlyNotFollowMe is True:
         # unfollow only not follow me
         try:
             browser.get(
@@ -149,7 +146,6 @@ def unfollow(browser,
 
         all_followers = []
         all_following = []
-        unfollow_list = []
 
         variables = {}
         variables['id'] = user_data['id']
@@ -165,10 +161,12 @@ def unfollow(browser,
                     .format(graphql_followers, str(json.dumps(variables)))
                 )
                 if i != 0:
+                    del variables['after']
                     url = (
                         '{}&variables={}'
                         .format(graphql_following, str(json.dumps(variables)))
                     )
+                sleep(2)
                 browser.get(url)
 
                 # fetch all user while still has data
@@ -208,12 +206,16 @@ def unfollow(browser,
                                     str(json.dumps(variables))
                                 )
                             )
+                        sleep(2)
                         browser.get(url)
         except BaseException as e:
             print(
                 "unable to get followers and following information \n", str(e))
 
-        unfollow_list = set(all_following) - set(all_followers)
+        # make sure to unfollow users who don't follow back and don't
+        # unfollow whitelisted users
+        unfollow_list = (
+            set(all_following) - set(all_followers) - set(dont_include))
 
         # unfollow loop
         try:
@@ -334,15 +336,8 @@ def follow_user(browser, follow_restrict, login, user_name, blacklist, logger):
 
         # Do we still need this sleep?
         sleep(2)
-		
-        errorSkip = False
-		
-        try:
-            follow_button.is_displayed()
-        except:
-            errorSkip = True
 
-        if not errorSkip and follow_button.is_displayed():
+        if follow_button.is_displayed():
             follow_button.send_keys("\n")
             update_activity('follows')
         else:
@@ -366,10 +361,6 @@ def follow_user(browser, follow_restrict, login, user_name, blacklist, logger):
         return 1
     except NoSuchElementException:
         logger.info('--> Already following')
-        sleep(1)
-        return 0
-    except:
-        print('--> SION:Not following since error occuered')
         sleep(1)
         return 0
 
@@ -595,13 +586,7 @@ def get_given_user_followers(browser,
         "//div[text()='Followers']/following-sibling::div")
 
     # scroll down the page
-    try:
-        print('0')
-        scroll_bottom(browser, dialog, allfollowing)
-        scroll_bottom(browser, dialog, allfollowing)
-        scroll_bottom(browser, dialog, allfollowing)
-    except:
-        pass
+    scroll_bottom(browser, dialog, allfollowing)
 
     # get follow buttons. This approch will find the follow buttons and
     # ignore the Unfollow/Requested buttons.
@@ -611,7 +596,6 @@ def get_given_user_followers(browser,
 
     if amount >= len(follow_buttons):
         amount = len(follow_buttons)
-        print(str(amount))
         logger.warning("{} -> Less users to follow than requested."
                        .format(user_name))
 
@@ -804,6 +788,3 @@ def load_follow_restriction():
     """Loads the saved """
     with open('./logs/followRestriction.json') as followResFile:
         return json.load(followResFile)
-
-
-
