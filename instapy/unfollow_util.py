@@ -131,7 +131,7 @@ def unfollow(browser,
         except BaseException as e:
             logger.error("unfollow loop error {}".format(str(e)))
 
-    elif onlyInstapyFollowed is not True and onlyNotFollowMe is True:
+    elif onlyInstapyFollowed is False and onlyNotFollowMe is True:
         # unfollow only not follow me
         try:
             browser.get(
@@ -149,7 +149,6 @@ def unfollow(browser,
 
         all_followers = []
         all_following = []
-        unfollow_list = []
 
         variables = {}
         variables['id'] = user_data['id']
@@ -165,10 +164,12 @@ def unfollow(browser,
                     .format(graphql_followers, str(json.dumps(variables)))
                 )
                 if i != 0:
+                    del variables['after']
                     url = (
                         '{}&variables={}'
                         .format(graphql_following, str(json.dumps(variables)))
                     )
+                sleep(2)
                 browser.get(url)
 
                 # fetch all user while still has data
@@ -208,12 +209,16 @@ def unfollow(browser,
                                     str(json.dumps(variables))
                                 )
                             )
+                        sleep(2)
                         browser.get(url)
         except BaseException as e:
             print(
                 "unable to get followers and following information \n", str(e))
 
-        unfollow_list = set(all_following) - set(all_followers)
+        # make sure to unfollow users who don't follow back and don't
+        # unfollow whitelisted users
+        unfollow_list = (
+            set(all_following) - set(all_followers) - set(dont_include))
 
         # unfollow loop
         try:

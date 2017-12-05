@@ -548,7 +548,7 @@ def like_image(browser, username, blacklist, logger):
             add_user_to_blacklist(
                 browser, username, blacklist['campaign'], action, logger
             )
-        sleep(2)
+        sleep(4)
         return True
     #elif len(liked_elem) == 1:
     #    print('--> Already Liked!')
