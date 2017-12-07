@@ -61,7 +61,7 @@ class InstaPyStorage(object):
             # stop actions since the maximum actions per day reached
             if self.thisDayTotal >= self.MAX_PER_DAY:
                 print('reached MAX_PER_DAY')
-                sleep(3600)
+                return True
 
             # stop actions since the maximum actions per this hour reached
             if self.thisHourTotal >= self.MAX_PER_HOUR:
