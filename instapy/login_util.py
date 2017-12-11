@@ -5,7 +5,11 @@ from selenium.common.exceptions import NoSuchElementException
 from .util import update_activity
 
 
-def login_user(browser, username, password, switch_language=True):
+def login_user(browser,
+               username,
+               password,
+               switch_language=True,
+               bypass_suspicious_attempt=False):
     """Logins the user with the given username and password"""
     browser.get('https://www.instagram.com')
     # update server calls
@@ -47,15 +51,20 @@ def login_user(browser, username, password, switch_language=True):
     # update server calls
     update_activity()
 
-    try:
+    if bypass_suspicious_attempt is True:
         suspicious_attempt = browser.find_element_by_xpath(
             "//p[@class='_fb78b'][text()='Suspicious Login Attempt']")
-    except NoSuchElementException:
-        suspicious_attempt = None
 
-    if suspicious_attempt is not None:
-        user_email = browser.find_element_by_xpath((
-            "//label[@class='_q0nt5']"))
+        try:
+            user_email = browser.find_element_by_xpath((
+                "//label[@class='_q0nt5']"))
+        except NoSuchElementException:
+            try:
+                user_email = browser.find_element_by_xpath((
+                    "//label[@class='_9oihj _9p5jh']"))
+            except:
+                print('Unable to locate email or phone button')
+                return False
 
         send_security_code_button = browser.find_element_by_xpath(
             ("//button[text()='Send Security Code']"))
