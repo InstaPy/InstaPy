@@ -52,8 +52,6 @@ def login_user(browser,
     update_activity()
 
     if bypass_suspicious_attempt is True:
-        suspicious_attempt = browser.find_element_by_xpath(
-            "//p[@class='_fb78b'][text()='Suspicious Login Attempt']")
 
         try:
             user_email = browser.find_element_by_xpath((
@@ -63,8 +61,12 @@ def login_user(browser,
                 user_email = browser.find_element_by_xpath((
                     "//label[@class='_9oihj _9p5jh']"))
             except:
-                print('Unable to locate email or phone button')
-                return False
+                try:
+                    user_email = browser.find_element_by_xpath((
+                        "//label[@class='_q0nt5 _a7z3k']"))
+                except:
+                    print('Unable to locate email or phone button')
+                    return False
 
         send_security_code_button = browser.find_element_by_xpath(
             ("//button[text()='Send Security Code']"))
