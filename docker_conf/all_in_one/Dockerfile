@@ -4,7 +4,7 @@ MAINTAINER Grossmann Tim <contact.timgrossmann@gmail.com>
 
 # Set env variables
 ENV CHROME https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
-ENV CRHOMEDRIVER http://chromedriver.storage.googleapis.com/2.29/chromedriver_linux64.zip
+ENV CRHOMEDRIVER http://chromedriver.storage.googleapis.com/2.34/chromedriver_linux64.zip
 
 # Environment setup
 RUN apt-get update \
