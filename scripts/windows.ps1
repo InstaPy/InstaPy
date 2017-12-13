@@ -13,7 +13,7 @@ echo " "
 cd ..\
 echo "Downloading Chrome Driver..."
 $webclient = New-Object System.Net.WebClient
-$webclient.DownloadFile("https://chromedriver.storage.googleapis.com/2.29/chromedriver_win32.zip","$pwd\chromedriver.zip")
+$webclient.DownloadFile("https://chromedriver.storage.googleapis.com/2.34/chromedriver_win32.zip","$pwd\chromedriver.zip")
 echo "Chrome Driver download completed."
 echo " "
 echo "Unzipping Chrome Driver..."
