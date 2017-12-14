@@ -51,22 +51,16 @@ def login_user(browser,
     # update server calls
     update_activity()
 
+    sleep(1)
+
     if bypass_suspicious_attempt is True:
 
         try:
             user_email = browser.find_element_by_xpath((
-                "//label[@class='_q0nt5']"))
-        except NoSuchElementException:
-            try:
-                user_email = browser.find_element_by_xpath((
-                    "//label[@class='_9oihj _9p5jh']"))
-            except:
-                try:
-                    user_email = browser.find_element_by_xpath((
-                        "//label[@class='_q0nt5 _a7z3k']"))
-                except:
-                    print('Unable to locate email or phone button')
-                    return False
+                "//label[@for='choice_1']"))
+        except:
+            print('Unable to locate email or phone button')
+            return False
 
         send_security_code_button = browser.find_element_by_xpath(
             ("//button[text()='Send Security Code']"))
@@ -81,7 +75,7 @@ def login_user(browser,
         security_code = input('Type the security code here: ')
 
         security_code_field = browser.find_element_by_xpath((
-            "//input[@id='securityCode']"))
+            "//input[@id='security_code']"))
         (ActionChains(browser)
          .move_to_element(security_code_field)
          .click().send_keys(security_code).perform())
