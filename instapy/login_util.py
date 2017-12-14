@@ -12,12 +12,14 @@ def login_user(browser,
                bypass_suspicious_attempt=False):
     """Logins the user with the given username and password"""
 
+    cookies_file = "logs/" + username + "-cookies.pkl"
+
     # update server calls
     update_activity()
 
     try: # check if we have login cookies
         browser.get('https://www.google.com')
-        for cookie in pickle.load(open("logs/cookies.pkl", "rb")):
+        for cookie in pickle.load(open(cookies_file, "rb")):
             browser.add_cookie(cookie)
         return True
     except (OSError, IOError) as e: # There is no cookie for login
@@ -112,7 +114,7 @@ def login_user(browser,
         nav = browser.find_elements_by_xpath('//nav')
         if len(nav) == 2:
             # save login cookie for next time
-            pickle.dump(browser.get_cookies(), open("logs/cookies.pkl", "wb"))
+            pickle.dump(browser.get_cookies(), open(cookies_file, "wb"))
             return True
         else:
             return False
