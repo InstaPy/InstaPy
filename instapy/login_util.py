@@ -60,7 +60,7 @@ def login_user(browser,
         update_activity()
 
         try:
-            sleep(5)
+            sleep(10)
             suspicious_login = browser.find_element_by_xpath(
                 ("//p[text()='Suspicious Login Attempt']"))
 
