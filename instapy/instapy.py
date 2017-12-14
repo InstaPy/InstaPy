@@ -292,7 +292,7 @@ class InstaPy:
 
     def set_dont_like(self, tags=None):
         """Changes the possible restriction tags, if one of this
-         words is in the description, the image won't be liked"""
+         words is in the description, the image won't be liked and might be unfollowed"""
         if self.aborting:
             return self
 
@@ -1488,8 +1488,8 @@ class InstaPy:
                                 self.logger.info(
                                     '--> Image not liked: {}'.format(reason))
                                 inap_img += 1
-                                if reason == 'Inappropriate':
-                                    unfollow_user(self.browser, self.logger)
+                                #if reason == 'Inappropriate':
+                                #    unfollow_user(self.browser, self.logger)
                         except NoSuchElementException as err:
                             self.logger.error('Invalid Page: {}'.format(err))
 
@@ -1504,9 +1504,12 @@ class InstaPy:
 
         return self
 
-    def getFollowerList_user(self, following=True, followers=False):
-        unfollowNumber = getFollowerList(self.browser,
-                                         self.username,
+    def getFollowerList_user(self, following=True, followers=False, username=None):
+        if username is None:
+            username=self.username
+
+        followNumber = getFollowerList(self.browser,
+                                         username,
                                          self.logger,
                                          following,
                                          followers)
