@@ -54,8 +54,7 @@ class InstaPy:
                  use_firefox=False,
                  page_delay=25,
                  show_logs=True,
-                 headless_browser=False,
-                 bypass_suspicious_attempt=False):
+                 headless_browser=False):
 
         if nogui:
             self.display = Display(visible=0, size=(800, 600))
@@ -107,8 +106,6 @@ class InstaPy:
 
         self.like_by_followers_upper_limit = 0
         self.like_by_followers_lower_limit = 0
-
-        self.bypass_suspicious_attempt = bypass_suspicious_attempt
 
         self.aborting = False
 
@@ -223,8 +220,7 @@ class InstaPy:
         if not login_user(self.browser,
                           self.username,
                           self.password,
-                          self.switch_language,
-                          self.bypass_suspicious_attempt):
+                          self.switch_language):
             self.logger.critical('Wrong login data!')
 
             self.aborting = True

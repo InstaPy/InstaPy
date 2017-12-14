@@ -8,8 +8,7 @@ import pickle
 def login_user(browser,
                username,
                password,
-               switch_language=True,
-               bypass_suspicious_attempt=False):
+               switch_language=True):
     """Logins the user with the given username and password"""
 
     cookies_file = "logs/" + username + "-cookies.pkl"
@@ -60,53 +59,58 @@ def login_user(browser,
         # update server calls
         update_activity()
 
-        if bypass_suspicious_attempt is True:
+        try:
             sleep(5)
+            suspicious_login = browser.find_element_by_xpath(
+                ("//p[text()='Suspicious Login Attempt']"))
 
-            try:
-                user_email = browser.find_element_by_xpath((
-                    "//label[@for='choice_1']"))
-            except:
-                print('Unable to locate email or phone button')
-                return False
+            if suspicious_login is not None:
+                try:
+                    user_email = browser.find_element_by_xpath((
+                        "//label[@for='choice_1']"))
+                except:
+                    print('Unable to locate email or phone button')
+                    return False
 
-            send_security_code_button = browser.find_element_by_xpath(
-                ("//button[text()='Send Security Code']"))
-            (ActionChains(browser)
-            .move_to_element(send_security_code_button)
-            .click()
-            .perform())
+                send_security_code_button = browser.find_element_by_xpath(
+                    ("//button[text()='Send Security Code']"))
+                (ActionChains(browser)
+                .move_to_element(send_security_code_button)
+                .click()
+                .perform())
 
-            print('Instagram detected an unusual login attempt')
-            print('A security code wast sent to your email: {}'
-                .format(user_email.text))
-            security_code = input('Type the security code here: ')
+                print('Instagram detected an unusual login attempt')
+                print('A security code wast sent to your email: {}'
+                    .format(user_email.text))
+                security_code = input('Type the security code here: ')
 
-            security_code_field = browser.find_element_by_xpath((
-                "//input[@id='security_code']"))
-            (ActionChains(browser)
-            .move_to_element(security_code_field)
-            .click().send_keys(security_code).perform())
+                security_code_field = browser.find_element_by_xpath((
+                    "//input[@id='security_code']"))
+                (ActionChains(browser)
+                .move_to_element(security_code_field)
+                .click().send_keys(security_code).perform())
 
-            submit_security_code_button = browser.find_element_by_xpath((
-                "//button[text()='Submit']"))
+                submit_security_code_button = browser.find_element_by_xpath((
+                    "//button[text()='Submit']"))
 
-            (ActionChains(browser)
-            .move_to_element(submit_security_code_button)
-            .click().perform())
+                (ActionChains(browser)
+                .move_to_element(submit_security_code_button)
+                .click().perform())
 
-            try:
-                sleep(5)
-                # locate wrong security code message
-                wrong_login = browser.find_element_by_xpath((
-                    "//p[text()='Please check the code we sent you and try "
-                    "again.']"))
-                if wrong_login is not None:
-                    print(('Wrong security code! Please check the code Instagram'
-                        'sent you and try again.'))
-            except NoSuchElementException:
-                # correct security code
-                pass
+                try:
+                    sleep(5)
+                    # locate wrong security code message
+                    wrong_login = browser.find_element_by_xpath((
+                        "//p[text()='Please check the code we sent you and try "
+                        "again.']"))
+                    if wrong_login is not None:
+                        print(('Wrong security code! Please check the code Instagram '
+                            'sent you and try again.'))
+                except NoSuchElementException:
+                    # correct security code
+                    pass
+        except NoSuchElementException:
+            pass
 
         sleep(5)
 
