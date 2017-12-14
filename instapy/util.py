@@ -320,9 +320,11 @@ def getFollowerList(browser,
 
         if following is True:
             print(len(all_following))
-            with open('./logs/all_following.pkl', 'wb') as output:
+            with open('./logs/usersLists/following/' + username, 'wb') as output:
                 pickle.dump(all_following, output, pickle.HIGHEST_PROTOCOL)
+                return len(all_following)
         elif followers is True:
             print(len(all_followers))
-            with open('./logs/all_followers.pkl', 'wb') as output:
+            with open('./logs/usersLists/followers/' + username, 'wb') as output:
                 pickle.dump(all_followers, output, pickle.HIGHEST_PROTOCOL)
+                return (len(all_followers))

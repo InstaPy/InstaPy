@@ -5,14 +5,18 @@ from .util import update_activity
 import pickle
 
 def login_user(browser, username, password, switch_language=True):
-    """Logins the user with the given username and password"""
-    browser.get('https://www.google.com')
+    """Logins the user with the given username and password or with saved cookie"""
+
+    # update server calls
+    update_activity()
 
     try: # check if we have login cookies
+        browser.get('https://www.google.com')
         for cookie in pickle.load(open("logs/cookies.pkl", "rb")):
             browser.add_cookie(cookie)
         return True
     except (OSError, IOError) as e: # There is no cookie for login
+        browser.get('https://www.instagram.com')
         # Changes Instagram language to english, to ensure no errors ensue from
         # having the site on a different language
         # Might cause problems if the OS language is english
@@ -49,7 +53,7 @@ def login_user(browser, username, password, switch_language=True):
         # update server calls
         update_activity()
 
-        sleep(5)
+        sleep(150)
 
         # Check if user is logged-in (If there's two 'nav' elements)
         nav = browser.find_elements_by_xpath('//nav')
