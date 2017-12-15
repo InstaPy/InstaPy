@@ -3,7 +3,7 @@ from .time_util import sleep
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.common.exceptions import NoSuchElementException
 from .util import update_activity
-import pickle
+import json
 
 def login_user(browser,
                username,
@@ -11,14 +11,14 @@ def login_user(browser,
                switch_language=True):
     """Logins the user with the given username and password"""
 
-    cookies_file = "logs/" + username + "-cookies.pkl"
+    cookies_file = "logs/" + username + "-cookies.json"
 
     # update server calls
     update_activity()
 
     try: # check if we have login cookies
         browser.get('https://www.google.com')
-        for cookie in pickle.load(open(cookies_file, "rb")):
+        for cookie in json.load(open(cookies_file, "rt")):
             browser.add_cookie(cookie)
         return True
     except (OSError, IOError) as e: # There is no cookie for login
@@ -118,7 +118,7 @@ def login_user(browser,
         nav = browser.find_elements_by_xpath('//nav')
         if len(nav) == 2:
             # save login cookie for next time
-            pickle.dump(browser.get_cookies(), open(cookies_file, "wb"))
+            json.dump(browser.get_cookies(), open(cookies_file, "wt"))
             return True
         else:
             return False
