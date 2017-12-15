@@ -153,7 +153,7 @@ class InstaPy:
             # this setting can improve pageload & save bandwidth
             firefox_profile.set_preference('permissions.default.image', 2)
 
-            if self.proxy_address is not None and self.proxy_port > 0:
+            if self.proxy_address and self.proxy_port > 0:
                 firefox_profile.set_preference('network.proxy.type', 1)
                 firefox_profile.set_preference('network.proxy.http', self.proxy_address)
                 firefox_profile.set_preference('network.proxy.http_port', self.proxy_port)
@@ -170,9 +170,9 @@ class InstaPy:
             chrome_options.add_argument('--lang=en-US')
             chrome_options.add_argument('--disable-setuid-sandbox')
 
-            if self.proxy_address is not None and self.proxy_port > 0:
-                proxy = '%s:%s' % (self.proxy_address, self.proxy_port)
-                chrome_options.add_argument('--proxy-server=http://%s' % proxy)
+            if self.proxy_address and self.proxy_port > 0:
+                proxy = '{ip}:{port}'.format(ip=self.proxy_address, port=self.proxy_port)
+                chrome_options.add_argument('--proxy-server=http://{proxy}'.format(proxy=proxy))
 
             ## This option implements Chrome Headless, a new (late 2017) GUI-less browser
             ## Must be Chromedriver 2.9 and above.
