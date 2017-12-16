@@ -120,7 +120,7 @@ class InstaPy:
         if (self.logger.hasHandlers()):
             self.logger.handlers.clear()
         self.logger.addHandler(file_handler)
-
+        
         if show_logs is True:
             console_handler = logging.StreamHandler()
             console_handler.setLevel(logging.DEBUG)
