@@ -1,5 +1,8 @@
 from instapy import InstaPy
 
+insta_username = ""
+insta_password = ""
+
 session = InstaPy(username=insta_username, password=insta_password)
 
 # set up all the settings
