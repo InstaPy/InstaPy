@@ -174,7 +174,7 @@ def delete_line_from_file(filepath, lineToDelete, logger):
             if line != lineToDelete:
                 f.write(line)
             else:
-                logger.info(line, "removed from csv")
+                logger.info("{} removed from csv".format(line))
         f.close()
 
         # File leftovers that should not exist, but if so remove it
@@ -322,12 +322,12 @@ def get_follow_list(browser,
                 "unable to get followers and following information \n", str(e))
 
         if following is True:
-            logger.info("following length captured is", len(all_following))
+            logger.info("following length captured is {}".format(str(len(all_following))))
             with open('./logs/following/' + username, 'wb') as output:
                 pickle.dump(all_following, output, pickle.HIGHEST_PROTOCOL)
                 return len(all_following)
         elif followers is True:
-            logger.info("followers length captured is", len(all_followers))
+            logger.info("followers length captured is {}".format(str(len(all_followers))) )
             with open('./logs/followers/' + username, 'wb') as output:
                 pickle.dump(all_followers, output, pickle.HIGHEST_PROTOCOL)
                 return (len(all_followers))
