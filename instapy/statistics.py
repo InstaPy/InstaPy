@@ -2,7 +2,7 @@ import datetime as _datetime
 from .time_util import sleep
 
 HOUR_START_DAY = 5
-HOUR_END_DAY = 22
+HOUR_END_DAY = 21
 
 
 class InstaPyStorage(object):
