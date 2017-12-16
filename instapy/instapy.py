@@ -29,7 +29,7 @@ from .print_log_writer import log_follower_num
 from .time_util import sleep
 from .time_util import set_sleep_percentage
 from .util import get_active_users
-from .util import getFollowerList
+from .util import get_follow_list
 from .util import validate_username
 from .unfollow_util import get_given_user_followers
 from .unfollow_util import get_given_user_following
@@ -287,7 +287,7 @@ class InstaPy:
 
     def set_dont_like(self, tags=None):
         """Changes the possible restriction tags, if one of this
-         words is in the description, the image won't be liked"""
+         words is in the description, the image won't be liked and might be unfollowed"""
         if self.aborting:
             return self
 
@@ -1463,12 +1463,24 @@ class InstaPy:
 
         self.followed += followed
 
-    def getFollowerList_user(self, following=True, followers=False):
-        unfollowNumber = getFollowerList(self.browser,
-                                         self.username,
-                                         self.logger,
-                                         following,
-                                         followers)
+    def get_follow_list_from_user(self, following=True, followers=False, username=None):
+        if username is None:
+            username=self.username
+
+        if following is True and not os.path.isfile('./logs/usersLists/following/' + username):
+            followNumber = get_follow_list(self.browser,
+                                           username,
+                                           self.logger,
+                                           50000,
+                                           True,
+                                           False)
+        if followers is True and not os.path.isfile('./logs/usersLists/followers/' + username):
+            followNumber = get_follow_list(self.browser,
+                                           username,
+                                           self.logger,
+                                           50000,
+                                           False,
+                                           True)
         return self
 
     def set_dont_unfollow_active_users(self, enabled=False, posts=4):

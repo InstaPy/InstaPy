@@ -179,14 +179,22 @@ def delete_line_from_file(filepath, lineToDelete, logger):
         f.close()
 
         # File leftovers that should not exist, but if so remove it
-        try:
-            os.remove(filepathOld)
-        except:
-            pass
+        while os.path.isfile(filepathOld):
+            try:
+                os.remove(filepathOld)
+            except OSError as e:
+                logger.error("Can't remove filepathOld {}".format(str(e)))
+                sleep(5)
+
         # rename original file to _old
         os.rename(filepath, filepathOld)
         # rename new temp file to filepath
-        os.rename(filepathTemp, filepath)
+        while os.path.isfile(filepathTemp):
+            try:
+                os.rename(filepathTemp, filepath)
+            except OSError as e:
+                logger.error("Can't rename filepathTemp to filepath {}".format(str(e)))
+                sleep(5)
        # remove old and temp file
         os.remove(filepathOld)
 

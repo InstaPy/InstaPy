@@ -13,7 +13,7 @@ print("1")
 
 # set up all the settings
 session.login()
-session.getFollowerList_user(following=True, followers=False)
+#session.getFollowerList_user(following=True, followers=False)
 session.getFollowerList_user(following=False, followers=True)
 
 # end the bot session
