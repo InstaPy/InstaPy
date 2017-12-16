@@ -323,11 +323,11 @@ def get_follow_list(browser,
 
         if following is True:
             logger.info("following length captured is", len(all_following))
-            with open('./logs/usersLists/following/' + username, 'wb') as output:
+            with open('./logs/following/' + username, 'wb') as output:
                 pickle.dump(all_following, output, pickle.HIGHEST_PROTOCOL)
                 return len(all_following)
         elif followers is True:
             logger.info("followers length captured is", len(all_followers))
-            with open('./logs/usersLists/followers/' + username, 'wb') as output:
+            with open('./logs/followers/' + username, 'wb') as output:
                 pickle.dump(all_followers, output, pickle.HIGHEST_PROTOCOL)
                 return (len(all_followers))

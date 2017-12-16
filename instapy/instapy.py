@@ -1467,14 +1467,14 @@ class InstaPy:
         if username is None:
             username=self.username
 
-        if following is True and not os.path.isfile('./logs/usersLists/following/' + username):
+        if following is True and not os.path.isfile('./logs/following/' + username):
             followNumber = get_follow_list(self.browser,
                                            username,
                                            self.logger,
                                            50000,
                                            True,
                                            False)
-        if followers is True and not os.path.isfile('./logs/usersLists/followers/' + username):
+        if followers is True and not os.path.isfile('./logs/followers/' + username):
             followNumber = get_follow_list(self.browser,
                                            username,
                                            self.logger,
