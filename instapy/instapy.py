@@ -1508,11 +1508,20 @@ class InstaPy:
         if username is None:
             username=self.username
 
-        followNumber = getFollowerList(self.browser,
-                                         username,
-                                         self.logger,
-                                         following,
-                                         followers)
+        if following is True and not os.path.isfile('./logs/usersLists/following/' + username):
+            followNumber = getFollowerList(self.browser,
+                                           username,
+                                           self.logger,
+                                           50000,
+                                           True,
+                                           False)
+        elif followers is True and not os.path.isfile('./logs/usersLists/followers/' + username):
+            followNumber = getFollowerList(self.browser,
+                                           username,
+                                           self.logger,
+                                           50000,
+                                           False,
+                                           True)
         return self
 
     def set_dont_unfollow_active_users(self, enabled=False, posts=4):

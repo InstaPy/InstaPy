@@ -178,14 +178,22 @@ def delete_line_from_file(filepath, lineToDelete, logger):
         f.close()
 
         # File leftovers that should not exist, but if so remove it
-        try:
-            os.remove(filepathOld)
-        except:
-            pass
+        while os.path.isfile(filepathOld):
+            try:
+                os.remove(filepathOld)
+            except OSError as e:
+                logger.error("Can't remove filepathOld {}".format(str(e)))
+                sleep(5)
+
         # rename original file to _old
         os.rename(filepath, filepathOld)
         # rename new temp file to filepath
-        os.rename(filepathTemp, filepath)
+        while os.path.isfile(filepathTemp):
+            try:
+                os.rename(filepathTemp, filepath)
+            except OSError as e:
+                logger.error("Can't rename filepathTemp to filepath {}".format(str(e)))
+                sleep(5)
        # remove old and temp file
         os.remove(filepathOld)
 
@@ -216,18 +224,11 @@ def formatNumber(number):
 def getFollowerList(browser,
                     username,
                     logger,
+                    maxAmount,
                     following,
                     followers):
 
     browser.get('https://www.instagram.com/' + username)
-
-    #  check how many people we are following
-    #  throw RuntimeWarning if we are 0 people following
-    try:
-        allfollowing = formatNumber(
-            browser.find_element_by_xpath('//li[3]/a/span').text)
-    except NoSuchElementException:
-        logger.warning('There are 0 people to unfollow')
 
     if True:
         try:
@@ -275,7 +276,7 @@ def getFollowerList(browser,
             browser.get(url)
 
             # fetch all user while still has data
-            while has_next_data:
+            while has_next_data and len(all_followers) < maxAmount and len(all_following) < maxAmount:
                 sleep(10)
                 pre = browser.find_element_by_tag_name("pre").text
                 data = json.loads(pre)['data']
