@@ -76,12 +76,12 @@ def login_user(browser,
          .perform())
 
         print('Instagram detected an unusual login attempt')
-        print('A security code wast sent to your email: {}'
+        print('A security code wast sent to your {}'
               .format(user_email.text))
         security_code = input('Type the security code here: ')
 
         security_code_field = browser.find_element_by_xpath((
-            "//input[@id='securityCode']"))
+            "//input[@id='security_code']"))
         (ActionChains(browser)
          .move_to_element(security_code_field)
          .click().send_keys(security_code).perform())
