@@ -338,7 +338,7 @@ def follow_user(browser, follow_restrict, login, user_name, blacklist, logger):
         sleep(2)
 
         if follow_button.is_displayed():
-            follow_button.send_keys("\n")
+            follow_button.click()
             update_activity('follows')
         else:
             browser.execute_script(
