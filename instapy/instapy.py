@@ -132,10 +132,6 @@ class InstaPy:
                          'We\'re working to fix this soon!')
             self.logger.critical(error_msg)
 
-    def get_dont_like(self):
-        for i in self.dont_like:
-            print(i)
-
     def set_selenium_local_session(self):
         """Starts local session for a selenium server.
         Default case scenario."""
