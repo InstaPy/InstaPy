@@ -23,7 +23,7 @@ def login_user(browser,
                                        .format(username), 'rb')):
             browser.add_cookie(cookie)
         return True
-    except (WebDriverException, OSError):
+    except (WebDriverException, OSError, IOError):
         print("Cookie file not found, creating cookie...")
         bypass_suspicious_attempt = True
         browser.get('https://www.instagram.com')
