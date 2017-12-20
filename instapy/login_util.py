@@ -59,7 +59,7 @@ def login_user(browser,
         except NoSuchElementException:
             try:
                 user_email = browser.find_element_by_xpath((
-                    "//label[@class='_9oihj _9p5jh']"))
+                    "//label[@for='choice_1']"))
             except:
                 try:
                     user_email = browser.find_element_by_xpath((
