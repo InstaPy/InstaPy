@@ -2,7 +2,9 @@
 from .time_util import sleep
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.common.exceptions import NoSuchElementException
+from selenium.common.exceptions import WebDriverException
 from .util import update_activity
+import pickle
 
 
 def login_user(browser,
@@ -14,6 +16,17 @@ def login_user(browser,
     browser.get('https://www.instagram.com')
     # update server calls
     update_activity()
+
+    try:
+        browser.get('https://www.google.com')
+        for cookie in pickle.load(open('./logs/{}_cookie.pkl'
+                                       .format(username), 'rb')):
+            browser.add_cookie(cookie)
+        return True
+    except (WebDriverException, OSError):
+        print("Cookie file not found, creating cookie...")
+        bypass_suspicious_attempt = True
+        browser.get('https://www.instagram.com')
 
     # Changes instagram language to english, to ensure no errors ensue from
     # having the site on a different language
@@ -110,6 +123,18 @@ def login_user(browser,
     # Check if user is logged-in (If there's two 'nav' elements)
     nav = browser.find_elements_by_xpath('//nav')
     if len(nav) == 2:
+        # save login cookie for next time
+        pickle.dump(browser.get_cookies(),
+                    open('./logs/{}_cookie.pkl'.format(username), 'wb'))
+        try:
+            # click on "This was me" button if challenge page was called
+            this_was_me_button = browser.find_element_by_xpath(
+                "//button[@name='choice'][text()='This Was Me']")
+            ActionChains(
+                browser).move_to_element(this_was_me_button).click().perform()
+        except NoSuchElementException:
+            # no verification needed
+            pass
         return True
     else:
         return False

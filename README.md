@@ -55,7 +55,6 @@ Table of Contents
   * [Blacklist Campaign](#blacklist-campaign)
   * [Smart Hashtags](#smart-hashtags)
   * [Follow/Unfollow/exclude not working?](#followunfollowexclude-not-working)
-  * [Bypass Suspicious Login Attempt](#bypass-suspicious-login-attempt)
 * [Third Party InstaPy GUI for Windows](#third-party-instapy-gui-for-windows)
 * [Switching to Firefox](#switching-to-firefox)
 * [Emoji Support](#emoji-support)
@@ -422,15 +421,6 @@ If you notice that one or more of the above functionalities are not working as e
 session.set_do_follow(enabled=True, percentage=10, times=2)
 ```
 but none of the profiles are being followed - or any such functionality is misbehaving - then one thing you should check is the position/order of such methods in your script. Essentially, all the ```set_*``` methods have to be before ```like_by_tags``` or ```like_by_locations``` or ```unfollow```. This is also implicit in all the exmples and quickstart.py
-
-### Bypass Suspicious Login Attempt
-
-If you're having issues with the "we detected an unusual login attempt" message,
-you can bypass it setting InstaPy in this way:
-
-```python
-session = InstaPy(username=insta_username, password=insta_password, bypass_suspicious_attempt=True)
-```
 
 ## Switching to Firefox
 
