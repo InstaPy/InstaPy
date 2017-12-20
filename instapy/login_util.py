@@ -54,16 +54,16 @@ def login_user(browser,
     if bypass_suspicious_attempt is True:
 
         try:
-            user_email = browser.find_element_by_xpath((
-                "//label[@class='_q0nt5']"))
+            user_email = browser.find_element_by_xpath(
+                "//label[@for='choice_1']").text
         except NoSuchElementException:
             try:
-                user_email = browser.find_element_by_xpath((
-                    "//label[@for='choice_1']"))
+                user_email = browser.find_element_by_xpath(
+                    "//label[@class='_q0nt5']").text
             except:
                 try:
-                    user_email = browser.find_element_by_xpath((
-                        "//label[@class='_q0nt5 _a7z3k']"))
+                    user_email = browser.find_element_by_xpath(
+                        "//label[@class='_q0nt5 _a7z3k']").text
                 except:
                     print('Unable to locate email or phone button')
                     return False
@@ -76,8 +76,7 @@ def login_user(browser,
          .perform())
 
         print('Instagram detected an unusual login attempt')
-        print('A security code wast sent to your {}'
-              .format(user_email.text))
+        print('A security code wast sent to your {}'.format(user_email))
         security_code = input('Type the security code here: ')
 
         security_code_field = browser.find_element_by_xpath((
