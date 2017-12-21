@@ -513,8 +513,7 @@ def follow_through_dialog(browser,
                 log_followed_pool(login, person, logger)
                 update_activity('follows')
 
-                follow_restrict[user_name] = follow_restrict.get(
-                    user_name, 0) + 1
+                follow_restrict[person] = follow_restrict.get(person, 0) + 1
 
                 logger.info('--> Ongoing follow {}, now following: {}'
                             .format(str(followNum), person.encode('utf-8')))
