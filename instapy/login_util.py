@@ -2,7 +2,7 @@
 from .time_util import sleep
 from selenium.webdriver.common.action_chains import ActionChains
 from .util import update_activity
-
+import pickle
 
 def login_user(browser, username, password, switch_language=True):
     """Logins the user with the given username and password"""

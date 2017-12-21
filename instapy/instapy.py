@@ -29,6 +29,7 @@ from .print_log_writer import log_follower_num
 from .time_util import sleep
 from .time_util import set_sleep_percentage
 from .util import get_active_users
+from .util import get_follow_list
 from .util import validate_username
 from .unfollow_util import get_given_user_followers
 from .unfollow_util import get_given_user_following
@@ -116,8 +117,10 @@ class InstaPy:
         file_handler.setLevel(logging.DEBUG)
         logger_formatter = logging.Formatter('%(levelname)s - %(message)s')
         file_handler.setFormatter(logger_formatter)
+        if (self.logger.hasHandlers()):
+            self.logger.handlers.clear()
         self.logger.addHandler(file_handler)
-
+        
         if show_logs is True:
             console_handler = logging.StreamHandler()
             console_handler.setLevel(logging.DEBUG)
@@ -284,7 +287,7 @@ class InstaPy:
 
     def set_dont_like(self, tags=None):
         """Changes the possible restriction tags, if one of this
-         words is in the description, the image won't be liked"""
+         words is in the description, the image won't be liked and might be unfollowed"""
         if self.aborting:
             return self
 
@@ -1072,6 +1075,9 @@ class InstaPy:
 
     def interact_user_followers(self, usernames, amount=10, randomize=False):
 
+        if self.aborting:
+            return self
+
         userToInteract = []
         if not isinstance(usernames, list):
             usernames = [usernames]
@@ -1249,6 +1255,10 @@ class InstaPy:
                        onlyInstapyMethod='FIFO',
                        sleep_delay=600,
                        onlyNotFollowMe=False):
+
+        if self.aborting:
+            return self
+        
         """Unfollows (default) 10 users from your following list"""
         self.automatedFollowedPool = set_automated_followed_pool(self.username,
                                                                  self.logger)
@@ -1453,6 +1463,24 @@ class InstaPy:
 
         self.followed += followed
 
+    def get_follow_list_from_user(self, following=True, followers=False, username=None):
+        if username is None:
+            username=self.username
+
+        if following is True and not os.path.isfile('./logs/following/' + username):
+            followNumber = get_follow_list(self.browser,
+                                           username,
+                                           self.logger,
+                                           50000,
+                                           True,
+                                           False)
+        if followers is True and not os.path.isfile('./logs/followers/' + username):
+            followNumber = get_follow_list(self.browser,
+                                           username,
+                                           self.logger,
+                                           50000,
+                                           False,
+                                           True)
         return self
 
     def set_dont_unfollow_active_users(self, enabled=False, posts=4):
@@ -1494,6 +1522,9 @@ class InstaPy:
 
     def end(self):
         """Closes the current session"""
+        # If stopped in the middle than abort all other tasks
+        self.aborting = True
+        # Copy all followed by restriction to a json
         dump_follow_restriction(self.follow_restrict)
         self.browser.delete_all_cookies()
         self.browser.close()

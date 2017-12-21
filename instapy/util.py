@@ -3,6 +3,8 @@ import os
 from .time_util import sleep
 from selenium.common.exceptions import NoSuchElementException
 import sqlite3
+import json
+import pickle
 import datetime
 
 
@@ -36,7 +38,6 @@ def validate_username(browser,
 
     # if everything ok
     return True
-
 
 def update_activity(action=None):
     """Record every Instagram server call (page load, content load, likes,
@@ -161,16 +162,41 @@ def get_active_users(browser, username, posts, logger):
 
 def delete_line_from_file(filepath, lineToDelete, logger):
     try:
+        file_path_old = filepath+".old"
+        file_path_Temp = filepath+".temp"
+
         f = open(filepath, "r")
         lines = f.readlines()
         f.close()
-        f = open(filepath, "w")
 
+        f = open(file_path_Temp, "w")
         for line in lines:
-
             if line != lineToDelete:
                 f.write(line)
+            else:
+                logger.info("{} removed from csv".format(line))
         f.close()
+
+        # File leftovers that should not exist, but if so remove it
+        while os.path.isfile(file_path_old):
+            try:
+                os.remove(file_path_old)
+            except OSError as e:
+                logger.error("Can't remove file_path_old {}".format(str(e)))
+                sleep(5)
+
+        # rename original file to _old
+        os.rename(filepath, file_path_old)
+        # rename new temp file to filepath
+        while os.path.isfile(file_path_Temp):
+            try:
+                os.rename(file_path_Temp, filepath)
+            except OSError as e:
+                logger.error("Can't rename file_path_Temp to filepath {}".format(str(e)))
+                sleep(5)
+       # remove old and temp file
+        os.remove(file_path_old)
+
     except BaseException as e:
         logger.error("delete_line_from_file error {}".format(str(e)))
 
@@ -194,3 +220,114 @@ def formatNumber(number):
     formattedNum = number.replace(',', '').replace('.', '')
     formattedNum = int(formattedNum.replace('k', '00').replace('m', '00000'))
     return formattedNum
+
+def get_follow_list(browser,
+                    username,
+                    logger,
+                    maxAmount,
+                    following,
+                    followers):
+
+    browser.get('https://www.instagram.com/' + username)
+
+    if True:
+        try:
+            browser.get(
+                'https://www.instagram.com/' + username + '/?__a=1')
+            pre = browser.find_element_by_tag_name("pre").text
+            user_data = json.loads(pre)['user']
+        except BaseException as e:
+            logger.warning("unable to get user information\n", str(e))
+
+        graphql_endpoint = 'https://www.instagram.com/graphql/query/'
+        graphql_followers = (
+            graphql_endpoint + '?query_id=17851374694183129')
+        graphql_following = (
+            graphql_endpoint + '?query_id=17874545323001329')
+
+        all_followers = []
+        all_following = []
+        unfollow_list = []
+
+        variables = {}
+        variables['id'] = user_data['id']
+        variables['first'] = 100
+
+        # get follower and following user loop
+        try:
+            if following is True:
+                i = 1
+                logger.info("Capturing following of user {}".format(username))
+            elif followers is True:
+                i = 0
+                logger.info("Capturing followers of user {}".format(username))
+            else:
+                return 0
+            has_next_data = True
+            url = (
+                '{}&variables={}'
+                .format(graphql_followers, str(json.dumps(variables)))
+            )
+            if i != 0:
+
+                url = (
+                    '{}&variables={}'
+                    .format(graphql_following, str(json.dumps(variables)))
+                )
+            sleep(2)
+            browser.get(url)
+
+            # fetch all user while still has data
+            while has_next_data and len(all_followers) < maxAmount and len(all_following) < maxAmount:
+                sleep(10)
+                pre = browser.find_element_by_tag_name("pre").text
+                data = json.loads(pre)['data']
+
+                if i == 0:
+                    # get followers
+                    page_info = (
+                        data['user']['edge_followed_by']['page_info'])
+                    edges = data['user']['edge_followed_by']['edges']
+                    for user in edges:
+                        all_followers.append(user['node']['username'])
+                elif i == 1:
+                    # get following
+                    page_info = (
+                        data['user']['edge_follow']['page_info'])
+                    edges = data['user']['edge_follow']['edges']
+                    for user in edges:
+                        all_following.append(user['node']['username'])
+
+                has_next_data = page_info['has_next_page']
+                if has_next_data:
+                    variables['after'] = page_info['end_cursor']
+
+                    url = (
+                        '{}&variables={}'
+                        .format(
+                            graphql_followers, str(json.dumps(variables)))
+                    )
+                    if i != 0:
+                        url = (
+                            '{}&variables={}'
+                            .format(
+                                graphql_following,
+                                str(json.dumps(variables))
+                            )
+                        )
+                    sleep(2)
+                    browser.get(url)
+        except BaseException as e:
+            logger.warning(
+                "unable to get followers and following information \n", str(e))
+
+        if following is True:
+            logger.info("following length captured is {}".format(str(len(all_following))))
+            with open('./logs/following/' + username, 'wb') as output:
+                pickle.dump(all_following, output, pickle.HIGHEST_PROTOCOL)
+                return len(all_following)
+        elif followers is True:
+            logger.info("followers length captured is {}".format(str(len(all_followers))) )
+            with open('./logs/followers/' + username, 'wb') as output:
+                pickle.dump(all_followers, output, pickle.HIGHEST_PROTOCOL)
+                return (len(all_followers))

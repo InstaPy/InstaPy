@@ -595,8 +595,8 @@ def get_given_user_followers(browser,
 
     if amount >= len(follow_buttons):
         amount = len(follow_buttons)
-        logger.warning("{} -> Less users to follow than requested."
-                       .format(user_name))
+        logger.warning("{} -> Less users to follow than requested. == {} "
+                       .format(user_name), str(amount))
 
     finalBtnPerson = []
     if randomize:
