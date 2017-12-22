@@ -29,12 +29,12 @@ def validate_username(browser,
     except NoSuchElementException:
         return '---> {} account is private, skipping user...'.format(username)
 
-    #TODO Dont repeat yourself, there is the similar code on like_util line 490
-    if followers > like_by_followers_upper_limit:
-        return '---> User {} exceeds followers limit'.format(username)
-    elif followers < like_by_followers_lower_limit:
-        return ('---> {}, number of followers does not reach '
-                'minimum'.format(username))
+    number_of_followers_valid, error_text = is_number_of_followers_valid(followers,
+                                                                         like_by_followers_upper_limit,
+                                                                         like_by_followers_lower_limit)
+    if number_of_followers_valid == False:
+        return ('---> {}, {}'.format(username, error_text))
+
 
     num_following = browser.execute_script(
         "return window._sharedData.entry_data."
@@ -46,6 +46,18 @@ def validate_username(browser,
 
     # if everything ok
     return True
+
+def is_number_of_followers_valid(num_followers, like_by_followers_upper_limit, like_by_followers_lower_limit):
+    """ Checks if the number of followers is within the lower and upper limits"""
+    if like_by_followers_upper_limit and \
+                    num_followers > like_by_followers_upper_limit:
+        return False, 'Number of followers exceeds limit'
+
+    if like_by_followers_lower_limit and \
+                    num_followers < like_by_followers_lower_limit:
+        return False, 'Number of followers does not reach minimum'
+
+    return True, None
 
 
 def update_activity(action=None):

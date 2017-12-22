@@ -7,8 +7,7 @@ from re import findall
 from selenium.webdriver.common.keys import Keys
 
 from .time_util import sleep
-from .util import update_activity
-from .util import add_user_to_blacklist
+from .util import update_activity, is_number_of_followers_valid, add_user_to_blacklist
 
 
 def get_links_from_feed(browser, amount, num_of_search, logger):
@@ -487,15 +486,12 @@ def check_link(browser,
         sleep(1)
         logger.info('Number of Followers: {}'.format(num_followers))
 
-        if like_by_followers_upper_limit and \
-           num_followers > like_by_followers_upper_limit:
-                return True, user_name, is_video, \
-                    'Number of followers exceeds limit'
+        number_of_followers_valid, error_text = is_number_of_followers_valid(num_followers,
+                                                                            like_by_followers_upper_limit,
+                                                                            like_by_followers_lower_limit)
+        if number_of_followers_valid == False:
+            return True, user_name, is_video, error_text
 
-        if like_by_followers_lower_limit and \
-           num_followers < like_by_followers_lower_limit:
-                return True, user_name, is_video, \
-                    'Number of followers does not reach minimum'
 
     if like_by_following_lower_limit:
         userlink = 'https://www.instagram.com/' + user_name
