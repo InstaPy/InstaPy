@@ -54,7 +54,9 @@ class InstaPy:
                  use_firefox=False,
                  page_delay=25,
                  show_logs=True,
-                 headless_browser=False):
+                 headless_browser=False,
+                 proxy_address=None,
+                 proxy_port=0):
 
         if nogui:
             self.display = Display(visible=0, size=(800, 600))
@@ -62,6 +64,8 @@ class InstaPy:
 
         self.browser = None
         self.headless_browser = headless_browser
+        self.proxy_address = proxy_address
+        self.proxy_port = proxy_port
 
         self.username = username or os.environ.get('INSTA_USER')
         self.password = password or os.environ.get('INSTA_PW')
@@ -148,6 +152,13 @@ class InstaPy:
             # permissions.default.image = 2: Disable images load,
             # this setting can improve pageload & save bandwidth
             firefox_profile.set_preference('permissions.default.image', 2)
+
+            if self.proxy_address and self.proxy_port > 0:
+                firefox_profile.set_preference('network.proxy.type', 1)
+                firefox_profile.set_preference('network.proxy.http', self.proxy_address)
+                firefox_profile.set_preference('network.proxy.http_port', self.proxy_port)
+                firefox_profile.set_preference('network.proxy.ssl', self.proxy_address)
+                firefox_profile.set_preference('network.proxy.ssl_port', self.proxy_port)
 
             self.browser = webdriver.Firefox(firefox_profile=firefox_profile)
 
