@@ -317,7 +317,8 @@ def get_links_for_username(browser,
                     "window.scrollTo(0, document.body.scrollHeight);")
                 sleep(2)
         except:
-            logger.warning('Load button not found, working with current images!')
+            logger.warning(
+                'Load button not found, working with current images!')
         else:
             abort = False
             body_elem.send_keys(Keys.END)

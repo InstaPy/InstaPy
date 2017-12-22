@@ -54,7 +54,9 @@ class InstaPy:
                  use_firefox=False,
                  page_delay=25,
                  show_logs=True,
-                 headless_browser=False):
+                 headless_browser=False,
+                 proxy_address=None,
+                 proxy_port=0):
 
         if nogui:
             self.display = Display(visible=0, size=(800, 600))
@@ -62,6 +64,8 @@ class InstaPy:
 
         self.browser = None
         self.headless_browser = headless_browser
+        self.proxy_address = proxy_address
+        self.proxy_port = proxy_port
 
         self.username = username or os.environ.get('INSTA_USER')
         self.password = password or os.environ.get('INSTA_PW')
@@ -149,6 +153,13 @@ class InstaPy:
             # this setting can improve pageload & save bandwidth
             firefox_profile.set_preference('permissions.default.image', 2)
 
+            if self.proxy_address and self.proxy_port > 0:
+                firefox_profile.set_preference('network.proxy.type', 1)
+                firefox_profile.set_preference('network.proxy.http', self.proxy_address)
+                firefox_profile.set_preference('network.proxy.http_port', self.proxy_port)
+                firefox_profile.set_preference('network.proxy.ssl', self.proxy_address)
+                firefox_profile.set_preference('network.proxy.ssl_port', self.proxy_port)
+
             self.browser = webdriver.Firefox(firefox_profile=firefox_profile)
 
         else:
@@ -159,25 +170,14 @@ class InstaPy:
             chrome_options.add_argument('--lang=en-US')
             chrome_options.add_argument('--disable-setuid-sandbox')
 
-            ## This option implements Chrome Headless, a new (late 2017) GUI-less browser
-            ## Must be Chromedriver 2.9 and above.
+            # this option implements Chrome Headless, a new (late 2017)
+            # GUI-less browser. chromedriver 2.9 and above required
             if self.headless_browser:
                 chrome_options.add_argument('--headless')
-                user_agent = "Chrome" # Replaces browser User Agent from "HeadlessChrome".
-                chrome_options.add_argument('user-agent={user_agent}'.format(user_agent=user_agent))
-
-            # managed_default_content_settings.images = 2: Disable images load,
-            # this setting can improve pageload & save bandwidth
-            # default_content_setting_values.notifications = 2:
-            # Disable notifications
-            # credentials_enable_service & password_manager_enabled = false:
-            # Ignore save password prompt from chrome
-            # 'profile.managed_default_content_settings.images': 2,
-            # 'profile.default_content_setting_values.notifications' : 2,
-            # 'credentials_enable_service': False,
-            # 'profile': {
-            #   'password_manager_enabled': False
-            # }
+                # Replaces browser User Agent from "HeadlessChrome".
+                user_agent = "Chrome"
+                chrome_options.add_argument('user-agent={user_agent}'
+                                            .format(user_agent=user_agent))
 
             chrome_prefs = {
                 'intl.accept_languages': 'en-US'
@@ -1100,7 +1100,8 @@ class InstaPy:
         self.logger.info('--> Users: {} \n'.format(len(userToInteract)))
         userToInteract = random.sample(
             userToInteract,
-            int(ceil(self.user_interact_percentage * len(userToInteract) / 100)))
+            int(ceil(
+                self.user_interact_percentage * len(userToInteract) / 100)))
 
         self.like_by_users(userToInteract,
                            self.user_interact_amount,
@@ -1230,7 +1231,8 @@ class InstaPy:
                     self.aborting = True
 
                     return self
-        self.logger.info("--> Total people followed : {} ".format(len(userFollowed)))
+        self.logger.info("--> Total people followed : {} "
+                         .format(len(userFollowed)))
 
         if interact:
             self.logger.info('--> User followed: {}'.format(userFollowed))
