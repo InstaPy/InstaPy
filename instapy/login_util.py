@@ -7,6 +7,83 @@ from .util import update_activity
 import pickle
 
 
+def bypass_suspicious_login(browser):
+    """Bypass suspicious loggin attempt verification. This should be only enabled
+    when there isn't available cookie for the username, otherwise it will and
+    shows "Unable to locate email or phone button" message, folollowed by
+    CRITICAL - Wrong login data!"""
+    # close sign up Instagram modal if available
+    try:
+        close_button = browser.find_element_by_xpath("[text()='Close']")
+        ActionChains(
+            browser).move_to_element(close_button).click().perform()
+    except NoSuchElementException:
+        pass
+
+    try:
+        # click on "This was me" button if challenge page was called
+        this_was_me_button = browser.find_element_by_xpath(
+            "//button[@name='choice'][text()='This Was Me']")
+        ActionChains(
+            browser).move_to_element(this_was_me_button).click().perform()
+    except NoSuchElementException:
+        # no verification needed
+        pass
+
+    try:
+        user_email = browser.find_element_by_xpath(
+            "//label[@for='choice_1']").text
+    except NoSuchElementException:
+        try:
+            user_email = browser.find_element_by_xpath(
+                "//label[@class='_q0nt5']").text
+        except:
+            try:
+                user_email = browser.find_element_by_xpath(
+                    "//label[@class='_q0nt5 _a7z3k']").text
+            except:
+                print("Unable to locate email or phone button, maybe "
+                      "bypass_suspicious_login=True isn't needed anymore.")
+                return False
+
+    send_security_code_button = browser.find_element_by_xpath(
+        ("//button[text()='Send Security Code']"))
+    (ActionChains(browser)
+     .move_to_element(send_security_code_button)
+     .click()
+     .perform())
+
+    print('Instagram detected an unusual login attempt')
+    print('A security code wast sent to your {}'.format(user_email))
+    security_code = input('Type the security code here: ')
+
+    security_code_field = browser.find_element_by_xpath((
+        "//input[@id='security_code']"))
+    (ActionChains(browser)
+     .move_to_element(security_code_field)
+     .click().send_keys(security_code).perform())
+
+    submit_security_code_button = browser.find_element_by_xpath((
+        "//button[text()='Submit']"))
+
+    (ActionChains(browser)
+     .move_to_element(submit_security_code_button)
+     .click().perform())
+
+    try:
+        sleep(5)
+        # locate wrong security code message
+        wrong_login = browser.find_element_by_xpath((
+            "//p[text()='Please check the code we sent you and try "
+            "again.']"))
+        if wrong_login is not None:
+            print(('Wrong security code! Please check the code Instagram'
+                   'sent you and try again.'))
+    except NoSuchElementException:
+        # correct security code
+        pass
+
+
 def login_user(browser,
                username,
                password,
@@ -66,76 +143,7 @@ def login_user(browser,
     update_activity()
 
     if bypass_suspicious_attempt is True:
-
-        # close sign up Instagram modal if available
-        try:
-            close_button = browser.find_element_by_xpath("[text()='Close']")
-            ActionChains(
-                browser).move_to_element(close_button).click().perform()
-        except NoSuchElementException:
-            pass
-
-        try:
-            # click on "This was me" button if challenge page was called
-            this_was_me_button = browser.find_element_by_xpath(
-                "//button[@name='choice'][text()='This Was Me']")
-            ActionChains(
-                browser).move_to_element(this_was_me_button).click().perform()
-        except NoSuchElementException:
-            # no verification needed
-            pass
-
-        try:
-            user_email = browser.find_element_by_xpath(
-                "//label[@for='choice_1']").text
-        except NoSuchElementException:
-            try:
-                user_email = browser.find_element_by_xpath(
-                    "//label[@class='_q0nt5']").text
-            except:
-                try:
-                    user_email = browser.find_element_by_xpath(
-                        "//label[@class='_q0nt5 _a7z3k']").text
-                except:
-                    print('Unable to locate email or phone button')
-                    return False
-
-        send_security_code_button = browser.find_element_by_xpath(
-            ("//button[text()='Send Security Code']"))
-        (ActionChains(browser)
-         .move_to_element(send_security_code_button)
-         .click()
-         .perform())
-
-        print('Instagram detected an unusual login attempt')
-        print('A security code wast sent to your {}'.format(user_email))
-        security_code = input('Type the security code here: ')
-
-        security_code_field = browser.find_element_by_xpath((
-            "//input[@id='security_code']"))
-        (ActionChains(browser)
-         .move_to_element(security_code_field)
-         .click().send_keys(security_code).perform())
-
-        submit_security_code_button = browser.find_element_by_xpath((
-            "//button[text()='Submit']"))
-
-        (ActionChains(browser)
-         .move_to_element(submit_security_code_button)
-         .click().perform())
-
-        try:
-            sleep(5)
-            # locate wrong security code message
-            wrong_login = browser.find_element_by_xpath((
-                "//p[text()='Please check the code we sent you and try "
-                "again.']"))
-            if wrong_login is not None:
-                print(('Wrong security code! Please check the code Instagram'
-                       'sent you and try again.'))
-        except NoSuchElementException:
-            # correct security code
-            pass
+        bypass_suspicious_login(browser)
 
     sleep(5)
 
