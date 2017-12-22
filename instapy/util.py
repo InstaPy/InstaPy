@@ -11,7 +11,8 @@ def validate_username(browser,
                       ignore_users,
                       blacklist,
                       like_by_followers_upper_limit,
-                      like_by_followers_lower_limit):
+                      like_by_followers_lower_limit,
+                      like_by_following_lower_limit):
     """Check if we can interact with the user"""
 
     if username in ignore_users:
@@ -28,10 +29,19 @@ def validate_username(browser,
     except NoSuchElementException:
         return '---> {} account is private, skipping user...'.format(username)
 
+    #TODO Dont repeat yourself, there is the similar code on like_util line 490
     if followers > like_by_followers_upper_limit:
         return '---> User {} exceeds followers limit'.format(username)
     elif followers < like_by_followers_lower_limit:
         return ('---> {}, number of followers does not reach '
+                'minimum'.format(username))
+
+    num_following = browser.execute_script(
+        "return window._sharedData.entry_data."
+        "ProfilePage[0].user.follows.count")
+
+    if num_following < like_by_following_lower_limit:
+        return ('---> {}, number of following does not reach '
                 'minimum'.format(username))
 
     # if everything ok
