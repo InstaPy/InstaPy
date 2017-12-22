@@ -1,5 +1,6 @@
 import csv
 import os
+import logging
 from .time_util import sleep
 from selenium.common.exceptions import NoSuchElementException
 import sqlite3
@@ -37,6 +38,41 @@ def validate_username(browser,
     # if everything ok
     return True
 
+
+def check_activity_limits(likes, comments, follows, unfollows, server_calls, logger):
+    """Check activity daily limits"""
+
+    if (likes is None or
+            comments is None or
+            follows is None or
+            unfollows is None or
+            server_calls is None):
+        logger.warning('Warning: set_interaction__limits is misconfigured')
+        return
+
+    conn = sqlite3.connect('./db/instapy.db')
+    conn.row_factory = sqlite3.Row
+    cur = conn.cursor()
+    # collect today data
+    cur.execute("SELECT * FROM statistics WHERE created == date('now')")
+    data = cur.fetchone()
+    if data['likes'] >= likes:
+        logger.info("Daily likes limit reached, exiting...")
+        return True
+    elif data['comments'] >= comments:
+        logger.info('Daily comments limit reached, exiting...')
+        return True
+    elif data['follows'] >= follows:
+        logger.info('Daily follows limit reached, exiting...')
+        return True
+    elif data['unfollows'] >= unfollows:
+        logger.info('Daily unfollows limit reached, exiting...')
+        return True
+    elif data['server_calls'] >= server_calls:
+        logger.info('Daily server calls limit reached, exiting...')
+        return True
+    else:
+        return False
 
 def update_activity(action=None):
     """Record every Instagram server call (page load, content load, likes,
