@@ -54,7 +54,7 @@ def is_number_of_followers_valid(num_followers, like_by_followers_upper_limit, l
         return False, 'Number of followers exceeds limit'
 
     if like_by_followers_lower_limit and \
-                    num_followers < like_by_followers_lower_limit:
+                    num_followers <= like_by_followers_lower_limit:
         return False, 'Number of followers does not reach minimum'
 
     return True, None
