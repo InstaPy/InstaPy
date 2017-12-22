@@ -158,7 +158,7 @@ class InstaPy:
             chrome_options.add_argument('--no-sandbox')
             chrome_options.add_argument('--lang=en-US')
             chrome_options.add_argument('--disable-setuid-sandbox')
-            
+
             ## This option implements Chrome Headless, a new (late 2017) GUI-less browser
             ## Must be Chromedriver 2.9 and above.
             if self.headless_browser:
@@ -918,7 +918,7 @@ class InstaPy:
                 links = get_links_for_username(self.browser,
                                                username,
                                                amount,
-                                               self.logger, 
+                                               self.logger,
                                                randomize,
                                                media)
             except NoSuchElementException:
