@@ -57,6 +57,7 @@ Table of Contents
   * [Smart Hashtags](#smart-hashtags)
   * [Follow/Unfollow/exclude not working?](#followunfollowexclude-not-working)
 * [Third Party InstaPy GUI for Windows](#third-party-instapy-gui-for-windows)
+* [Use a proxy](#use-a-proxy)
 * [Switching to Firefox](#switching-to-firefox)
 * [Emoji Support](#emoji-support)
 * [Clarifai ImageAPI](#clarifai-imageapi)
@@ -422,6 +423,14 @@ If you notice that one or more of the above functionalities are not working as e
 session.set_do_follow(enabled=True, percentage=10, times=2)
 ```
 but none of the profiles are being followed - or any such functionality is misbehaving - then one thing you should check is the position/order of such methods in your script. Essentially, all the ```set_*``` methods have to be before ```like_by_tags``` or ```like_by_locations``` or ```unfollow```. This is also implicit in all the exmples and quickstart.py
+
+## Use a proxy
+
+You can use InstaPy behind a proxy by specifying server address and port
+
+```python
+session = InstaPy(username=insta_username, password=insta_password, proxy_address='8.8.8.8', proxy_port=8080)
+```
 
 ## Switching to Firefox
 
