@@ -45,6 +45,7 @@ Table of Contents
   * [Interact with someone else's followers](#interact-with-someone-elses-followers)
   * [Unfollowing](#unfollowing)
   * [Don't unfollow active users](#dont-unfollow-active-users)
+  * [Interactions based on how many people a user follows] (#interactions-based-on-how-many-people-a-user-follows)
   * [Interactions based on the number of followers a user has](#interactions-based-on-the-number-of-followers-a-user-has)
   * [Like by Locations](#like-by-locations)
   * [Like by Tags](#like-by-tags)
@@ -286,6 +287,15 @@ session.unfollow_users(amount=10, onlyNotFollowMe=True, sleep_delay=60)
 # Prevents unfollow followers who have liked one of your latest 5 posts
 
 session.set_dont_unfollow_active_users(enabled=True, posts=5)
+```
+
+### Interactions based on how many people a user follows
+
+```python
+# This is used to check the number of following a user has and if this number 
+# does not pass the number set then no further interaction happens
+
+session.set_lower_following_count(limit = 250)
 ```
 
 ### Interactions based on the number of followers a user has
