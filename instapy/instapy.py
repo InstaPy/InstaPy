@@ -56,7 +56,8 @@ class InstaPy:
                  show_logs=True,
                  headless_browser=False,
                  proxy_address=None,
-                 proxy_port=0):
+                 proxy_port=0,
+                 bypass_suspicious_attempt=False):
 
         if nogui:
             self.display = Display(visible=0, size=(800, 600))
@@ -111,6 +112,8 @@ class InstaPy:
         self.like_by_followers_upper_limit = 0
         self.like_by_followers_lower_limit = 0
 
+        self.bypass_suspicious_attempt = bypass_suspicious_attempt
+
         self.aborting = False
 
         # initialize and setup logging system
@@ -155,10 +158,14 @@ class InstaPy:
 
             if self.proxy_address and self.proxy_port > 0:
                 firefox_profile.set_preference('network.proxy.type', 1)
-                firefox_profile.set_preference('network.proxy.http', self.proxy_address)
-                firefox_profile.set_preference('network.proxy.http_port', self.proxy_port)
-                firefox_profile.set_preference('network.proxy.ssl', self.proxy_address)
-                firefox_profile.set_preference('network.proxy.ssl_port', self.proxy_port)
+                firefox_profile.set_preference('network.proxy.http',
+                                               self.proxy_address)
+                firefox_profile.set_preference('network.proxy.http_port',
+                                               self.proxy_port)
+                firefox_profile.set_preference('network.proxy.ssl',
+                                               self.proxy_address)
+                firefox_profile.set_preference('network.proxy.ssl_port',
+                                               self.proxy_port)
 
             self.browser = webdriver.Firefox(firefox_profile=firefox_profile)
 
@@ -216,7 +223,8 @@ class InstaPy:
         if not login_user(self.browser,
                           self.username,
                           self.password,
-                          self.switch_language):
+                          self.switch_language,
+                          self.bypass_suspicious_attempt):
             self.logger.critical('Wrong login data!')
 
             self.aborting = True
