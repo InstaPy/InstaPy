@@ -402,6 +402,7 @@ def check_link(browser,
                username,
                like_by_followers_upper_limit,
                like_by_followers_lower_limit,
+               like_by_following_lower_limit,
                logger):
 
     browser.get(link)
@@ -495,6 +496,26 @@ def check_link(browser,
            num_followers < like_by_followers_lower_limit:
                 return True, user_name, is_video, \
                     'Number of followers does not reach minimum'
+
+    if like_by_following_lower_limit:
+        userlink = 'https://www.instagram.com/' + user_name
+        browser.get(userlink)
+        # update server calls
+        update_activity()
+        sleep(1)
+        num_following = browser.execute_script(
+            "return window._sharedData.entry_data."
+            "ProfilePage[0].user.follows.count")
+        browser.get(link)
+        # update server calls
+        update_activity()
+        sleep(1)
+        logger.info('Number of Following: {}'.format(num_following))
+
+        if  num_following < like_by_following_lower_limit:
+                return True, user_name, is_video, \
+                    'Number of following does not reach minimum'
+
 
     logger.info('Link: {}'.format(link.encode('utf-8')))
     logger.info('Description: {}'.format(image_text.encode('utf-8')))
