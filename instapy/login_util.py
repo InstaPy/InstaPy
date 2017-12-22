@@ -17,15 +17,16 @@ def login_user(browser,
     # update server calls
     update_activity()
 
+    # try to load cookie from username
     try:
         browser.get('https://www.google.com')
         for cookie in pickle.load(open('./logs/{}_cookie.pkl'
                                        .format(username), 'rb')):
             browser.add_cookie(cookie)
+        # logged in!
         return True
     except (WebDriverException, OSError, IOError):
         print("Cookie file not found, creating cookie...")
-        bypass_suspicious_attempt = True
         browser.get('https://www.instagram.com')
 
     # Changes instagram language to english, to ensure no errors ensue from
@@ -65,6 +66,24 @@ def login_user(browser,
     update_activity()
 
     if bypass_suspicious_attempt is True:
+
+        # close sign up Instagram modal if available
+        try:
+            close_button = browser.find_element_by_xpath("[text()='Close']")
+            ActionChains(
+                browser).move_to_element(close_button).click().perform()
+        except NoSuchElementException:
+            pass
+
+        try:
+            # click on "This was me" button if challenge page was called
+            this_was_me_button = browser.find_element_by_xpath(
+                "//button[@name='choice'][text()='This Was Me']")
+            ActionChains(
+                browser).move_to_element(this_was_me_button).click().perform()
+        except NoSuchElementException:
+            # no verification needed
+            pass
 
         try:
             user_email = browser.find_element_by_xpath(
@@ -123,18 +142,9 @@ def login_user(browser,
     # Check if user is logged-in (If there's two 'nav' elements)
     nav = browser.find_elements_by_xpath('//nav')
     if len(nav) == 2:
-        # save login cookie for next time
+        # create cookie for username
         pickle.dump(browser.get_cookies(),
                     open('./logs/{}_cookie.pkl'.format(username), 'wb'))
-        try:
-            # click on "This was me" button if challenge page was called
-            this_was_me_button = browser.find_element_by_xpath(
-                "//button[@name='choice'][text()='This Was Me']")
-            ActionChains(
-                browser).move_to_element(this_was_me_button).click().perform()
-        except NoSuchElementException:
-            # no verification needed
-            pass
         return True
     else:
         return False
