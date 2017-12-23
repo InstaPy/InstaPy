@@ -11,12 +11,12 @@ print("1")
 
 # set up all the settings
 session.login()
-#session.getFollowerList_user(following=True, followers=False)
-#session.getFollowerList_user(following=False, followers=True)
+#session.get_follow_list_from_user(following=True, followers=False)
+#session.get_follow_list_from_user(following=False, followers=True)
 
-userFollowinglist = ["bandana_shop"]
-for user in userFollowinglist:
-    session.getFollowerList_user(following=True, followers=False, username=user)
+userFollowlist = ["astarosher", "bia.anotaai","bubri","insta.ludii","jannekevanraaf","oprah", "loveandlibby", "matan_sensel", "einadesign", "tweelingendesign", "nkahalon", "yaelyaniv", "pulkepanama" ,"lihihod", "galisjewelry", "shooka.stores", "ms_sweet_dreams", "danielyona", "peterandwolf.kids", "anattal03", "michaelabercu", "limortiroche", "danaungerfashion", "hilarahav", "kerenshpilsher", "petitedorisofficial", "jem_sharonbenzaray", "kerenbargil", "sivansternbach", "maria_rodsant", "misskyreeloves", "zucoulisses", "petit.os", "nyani_kids", "littleops_", "kidsinteriors_com", "mytrendtroom", "adikastyle"]
+for user in userFollowlist:
+    session.get_follow_list_from_user(following=False, followers=True, username=user)
 
 # end the bot session
 session.end()

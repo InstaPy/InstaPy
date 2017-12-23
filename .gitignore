@@ -100,5 +100,6 @@ ENV/
 .idea
 logs/password.txt
 logs/user.txt
-logs/usersLists/followers/
+logs/followers/
+logs/following/
 .dropbox

@@ -1,6 +1,7 @@
 import re
 import random
 
+
 """Module that handles the like features"""
 from math import ceil
 from re import findall
@@ -9,7 +10,7 @@ from selenium.webdriver.common.keys import Keys
 from .time_util import sleep
 from .util import update_activity
 from .util import add_user_to_blacklist
-
+from langdetect import detect
 
 def get_links_from_feed(browser, amount, num_of_search, logger):
     """Fetches random number of links from feed and returns a list of links"""
@@ -402,6 +403,7 @@ def check_link(browser,
                dont_like,
                ignore_if_contains,
                ignore_users,
+               dont_include_language,
                username,
                like_by_followers_upper_limit,
                like_by_followers_lower_limit,
@@ -476,6 +478,47 @@ def check_link(browser,
 
     logger.info('Image from: {}'.format(user_name.encode('utf-8')))
 
+    """validate profile description language is supported"""
+    if dont_include_language:
+        userlink = 'https://www.instagram.com/' + user_name
+        browser.get(userlink)
+        profile_description = browser.execute_script(
+            "return window._sharedData.entry_data."
+            "ProfilePage[0].user.biography")
+        profile_full_name = browser.execute_script(
+            "return window._sharedData.entry_data."
+            "ProfilePage[0].user.full_name")
+
+        browser.get(link)
+        try:
+            # detect language by profile description, if the description is empty detect by name
+            image_text
+            profile_detect = ''
+            if isinstance(profile_description, str):
+                profile_detect = profile_description
+            elif isinstance(profile_full_name, str):
+                profile_detect += profile_full_name
+
+            update_activity()
+            sleep(1)
+            #logger.info('profile description {}'.format(profile_detect))
+            language = detect(profile_detect)
+
+            if language in dont_include_language:
+                logger.info('detected unwanted language: {}'.format(language))
+                return True, user_name, is_video, \
+                       'detected unwanted language'
+            else:
+                logger.info('detected wanted language: {}'.format(language))
+        except UnicodeEncodeError:
+            logger.error('profile description and full_name of: {} have UnicodeEncodeError'.format(user_name))
+        except TypeError:
+            logger.info('profile description and full_name of: {} is empty'.format(user_name))
+        except:
+            import traceback
+            print(traceback.format_exc())
+            logger.error('profile description and full_name of: {} Could not detect language'.format(user_name))
+
     """Find the number of followes the user has"""
     if like_by_followers_upper_limit or like_by_followers_lower_limit:
         userlink = 'https://www.instagram.com/' + user_name
@@ -548,7 +591,7 @@ def like_image(browser, username, blacklist, logger):
             add_user_to_blacklist(
                 browser, username, blacklist['campaign'], action, logger
             )
-        sleep(4)
+        sleep(2)
         return True
     #elif len(liked_elem) == 1:
     #    print('--> Already Liked!')
