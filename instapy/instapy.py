@@ -42,7 +42,9 @@ from .unfollow_util import follow_given_user
 from .unfollow_util import load_follow_restriction
 from .unfollow_util import dump_follow_restriction
 from .unfollow_util import set_automated_followed_pool
+
 from .statistics import InstaPyStorage
+from random import shuffle
 import pickle
 
 
@@ -106,6 +108,9 @@ class InstaPy:
         self.user_interact_media = None
         self.user_interact_percentage = 0
         self.user_interact_random = False
+        self.user_interact_dict_users_dir = {} # count each user the number of followers interact
+        self.user_interact_listUsersFromDirectory = False
+        self.currentUsernameFollowers = None
 
         self.use_clarifai = False
         self.clarifai_api_key = None
@@ -315,7 +320,8 @@ class InstaPy:
                           amount=10,
                           percentage=100,
                           randomize=False,
-                          media=None):
+                          media=None,
+                          listUsersFromDirectory=False):
         """Define if posts of given user should be interacted"""
         if self.aborting:
             return self
@@ -324,6 +330,30 @@ class InstaPy:
         self.user_interact_random = randomize
         self.user_interact_percentage = percentage
         self.user_interact_media = media
+        self.user_interact_listUsersFromDirectory = listUsersFromDirectory
+
+        if listUsersFromDirectory is True:
+            # list all users dump in users folder
+            files_list_from_users_dir=os.listdir('./logs/followers/')
+
+            if not files_list_from_users_dir:
+                self.user_interact_listUsersFromDirectory = False # list is empty no users files exist
+
+            try:
+                # check if a dict already exist for users list
+                with open('./logs/all_followers_dict.pkl', 'rb') as input:
+                    self.user_interact_dict_users_dir = pickle.load(input)
+            except (OSError, IOError) as e:
+                # create an empty dict if file not exist
+                with open('./logs/all_followers_dict.pkl', 'wb') as output:
+                    pickle.dump(self.user_interact_dict_users_dir, output, pickle.HIGHEST_PROTOCOL)
+
+            for file_user in files_list_from_users_dir:
+                if file_user not in self.user_interact_dict_users_dir:
+                    self.user_interact_dict_users_dir[file_user] = 0
+
+            with open('./logs/all_followers_dict.pkl', 'wb') as output:
+                pickle.dump(self.user_interact_dict_users_dir, output, pickle.HIGHEST_PROTOCOL)
 
         return self
 
@@ -661,7 +691,7 @@ class InstaPy:
                                           self.logger,
                                           media,
                                           skip_top_posts)
-				# remove first 5 elements as it is "top post"
+                # remove first 5 elements as it is "top post"
                 del links[:5]
 
             except NoSuchElementException:
@@ -945,6 +975,7 @@ class InstaPy:
                           usernames,
                           amount=10,
                           randomize=False,
+                          source=None,
                           media=None):
         """Likes some amounts of images for each usernames"""
         if self.aborting:
@@ -962,6 +993,12 @@ class InstaPy:
             self.logger.info(
                 'Username [{}/{}]'.format(index + 1, len(usernames)))
             self.logger.info('--> {}'.format(username.encode('utf-8')))
+
+            # if we are using followers list from saved dict we shall update it
+            if self.user_interact_listUsersFromDirectory is True and source == 'dict':
+                self.user_interact_dict_users_dir[self.currentUsernameFollowers] += 1
+                with open('./logs/all_followers_dict.pkl', 'wb') as output:
+                    pickle.dump(self.user_interact_dict_users_dir, output, pickle.HIGHEST_PROTOCOL)
 
             try:
                 links = get_links_for_username(self.browser,
@@ -1039,7 +1076,7 @@ class InstaPy:
                             total_liked_img += 1
                             liked_img += 1
 
-                            if (self.save_do_like_statistics() == 0):
+                            if self.save_do_like_statistics() == 0:
                                 self.end()
                                 return
                             checked_img = True
@@ -1121,6 +1158,36 @@ class InstaPy:
             self.logger.error('Sorry, an error occured: {}'.format(err))
             self.aborting = True
             return self
+
+        return self
+
+    def interact_by_users_from_dict(self,
+                                    amountInteractPerUser=10,
+                                    amountInteractPerUserFollowers=200,
+                                    amountUserFollowers=5,
+                                    randomize=False,
+                                    media=None):
+        """Likes some amounts of images for each user followers in dict"""
+
+        if self.aborting:
+            return self
+
+        usernamesFollowers = list(self.user_interact_dict_users_dir.keys())
+        if self.username in usernamesFollowers: usernamesFollowers.remove(self.username)
+        shuffle(usernamesFollowers)
+        usernamesFollowers = usernamesFollowers[:amountUserFollowers]
+
+        for usernameFollowers in usernamesFollowers:
+            # read user all followers from file
+            with open('./logs/followers/' + usernameFollowers, 'rb') as input:
+                usernames = pickle.load(input)
+
+            if self.user_interact_dict_users_dir[usernameFollowers] != len(usernames):
+                self.currentUsernameFollowers = usernameFollowers
+                # pass only usernames starting from last counter
+                startingUserCount = self.user_interact_dict_users_dir[usernameFollowers]
+                usernamesTrimed = usernames[startingUserCount:(startingUserCount+amountInteractPerUserFollowers)]
+                self.interact_by_users(usernamesTrimed, amount=amountInteractPerUser, randomize=randomize, source='dict', media=media)
 
         return self
 

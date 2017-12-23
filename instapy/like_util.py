@@ -1,7 +1,6 @@
 import re
 import random
 
-
 """Module that handles the like features"""
 from math import ceil
 from re import findall
