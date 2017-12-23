@@ -10,7 +10,7 @@ with open('./logs/user.txt', 'r') as file:
     print(insta_username)
 with open('./logs/password.txt', 'r') as file:
     insta_password = file.readline()
-with open('./logs/all_following.pkl', 'rb') as input:
+with open('./logs/following/'+insta_username, 'rb') as input:
     original_all_following = pickle.load(input)
 print ("original_all_following users to ignore", len(original_all_following))
 print("1")
@@ -43,15 +43,19 @@ def job():
         session.set_blacklist(enabled=True, campaign='General')
         session.set_upper_follower_count(limit=1500)
         session.set_dont_include(original_all_following)
+        session.set_dont_include_language(['ar', 'id', 'tr', 'ab', 'af', 'as', 'az', 'ba', 'zh', 'cv', 'th'])
         session.set_user_interact(amount=2, randomize=False, percentage=90, media='Photo')
         #configurations
+        session.set_do_like(True, percentage=95)
         session.set_do_comment(True, percentage=5)
         session.set_do_follow(True, percentage=50, times=1)
         session.set_comments(['beautiful', u'\u2665', u'\u2665 \u2665 \u2665', u'\u2665 \u2665', u'\u2764', u'\u263A'])
 
         # start the process
         print("do the actual liking by tag")
-        session.like_by_tags(taglist, amount=200)
+
+        #session.interact_by_users(['wiles.leept77'], amount=10)
+        session.like_by_tags(taglist, amount=500)
 
         # unfollow
         session.unfollow_users(amount=40, onlyInstapyFollowed=True, onlyInstapyMethod='FIFO', sleep_delay=600)

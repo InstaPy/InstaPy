@@ -29,7 +29,7 @@ from .print_log_writer import log_follower_num
 from .time_util import sleep
 from .time_util import set_sleep_percentage
 from .util import get_active_users
-from .util import getFollowerList
+from .util import get_follow_list
 from .util import validate_username
 from .unfollow_util import get_given_user_followers
 from .unfollow_util import get_given_user_following
@@ -42,12 +42,9 @@ from .unfollow_util import follow_given_user
 from .unfollow_util import load_follow_restriction
 from .unfollow_util import dump_follow_restriction
 from .unfollow_util import set_automated_followed_pool
-
 from .statistics import InstaPyStorage
-import csv
 import pickle
-from passlib.hash import pbkdf2_sha256
-import getpass
+
 
 class InstaPy:
     """Class to be instantiated to use the script"""
@@ -60,7 +57,9 @@ class InstaPy:
                  use_firefox=False,
                  page_delay=25,
                  show_logs=True,
-                 headless_browser=False):
+                 headless_browser=False,
+                 proxy_address=None,
+                 proxy_port=0):
 
         if nogui:
             self.display = Display(visible=0, size=(800, 600))
@@ -68,6 +67,8 @@ class InstaPy:
 
         self.browser = None
         self.headless_browser = headless_browser
+        self.proxy_address = proxy_address
+        self.proxy_port = proxy_port
 
         self.username = username or os.environ.get('INSTA_USER')
         self.password = password or os.environ.get('INSTA_PW')
@@ -90,6 +91,7 @@ class InstaPy:
         self.do_follow = False
         self.follow_percentage = 0
         self.dont_include = []
+        self.dont_include_language = []
         self.blacklist = {'enabled': 'True', 'campaign': ''}
         self.automatedFollowedPool = []
         self.do_like = False
@@ -166,6 +168,10 @@ class InstaPy:
             chrome_options.add_argument('--no-sandbox')
             chrome_options.add_argument('--lang=en-US')
             chrome_options.add_argument('--disable-setuid-sandbox')
+
+            if self.proxy_address and self.proxy_port > 0:
+                proxy = '{ip}:{port}'.format(ip=self.proxy_address, port=self.proxy_port)
+                chrome_options.add_argument('--proxy-server=http://{proxy}'.format(proxy=proxy))
             
             ## This option implements Chrome Headless, a new (late 2017) GUI-less browser
             ## Must be Chromedriver 2.9 and above.
@@ -350,6 +356,15 @@ class InstaPy:
 
         return self
 
+    def set_dont_include_language(self, languages=None):
+        """Defines which accounts should not be unfollowed"""
+        if self.aborting:
+            return self
+
+        self.dont_include_language = languages or []
+
+        return self
+		
     def set_switch_language(self, option=True):
         self.switch_language = option
         return self
@@ -508,6 +523,7 @@ class InstaPy:
                                    self.dont_like,
                                    self.ignore_if_contains,
                                    self.ignore_users,
+                                   self.dont_include_language,
                                    self.username,
                                    self.like_by_followers_upper_limit,
                                    self.like_by_followers_lower_limit,
@@ -663,6 +679,7 @@ class InstaPy:
                                    self.dont_like,
                                    self.ignore_if_contains,
                                    self.ignore_users,
+                                   self.dont_include_language,
                                    self.username,
                                    self.like_by_followers_upper_limit,
                                    self.like_by_followers_lower_limit,
@@ -727,20 +744,20 @@ class InstaPy:
                             if (self.do_follow and
                                 user_name not in self.dont_include and
                                 checked_img and
-                                following and
-                                self.follow_restrict.get(user_name, 0) <
-                                    self.follow_times):
+                                following):
+                                if self.follow_restrict.get(user_name, 0) < self.follow_times:
+                                    followed += follow_user(self.browser,
+                                                            self.follow_restrict,
+                                                            self.username,
+                                                            user_name,
+                                                            self.blacklist,
+                                                            self.logger)
 
-                                followed += follow_user(self.browser,
-                                                        self.follow_restrict,
-                                                        self.username,
-                                                        user_name,
-                                                        self.blacklist,
-                                                        self.logger)
-
-                                if (self.save_do_follow_statistics() == 0):
-                                    self.end()
-                                    return
+                                    if self.save_do_follow_statistics() == 0:
+                                        self.end()
+                                        return
+                                else:
+                                    self.logger.info('--> Not following since already been followed before')
                             else:
                                 self.logger.info('--> Not following')
                                 sleep(1)
@@ -843,6 +860,7 @@ class InstaPy:
                                    self.dont_like,
                                    self.ignore_if_contains,
                                    self.ignore_users,
+                                   self.dont_include_language,
                                    self.username,
                                    self.like_by_followers_upper_limit,
                                    self.like_by_followers_lower_limit,
@@ -980,6 +998,7 @@ class InstaPy:
                                    self.dont_like,
                                    self.ignore_if_contains,
                                    self.ignore_users,
+                                   self.dont_include_language,
                                    self.username,
                                    self.like_by_followers_upper_limit,
                                    self.like_by_followers_lower_limit,
@@ -1378,6 +1397,7 @@ class InstaPy:
                                            self.dont_like,
                                            self.ignore_if_contains,
                                            self.ignore_users,
+                                           self.dont_include_language,
                                            self.username,
                                            self.like_by_followers_upper_limit,
                                            self.like_by_followers_lower_limit,
@@ -1504,19 +1524,19 @@ class InstaPy:
 
         return self
 
-    def getFollowerList_user(self, following=True, followers=False, username=None):
+    def get_follow_list_from_user(self, following=True, followers=False, username=None):
         if username is None:
             username=self.username
 
-        if following is True and not os.path.isfile('./logs/usersLists/following/' + username):
-            followNumber = getFollowerList(self.browser,
+        if following is True and not os.path.isfile('./logs/following/' + username):
+            followNumber = get_follow_list(self.browser,
                                            username,
                                            self.logger,
                                            50000,
                                            True,
                                            False)
-        elif followers is True and not os.path.isfile('./logs/usersLists/followers/' + username):
-            followNumber = getFollowerList(self.browser,
+        if followers is True and not os.path.isfile('./logs/followers/' + username):
+            followNumber = get_follow_list(self.browser,
                                            username,
                                            self.logger,
                                            50000,
