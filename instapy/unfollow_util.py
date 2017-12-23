@@ -112,7 +112,7 @@ def unfollow(browser,
                             ' now unfollowing: {}'
                             .format(str(unfollowNum), person.encode('utf-8')))
 
-                        sleep(25)
+                        sleep(15)
 
                         if hasSlept:
                             hasSlept = False
