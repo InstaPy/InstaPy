@@ -22,7 +22,8 @@ Head over to https://github.com/timgrossmann/InstaPy/wiki/Reporting-An-Issue to 
 
 ### Social
 
-#### [Slack Workspace](https://join.slack.com/t/instapy/shared_invite/enQtMjYzNTgwMDg3MDEyLTk2NWI0MjY2MTVjYmM2NjFlYjVmMmE0ZjU1OGQ0OWM2MTQwOTc1NTIyOGVhZDEwMTFkYzFmODE5ZWIxZjhjMTQ) | [InstaPy Twitter](https://twitter.com/InstaPy) | [My Twitter](https://twitter.com/timigrossmann) | [How it works (Medium)](https://medium.freecodecamp.com/my-open-source-instagram-bot-got-me-2-500-real-followers-for-5-in-server-costs-e40491358340) | [Check out the talk](https://youtu.be/4TmKFZy-ioQ) | [Support InstaPy!](https://www.paypal.me/supportInstaPy)
+#### [Slack Workspace](https://join.slack.com/t/instapy/shared_invite/enQtMjYzNTgwMDg3MDEyLTk2NWI0MjY2MTVjYmM2NjFlYjVmMmE0ZjU1OGQ0OWM2MTQwOTc1NTIyOGVhZDEwMTFkYzFmODE5ZWIxZjhjMTQ) | [InstaPy Twitter](https://twitter.com/InstaPy) | [My Twitter](https://twitter.com/timigrossmann) | [How it works (Medium)](https://medium.freecodecamp.com/my-open-source-instagram-bot-got-me-2-500-real-followers-for-5-in-server-costs-e40491358340) | [Check out the talk](https://youtu.be/4TmKFZy-ioQ) |    
+[Listen to the "Talk Python to me"-Episode](https://talkpython.fm/episodes/show/142/automating-the-web-with-selenium-and-instapy) | [Support InstaPy!](https://www.paypal.me/supportInstaPy)
 
 [![paypal](https://img.shields.io/badge/-PayPal-blue.svg)](https://www.paypal.me/supportInstaPy)
 
@@ -55,7 +56,9 @@ Table of Contents
   * [Blacklist Campaign](#blacklist-campaign)
   * [Smart Hashtags](#smart-hashtags)
   * [Follow/Unfollow/exclude not working?](#followunfollowexclude-not-working)
+  * [Bypass Suspicious Login Attempt](#bypass-suspicious-login-attempt)
 * [Third Party InstaPy GUI for Windows](#third-party-instapy-gui-for-windows)
+* [Use a proxy](#use-a-proxy)
 * [Switching to Firefox](#switching-to-firefox)
 * [Emoji Support](#emoji-support)
 * [Clarifai ImageAPI](#clarifai-imageapi)
@@ -102,7 +105,7 @@ from instapy import InstaPy
 insta_username = ''
 insta_password = ''
 
-# if you want to run this script on a server, 
+# if you want to run this script on a server,
 # simply add nogui=True to the InstaPy() constructor
 session = InstaPy(username=insta_username, password=insta_password)
 session.login()
@@ -156,7 +159,7 @@ session.set_comments(['Great Video!'], media='Video')
 ### Following
 
 ```python
-# default enabled=False, follows ~ 10% of the users from the images, times=1 
+# default enabled=False, follows ~ 10% of the users from the images, times=1
 # (only follows a user once (if unfollowed again))
 
 session.set_do_follow(enabled=True, percentage=10, times=2)
@@ -166,8 +169,8 @@ session.set_do_follow(enabled=True, percentage=10, times=2)
 
 ```python
 # follows each account from a list of instagram nicknames (only follows a user
-# once (if unfollowed again)) would be useful for the precise targeting. 
-# For example, if one needs to get followbacks from followers of a chosen 
+# once (if unfollowed again)) would be useful for the precise targeting.
+# For example, if one needs to get followbacks from followers of a chosen
 # account/group of accounts.
 
 accs = ['therock','natgeo']
@@ -259,14 +262,14 @@ session.interact_user_followers(['natgeo'], amount=10, randomize=True)
 ### Unfollowing
 
 ```python
-# unfollows 10 of the accounts you're following -> instagram will only 
-# unfollow 10 before you'll be 'blocked for 10 minutes' (if you enter a 
-# higher number than 10 it will unfollow 10, then wait 10 minutes and will 
+# unfollows 10 of the accounts you're following -> instagram will only
+# unfollow 10 before you'll be 'blocked for 10 minutes' (if you enter a
+# higher number than 10 it will unfollow 10, then wait 10 minutes and will
 # continue then).
 # You can choose to only unfollow the user that Insta has followed by adding
 # onlyInstapyFollowed = True otherwise it will unfollow all users
-# You can choose unfollow method as FIFO (First-Input-First-Output) or 
-# LIFO (Last-Input-First-Output). The default is FIFO method. 
+# You can choose unfollow method as FIFO (First-Input-First-Output) or
+# LIFO (Last-Input-First-Output). The default is FIFO method.
 # onlyInstapyMethod is using only when onlyInstapyFollowed = True
 # sleep_delay sets the time it will sleep every 10 profile unfollow, default
 # is 10min
@@ -274,8 +277,8 @@ session.interact_user_followers(['natgeo'], amount=10, randomize=True)
 session.unfollow_users(amount=10, onlyInstapyFollowed = True, onlyInstapyMethod = 'FIFO', sleep_delay=60 )
 
 # You can only unfollow user that won't follow you back by adding
-# onlyNotFollowMe = True it still only support on profile following 
-# you should disable onlyInstapyFollowed when use this 
+# onlyNotFollowMe = True it still only support on profile following
+# you should disable onlyInstapyFollowed when use this
 session.unfollow_users(amount=10, onlyNotFollowMe=True, sleep_delay=60)
 ```
 
@@ -290,7 +293,7 @@ session.set_dont_unfollow_active_users(enabled=True, posts=5)
 ### Interactions based on the number of followers a user has
 
 ```python
-# This is used to check the number of followers a user has and if this number 
+# This is used to check the number of followers a user has and if this number
 # exceeds the number set then no further interaction happens
 
 session.set_upper_follower_count(limit = 250)
@@ -336,8 +339,8 @@ session.like_by_tags(['natgeo', 'world'], amount=10)
 # This is used to perform likes on your own feeds
 # amount=100  specifies how many total likes you want to perform
 # randomize=True randomly skips posts to be liked on your feed
-# unfollow=True unfollows the author of a post which was considered 
-# inappropriate interact=True visits the author's profile page of a 
+# unfollow=True unfollows the author of a post which was considered
+# inappropriate interact=True visits the author's profile page of a
 # certain post and likes a given number of his pictures, then returns to feed
 
 session.like_by_feed(amount=100, randomize=True, unfollow=True, interact=True)
@@ -347,7 +350,7 @@ session.like_by_feed(amount=100, randomize=True, unfollow=True, interact=True)
 ```python
 # Controls your interactions by campaigns.
 # ex. this week InstaPy will like and comment interacting by campaign called
-# 'soccer', next time InstaPy runs, it will not interact again with users in 
+# 'soccer', next time InstaPy runs, it will not interact again with users in
 # blacklist
 # In general, this means that once we turn off the soccer_campaign again, InstaPy
 # will have no track of the people it interacted with about soccer.
@@ -380,7 +383,7 @@ session.like_by_tags(amount=10, use_smart_hashtags=True)
 session.set_dont_like(['#exactmatch', '[startswith', ']endswith', 'broadmatch'])
 ```
 
-`.set_dont_like` searches the description and owner comments for hashtags and 
+`.set_dont_like` searches the description and owner comments for hashtags and
 won't like the image if one of those hashtags are in there
 
 You have 4 options to exclude posts from your InstaPy session:
@@ -409,7 +412,7 @@ session.set_ignore_if_contains(['glutenfree', 'french', 'tasty'])
 ### Excluding friends
 
 ```python
-# will prevent commenting on and unfollowing your good friends (the images will 
+# will prevent commenting on and unfollowing your good friends (the images will
 # still be liked)
 
 session.set_dont_include(['friend1', 'friend2', 'friend3'])
@@ -422,7 +425,29 @@ session.set_do_follow(enabled=True, percentage=10, times=2)
 ```
 but none of the profiles are being followed - or any such functionality is misbehaving - then one thing you should check is the position/order of such methods in your script. Essentially, all the ```set_*``` methods have to be before ```like_by_tags``` or ```like_by_locations``` or ```unfollow```. This is also implicit in all the exmples and quickstart.py
 
-## Switching to Firefox
+### Bypass Suspicious Login Attempt
+
+If you're having issues with the "we detected an unusual login attempt" message,
+you can bypass it setting InstaPy in this way:
+
+```python
+session = InstaPy(username=insta_username, password=insta_password, bypass_suspicious_attempt=True)
+```
+
+```bypass_suspicious_attempt=True``` will send the verification code to your
+email, and you will be prompted to enter the security code sent to your email.
+It will login to your account, now you can set bypass_suspicious_attempt to False
+```bypass_suspicious_attempt=False``` and InstaPy will quickly login using cookies.
+
+### Use a proxy
+
+You can use InstaPy behind a proxy by specifying server address and port
+
+```python
+session = InstaPy(username=insta_username, password=insta_password, proxy_address='8.8.8.8', proxy_port=8080)
+```
+
+### Switching to Firefox
 
 Chrome is the default browser, but InstaPy provides support for Firefox as well.
 
@@ -474,7 +499,7 @@ session.end()
 
 ```python
 # default enabled=False , enables the checking with the clarifai api (image
-# tagging) if secret and proj_id are not set, it will get the environment 
+# tagging) if secret and proj_id are not set, it will get the environment
 # variables 'CLARIFAI_API_KEY'
 
 session.set_use_clarifai(enabled=True, api_key='xxx')
@@ -509,7 +534,7 @@ session = InstaPy(username='test', password='test', nogui=True)
 
 ## Running on a Headless Browser
 
-**Note:** Chrome only! Must user chromedriver v2.9+ 
+**Note:** Chrome only! Must user chromedriver v2.9+
 
 Use `headless_browser` parameter to run the bot via the CLI. Works great if running the scripts locally, or to deploy on a server. No GUI, less CPU intensive. [Example](http://g.recordit.co/BhEgXANLhJ.gif)
 
@@ -612,8 +637,8 @@ You can add InstaPy to your crontab, so that the script will be executed regular
 # Edit or create a crontab
 crontab -e
 # Add information to execute your InstaPy regularly.
-# With cd you navigate to your InstaPy folder, with the part after && 
-# you execute your quickstart.py with python. Make sure that those paths match 
+# With cd you navigate to your InstaPy folder, with the part after &&
+# you execute your quickstart.py with python. Make sure that those paths match
 # your environment.
 45 */4 * * * cd /home/user/InstaPy && /usr/bin/python ./quickstart.py
 ```
@@ -665,4 +690,3 @@ Built-in delays prevent your account from getting banned. (Just make sure you do
 ---
 ###### Have Fun & Feel Free to report any issues
 ---
-
