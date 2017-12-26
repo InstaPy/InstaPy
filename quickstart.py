@@ -1,7 +1,7 @@
 from instapy import InstaPy
 
-insta_username = ''
-insta_password = ''
+insta_username = 'cycling_apparel'
+insta_password = 'lx7qt5'
 
 # set headless_browser=True if you want to run InstaPy on a server
 try:
@@ -18,9 +18,8 @@ try:
     session.set_dont_like(['pizza', 'girl'])
 
     # actions
-    session.like_by_tags(['natgeo', 'world'], amount=100)
+    session.like_by_tags(['natgeo'], amount=1)
 
+finally:
     # end the bot session
-    session.end()
-except:
     session.end()
