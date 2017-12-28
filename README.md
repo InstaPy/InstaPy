@@ -64,7 +64,7 @@ Table of Contents
 * [Clarifai ImageAPI](#clarifai-imageapi)
 * [Running on a Server](#running-on-a-server)
 * [Running on a Headless Browser](#running-on-a-headless-browser)
-# [Using a custom User-Agent](#using-a-custom-user-agent)
+* [Using a custom User-Agent](#using-a-custom-user-agent)
 * [Running with Docker microservices manual](#running-with-docker-microservices-manual)
 * [Running all-in-one with Docker (obsolete)](#running-all-in-one-with-docker-obsolete)
 * [Automate with cron](#automate-with-cron)
