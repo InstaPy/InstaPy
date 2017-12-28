@@ -150,6 +150,8 @@ def login_user(browser,
     # Needed in case you're redirected to https://www.instagram.com#reactivated, asking you to download the app.
     browser.get('https://www.instagram.com')
 
+    sleep(5)
+
     # Check if user is logged-in (If there's two 'nav' elements)
     nav = browser.find_elements_by_xpath('//nav')
     if len(nav) == 2:
