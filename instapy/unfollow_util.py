@@ -695,7 +695,8 @@ def follow_given_user_followers(browser,
                                 random,
                                 delay,
                                 blacklist,
-                                logger):
+                                logger,
+                                logfolder):
 
     browser.get('https://www.instagram.com/' + user_name)
     # update server calls
@@ -744,7 +745,8 @@ def follow_given_user_following(browser,
                                 random,
                                 delay,
                                 blacklist,
-                                logger):
+                                logger,
+                                logfolder):
 
     browser.get('https://www.instagram.com/' + user_name)
     # update server calls
