@@ -2,7 +2,7 @@
 from instapy import InstaPy
 
 # if you don't provide arguments, the script will look for INSTA_USER and INSTA_PW in the environment
-session = InstaPy(username='test', password='test')
+session = InstaPy(username='test', password='test',multi_logs=True)
 
 """Logging in"""
 # logs you in with the specified username and password

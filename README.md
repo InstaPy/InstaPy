@@ -11,7 +11,7 @@ Implemented in Python using the Selenium module.
 
 **Think this tool is worth supporting?**
 Head over to https://github.com/timgrossmann/InstaPy/wiki/How-to-Contribute to find out how you can help.
-**Become a part of InstaPy!**  
+**Become a part of InstaPy!**
 
 **Have an issue**
 Head over to https://github.com/timgrossmann/InstaPy/wiki/Reporting-An-Issue to find out how to report this to us and get help.
@@ -22,7 +22,7 @@ Head over to https://github.com/timgrossmann/InstaPy/wiki/Reporting-An-Issue to 
 
 ### Social
 
-#### [Slack Workspace](https://join.slack.com/t/instapy/shared_invite/enQtMjYzNTgwMDg3MDEyLTk2NWI0MjY2MTVjYmM2NjFlYjVmMmE0ZjU1OGQ0OWM2MTQwOTc1NTIyOGVhZDEwMTFkYzFmODE5ZWIxZjhjMTQ) | [InstaPy Twitter](https://twitter.com/InstaPy) | [My Twitter](https://twitter.com/timigrossmann) | [How it works (Medium)](https://medium.freecodecamp.com/my-open-source-instagram-bot-got-me-2-500-real-followers-for-5-in-server-costs-e40491358340) | [Check out the talk](https://youtu.be/4TmKFZy-ioQ) |    
+#### [Slack Workspace](https://join.slack.com/t/instapy/shared_invite/enQtMjYzNTgwMDg3MDEyLTk2NWI0MjY2MTVjYmM2NjFlYjVmMmE0ZjU1OGQ0OWM2MTQwOTc1NTIyOGVhZDEwMTFkYzFmODE5ZWIxZjhjMTQ) | [InstaPy Twitter](https://twitter.com/InstaPy) | [My Twitter](https://twitter.com/timigrossmann) | [How it works (Medium)](https://medium.freecodecamp.com/my-open-source-instagram-bot-got-me-2-500-real-followers-for-5-in-server-costs-e40491358340) | [Check out the talk](https://youtu.be/4TmKFZy-ioQ) |
 [Listen to the "Talk Python to me"-Episode](https://talkpython.fm/episodes/show/142/automating-the-web-with-selenium-and-instapy) | [Support InstaPy!](https://www.paypal.me/supportInstaPy)
 
 [![paypal](https://img.shields.io/badge/-PayPal-blue.svg)](https://www.paypal.me/supportInstaPy)
@@ -64,6 +64,7 @@ Table of Contents
 * [Clarifai ImageAPI](#clarifai-imageapi)
 * [Running on a Server](#running-on-a-server)
 * [Running on a Headless Browser](#running-on-a-headless-browser)
+* [Running Multiple Accounts](#running-multiple-accounts)
 * [Running with Docker microservices manual](#running-with-docker-microservices-manual)
 * [Running all-in-one with Docker (obsolete)](#running-all-in-one-with-docker-obsolete)
 * [Automate with cron](#automate-with-cron)
@@ -188,7 +189,7 @@ session.follow_by_list(accs, times=1)
 session.follow_user_followers(['friend1', 'friend2', 'friend3'], amount=10, randomize=False)
 
 # default sleep_delay=600 (10min) for every 10 user following, in this case
-# sleep for 60 seconds  
+# sleep for 60 seconds
 
 session.follow_user_followers(['friend1', 'friend2', 'friend3'], amount=10, randomize=False, sleep_delay=60)
 ```
@@ -459,17 +460,17 @@ session = InstaPy(username=insta_username, password=insta_password, use_firefox=
 To use an emoji just add an `u` in front of the opening apostrophe:
 
 ```
-session.set_comments([u'This post is 🔥',u'More emojis are always better 💯',u'I love your posts 😍😍😍']);
+session.set_comments([u'This post is ?',u'More emojis are always better ?',u'I love your posts ???']);
 # or
-session.set_comments([u'Emoji text codes are also supported :100: :thumbsup: :thumbs_up: \u2764 💯💯']);
+session.set_comments([u'Emoji text codes are also supported :100: :thumbsup: :thumbs_up: \u2764 ??']);
 ```
 
 Emoji text codes are implemented using 2 different naming codes. A complete list of emojis codes can be found on the [Python Emoji Github](https://github.com/carpedm20/emoji/blob/master/emoji/unicode_codes.py), but you can use the alternate shorted naming scheme found for Emoji text codes [here](https://www.webpagefx.com/tools/emoji-cheat-sheet). Note: Every Emoji has not been tested. Please report any inconsistencies.
 
-> **Legacy Emoji Support**  
+> **Legacy Emoji Support**
 >
 > You can still use Unicode strings in your comments, but there are some limitations.
-> 1. You can use only Unicode characters with no more than 4 characters and you have to use the unicode code (e. g. ```\u1234```). You find a list of emoji with unicode codes on [Wikipedia](https://en.wikipedia.org/wiki/Emoji#Unicode_blocks), but there is also a list of working emoji in ```/assets```  
+> 1. You can use only Unicode characters with no more than 4 characters and you have to use the unicode code (e. g. ```\u1234```). You find a list of emoji with unicode codes on [Wikipedia](https://en.wikipedia.org/wiki/Emoji#Unicode_blocks), but there is also a list of working emoji in ```/assets```
 >
 > 2. You have to convert your comment to Unicode. This can safely be done by adding an u in front of the opening apostrophe: ```u'\u1234 some comment'```
 
@@ -540,6 +541,13 @@ Use `headless_browser` parameter to run the bot via the CLI. Works great if runn
 
 ```
 session = InstaPy(username='test', password='test', headless_browser=True)
+```
+
+## Running Multiple Accounts
+
+Use the multi_logs parameter if you are going to use multiple accounts and want the log files stored per account.
+```
+session = InstaPy(username='test', password='test', multi_logs=True)
 ```
 
 ## Running with Docker microservices manual
