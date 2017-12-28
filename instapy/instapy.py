@@ -805,7 +805,7 @@ class InstaPy:
                                         username,
                                         self.blacklist,
                                         self.logger,
-                                        slef.logfolder)
+                                        self.logfolder)
             else:
                 self.logger.info('--> Not following')
                 sleep(1)
