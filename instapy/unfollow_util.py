@@ -385,7 +385,8 @@ def follow_given_user(browser,
                       acc_to_follow,
                       follow_restrict,
                       blacklist,
-                      logger):
+                      logger,
+                      logfolder):
     """Follows a given user."""
     browser.get('https://www.instagram.com/' + acc_to_follow)
     # update server calls

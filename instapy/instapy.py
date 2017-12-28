@@ -1440,7 +1440,7 @@ class InstaPy:
                                                         comments,
                                                         self.blacklist,
                                                         self.logger,
-                                                        logfolder)
+                                                        self.logfolder)
                                     else:
                                         self.logger.info('--> Not commented')
                                         sleep(1)
