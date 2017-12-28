@@ -57,7 +57,8 @@ class InstaPy:
                  headless_browser=False,
                  proxy_address=None,
                  proxy_port=0,
-                 bypass_suspicious_attempt=False):
+                 bypass_suspicious_attempt=False,
+                 custom_user_agent=None):
 
         if nogui:
             self.display = Display(visible=0, size=(800, 600))
@@ -113,6 +114,8 @@ class InstaPy:
         self.like_by_followers_lower_limit = 0
 
         self.bypass_suspicious_attempt = bypass_suspicious_attempt
+
+        self.custom_user_agent = custom_user_agent
 
         self.aborting = False
 
@@ -185,6 +188,12 @@ class InstaPy:
                 user_agent = "Chrome"
                 chrome_options.add_argument('user-agent={user_agent}'
                                             .format(user_agent=user_agent))
+
+            # this is setting the user agent to a custom user-agent
+            # user-agent is set after headless_browser, to overwrite the "Chrome" user-agent if a custom one is passed
+            if self.custom_user_agent:
+                user_agent = self.custom_user_agent
+                chrome_options.add_argument('user-agent={user_agent}'.format(user_agent=user_agent))
 
             chrome_prefs = {
                 'intl.accept_languages': 'en-US'
