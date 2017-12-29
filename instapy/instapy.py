@@ -1513,10 +1513,10 @@ class InstaPy:
             self.logger.info('Campaign {} first run'.format(campaign))
 
     # running the fan accounts utility
-    def set_fan_accounts(self, accounts, self_account):
+    def set_fan_accounts(self, accounts, my_account):
         print("Checking for fan accounts")
         for account in accounts:
-            if self_account != account:
+            if my_account != account:
                 try:
                     fan_util(self.browser, account, self.logger)
                 except:
