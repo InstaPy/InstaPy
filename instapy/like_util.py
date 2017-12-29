@@ -535,7 +535,7 @@ def like_image(browser, username, blacklist, logger):
         "//a[@role='button']/span[text()='Unlike']")
 
     if len(like_elem) == 1:
-        like_elem[0].send_keys("\n")
+        like_elem[0].click()
         logger.info('--> Image Liked!')
         update_activity('likes')
         if blacklist['enabled'] is True:
