@@ -109,16 +109,29 @@ def login_user(browser,
     # Changes instagram language to english, to ensure no errors ensue from
     # having the site on a different language
     # Might cause problems if the OS language is english
-    if switch_language:
-        browser.find_element_by_xpath(
-            "//footer[@class='_s5vm9']/div[@class='_g7lf5 _9z659']/nav["
-            "@class='_luodr']/ul[@class='_g8wl6']/li[@class='_538w0'][10]/"
-            "span[@class='_pqycz _hqmnd']/select[@class='_fsoey']/option"
-            "[text()='English']").click()
+    try:
+        if switch_language:
+            browser.find_element_by_xpath(
+                "//footer[@class='_s5vm9']/div[@class='_g7lf5 _9z659']/nav["
+                "@class='_luodr']/ul[@class='_g8wl6']/li[@class='_538w0'][10]/"
+                "span[@class='_pqycz _hqmnd']/select[@class='_fsoey']/option"
+                "[text()='English']").click()
+    except (WebDriverException):
+        print("Language switcher not found")
 
     # Check if the first div is 'Create an Account' or 'Log In'
-    login_elem = browser.find_element_by_xpath(
-        "//article/div/div/p/a[text()='Log in']")
+    login_elem = None
+    login_text = 'Log in'
+    try:
+        login_elem = browser.find_element_by_xpath("//article/div/div/p/a[text()='"+login_text+"']")
+    except:
+        print("Failed with desktop version of the site, trying mobile version login")
+
+        try:
+            login_elem = browser.find_elements_by_xpath("//main/div/p/a[text()='"+login_text+"']")
+        except:
+            print("Failed with mobile version")
+
     if login_elem is not None:
         ActionChains(browser).move_to_element(login_elem).click().perform()
 
@@ -137,13 +150,16 @@ def login_user(browser,
         click().send_keys(password).perform()
 
     login_button = browser.find_element_by_xpath(
-        "//form/span/button[text()='Log in']")
+        "//form/span/button[text()='"+login_text+"']")
     ActionChains(browser).move_to_element(login_button).click().perform()
     # update server calls
     update_activity()
 
     if bypass_suspicious_attempt is True:
-        bypass_suspicious_login(browser)
+        try:
+            bypass_suspicious_login(browser)
+        except:
+            print("No Bypass required")
 
     sleep(5)
 
