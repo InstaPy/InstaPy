@@ -41,6 +41,7 @@ from .unfollow_util import follow_given_user
 from .unfollow_util import load_follow_restriction
 from .unfollow_util import dump_follow_restriction
 from .unfollow_util import set_automated_followed_pool
+from .fan_util import fan_util
 
 
 class InstaPy:
@@ -1510,6 +1511,20 @@ class InstaPy:
                         self.dont_include.append(row['username'])
         except:
             self.logger.info('Campaign {} first run'.format(campaign))
+
+    # running the fan accounts utility
+    def set_fan_accounts(self, accounts, self_account):
+        print("Checking for fan accounts")
+        for account in accounts:
+            if self_account != account:
+                try:
+                    fan_util(self.browser, account, self.logger)
+                except:
+                    print("Could not Fan account " + account)
+            else:
+                print("User can't be a fan of himself")
+
+        return self
 
     def end(self):
         """Closes the current session"""
