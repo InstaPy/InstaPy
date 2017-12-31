@@ -221,6 +221,14 @@ session.set_user_interact(amount=5, randomize=True, percentage=50, media='Photo'
 session.follow_user_followers(['friend1', 'friend2', 'friend3'], amount=10, randomize=False, interact=True)
 ```
 
+### Follow by Tags
+
+```python
+# Follow user based on hashtags (without liking the image)
+
+session.follow_by_tags(['tag1', 'tag2'], amount=10)
+```
+
 ### Interact with specific users
 ```python
 # Interact with specific users
