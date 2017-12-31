@@ -128,7 +128,7 @@ def login_user(browser,
         print("Failed with desktop version of the site, trying mobile version login")
 
         try:
-            login_elem = browser.find_elements_by_xpath("//main/div/p/a[text()='"+login_text+"']")
+            login_elem = browser.find_elements_by_xpath("//a[text()='"+login_text+"']")
         except:
             print("Failed with mobile version")
 

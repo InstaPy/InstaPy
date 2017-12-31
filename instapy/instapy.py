@@ -42,6 +42,7 @@ from .unfollow_util import load_follow_restriction
 from .unfollow_util import dump_follow_restriction
 from .unfollow_util import set_automated_followed_pool
 from .fan_util import fan_util
+from .post_util import make_a_post
 
 
 class InstaPy:
@@ -1525,6 +1526,14 @@ class InstaPy:
                 print("User can't be a fan of himself")
 
         return self
+
+    # Posting images as a regular user
+    def set_post_images(self, folder, description, tags, percentage):
+        try:
+            make_a_post(self.logger, self.browser, folder, description, tags, percentage)
+        except:
+            print("Unable to make a post")
+
 
     def end(self):
         """Closes the current session"""

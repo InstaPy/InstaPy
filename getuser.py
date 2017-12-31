@@ -22,7 +22,6 @@ def get_one_user():
         # Making sure I don't have an infinite loop
         attempts -= 1
 
-    lock_user(selected_user, filename)
     return picked_user
 
 
@@ -30,6 +29,17 @@ def reduce_user(headers, selected_user):
     if(selected_user == None):
         return
     user = dict(zip(headers, selected_user))
+
+    try:
+        user['username'] = user['username'].strip()
+    except:
+        print("reduce rebound")
+
+    try:
+        user['password'] = user['password'].strip()
+    except:
+        print("reduce rebound")
+
     try:
         user['tags'] = user['tags'].split(", ")
     except:
@@ -98,13 +108,17 @@ def reduce_user(headers, selected_user):
     except:
         print("reduce rebound")
 
+    try:
+        user['fans'] = user['fans'].split(", ")
+    except:
+        print("reduce rebound")
+
     return user
 
-def lock_user(selected_user, filename):
-    if(selected_user == None):
+def lock_user(username):
+    if(username == None):
         return
-    if(int(selected_user[len(selected_user)-1]) != 0):
-        return
+    filename = 'setup.csv'
     setup_file = []
     with open(filename, 'r') as csvfile:
         reader = csv.reader(csvfile, delimiter=',', quotechar='"')
@@ -112,7 +126,7 @@ def lock_user(selected_user, filename):
             setup_file.append(row)
 
     for i, row in enumerate(setup_file):
-        if(row == selected_user):
+        if(row[0] == username):
             setup_file[i][len(setup_file[i])-1] = '1'
 
     with open(filename, mode='wb') as outfile:
