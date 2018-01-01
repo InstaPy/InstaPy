@@ -5,11 +5,11 @@ import multiprocessing
 import datetime
 import time
 
-instaUser = ['username1','username2'] 
-instaPass = ['pass1','pass2']
-followersToFollow = [['acc1RelatedtoUser1','acc2RelatedtoUser1'],['acc1RelatedtoUser2']]
-smartTags = [['tag1User1','tag2User1'],['tag1User2']]
-followLocation = ['','224442573/salton-sea/']
+instaUser = ['username1', 'username2']
+instaPass = ['pass1', 'pass2']
+followersToFollow = [['acc1RelatedtoUser1', 'acc2RelatedtoUser1'], ['acc1RelatedtoUser2']]
+smartTags = [['tag1User1', 'tag2User1'], ['tag1User2']]
+followLocation = ['', '224442573/salton-sea/']
 
 def worker(selection):
     
