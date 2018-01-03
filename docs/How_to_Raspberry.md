@@ -30,6 +30,12 @@
 23. sudo apt-get install firefox
 > Update GeckoDriver if needed. Instructions at the end of this document.
 
+> Firefox is not currently working correctly on Pi 2, to install a working version the following commands should be used:
+
+Pi2.1. wget https://launchpad.net/~ubuntu-mozilla-security/+archive/ubuntu/ppa/+build/10930950/+files/firefox_49.0+build4-0ubuntu0.14.04.1_armhf.deb
+
+Pi2.2 sudo dpkg -i firefox_49.0+build4-0ubuntu0.14.04.1_armhf.deb
+
 > Encountered some errors when trying to run the quickstart.py and ran the next 3 commands (all may not be necessary)
 
 24. sudo pip install future
