@@ -530,9 +530,9 @@ def check_link(browser,
 def like_image(browser, username, blacklist, logger):
     """Likes the browser opened image"""
     like_elem = browser.find_elements_by_xpath(
-        "//a[@role='button']/span[text()='Like']/..")
+        "//*[contains(@class, '_8scx2 coreSpriteHeartOpen')]")
     liked_elem = browser.find_elements_by_xpath(
-        "//a[@role='button']/span[text()='Unlike']")
+        "//*[contains(@class, '_8scx2 coreSpriteHeartFull')]")
 
     if len(like_elem) == 1:
         like_elem[0].click()
