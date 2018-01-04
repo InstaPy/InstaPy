@@ -94,7 +94,7 @@ Table of Contents
 or
 3. python setup.py install
 ```
-4. Download ```chromedriver``` for your system [from here](https://sites.google.com/a/chromium.org/chromedriver/downloads). And put it in ```/assets``` folder.
+4. Download ```chromedriver``` for your system [from here](https://sites.google.com/a/chromium.org/chromedriver/downloads). Extract the .zip file and put it in ```/assets``` folder.
 
 ### Set it up yourself with this Basic Setup
 
