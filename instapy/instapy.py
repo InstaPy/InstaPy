@@ -1449,7 +1449,7 @@ class InstaPy:
                                 self.logger.info(
                                     '--> Image not liked: {}'.format(reason))
                                 inap_img += 1
-                                if reason == 'Inappropriate':
+                                if reason == 'Inappropriate' and unfollow:
                                     unfollow_user(self.browser, self.logger)
                         except NoSuchElementException as err:
                             self.logger.error('Invalid Page: {}'.format(err))
