@@ -116,7 +116,7 @@ def unfollow(browser,
                             hasSlept = False
                         continue
                     else:
-                        delete_line_from_file('{0}{1}_followedPool.csv'.format(logfolder, username,
+                        delete_line_from_file('{0}{1}_followedPool.csv'.format(logfolder, username),
                                               person + ",\n", logger)
 
                         logger.warning(
