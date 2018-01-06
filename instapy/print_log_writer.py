@@ -24,3 +24,12 @@ def log_followed_pool(login, followed, logger):
             followPool.write(followed + ",\n")
     except BaseException as e:
         logger.error("log_followed_pool error {}".format(str(e)))
+
+def log_uncertain_unfollowed_pool(login, unfollowed, logger):
+    """Prints and logs the uncertain unfollowed to
+    a seperate file"""
+    try:
+        with open('./logs/' + login + '_uncertain_unfollowedPool.csv', 'a+') as followPool:
+            followPool.write(unfollowed + ",\n")
+    except BaseException as e:
+        logger.error("log_followed_pool error {}".format(str(e)))

@@ -8,6 +8,7 @@ from .util import formatNumber
 from .util import update_activity
 from .util import add_user_to_blacklist
 from .print_log_writer import log_followed_pool
+from .print_log_writer import log_uncertain_unfollowed_pool
 from selenium.common.exceptions import NoSuchElementException
 import random
 
@@ -92,32 +93,44 @@ def unfollow(browser,
                 if person not in dont_include:
                     browser.get('https://www.instagram.com/' + person)
                     sleep(2)
-                    try:
-                        follow_button = browser.find_element_by_xpath(
-                            "//*[contains(text(), 'Follow')]")
-                    except:
-                        follow_button.text = 'none'
+                    follow_button = browser.find_element_by_xpath(
+                        "//*[contains(text(), 'Follow')]")
 
                     if follow_button.text == 'Following':
-                        unfollowNum += 1
+                        # click the button
                         follow_button.click()
-                        update_activity('unfollows')
+                        sleep(2)
 
-                        delete_line_from_file('./logs/' + username +
-                                              '_followedPool.csv', person +
-                                              ",\n", logger)
+                        # double check not following
+                        follow_button = browser.find_element_by_xpath(
+                            "//*[contains(text(), 'Follow')]")
 
-                        logger.info(
-                            '--> Ongoing Unfollow From InstaPy {},'
-                            ' now unfollowing: {}'
-                            .format(str(unfollowNum), person.encode('utf-8')))
+                        if follow_button.text == 'Follow':
 
-                        sleep(15)
+                            unfollowNum += 1
+                            update_activity('unfollows')
 
-                        if hasSlept:
-                            hasSlept = False
-                        continue
+                            delete_line_from_file('./logs/' + username +
+                                                  '_followedPool.csv', person +
+                                                  ",\n", logger)
+
+                            logger.info(
+                                '--> Ongoing Unfollow From InstaPy {},'
+                                ' now unfollowing: {}'
+                                .format(str(unfollowNum), person.encode('utf-8')))
+
+                            sleep(15)
+
+                            if hasSlept:
+                                hasSlept = False
+                            continue
+                        else:
+                            logger.error("unfollow error username {} might be blocked ".format(username))
+                            # stop the loop
+                            break
                     else:
+                        if follow_button.text != 'Follow':
+                            log_uncertain_unfollowed_pool(username, person, logger)
                         delete_line_from_file('./logs/' + username +
                                               '_followedPool.csv',
                                               person + ",\n", logger)
@@ -339,16 +352,16 @@ def follow_user(browser, follow_restrict, login, user_name, blacklist, logger):
 
         # Do we still need this sleep?
         sleep(2)
-		
+
         errorSkip = False
-		
+
         try:
             follow_button.is_displayed()
         except:
             errorSkip = True
 
         if not errorSkip and follow_button.is_displayed():
-            follow_button.send_keys("\n")
+            follow_button.click()
             update_activity('follows')
         else:
             browser.execute_script(
@@ -599,13 +612,7 @@ def get_given_user_followers(browser,
         "//div[text()='Followers']/following-sibling::div")
 
     # scroll down the page
-    try:
-        print('0')
-        scroll_bottom(browser, dialog, allfollowing)
-        scroll_bottom(browser, dialog, allfollowing)
-        scroll_bottom(browser, dialog, allfollowing)
-    except:
-        pass
+    scroll_bottom(browser, dialog, allfollowing)
 
     # get follow buttons. This approch will find the follow buttons and
     # ignore the Unfollow/Requested buttons.
