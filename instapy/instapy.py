@@ -148,7 +148,7 @@ class InstaPy:
         if os.name == 'nt':
             error_msg = ('Sorry, Record Activity is not working on Windows. '
                          'We\'re working to fix this soon!')
-            self.logger.critical(error_msg)
+            self.logger.warning(error_msg)
 
     def set_selenium_local_session(self):
         """Starts local session for a selenium server.
@@ -187,6 +187,7 @@ class InstaPy:
             chrome_options.add_argument('--no-sandbox')
             chrome_options.add_argument('--lang=en-US')
             chrome_options.add_argument('--disable-setuid-sandbox')
+
             # this option implements Chrome Headless, a new (late 2017)
             # GUI-less browser. chromedriver 2.9 and above required
             if self.headless_browser:
@@ -613,7 +614,6 @@ class InstaPy:
                                 self.logger.info('--> Not commented')
                                 sleep(1)
 
-
                             if (self.do_follow and
                                 user_name not in self.dont_include and
                                 checked_img and
@@ -628,7 +628,7 @@ class InstaPy:
                                                         self.blacklist,
                                                         self.logger)
 
-                                if (self.save_do_follow_statistics() == 0):
+                                if self.save_do_follow_statistics() == 0:
                                     self.end()
                                     return
                             else:
@@ -859,6 +859,7 @@ class InstaPy:
                                         username,
                                         self.blacklist,
                                         self.logger)
+
                 if (self.save_do_follow_statistics() == 0):
                     self.end()
                     return
@@ -1058,6 +1059,10 @@ class InstaPy:
                                 username,
                                 self.blacklist,
                                 self.logger)
+
+                            if self.save_do_follow_statistics() == 0:
+                                self.end()
+                                return
                         else:
                             self.logger.info('--> Not following')
                             sleep(1)
@@ -1186,6 +1191,8 @@ class InstaPy:
                 # pass only usernames starting from last counter
                 startingUserCount = self.user_interact_dict_users_dir[usernameFollowers]
                 usernamesTrimed = usernames[startingUserCount:(startingUserCount+amountInteractPerUserFollowers)]
+                self.logger.info('-->interact_by_users_from_dict User: {} start at {} \n'.format(usernameFollowers,
+                                                                                                 startingUserCount))
                 self.interact_by_users(usernamesTrimed, amount=amountInteractPerUser, randomize=randomize, source='dict', media=media)
 
         return self
@@ -1550,7 +1557,6 @@ class InstaPy:
                                         self.logger.info('--> Not commented')
                                         sleep(1)
 
-
                                     if (self.do_follow and
                                         user_name not in self.dont_include and
                                         checked_img and
@@ -1564,7 +1570,8 @@ class InstaPy:
                                             user_name,
                                             self.blacklist,
                                             self.logger)
-                                        if (self.save_do_follow_statistics() == 0):
+
+                                        if self.save_do_follow_statistics() == 0:
                                             self.end()
                                             return
                                     else:
@@ -1576,8 +1583,8 @@ class InstaPy:
                                 self.logger.info(
                                     '--> Image not liked: {}'.format(reason))
                                 inap_img += 1
-                                #if reason == 'Inappropriate':
-                                #    unfollow_user(self.browser, self.logger)
+                                if reason == 'Inappropriate' and unfollow:
+                                    unfollow_user(self.browser, self.logger)
                         except NoSuchElementException as err:
                             self.logger.error('Invalid Page: {}'.format(err))
 
@@ -1600,14 +1607,14 @@ class InstaPy:
             followNumber = get_follow_list(self.browser,
                                            username,
                                            self.logger,
-                                           50000,
+                                           80000,
                                            True,
                                            False)
         if followers is True and not os.path.isfile('./logs/followers/' + username):
             followNumber = get_follow_list(self.browser,
                                            username,
                                            self.logger,
-                                           50000,
+                                           80000,
                                            False,
                                            True)
         return self

@@ -3,6 +3,7 @@ import random
 
 """Module that handles the like features"""
 from math import ceil
+from math import floor
 from re import findall
 from selenium.webdriver.common.keys import Keys
 
@@ -204,10 +205,7 @@ def get_links_for_tag(browser,
         abort = False
         body_elem.send_keys(Keys.END)
         sleep(2)
-        try:
-            load_button.click()
-        except:
-            pass
+        load_button.click()
         # update server calls
         update_activity()
 
@@ -298,8 +296,11 @@ def get_links_for_username(browser,
     body_elem = browser.find_element_by_tag_name('body')
 
     try:
-        is_private = body_elem.find_element_by_xpath(
-            '//h2[@class="_kcrwx"]')
+        is_private = browser.execute_script(
+            "return window._sharedData.entry_data."
+            "ProfilePage[0].user.is_private")
+        #is_private = body_elem.find_element_by_xpath(
+        #    '//h2[@class="_kcrwx"]')
     except:
         logger.info('Interaction begin...')
     else:
@@ -415,11 +416,8 @@ def check_link(browser,
     sleep(2)
 
     """Check if the Post is Valid/Exists"""
-    try:
-        post_page = browser.execute_script(
-        	"return window._sharedData.entry_data.PostPage")
-    except:
-        post_page = None
+    post_page = browser.execute_script(
+        "return window._sharedData.entry_data.PostPage")
     if post_page is None:
         logger.warning('Unavailable Page: {}'.format(link.encode('utf-8')))
         return True, None, None, 'Unavailable Page'
@@ -583,7 +581,7 @@ def like_image(browser, username, blacklist, logger):
     #    "//a[@role='button']/span[text()='Unlike']")
 
     if len(like_elem) == 1:
-        like_elem[0].send_keys("\n")
+        like_elem[0].click()
         logger.info('--> Image Liked!')
         update_activity('likes')
         if blacklist['enabled'] is True:
@@ -594,7 +592,7 @@ def like_image(browser, username, blacklist, logger):
         sleep(2)
         return True
     #elif len(liked_elem) == 1:
-    #    print('--> Already Liked!')
+    #    logger.info('--> Already Liked!')
     #    return False
     else:
         logger.info('--> Invalid Like Element!')

@@ -90,7 +90,7 @@ def login_user(browser,
                switch_language=True,
                bypass_suspicious_attempt=False):
     """Logins the user with the given username and password"""
-    browser.get('https://www.instagram.com')
+    #browser.get('https://www.instagram.com')
     # update server calls
     update_activity()
 
