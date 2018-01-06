@@ -98,8 +98,8 @@ def login_user(browser,
     # try to load cookie from username
     try:
         browser.get('https://www.google.com')
-        for cookie in pickle.load(open(logfolder + '{}_cookie.pkl'
-                                       .format(username), 'rb')):
+        for cookie in pickle.load(open('{0}{1}_cookie.pkl'
+                                       .format(logfolder,username), 'rb')):
             browser.add_cookie(cookie)
         # logged in!
         return True
@@ -153,7 +153,7 @@ def login_user(browser,
     if len(nav) == 2:
         # create cookie for username
         pickle.dump(browser.get_cookies(),
-                    open(logfolder + '{}_cookie.pkl'.format(username), 'wb'))
+                    open('{0}{1}_cookie.pkl'.format(logfolder,username), 'wb'))
         return True
     else:
         return False

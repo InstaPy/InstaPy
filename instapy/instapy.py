@@ -15,7 +15,8 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver import DesiredCapabilities
 import requests
 
-from .clarifai_util import check_image
+if os.name != 'nt':
+    from .clarifai_util import check_image
 from .comment_util import comment_image
 from .like_util import check_link
 from .like_util import get_links_for_tag
@@ -74,7 +75,7 @@ class InstaPy:
         self.nogui = nogui
         self.logfolder = './logs/'
         if multi_logs is True:
-            self.logfolder = './logs/' + username +'/'
+            self.logfolder = './logs/{}/'.format(self.username)
         if not os.path.exists(self.logfolder):
             os.makedirs(self.logfolder)
 
@@ -125,7 +126,7 @@ class InstaPy:
         # initialize and setup logging system
         self.logger = logging.getLogger(__name__)
         self.logger.setLevel(logging.DEBUG)
-        file_handler = logging.FileHandler(self.logfolder + 'general.log')
+        file_handler = logging.FileHandler( '{}general.log'.format(self.logfolder))
         file_handler.setLevel(logging.DEBUG)
         logger_formatter = logging.Formatter('%(levelname)s - %(message)s')
         file_handler.setFormatter(logger_formatter)
@@ -1516,7 +1517,7 @@ class InstaPy:
         self.blacklist['campaign'] = campaign
 
         try:
-            with open(self.logfolder + 'blacklist.csv', 'r') as blacklist:
+            with open('{}blacklist.csv'.format(self.logfolder), 'r') as blacklist:
                 reader = csv.DictReader(blacklist)
                 for row in reader:
                     if row['campaign'] == campaign:
@@ -1537,5 +1538,5 @@ class InstaPy:
                 datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
         self.logger.info('-' * 20 + '\n\n')
 
-        with open(self.logfolder + 'followed.txt', 'w') as followFile:
+        with open('{}followed.txt'.format(self.logfolder), 'w') as followFile:
             followFile.write(str(self.followed))
