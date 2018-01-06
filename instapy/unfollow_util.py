@@ -16,7 +16,7 @@ import os
 def set_automated_followed_pool(username, logger, logfolder):
     automatedFollowedPool = []
     try:
-        with open(logfolder + username + '_followedPool.csv') as \
+        with open('{0}{1}_followedPool.csv'.format(logfolder, username) as \
                 followedPoolFile:
             reader = csv.reader(followedPoolFile)
             automatedFollowedPool = [row[0] for row in reader]
@@ -102,8 +102,7 @@ def unfollow(browser,
                         follow_button.click()
                         update_activity('unfollows')
 
-                        delete_line_from_file(logfolder + username +
-                                              '_followedPool.csv', person +
+                        delete_line_from_file('{0}{1}_followedPool.csv'.format(logfolder, username), person +
                                               ",\n", logger)
 
                         logger.info(
@@ -117,8 +116,7 @@ def unfollow(browser,
                             hasSlept = False
                         continue
                     else:
-                        delete_line_from_file(logfolder + username +
-                                              '_followedPool.csv',
+                        delete_line_from_file('{0}{1}_followedPool.csv'.format(logfolder, username,
                                               person + ",\n", logger)
 
                         logger.warning(
@@ -787,7 +785,7 @@ def follow_given_user_following(browser,
 
 def dump_follow_restriction(followRes, logfolder):
     """Dumps the given dictionary to a file using the json format"""
-    filename = logfolder + 'followRestriction.json'
+    filename = '{}followRestriction.json'.format(logfolder)
 
     with open(filename, 'w') as followResFile:
         json.dump(followRes, followResFile)
@@ -795,7 +793,7 @@ def dump_follow_restriction(followRes, logfolder):
 
 def load_follow_restriction(logfolder):
     """Loads the saved """
-    filename = logfolder + 'followRestriction.json'
+    filename = '{}followRestriction.json'.format(logfolder)
 
     if not os.path.isfile(filename):
         data = {}
