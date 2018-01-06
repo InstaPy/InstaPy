@@ -18,12 +18,6 @@ try:
     # default enabled=False, follows ~ every 10th user from the images
     session.set_do_follow(enabled=True, percentage=10)
 
-    # For 50% of the 30 newly followed, move to their profile
-    # and randomly choose 5 pictures to be liked.
-    # Take into account the other set options like the comment rate
-    # and the filtering for inappropriate words or users
-    session.set_user_interact(amount=5, random=True, percentage=50, media='Photo')
-
     session.set_use_clarifai(enabled=False)
 
     """Like util"""
