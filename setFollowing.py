@@ -14,7 +14,7 @@ session.login()
 #session.get_follow_list_from_user(following=True, followers=False)
 #session.get_follow_list_from_user(following=False, followers=True)
 
-userFollowinglist = ["taircohenn"]
+userFollowinglist = ["bubabella"]
 for user in userFollowinglist:
     session.get_follow_list_from_user(following=True, followers=False, username=user)
 

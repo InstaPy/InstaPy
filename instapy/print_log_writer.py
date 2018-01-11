@@ -15,6 +15,22 @@ def log_follower_num(browser, username):
         numFile.write(
             '{:%Y-%m-%d %H:%M} {}\n'.format(datetime.now(), followed_by or 0))
 
+    return followed_by
+
+def log_following_num(browser, username):
+    """Prints and logs the current number of followers to
+    a seperate file"""
+    browser.get('https://www.instagram.com/' + username)
+
+    following_num = browser.execute_script(
+        "return window._sharedData.""entry_data.ProfilePage[0]."
+        "user.follows.count")
+
+    with open('./logs/followingNum.txt', 'a') as numFile:
+        numFile.write(
+            '{:%Y-%m-%d %H:%M} {}\n'.format(datetime.now(), following_num or 0))
+
+    return following_num
 
 def log_followed_pool(login, followed, logger):
     """Prints and logs the followed to

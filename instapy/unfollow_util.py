@@ -11,20 +11,26 @@ from .print_log_writer import log_followed_pool
 from .print_log_writer import log_uncertain_unfollowed_pool
 from selenium.common.exceptions import NoSuchElementException
 import random
+import pickle
 
 
-def set_automated_followed_pool(username, logger):
+def set_automated_followed_pool(username, logger, from_file=None):
     automatedFollowedPool = []
     try:
-        with open('./logs/' + username + '_followedPool.csv') as \
-                followedPoolFile:
-            reader = csv.reader(followedPoolFile)
-            automatedFollowedPool = [row[0] for row in reader]
+        if from_file is None:
+            with open('./logs/' + username + '_followedPool.csv') as \
+                    followedPoolFile:
+                reader = csv.reader(followedPoolFile)
+                automatedFollowedPool = [row[0] for row in reader]
+
+            followedPoolFile.close()
+        else:
+            with open(from_file, 'rb') as followedPoolFile:
+                automatedFollowedPool = pickle.load(followedPoolFile)
+
 
         logger.info("Number of people followed automatically remaining: {}"
                     .format(len(automatedFollowedPool)))
-
-        followedPoolFile.close()
 
     except BaseException as e:
         logger.error("set_automated_followed_pool error {}".format(str(e)))
@@ -353,14 +359,7 @@ def follow_user(browser, follow_restrict, login, user_name, blacklist, logger):
         # Do we still need this sleep?
         sleep(2)
 
-        errorSkip = False
-
-        try:
-            follow_button.is_displayed()
-        except:
-            errorSkip = True
-
-        if not errorSkip and follow_button.is_displayed():
+        if follow_button.is_displayed():
             follow_button.click()
             update_activity('follows')
         else:
@@ -814,3 +813,16 @@ def load_follow_restriction():
     """Loads the saved """
     with open('./logs/followRestriction.json') as followResFile:
         return json.load(followResFile)
+
+def check_following_num(browser, username):
+    """Prints and logs the current number of followers to
+    a seperate file"""
+    browser.get('https://www.instagram.com/' + username)
+
+    followed_by = browser.execute_script(
+        "return window._sharedData.""entry_data.ProfilePage[0]."
+        "user.followed_by.count")
+
+    with open('./logs/followerNum.txt', 'a') as numFile:
+        numFile.write(
+            '{:%Y-%m-%d %H:%M} {}\n'.format(datetime.now(), followed_by or 0))
