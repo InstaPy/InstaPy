@@ -26,6 +26,7 @@ from .like_util import like_image
 from .like_util import get_links_for_username
 from .login_util import login_user
 from .print_log_writer import log_follower_num
+from .print_log_writer import log_following_num
 from .time_util import sleep
 from .time_util import set_sleep_percentage
 from .util import get_active_users
@@ -98,6 +99,8 @@ class InstaPy:
         self.blacklist = {'enabled': 'True', 'campaign': ''}
         self.automatedFollowedPool = []
         self.do_like = False
+        self.do_following_limit = False
+        self.following_limit = 7500
         self.like_percentage = 0
         self.smart_hashtags = []
 
@@ -112,6 +115,9 @@ class InstaPy:
         self.user_interact_dict_users_dir = {} # count each user the number of followers interact
         self.user_interact_listUsersFromDirectory = False
         self.currentUsernameFollowers = None
+
+        self.following_num = 0
+        self.follower_num = 0
 
         self.use_clarifai = False
         self.clarifai_api_key = None
@@ -242,12 +248,19 @@ class InstaPy:
         else:
             self.logger.info('Logged in successfully!')
 
-        log_follower_num(self.browser, self.username)
+        self.follower_num = log_follower_num(self.browser, self.username)
+        self.following_num = log_following_num(self.browser, self.username)
 
         return self
 
     def set_sleep_reduce(self, percentage):
         set_sleep_percentage(percentage)
+
+        return self
+
+    def set_following_limit(self, enabled=False, limit=7500):
+        self.do_following_limit = enabled
+        self.following_limit = limit
 
         return self
 
@@ -621,14 +634,14 @@ class InstaPy:
                                 self.follow_restrict.get(user_name, 0) <
                                     self.follow_times):
 
-                                followed += follow_user(self.browser,
+                                is_followed = follow_user(self.browser,
                                                         self.follow_restrict,
                                                         self.username,
                                                         user_name,
                                                         self.blacklist,
                                                         self.logger)
-
-                                if self.save_do_follow_statistics() == 0:
+                                followed += is_followed
+                                if is_followed and self.save_do_follow_statistics():
                                     self.end()
                                     return
                             else:
@@ -775,14 +788,14 @@ class InstaPy:
                                 checked_img and
                                 following):
                                 if self.follow_restrict.get(user_name, 0) < self.follow_times:
-                                    followed += follow_user(self.browser,
+                                    is_followed = follow_user(self.browser,
                                                             self.follow_restrict,
                                                             self.username,
                                                             user_name,
                                                             self.blacklist,
                                                             self.logger)
-
-                                    if self.save_do_follow_statistics() == 0:
+                                    followed += is_followed
+                                    if is_followed and self.save_do_follow_statistics():
                                         self.end()
                                         return
                                 else:
@@ -853,14 +866,14 @@ class InstaPy:
                 username not in self.dont_include and
                 following and
                     self.follow_restrict.get(username, 0) < self.follow_times):
-                followed += follow_user(self.browser,
+                is_followed = follow_user(self.browser,
                                         self.follow_restrict,
                                         self.username,
                                         username,
                                         self.blacklist,
                                         self.logger)
-
-                if (self.save_do_follow_statistics() == 0):
+                followed += is_followed
+                if is_followed and self.save_do_follow_statistics():
                     self.end()
                     return
             else:
@@ -1052,15 +1065,16 @@ class InstaPy:
                             self.follow_restrict.get(
                                 username, 0) < self.follow_times):
 
-                            followed += follow_user(
+                            is_followed = follow_user(
                                 self.browser,
                                 self.follow_restrict,
                                 self.username,
                                 username,
                                 self.blacklist,
                                 self.logger)
+                            followed += is_followed
 
-                            if self.save_do_follow_statistics() == 0:
+                            if is_followed and self.save_do_follow_statistics():
                                 self.end()
                                 return
                         else:
@@ -1380,14 +1394,16 @@ class InstaPy:
                        onlyInstapyFollowed=False,
                        onlyInstapyMethod='FIFO',
                        sleep_delay=600,
-                       onlyNotFollowMe=False):
+                       onlyNotFollowMe=False,
+                       from_file=None):
 
         if self.aborting:
             return self
         
         """Unfollows (default) 10 users from your following list"""
         self.automatedFollowedPool = set_automated_followed_pool(self.username,
-                                                                 self.logger)
+                                                                 self.logger,
+                                                                 from_file)
 
         try:
             unfollowNumber = unfollow(self.browser,
@@ -1402,6 +1418,10 @@ class InstaPy:
                                       self.logger)
             self.logger.info(
                 "--> Total people unfollowed : {} ".format(unfollowNumber))
+
+            self.following_num -= unfollowNumber
+            if (self.do_following_limit and (self.following_num < self.following_limit)):
+                self.do_follow = True  # block all following until unfollow is done
 
         except (TypeError, RuntimeWarning) as err:
             if isinstance(err, RuntimeWarning):
@@ -1563,15 +1583,16 @@ class InstaPy:
                                         following and
                                         self.follow_restrict.get(
                                             user_name, 0) < self.follow_times):
-                                        followed += follow_user(
+                                        is_followed = follow_user(
                                             self.browser,
                                             self.follow_restrict,
                                             self.username,
                                             user_name,
                                             self.blacklist,
                                             self.logger)
+                                        followed += is_followed
 
-                                        if self.save_do_follow_statistics() == 0:
+                                        if is_followed and self.save_do_follow_statistics():
                                             self.end()
                                             return
                                     else:
@@ -1698,6 +1719,9 @@ class InstaPy:
     def save_do_follow_statistics(self):
         """run date information to not exceed the daily/hourly limits"""
         # read today's date in 2008-11-22 format, and now time
+        self.following_num += 1
+        if (self.do_following_limit and (self.following_num >= self.following_limit)):
+            self.do_follow = False  # block all following until unfollow is done
         try:
             with open('./logs/followsLimitLogFile.pkl', 'rb') as input:
                 follows = pickle.load(input)
