@@ -1091,7 +1091,6 @@ class InstaPy:
                                                 amount,
                                                 self.dont_include,
                                                 self.username,
-                                                self.follow_restrict,
                                                 randomize,
                                                 self.logger)
                 if isinstance(user, list):
@@ -1132,7 +1131,6 @@ class InstaPy:
                     amount,
                     self.dont_include,
                     self.username,
-                    self.follow_restrict,
                     randomize,
                     self.logger)
         except (TypeError, RuntimeWarning) as err:
@@ -1179,7 +1177,8 @@ class InstaPy:
                                                             randomize,
                                                             sleep_delay,
                                                             self.blacklist,
-                                                            self.logger)
+                                                            self.logger,
+                                                            self.follow_times)
 
             except (TypeError, RuntimeWarning) as err:
                 if isinstance(err, RuntimeWarning):
@@ -1226,7 +1225,8 @@ class InstaPy:
                                                             randomize,
                                                             sleep_delay,
                                                             self.blacklist,
-                                                            self.logger)
+                                                            self.logger,
+                                                            self.follow_times)
 
             except (TypeError, RuntimeWarning) as err:
                 if isinstance(err, RuntimeWarning):
