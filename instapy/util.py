@@ -118,8 +118,10 @@ def get_active_users(browser, username, posts, logger):
         posts = total_posts
 
     # click latest post
-    browser.find_element_by_xpath(
-        "(//div[contains(@class, '_si7dy')])[1]").click()
+    try:
+        browser.find_element_by_xpath("(//div[contains(@class, '_si7dy')])[1]").click()
+    except:
+        print("Unable to grab latest post")
 
     active_users = []
 

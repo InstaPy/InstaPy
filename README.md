@@ -64,6 +64,7 @@ Table of Contents
 * [Clarifai ImageAPI](#clarifai-imageapi)
 * [Running on a Server](#running-on-a-server)
 * [Running on a Headless Browser](#running-on-a-headless-browser)
+* [Using a custom User-Agent](#using-a-custom-user-agent)
 * [Running with Docker microservices manual](#running-with-docker-microservices-manual)
 * [Running all-in-one with Docker (obsolete)](#running-all-in-one-with-docker-obsolete)
 * [Automate with cron](#automate-with-cron)
@@ -549,6 +550,32 @@ Use `headless_browser` parameter to run the bot via the CLI. Works great if runn
 ```
 session = InstaPy(username='test', password='test', headless_browser=True)
 ```
+
+## Using a custom User-Agent
+
+**Note:** Chrome only!
+
+You can mimic your phone's `user-agent` by passing in your user agent. User agent looks something like this: `'Mozilla/5.0 (iPhone; CPU iPhone OS 11_2_1 like Mac OS X) AppleWebKit/604.4.7 (KHTML, like Gecko) Version/11.0 Mobile/15C153 Safari/604.1'`.
+
+You can find out your phone's `user-agent` by going to [this site](https://www.esolutions.se/whatsmyinfo) on your phone.
+
+To set the `user-agent`, pass it like so
+
+```
+insta_username = ''
+insta_password = ''
+
+session = InstaPy(
+    username=insta_username,
+    password=insta_password,
+    custom_user_agent="Mozilla/5.0 (iPhone; CPU iPhone OS 11_2_1 like Mac OS X) AppleWebKit/604.4.7 (KHTML, like Gecko) Version/11.0 Mobile/15C153 Safari/604.1"
+)
+
+session.login()
+...
+```
+
+
 
 ## Running with Docker microservices manual
 

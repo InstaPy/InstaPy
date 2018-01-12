@@ -41,6 +41,8 @@ from .unfollow_util import follow_given_user
 from .unfollow_util import load_follow_restriction
 from .unfollow_util import dump_follow_restriction
 from .unfollow_util import set_automated_followed_pool
+from .fan_util import fan_util
+from .post_util import make_a_post
 
 
 class InstaPy:
@@ -57,7 +59,8 @@ class InstaPy:
                  headless_browser=False,
                  proxy_address=None,
                  proxy_port=0,
-                 bypass_suspicious_attempt=False):
+                 bypass_suspicious_attempt=False,
+                 custom_user_agent=None):
 
         if nogui:
             self.display = Display(visible=0, size=(800, 600))
@@ -113,6 +116,8 @@ class InstaPy:
         self.like_by_followers_lower_limit = 0
 
         self.bypass_suspicious_attempt = bypass_suspicious_attempt
+
+        self.custom_user_agent = custom_user_agent
 
         self.aborting = False
 
@@ -185,6 +190,12 @@ class InstaPy:
                 user_agent = "Chrome"
                 chrome_options.add_argument('user-agent={user_agent}'
                                             .format(user_agent=user_agent))
+
+            # this is setting the user agent to a custom user-agent
+            # user-agent is set after headless_browser, to overwrite the "Chrome" user-agent if a custom one is passed
+            if self.custom_user_agent:
+                user_agent = self.custom_user_agent
+                chrome_options.add_argument('user-agent={user_agent}'.format(user_agent=user_agent))
 
             chrome_prefs = {
                 'intl.accept_languages': 'en-US'
@@ -1501,6 +1512,28 @@ class InstaPy:
                         self.dont_include.append(row['username'])
         except:
             self.logger.info('Campaign {} first run'.format(campaign))
+
+    # running the fan accounts utility
+    def set_fan_accounts(self, accounts, my_account):
+        print("Checking for fan accounts")
+        for account in accounts:
+            if my_account != account:
+                try:
+                    fan_util(self.browser, account, self.logger)
+                except:
+                    print("Could not Fan account " + account)
+            else:
+                print("User can't be a fan of himself")
+
+        return self
+
+    # Posting images as a regular user
+    def set_post_images(self, folder, description, tags, percentage):
+        try:
+            make_a_post(self.logger, self.browser, folder, description, tags, percentage)
+        except:
+            print("Unable to make a post")
+
 
     def end(self):
         """Closes the current session"""
