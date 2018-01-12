@@ -5,23 +5,24 @@ import telegram
 from telegram.error import NetworkError, Unauthorized
 
 update_id = None
+insta_username = ""
 
 
-def start():
+def start_telegram():
     """Run the bot."""
     global update_id
     # Telegram Bot Authorization Token
     bot = telegram.Bot('<token>')
     echo_start(bot)
     
-def finish():
+def finish_telegram():
     """Run the bot."""
     global update_id
     # Telegram Bot Authorization Token
     bot = telegram.Bot('<token>')
     echo_finish(bot)
     
-def pause():
+def pause_telegram():
     """Run the bot."""
     global update_id
     # Telegram Bot Authorization Token
