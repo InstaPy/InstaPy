@@ -513,8 +513,6 @@ def check_link(browser,
         except TypeError:
             logger.info('profile description and full_name of: {} is empty'.format(user_name))
         except:
-            import traceback
-            print(traceback.format_exc())
             logger.error('profile description and full_name of: {} Could not detect language'.format(user_name))
 
     """Find the number of followes the user has"""

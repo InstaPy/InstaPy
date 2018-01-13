@@ -641,7 +641,7 @@ class InstaPy:
                                                         self.blacklist,
                                                         self.logger)
                                 followed += is_followed
-                                if is_followed and self.save_do_follow_statistics():
+                                if is_followed and (self.save_do_follow_statistics() == 0):
                                     self.end()
                                     return
                             else:
@@ -795,7 +795,7 @@ class InstaPy:
                                                             self.blacklist,
                                                             self.logger)
                                     followed += is_followed
-                                    if is_followed and self.save_do_follow_statistics():
+                                    if is_followed and (self.save_do_follow_statistics() == 0):
                                         self.end()
                                         return
                                 else:
@@ -873,7 +873,7 @@ class InstaPy:
                                         self.blacklist,
                                         self.logger)
                 followed += is_followed
-                if is_followed and self.save_do_follow_statistics():
+                if is_followed and (self.save_do_follow_statistics() == 0):
                     self.end()
                     return
             else:
@@ -1074,7 +1074,7 @@ class InstaPy:
                                 self.logger)
                             followed += is_followed
 
-                            if is_followed and self.save_do_follow_statistics():
+                            if is_followed and (self.save_do_follow_statistics() == 0):
                                 self.end()
                                 return
                         else:
@@ -1419,9 +1419,20 @@ class InstaPy:
             self.logger.info(
                 "--> Total people unfollowed : {} ".format(unfollowNumber))
 
-            self.following_num -= unfollowNumber
-            if (self.do_following_limit and (self.following_num < self.following_limit)):
-                self.do_follow = True  # block all following until unfollow is done
+            if self.do_following_limit:
+                # update local follwing counter
+                self.following_num -= unfollowNumber
+
+                # DEBUG: if real following number is different than counted: update and warning
+                following_num = log_following_num(self.browser, self.username)
+                if following_num != self.following_num:
+                    self.logger.warning(
+                        'real following number {} is different than counted {}'.format(following_num, self.following_num))
+                    self.following_num = following_num
+
+                # check we still under the limit we set
+                if (self.following_num < self.following_limit):
+                    self.do_follow = True  # block all following until unfollow is done
 
         except (TypeError, RuntimeWarning) as err:
             if isinstance(err, RuntimeWarning):
@@ -1592,7 +1603,7 @@ class InstaPy:
                                             self.logger)
                                         followed += is_followed
 
-                                        if is_followed and self.save_do_follow_statistics():
+                                        if is_followed and (self.save_do_follow_statistics() == 0):
                                             self.end()
                                             return
                                     else:

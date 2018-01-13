@@ -105,12 +105,13 @@ def unfollow(browser,
                     if follow_button.text == 'Following':
                         # click the button
                         follow_button.click()
-                        sleep(2)
+                        sleep(4)
 
                         # double check not following
                         follow_button = browser.find_element_by_xpath(
                             "//*[contains(text(), 'Follow')]")
 
+                        # TODO: try polling on button
                         if follow_button.text == 'Follow':
 
                             unfollowNum += 1
