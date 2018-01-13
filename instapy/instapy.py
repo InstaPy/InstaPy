@@ -99,8 +99,11 @@ class InstaPy:
         self.blacklist = {'enabled': 'True', 'campaign': ''}
         self.automatedFollowedPool = []
         self.do_like = False
+
         self.do_following_limit = False
         self.following_limit = 7500
+        self.following_limit_unfollow_immediate = False
+
         self.like_percentage = 0
         self.smart_hashtags = []
 
@@ -258,9 +261,10 @@ class InstaPy:
 
         return self
 
-    def set_following_limit(self, enabled=False, limit=7500):
+    def set_following_limit(self, enabled=False, limit=7500, unfollowImmediate=False):
         self.do_following_limit = enabled
         self.following_limit = limit
+        self.following_limit_unfollow_immediate = unfollowImmediate
 
         return self
 
@@ -1430,8 +1434,8 @@ class InstaPy:
                         'real following number {} is different than counted {}'.format(following_num, self.following_num))
                     self.following_num = following_num
 
-                # check we still under the limit we set
-                if (self.following_num < self.following_limit):
+                # check we under the limit we set
+                if self.following_num < self.following_limit:
                     self.do_follow = True  # block all following until unfollow is done
 
         except (TypeError, RuntimeWarning) as err:
@@ -1730,9 +1734,14 @@ class InstaPy:
     def save_do_follow_statistics(self):
         """run date information to not exceed the daily/hourly limits"""
         # read today's date in 2008-11-22 format, and now time
-        self.following_num += 1
-        if (self.do_following_limit and (self.following_num >= self.following_limit)):
+
+        self.following_num += 1 # update the local follow number
+        # check we still under the limit we set (following_limit - rand(1 -> 20))
+        if self.do_following_limit and (self.following_num >= (self.following_limit - random.randint(1, 20))):
             self.do_follow = False  # block all following until unfollow is done
+            # optional: do unfollow immediate
+            if self.following_limit_unfollow_immediate:
+                self.unfollow_users(amount=5, onlyInstapyFollowed=True, onlyInstapyMethod='FIFO', sleep_delay=600)
         try:
             with open('./logs/followsLimitLogFile.pkl', 'rb') as input:
                 follows = pickle.load(input)
