@@ -68,6 +68,7 @@ Table of Contents
 * [Running all-in-one with Docker (obsolete)](#running-all-in-one-with-docker-obsolete)
 * [Automate with cron](#automate-with-cron)
 * [Automate with Schedule](#automate-with-schedule)
+* [Notifications with Telegram](#notifications-with-telegram)
 * [Extra Informations](#extra-informations)
 
 ## Getting started
@@ -685,6 +686,55 @@ while True:
     schedule.run_pending()
     time.sleep(1)
 ```
+## Notifications with Telegram
+> Telegram is a popular Messaging Platform similar to WhatsApp and Facebook Messenger, but is developer (and bot) friendly. Download it here: https://telegram.org/
+
+If you haven't done so already (from reqiurements.txt) you need to install the python bot module
+```shell
+pip install python-telegram-bot
+```
+To setup a Telegram bot you need to import modules into your 'quickstart.py' file. Make sure you have instapy/telegram_util.py file.
+```
+from instapy.telegram_util import start_telegram,finish_telegram,pause_telegram
+```
+
+Within `quickstart.py` you can use the following functions:
+
+#### Start Bot Notification
+```
+start_telegram(insta_username)
+```
+Messages your Telegram channel with `<YOUR_INSTAGRAM_NAME> started botting`
+
+#### Pause Bot Notification
+```
+pause_telegram(insta_username)
+```
+Messages your Telegram channel with `<YOUR_INSTAGRAM_NAME> is pretending to be human and is idle for 1 hour. You can logon for an hour if you want.`
+
+#### Finished Bot Notification
+```
+finish_telegram(insta_username)
+```
+Messages your Telegram channel with `<YOUR_INSTAGRAM_NAME> finished botting`
+
+### Creating the Telegram Bot with @BotFather and adding it to a channel
+
+#### 1. Download and create your main account with Telegram
+
+#### 2. Chat with @BotFather on Telegram to creatre a bot. Save the token ID! We will need it later.
+More infromation on @BotFather here: https://core.telegram.org/bots#6-botfather
+
+#### 3. On your main account create a 'Channel' and add your bot as an Admin
+Send at least 1 message with any text to the channel. A simple "test" is fine.
+
+#### 4. Now you need the Channel ID
+Get your token and paste it into this URL `https://api.telegram.org/bot<token>/getUpdates`
+This URL will out return JSON values and you will see `chat_id` that starts with a `-` (minus sign)
+The `-` minus sign is your chat ID i.e. `-1001244563702`
+
+#### 5. Now go to instapy/telegram.py and put in your <channel ID> and <token ID> where prompted.
+This goes great with a 24 hour script, so you can login your account while away from the computer!
 
 ## Extra Informations
 
