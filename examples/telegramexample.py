@@ -15,7 +15,7 @@ try:
                       headless_browser=False)
     session.login()
     #Sends a Telegram message to your Channel ID telling you the bot has started
-	start_telegram(insta_username)
+    start_telegram(insta_username)
     # settings
     session.set_upper_follower_count(limit=2500)
     session.set_do_comment(True, percentage=10)
