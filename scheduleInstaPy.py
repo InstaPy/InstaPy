@@ -59,8 +59,7 @@ def job():
         ])
         session.set_do_follow(True, percentage=50, times=1)
         session.set_sleep_reduce(50)
-        session.set_following_limit(True, limit=715)
-
+        session.set_following_limit(True, limit=715, unfollowImmediate=True)
 
         # start the process
         # session.interact_by_users(['marine.dns'])
