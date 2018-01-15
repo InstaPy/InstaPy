@@ -1108,7 +1108,6 @@ class InstaPy:
                                                 amount,
                                                 self.dont_include,
                                                 self.username,
-                                                self.follow_restrict,
                                                 randomize,
                                                 self.logger)
                 if isinstance(user, list):
@@ -1149,7 +1148,6 @@ class InstaPy:
                     amount,
                     self.dont_include,
                     self.username,
-                    self.follow_restrict,
                     randomize,
                     self.logger)
         except (TypeError, RuntimeWarning) as err:
@@ -1542,3 +1540,78 @@ class InstaPy:
 
         with open('{}followed.txt'.format(self.logfolder), 'w') as followFile:
             followFile.write(str(self.followed))
+
+    def follow_by_tags(self,
+                     tags=None,
+                     amount=50,
+                     media=None,
+                     skip_top_posts=True,
+                     use_smart_hashtags=False):
+        if self.aborting:
+            return self
+
+        inap_img = 0
+        followed = 0
+
+        # if smart hashtag is enabled
+        if use_smart_hashtags is True and self.smart_hashtags is not []:
+            print('Using smart hashtags')
+            tags = self.smart_hashtags
+
+        # deletes white spaces in tags
+        tags = [tag.strip() for tag in tags]
+
+        tags = tags or []
+
+        for index, tag in enumerate(tags):
+            self.logger.info('Tag [{}/{}]'.format(index + 1, len(tags)))
+            self.logger.info('--> {}'.format(tag.encode('utf-8')))
+
+            try:
+                links = get_links_for_tag(self.browser,
+                                          tag,
+                                          amount,
+                                          self.logger,
+                                          media,
+                                          skip_top_posts)
+            except NoSuchElementException:
+                self.logger.error('Too few images, skipping this tag')
+                continue
+
+            for i, link in enumerate(links):
+                self.logger.info('[{}/{}]'.format(i + 1, len(links)))
+                self.logger.info(link)
+
+                try:
+                    inappropriate, user_name, is_video, reason = (
+                        check_link(self.browser,
+                                   link,
+                                   self.dont_like,
+                                   self.ignore_if_contains,
+                                   self.ignore_users,
+                                   self.username,
+                                   self.like_by_followers_upper_limit,
+                                   self.like_by_followers_lower_limit,
+                                   self.logger)
+                    )
+
+                    if not inappropriate:
+                        followed += follow_user(self.browser,
+                                                        self.follow_restrict,
+                                                        self.username,
+                                                        user_name,
+                                                        self.blacklist,
+                                                        self.logger)
+                    else:
+                        self.logger.info(
+                            '--> User not followed: {}'.format(reason))
+                        inap_img += 1
+                except NoSuchElementException as err:
+                    self.logger.error('Invalid Page: {}'.format(err))
+
+        self.logger.info('Inappropriate: {}'.format(inap_img))
+        self.logger.info('Followed: {}'.format(followed))
+
+        self.followed += followed
+
+        return self
