@@ -1197,7 +1197,8 @@ class InstaPy:
                                                             sleep_delay,
                                                             self.blacklist,
                                                             self.logger,
-                                                            self.logfolder)
+                                                            self.logfolder,
+                                                            self.follow_times)
 
             except (TypeError, RuntimeWarning) as err:
                 if isinstance(err, RuntimeWarning):
@@ -1245,7 +1246,8 @@ class InstaPy:
                                                             sleep_delay,
                                                             self.blacklist,
                                                             self.logger,
-                                                            self.logfolder)
+                                                            self.logfolder,
+                                                            self.follow_times)
 
             except (TypeError, RuntimeWarning) as err:
                 if isinstance(err, RuntimeWarning):
