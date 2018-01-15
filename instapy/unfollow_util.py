@@ -506,7 +506,9 @@ def follow_through_dialog(browser,
                 hasSlept = True
                 continue
 
-            if person not in dont_include:
+            if (person not in dont_include and
+                follow_restrict.get(person, 0) < follow_times):
+
                 followNum += 1
                 # Register this session's followed user for further interaction
                 person_followed.append(person)
@@ -556,7 +558,6 @@ def get_given_user_followers(browser,
                              amount,
                              dont_include,
                              login,
-                             follow_restrict,
                              randomize,
                              logger):
 
@@ -622,7 +623,6 @@ def get_given_user_following(browser,
                              amount,
                              dont_include,
                              login,
-                             follow_restrict,
                              randomize,
                              logger):
 
@@ -746,7 +746,8 @@ def follow_given_user_following(browser,
                                 delay,
                                 blacklist,
                                 logger,
-                                logfolder):
+                                logfolder,
+                                follow_times):
 
     browser.get('https://www.instagram.com/' + user_name)
     # update server calls
