@@ -425,6 +425,7 @@ def follow_through_dialog(browser,
                           blacklist,
                           logger,
                           logfolder,
+                          follow_times,
                           callbacks=[]):
     sleep(2)
     person_followed = []
@@ -693,7 +694,8 @@ def follow_given_user_followers(browser,
                                 delay,
                                 blacklist,
                                 logger,
-                                logfolder):
+                                logfolder,
+                                follow_times):
 
     browser.get('https://www.instagram.com/' + user_name)
     # update server calls
@@ -728,6 +730,7 @@ def follow_given_user_followers(browser,
                                            blacklist,
                                            logger,
                                            logfolder,
+                                           follow_times,
                                            callbacks=[])
 
     return personFollowed
@@ -777,7 +780,8 @@ def follow_given_user_following(browser,
                                            delay,
                                            blacklist,
                                            logger,
-                                           logfolder)
+                                           logfolder,
+                                           follow_times)
 
     return personFollowed
 
