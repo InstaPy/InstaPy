@@ -109,7 +109,7 @@ class InstaPy:
         self.clarifai_img_tags = []
         self.clarifai_full_match = False
 
-        self.like_by_followers_upper_limit = 0
+        self.like_by_followers_upper_limit = 90000
         self.like_by_followers_lower_limit = 0
 
         self.bypass_suspicious_attempt = bypass_suspicious_attempt
