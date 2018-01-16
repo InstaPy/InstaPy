@@ -35,7 +35,7 @@ def open_comment_section(browser):
 
 def comment_image(browser, username, comments, blacklist, logger):
     """Checks if it should comment on the image"""
-    rand_comment = (choice(comments))
+    rand_comment = (choice(comments).format(username))
     rand_comment = emoji.demojize(rand_comment)
     rand_comment = emoji.emojize(rand_comment, use_aliases=True)
 
