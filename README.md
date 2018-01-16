@@ -155,7 +155,12 @@ session.set_comments(['Awesome', 'Really Cool', 'I like your stuff'])
 
 session.set_comments(['Nice shot!'], media='Photo')
 session.set_comments(['Great Video!'], media='Video')
+
+# and you can add the username of the poster to the comment by using
+
+session.set_comments(['Nice shot! @{}'], media='Photo')
 ```
+
 
 ### Following
 
