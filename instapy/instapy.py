@@ -606,7 +606,8 @@ class InstaPy:
                      amount=50,
                      media=None,
                      skip_top_posts=True,
-                     use_smart_hashtags=False):
+                     use_smart_hashtags=False,
+                     interact=False):
         """Likes (default) 50 images per given tag"""
         if self.aborting:
             return self
@@ -666,6 +667,26 @@ class InstaPy:
                                            self.logger)
 
                         if liked:
+
+                            if interact:
+                                username = (self.browser.
+                                    find_element_by_xpath(
+                                        '//article/header/div[2]/'
+                                        'div[1]/div/a'))
+
+                                username = username.get_attribute("title")
+                                name = []
+                                name.append(username)
+
+                                self.logger.info(
+                                    '--> User followed: {}'
+                                    .format(name))
+                                self.like_by_users(
+                                    name,
+                                    self.user_interact_amount,
+                                    self.user_interact_random,
+                                    self.user_interact_media)
+
                             liked_img += 1
                             checked_img = True
                             temp_comments = []
