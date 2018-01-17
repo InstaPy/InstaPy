@@ -15,7 +15,7 @@ import random
 def set_automated_followed_pool(username, logger):
     automatedFollowedPool = []
     try:
-        with open('./logs/' + username + '_followedPool.csv') as \
+        with open('./logs/{username}_followedPool.csv'.format(username=username), 'r+') as \
                 followedPoolFile:
             reader = csv.reader(followedPoolFile)
             automatedFollowedPool = [row[0] for row in reader]
