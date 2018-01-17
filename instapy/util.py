@@ -190,38 +190,31 @@ def scroll_bottom(browser, element, range_int):
 
     return
 
-def click_element(browser, element):
-    print("clicking button with class " + element.get_attribute("class"))
-    _attempt_click_element(browser, element, 0)
+# There are three (maybe more) different ways to "click" an element/button.
+# 1. element.click()
+# 2. element.send_keys("\n")
+# 3. browser.execute_script("document.getElementsByClassName('" + element.get_attribute("class") + "')[0].click()")
 
-    # browser.execute_script("document.getElementsByClassName('" +  element.get_attribute("class") + "')[0].click()")
-    # _attempt_click_element(browser, element, 0)
-
-    # There are three (maybe more) different ways to "click" an element/button.
-    # 1. element.click()
-    # 2. element.send_keys("\n")
-    # 3. browser.execute_script("document.getElementsByClassName('" + element.get_attribute("class") + "')[0].click()")
-
-    # I'm guessing all three have their advantages/disadvantages
-    # Before committing over this code, you MUST justify your change
-    # and potentially adding an 'if' statement that applies to your 
-    # specific case. See the following issue for more details
-    # https://github.com/timgrossmann/InstaPy/issues/1232
-
-    # i.e. (pseudo code) 
-    # if brownser.type == 'Firefox':
-    #     element.send_keys("\n")
-    # else: 
-
-# This method should never be called outside of this file
-def _attempt_click_element(browser, element, tryNum):
-    print("attempting to click with try " + str(tryNum))
+# I'm guessing all three have their advantages/disadvantages
+# Before committing over this code, you MUST justify your change
+# and potentially adding an 'if' statement that applies to your 
+# specific case. See the following issue for more details
+# https://github.com/timgrossmann/InstaPy/issues/1232
+def click_element(browser, element, tryNum=0):
+    # explaination of the following recursive function:
+    #   we will attempt to click the element given, if an error is thrown
+    #   we know something is wrong (element not in view, element doesn't 
+    #   exist, ...). on each attempt try and move the screen around in 
+    #   various ways. if all else fails, programmically click the button
+    #   using `execute_script` in the browser.
+    
     try:
+        # use Selenium's built in click function
         element.click()
-
-        print("Successful click with `.click()`! on try " + str(tryNum))
+        print("button clicked!")
     except:
-        print("click with try " + str(tryNum) + " failed")
+        # click attempt failed
+        # try something funky and try again
 
         if tryNum == 0:
             # try scrolling the element into view
@@ -230,13 +223,13 @@ def _attempt_click_element(browser, element, tryNum):
             # well, that didn't work, try scrolling to the top and then clicking again
             browser.execute_script("window.scrollTo(0,0);")
         elif tryNum == 2:
-            # well, that didn't work, try scrolling to the bottom and then clicking again
+            # that didn't work either, try scrolling to the bottom and then clicking again
             browser.execute_script("window.scrollTo(0,document.body.scrollHeight);")
         else:
-            # try programic click as a last resort
+            # try `execute_script` as a last resort
             print("attempting last ditch effort for click, `execute_script`")
             browser.execute_script("document.getElementsByClassName('" +  element.get_attribute("class") + "')[0].click()")
-            return
+            return # end condition for the recursive function
             
 
         # sleep for 1 second to allow window to adjust (may or may not be needed)
@@ -244,6 +237,7 @@ def _attempt_click_element(browser, element, tryNum):
 
         tryNum += 1
 
+        # try again!
         _attempt_click_element(browser, element, tryNum)
     
 
