@@ -237,7 +237,7 @@ def click_element(browser, element, tryNum=0):
         tryNum += 1
 
         # try again!
-        _attempt_click_element(browser, element, tryNum)
+        click_element(browser, element, tryNum)
     
 
 def formatNumber(number):
