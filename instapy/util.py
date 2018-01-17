@@ -211,7 +211,6 @@ def click_element(browser, element, tryNum=0):
     try:
         # use Selenium's built in click function
         element.click()
-        print("button clicked!")
     except:
         # click attempt failed
         # try something funky and try again
@@ -227,7 +226,7 @@ def click_element(browser, element, tryNum=0):
             browser.execute_script("window.scrollTo(0,document.body.scrollHeight);")
         else:
             # try `execute_script` as a last resort
-            print("attempting last ditch effort for click, `execute_script`")
+            # print("attempting last ditch effort for click, `execute_script`")
             browser.execute_script("document.getElementsByClassName('" +  element.get_attribute("class") + "')[0].click()")
             return # end condition for the recursive function
             
