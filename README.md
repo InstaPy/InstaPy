@@ -346,6 +346,14 @@ Example:
 session.like_by_tags(['natgeo', 'world'], amount=10)
 ```
 
+### Like by Tags and interact with user
+
+```python
+# Like posts based on hashtags and like 3 posts of its poster
+session.set_user_interact(amount=3, randomize=True, percentage=100, media='Photo')
+session.like_by_tags(['natgeo', 'world'], amount=10, interact=True)
+```
+
 ### Like by Feeds
 
 ```python
