@@ -16,7 +16,7 @@ import os
 def set_automated_followed_pool(username, logger, logfolder):
     automatedFollowedPool = []
     try:
-        with open('{0}{1}_followedPool.csv'.format(logfolder, username)) as followedPoolFile:
+        with open('{0}{1}_followedPool.csv'.format(logfolder, username), 'r+') as followedPoolFile:
             reader = csv.reader(followedPoolFile)
             automatedFollowedPool = [row[0] for row in reader]
 
