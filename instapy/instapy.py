@@ -1568,7 +1568,7 @@ class InstaPy:
         """Closes the current session"""
         dump_follow_restriction(self.follow_restrict, self.logfolder)
         self.browser.delete_all_cookies()
-        self.browser.close()
+        self.browser.quit()
 
         if self.nogui:
             self.display.stop()
