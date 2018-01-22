@@ -102,4 +102,5 @@ logs/password.txt
 logs/user.txt
 logs/followers/
 logs/following/
+logs/*_cookie.pkl
 .dropbox
