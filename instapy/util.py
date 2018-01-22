@@ -6,14 +6,18 @@ import sqlite3
 import json
 import pickle
 import datetime
+from langdetect import detect_langs
 
 
 def validate_username(browser,
                       username,
                       ignore_users,
                       blacklist,
+                      dont_include_language,
                       like_by_followers_upper_limit,
-                      like_by_followers_lower_limit):
+                      like_by_followers_lower_limit,
+                      following_to_followers_ratio,
+                      logger):
     """Check if we can interact with the user"""
 
     if username in ignore_users:
@@ -23,12 +27,36 @@ def validate_username(browser,
         return '---> {} is in blacklist, skipping user...'
 
     browser.get('https://www.instagram.com/{}'.format(username))
+
     sleep(1)
+
     try:
-        followers = (formatNumber(browser.find_element_by_xpath("//a[contains"
-                     "(@href,'followers')]/span").text))
+        is_private = browser.execute_script(
+            "return window._sharedData.entry_data."
+            "ProfilePage[0].user.is_private")
+        #is_private = body_elem.find_element_by_xpath(
+        #    '//h2[@class="_kcrwx"]')
+    except:
+        logger.info('Interaction begin...')
+    else:
+        if is_private:
+            logger.warning('This user is private...')
+            return False
+
+    if "Page Not Found" in browser.title or "Content Unavailable" in browser.title:
+        logger.warning('Intagram error: The link you followed may be broken, or the page may have been removed...')
+        return False
+
+    try:
+        followers = browser.execute_script(
+            "return window._sharedData.entry_data.ProfilePage[0].user.followed_by.count")
+        following = browser.execute_script(
+            "return window._sharedData.entry_data.ProfilePage[0].user.follows.count")
     except NoSuchElementException:
         return '---> {} account is private, skipping user...'.format(username)
+    except:
+        logger.error('Intagram error: can not fetch followers/following number, The link you followed may be broken, or the page may have been removed...')
+        return False
 
     if followers > like_by_followers_upper_limit:
         return '---> User {} exceeds followers limit'.format(username)
@@ -36,6 +64,43 @@ def validate_username(browser,
         return ('---> {}, number of followers does not reach '
                 'minimum'.format(username))
 
+    if (followers != 0) and ((following/followers) > following_to_followers_ratio):
+        return ('---> {}, following/followers ratio is '
+                'too high {}'.format(username, following_to_followers_ratio))
+
+    """validate profile description language is supported"""
+    if dont_include_language:
+        profile_description = browser.execute_script(
+            "return window._sharedData.entry_data."
+            "ProfilePage[0].user.biography")
+        profile_full_name = browser.execute_script(
+            "return window._sharedData.entry_data."
+            "ProfilePage[0].user.full_name")
+
+        try:
+            # detect language by profile description, if the description is empty detect by name
+            profile_detect = ''
+            if isinstance(profile_description, str):
+                profile_detect = profile_description
+            #elif isinstance(profile_full_name, str):
+            #   profile_detect += profile_full_name
+
+            update_activity()
+            sleep(1)
+            #logger.info('profile description {}'.format(profile_detect))
+            languages = detect_langs(profile_detect)
+            lan_list = [languages[i].lang for i in range(0, len(languages)) if languages[i].prob > 0.1]
+
+            if set(lan_list) & set(dont_include_language):
+                return 'detected unwanted language: {}'.format(languages)
+            else:
+                logger.info('detected wanted language: {}'.format(languages))
+        except UnicodeEncodeError:
+            logger.error('profile description and full_name of: {} have UnicodeEncodeError'.format(username))
+        except TypeError:
+            logger.info('profile description and full_name of: {} is empty'.format(username))
+        except:
+            logger.warning('profile description and full_name of: {} Could not detect language'.format(username))
     # if everything ok
     return True
 

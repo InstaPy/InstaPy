@@ -85,7 +85,8 @@ class InstaPy:
 
         self.do_comment = False
         self.comment_percentage = 0
-        self.comments = ['Cool!', 'Nice!', 'Looks good!']
+        self.comments = {}
+        self.feed_comments = []
         self.photo_comments = []
         self.video_comments = []
 
@@ -103,6 +104,7 @@ class InstaPy:
         self.do_following_limit = False
         self.following_limit = 7500
         self.following_limit_unfollow_immediate = False
+        self.following_limit_minimum_unfollow_pool = 50
 
         self.like_percentage = 0
         self.smart_hashtags = []
@@ -115,7 +117,8 @@ class InstaPy:
         self.user_interact_media = None
         self.user_interact_percentage = 0
         self.user_interact_random = False
-        self.user_interact_dict_users_dir = {} # count each user the number of followers interact
+        self.user_interact_dict_users_dir = {} # count each user the number of followers interact till now
+        self.user_interact_dict_users_dir_curr = {}  # list all usernames to followers currently in directory
         self.user_interact_listUsersFromDirectory = False
         self.currentUsernameFollowers = None
 
@@ -129,6 +132,9 @@ class InstaPy:
 
         self.like_by_followers_upper_limit = 0
         self.like_by_followers_lower_limit = 0
+        self.following_to_followers_ratio = 5
+
+        self.bypass_suspicious_attempt = bypass_suspicious_attempt
 
         self.bypass_suspicious_attempt = bypass_suspicious_attempt
 
@@ -261,10 +267,11 @@ class InstaPy:
 
         return self
 
-    def set_following_limit(self, enabled=False, limit=7500, unfollowImmediate=False):
+    def set_following_limit(self, enabled=False, limit=7500, unfollowImmediate=False, minimumUnfollowPool=150):
         self.do_following_limit = enabled
         self.following_limit = limit
         self.following_limit_unfollow_immediate = unfollowImmediate
+        self.following_limit_minimum_unfollow_pool = minimumUnfollowPool
 
         return self
 
@@ -297,6 +304,12 @@ class InstaPy:
             setattr(self, attr, comments)
 
         return self
+
+    def set_feed_comments(self, comments=None, media=None):
+        if self.aborting:
+            return self
+
+        self.feed_comments = comments
 
     def set_do_follow(self, enabled=False, percentage=0, times=1):
         """Defines if the user of the liked image should be followed"""
@@ -351,9 +364,9 @@ class InstaPy:
 
         if listUsersFromDirectory is True:
             # list all users dump in users folder
-            files_list_from_users_dir=os.listdir('./logs/followers/')
+            self.user_interact_dict_users_dir_curr=os.listdir('./logs/followers/')
 
-            if not files_list_from_users_dir:
+            if not self.user_interact_dict_users_dir_curr:
                 self.user_interact_listUsersFromDirectory = False # list is empty no users files exist
 
             try:
@@ -365,7 +378,7 @@ class InstaPy:
                 with open('./logs/all_followers_dict.pkl', 'wb') as output:
                     pickle.dump(self.user_interact_dict_users_dir, output, pickle.HIGHEST_PROTOCOL)
 
-            for file_user in files_list_from_users_dir:
+            for file_user in self.user_interact_dict_users_dir_curr:
                 if file_user not in self.user_interact_dict_users_dir:
                     self.user_interact_dict_users_dir[file_user] = 0
 
@@ -564,7 +577,7 @@ class InstaPy:
                 self.logger.info(link)
 
                 try:
-                    inappropriate, user_name, is_video, reason = (
+                    inappropriate, user_name, is_video, most_prob_language, reason = (
                         check_link(self.browser,
                                    link,
                                    self.dont_like,
@@ -613,15 +626,28 @@ class InstaPy:
                                 checked_img and
                                     commenting):
 
+                                # if we looked for language in post
+                                # and we composed comments by language(dict not list)
+                                if self.dont_include_language and isinstance(self.comments, dict):
+                                    try:
+                                        # if found language contain comments
+                                        comments = self.comments[most_prob_language]
+                                    except KeyError:
+                                        # if found language don't contain comments use english
+                                        comments = self.comments['en']
+                                else:
+                                    comments = self.comments
+
                                 if temp_comments:
-                                    # Use clarifai related comments only!
+                                    # use clarifai related comments only!
                                     comments = temp_comments
                                 elif is_video:
-                                    comments = (self.comments +
+                                    comments = (comments +
                                                 self.video_comments)
                                 else:
-                                    comments = (self.comments +
+                                    comments = (comments +
                                                 self.photo_comments)
+
                                 commented += comment_image(self.browser,
                                                            user_name,
                                                            comments,
@@ -719,7 +745,7 @@ class InstaPy:
                 self.logger.info(link)
 
                 try:
-                    inappropriate, user_name, is_video, reason = (
+                    inappropriate, user_name, is_video, most_prob_language, reason = (
                         check_link(self.browser,
                                    link,
                                    self.dont_like,
@@ -727,12 +753,24 @@ class InstaPy:
                                    self.ignore_users,
                                    self.dont_include_language,
                                    self.username,
-                                   self.like_by_followers_upper_limit,
-                                   self.like_by_followers_lower_limit,
+                                   False,
+                                   False,
                                    self.logger)
                     )
-
+                    valid_user = False
                     if not inappropriate:
+                        valid_user = validate_username(self.browser,
+                                                       user_name,
+                                                       self.ignore_users,
+                                                       self.blacklist,
+                                                       self.dont_include_language,
+                                                       self.like_by_followers_upper_limit,
+                                                       self.like_by_followers_lower_limit,
+                                                       self.following_to_followers_ratio,
+                                                       self.logger)
+                        self.browser.get(link)
+
+                    if not inappropriate and valid_user is True:
                         liked = like_image(self.browser,
                                            user_name,
                                            self.blacklist,
@@ -768,15 +806,26 @@ class InstaPy:
                                 checked_img and
                                     commenting):
 
+                                if self.dont_include_language and isinstance(self.comments, dict):
+                                    try:
+                                        # if found language contain comments
+                                        comments = self.comments[most_prob_language]
+                                    except KeyError:
+                                        # if found language don't contain comments use english
+                                        comments = self.comments['en']
+                                else:
+                                    comments = self.comments
+
                                 if temp_comments:
-                                    # Use clarifai related comments only!
+                                    # use clarifai related comments only!
                                     comments = temp_comments
                                 elif is_video:
-                                    comments = (self.comments +
+                                    comments = (comments +
                                                 self.video_comments)
                                 else:
-                                    comments = (self.comments +
+                                    comments = (comments +
                                                 self.photo_comments)
+
                                 commented += comment_image(self.browser,
                                                            user_name,
                                                            comments,
@@ -848,8 +897,11 @@ class InstaPy:
                                            username,
                                            self.ignore_users,
                                            self.blacklist,
+                                           self.dont_include_language,
                                            self.like_by_followers_upper_limit,
-                                           self.like_by_followers_lower_limit)
+                                           self.like_by_followers_lower_limit,
+                                           self.following_to_followers_ratio,
+                                           self.logger)
             if valid_user is not True:
                 self.logger.info(valid_user)
                 continue
@@ -901,7 +953,7 @@ class InstaPy:
                 self.logger.info(link)
 
                 try:
-                    inappropriate, user_name, is_video, reason = (
+                    inappropriate, user_name, is_video, most_prob_language, reason = (
                         check_link(self.browser,
                                    link,
                                    self.dont_like,
@@ -948,15 +1000,28 @@ class InstaPy:
                                 checked_img and
                                     commenting):
 
+                                # if we looked for language in post
+                                # and we composed comments by language(dict not list)
+                                if self.dont_include_language and isinstance(self.comments, dict):
+                                    try:
+                                        # if found language contain comments
+                                        comments = self.comments[most_prob_language]
+                                    except KeyError:
+                                        # if found language don't contain comments use english
+                                        comments = self.comments['en']
+                                else:
+                                    comments = self.comments
+
                                 if temp_comments:
                                     # use clarifai related comments only!
                                     comments = temp_comments
                                 elif is_video:
-                                    comments = (self.comments +
+                                    comments = (comments +
                                                 self.video_comments)
                                 else:
-                                    comments = (self.comments +
+                                    comments = (comments +
                                                 self.photo_comments)
+
                                 commented += comment_image(self.browser,
                                                            user_name,
                                                            comments,
@@ -1014,8 +1079,28 @@ class InstaPy:
             # if we are using followers list from saved dict we shall update it
             if self.user_interact_listUsersFromDirectory is True and source == 'dict':
                 self.user_interact_dict_users_dir[self.currentUsernameFollowers] += 1
-                with open('./logs/all_followers_dict.pkl', 'wb') as output:
-                    pickle.dump(self.user_interact_dict_users_dir, output, pickle.HIGHEST_PROTOCOL)
+                done = False
+                while not done:
+                    try:
+                        with open('./logs/all_followers_dict.pkl', 'wb') as output:
+                            pickle.dump(self.user_interact_dict_users_dir, output, pickle.HIGHEST_PROTOCOL)
+                            done = True
+                    except OSError:
+                        self.logger.error('--> can not dump user_interact_dict_users_dir')
+                        sleep(5)
+
+            valid_user = validate_username(self.browser,
+                                           username,
+                                           self.ignore_users,
+                                           self.blacklist,
+                                           self.dont_include_language,
+                                           self.like_by_followers_upper_limit,
+                                           self.like_by_followers_lower_limit,
+                                           self.following_to_followers_ratio,
+                                           self.logger)
+            if valid_user is not True:
+                self.logger.info(valid_user)
+                continue
 
             try:
                 links = get_links_for_username(self.browser,
@@ -1046,7 +1131,7 @@ class InstaPy:
                 self.logger.info(link)
 
                 try:
-                    inappropriate, user_name, is_video, reason = (
+                    inappropriate, user_name, is_video, most_prob_language, reason = (
                         check_link(self.browser,
                                    link,
                                    self.dont_like,
@@ -1054,8 +1139,8 @@ class InstaPy:
                                    self.ignore_users,
                                    self.dont_include_language,
                                    self.username,
-                                   self.like_by_followers_upper_limit,
-                                   self.like_by_followers_lower_limit,
+                                   False,
+                                   False,
                                    self.logger)
                     )
 
@@ -1063,6 +1148,7 @@ class InstaPy:
 
                         following = (
                             random.randint(0, 100) <= self.follow_percentage)
+
                         if (self.do_follow and
                             username not in self.dont_include and
                             following and
@@ -1123,15 +1209,28 @@ class InstaPy:
                                 checked_img and
                                     commenting):
 
+                                # if we looked for language in post
+                                # and we composed comments by language(dict not list)
+                                if self.dont_include_language and isinstance(self.comments, dict):
+                                    try:
+                                        # if found language contain comments
+                                        comments = self.comments[most_prob_language]
+                                    except KeyError:
+                                        # if found language don't contain comments use english
+                                        comments = self.comments['en']
+                                else:
+                                    comments = self.comments
+
                                 if temp_comments:
                                     # use clarifai related comments only!
                                     comments = temp_comments
                                 elif is_video:
-                                    comments = (self.comments +
+                                    comments = (comments +
                                                 self.video_comments)
                                 else:
-                                    comments = (self.comments +
+                                    comments = (comments +
                                                 self.photo_comments)
+
                                 commented += comment_image(self.browser,
                                                            user_name,
                                                            comments,
@@ -1194,24 +1293,42 @@ class InstaPy:
         if self.aborting:
             return self
 
-        usernamesFollowers = list(self.user_interact_dict_users_dir.keys())
-        if self.username in usernamesFollowers: usernamesFollowers.remove(self.username)
-        shuffle(usernamesFollowers)
-        usernamesFollowers = usernamesFollowers[:amountUserFollowers]
+        amountUserFollowersCounter = 0
+        usernamesFollowers = self.user_interact_dict_users_dir_curr  # only users currently in dir
+        if self.username in usernamesFollowers: usernamesFollowers.remove(self.username)  # remove my self from the list
+        shuffle(usernamesFollowers)  # randomize order
 
         for usernameFollowers in usernamesFollowers:
             # read user all followers from file
             with open('./logs/followers/' + usernameFollowers, 'rb') as input:
                 usernames = pickle.load(input)
+            # stop when reach amount
+            if amountUserFollowersCounter == amountUserFollowers:
+                break
 
             if self.user_interact_dict_users_dir[usernameFollowers] != len(usernames):
+                amountUserFollowersCounter += 1
                 self.currentUsernameFollowers = usernameFollowers
+
                 # pass only usernames starting from last counter
                 startingUserCount = self.user_interact_dict_users_dir[usernameFollowers]
                 usernamesTrimed = usernames[startingUserCount:(startingUserCount+amountInteractPerUserFollowers)]
                 self.logger.info('-->interact_by_users_from_dict User: {} start at {} \n'.format(usernameFollowers,
                                                                                                  startingUserCount))
+
+                # fake of getting to the user followers
+                user = get_given_user_followers(self.browser,
+                                                usernameFollowers,
+                                                20,
+                                                self.dont_include,
+                                                self.username,
+                                                randomize,
+                                                self.logger)
+
                 self.interact_by_users(usernamesTrimed, amount=amountInteractPerUser, randomize=randomize, source='dict', media=media)
+
+                if self.aborting:
+                    return self
 
         return self
 
@@ -1231,7 +1348,6 @@ class InstaPy:
                                                 amount,
                                                 self.dont_include,
                                                 self.username,
-                                                self.follow_restrict,
                                                 randomize,
                                                 self.logger)
                 if isinstance(user, list):
@@ -1272,7 +1388,6 @@ class InstaPy:
                     amount,
                     self.dont_include,
                     self.username,
-                    self.follow_restrict,
                     randomize,
                     self.logger)
         except (TypeError, RuntimeWarning) as err:
@@ -1319,7 +1434,8 @@ class InstaPy:
                                                             randomize,
                                                             sleep_delay,
                                                             self.blacklist,
-                                                            self.logger)
+                                                            self.logger,
+                                                            self.follow_times)
 
             except (TypeError, RuntimeWarning) as err:
                 if isinstance(err, RuntimeWarning):
@@ -1366,7 +1482,8 @@ class InstaPy:
                                                             randomize,
                                                             sleep_delay,
                                                             self.blacklist,
-                                                            self.logger)
+                                                            self.logger,
+                                                            self.follow_times)
 
             except (TypeError, RuntimeWarning) as err:
                 if isinstance(err, RuntimeWarning):
@@ -1408,6 +1525,11 @@ class InstaPy:
         self.automatedFollowedPool = set_automated_followed_pool(self.username,
                                                                  self.logger,
                                                                  from_file)
+
+        if len(self.automatedFollowedPool) < self.following_limit_minimum_unfollow_pool:
+            self.logger.info(
+                "--> Minimum unfollow pool not reached : {} ".format(len(self.automatedFollowedPool)))
+            return self
 
         try:
             unfollowNumber = unfollow(self.browser,
@@ -1491,8 +1613,7 @@ class InstaPy:
                     skipped_img += 1
                 else:
                     if link in history:
-                        self.logger.info('This link has already '
-                                         'been visited:\n', link, '\n')
+                        self.logger.info('This link has already been visited: \n {} \n'.format(link))
                     else:
                         self.logger.info('New link found...')
                         history.append(link)
@@ -1501,7 +1622,7 @@ class InstaPy:
                         self.logger.info(link)
 
                         try:
-                            inappropriate, user_name, is_video, reason = (
+                            inappropriate, user_name, is_video, most_prob_language, reason = (
                                 check_link(self.browser,
                                            link,
                                            self.dont_like,
@@ -1570,18 +1691,36 @@ class InstaPy:
                                     if (self.do_comment and
                                         user_name not in self.dont_include and
                                             checked_img and commenting):
+
+                                        if self.feed_comments:
+                                            comments = self.feed_comments
+
+                                        # if we looked for language in post
+                                        # and we composed comments by language(dict not list)
+                                        else:
+                                            if self.dont_include_language and isinstance(self.comments, dict):
+                                                try:
+                                                    # if found language contain comments
+                                                    comments = self.comments[most_prob_language]
+                                                except KeyError:
+                                                    # if found language don't contain comments use english
+                                                    comments = self.comments['en']
+                                            else:
+                                                comments = self.comments
+
                                         if temp_comments:
                                             # use clarifai related
                                             # comments only!
                                             comments = temp_comments
                                         elif is_video:
                                             comments = (
-                                                self.comments +
+                                                comments +
                                                 self.video_comments)
                                         else:
                                             comments = (
-                                                self.comments +
+                                                comments +
                                                 self.photo_comments)
+
                                         commented += comment_image(
                                                         self.browser,
                                                         user_name,
@@ -1714,6 +1853,81 @@ class InstaPy:
         with open('./logs/followed.txt', 'w') as followFile:
             followFile.write(str(self.followed))
 
+    def follow_by_tags(self,
+                     tags=None,
+                     amount=50,
+                     media=None,
+                     skip_top_posts=True,
+                     use_smart_hashtags=False):
+        if self.aborting:
+            return self
+
+        inap_img = 0
+        followed = 0
+
+        # if smart hashtag is enabled
+        if use_smart_hashtags is True and self.smart_hashtags is not []:
+            print('Using smart hashtags')
+            tags = self.smart_hashtags
+
+        # deletes white spaces in tags
+        tags = [tag.strip() for tag in tags]
+
+        tags = tags or []
+
+        for index, tag in enumerate(tags):
+            self.logger.info('Tag [{}/{}]'.format(index + 1, len(tags)))
+            self.logger.info('--> {}'.format(tag.encode('utf-8')))
+
+            try:
+                links = get_links_for_tag(self.browser,
+                                          tag,
+                                          amount,
+                                          self.logger,
+                                          media,
+                                          skip_top_posts)
+            except NoSuchElementException:
+                self.logger.error('Too few images, skipping this tag')
+                continue
+
+            for i, link in enumerate(links):
+                self.logger.info('[{}/{}]'.format(i + 1, len(links)))
+                self.logger.info(link)
+
+                try:
+                    inappropriate, user_name, is_video, reason = (
+                        check_link(self.browser,
+                                   link,
+                                   self.dont_like,
+                                   self.ignore_if_contains,
+                                   self.ignore_users,
+                                   self.username,
+                                   self.like_by_followers_upper_limit,
+                                   self.like_by_followers_lower_limit,
+                                   self.logger)
+                    )
+
+                    if not inappropriate:
+                        followed += follow_user(self.browser,
+                                                        self.follow_restrict,
+                                                        self.username,
+                                                        user_name,
+                                                        self.blacklist,
+                                                        self.logger)
+                    else:
+                        self.logger.info(
+                            '--> User not followed: {}'.format(reason))
+                        inap_img += 1
+                except NoSuchElementException as err:
+                    self.logger.error('Invalid Page: {}'.format(err))
+
+        self.logger.info('Inappropriate: {}'.format(inap_img))
+        self.logger.info('Followed: {}'.format(followed))
+
+        self.followed += followed
+
+        return self
+
     def save_do_like_statistics(self):
         """run date information to not exceed the daily/hourly limits"""
         # read today's date in 2008-11-22 format, and now time
@@ -1730,6 +1944,7 @@ class InstaPy:
         with open('./logs/likesLimitLogFile.pkl', 'wb') as output:
             pickle.dump(likes, output, pickle.HIGHEST_PROTOCOL)
         return res
+        #return 1
 
     def save_do_follow_statistics(self):
         """run date information to not exceed the daily/hourly limits"""
@@ -1738,10 +1953,13 @@ class InstaPy:
         self.following_num += 1 # update the local follow number
         # check we still under the limit we set (following_limit - rand(1 -> 20))
         if self.do_following_limit and (self.following_num >= (self.following_limit - random.randint(1, 20))):
-            self.do_follow = False  # block all following until unfollow is done
             # optional: do unfollow immediate
             if self.following_limit_unfollow_immediate:
-                self.unfollow_users(amount=5, onlyInstapyFollowed=True, onlyInstapyMethod='FIFO', sleep_delay=600)
+                current_url = self.browser.current_url
+                self.unfollow_users(amount=15, onlyInstapyFollowed=True, onlyInstapyMethod='FIFO', sleep_delay=250)
+                self.browser.get(current_url)
+            else:
+                self.do_follow = False  # block all following until unfollow is done
         try:
             with open('./logs/followsLimitLogFile.pkl', 'rb') as input:
                 follows = pickle.load(input)
@@ -1755,6 +1973,7 @@ class InstaPy:
         with open('./logs/followsLimitLogFile.pkl', 'wb') as output:
             pickle.dump(follows, output, pickle.HIGHEST_PROTOCOL)
         return res
+        #return 1
 
     def read_likes_statistics(self):
         with open('./logs/likesLimitLogFile.pkl', 'rb') as input:
@@ -1775,3 +1994,4 @@ class InstaPy:
         print('this Hour Total follows:', follows.thisHourTotal)
         print('Day Executed last follow:', follows.lastDayExecuted)
         print('Hour Executed last follow:', follows.lastHourExecuted)
+
