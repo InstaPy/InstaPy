@@ -10,7 +10,7 @@ from selenium.webdriver.common.keys import Keys
 from .time_util import sleep
 from .util import update_activity
 from .util import add_user_to_blacklist
-from langdetect import detect
+from langdetect import detect_langs
 
 def get_links_from_feed(browser, amount, num_of_search, logger):
     """Fetches random number of links from feed and returns a list of links"""
@@ -293,24 +293,27 @@ def get_links_for_username(browser,
     # update server calls
     update_activity()
 
-    body_elem = browser.find_element_by_tag_name('body')
-
     try:
         is_private = browser.execute_script(
             "return window._sharedData.entry_data."
             "ProfilePage[0].user.is_private")
-        #is_private = body_elem.find_element_by_xpath(
-        #    '//h2[@class="_kcrwx"]')
     except:
-        logger.info('Interaction begin...')
+        logger.info('This user is not private...')
     else:
         if is_private:
             logger.warning('This user is private...')
             return False
 
+    if "Page Not Found" in browser.title:
+        logger.warning('Intagram error: The link you followed may be broken, or the page may have been removed...')
+        return False
+
+    body_elem = browser.find_element_by_tag_name('body')
+
     abort = True
 
     try:
+        raise ValueError('not looking for load button')
         load_button = body_elem.find_element_by_xpath(
             '//a[contains(@class, "_1cr2e _epyes")]')
     except:
@@ -414,13 +417,14 @@ def check_link(browser,
     # update server calls
     update_activity()
     sleep(2)
+    image_text_lang_detect = ''
 
     """Check if the Post is Valid/Exists"""
     post_page = browser.execute_script(
         "return window._sharedData.entry_data.PostPage")
     if post_page is None:
         logger.warning('Unavailable Page: {}'.format(link.encode('utf-8')))
-        return True, None, None, 'Unavailable Page'
+        return True, None, None, None, 'Unavailable Page'
 
     """Gets the description of the link and checks for the dont_like tags"""
     graphql = 'graphql' in post_page[0]
@@ -429,6 +433,18 @@ def check_link(browser,
         is_video = media['is_video']
         user_name = media['owner']['username']
         image_text = media['edge_media_to_caption']['edges']
+        try:
+            image_first_comment = media['edge_media_to_comment']['edges'][0]['node']['text']
+            image_text_lang_detect += image_first_comment
+        except IndexError:
+            pass
+
+        try:
+            image_second_comment = media['edge_media_to_comment']['edges'][1]['node']['text']
+            image_text_lang_detect += image_second_comment
+        except IndexError:
+            pass
+
         image_text = image_text[0]['node']['text'] if image_text else None
         owner_comments = browser.execute_script('''
       latest_comments = window._sharedData.entry_data.PostPage[0].graphql.shortcode_media.edge_media_to_comment.edges;
@@ -476,44 +492,36 @@ def check_link(browser,
 
     logger.info('Image from: {}'.format(user_name.encode('utf-8')))
 
-    """validate profile description language is supported"""
+    """validate post description language is supported"""
+    most_prob_language = 'en'
     if dont_include_language:
-        userlink = 'https://www.instagram.com/' + user_name
-        browser.get(userlink)
-        profile_description = browser.execute_script(
-            "return window._sharedData.entry_data."
-            "ProfilePage[0].user.biography")
-        profile_full_name = browser.execute_script(
-            "return window._sharedData.entry_data."
-            "ProfilePage[0].user.full_name")
-
-        browser.get(link)
         try:
-            # detect language by profile description, if the description is empty detect by name
-            image_text
-            profile_detect = ''
-            if isinstance(profile_description, str):
-                profile_detect = profile_description
-            elif isinstance(profile_full_name, str):
-                profile_detect += profile_full_name
+            # append the description to text to detect
+            image_text_lang_detect += image_text
+            languages = detect_langs(image_text_lang_detect)
 
-            update_activity()
-            sleep(1)
-            #logger.info('profile description {}'.format(profile_detect))
-            language = detect(profile_detect)
+            #find the most probability language (to use for comments)
+            try:
+                # if we have mixed with english(tags) we shall take the second language
+                if languages[1].prob > 0.2:
+                    most_prob_language = languages[1].lang
+            except IndexError:  # languages[1] don't exist
+                most_prob_language = languages[0].lang
 
-            if language in dont_include_language:
-                logger.info('detected unwanted language: {}'.format(language))
-                return True, user_name, is_video, \
+            lan_list = [languages[i].lang for i in range(0, len(languages)) if languages[i].prob > 0.1]
+
+            if set(lan_list) & set(dont_include_language):
+                logger.info('detected unwanted language: {}'.format(languages))
+                return True, user_name, is_video, most_prob_language, \
                        'detected unwanted language'
             else:
-                logger.info('detected wanted language: {}'.format(language))
+                logger.info('detected wanted language: {}'.format(languages))
         except UnicodeEncodeError:
             logger.error('profile description and full_name of: {} have UnicodeEncodeError'.format(user_name))
         except TypeError:
             logger.info('profile description and full_name of: {} is empty'.format(user_name))
         except:
-            logger.error('profile description and full_name of: {} Could not detect language'.format(user_name))
+            logger.warning('profile description and full_name of: {} Could not detect language'.format(user_name))
 
     """Find the number of followes the user has"""
     if like_by_followers_upper_limit or like_by_followers_lower_limit:
@@ -533,12 +541,12 @@ def check_link(browser,
 
         if like_by_followers_upper_limit and \
            num_followers > like_by_followers_upper_limit:
-                return True, user_name, is_video, \
+                return True, user_name, is_video, most_prob_language, \
                     'Number of followers exceeds limit'
 
         if like_by_followers_lower_limit and \
            num_followers < like_by_followers_lower_limit:
-                return True, user_name, is_video, \
+                return True, user_name, is_video, most_prob_language, \
                     'Number of followers does not reach minimum'
 
     logger.info('Link: {}'.format(link.encode('utf-8')))
@@ -546,10 +554,10 @@ def check_link(browser,
 
     """Check if the user_name is in the ignore_users list"""
     if (user_name in ignore_users) or (user_name == username):
-        return True, user_name, is_video, 'Username'
+        return True, user_name, is_video, most_prob_language, 'Username'
 
     if any((word in image_text for word in ignore_if_contains)):
-        return False, user_name, is_video, 'None'
+        return False, user_name, is_video, most_prob_language, 'None'
 
     dont_like_regex = []
 
@@ -566,9 +574,9 @@ def check_link(browser,
 
     for dont_likes_regex in dont_like_regex:
         if re.search(dont_likes_regex, image_text, re.IGNORECASE):
-            return True, user_name, is_video, 'Inappropriate'
+            return True, user_name, is_video, most_prob_language, 'Inappropriate'
 
-    return False, user_name, is_video, 'None'
+    return False, user_name, is_video, most_prob_language, 'None'
 
 
 def like_image(browser, username, blacklist, logger):
@@ -579,7 +587,7 @@ def like_image(browser, username, blacklist, logger):
     #    "//a[@role='button']/span[text()='Unlike']")
 
     if len(like_elem) == 1:
-        like_elem[0].click()
+        browser.execute_script("document.getElementsByClassName('" + like_elem[0].get_attribute("class") + "')[0].click()")
         logger.info('--> Image Liked!')
         update_activity('likes')
         if blacklist['enabled'] is True:
