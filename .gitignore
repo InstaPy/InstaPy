@@ -102,5 +102,5 @@ logs/password.txt
 logs/user.txt
 logs/followers/
 logs/following/
-logs/*_cookie.pkl
+logs/sion_cohen_cookie.pkl
 .dropbox
