@@ -136,8 +136,6 @@ class InstaPy:
 
         self.bypass_suspicious_attempt = bypass_suspicious_attempt
 
-        self.bypass_suspicious_attempt = bypass_suspicious_attempt
-
         self.aborting = False
 
         # initialize and setup logging system
@@ -202,6 +200,10 @@ class InstaPy:
             chrome_options.add_argument('--no-sandbox')
             chrome_options.add_argument('--lang=en-US')
             chrome_options.add_argument('--disable-setuid-sandbox')
+
+            if self.proxy_address and self.proxy_port > 0:
+                proxy = '{ip}:{port}'.format(ip=self.proxy_address, port=self.proxy_port)
+                chrome_options.add_argument('--proxy-server=http://{proxy}'.format(proxy=proxy))
 
             # this option implements Chrome Headless, a new (late 2017)
             # GUI-less browser. chromedriver 2.9 and above required
@@ -375,8 +377,10 @@ class InstaPy:
                     self.user_interact_dict_users_dir = pickle.load(input)
             except (OSError, IOError) as e:
                 # create an empty dict if file not exist
-                with open('./logs/all_followers_dict.pkl', 'wb') as output:
-                    pickle.dump(self.user_interact_dict_users_dir, output, pickle.HIGHEST_PROTOCOL)
+                file_exists = os.path.isfile('./logs/all_followers_dict.pkl')
+                if not file_exists:
+                    with open('./logs/all_followers_dict.pkl', 'wb') as output:
+                        pickle.dump(self.user_interact_dict_users_dir, output, pickle.HIGHEST_PROTOCOL)
 
             for file_user in self.user_interact_dict_users_dir_curr:
                 if file_user not in self.user_interact_dict_users_dir:
