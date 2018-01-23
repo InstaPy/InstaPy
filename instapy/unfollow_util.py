@@ -14,23 +14,18 @@ import random
 import pickle
 
 
-def set_automated_followed_pool(username, logger, from_file=None):
+def set_automated_followed_pool(username, logger):
     automatedFollowedPool = []
     try:
-        if from_file is None:
-            with open('./logs/' + username + '_followedPool.csv') as \
-                    followedPoolFile:
-                reader = csv.reader(followedPoolFile)
-                automatedFollowedPool = [row[0] for row in reader]
-
-            followedPoolFile.close()
-        else:
-            with open(from_file, 'rb') as followedPoolFile:
-                automatedFollowedPool = pickle.load(followedPoolFile)
-
+        with open('./logs/{}_followedPool.csv'.format(username), 'r+') as \
+                followedPoolFile:
+            reader = csv.reader(followedPoolFile)
+            automatedFollowedPool = [row[0] for row in reader]
 
         logger.info("Number of people followed automatically remaining: {}"
                     .format(len(automatedFollowedPool)))
+
+        followedPoolFile.close()
 
     except BaseException as e:
         logger.error("set_automated_followed_pool error {}".format(str(e)))
