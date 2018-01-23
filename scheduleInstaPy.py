@@ -109,6 +109,7 @@ def job():
         session.set_sleep_reduce(70)
         session.set_following_limit(True, limit=715, unfollowImmediate=True)
 
+        session.interact_by_users_from_dict(amountInteractPerUser=2, amountInteractPerUserFollowers=150, amountUserFollowers=5)
         # start the process
         print("do the actual liking by tag")
         session.like_by_tags(taglist, amount=100)

@@ -420,8 +420,12 @@ def check_link(browser,
     image_text_lang_detect = ''
 
     """Check if the Post is Valid/Exists"""
-    post_page = browser.execute_script(
-        "return window._sharedData.entry_data.PostPage")
+    try:
+        post_page = browser.execute_script(
+            "return window._sharedData.entry_data.PostPage")
+    except:
+        post_page = None
+
     if post_page is None:
         logger.warning('Unavailable Page: {}'.format(link.encode('utf-8')))
         return True, None, None, None, 'Unavailable Page'
