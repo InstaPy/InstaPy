@@ -13,7 +13,7 @@ Implemented in Python using the Selenium module.
 Head over to https://github.com/timgrossmann/InstaPy/wiki/How-to-Contribute to find out how you can help.
 **Become a part of InstaPy!**  
 
-**Have an issue**
+**Have an issue?**
 Head over to https://github.com/timgrossmann/InstaPy/wiki/Reporting-An-Issue to find out how to report this to us and get help.
 
 **Disclaimer**: Please Note that this is a research project. I am by no means responsible for any usage of this tool. Use on your own behalf. I’m also not responsible if your accounts get banned due to extensive use of this tool.
@@ -93,7 +93,7 @@ Table of Contents
 or
 3. python setup.py install
 ```
-4. Download ```chromedriver``` for your system [from here](https://sites.google.com/a/chromium.org/chromedriver/downloads). And put it in ```/assets``` folder.
+4. Download ```chromedriver``` for your system [from here](https://sites.google.com/a/chromium.org/chromedriver/downloads). Extract the .zip file and put it in ```/assets``` folder.
 
 ### Set it up yourself with this Basic Setup
 
@@ -154,7 +154,12 @@ session.set_comments(['Awesome', 'Really Cool', 'I like your stuff'])
 
 session.set_comments(['Nice shot!'], media='Photo')
 session.set_comments(['Great Video!'], media='Video')
+
+# and you can add the username of the poster to the comment by using
+
+session.set_comments(['Nice shot! @{}'], media='Photo')
 ```
+
 
 ### Following
 
@@ -219,6 +224,14 @@ session.follow_user_following(['friend1', 'friend2', 'friend3'], amount=10, rand
 
 session.set_user_interact(amount=5, randomize=True, percentage=50, media='Photo')
 session.follow_user_followers(['friend1', 'friend2', 'friend3'], amount=10, randomize=False, interact=True)
+```
+
+### Follow by Tags
+
+```python
+# Follow user based on hashtags (without liking the image)
+
+session.follow_by_tags(['tag1', 'tag2'], amount=10)
 ```
 
 ### Interact with specific users
@@ -331,6 +344,14 @@ Example:
 ```python
 # Like posts based on hashtags
 session.like_by_tags(['natgeo', 'world'], amount=10)
+```
+
+### Like by Tags and interact with user
+
+```python
+# Like posts based on hashtags and like 3 posts of its poster
+session.set_user_interact(amount=3, randomize=True, percentage=100, media='Photo')
+session.like_by_tags(['natgeo', 'world'], amount=10, interact=True)
 ```
 
 ### Like by Feeds
