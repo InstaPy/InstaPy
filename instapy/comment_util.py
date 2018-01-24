@@ -33,7 +33,7 @@ def open_comment_section(browser):
         print(missing_comment_elem_warning)
 
 
-def comment_image(browser, username, comments, blacklist, logger):
+def comment_image(browser, username, comments, blacklist, logger, logfolder):
     """Checks if it should comment on the image"""
     rand_comment = (choice(comments).format(username))
     rand_comment = emoji.demojize(rand_comment)
@@ -57,7 +57,7 @@ def comment_image(browser, username, comments, blacklist, logger):
         if blacklist['enabled'] is True:
             action = 'commented'
             add_user_to_blacklist(
-                browser, username, blacklist['campaign'], action, logger
+                browser, username, blacklist['campaign'], action, logger, logfolder
             )
     else:
         logger.warning('--> Warning: Comment Action Likely Failed:'
