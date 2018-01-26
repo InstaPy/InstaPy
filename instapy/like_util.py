@@ -9,6 +9,7 @@ from selenium.webdriver.common.keys import Keys
 from .time_util import sleep
 from .util import update_activity
 from .util import add_user_to_blacklist
+from .util import quota_supervisor
 from .util import click_element
 
 
@@ -528,33 +529,40 @@ def check_link(browser,
     return False, user_name, is_video, 'None'
 
 
-def like_image(browser, username, blacklist, logger):
+def like_image(browser, username, blacklist, logger, logfolder):
     """Likes the browser opened image"""
-    like_elem = browser.find_elements_by_xpath(
-        "//a[@role='button']/span[text()='Like']/..")
-    liked_elem = browser.find_elements_by_xpath(
-        "//a[@role='button']/span[text()='Unlike']")
-
-    if len(like_elem) == 1:
-        # sleep real quick right before clicking the element
-        sleep(2)
-        click_element(browser, like_elem[0])
-
-        logger.info('--> Image Liked!')
-        update_activity('likes')
-        if blacklist['enabled'] is True:
-            action = 'liked'
-            add_user_to_blacklist(
-                browser, username, blacklist['campaign'], action, logger
-            )
-        sleep(2)
-        return True
-    elif len(liked_elem) == 1:
-        logger.info('--> Already Liked!')
-        return False
+    if quota_supervisor('likes') == 'jump':
+        update_activity('jumps')
+        return 'jumped'
     else:
-        logger.info('--> Invalid Like Element!')
-        return False
+        like_elem = browser.find_elements_by_xpath(
+            "//a[@role='button']/span[text()='Like']/..")
+        liked_elem = browser.find_elements_by_xpath(
+            "//a[@role='button']/span[text()='Unlike']")
+
+        if len(like_elem) == 1:
+            # sleep real quick right before clicking the element
+            sleep(2)
+            click_element(browser, like_elem[0])
+
+            logger.info('--> Image Liked!')
+            update_activity('likes')
+            if blacklist['enabled'] is True:
+                action = 'liked'
+                add_user_to_blacklist(
+                    browser, username, blacklist['campaign'], action, logger, logfolder
+                )
+            sleep(2)
+            return True
+        elif len(liked_elem) == 1:
+            logger.info('--> Already Liked!')
+            return False
+        else:
+            logger.info('--> Invalid Like Element!')
+            return False
+
+
+
 
 
 def get_tags(browser, url):
