@@ -7,6 +7,7 @@ from .util import scroll_bottom
 from .util import formatNumber
 from .util import update_activity
 from .util import add_user_to_blacklist
+from .util import click_element
 from .print_log_writer import log_followed_pool
 from selenium.common.exceptions import NoSuchElementException
 import random
@@ -98,7 +99,8 @@ def unfollow(browser,
 
                     if follow_button.text == 'Following':
                         unfollowNum += 1
-                        follow_button.click()
+                        click_element(browser, follow_button) # follow_button.click()
+                        
                         update_activity('unfollows')
 
                         delete_line_from_file('{0}{1}_followedPool.csv'.format(logfolder, username), person +
@@ -241,7 +243,7 @@ def unfollow(browser,
 
                 if follow_button.text == 'Following':
                     unfollowNum += 1
-                    follow_button.click()
+                    click_element(browser, follow_button) # follow_button.click()
                     print('--> Ongoing Unfollow ' + str(unfollowNum) +
                           ', now unfollowing: {}'
                           .format(person.encode('utf-8')))
@@ -257,7 +259,8 @@ def unfollow(browser,
         try:
             following_link = browser.find_elements_by_xpath(
                 '//article//ul//li[3]')
-            following_link[0].click()
+            
+            click_element(browser, following_link[0]) # following_link[0].click()
             # update server calls
             update_activity()
         except BaseException as e:
@@ -305,7 +308,7 @@ def unfollow(browser,
 
                 if person not in dont_include:
                     unfollowNum += 1
-                    button.click()
+                    click_element(browser, button) # button.click()
                     update_activity('unfollows')
 
                     logger.info(
@@ -337,7 +340,7 @@ def follow_user(browser, follow_restrict, login, user_name, blacklist, logger, l
         sleep(2)
 
         if follow_button.is_displayed():
-            follow_button.click()
+            click_element(browser, follow_button) # follow_button.click()
             update_activity('follows')
         else:
             browser.execute_script(
@@ -345,7 +348,7 @@ def follow_user(browser, follow_restrict, login, user_name, blacklist, logger, l
                 "arguments[0].style.height = '10px'; "
                 "arguments[0].style.width = '10px'; "
                 "arguments[0].style.opacity = 1", follow_button)
-            follow_button.click()
+            click_element(browser, follow_button) # follow_button.click()
             update_activity('follows')
 
         logger.info('--> Now following')
@@ -371,7 +374,8 @@ def unfollow_user(browser, logger):
         "//*[contains(text(), 'Following')]")
 
     if unfollow_button.text == 'Following':
-        unfollow_button.send_keys("\n")
+        click_element(browser, unfollow_button) # unfollow_button.send_keys("\n")
+        
         update_activity('unfollows')
         logger.warning('--> User unfollowed due to Inappropriate Content')
         sleep(3)
@@ -393,7 +397,7 @@ def follow_given_user(browser,
     try:
         sleep(10)
         follow_button = browser.find_element_by_xpath("//*[text()='Follow']")
-        follow_button.send_keys("\n")
+        click_element(browser, follow_button) # unfollow_button.send_keys("\n")
         update_activity('follows')
         logger.info('---> Now following: {}'.format(acc_to_follow))
         follow_restrict[acc_to_follow] = follow_restrict.get(
@@ -513,8 +517,10 @@ def follow_through_dialog(browser,
                 # Register this session's followed user for further interaction
                 person_followed.append(person)
 
-                button.send_keys("\n")
+
+                click_element(browser, button) # button.send_keys("\n")
                 log_followed_pool(login, person, logger, logfolder)
+
                 update_activity('follows')
 
                 follow_restrict[person] = follow_restrict.get(person, 0) + 1
@@ -577,7 +583,7 @@ def get_given_user_followers(browser,
 
     following_link = browser.find_elements_by_xpath(
         '//a[@href="/' + user_name + '/followers/"]')
-    following_link[0].send_keys("\n")
+    click_element(browser, following_link[0]) # following_link.send_keys("\n")
     # update server calls
     update_activity()
 
@@ -641,7 +647,7 @@ def get_given_user_following(browser,
     try:
         following_link = browser.find_elements_by_xpath(
             '//a[@href="/' + user_name + '/following/"]')
-        following_link[0].send_keys("\n")
+        click_element(browser, following_link[0]) # following_link.send_keys("\n")
         # update server calls
         update_activity()
     except BaseException as e:
@@ -712,7 +718,7 @@ def follow_given_user_followers(browser,
     try:
         following_link = browser.find_elements_by_xpath(
             '//a[@href="/' + user_name + '/followers/"]')
-        following_link[0].send_keys("\n")
+        click_element(browser, following_link[0]) # following_link.send_keys("\n")
         # update server calls
         update_activity()
     except BaseException as e:
@@ -764,7 +770,7 @@ def follow_given_user_following(browser,
     try:
         following_link = browser.find_elements_by_xpath(
             '//a[@href="/' + user_name + '/following/"]')
-        following_link[0].send_keys("\n")
+        click_element(browser, following_link[0]) # following_link.send_keys("\n")
         # update server calls
         update_activity()
     except BaseException as e:
