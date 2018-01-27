@@ -1640,7 +1640,8 @@ class InstaPy:
                                                         self.username,
                                                         user_name,
                                                         self.blacklist,
-                                                        self.logger)
+                                                        self.logger,
+                                                        self.logfolder)
                     else:
                         self.logger.info(
                             '--> User not followed: {}'.format(reason))
