@@ -87,6 +87,7 @@ def bypass_suspicious_login(browser):
 def login_user(browser,
                username,
                password,
+               logfolder,
                switch_language=True,
                bypass_suspicious_attempt=False):
     """Logins the user with the given username and password"""
@@ -97,8 +98,8 @@ def login_user(browser,
     # try to load cookie from username
     try:
         browser.get('https://www.google.com')
-        for cookie in pickle.load(open('./logs/{}_cookie.pkl'
-                                       .format(username), 'rb')):
+        for cookie in pickle.load(open('{0}{1}_cookie.pkl'
+                                       .format(logfolder,username), 'rb')):
             browser.add_cookie(cookie)
 
         # Instagram password changing might requested - check profile is connected
@@ -160,7 +161,7 @@ def login_user(browser,
     if len(nav) == 2:
         # create cookie for username
         pickle.dump(browser.get_cookies(),
-                    open('./logs/{}_cookie.pkl'.format(username), 'wb'))
+                    open('{0}{1}_cookie.pkl'.format(logfolder,username), 'wb'))
         return True
     else:
         return False
