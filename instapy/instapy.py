@@ -411,7 +411,7 @@ class InstaPy:
 
         for tag in tags:
             req = requests.get(
-                'https://d212rkvo8t62el.cloudfront.net/tag/{}'.format(tag))
+                u'https://d212rkvo8t62el.cloudfront.net/tag/{}'.format(tag))
             data = json.loads(req.text)
 
             if data['tagExists'] is True:
@@ -431,7 +431,7 @@ class InstaPy:
 
                 if log_tags is True:
                     for item in self.smart_hashtags:
-                        print('[smart hashtag generated: {}]'.format(item))
+                        print(u'[smart hashtag generated: {}]'.format(item))
             else:
                 print('Too few results for #{} tag'.format(tag))
 
