@@ -7,7 +7,8 @@ insta_password = ''
 try:
     session = InstaPy(username=insta_username,
                       password=insta_password,
-                      headless_browser=False)
+                      headless_browser=False,
+                      multi_logs=True)
     session.login()
 
     # settings

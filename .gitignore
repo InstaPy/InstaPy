@@ -98,9 +98,11 @@ ENV/
 
 # Editors
 .idea
+
 logs/password.txt
 logs/user.txt
 logs/followers/
 logs/following/
 logs/sion_cohen_cookie.pkl
 .dropbox
+.vscode
