@@ -100,6 +100,14 @@ def login_user(browser,
         for cookie in pickle.load(open('./logs/{}_cookie.pkl'
                                        .format(username), 'rb')):
             browser.add_cookie(cookie)
+
+        # Instagram password changing might requested - check profile is connected
+        browser.get('https://www.instagram.com/'+username)
+        valid_connection = browser.execute_script(
+        "return window._sharedData.""activity_counts")
+        if not valid_connection:
+            return False
+
         # logged in!
         return True
     except (WebDriverException, OSError, IOError):

@@ -6,11 +6,12 @@ from math import ceil
 from math import floor
 from re import findall
 from selenium.webdriver.common.keys import Keys
-
+from selenium.common.exceptions import NoSuchElementException
 from .time_util import sleep
 from .util import update_activity
 from .util import add_user_to_blacklist
 from langdetect import detect_langs
+
 
 def get_links_from_feed(browser, amount, num_of_search, logger):
     """Fetches random number of links from feed and returns a list of links"""
@@ -52,7 +53,6 @@ def get_links_for_location(browser,
                            logger,
                            media=None,
                            skip_top_posts=True):
-
     """Fetches the number of links specified
     by amount and returns a list of links"""
     if media is None:
@@ -81,7 +81,7 @@ def get_links_for_location(browser,
     except:
         try:
             # scroll down to load posts
-            for i in range(int(ceil(amount/12))):
+            for i in range(int(ceil(amount / 12))):
                 browser.execute_script(
                     "window.scrollTo(0, document.body.scrollHeight);")
                 sleep(2)
@@ -183,12 +183,14 @@ def get_links_for_tag(browser,
 
     abort = True
     try:
-        load_button = body_elem.find_element_by_xpath(
-            '//a[contains(@class, "_1cr2e _epyes")]')
+        # skip this checl
+        raise NoSuchElementException
+        # load_button = body_elem.find_element_by_xpath(
+        #    '//a[contains(@class, "_1cr2e _epyes")]')
     except:
         try:
             # scroll down to load posts
-            for i in range(int(ceil(amount/12))):
+            for i in range(int(ceil(amount / 12))):
                 browser.execute_script(
                     "window.scrollTo(0, document.body.scrollHeight);")
                 sleep(2)
@@ -264,7 +266,7 @@ def get_links_for_tag(browser,
                  if link_elem.text in media]
         filtered_links = len(links)
 
-    return links[:amount]
+    return link_elems[:amount]
 
 
 def get_links_for_username(browser,
@@ -273,7 +275,6 @@ def get_links_for_username(browser,
                            logger,
                            randomize=False,
                            media=None):
-
     """Fetches the number of links specified
     by amount and returns a list of links"""
     if media is None:
@@ -319,7 +320,7 @@ def get_links_for_username(browser,
     except:
         try:
             # scroll down to load posts
-            for i in range(int(ceil(amount/12))):
+            for i in range(int(ceil(amount / 12))):
                 browser.execute_script(
                     "window.scrollTo(0, document.body.scrollHeight);")
                 sleep(2)
@@ -349,18 +350,20 @@ def get_links_for_username(browser,
     total_links = len(link_elems)
     links = []
     filtered_links = 0
+
     try:
         if link_elems:
             links = [link_elem.get_attribute('href') for link_elem in link_elems
                      if link_elem and link_elem.text in media]
-            filtered_links = len(links)
-
     except BaseException as e:
         logger.error("link_elems error {}}".format(str(e)))
 
     if randomize:
-        # Expanding the pooulation for better random distribution
-        amount = amount * 5
+        # Expanding the population for better random distribution
+        amount = amount * 3
+        links = links[:amount]
+
+    filtered_links = len(links)
 
     while (filtered_links < amount) and not abort:
         amount_left = amount - filtered_links
@@ -412,8 +415,11 @@ def check_link(browser,
                like_by_followers_upper_limit,
                like_by_followers_lower_limit,
                logger):
-
-    browser.get(link)
+    """click and check link"""
+    if isinstance(link, str):
+        browser.get(link)
+    else:
+        link.send_keys(Keys.CONTROL + Keys.RETURN)
     # update server calls
     update_activity()
     sleep(2)
@@ -421,13 +427,17 @@ def check_link(browser,
 
     """Check if the Post is Valid/Exists"""
     try:
-        post_page = browser.execute_script(
-            "return window._sharedData.entry_data.PostPage")
+        if isinstance(link, str):
+            post_page = browser.execute_script(
+                "return window._sharedData.entry_data.PostPage")
+        else:
+            post_page =browser.execute_script(
+                "return window._sharedData")
     except:
         post_page = None
 
-    if post_page is None:
-        logger.warning('Unavailable Page: {}'.format(link.encode('utf-8')))
+    if isinstance(link, str) and (post_page is None):
+        #logger.warning('Unavailable Page: {}'.format(link.encode('utf-8')))
         return True, None, None, None, 'Unavailable Page'
 
     """Gets the description of the link and checks for the dont_like tags"""
@@ -504,7 +514,7 @@ def check_link(browser,
             image_text_lang_detect += image_text
             languages = detect_langs(image_text_lang_detect)
 
-            #find the most probability language (to use for comments)
+            # find the most probability language (to use for comments)
             try:
                 # if we have mixed with english(tags) we shall take the second language
                 if languages[1].prob > 0.2:
@@ -544,14 +554,14 @@ def check_link(browser,
         logger.info('Number of Followers: {}'.format(num_followers))
 
         if like_by_followers_upper_limit and \
-           num_followers > like_by_followers_upper_limit:
-                return True, user_name, is_video, most_prob_language, \
-                    'Number of followers exceeds limit'
+                        num_followers > like_by_followers_upper_limit:
+            return True, user_name, is_video, most_prob_language, \
+                   'Number of followers exceeds limit'
 
         if like_by_followers_lower_limit and \
-           num_followers < like_by_followers_lower_limit:
-                return True, user_name, is_video, most_prob_language, \
-                    'Number of followers does not reach minimum'
+                        num_followers < like_by_followers_lower_limit:
+            return True, user_name, is_video, most_prob_language, \
+                   'Number of followers does not reach minimum'
 
     logger.info('Link: {}'.format(link.encode('utf-8')))
     logger.info('Description: {}'.format(image_text.encode('utf-8')))
@@ -587,26 +597,28 @@ def like_image(browser, username, blacklist, logger):
     """Likes the browser opened image"""
     like_elem = browser.find_elements_by_xpath(
         "//a[@role='button']/span[text()='Like']/..")
-    #liked_elem = browser.find_elements_by_xpath(
-    #    "//a[@role='button']/span[text()='Unlike']")
-
     if len(like_elem) == 1:
-        browser.execute_script("document.getElementsByClassName('" + like_elem[0].get_attribute("class") + "')[0].click()")
-        logger.info('--> Image Liked!')
-        update_activity('likes')
-        if blacklist['enabled'] is True:
-            action = 'liked'
-            add_user_to_blacklist(
-                browser, username, blacklist['campaign'], action, logger
-            )
-        sleep(2)
-        return True
-    #elif len(liked_elem) == 1:
-    #    logger.info('--> Already Liked!')
-    #    return False
-    else:
-        logger.info('--> Invalid Like Element!')
-        return False
+        browser.execute_script(
+            "document.getElementsByClassName('" + like_elem[0].get_attribute("class") + "')[0].click()")
+        liked_elem = browser.find_elements_by_xpath(
+            "//a[@role='button']/span[text()='Unlike']")
+        if len(liked_elem) == 1:
+            logger.info('--> Image Liked!')
+            update_activity('likes')
+            if blacklist['enabled'] is True:
+                action = 'liked'
+                add_user_to_blacklist(
+                    browser, username, blacklist['campaign'], action, logger
+                )
+            sleep(2)
+            return True
+        else:
+            # if like not seceded wait for 2 min
+            logger.info('--> Image was not able to get Liked! maybe blocked ?')
+            sleep(120)
+
+    logger.info('--> Invalid Like Element!')
+    return False
 
 
 def get_tags(browser, url):

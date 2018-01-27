@@ -32,7 +32,7 @@ def job():
         print(taglist)
 
         #create instance
-        session = InstaPy(username=insta_username, password=insta_password, proxy_address='149.202.180.55', proxy_port=3128)
+        session = InstaPy(username=insta_username, password=insta_password)
         session.login()
 
         # limits
@@ -51,51 +51,40 @@ def job():
         session.set_feed_comments(['beautiful', u':heart_eyes:', u':heart_eyes::heart_eyes:',
                                     u':heart_eyes::heart_eyes::heart_eyes:',
                                     u':heart_eyes: + :heart_eyes:', u':heart_eyes: :heart_eyes:',
-                                    u':leaves: + :leaves:', u':leaves: :leaves:',u':purple_heart:',
-                                    u':pray:', u':heart: :heart:', u'heart :heart:',
-                                    u':sunny:', u':cloud::sunny::cloud:',u':sunny: :cloud:',u':sunny::sunny:',
-                                    u':tulip:', u':tulip:::sunflower:::tulip:', u':tulip: :tulip:',
-                                    u':sunflower::sunflower:'])
+                                    u':leaves: + :leaves:', u':leaves: :leaves:',])
 
         session.set_comments({"en":[
-            'beautiful', u':heart_eyes:', u':heart_eyes::heart_eyes:',
-            u':heart_eyes::heart_eyes::heart_eyes:',
-            u':heart_eyes: + :heart_eyes:', u':heart_eyes: :heart_eyes:',
-            u':leaves: + :leaves:', u':leaves: :leaves:', u':purple_heart:',
-            u':pray:', u':heart: :heart:', u'heart :heart:',
-            u':sunny:', u':cloud::sunny::cloud:', u':sunny: :cloud:', u':sunny::sunny:',
-            u':tulip:', u':tulip:::sunflower:::tulip:', u':tulip: :tulip:',
-            u':sunflower::sunflower:',
+            'beautiful',
+            u':heart_eyes:', u':heart_eyes::heart_eyes:', u':heart_eyes::heart_eyes::heart_eyes:',
+            u':heart_eyes: + :heart_eyes:', u':heart_eyes: :heart_eyes:'
+            u':leaves: + :leaves:', u':leaves: {} :leaves:',
             'Delightful photography...', 'describe ur works!',
-            'Nice-nice.', 'Way rad!', 'hi {} Pretty cool!',
+            'Nice-nice.', 'hi {} Pretty cool!', 'hi {} :)',
             'hi {} Its fascinating...',
             'hi {} Nice photo', 'Just love it', 'Lovely pictures',
-            'It has sence and character... I love it...',
-            'Winning, love it!', 'Magnetic power!', 'Paradise', 'Fantastic',
-            'looks good', 'Elegant and stylish!', 'Amazing Love Life',
+            'Paradise', 'Fantastic',
+            'looks good', 'Amazing Love Life',
             'Great pictures! Just love it!', 'Hello {} I really enjoy your account..',
-            'Harmony and peaceful atmoshere...', 'BINGO!!! Beauty&Style in one piece!', 'Wow, thats amazing pic',
             'Amazing', 'Wonderful', 'Awesome...)', 'Awesome...():)', 'Love ur profile', 'Love your profile :)', 'Just love it',
-            'Fresh and bright!', 'Like all your photoes', 'Extremely good one!'
+            'Like all your photoes', 'Extremely good one!',
+            'So nice !!!', 'Love love love !.',
+            'It’s really nice !.', 'It’s gorgeous !', 'Beautiful and lovely!'
         ],
-        "he":['beautiful', u':heart_eyes:', u':heart_eyes::heart_eyes:',
-              u':heart_eyes::heart_eyes::heart_eyes:',
-              u':heart_eyes: + :heart_eyes:', u':heart_eyes: :heart_eyes:',
-              u':leaves: + :leaves:', u':leaves: :leaves:',u':purple_heart:',
-              u':pray:', u':heart: :heart:', u'heart :heart:',
-              u':sunny:', u':cloud::sunny::cloud:',u':sunny: :cloud:',u':sunny::sunny:',
-              u':tulip:', u':tulip:::sunflower:::tulip:', u':tulip: :tulip:',
-              u':sunflower::sunflower:',
-              'מקסים',
+        "he":['מקסים',
               'יפה',
               'יפה:)',
               'יפה!',
               'אחלה',
               'אחלה!',
               'אחלה :)',
+              u':heart_eyes:', u':heart_eyes::heart_eyes:', u':heart_eyes::heart_eyes::heart_eyes:',
+              u':heart_eyes: + :heart_eyes:', u':heart_eyes: :heart_eyes:'
+              u':leaves: + :leaves:', u':leaves: :leaves:',
               'מקסים!!',
               'מקסים!!!',
               'מקסים=!',
+              'אוהבת ממש !',
+              'מהמם !.',
               'מרגש!',
               'מרגש@!!',
               'מרגש!!',
@@ -104,21 +93,27 @@ def job():
               'מעניין@',
               'מעניין!!',
               'ליבי'
+              'אהבתי !.',
+              'יפה ממש !!.',
+              'ווואי מושלם !.',
+              'וואי מהממם !.',
+              'איזה כיף של תמונה',
+              'מדהים !.'
               ]})
 		
         session.set_sleep_reduce(70)
         session.set_following_limit(True, limit=715, unfollowImmediate=True)
 
-        session.interact_by_users_from_dict(amountInteractPerUser=2, amountInteractPerUserFollowers=150, amountUserFollowers=5)
+        #session.interact_by_users_from_dict(amountInteractPerUser=2, amountInteractPerUserFollowers=150, amountUserFollowers=5, randomize=True)
         # start the process
         print("do the actual liking by tag")
-        session.like_by_tags(taglist, amount=100)
+        session.like_by_tags(taglist, amount=20, skip_top_posts=False)
 
         # unfollow
         #session.unfollow_users(amount=20, onlyInstapyFollowed=True, onlyInstapyMethod='FIFO', sleep_delay=250)
 
         print("do the actual liking by feed")
-        session.like_by_feed(amount=80)
+        #session.like_by_feed(amount=80, interact=True)
 
         # unfollow
         session.unfollow_users(amount=30, onlyInstapyFollowed=True, onlyInstapyMethod='FIFO', sleep_delay=250)

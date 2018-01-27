@@ -13,6 +13,7 @@ from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver import DesiredCapabilities
+from selenium.webdriver.common.action_chains import ActionChains
 import requests
 
 #from .clarifai_util import check_image
@@ -43,7 +44,7 @@ from .unfollow_util import follow_given_user
 from .unfollow_util import load_follow_restriction
 from .unfollow_util import dump_follow_restriction
 from .unfollow_util import set_automated_followed_pool
-
+from selenium.webdriver.common.keys import Keys
 from .statistics import InstaPyStorage
 from random import shuffle
 import pickle
@@ -766,6 +767,7 @@ class InstaPy:
                 self.logger.info(link)
 
                 try:
+                    main_window = self.browser.current_window_handle
                     inappropriate, user_name, is_video, most_prob_language, reason = (
                         check_link(self.browser,
                                    link,
@@ -777,6 +779,7 @@ class InstaPy:
                                    False,
                                    False,
                                    self.logger)
+                    #self.browser.switch_to_window(main_window)
                     )
                     valid_user = False
                     if not inappropriate:
@@ -819,7 +822,7 @@ class InstaPy:
                                     self.user_interact_media)
 
                             liked_img += 1
-                            if (self.save_do_like_statistics() == 0):
+                            if self.save_do_like_statistics() == 0:
                                 self.end()
                                 return
                             checked_img = True
@@ -903,6 +906,8 @@ class InstaPy:
                         self.logger.info(
                             '--> Image not liked: {}'.format(reason))
                         inap_img += 1
+
+                    self.find_element_by_xpath("/html/body/div[3]/div/button[text()='Close']").click()
                 except NoSuchElementException as err:
                     self.logger.error('Invalid Page: {}'.format(err))
 
@@ -1154,6 +1159,28 @@ class InstaPy:
                 self.logger.error('Element not found, skipping this username')
                 continue
 
+            following = random.randint(0, 100) <= self.follow_percentage
+
+            if (self.do_follow and
+                username not in self.dont_include and
+                following and
+                    self.follow_restrict.get(username, 0) < self.follow_times):
+
+                is_followed = follow_user(self.browser,
+                                        self.follow_restrict,
+                                        self.username,
+                                        username,
+                                        self.blacklist,
+                                        self.logger)
+                followed += is_followed
+
+                if is_followed and (self.save_do_follow_statistics() == 0):
+                    self.end()
+                    return
+            else:
+                self.logger.info('--> Not following')
+                sleep(1)
+
             if links is False:
                 continue
 
@@ -1170,6 +1197,8 @@ class InstaPy:
 
                 self.logger.info('Post [{}/{}]'.format(liked_img + 1, amount))
                 self.logger.info(link)
+                # go back to user page for reliability
+                self.browser.back()
 
                 try:
                     inappropriate, user_name, is_video, most_prob_language, reason = (
@@ -1186,48 +1215,24 @@ class InstaPy:
                     )
 
                     if not inappropriate:
-
-                        following = (
-                            random.randint(0, 100) <= self.follow_percentage)
-
-                        if (self.do_follow and
-                            username not in self.dont_include and
-                            following and
-                            self.follow_restrict.get(
-                                username, 0) < self.follow_times):
-
-                            is_followed = follow_user(
-                                self.browser,
-                                self.follow_restrict,
-                                self.username,
-                                username,
-                                self.blacklist,
-                                self.logger)
-                            followed += is_followed
-
-                            if is_followed and (self.save_do_follow_statistics() == 0):
-                                self.end()
-                                return
-                        else:
-                            self.logger.info('--> Not following')
-                            sleep(1)
-
                         liking = random.randint(0, 100) <= self.like_percentage
+
                         if self.do_like and liking:
                             liked = like_image(self.browser,
                                                user_name,
                                                self.blacklist,
                                                self.logger)
+                            if liked:
+                                if self.save_do_like_statistics() == 0:
+                                    self.end()
+                                    return
+
+                                total_liked_img += 1
+                                liked_img += 1
                         else:
                             liked = True
 
                         if liked:
-                            total_liked_img += 1
-                            liked_img += 1
-
-                            if self.save_do_like_statistics() == 0:
-                                self.end()
-                                return
                             checked_img = True
                             temp_comments = []
                             commenting = random.randint(
@@ -1288,7 +1293,7 @@ class InstaPy:
                             '--> Image not liked: {}'.format(reason))
                         inap_img += 1
                 except NoSuchElementException as err:
-                    self.logger.info('Invalid Page: {}'.format(err))
+                    self.logger.error('Invalid Page: {}'.format(err))
 
             if liked_img < amount:
                 self.logger.info('-------------')
@@ -1877,7 +1882,8 @@ class InstaPy:
         self.aborting = True
         # Copy all followed by restriction to a json
         dump_follow_restriction(self.follow_restrict)
-
+        #save the last mode screenhoot
+        self.browser.get_screenshot_as_file('./logs/screen.png')
         try:
             self.browser.delete_all_cookies()
             self.browser.quit()
