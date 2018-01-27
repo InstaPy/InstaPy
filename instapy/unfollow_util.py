@@ -162,7 +162,8 @@ def unfollow(browser,
                     .format(graphql_followers, str(json.dumps(variables)))
                 )
                 if i != 0:
-                    del variables['after']
+                    if 'after' in variables:
+                        del variables['after']
                     url = (
                         '{}&variables={}'
                         .format(graphql_following, str(json.dumps(variables)))
