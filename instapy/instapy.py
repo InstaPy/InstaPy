@@ -151,7 +151,8 @@ class InstaPy:
             logger.setLevel(logging.DEBUG)
             file_handler = logging.FileHandler( '{}general.log'.format(self.logfolder))
             file_handler.setLevel(logging.DEBUG)
-            logger_formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
+            extra = {"username": self.username}
+            logger_formatter = logging.Formatter('%(levelname)s [%(username)s]  %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
             file_handler.setFormatter(logger_formatter)
             logger.addHandler(file_handler)
 
@@ -160,7 +161,9 @@ class InstaPy:
                 console_handler.setLevel(logging.DEBUG)
                 console_handler.setFormatter(logger_formatter)
                 logger.addHandler(console_handler)
-
+            
+            self.logger = logging.LoggerAdapter(self.logger, extra)
+            
             loggers[__name__] = logger
             return logger
 
