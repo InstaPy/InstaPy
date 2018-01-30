@@ -57,6 +57,7 @@ Table of Contents
   * [Smart Hashtags](#smart-hashtags)
   * [Follow/Unfollow/exclude not working?](#followunfollowexclude-not-working)
   * [Bypass Suspicious Login Attempt](#bypass-suspicious-login-attempt)
+  * [Quota Supervisor](#quota-supervisor)
 * [Third Party InstaPy GUI for Windows](#third-party-instapy-gui-for-windows)
 * [Use a proxy](#use-a-proxy)
 * [Switching to Firefox](#switching-to-firefox)
@@ -467,6 +468,44 @@ You can use InstaPy behind a proxy by specifying server address and port
 
 ```python
 session = InstaPy(username=insta_username, password=insta_password, proxy_address='8.8.8.8', proxy_port=8080)
+```
+
+### Quota Supervisor
+Take full control of the actions with the most sophisticated approaches:
+```python
+session.set_quota_supervisor(enabled=True, sleep_after=['likes', 'comments_d', 'follows', 'unfollows', 'server_calls_h'], sleepyhead=True, stochastic_flow=True, notify_me=True,
+                              peak_likes=(57, 585),
+                               peak_comments=(21, 182),
+                                peak_follows=(48, None),
+                                 peak_unfollows=(35, 402),
+                                  peak_server_calls=(None, 4700))
+
+enabled=True #to activate or enabled=False to deactivate supervisor any time
+
+peak_likes=(hourly, daily) #restricts actions to hourly/daily peaks
+ #If you don't want to supervise likes at all, simply remove peak_likes param or use peak_likes=(None, None)
+ #Notice: peak_likes=(50) will not work, use peak_likes=(50, None) for hourly peak and peak_likes=(None, 50) for daily peak, also don't include 0 in peaks, instead simply put None
+  peak_server_calls=(500, 4745) #will supervise server calls with hourly peak of 500 and daily peak of 4745
+  peak_likes=(70, None) #will supervise only hourly likes with peak of 70
+  peak_unfollows=(None, 350) #will supervise only daily unfollows with peak of 350
+  peak_comments=(None, None) #will not supervise comments at all
+ #Once likes reach peak, it will jump every like , yet will do available actions (e.g. follow or unfollow)
+ #Every action will be jumped separately after reaching it's peak, except comments. Cos commenting without a like isn't really welcomed that's when like peaks is reached, it will jump comments, too
+ #Same form applies to all actions. Specify which actions (in which intervals- hourly, daily or both) you want to supervise
+
+sleep_after=[] #is used to put InstaPy to sleep after reaching peaks rather than jumping the action
+ #Any action ['likes', 'comments', 'follows', 'unfollows', 'server_calls'] can be included
+ #As if you want to sleep only after reaching hourly like peak put 'likes_h' or 'likes_d' for sleeping only after reaching daily like peaks
+ #Notice: there can be either 'likes' (for both hourly and daily sleep) or 'likes_h' (for hourly sleep only) or 'likes_d' (for daily sleep only)
+  sleep_after=['likes_h'] #will sleep after reaching hourly like peaks
+  sleep_after=['likes_d', 'follows', 'server_calls_h'] #will sleep after reaching daily like peak, follow peaks(hourly and daily) and hourly server_call peak
+ #Once gone to sleep it will wake up as new hour/day arrives and continue doing actions
+
+sleepyhead=True #can help to sound more humanly which will wake up a little bit later in a randomly chosen time interval around accurate wake up time. E.g: if remaining time is 17 minutes, it will sleep 20 minutes instead.. (each time at random time interval)
+
+stochastic_flow=True #provides smooth peak values! Every hour/day it will generate peaks at close range around your original peaks but below them. E.g: your peak likes hourly is 45, next hour peak will be 39, the next 43,..
+
+notify_me=True #sends toast notifications about the important states of the supervisor (sleep, wake up and exit messages) directly to your OS, supported in Windows, Linux and Mac
 ```
 
 ### Switching to Firefox
