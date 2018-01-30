@@ -162,7 +162,7 @@ class InstaPy:
                 console_handler.setFormatter(logger_formatter)
                 logger.addHandler(console_handler)
             
-            self.logger = logging.LoggerAdapter(self.logger, extra)
+            self.logger = logging.LoggerAdapter(logger, extra)
             
             loggers[__name__] = logger
             return logger
