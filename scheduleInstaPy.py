@@ -32,7 +32,8 @@ def job():
         print(taglist)
 
         #create instance
-        session = InstaPy(username=insta_username, password=insta_password)
+        session = InstaPy(username=insta_username, password=insta_password,
+                          proxy_address='67.220.231.78', proxy_port=21317)
         session.login()
 
         # limits
@@ -104,19 +105,19 @@ def job():
         session.set_sleep_reduce(70)
         session.set_following_limit(True, limit=715, unfollowImmediate=True)
 
-        #session.interact_by_users_from_dict(amountInteractPerUser=2, amountInteractPerUserFollowers=150, amountUserFollowers=5, randomize=True)
+        session.interact_by_users_from_dict(amountInteractPerUser=2, amountInteractPerUserFollowers=150, amountUserFollowers=5, randomize=True)
         # start the process
         print("do the actual liking by tag")
-        session.like_by_tags(taglist, amount=20, skip_top_posts=False)
+        #session.like_by_tags(taglist, amount=20, skip_top_posts=False)
 
         # unfollow
         #session.unfollow_users(amount=20, onlyInstapyFollowed=True, onlyInstapyMethod='FIFO', sleep_delay=250)
 
         print("do the actual liking by feed")
-        #session.like_by_feed(amount=80, interact=True)
+        #session.like_by_feed(amount=10, interact=True)
 
         # unfollow
-        session.unfollow_users(amount=30, onlyInstapyFollowed=True, onlyInstapyMethod='FIFO', sleep_delay=250)
+        #session.unfollow_users(amount=10, onlyInstapyFollowed=True, onlyInstapyMethod='FIFO', sleep_delay=250)
 
 
     except KeyboardInterrupt:

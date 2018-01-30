@@ -2,6 +2,7 @@ import csv
 import os
 from .time_util import sleep
 from selenium.common.exceptions import NoSuchElementException
+from selenium.webdriver.chrome.options import Options
 import sqlite3
 import json
 import pickle
@@ -26,9 +27,13 @@ def validate_username(browser,
     if username in blacklist:
         return '---> {} is in blacklist, skipping user...'
 
+    #browser.find_element_by_xpath(
+    #"// *[ @ id = \"react-root\"] / section / main / div / div / article / header / div[2] / div[1] / div[1] / a").click()
+    #chrome_options = Options()
+    #chrome_options.add_argument("--Referer={}".format(browser.current_url))
     browser.get('https://www.instagram.com/{}'.format(username))
 
-    sleep(1)
+    sleep(2)
 
     try:
         is_private = browser.execute_script(
