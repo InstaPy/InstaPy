@@ -92,7 +92,7 @@ class InstaPy:
             os.makedirs(self.logfolder)
 
         self.page_delay = page_delay
-        self.switch_language = True
+        self.switch_language = False
         self.use_firefox = use_firefox
         self.firefox_profile_path = None
 
@@ -625,13 +625,14 @@ class InstaPy:
                         liked = like_image(self.browser,
                                            user_name,
                                            self.blacklist,
-                                           self.logger)
+                                           self.logger,
+                                           self.logfolder)
 
                         if liked:
                             liked_img += 1
-                            if (self.save_do_like_statistics() == 0):
-                                self.end()
-                                return
+                            if self.save_do_like_statistics() == 0:
+                                if self.do_end() is True:
+                                    return
                             checked_img = True
                             temp_comments = []
                             commenting = random.randint(
@@ -768,7 +769,7 @@ class InstaPy:
                                           media,
                                           skip_top_posts)
                 # remove first 5 elements as it is "top post"
-                del links[:5]
+                del links[:10]
 
             except NoSuchElementException:
                 self.logger.error('Too few images, skipping this tag')
@@ -779,7 +780,6 @@ class InstaPy:
                 self.logger.info(link)
 
                 try:
-                    main_window = self.browser.current_window_handle
                     inappropriate, user_name, is_video, most_prob_language, reason = (
                         check_link(self.browser,
                                    link,
@@ -791,8 +791,8 @@ class InstaPy:
                                    False,
                                    False,
                                    self.logger)
-                    #self.browser.switch_to_window(main_window)
                     )
+
                     valid_user = False
                     if not inappropriate:
                         valid_user = validate_username(self.browser,
@@ -804,13 +804,15 @@ class InstaPy:
                                                        self.like_by_followers_lower_limit,
                                                        self.following_to_followers_ratio,
                                                        self.logger)
-                        self.browser.get(link)
-
+                        self.browser.back()
                     if not inappropriate and valid_user is True:
+                        # open the relevant image in current page
+                        #link.click()
                         liked = like_image(self.browser,
                                            user_name,
                                            self.blacklist,
-                                           self.logger)
+                                           self.logger,
+                                           self.logfolder)
 
                         if liked:
 
@@ -835,8 +837,8 @@ class InstaPy:
 
                             liked_img += 1
                             if self.save_do_like_statistics() == 0:
-                                self.end()
-                                return
+                                if self.do_end() is True:
+                                    return
                             checked_img = True
                             temp_comments = []
                             commenting = (random.randint(0, 100) <=
@@ -892,11 +894,10 @@ class InstaPy:
                                 self.logger.info('--> Not commented')
                                 sleep(1)
 
-
                             if (self.do_follow and
                                 user_name not in self.dont_include and
                                 checked_img and
-                                following):
+                                following and
                                 self.follow_restrict.get(user_name, 0) <
                                     self.follow_times):
                                     is_followed = follow_user(self.browser,
@@ -910,8 +911,6 @@ class InstaPy:
                                     if is_followed and (self.save_do_follow_statistics() == 0):
                                         self.end()
                                         return
-                                else:
-                                    self.logger.info('--> Not following since already been followed before')
                             else:
                                 self.logger.info('--> Not following')
                                 sleep(1)
@@ -921,8 +920,12 @@ class InstaPy:
                         self.logger.info(
                             '--> Image not liked: {}'.format(reason))
                         inap_img += 1
-
-                    self.find_element_by_xpath("/html/body/div[3]/div/button[text()='Close']").click()
+                    # press on close button
+                    # self.browser.find_element_by_xpath("/html/body/div[3]/div/button[text()='Close']").click()
+                    # check_link and validate_username will be open in a new tab
+                    self.browser.close()
+                    self.browser.switch_to_window(self.browser.window_handles[0])
+                    sleep(1)
                 except NoSuchElementException as err:
                     self.logger.error('Invalid Page: {}'.format(err))
 
@@ -1032,7 +1035,8 @@ class InstaPy:
                         liked = like_image(self.browser,
                                            user_name,
                                            self.blacklist,
-                                           self.logger)
+                                           self.logger,
+                                           self.logfolder)
 
                         if liked:
                             total_liked_img += 1
@@ -1239,11 +1243,12 @@ class InstaPy:
                             liked = like_image(self.browser,
                                                user_name,
                                                self.blacklist,
-                                               self.logger)
+                                               self.logger,
+                                               self.logfolder)
                             if liked:
                                 if self.save_do_like_statistics() == 0:
-                                    self.end()
-                                    return
+                                    if self.do_end() is True:
+                                        return
 
                                 total_liked_img += 1
                                 liked_img += 1
@@ -1707,7 +1712,8 @@ class InstaPy:
                                 liked = like_image(self.browser,
                                                    user_name,
                                                    self.blacklist,
-                                                   self.logger)
+                                                   self.logger,
+                                                   self.logfolder)
 
                                 if liked:
                                     username = (self.browser.
@@ -1731,8 +1737,8 @@ class InstaPy:
 
                                     liked_img += 1
                                     if (self.save_do_like_statistics() == 0):
-                                        self.end()
-                                        return
+                                        if self.do_end() is True:
+                                            return
                                     checked_img = True
                                     temp_comments = []
                                     commenting = random.randint(
@@ -1798,29 +1804,6 @@ class InstaPy:
                                                         self.logfolder)
                                     else:
                                         self.logger.info('--> Not commented')
-                                        sleep(1)
-
-                                    if (self.do_follow and
-                                        user_name not in self.dont_include and
-                                        checked_img and
-                                        following and
-                                        self.follow_restrict.get(
-                                            user_name, 0) < self.follow_times):
-                                        is_followed = follow_user(
-                                            self.browser,
-                                            self.follow_restrict,
-                                            self.username,
-                                            user_name,
-                                            self.blacklist,
-                                            self.logger,
-                                            self.logfolder)
-                                        followed += is_followed
-
-                                        if is_followed and (self.save_do_follow_statistics() == 0):
-                                            self.end()
-                                            return
-                                    else:
-                                        self.logger.info('--> Not following')
                                         sleep(1)
                                 else:
                                     already_liked += 1
@@ -1900,6 +1883,13 @@ class InstaPy:
                         self.dont_include.append(row['username'])
         except:
             self.logger.info('Campaign {} first run'.format(campaign))
+
+    def do_end(self):
+        if random.randint(1, 3) == 1:
+            self.end()
+            return True
+        return False
+
 
     def end(self):
         """Closes the current session"""

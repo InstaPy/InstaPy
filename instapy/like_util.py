@@ -419,7 +419,11 @@ def check_link(browser,
     if isinstance(link, str):
         browser.get(link)
     else:
+        # open this in new tab
         link.send_keys(Keys.CONTROL + Keys.RETURN)
+        # switch to this tab
+        browser.switch_to_window(browser.window_handles[1])
+
     # update server calls
     update_activity()
     sleep(2)
@@ -427,16 +431,13 @@ def check_link(browser,
 
     """Check if the Post is Valid/Exists"""
     try:
-        if isinstance(link, str):
-            post_page = browser.execute_script(
-                "return window._sharedData.entry_data.PostPage")
-        else:
-            post_page =browser.execute_script(
-                "return window._sharedData")
+
+        post_page = browser.execute_script(
+            "return window._sharedData.entry_data.PostPage")
     except:
         post_page = None
 
-    if isinstance(link, str) and (post_page is None):
+    if post_page is None:
         #logger.warning('Unavailable Page: {}'.format(link.encode('utf-8')))
         return True, None, None, None, 'Unavailable Page'
 
@@ -563,7 +564,7 @@ def check_link(browser,
             return True, user_name, is_video, most_prob_language, \
                    'Number of followers does not reach minimum'
 
-    logger.info('Link: {}'.format(link.encode('utf-8')))
+    #logger.info('Link: {}'.format(link.encode('utf-8')))
     logger.info('Description: {}'.format(image_text.encode('utf-8')))
 
     """Check if the user_name is in the ignore_users list"""
@@ -593,7 +594,7 @@ def check_link(browser,
     return False, user_name, is_video, most_prob_language, 'None'
 
 
-def like_image(browser, username, blacklist, logger):
+def like_image(browser, username, blacklist, logger, logfolder):
     """Likes the browser opened image"""
     like_elem = browser.find_elements_by_xpath(
         "//a[@role='button']/span[text()='Like']/..")
@@ -608,7 +609,7 @@ def like_image(browser, username, blacklist, logger):
             if blacklist['enabled'] is True:
                 action = 'liked'
                 add_user_to_blacklist(
-                    browser, username, blacklist['campaign'], action, logger
+                    browser, username, blacklist['campaign'], action, logger, logfolder
                 )
             sleep(2)
             return True
