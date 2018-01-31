@@ -186,7 +186,7 @@ class InstaPy:
                 console_handler.setFormatter(logger_formatter)
                 logger.addHandler(console_handler)
             
-            self.logger = logging.LoggerAdapter(logger, extra)
+            logger = logging.LoggerAdapter(logger, extra)
             
             loggers[__name__] = logger
             return logger
@@ -1808,6 +1808,28 @@ class InstaPy:
                                     else:
                                         self.logger.info('--> Not commented')
                                         sleep(1)
+
+                                    if (self.do_follow and
+                                        user_name not in self.dont_include and
+                                        checked_img and
+                                        following and
+                                        self.follow_restrict.get(
+                                            user_name, 0) < self.follow_times):
+                                        is_followed = follow_user(
+                                            self.browser,
+                                            self.follow_restrict,
+                                            self.username,
+                                            user_name,
+                                            self.blacklist,
+                                            self.logger)
+                                        followed += is_followed
+
+                                        if is_followed and (self.save_do_follow_statistics() == 0):
+                                            self.end()
+                                            return
+                                    else:
+                                        self.logger.info('--> Not following')
+                                        sleep(1)
                                 else:
                                     already_liked += 1
                             else:
@@ -1892,7 +1914,6 @@ class InstaPy:
             self.end()
             return True
         return False
-
 
     def end(self):
         """Closes the current session"""
