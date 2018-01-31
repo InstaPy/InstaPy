@@ -60,7 +60,7 @@ def comment_image(browser, username, comments, blacklist, logger, logfolder):
             if blacklist['enabled'] is True:
                 action = 'commented'
                 add_user_to_blacklist(
-                    browser, username, blacklist['campaign'], action, logger
+                    browser, username, blacklist['campaign'], action, logger, logfolder
                 )
         except KeyError as e:
             logger.error('--> Error: Comment Action Likely Failed:'
@@ -72,19 +72,6 @@ def comment_image(browser, username, comments, blacklist, logger, logfolder):
             logger.error('--> Error: Comment Action Likely Failed:'
                          ' with no reason \n {}'.format(str(e)))
 
-        browser.execute_script(
-            "arguments[0].value = '" + rand_comment + " ';", comment_input[0])
-        # An extra space is added here and then deleted.
-        # This forces the input box to update the reactJS core
-        comment_input[0].send_keys("\b")
-        comment_input = get_comment_input(browser)
-        comment_input[0].submit()
-        update_activity('comments')
-        if blacklist['enabled'] is True:
-            action = 'commented'
-            add_user_to_blacklist(
-                browser, username, blacklist['campaign'], action, logger, logfolder
-            )
     else:
         logger.warning('--> Warning: Comment Action Likely Failed:'
                        ' Comment Element not found')

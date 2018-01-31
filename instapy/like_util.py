@@ -184,7 +184,7 @@ def get_links_for_tag(browser,
 
     abort = True
     try:
-        # skip this checl
+        # skip this checlk
         raise NoSuchElementException
         # load_button = body_elem.find_element_by_xpath(
         #    '//a[contains(@class, "_1cr2e _epyes")]')
