@@ -1,4 +1,4 @@
-from langdetect import detect
+from instapy import InstaPy
 
 insta_username = ''
 insta_password = ''

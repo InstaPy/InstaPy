@@ -9,8 +9,6 @@ from .util import update_activity
 from .util import add_user_to_blacklist
 from .util import click_element
 from .print_log_writer import log_followed_pool
-from .print_log_writer import log_uncertain_unfollowed_pool
-from .print_log_writer import log_record_all_unfollowed
 from selenium.common.exceptions import NoSuchElementException
 import random
 import os
@@ -100,46 +98,27 @@ def unfollow(browser,
                         "//*[contains(text(), 'Follow')]")
 
                     if follow_button.text == 'Following':
-                        # click the button
+                        unfollowNum += 1
                         click_element(browser, follow_button) # follow_button.click()
-                        sleep(4)
+                        
+                        update_activity('unfollows')
 
-                        # double check not following
-                        follow_button = browser.find_element_by_xpath(
-                            "//*[contains(text(), 'Follow')]")
+                        delete_line_from_file('{0}{1}_followedPool.csv'.format(logfolder, username), person +
+                                              ",\n", logger)
 
-                        # TODO: try polling on button
-                        if follow_button.text == 'Follow':
+                        logger.info(
+                            '--> Ongoing Unfollow From InstaPy {},'
+                            ' now unfollowing: {}'
+                            .format(str(unfollowNum), person.encode('utf-8')))
 
-                            unfollowNum += 1
-                            update_activity('unfollows')
+                        sleep(15)
 
-                            delete_line_from_file('{0}{1}_followedPool.csv'.format(logfolder, username), person +
-                                                  ",\n", logger)
-                            # save any unfollowed person
-                            log_record_all_unfollowed(username, person, logger)
-
-                            logger.info(
-                                '--> Ongoing Unfollow From InstaPy {},'
-                                ' now unfollowing: {}'
-                                .format(str(unfollowNum), person.encode('utf-8')))
-
-                            sleep(15)
-
-                            if hasSlept:
-                                hasSlept = False
-                            continue
-                        else:
-                            logger.error("unfollow error username {} might be blocked ".format(username))
-                            # stop the loop
-                            break
+                        if hasSlept:
+                            hasSlept = False
+                        continue
                     else:
-                        if follow_button.text != 'Follow':
-                            log_uncertain_unfollowed_pool(username, person, logger)
                         delete_line_from_file('{0}{1}_followedPool.csv'.format(logfolder, username),
                                               person + ",\n", logger)
-                        # save any unfollowed person
-                        log_record_all_unfollowed(username, person, logger)
 
                         logger.warning(
                             '--> Cannot Unfollow From InstaPy {}'
@@ -387,10 +366,6 @@ def follow_user(browser, follow_restrict, login, user_name, blacklist, logger, l
         logger.info('--> Already following')
         sleep(1)
         return 0
-    except:
-        print('--> SION:Not following since error occuered')
-        sleep(1)
-        return 0
 
 
 def unfollow_user(browser, logger):
@@ -630,8 +605,8 @@ def get_given_user_followers(browser,
 
     if amount >= len(follow_buttons):
         amount = len(follow_buttons)
-        logger.warning("{} -> Less users to follow than requested. == {} "
-                       .format(user_name, str(amount)))
+        logger.warning("{} -> Less users to follow than requested."
+                       .format(user_name))
 
     finalBtnPerson = []
     if randomize:
@@ -839,16 +814,3 @@ def load_follow_restriction(logfolder):
 
     with open(filename) as followResFile:
         return json.load(followResFile)
-
-def check_following_num(browser, username):
-    """Prints and logs the current number of followers to
-    a seperate file"""
-    browser.get('https://www.instagram.com/' + username)
-
-    followed_by = browser.execute_script(
-        "return window._sharedData.""entry_data.ProfilePage[0]."
-        "user.followed_by.count")
-
-    with open('./logs/followerNum.txt', 'a') as numFile:
-        numFile.write(
-            '{:%Y-%m-%d %H:%M} {}\n'.format(datetime.now(), followed_by or 0))
