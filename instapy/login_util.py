@@ -121,7 +121,7 @@ def login_user(browser,
     if switch_language:
         browser.find_element_by_xpath(
             "//footer[@class='_s5vm9']/div[@class='_g7lf5 _9z659']/nav["
-            "@class='_luodr']/ul[@class='_g8wl6']/li[@class='_538w0'][10]/"
+            "@class='_luodr']/ul[@class='_g8wl6']/li[@class='_538w0'][11]/"
             "span[@class='_pqycz _hqmnd']/select[@class='_fsoey']/option"
             "[text()='English']").click()
 
