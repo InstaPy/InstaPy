@@ -522,8 +522,13 @@ def check_link(browser,
                 "#[\d\w]*" + dont_likes + "[\d\w]*([^\d\w]|$)")
 
     for dont_likes_regex in dont_like_regex:
-        if re.search(dont_likes_regex, image_text, re.IGNORECASE):
-            return True, user_name, is_video, 'Inappropriate'
+        quash = re.search(dont_likes_regex, image_text, re.IGNORECASE)
+        if quash:
+            quashed = (quash.group(0)).split('#')[1]
+            iffy = (re.split(r'\W+', dont_likes_regex))[3]
+            inapp_unit = ('Inappropriate! ~ contains \'{}\''.format(quashed) if quashed == iffy else
+                              'Inappropriate! ~ contains \'{}\' in \'{}\''.format(iffy, quashed))
+            return True, user_name, is_video, inapp_unit
 
     return False, user_name, is_video, 'None'
 
