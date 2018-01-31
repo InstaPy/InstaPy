@@ -5,7 +5,6 @@ import logging
 from math import ceil
 import os
 from datetime import datetime
-import time
 from sys import maxsize
 import random
 
@@ -15,7 +14,6 @@ from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver import DesiredCapabilities
 import requests
-import sqlite3
 
 if os.name != 'nt':
     from .clarifai_util import check_image
@@ -92,7 +90,7 @@ class InstaPy:
 
         self.do_comment = False
         self.comment_percentage = 0
-        self.comments = []
+        self.comments = ['Cool!', 'Nice!', 'Looks good!']
         self.photo_comments = []
         self.video_comments = []
 
@@ -163,9 +161,9 @@ class InstaPy:
                 console_handler.setLevel(logging.DEBUG)
                 console_handler.setFormatter(logger_formatter)
                 logger.addHandler(console_handler)
-
-            logger = logging.LoggerAdapter(logger, extra)
-
+            
+            self.logger = logging.LoggerAdapter(logger, extra)
+            
             loggers[__name__] = logger
             return logger
 
@@ -250,7 +248,6 @@ class InstaPy:
 
     def login(self):
         """Used to login the user either with the username and password"""
-        self.set_quota_supervisor()
         if not login_user(self.browser,
                           self.username,
                           self.password,
@@ -553,7 +550,7 @@ class InstaPy:
                                            self.blacklist,
                                            self.logger)
 
-                        if liked == True:
+                        if liked:
                             liked_img += 1
                             checked_img = True
                             temp_comments = []
@@ -617,44 +614,8 @@ class InstaPy:
                             else:
                                 self.logger.info('--> Not following')
                                 sleep(1)
-                        elif liked == False:
+                        else:
                             already_liked += 1
-                        elif liked == 'jumped':
-                            checked_img = True
-                            temp_comments = []
-                            following = random.randint(
-                                0, 100) <= self.follow_percentage
-
-                            if self.use_clarifai and following:
-                                try:
-                                    checked_img, temp_comments = (
-                                        check_image(self.browser,
-                                                    self.clarifai_api_key,
-                                                    self.clarifai_img_tags,
-                                                    self.logger,
-                                                    self.clarifai_full_match)
-                                    )
-                                except Exception as err:
-                                    self.logger.error(
-                                        'Image check error: {}'.format(err))
-
-                            if (self.do_follow and
-                                user_name not in self.dont_include and
-                                checked_img and
-                                following and
-                                self.follow_restrict.get(user_name, 0) <
-                                    self.follow_times):
-
-                                followed += follow_user(self.browser,
-                                                        self.follow_restrict,
-                                                        self.username,
-                                                        user_name,
-                                                        self.blacklist,
-                                                        self.logger)
-                            else:
-                                self.logger.info('--> Not following')
-                                sleep(1)
-
                     else:
                         self.logger.info(
                             '--> Image not liked: {}'.format(reason))
@@ -735,10 +696,9 @@ class InstaPy:
                         liked = like_image(self.browser,
                                            user_name,
                                            self.blacklist,
-                                           self.logger,
-                                           self.logfolder)
+                                           self.logger)
 
-                        if liked == True:
+                        if liked:
 
                             if interact:
                                 username = (self.browser.
@@ -821,44 +781,8 @@ class InstaPy:
                             else:
                                 self.logger.info('--> Not following')
                                 sleep(1)
-                        elif liked == False:
+                        else:
                             already_liked += 1
-                        elif liked == 'jumped':
-                            checked_img = True
-                            temp_comments = []
-                            following = (random.randint(0, 100) <=
-                                         self.follow_percentage)
-                            if self.use_clarifai and following:
-                                try:
-                                    checked_img, temp_comments = (
-                                        check_image(self.browser,
-                                                    self.clarifai_api_key,
-                                                    self.clarifai_img_tags,
-                                                    self.logger,
-                                                    self.clarifai_full_match)
-                                    )
-                                except Exception as err:
-                                    self.logger.error(
-                                        'Image check error: {}'.format(err))
-
-                            if (self.do_follow and
-                                user_name not in self.dont_include and
-                                checked_img and
-                                following and
-                                self.follow_restrict.get(user_name, 0) <
-                                    self.follow_times):
-
-                                followed += follow_user(self.browser,
-                                                        self.follow_restrict,
-                                                        self.username,
-                                                        user_name,
-                                                        self.blacklist,
-                                                        self.logger,
-                                                        self.logfolder)
-                            else:
-                                self.logger.info('--> Not following')
-                                sleep(1)
-
                     else:
                         self.logger.info(
                             '--> Image not liked: {}'.format(reason))
@@ -936,7 +860,6 @@ class InstaPy:
 
             # Reset like counter for every username
             liked_img = 0
-            jumped = 0
 
             for i, link in enumerate(links):
                 # Check if target has reached
@@ -944,11 +867,6 @@ class InstaPy:
                     self.logger.info('-------------')
                     self.logger.info("--> Total liked image reached it's "
                                      "amount given: {}".format(liked_img))
-                    break
-
-                elif jumped >= 1:
-                    self.logger.info('-------------')
-                    self.logger.info("--> Like quotient reached! Total liked images: {}".format(liked_img))
                     break
 
                 self.logger.info('Post [{}/{}]'.format(liked_img + 1, amount))
@@ -973,7 +891,7 @@ class InstaPy:
                                            self.blacklist,
                                            self.logger)
 
-                        if liked == True:
+                        if liked:
                             total_liked_img += 1
                             liked_img += 1
                             checked_img = True
@@ -1017,10 +935,8 @@ class InstaPy:
                                 self.logger.info('--> Not commented')
                                 sleep(1)
 
-                        elif liked == False:
+                        else:
                             already_liked += 1
-                        elif liked == 'jumped':
-                            jumped += 1
 
                     else:
                         self.logger.info(
@@ -1079,7 +995,6 @@ class InstaPy:
 
             # Reset like counter for every username
             liked_img = 0
-            jumped = 0  #if it is not alowed to like due to like quota, but at least, allow one interaction in case of follow
 
             for i, link in enumerate(links):
                 # Check if target has reached
@@ -1087,11 +1002,6 @@ class InstaPy:
                     self.logger.info('-------------')
                     self.logger.info("--> Total liked image reached it's "
                                      "amount given: {}".format(liked_img))
-                    break
-
-                elif jumped >= 1:
-                    self.logger.info('-------------')
-                    self.logger.info("--> Like quotient reached! Total liked images: {}".format(liked_img))
                     break
 
                 self.logger.info('Post [{}/{}]'.format(liked_img + 1, amount))
@@ -1137,12 +1047,11 @@ class InstaPy:
                             liked = like_image(self.browser,
                                                user_name,
                                                self.blacklist,
-                                               self.logger,
-                                               self.logfolder)
+                                               self.logger)
                         else:
                             liked = True
 
-                        if liked == True:
+                        if liked:
                             total_liked_img += 1
                             liked_img += 1
                             checked_img = True
@@ -1185,10 +1094,8 @@ class InstaPy:
                             else:
                                 self.logger.info('--> Not commented')
                                 sleep(1)
-                        elif liked == False:
+                        else:
                             already_liked += 1
-                        elif liked == 'jumped':
-                            jumped += 1
 
                     else:
                         self.logger.info(
@@ -1463,9 +1370,8 @@ class InstaPy:
         skipped_img = 0
         num_of_search = 0
         history = []
-        jumped = 0
 
-        while (liked_img + jumped) < amount: #will wait for amount filled to quit (in case of follow/unfollow), use ```liked_img < amount or jumped >= 1``` to prevent this
+        while liked_img < amount:
             try:
                 # Gets another load of links to be tested
                 links = get_links_from_feed(self.browser,
@@ -1513,10 +1419,9 @@ class InstaPy:
                                 liked = like_image(self.browser,
                                                    user_name,
                                                    self.blacklist,
-                                                   self.logger,
-                                                   self.logfolder)
+                                                   self.logger)
 
-                                if liked == True:
+                                if liked:
                                     username = (self.browser.
                                                 find_element_by_xpath(
                                                     '//article/header/div[2]/'
@@ -1603,61 +1508,8 @@ class InstaPy:
                                     else:
                                         self.logger.info('--> Not following')
                                         sleep(1)
-                                elif liked == False:
+                                else:
                                     already_liked += 1
-                                elif liked == 'jumped':
-                                    jumped += 1
-                                    username = (self.browser.
-                                                find_element_by_xpath(
-                                                    '//article/header/div[2]/'
-                                                    'div[1]/div/a'))
-
-                                    username = username.get_attribute("title")
-                                    name = []
-                                    name.append(username)
-
-                                    if interact:
-                                        self.logger.info(
-                                            '--> User followed: {}'
-                                            .format(name))
-                                    checked_img = True
-                                    temp_comments = []
-                                    following = random.randint(
-                                        0, 100) <= self.follow_percentage
-
-                                    if (self.use_clarifai and following):
-                                        try:
-                                            checked_img, temp_comments = (
-                                                check_image(
-                                                    self.browser,
-                                                    self.clarifai_api_key,
-                                                    self.clarifai_img_tags,
-                                                    self.logger,
-                                                    self.clarifai_full_match)
-                                            )
-                                        except Exception as err:
-                                            self.logger.error(
-                                                'Image check error:'
-                                                ' {}'.format(err))
-
-                                    if (self.do_follow and
-                                        user_name not in self.dont_include and
-                                        checked_img and
-                                        following and
-                                        self.follow_restrict.get(
-                                            user_name, 0) < self.follow_times):
-                                        followed += follow_user(
-                                            self.browser,
-                                            self.follow_restrict,
-                                            self.username,
-                                            user_name,
-                                            self.blacklist,
-                                            self.logger,
-                                            self.logfolder)
-                                    else:
-                                        self.logger.info('--> Not following')
-                                        sleep(1)
-
                             else:
                                 self.logger.info(
                                     '--> Image not liked: {}'.format(reason))
@@ -1806,85 +1658,3 @@ class InstaPy:
         self.followed += followed
 
         return self
-
-    def set_quota_supervisor(self, enabled=False, sleep_after=[None, None], sleepyhead=False, stochastic_flow=False, notify_me=False,
-                              peak_likes=(None, None),
-                               peak_comments=(None, None),
-                                peak_follows=(None, None),
-                                 peak_unfollows=(None, None),
-                                  peak_server_calls=(None, None)):
-
-        conn = sqlite3.connect('./db/instapy.db')
-        with conn:
-            conn.row_factory = sqlite3.Row
-            cur = conn.cursor()
-                #reset supervisor's latest tact's state in each set_quota_supervisor initialization where it will treat as it is stated in the 'enabled' arg. later on
-            supervising_state = None
-            tact_cycle = 1
-            record_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-
-            cur.execute("SELECT recorded FROM QuotaPeaks WHERE STRFTIME('%Y-%m-%d', recorded) == STRFTIME('%Y-%m-%d', 'now', 'localtime') and tact==1 ORDER BY recorded DESC LIMIT 1")
-            data = cur.fetchone()
-            if data is None:
-                cur.execute("INSERT INTO QuotaPeaks (state, tact, recorded) VALUES (?, ?, ?)",
-                (supervising_state, tact_cycle, record_time))
-            else:
-                cur.execute("UPDATE QuotaPeaks set state=? WHERE recorded == (SELECT MAX(recorded) FROM QuotaPeaks)",
-                (supervising_state,))
-            conn.commit()
-
-        if enabled:
-            peak_values_combined = [ peak_likes, peak_comments, peak_follows, peak_unfollows, peak_server_calls ]
-            peak_values_merged = [i for sub in peak_values_combined for i in sub]
-            integers_filtered = filter(lambda e: isinstance(e, int), peak_values_merged)
-
-            if all(type(item) is type(None) for item in peak_values_merged):
-                self.logger.info('Quota Supervisor: there is nothing to supervise. (closing supervisor for current session...)\n~please add some peak values to keep supervising :>')
-
-            elif ((type(peak_likes) is tuple and type(peak_comments) is tuple and type(peak_follows) is tuple and type(peak_unfollows) is tuple  and type(peak_server_calls) is tuple) and
-                  (len(peak_likes) == 2 and len(peak_comments) ==2 and len(peak_follows) == 2 and len(peak_unfollows) == 2 and len(peak_server_calls) == 2) and
-                   all(type(item) is int or type(item) is type(None) for item in peak_values_merged) and
-                    all(item>0 for item in integers_filtered)):
-
-                peak_likes_hourly = None if peak_likes is (None, None) else int(peak_likes[0]) if peak_likes[0] is not None else None
-                peak_comments_hourly = None if peak_comments is (None, None) else int(peak_comments[0]) if peak_comments[0] is not None else None
-                peak_follows_hourly = None if peak_follows is (None, None) else int(peak_follows[0]) if peak_follows[0] is not None else None
-                peak_unfollows_hourly = None if peak_unfollows is (None, None) else int(peak_unfollows[0]) if peak_unfollows[0] is not None else None
-                peak_server_calls_hourly = None if peak_server_calls is (None, None) else int(peak_server_calls[0]) if peak_server_calls[0] is not None else None
-
-                peak_likes_daily = None if peak_likes is (None, None) else int(peak_likes[1]) if peak_likes[1] is not None else None
-                peak_comments_daily = None if peak_comments is (None, None) else int(peak_comments[1]) if peak_comments[1] is not None else None
-                peak_follows_daily = None if peak_follows is (None, None) else int(peak_follows[1]) if peak_follows[1] is not None else None
-                peak_unfollows_daily = None if peak_unfollows is (None, None) else int(peak_unfollows[1]) if peak_unfollows[1] is not None else None
-                peak_server_calls_daily = None if peak_server_calls is (None, None) else int(peak_server_calls[1]) if peak_server_calls[1] is not None else None
-
-                supervising_state = 1
-                stochastic_flow = 1 if stochastic_flow else None
-                stochastic_latesttime_h = time.time() if stochastic_flow else None
-                stochastic_latesttime_d = time.time() if stochastic_flow else None
-
-                if (sleep_after is not None and (type(sleep_after) is list) and any(item is not None for item in sleep_after)):
-                    like_sleep = 1.1 if any(item == 'likes' for item in sleep_after) else 1.0 if any(item == 'likes_h' for item in sleep_after) else 0.1 if any(item == 'likes_d' for item in sleep_after) else 0.0
-                    comment_sleep = 1.1 if any(item == 'comments' for item in sleep_after) else 1.0 if any(item == 'comments_h' for item in sleep_after) else 0.1 if any(item == 'comments_d' for item in sleep_after) else 0.0
-                    follow_sleep = 1.1 if any(item == 'follows' for item in sleep_after) else 1.0 if any(item == 'follows_h' for item in sleep_after) else 0.1 if any(item == 'follows_d' for item in sleep_after) else 0.0
-                    unfollow_sleep = 1.1 if any(item == 'unfollows' for item in sleep_after) else 1.0 if any(item == 'unfollows_h' for item in sleep_after) else 0.1 if any(item == 'unfollows_d' for item in sleep_after) else 0.0
-                    server_call_sleep = 1.1 if any(item == 'server_calls' for item in sleep_after) else 1.0 if any(item == 'server_calls_h' for item in sleep_after) else 0.1 if any(item == 'server_calls_d' for item in sleep_after) else 0.0
-                    bear_sleep = 1 if sleepyhead else 0
-                    sleepzz = '-'.join([str(like_sleep), str(comment_sleep), str(follow_sleep), str(unfollow_sleep), str(server_call_sleep), str(bear_sleep)])
-                else:
-                    sleepzz = '0.0-0.0-0.0-0.0-0.0-0'
-
-                notifier = 1 if notify_me else None
-                #activate superviser and write peaks
-                cur.execute("UPDATE QuotaPeaks set state=?, sleep=?, stochastic=?, notify=?, likes_h=?, likes_d=?, comments_h=?, comments_d=?, follows_h=?, follows_d=?, unfollows_h=?, unfollows_d=?, server_calls_h=?, server_calls_d=?, stochastic_time_h=?, stochastic_time_d=?, recorded=? WHERE STRFTIME('%Y-%m-%d', recorded) == STRFTIME('%Y-%m-%d', 'now', 'localtime') AND tact==1",
-                                                        (supervising_state, sleepzz, stochastic_flow, notifier, peak_likes_hourly, peak_likes_daily, peak_comments_hourly, peak_comments_daily,
-                                                        peak_follows_hourly, peak_follows_daily, peak_unfollows_hourly, peak_unfollows_daily,
-                                                        peak_server_calls_hourly, peak_server_calls_daily, stochastic_latesttime_h, stochastic_latesttime_d, record_time))
-                #better the tables clean, not bulky, faster the query rate! `except you will rely on data off these old records to e.g. get predictive new peak rates by analysis from some time interval
-                cur.execute("DELETE FROM statistics WHERE ROWID IN (SELECT ROWID FROM statistics ORDER BY ROWID DESC LIMIT -1 OFFSET 24)") #keeping last 24 rows only, daily supervising uses maximum 24 rows in 24-hours basis per day
-                cur.execute("DELETE FROM QuotaPeaks WHERE ROWID IN (SELECT ROWID FROM QuotaPeaks ORDER BY ROWID DESC LIMIT -1 OFFSET 2)") #maximum 2 rows only is used per daily operations, 1st (tact==1) row initial peaks and the 2nd (tact>1) stochastical if any
-                conn.commit()
-
-
-            else:
-                self.logger.info('Quota Supervisor: peak rates are misfit! please apply supported* format (disabling supervisor for current session..)')
