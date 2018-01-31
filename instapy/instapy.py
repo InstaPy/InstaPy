@@ -175,7 +175,8 @@ class InstaPy:
             logger.setLevel(logging.DEBUG)
             file_handler = logging.FileHandler( '{}general.log'.format(self.logfolder))
             file_handler.setLevel(logging.DEBUG)
-            logger_formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
+            extra = {"username": self.username}
+            logger_formatter = logging.Formatter('%(levelname)s [%(username)s]  %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
             file_handler.setFormatter(logger_formatter)
             logger.addHandler(file_handler)
 
@@ -184,7 +185,9 @@ class InstaPy:
                 console_handler.setLevel(logging.DEBUG)
                 console_handler.setFormatter(logger_formatter)
                 logger.addHandler(console_handler)
-
+            
+            self.logger = logging.LoggerAdapter(logger, extra)
+            
             loggers[__name__] = logger
             return logger
 
@@ -490,7 +493,7 @@ class InstaPy:
 
         for tag in tags:
             req = requests.get(
-                'https://d212rkvo8t62el.cloudfront.net/tag/{}'.format(tag))
+                u'https://d212rkvo8t62el.cloudfront.net/tag/{}'.format(tag))
             data = json.loads(req.text)
 
             if data['tagExists'] is True:
@@ -510,7 +513,7 @@ class InstaPy:
 
                 if log_tags is True:
                     for item in self.smart_hashtags:
-                        print('[smart hashtag generated: {}]'.format(item))
+                        print(u'[smart hashtag generated: {}]'.format(item))
             else:
                 print('Too few results for #{} tag'.format(tag))
 
@@ -1976,7 +1979,8 @@ class InstaPy:
                                                         self.username,
                                                         user_name,
                                                         self.blacklist,
-                                                        self.logger)
+                                                        self.logger,
+                                                        self.logfolder)
                     else:
                         self.logger.info(
                             '--> User not followed: {}'.format(reason))

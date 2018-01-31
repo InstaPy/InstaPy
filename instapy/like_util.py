@@ -11,6 +11,7 @@ from .time_util import sleep
 from .util import update_activity
 from .util import add_user_to_blacklist
 from langdetect import detect_langs
+from .util import click_element
 
 
 def get_links_from_feed(browser, amount, num_of_search, logger):
@@ -98,7 +99,7 @@ def get_links_for_location(browser,
         abort = False
         body_elem.send_keys(Keys.END)
         sleep(2)
-        load_button.click()
+        click_element(browser, load_button) # load_button.click()
         # update server calls
         update_activity()
 
@@ -207,7 +208,7 @@ def get_links_for_tag(browser,
         abort = False
         body_elem.send_keys(Keys.END)
         sleep(2)
-        load_button.click()
+        click_element(browser, load_button) # load_button.click()
         # update server calls
         update_activity()
 
@@ -337,7 +338,7 @@ def get_links_for_username(browser,
         abort = False
         body_elem.send_keys(Keys.END)
         sleep(2)
-        load_button.click()
+        click_element(browser, load_button) # load_button.click()
         # update server calls
         update_activity()
 
@@ -572,7 +573,8 @@ def check_link(browser,
         return True, user_name, is_video, most_prob_language, 'Username'
 
     if any((word in image_text for word in ignore_if_contains)):
-        return False, user_name, is_video, most_prob_language, 'None'
+        return True, user_name, is_video, most_prob_language, 'None'
+
 
     dont_like_regex = []
 
@@ -599,8 +601,10 @@ def like_image(browser, username, blacklist, logger, logfolder):
     like_elem = browser.find_elements_by_xpath(
         "//a[@role='button']/span[text()='Like']/..")
     if len(like_elem) == 1:
-        browser.execute_script(
-            "document.getElementsByClassName('" + like_elem[0].get_attribute("class") + "')[0].click()")
+        # sleep real quick right before clicking the element
+        sleep(2)
+        click_element(browser, like_elem[0])
+        # check now we have unlike instead of like
         liked_elem = browser.find_elements_by_xpath(
             "//a[@role='button']/span[text()='Unlike']")
         if len(liked_elem) == 1:
@@ -617,6 +621,12 @@ def like_image(browser, username, blacklist, logger, logfolder):
             # if like not seceded wait for 2 min
             logger.info('--> Image was not able to get Liked! maybe blocked ?')
             sleep(120)
+    else:
+        liked_elem = browser.find_elements_by_xpath(
+            "//a[@role='button']/span[text()='Unlike']")
+        if len(liked_elem) == 1:
+            logger.info('--> Image already liked! ')
+            return False
 
     logger.info('--> Invalid Like Element!')
     return False
