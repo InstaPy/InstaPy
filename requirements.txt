@@ -2,4 +2,3 @@ selenium
 clarifai
 pyvirtualdisplay
 emoji
-plyer

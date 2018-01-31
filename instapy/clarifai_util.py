@@ -18,7 +18,6 @@ def check_image(browser, clarifai_api_key, img_tags, logger, full_match=False):
     for (tags, should_comment, comments) in img_tags:
         if should_comment:
             if given_tags_in_result(tags, clarifai_tags, full_match):
-                logger.info("Clarifai check passed: target-comment!")
                 return True, comments
         else:
             if given_tags_in_result(tags, clarifai_tags, full_match):
