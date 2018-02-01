@@ -15,7 +15,8 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver import DesiredCapabilities
 import requests
 
-from .clarifai_util import check_image
+if os.name != 'nt':
+    from .clarifai_util import check_image
 from .comment_util import comment_image
 from .like_util import check_link
 from .like_util import get_links_for_tag
@@ -43,6 +44,10 @@ from .unfollow_util import dump_follow_restriction
 from .unfollow_util import set_automated_followed_pool
 
 
+# Set a logger cache outside the InstaPy object to avoid re-instantiation issues
+loggers = {}
+
+
 class InstaPy:
     """Class to be instantiated to use the script"""
 
@@ -56,7 +61,9 @@ class InstaPy:
                  show_logs=True,
                  headless_browser=False,
                  proxy_address=None,
-                 proxy_port=0):
+                 proxy_port=0,
+                 bypass_suspicious_attempt=False,
+                 multi_logs=False):
 
         if nogui:
             self.display = Display(visible=0, size=(800, 600))
@@ -70,6 +77,11 @@ class InstaPy:
         self.username = username or os.environ.get('INSTA_USER')
         self.password = password or os.environ.get('INSTA_PW')
         self.nogui = nogui
+        self.logfolder = './logs/'
+        if multi_logs is True:
+            self.logfolder = './logs/{}/'.format(self.username)
+        if not os.path.exists(self.logfolder):
+            os.makedirs(self.logfolder)
 
         self.page_delay = page_delay
         self.switch_language = True
@@ -83,7 +95,7 @@ class InstaPy:
         self.video_comments = []
 
         self.followed = 0
-        self.follow_restrict = load_follow_restriction()
+        self.follow_restrict = load_follow_restriction(self.logfolder)
         self.follow_times = 1
         self.do_follow = False
         self.follow_percentage = 0
@@ -108,25 +120,15 @@ class InstaPy:
         self.clarifai_img_tags = []
         self.clarifai_full_match = False
 
-        self.like_by_followers_upper_limit = 0
+        self.like_by_followers_upper_limit = 90000
         self.like_by_followers_lower_limit = 0
+
+        self.bypass_suspicious_attempt = bypass_suspicious_attempt
 
         self.aborting = False
 
-        # initialize and setup logging system
-        self.logger = logging.getLogger(__name__)
-        self.logger.setLevel(logging.DEBUG)
-        file_handler = logging.FileHandler('./logs/general.log')
-        file_handler.setLevel(logging.DEBUG)
-        logger_formatter = logging.Formatter('%(levelname)s - %(message)s')
-        file_handler.setFormatter(logger_formatter)
-        self.logger.addHandler(file_handler)
-
-        if show_logs is True:
-            console_handler = logging.StreamHandler()
-            console_handler.setLevel(logging.DEBUG)
-            console_handler.setFormatter(logger_formatter)
-            self.logger.addHandler(console_handler)
+        # Assign logger
+        self.logger = self.get_instapy_logger(show_logs)
 
         if selenium_local_session:
             self.set_selenium_local_session()
@@ -134,7 +136,36 @@ class InstaPy:
         if os.name == 'nt':
             error_msg = ('Sorry, Record Activity is not working on Windows. '
                          'We\'re working to fix this soon!')
-            self.logger.critical(error_msg)
+            self.logger.warning(error_msg)
+
+    def get_instapy_logger(self, show_logs):
+        """
+        Handles the creation and retrieval of loggers to avoid re-instantiation.
+        """
+        existing_logger = loggers.get(__name__)
+        if existing_logger is not None:
+            return existing_logger
+        else:
+            # initialize and setup logging system for the InstaPy object
+            logger = logging.getLogger(__name__)
+            logger.setLevel(logging.DEBUG)
+            file_handler = logging.FileHandler( '{}general.log'.format(self.logfolder))
+            file_handler.setLevel(logging.DEBUG)
+            extra = {"username": self.username}
+            logger_formatter = logging.Formatter('%(levelname)s [%(username)s]  %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
+            file_handler.setFormatter(logger_formatter)
+            logger.addHandler(file_handler)
+
+            if show_logs is True:
+                console_handler = logging.StreamHandler()
+                console_handler.setLevel(logging.DEBUG)
+                console_handler.setFormatter(logger_formatter)
+                logger.addHandler(console_handler)
+            
+            self.logger = logging.LoggerAdapter(logger, extra)
+            
+            loggers[__name__] = logger
+            return logger
 
     def set_selenium_local_session(self):
         """Starts local session for a selenium server.
@@ -155,10 +186,14 @@ class InstaPy:
 
             if self.proxy_address and self.proxy_port > 0:
                 firefox_profile.set_preference('network.proxy.type', 1)
-                firefox_profile.set_preference('network.proxy.http', self.proxy_address)
-                firefox_profile.set_preference('network.proxy.http_port', self.proxy_port)
-                firefox_profile.set_preference('network.proxy.ssl', self.proxy_address)
-                firefox_profile.set_preference('network.proxy.ssl_port', self.proxy_port)
+                firefox_profile.set_preference('network.proxy.http',
+                                               self.proxy_address)
+                firefox_profile.set_preference('network.proxy.http_port',
+                                               self.proxy_port)
+                firefox_profile.set_preference('network.proxy.ssl',
+                                               self.proxy_address)
+                firefox_profile.set_preference('network.proxy.ssl_port',
+                                               self.proxy_port)
 
             self.browser = webdriver.Firefox(firefox_profile=firefox_profile)
 
@@ -216,14 +251,16 @@ class InstaPy:
         if not login_user(self.browser,
                           self.username,
                           self.password,
-                          self.switch_language):
+                          self.logfolder,
+                          self.switch_language,
+                          self.bypass_suspicious_attempt):
             self.logger.critical('Wrong login data!')
 
             self.aborting = True
         else:
             self.logger.info('Logged in successfully!')
 
-        log_follower_num(self.browser, self.username)
+        log_follower_num(self.browser, self.username, self.logfolder)
 
         return self
 
@@ -377,7 +414,7 @@ class InstaPy:
 
         for tag in tags:
             req = requests.get(
-                'https://d212rkvo8t62el.cloudfront.net/tag/{}'.format(tag))
+                u'https://d212rkvo8t62el.cloudfront.net/tag/{}'.format(tag))
             data = json.loads(req.text)
 
             if data['tagExists'] is True:
@@ -397,7 +434,7 @@ class InstaPy:
 
                 if log_tags is True:
                     for item in self.smart_hashtags:
-                        print('[smart hashtag generated: {}]'.format(item))
+                        print(u'[smart hashtag generated: {}]'.format(item))
             else:
                 print('Too few results for #{} tag'.format(tag))
 
@@ -434,7 +471,8 @@ class InstaPy:
                                               acc_to_follow,
                                               self.follow_restrict,
                                               self.blacklist,
-                                              self.logger)
+                                              self.logger,
+                                              self.logfolder)
                 self.followed += followed
                 self.logger.info('Followed: {}'.format(str(followed)))
                 followed = 0
@@ -552,7 +590,8 @@ class InstaPy:
                                                            user_name,
                                                            comments,
                                                            self.blacklist,
-                                                           self.logger)
+                                                           self.logger,
+                                                           self.logfolder)
                             else:
                                 self.logger.info('--> Not commented')
                                 sleep(1)
@@ -569,7 +608,8 @@ class InstaPy:
                                                         self.username,
                                                         user_name,
                                                         self.blacklist,
-                                                        self.logger)
+                                                        self.logger,
+                                                        self.logfolder)
 
                             else:
                                 self.logger.info('--> Not following')
@@ -598,7 +638,8 @@ class InstaPy:
                      amount=50,
                      media=None,
                      skip_top_posts=True,
-                     use_smart_hashtags=False):
+                     use_smart_hashtags=False,
+                     interact=False):
         """Likes (default) 50 images per given tag"""
         if self.aborting:
             return self
@@ -658,6 +699,26 @@ class InstaPy:
                                            self.logger)
 
                         if liked:
+
+                            if interact:
+                                username = (self.browser.
+                                    find_element_by_xpath(
+                                        '//article/header/div[2]/'
+                                        'div[1]/div/a'))
+
+                                username = username.get_attribute("title")
+                                name = []
+                                name.append(username)
+
+                                self.logger.info(
+                                    '--> User followed: {}'
+                                    .format(name))
+                                self.like_by_users(
+                                    name,
+                                    self.user_interact_amount,
+                                    self.user_interact_random,
+                                    self.user_interact_media)
+
                             liked_img += 1
                             checked_img = True
                             temp_comments = []
@@ -697,7 +758,8 @@ class InstaPy:
                                                            user_name,
                                                            comments,
                                                            self.blacklist,
-                                                           self.logger)
+                                                           self.logger,
+                                                           self.logfolder)
                             else:
                                 self.logger.info('--> Not commented')
                                 sleep(1)
@@ -714,7 +776,8 @@ class InstaPy:
                                                         self.username,
                                                         user_name,
                                                         self.blacklist,
-                                                        self.logger)
+                                                        self.logger,
+                                                        self.logfolder)
                             else:
                                 self.logger.info('--> Not following')
                                 sleep(1)
@@ -786,7 +849,8 @@ class InstaPy:
                                         self.username,
                                         username,
                                         self.blacklist,
-                                        self.logger)
+                                        self.logger,
+                                        self.logfolder)
             else:
                 self.logger.info('--> Not following')
                 sleep(1)
@@ -865,7 +929,8 @@ class InstaPy:
                                                            user_name,
                                                            comments,
                                                            self.blacklist,
-                                                           self.logger)
+                                                           self.logger,
+                                                           self.logfolder)
                             else:
                                 self.logger.info('--> Not commented')
                                 sleep(1)
@@ -971,7 +1036,8 @@ class InstaPy:
                                 self.username,
                                 username,
                                 self.blacklist,
-                                self.logger)
+                                self.logger,
+                                self.logfolder)
                         else:
                             self.logger.info('--> Not following')
                             sleep(1)
@@ -1023,7 +1089,8 @@ class InstaPy:
                                                            user_name,
                                                            comments,
                                                            self.blacklist,
-                                                           self.logger)
+                                                           self.logger,
+                                                           self.logfolder)
                             else:
                                 self.logger.info('--> Not commented')
                                 sleep(1)
@@ -1083,7 +1150,6 @@ class InstaPy:
                                                 amount,
                                                 self.dont_include,
                                                 self.username,
-                                                self.follow_restrict,
                                                 randomize,
                                                 self.logger)
                 if isinstance(user, list):
@@ -1124,7 +1190,6 @@ class InstaPy:
                     amount,
                     self.dont_include,
                     self.username,
-                    self.follow_restrict,
                     randomize,
                     self.logger)
         except (TypeError, RuntimeWarning) as err:
@@ -1171,7 +1236,9 @@ class InstaPy:
                                                             randomize,
                                                             sleep_delay,
                                                             self.blacklist,
-                                                            self.logger)
+                                                            self.logger,
+                                                            self.logfolder,
+                                                            self.follow_times)
 
             except (TypeError, RuntimeWarning) as err:
                 if isinstance(err, RuntimeWarning):
@@ -1218,7 +1285,9 @@ class InstaPy:
                                                             randomize,
                                                             sleep_delay,
                                                             self.blacklist,
-                                                            self.logger)
+                                                            self.logger,
+                                                            self.logfolder,
+                                                            self.follow_times)
 
             except (TypeError, RuntimeWarning) as err:
                 if isinstance(err, RuntimeWarning):
@@ -1253,7 +1322,8 @@ class InstaPy:
                        onlyNotFollowMe=False):
         """Unfollows (default) 10 users from your following list"""
         self.automatedFollowedPool = set_automated_followed_pool(self.username,
-                                                                 self.logger)
+                                                                 self.logger,
+                                                                 self.logfolder)
 
         try:
             unfollowNumber = unfollow(self.browser,
@@ -1265,7 +1335,8 @@ class InstaPy:
                                       self.automatedFollowedPool,
                                       sleep_delay,
                                       onlyNotFollowMe,
-                                      self.logger)
+                                      self.logger,
+                                      self.logfolder)
             self.logger.info(
                 "--> Total people unfollowed : {} ".format(unfollowNumber))
 
@@ -1414,7 +1485,8 @@ class InstaPy:
                                                         user_name,
                                                         comments,
                                                         self.blacklist,
-                                                        self.logger)
+                                                        self.logger,
+                                                        self.logfolder)
                                     else:
                                         self.logger.info('--> Not commented')
                                         sleep(1)
@@ -1431,7 +1503,8 @@ class InstaPy:
                                             self.username,
                                             user_name,
                                             self.blacklist,
-                                            self.logger)
+                                            self.logger,
+                                            self.logfolder)
                                     else:
                                         self.logger.info('--> Not following')
                                         sleep(1)
@@ -1441,7 +1514,7 @@ class InstaPy:
                                 self.logger.info(
                                     '--> Image not liked: {}'.format(reason))
                                 inap_img += 1
-                                if reason == 'Inappropriate':
+                                if reason == 'Inappropriate' and unfollow:
                                     unfollow_user(self.browser, self.logger)
                         except NoSuchElementException as err:
                             self.logger.error('Invalid Page: {}'.format(err))
@@ -1486,7 +1559,7 @@ class InstaPy:
         self.blacklist['campaign'] = campaign
 
         try:
-            with open('./logs/blacklist.csv', 'r') as blacklist:
+            with open('{}blacklist.csv'.format(self.logfolder), 'r') as blacklist:
                 reader = csv.DictReader(blacklist)
                 for row in reader:
                     if row['campaign'] == campaign:
@@ -1496,9 +1569,9 @@ class InstaPy:
 
     def end(self):
         """Closes the current session"""
-        dump_follow_restriction(self.follow_restrict)
+        dump_follow_restriction(self.follow_restrict, self.logfolder)
         self.browser.delete_all_cookies()
-        self.browser.close()
+        self.browser.quit()
 
         if self.nogui:
             self.display.stop()
@@ -1507,5 +1580,81 @@ class InstaPy:
                 datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
         self.logger.info('-' * 20 + '\n\n')
 
-        with open('./logs/followed.txt', 'w') as followFile:
+        with open('{}followed.txt'.format(self.logfolder), 'w') as followFile:
             followFile.write(str(self.followed))
+
+    def follow_by_tags(self,
+                     tags=None,
+                     amount=50,
+                     media=None,
+                     skip_top_posts=True,
+                     use_smart_hashtags=False):
+        if self.aborting:
+            return self
+
+        inap_img = 0
+        followed = 0
+
+        # if smart hashtag is enabled
+        if use_smart_hashtags is True and self.smart_hashtags is not []:
+            print('Using smart hashtags')
+            tags = self.smart_hashtags
+
+        # deletes white spaces in tags
+        tags = [tag.strip() for tag in tags]
+
+        tags = tags or []
+
+        for index, tag in enumerate(tags):
+            self.logger.info('Tag [{}/{}]'.format(index + 1, len(tags)))
+            self.logger.info('--> {}'.format(tag.encode('utf-8')))
+
+            try:
+                links = get_links_for_tag(self.browser,
+                                          tag,
+                                          amount,
+                                          self.logger,
+                                          media,
+                                          skip_top_posts)
+            except NoSuchElementException:
+                self.logger.error('Too few images, skipping this tag')
+                continue
+
+            for i, link in enumerate(links):
+                self.logger.info('[{}/{}]'.format(i + 1, len(links)))
+                self.logger.info(link)
+
+                try:
+                    inappropriate, user_name, is_video, reason = (
+                        check_link(self.browser,
+                                   link,
+                                   self.dont_like,
+                                   self.ignore_if_contains,
+                                   self.ignore_users,
+                                   self.username,
+                                   self.like_by_followers_upper_limit,
+                                   self.like_by_followers_lower_limit,
+                                   self.logger)
+                    )
+
+                    if not inappropriate:
+                        followed += follow_user(self.browser,
+                                                        self.follow_restrict,
+                                                        self.username,
+                                                        user_name,
+                                                        self.blacklist,
+                                                        self.logger,
+                                                        self.logfolder)
+                    else:
+                        self.logger.info(
+                            '--> User not followed: {}'.format(reason))
+                        inap_img += 1
+                except NoSuchElementException as err:
+                    self.logger.error('Invalid Page: {}'.format(err))
+
+        self.logger.info('Inappropriate: {}'.format(inap_img))
+        self.logger.info('Followed: {}'.format(followed))
+
+        self.followed += followed
+
+        return self
