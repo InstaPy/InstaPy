@@ -9,6 +9,7 @@ from selenium.webdriver.common.keys import Keys
 from .time_util import sleep
 from .util import update_activity
 from .util import add_user_to_blacklist
+from .util import click_element
 
 
 def get_links_from_feed(browser, amount, num_of_search, logger):
@@ -97,7 +98,7 @@ def get_links_for_location(browser,
         abort = False
         body_elem.send_keys(Keys.END)
         sleep(2)
-        load_button.click()
+        click_element(browser, load_button) # load_button.click()
         # update server calls
         update_activity()
 
@@ -204,7 +205,7 @@ def get_links_for_tag(browser,
         abort = False
         body_elem.send_keys(Keys.END)
         sleep(2)
-        load_button.click()
+        click_element(browser, load_button) # load_button.click()
         # update server calls
         update_activity()
 
@@ -329,7 +330,7 @@ def get_links_for_username(browser,
         abort = False
         body_elem.send_keys(Keys.END)
         sleep(2)
-        load_button.click()
+        click_element(browser, load_button) # load_button.click()
         # update server calls
         update_activity()
 
@@ -505,7 +506,7 @@ def check_link(browser,
         return True, user_name, is_video, 'Username'
 
     if any((word in image_text for word in ignore_if_contains)):
-        return False, user_name, is_video, 'None'
+        return True, user_name, is_video, 'None'
 
     dont_like_regex = []
 
@@ -535,7 +536,10 @@ def like_image(browser, username, blacklist, logger):
         "//a[@role='button']/span[text()='Unlike']")
 
     if len(like_elem) == 1:
-        like_elem[0].send_keys("\n")
+        # sleep real quick right before clicking the element
+        sleep(2)
+        click_element(browser, like_elem[0])
+
         logger.info('--> Image Liked!')
         update_activity('likes')
         if blacklist['enabled'] is True:
