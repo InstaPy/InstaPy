@@ -113,7 +113,7 @@ def unfollow(browser,
                             unfollowNum += 1
                             update_activity('unfollows')
 
-                        delete_line_from_file('{0}{1}_followedPool.csv'.format(logfolder, username), person +
+                            delete_line_from_file('{0}{1}_followedPool.csv'.format(logfolder, username), person +
                                               ",\n", logger)
 
                             logger.info(
