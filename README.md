@@ -288,13 +288,20 @@ session.interact_user_followers(['natgeo'], amount=10, randomize=True)
 # onlyInstapyMethod is using only when onlyInstapyFollowed = True
 # sleep_delay sets the time it will sleep every 10 profile unfollow, default
 # is 10min
-
 session.unfollow_users(amount=10, onlyInstapyFollowed = True, onlyInstapyMethod = 'FIFO', sleep_delay=60 )
 
 # You can only unfollow user that won't follow you back by adding
 # onlyNotFollowMe = True it still only support on profile following
 # you should disable onlyInstapyFollowed when use this
 session.unfollow_users(amount=10, onlyNotFollowMe=True, sleep_delay=60)
+
+# You can also unfollow users only after following them certain amount of time,
+# this will provide seamless unfollow activity without the notice of the targeted user
+# To use, just add `unfollow_after` argument with the desired time, e.g.
+session.unfollow_users(amount=10, onlyInstapyFollowed = True, onlyInstapyMethod = 'FIFO', sleep_delay=600, unfollow_after=48*60*60)
+# will unfollow users only after following them 48 hours (2 days), since `unfollow_after`s value
+# is seconds, you can simply give it `unfollow_after=100` to unfollow after 100 seconds,
+# but `1*60*60` (which is equal to 1 hour or 3600 seconds) style is a lot simpler to use 👍
 ```
 
 ### Don't unfollow active users

@@ -172,7 +172,7 @@ def delete_line_from_file(filepath, lineToDelete, logger):
 
         f = open(file_path_Temp, "w")
         for line in lines:
-            if line != lineToDelete:
+            if not line.endswith(lineToDelete):
                 f.write(line)
             else:
                 logger.info("{} removed from csv".format(line))
