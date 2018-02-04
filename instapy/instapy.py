@@ -84,7 +84,7 @@ class InstaPy:
             os.makedirs(self.logfolder)
 
         self.page_delay = page_delay
-        self.switch_language = False
+        self.switch_language = True
         self.use_firefox = use_firefox
         self.firefox_profile_path = None
 
@@ -157,8 +157,8 @@ class InstaPy:
             logger.setLevel(logging.DEBUG)
             file_handler = logging.FileHandler( '{}general.log'.format(self.logfolder))
             file_handler.setLevel(logging.DEBUG)
-            logger_formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
-            file_handler.setFormatter(logger_formatter)
+            extra = {"username": self.username}
+            logger_formatter = logging.Formatter('%(levelname)s [%(username)s]  %(message)s', datefmt='%Y-%m-%d %H:%M:%S')            file_handler.setFormatter(logger_formatter)
             logger.addHandler(file_handler)
 
             if show_logs is True:
@@ -166,6 +166,8 @@ class InstaPy:
                 console_handler.setLevel(logging.DEBUG)
                 console_handler.setFormatter(logger_formatter)
                 logger.addHandler(console_handler)
+ 
+            logger = logging.LoggerAdapter(logger, extra)
 
             loggers[__name__] = logger
             return logger
