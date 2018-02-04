@@ -84,7 +84,7 @@ class InstaPy:
             os.makedirs(self.logfolder)
 
         self.page_delay = page_delay
-        self.switch_language = True
+        self.switch_language = False
         self.use_firefox = use_firefox
         self.firefox_profile_path = None
 
@@ -95,6 +95,12 @@ class InstaPy:
         self.video_comments = []
 
         self.followed = 0
+        self.liked_img = 0
+        self.already_liked = 0
+        self.inap_img = 0
+        self.commented = 0
+        self.followed_by = 0
+
         self.follow_restrict = load_follow_restriction(self.logfolder)
         self.follow_times = 1
         self.do_follow = False
@@ -151,8 +157,7 @@ class InstaPy:
             logger.setLevel(logging.DEBUG)
             file_handler = logging.FileHandler( '{}general.log'.format(self.logfolder))
             file_handler.setLevel(logging.DEBUG)
-            extra = {"username": self.username}
-            logger_formatter = logging.Formatter('%(levelname)s [%(username)s]  %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
+            logger_formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
             file_handler.setFormatter(logger_formatter)
             logger.addHandler(file_handler)
 
@@ -161,8 +166,6 @@ class InstaPy:
                 console_handler.setLevel(logging.DEBUG)
                 console_handler.setFormatter(logger_formatter)
                 logger.addHandler(console_handler)
-
-            logger = logging.LoggerAdapter(logger, extra)
 
             loggers[__name__] = logger
             return logger
@@ -260,7 +263,7 @@ class InstaPy:
         else:
             self.logger.info('Logged in successfully!')
 
-        log_follower_num(self.browser, self.username, self.logfolder)
+        self.followed_by = log_follower_num(self.browser, self.username, self.logfolder)
 
         return self
 
@@ -630,6 +633,10 @@ class InstaPy:
         self.logger.info('Followed: {}'.format(followed))
 
         self.followed += followed
+        self.liked_img += liked_img
+        self.already_liked += already_liked
+        self.inap_img += inap_img
+        self.commented += commented
 
         return self
 
@@ -797,6 +804,10 @@ class InstaPy:
         self.logger.info('Followed: {}'.format(followed))
 
         self.followed += followed
+        self.liked_img += liked_img
+        self.already_liked += already_liked
+        self.inap_img += inap_img
+        self.commented += commented
 
         return self
 
@@ -954,6 +965,11 @@ class InstaPy:
         self.logger.info('Already Liked: {}'.format(already_liked))
         self.logger.info('Inappropriate: {}'.format(inap_img))
         self.logger.info('Commented: {}'.format(commented))
+
+        self.liked_img += liked_img
+        self.already_liked += already_liked
+        self.inap_img += inap_img
+        self.commented += commented
 
         return self
 
@@ -1113,6 +1129,11 @@ class InstaPy:
         self.logger.info('Already Liked: {}'.format(already_liked))
         self.logger.info('Inappropriate: {}'.format(inap_img))
         self.logger.info('Commented: {}'.format(commented))
+
+        self.liked_img += liked_img
+        self.already_liked += already_liked
+        self.inap_img += inap_img
+        self.commented += commented
 
         return self
 
@@ -1527,6 +1548,10 @@ class InstaPy:
         self.logger.info('Randomly Skipped: {}'.format(skipped_img))
 
         self.followed += followed
+        self.liked_img += liked_img
+        self.already_liked += already_liked
+        self.inap_img += inap_img
+        self.commented += commented
 
         return self
 
@@ -1656,5 +1681,6 @@ class InstaPy:
         self.logger.info('Followed: {}'.format(followed))
 
         self.followed += followed
+        self.inap_img += inap_img
 
         return self
