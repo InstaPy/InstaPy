@@ -15,6 +15,8 @@ def log_follower_num(browser, username, logfolder):
         numFile.write(
             '{:%Y-%m-%d %H:%M} {}\n'.format(datetime.now(), followed_by or 0))
 
+    return followed_by
+
 
 def log_followed_pool(login, followed, logger, logfolder):
     """Prints and logs the followed to
