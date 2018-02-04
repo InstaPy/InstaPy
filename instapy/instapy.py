@@ -158,7 +158,8 @@ class InstaPy:
             file_handler = logging.FileHandler( '{}general.log'.format(self.logfolder))
             file_handler.setLevel(logging.DEBUG)
             extra = {"username": self.username}
-            logger_formatter = logging.Formatter('%(levelname)s [%(username)s]  %(message)s', datefmt='%Y-%m-%d %H:%M:%S')            file_handler.setFormatter(logger_formatter)
+            logger_formatter = logging.Formatter('%(levelname)s [%(username)s]  %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
+            file_handler.setFormatter(logger_formatter)
             logger.addHandler(file_handler)
 
             if show_logs is True:
