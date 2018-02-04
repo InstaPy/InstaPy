@@ -167,7 +167,7 @@ class InstaPy:
                 console_handler.setLevel(logging.DEBUG)
                 console_handler.setFormatter(logger_formatter)
                 logger.addHandler(console_handler)
- 
+
             logger = logging.LoggerAdapter(logger, extra)
 
             loggers[__name__] = logger
