@@ -5,6 +5,7 @@ from .time_util import sleep_actual
 from selenium.common.exceptions import NoSuchElementException
 import sqlite3
 import datetime
+from .settings import Settings
 
 
 def validate_username(browser,
@@ -43,7 +44,7 @@ def update_activity(action=None):
     """Record every Instagram server call (page load, content load, likes,
     comments, follows, unfollow)."""
 
-    conn = sqlite3.connect('./db/instapy.db')
+    conn = sqlite3.connect(Settings.database_location)
     with conn:
         conn.row_factory = sqlite3.Row
         cur = conn.cursor()
@@ -197,17 +198,17 @@ def scroll_bottom(browser, element, range_int):
 
 # I'm guessing all three have their advantages/disadvantages
 # Before committing over this code, you MUST justify your change
-# and potentially adding an 'if' statement that applies to your 
+# and potentially adding an 'if' statement that applies to your
 # specific case. See the following issue for more details
 # https://github.com/timgrossmann/InstaPy/issues/1232
 def click_element(browser, element, tryNum=0):
     # explaination of the following recursive function:
     #   we will attempt to click the element given, if an error is thrown
-    #   we know something is wrong (element not in view, element doesn't 
-    #   exist, ...). on each attempt try and move the screen around in 
+    #   we know something is wrong (element not in view, element doesn't
+    #   exist, ...). on each attempt try and move the screen around in
     #   various ways. if all else fails, programmically click the button
     #   using `execute_script` in the browser.
-    
+
     try:
         # use Selenium's built in click function
         element.click()
@@ -229,7 +230,7 @@ def click_element(browser, element, tryNum=0):
             # print("attempting last ditch effort for click, `execute_script`")
             browser.execute_script("document.getElementsByClassName('" +  element.get_attribute("class") + "')[0].click()")
             return # end condition for the recursive function
-            
+
 
         # sleep for 1 second to allow window to adjust (may or may not be needed)
         sleep_actual(1)
@@ -238,7 +239,7 @@ def click_element(browser, element, tryNum=0):
 
         # try again!
         click_element(browser, element, tryNum)
-    
+
 
 def formatNumber(number):
     formattedNum = number.replace(',', '').replace('.', '')
