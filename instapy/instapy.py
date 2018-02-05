@@ -100,6 +100,7 @@ class InstaPy:
         self.inap_img = 0
         self.commented = 0
         self.followed_by = 0
+        self.unfollowNumber = 0
 
         self.follow_restrict = load_follow_restriction(self.logfolder)
         self.follow_times = 1
@@ -1363,6 +1364,7 @@ class InstaPy:
                                       self.logfolder)
             self.logger.info(
                 "--> Total people unfollowed : {} ".format(unfollowNumber))
+            self.unfollowNumber += unfollowNumber
 
         except (TypeError, RuntimeWarning) as err:
             if isinstance(err, RuntimeWarning):
