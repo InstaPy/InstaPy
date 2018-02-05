@@ -17,6 +17,7 @@ import requests
 
 if os.name != 'nt':
     from .clarifai_util import check_image
+from .settings import Settings
 from .comment_util import comment_image
 from .like_util import check_link
 from .like_util import get_links_for_tag
@@ -205,7 +206,7 @@ class InstaPy:
             self.browser = webdriver.Firefox(firefox_profile=firefox_profile)
 
         else:
-            chromedriver_location = './assets/chromedriver'
+            chromedriver_location = Settings.browser_location
             chrome_options = Options()
             chrome_options.add_argument('--dns-prefetch-disable')
             chrome_options.add_argument('--no-sandbox')
