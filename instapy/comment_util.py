@@ -63,7 +63,7 @@ def comment_image(browser, username, comments, blacklist, logger, logfolder):
         logger.warning('--> Warning: Comment Action Likely Failed:'
                        ' Comment Element not found')
 
-    logger.info("--> Commented: {}".format(rand_comment.encode('utf-8')))
+    logger.info("--> Commented: {}".format(rand_comment))
     sleep(2)
 
     return 1

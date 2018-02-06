@@ -109,7 +109,7 @@ def unfollow(browser,
                         logger.info(
                             '--> Ongoing Unfollow From InstaPy {},'
                             ' now unfollowing: {}'
-                            .format(str(unfollowNum), person.encode('utf-8')))
+                            .format(str(unfollowNum), person))
 
                         sleep(15)
 
@@ -123,7 +123,7 @@ def unfollow(browser,
                         logger.warning(
                             '--> Cannot Unfollow From InstaPy {}'
                             ', now unfollowing: {}'
-                            .format(str(unfollowNum), person.encode('utf-8')))
+                            .format(str(unfollowNum), person))
                         sleep(2)
 
         except BaseException as e:
@@ -247,7 +247,7 @@ def unfollow(browser,
                     click_element(browser, follow_button) # follow_button.click()
                     print('--> Ongoing Unfollow ' + str(unfollowNum) +
                           ', now unfollowing: {}'
-                          .format(person.encode('utf-8')))
+                          .format(person))
                     sleep(15)
                     if hasSlept:
                         hasSlept = False
@@ -314,7 +314,7 @@ def unfollow(browser,
 
                     logger.info(
                         '--> Ongoing Unfollow {}, now unfollowing: {}'
-                        .format(str(unfollowNum), person.encode('utf-8')))
+                        .format(str(unfollowNum), person))
                     sleep(15)
                     # To only sleep once until there is the next unfollow
                     if hasSlept:
@@ -527,7 +527,7 @@ def follow_through_dialog(browser,
                 follow_restrict[person] = follow_restrict.get(person, 0) + 1
 
                 logger.info('--> Ongoing follow {}, now following: {}'
-                            .format(str(followNum), person.encode('utf-8')))
+                            .format(str(followNum), person))
 
                 if blacklist['enabled'] is True:
                     action = 'followed'
@@ -536,7 +536,7 @@ def follow_through_dialog(browser,
                     )
 
                 for callback in callbacks:
-                    callback(person.encode('utf-8'))
+                    callback(person)
                 sleep(15)
 
                 # To only sleep once until there is the next follow
