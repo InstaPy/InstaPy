@@ -53,7 +53,7 @@ def comment_image(browser, username, comments, blacklist, logger, logfolder):
         comment_input[0].send_keys("\b")
         comment_input = get_comment_input(browser)
         comment_input[0].submit()
-        update_activity('comments')
+        update_activity('comments', username=username)
         if blacklist['enabled'] is True:
             action = 'commented'
             add_user_to_blacklist(

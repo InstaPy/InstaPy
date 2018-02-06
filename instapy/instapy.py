@@ -472,7 +472,8 @@ class InstaPy:
                                               self.follow_restrict,
                                               self.blacklist,
                                               self.logger,
-                                              self.logfolder)
+                                              self.logfolder
+                                              self.username)
                 self.followed += followed
                 self.logger.info('Followed: {}'.format(str(followed)))
                 followed = 0
@@ -1515,7 +1516,7 @@ class InstaPy:
                                     '--> Image not liked: {}'.format(reason))
                                 inap_img += 1
                                 if reason == 'Inappropriate' and unfollow:
-                                    unfollow_user(self.browser, self.logger)
+                                    unfollow_user(self.browser, self.logger, self.username)
                         except NoSuchElementException as err:
                             self.logger.error('Invalid Page: {}'.format(err))
 

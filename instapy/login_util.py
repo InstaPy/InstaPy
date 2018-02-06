@@ -93,7 +93,7 @@ def login_user(browser,
     """Logins the user with the given username and password"""
     browser.get('https://www.instagram.com')
     # update server calls
-    update_activity()
+    update_activity(username=username)
 
     # try to load cookie from username
     try:
@@ -138,7 +138,7 @@ def login_user(browser,
         "//form/span/button[text()='Log in']")
     ActionChains(browser).move_to_element(login_button).click().perform()
     # update server calls
-    update_activity()
+    update_activity(username=username)
 
     if bypass_suspicious_attempt is True:
         bypass_suspicious_login(browser)

@@ -17,7 +17,7 @@ def get_links_from_feed(browser, amount, num_of_search, logger):
 
     browser.get('https://www.instagram.com')
     # update server calls
-    update_activity()
+    update_activity(username=username)
     sleep(2)
 
     for i in range(num_of_search + 1):
@@ -67,7 +67,7 @@ def get_links_for_location(browser,
 
     browser.get('https://www.instagram.com/explore/locations/' + location)
     # update server calls
-    update_activity()
+    update_activity(username=username)
     sleep(2)
 
     # clicking load more
@@ -93,14 +93,14 @@ def get_links_for_location(browser,
             body_elem.send_keys(Keys.END)
             sleep(2)
             # update server calls
-            update_activity()
+            update_activity(username=username)
     else:
         abort = False
         body_elem.send_keys(Keys.END)
         sleep(2)
         click_element(browser, load_button) # load_button.click()
         # update server calls
-        update_activity()
+        update_activity(username=username)
 
     body_elem.send_keys(Keys.HOME)
     sleep(1)
@@ -136,7 +136,7 @@ def get_links_for_location(browser,
             before_load = total_links
             body_elem.send_keys(Keys.END)
             # update server calls
-            update_activity()
+            update_activity(username=username)
             sleep(1)
             body_elem.send_keys(Keys.HOME)
             sleep(1)
@@ -174,7 +174,7 @@ def get_links_for_tag(browser,
     browser.get('https://www.instagram.com/explore/tags/'
                 + (tag[1:] if tag[:1] == '#' else tag))
     # update server calls
-    update_activity()
+    update_activity(username=username)
     sleep(2)
 
     # clicking load more
@@ -200,14 +200,14 @@ def get_links_for_tag(browser,
             body_elem.send_keys(Keys.END)
             sleep(2)
             # update server calls
-            update_activity()
+            update_activity(username=username)
     else:
         abort = False
         body_elem.send_keys(Keys.END)
         sleep(2)
         click_element(browser, load_button) # load_button.click()
         # update server calls
-        update_activity()
+        update_activity(username=username)
 
     body_elem.send_keys(Keys.HOME)
     sleep(1)
@@ -250,7 +250,7 @@ def get_links_for_tag(browser,
             before_load = total_links
             body_elem.send_keys(Keys.END)
             # update server calls
-            update_activity()
+            update_activity(username=username)
             sleep(1)
             body_elem.send_keys(Keys.HOME)
             sleep(1)
@@ -291,7 +291,7 @@ def get_links_for_username(browser,
     # Get  user profile page
     browser.get('https://www.instagram.com/' + username)
     # update server calls
-    update_activity()
+    update_activity(username=username)
 
     body_elem = browser.find_element_by_tag_name('body')
 
@@ -325,14 +325,14 @@ def get_links_for_username(browser,
             body_elem.send_keys(Keys.END)
             sleep(2)
             # update server calls
-            update_activity()
+            update_activity(username=username)
     else:
         abort = False
         body_elem.send_keys(Keys.END)
         sleep(2)
         click_element(browser, load_button) # load_button.click()
         # update server calls
-        update_activity()
+        update_activity(username=username)
 
     body_elem.send_keys(Keys.HOME)
     sleep(2)
@@ -375,7 +375,7 @@ def get_links_for_username(browser,
             before_load = total_links
             body_elem.send_keys(Keys.END)
             # update server calls
-            update_activity()
+            update_activity(username=username)
             sleep(1)
             body_elem.send_keys(Keys.HOME)
             sleep(1)
@@ -408,7 +408,7 @@ def check_link(browser,
 
     browser.get(link)
     # update server calls
-    update_activity()
+    update_activity(username=username)
     sleep(2)
 
     """Check if the Post is Valid/Exists"""
@@ -477,14 +477,14 @@ def check_link(browser,
         userlink = 'https://www.instagram.com/' + user_name
         browser.get(userlink)
         # update server calls
-        update_activity()
+        update_activity(username=username)
         sleep(1)
         num_followers = browser.execute_script(
             "return window._sharedData.entry_data."
             "ProfilePage[0].user.followed_by.count")
         browser.get(link)
         # update server calls
-        update_activity()
+        update_activity(username=username)
         sleep(1)
         logger.info('Number of Followers: {}'.format(num_followers))
 
@@ -546,7 +546,7 @@ def like_image(browser, username, blacklist, logger):
         click_element(browser, like_elem[0])
 
         logger.info('--> Image Liked!')
-        update_activity('likes')
+        update_activity('likes', username=username)
         if blacklist['enabled'] is True:
             action = 'liked'
             add_user_to_blacklist(
@@ -566,7 +566,7 @@ def get_tags(browser, url):
     """Gets all the tags of the given description in the url"""
     browser.get(url)
     # update server calls
-    update_activity()
+    update_activity(username=username)
     sleep(1)
 
     graphql = browser.execute_script(
