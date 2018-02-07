@@ -17,6 +17,7 @@ import requests
 
 if os.name != 'nt':
     from .clarifai_util import check_image
+from .settings import Settings
 from .comment_util import comment_image
 from .like_util import check_link
 from .like_util import get_links_for_tag
@@ -95,6 +96,13 @@ class InstaPy:
         self.video_comments = []
 
         self.followed = 0
+        self.liked_img = 0
+        self.already_liked = 0
+        self.inap_img = 0
+        self.commented = 0
+        self.followed_by = 0
+        self.unfollowNumber = 0
+
         self.follow_restrict = load_follow_restriction(self.logfolder)
         self.follow_times = 1
         self.do_follow = False
@@ -198,7 +206,7 @@ class InstaPy:
             self.browser = webdriver.Firefox(firefox_profile=firefox_profile)
 
         else:
-            chromedriver_location = './assets/chromedriver'
+            chromedriver_location = Settings.browser_location
             chrome_options = Options()
             chrome_options.add_argument('--dns-prefetch-disable')
             chrome_options.add_argument('--no-sandbox')
@@ -260,7 +268,7 @@ class InstaPy:
         else:
             self.logger.info('Logged in successfully!')
 
-        log_follower_num(self.browser, self.username, self.logfolder)
+        self.followed_by = log_follower_num(self.browser, self.username, self.logfolder)
 
         return self
 
@@ -630,6 +638,10 @@ class InstaPy:
         self.logger.info('Followed: {}'.format(followed))
 
         self.followed += followed
+        self.liked_img += liked_img
+        self.already_liked += already_liked
+        self.inap_img += inap_img
+        self.commented += commented
 
         return self
 
@@ -797,6 +809,10 @@ class InstaPy:
         self.logger.info('Followed: {}'.format(followed))
 
         self.followed += followed
+        self.liked_img += liked_img
+        self.already_liked += already_liked
+        self.inap_img += inap_img
+        self.commented += commented
 
         return self
 
@@ -954,6 +970,11 @@ class InstaPy:
         self.logger.info('Already Liked: {}'.format(already_liked))
         self.logger.info('Inappropriate: {}'.format(inap_img))
         self.logger.info('Commented: {}'.format(commented))
+
+        self.liked_img += liked_img
+        self.already_liked += already_liked
+        self.inap_img += inap_img
+        self.commented += commented
 
         return self
 
@@ -1113,6 +1134,11 @@ class InstaPy:
         self.logger.info('Already Liked: {}'.format(already_liked))
         self.logger.info('Inappropriate: {}'.format(inap_img))
         self.logger.info('Commented: {}'.format(commented))
+
+        self.liked_img += liked_img
+        self.already_liked += already_liked
+        self.inap_img += inap_img
+        self.commented += commented
 
         return self
 
@@ -1339,6 +1365,7 @@ class InstaPy:
                                       self.logfolder)
             self.logger.info(
                 "--> Total people unfollowed : {} ".format(unfollowNumber))
+            self.unfollowNumber += unfollowNumber
 
         except (TypeError, RuntimeWarning) as err:
             if isinstance(err, RuntimeWarning):
@@ -1527,6 +1554,10 @@ class InstaPy:
         self.logger.info('Randomly Skipped: {}'.format(skipped_img))
 
         self.followed += followed
+        self.liked_img += liked_img
+        self.already_liked += already_liked
+        self.inap_img += inap_img
+        self.commented += commented
 
         return self
 
@@ -1656,5 +1687,6 @@ class InstaPy:
         self.logger.info('Followed: {}'.format(followed))
 
         self.followed += followed
+        self.inap_img += inap_img
 
         return self
