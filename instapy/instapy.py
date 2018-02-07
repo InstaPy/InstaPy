@@ -645,6 +645,144 @@ class InstaPy:
 
         return self
 
+    def comment_by_locations(self,
+                      locations=None,
+                      amount=50,
+                      media=None,
+                      skip_top_posts=True):
+        """Likes (default) 50 images per given locations"""
+        if self.aborting:
+            return self
+
+        liked_img = 0
+        already_liked = 0
+        inap_img = 0
+        commented = 0
+        followed = 0
+
+        locations = locations or []
+
+        for index, location in enumerate(locations):
+            self.logger.info('Location [{}/{}]'
+                             .format(index + 1, len(locations)))
+            self.logger.info('--> {}'.format(location.encode('utf-8')))
+
+            try:
+                links = get_links_for_location(self.browser,
+                                               location,
+                                               amount,
+                                               self.logger,
+                                               media,
+                                               skip_top_posts)
+            except NoSuchElementException:
+                self.logger.warning('Too few images, skipping this location')
+                continue
+
+            for i, link in enumerate(links):
+                self.logger.info('[{}/{}]'.format(i + 1, len(links)))
+                self.logger.info(link)
+
+                try:
+                    inappropriate, user_name, is_video, reason = (
+                        check_link(self.browser,
+                                   link,
+                                   self.dont_like,
+                                   self.ignore_if_contains,
+                                   self.ignore_users,
+                                   self.username,
+                                   self.like_by_followers_upper_limit,
+                                   self.like_by_followers_lower_limit,
+                                   self.logger)
+                    )
+
+                    if not inappropriate:
+                        liked = True
+
+                        self.logger.info('--> Image not liked: Likes are disabled for method \'comment_by_locations\'')
+
+                        if liked:
+                            liked_img += 1
+                            checked_img = True
+                            temp_comments = []
+                            commenting = random.randint(
+                                0, 100) <= self.comment_percentage
+                            following = random.randint(
+                                0, 100) <= self.follow_percentage
+
+                            if self.use_clarifai and (following or commenting):
+                                try:
+                                    checked_img, temp_comments = (
+                                        check_image(self.browser,
+                                                    self.clarifai_api_key,
+                                                    self.clarifai_img_tags,
+                                                    self.logger,
+                                                    self.clarifai_full_match)
+                                    )
+                                except Exception as err:
+                                    self.logger.error(
+                                        'Image check error: {}'.format(err))
+
+                            if (self.do_comment and
+                                user_name not in self.dont_include and
+                                checked_img and
+                                    commenting):
+
+                                if temp_comments:
+                                    # Use clarifai related comments only!
+                                    comments = temp_comments
+                                elif is_video:
+                                    comments = (self.comments +
+                                                self.video_comments)
+                                else:
+                                    comments = (self.comments +
+                                                self.photo_comments)
+                                commented += comment_image(self.browser,
+                                                           user_name,
+                                                           comments,
+                                                           self.blacklist,
+                                                           self.logger,
+                                                           self.logfolder)
+                            else:
+                                self.logger.info('--> Not commented')
+                                sleep(1)
+
+                            if (self.do_follow and
+                                user_name not in self.dont_include and
+                                checked_img and
+                                following and
+                                self.follow_restrict.get(user_name, 0) <
+                                    self.follow_times):
+
+                                followed += follow_user(self.browser,
+                                                        self.follow_restrict,
+                                                        self.username,
+                                                        user_name,
+                                                        self.blacklist,
+                                                        self.logger,
+                                                        self.logfolder)
+
+                            else:
+                                self.logger.info('--> Not following')
+                                sleep(1)
+                        else:
+                            already_liked += 1
+                    else:
+                        self.logger.info(
+                            '--> Image not liked: {}'.format(reason))
+                        inap_img += 1
+                except NoSuchElementException as err:
+                    self.logger.error('Invalid Page: {}'.format(err))
+
+        self.logger.info('Liked: {}'.format(liked_img))
+        self.logger.info('Already Liked: {}'.format(already_liked))
+        self.logger.info('Inappropriate: {}'.format(inap_img))
+        self.logger.info('Commented: {}'.format(commented))
+        self.logger.info('Followed: {}'.format(followed))
+
+        self.followed += followed
+
+        return self
+
     def like_by_tags(self,
                      tags=None,
                      amount=50,
