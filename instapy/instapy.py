@@ -472,7 +472,7 @@ class InstaPy:
                                               self.follow_restrict,
                                               self.blacklist,
                                               self.logger,
-                                              self.logfolder
+                                              self.logfolder,
                                               self.username)
                 self.followed += followed
                 self.logger.info('Followed: {}'.format(str(followed)))
@@ -671,7 +671,8 @@ class InstaPy:
                                           amount,
                                           self.logger,
                                           media,
-                                          skip_top_posts)
+                                          skip_top_posts,
+                                          self.username)
             except NoSuchElementException:
                 self.logger.error('Too few images, skipping this tag')
                 continue
@@ -697,7 +698,8 @@ class InstaPy:
                         liked = like_image(self.browser,
                                            user_name,
                                            self.blacklist,
-                                           self.logger)
+                                           self.logger,
+                                           self.username)
 
                         if liked:
 
@@ -778,7 +780,8 @@ class InstaPy:
                                                         user_name,
                                                         self.blacklist,
                                                         self.logger,
-                                                        self.logfolder)
+                                                        self.logfolder,
+                                                        self.username)
                             else:
                                 self.logger.info('--> Not following')
                                 sleep(1)
@@ -1616,7 +1619,8 @@ class InstaPy:
                                           amount,
                                           self.logger,
                                           media,
-                                          skip_top_posts)
+                                          skip_top_posts,
+                                          self.username)
             except NoSuchElementException:
                 self.logger.error('Too few images, skipping this tag')
                 continue

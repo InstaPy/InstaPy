@@ -33,7 +33,7 @@ def open_comment_section(browser):
         print(missing_comment_elem_warning)
 
 
-def comment_image(browser, username, comments, blacklist, logger, logfolder):
+def comment_image(browser, username, comments, blacklist, logger, logfolder, insta_username):
     """Checks if it should comment on the image"""
     rand_comment = (choice(comments).format(username))
     rand_comment = emoji.demojize(rand_comment)
@@ -53,7 +53,7 @@ def comment_image(browser, username, comments, blacklist, logger, logfolder):
         comment_input[0].send_keys("\b")
         comment_input = get_comment_input(browser)
         comment_input[0].submit()
-        update_activity('comments', username=username)
+        update_activity('comments', insta_username=insta_username)
         if blacklist['enabled'] is True:
             action = 'commented'
             add_user_to_blacklist(

@@ -39,7 +39,7 @@ def validate_username(browser,
     return True
 
 
-def update_activity(action=None, username):
+def update_activity(action=None, insta_username=None):
     """Record every Instagram server call (page load, content load, likes,
     comments, follows, unfollow)."""
 
@@ -56,13 +56,13 @@ def update_activity(action=None, username):
             pass
 
         # collect today data
-        cur.execute("SELECT * FROM statistics WHERE created == date('now') AND username == %s", (username))
+        cur.execute("SELECT * FROM statistics WHERE created == date('now') AND username == ?", (insta_username,))
         data = cur.fetchone()
 
         if data is None:
             # create a new record for the new day
             cur.execute("INSERT INTO statistics VALUES "
-                        "(0, 0, 0, 0, 1, date('now'), %s)", (username))
+                        "(0, 0, 0, 0, 1, date('now'), ?)", (insta_username,))
         else:
             # sqlite3.Row' object does not support item assignment -> so,
             # convert it into a new dict
@@ -81,9 +81,9 @@ def update_activity(action=None, username):
 
             sql = ("UPDATE statistics set likes = ?, comments = ?, "
                    "follows = ?, unfollows = ?, server_calls = ? "
-                   "WHERE created == date('now') AND username == %s", (username))
+                   "WHERE created == date('now') AND username == ?")
             cur.execute(sql, (data['likes'], data['comments'], data['follows'],
-                              data['unfollows'], data['server_calls']))
+                              data['unfollows'], data['server_calls'], insta_username))
         # commit
         conn.commit()
 

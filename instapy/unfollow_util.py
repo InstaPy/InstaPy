@@ -42,14 +42,15 @@ def unfollow(browser,
              sleep_delay,
              onlyNotFollowMe,
              logger,
-             logfolder):
+             logfolder,
+             insta_username):
 
     """unfollows the given amount of users"""
     unfollowNum = 0
 
     browser.get('https://www.instagram.com/' + username)
     # update server calls
-    update_activity(username=username)
+    update_activity(insta_username=insta_username)
 
     #  check how many poeple we are following
     #  throw RuntimeWarning if we are 0 people following
@@ -101,7 +102,7 @@ def unfollow(browser,
                         unfollowNum += 1
                         click_element(browser, follow_button) # follow_button.click()
                         
-                        update_activity('unfollows', username=username)
+                        update_activity('unfollows', insta_username=insta_username)
 
                         delete_line_from_file('{0}{1}_followedPool.csv'.format(logfolder, username), person +
                                               ",\n", logger)
@@ -263,7 +264,7 @@ def unfollow(browser,
             
             click_element(browser, following_link[0]) # following_link[0].click()
             # update server calls
-            update_activity(username=username)
+            update_activity(insta_username=insta_username)
         except BaseException as e:
             logger.error("following_link error {}".format(str(e)))
 
@@ -310,7 +311,7 @@ def unfollow(browser,
                 if person not in dont_include:
                     unfollowNum += 1
                     click_element(browser, button) # button.click()
-                    update_activity('unfollows', username=username)
+                    update_activity('unfollows', insta_username=insta_username)
 
                     logger.info(
                         '--> Ongoing Unfollow {}, now unfollowing: {}'
@@ -330,7 +331,7 @@ def unfollow(browser,
     return unfollowNum
 
 
-def follow_user(browser, follow_restrict, login, user_name, blacklist, logger, logfolder):
+def follow_user(browser, follow_restrict, login, user_name, blacklist, logger, logfolder, insta_username):
     """Follows the user of the currently opened image"""
 
     try:
@@ -342,7 +343,7 @@ def follow_user(browser, follow_restrict, login, user_name, blacklist, logger, l
 
         if follow_button.is_displayed():
             click_element(browser, follow_button) # follow_button.click()
-            update_activity('follows', username=user_name)
+            update_activity('follows', insta_username=insta_username)
         else:
             browser.execute_script(
                 "arguments[0].style.visibility = 'visible'; "
@@ -350,7 +351,7 @@ def follow_user(browser, follow_restrict, login, user_name, blacklist, logger, l
                 "arguments[0].style.width = '10px'; "
                 "arguments[0].style.opacity = 1", follow_button)
             click_element(browser, follow_button) # follow_button.click()
-            update_activity('follows', username=user_name)
+            update_activity('follows', insta_username=insta_username)
 
         logger.info('--> Now following')
         log_followed_pool(login, user_name, logger, logfolder)
@@ -368,7 +369,7 @@ def follow_user(browser, follow_restrict, login, user_name, blacklist, logger, l
         return 0
 
 
-def unfollow_user(browser, logger, username):
+def unfollow_user(browser, logger, username, insta_username):
     """Unfollows the user of the currently opened image"""
 
     unfollow_button = browser.find_element_by_xpath(
@@ -377,7 +378,7 @@ def unfollow_user(browser, logger, username):
     if unfollow_button.text == 'Following':
         click_element(browser, unfollow_button) # unfollow_button.send_keys("\n")
         
-        update_activity('unfollows', username=username)
+        update_activity('unfollows', insta_username=insta_username)
         logger.warning('--> User unfollowed due to Inappropriate Content')
         sleep(3)
         return 1
@@ -388,19 +389,19 @@ def follow_given_user(browser,
                       follow_restrict,
                       blacklist,
                       logger,
-                      logfolder
-                      username):
+                      logfolder,
+                      insta_username):
     """Follows a given user."""
     browser.get('https://www.instagram.com/' + acc_to_follow)
     # update server calls
-    update_activity(username=username)
+    update_activity(insta_username=insta_username)
     logger.info('--> {} instagram account is opened...'.format(acc_to_follow))
 
     try:
         sleep(10)
         follow_button = browser.find_element_by_xpath("//*[text()='Follow']")
         click_element(browser, follow_button) # unfollow_button.send_keys("\n")
-        update_activity('follows', username=username)
+        update_activity('follows', insta_username=insta_username)
         logger.info('---> Now following: {}'.format(acc_to_follow))
         follow_restrict[acc_to_follow] = follow_restrict.get(
             acc_to_follow, 0) + 1
@@ -432,7 +433,8 @@ def follow_through_dialog(browser,
                           logger,
                           logfolder,
                           follow_times,
-                          callbacks=[]):
+                          callbacks=[],
+                          insta_username=None):
     sleep(2)
     person_followed = []
     real_amount = amount
@@ -523,7 +525,7 @@ def follow_through_dialog(browser,
                 click_element(browser, button) # button.send_keys("\n")
                 log_followed_pool(login, person, logger, logfolder)
 
-                update_activity('follows', username=user_name)
+                update_activity('follows', insta_username=insta_username)
 
                 follow_restrict[person] = follow_restrict.get(person, 0) + 1
 
@@ -567,11 +569,12 @@ def get_given_user_followers(browser,
                              dont_include,
                              login,
                              randomize,
-                             logger):
+                             logger,
+                             insta_username):
 
     browser.get('https://www.instagram.com/' + user_name)
     # update server calls
-    update_activity(username=username)
+    update_activity(insta_username=insta_username)
 
     # check how many poeple are following this user.
     # throw RuntimeWarning if we are 0 people following this user or
@@ -587,7 +590,7 @@ def get_given_user_followers(browser,
         '//a[@href="/' + user_name + '/followers/"]')
     click_element(browser, following_link[0]) # following_link.send_keys("\n")
     # update server calls
-    update_activity(username=username)
+    update_activity(insta_username=insta_username)
 
     sleep(2)
 
@@ -632,11 +635,12 @@ def get_given_user_following(browser,
                              dont_include,
                              login,
                              randomize,
-                             logger):
+                             logger,
+                             insta_username):
 
     browser.get('https://www.instagram.com/' + user_name)
     # update server calls
-    update_activity(username=username)
+    update_activity(insta_username=insta_username)
 
     #  check how many poeple are following this user.
     #  throw RuntimeWarning if we are 0 people following this user
@@ -651,7 +655,7 @@ def get_given_user_following(browser,
             '//a[@href="/' + user_name + '/following/"]')
         click_element(browser, following_link[0]) # following_link.send_keys("\n")
         # update server calls
-        update_activity(username=username)
+        update_activity(insta_username=insta_username)
     except BaseException as e:
         logger.error("following_link error {}".format(str(e)))
 
@@ -703,11 +707,12 @@ def follow_given_user_followers(browser,
                                 blacklist,
                                 logger,
                                 logfolder,
-                                follow_times):
+                                follow_times,
+                                insta_username):
 
     browser.get('https://www.instagram.com/' + user_name)
     # update server calls
-    update_activity(username=username)
+    update_activity(insta_username=insta_username)
 
     #  check how many poeple are following this user.
     #  throw RuntimeWarning if we are 0 people following this user
@@ -722,7 +727,7 @@ def follow_given_user_followers(browser,
             '//a[@href="/' + user_name + '/followers/"]')
         click_element(browser, following_link[0]) # following_link.send_keys("\n")
         # update server calls
-        update_activity(username=username)
+        update_activity(insta_username=insta_username)
     except BaseException as e:
         logger.error("following_link error {}".format(str(e)))
 
@@ -755,11 +760,12 @@ def follow_given_user_following(browser,
                                 blacklist,
                                 logger,
                                 logfolder,
-                                follow_times):
+                                follow_times,
+                                insta_username):
 
     browser.get('https://www.instagram.com/' + user_name)
     # update server calls
-    update_activity(username=username)
+    update_activity(insta_username=insta_username)
 
     #  check how many poeple are following this user.
     #  throw RuntimeWarning if we are 0 people following this user
@@ -774,7 +780,7 @@ def follow_given_user_following(browser,
             '//a[@href="/' + user_name + '/following/"]')
         click_element(browser, following_link[0]) # following_link.send_keys("\n")
         # update server calls
-        update_activity(username=username)
+        update_activity(insta_username=insta_username)
     except BaseException as e:
         logger.error("following_link error {}".format(str(e)))
 
