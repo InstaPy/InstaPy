@@ -522,7 +522,7 @@ class InstaPy:
         for index, location in enumerate(locations):
             self.logger.info('Location [{}/{}]'
                              .format(index + 1, len(locations)))
-            self.logger.info('--> {}'.format(location.encode('utf-8')))
+            self.logger.info('--> {}'.format(location))
 
             try:
                 links = get_links_for_location(self.browser,
@@ -674,7 +674,7 @@ class InstaPy:
 
         for index, tag in enumerate(tags):
             self.logger.info('Tag [{}/{}]'.format(index + 1, len(tags)))
-            self.logger.info('--> {}'.format(tag.encode('utf-8')))
+            self.logger.info('--> {}'.format(tag))
 
             try:
                 links = get_links_for_tag(self.browser,
@@ -831,7 +831,7 @@ class InstaPy:
         for index, username in enumerate(usernames):
             self.logger.info(
                 'Username [{}/{}]'.format(index + 1, len(usernames)))
-            self.logger.info('--> {}'.format(username.encode('utf-8')))
+            self.logger.info('--> {}'.format(username))
             following = random.randint(0, 100) <= self.follow_percentage
 
             valid_user = validate_username(self.browser,
@@ -998,7 +998,7 @@ class InstaPy:
         for index, username in enumerate(usernames):
             self.logger.info(
                 'Username [{}/{}]'.format(index + 1, len(usernames)))
-            self.logger.info('--> {}'.format(username.encode('utf-8')))
+            self.logger.info('--> {}'.format(username))
 
             try:
                 links = get_links_for_username(self.browser,
@@ -1638,7 +1638,7 @@ class InstaPy:
 
         for index, tag in enumerate(tags):
             self.logger.info('Tag [{}/{}]'.format(index + 1, len(tags)))
-            self.logger.info('--> {}'.format(tag.encode('utf-8')))
+            self.logger.info('--> {}'.format(tag))
 
             try:
                 links = get_links_for_tag(self.browser,
