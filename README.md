@@ -46,6 +46,7 @@ Table of Contents
   * [Unfollowing](#unfollowing)
   * [Don't unfollow active users](#dont-unfollow-active-users)
   * [Interactions based on the number of followers a user has](#interactions-based-on-the-number-of-followers-a-user-has)
+  * [Comment by Locations](#comment-by-locations)
   * [Like by Locations](#like-by-locations)
   * [Like by Tags](#like-by-tags)
   * [Like by Feeds](#like-by-feeds)
@@ -319,6 +320,19 @@ session.set_upper_follower_count(limit = 250)
 
 session.set_lower_follower_count(limit = 1)
 ```
+
+### Comment by Locations
+
+```python
+session.comment_by_locations(['224442573/salton-sea/'], amount=100)
+# or
+session.comment_by_locations(['224442573'], amount=100)
+# or include media entities from top posts section
+
+session.comment_by_locations(['224442573'], amount=5, skip_top_posts=False)
+```
+
+This method allows commenting by locations, without liking posts. To get locations follow instructions in 'Like by Locations'
 
 ### Like by Locations
 
