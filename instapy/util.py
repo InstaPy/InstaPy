@@ -87,6 +87,22 @@ def update_activity(action=None, insta_username=None):
         # commit
         conn.commit()
 
+def dict_factory(cursor, row):
+    """Map row data to column name"""
+    d = {}
+    for idx, col in enumerate(cursor.description):
+        d[col[0]] = row[idx]
+    return d
+
+def get_activity(insta_username):
+    """Get current activity from database"""
+    conn = sqlite3.connect('./db/instapy.db')
+    conn.row_factory = dict_factory
+    with conn:
+        cur = conn.cursor()
+        cur.execute("SELECT * FROM statistics WHERE created == date('now') AND username == ?", (insta_username,))
+        row = cur.fetchone()
+    return row
 
 def add_user_to_blacklist(browser, username, campaign, action, logger, logfolder):
 

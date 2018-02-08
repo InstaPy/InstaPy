@@ -31,6 +31,7 @@ from .time_util import sleep
 from .time_util import set_sleep_percentage
 from .util import get_active_users
 from .util import validate_username
+from .util import get_activity
 from .unfollow_util import get_given_user_followers
 from .unfollow_util import get_given_user_following
 from .unfollow_util import unfollow
@@ -645,6 +646,15 @@ class InstaPy:
         if self.aborting:
             return self
 
+        # Check limit hasn't already been reached
+        cur_status = get_activity(self.username)
+        if cur_status['likes'] >= amount:
+            self.logger.info('Like limit reached')
+            return self
+        else:
+            # Deduct any work done already
+            amount = amount - cur_status['likes']
+
         liked_img = 0
         already_liked = 0
         inap_img = 0
@@ -780,8 +790,7 @@ class InstaPy:
                                                         user_name,
                                                         self.blacklist,
                                                         self.logger,
-                                                        self.logfolder,
-                                                        self.username)
+                                                        self.logfolder)
                             else:
                                 self.logger.info('--> Not following')
                                 sleep(1)
@@ -1595,6 +1604,16 @@ class InstaPy:
                      use_smart_hashtags=False):
         if self.aborting:
             return self
+
+
+        # Check limit hasn't already been reached
+        cur_status = get_activity(self.username)
+        if cur_status['follows'] >= amount:
+            self.logger.info('Follow limit reached')
+            return self
+        else:
+            # Deduct any work done already
+            amount = amount - cur_status['follows']
 
         inap_img = 0
         followed = 0

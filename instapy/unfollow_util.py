@@ -331,7 +331,7 @@ def unfollow(browser,
     return unfollowNum
 
 
-def follow_user(browser, follow_restrict, login, user_name, blacklist, logger, logfolder, insta_username):
+def follow_user(browser, follow_restrict, login, user_name, blacklist, logger, logfolder):
     """Follows the user of the currently opened image"""
 
     try:
@@ -343,7 +343,7 @@ def follow_user(browser, follow_restrict, login, user_name, blacklist, logger, l
 
         if follow_button.is_displayed():
             click_element(browser, follow_button) # follow_button.click()
-            update_activity('follows', insta_username=insta_username)
+            update_activity('follows', insta_username=login)
         else:
             browser.execute_script(
                 "arguments[0].style.visibility = 'visible'; "
@@ -351,7 +351,7 @@ def follow_user(browser, follow_restrict, login, user_name, blacklist, logger, l
                 "arguments[0].style.width = '10px'; "
                 "arguments[0].style.opacity = 1", follow_button)
             click_element(browser, follow_button) # follow_button.click()
-            update_activity('follows', insta_username=insta_username)
+            update_activity('follows', insta_username=login)
 
         logger.info('--> Now following')
         log_followed_pool(login, user_name, logger, logfolder)
@@ -369,7 +369,7 @@ def follow_user(browser, follow_restrict, login, user_name, blacklist, logger, l
         return 0
 
 
-def unfollow_user(browser, logger, username, insta_username):
+def unfollow_user(browser, logger, username):
     """Unfollows the user of the currently opened image"""
 
     unfollow_button = browser.find_element_by_xpath(
@@ -378,7 +378,7 @@ def unfollow_user(browser, logger, username, insta_username):
     if unfollow_button.text == 'Following':
         click_element(browser, unfollow_button) # unfollow_button.send_keys("\n")
         
-        update_activity('unfollows', insta_username=insta_username)
+        update_activity('unfollows', insta_username=username)
         logger.warning('--> User unfollowed due to Inappropriate Content')
         sleep(3)
         return 1
