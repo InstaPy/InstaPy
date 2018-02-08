@@ -64,7 +64,8 @@ class InstaPy:
                  proxy_address=None,
                  proxy_port=0,
                  bypass_suspicious_attempt=False,
-                 multi_logs=False):
+                 multi_logs=False,
+                 daily_limit=False):
 
         if nogui:
             self.display = Display(visible=0, size=(800, 600))
@@ -127,6 +128,8 @@ class InstaPy:
         self.bypass_suspicious_attempt = bypass_suspicious_attempt
 
         self.aborting = False
+
+        self.daily_limit = False
 
         # Assign logger
         self.logger = self.get_instapy_logger(show_logs)
@@ -647,13 +650,14 @@ class InstaPy:
             return self
 
         # Check limit hasn't already been reached
-        cur_status = get_activity(self.username)
-        if cur_status['likes'] >= amount:
-            self.logger.info('Like limit reached')
-            return self
-        else:
-            # Deduct any work done already
-            amount = amount - cur_status['likes']
+        if self.daily_limit:
+            cur_status = get_activity(self.username)
+            if cur_status['likes'] >= amount:
+                self.logger.info('Like limit reached')
+                return self
+            else:
+                # Deduct any work done already
+                amount = amount - cur_status['likes']
 
         liked_img = 0
         already_liked = 0
@@ -1607,13 +1611,14 @@ class InstaPy:
 
 
         # Check limit hasn't already been reached
-        cur_status = get_activity(self.username)
-        if cur_status['follows'] >= amount:
-            self.logger.info('Follow limit reached')
-            return self
-        else:
-            # Deduct any work done already
-            amount = amount - cur_status['follows']
+        if self.daily_limit:
+            cur_status = get_activity(self.username)
+            if cur_status['follows'] >= amount:
+                self.logger.info('Follow limit reached')
+                return self
+            else:
+                # Deduct any work done already
+                amount = amount - cur_status['follows']
 
         inap_img = 0
         followed = 0
@@ -1682,3 +1687,12 @@ class InstaPy:
         self.followed += followed
 
         return self
+
+    def set_daily_limit(self, enabled=False):
+        """Defines if limits should be per-run or per-day"""
+        if self.aborting:
+            return self
+
+        self.daily_limit = enabled
+        return self
+
