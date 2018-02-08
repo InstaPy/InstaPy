@@ -40,7 +40,7 @@ def validate_username(browser,
     return True
 
 
-def update_activity(action=None):
+def update_activity(action=None, insta_username=None):
     """Record every Instagram server call (page load, content load, likes,
     comments, follows, unfollow)."""
 
@@ -48,14 +48,22 @@ def update_activity(action=None):
     with conn:
         conn.row_factory = sqlite3.Row
         cur = conn.cursor()
+
+        # Upgrade schema
+        try:
+            cur.execute('ALTER TABLE statistics ADD COLUMN username;')
+        except:
+            # Column already exists
+            pass
+
         # collect today data
-        cur.execute("SELECT * FROM statistics WHERE created == date('now')")
+        cur.execute("SELECT * FROM statistics WHERE created == date('now') AND username == ?", (insta_username,))
         data = cur.fetchone()
 
         if data is None:
             # create a new record for the new day
             cur.execute("INSERT INTO statistics VALUES "
-                        "(0, 0, 0, 0, 1, date('now'))")
+                        "(0, 0, 0, 0, 1, date('now'), ?)", (insta_username,))
         else:
             # sqlite3.Row' object does not support item assignment -> so,
             # convert it into a new dict
@@ -74,12 +82,28 @@ def update_activity(action=None):
 
             sql = ("UPDATE statistics set likes = ?, comments = ?, "
                    "follows = ?, unfollows = ?, server_calls = ? "
-                   "WHERE created = date('now')")
+                   "WHERE created == date('now') AND username == ?")
             cur.execute(sql, (data['likes'], data['comments'], data['follows'],
-                              data['unfollows'], data['server_calls']))
+                              data['unfollows'], data['server_calls'], insta_username))
         # commit
         conn.commit()
 
+def dict_factory(cursor, row):
+    """Map row data to column name"""
+    d = {}
+    for idx, col in enumerate(cursor.description):
+        d[col[0]] = row[idx]
+    return d
+
+def get_activity(insta_username):
+    """Get current activity from database"""
+    conn = sqlite3.connect('./db/instapy.db')
+    conn.row_factory = dict_factory
+    with conn:
+        cur = conn.cursor()
+        cur.execute("SELECT * FROM statistics WHERE created == date('now') AND username == ?", (insta_username,))
+        row = cur.fetchone()
+    return row
 
 def add_user_to_blacklist(browser, username, campaign, action, logger, logfolder):
 
@@ -177,7 +201,7 @@ def delete_line_from_file(filepath, lineToDelete, logger):
         logger.error("delete_line_from_file error {}".format(str(e)))
 
 
-def scroll_bottom(browser, element, range_int):
+def scroll_bottom(browser, element, range_int, username):
     # put a limit to the scrolling
     if range_int > 50:
         range_int = 50
@@ -186,7 +210,7 @@ def scroll_bottom(browser, element, range_int):
         browser.execute_script(
             "arguments[0].scrollTop = arguments[0].scrollHeight", element)
         # update server calls
-        update_activity()
+        update_activity(username=username)
         sleep(1)
 
     return

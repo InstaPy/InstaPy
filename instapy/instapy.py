@@ -32,6 +32,7 @@ from .time_util import sleep
 from .time_util import set_sleep_percentage
 from .util import get_active_users
 from .util import validate_username
+from .util import get_activity
 from .unfollow_util import get_given_user_followers
 from .unfollow_util import get_given_user_following
 from .unfollow_util import unfollow
@@ -64,7 +65,8 @@ class InstaPy:
                  proxy_address=None,
                  proxy_port=0,
                  bypass_suspicious_attempt=False,
-                 multi_logs=False):
+                 multi_logs=False,
+                 daily_limit=False):
 
         if nogui:
             self.display = Display(visible=0, size=(800, 600))
@@ -134,6 +136,8 @@ class InstaPy:
         self.bypass_suspicious_attempt = bypass_suspicious_attempt
 
         self.aborting = False
+
+        self.daily_limit = False
 
         # Assign logger
         self.logger = self.get_instapy_logger(show_logs)
@@ -480,7 +484,8 @@ class InstaPy:
                                               self.follow_restrict,
                                               self.blacklist,
                                               self.logger,
-                                              self.logfolder)
+                                              self.logfolder,
+                                              self.username)
                 self.followed += followed
                 self.logger.info('Followed: {}'.format(str(followed)))
                 followed = 0
@@ -656,6 +661,16 @@ class InstaPy:
         if self.aborting:
             return self
 
+        # Check limit hasn't already been reached
+        if self.daily_limit:
+            cur_status = get_activity(self.username)
+            if cur_status['likes'] >= amount:
+                self.logger.info('Like limit reached')
+                return self
+            else:
+                # Deduct any work done already
+                amount = amount - cur_status['likes']
+
         liked_img = 0
         already_liked = 0
         inap_img = 0
@@ -682,7 +697,8 @@ class InstaPy:
                                           amount,
                                           self.logger,
                                           media,
-                                          skip_top_posts)
+                                          skip_top_posts,
+                                          self.username)
             except NoSuchElementException:
                 self.logger.error('Too few images, skipping this tag')
                 continue
@@ -708,7 +724,8 @@ class InstaPy:
                         liked = like_image(self.browser,
                                            user_name,
                                            self.blacklist,
-                                           self.logger)
+                                           self.logger,
+                                           self.username)
 
                         if liked:
 
@@ -1542,7 +1559,7 @@ class InstaPy:
                                     '--> Image not liked: {}'.format(reason))
                                 inap_img += 1
                                 if reason == 'Inappropriate' and unfollow:
-                                    unfollow_user(self.browser, self.logger)
+                                    unfollow_user(self.browser, self.logger, self.username)
                         except NoSuchElementException as err:
                             self.logger.error('Invalid Page: {}'.format(err))
 
@@ -1623,6 +1640,17 @@ class InstaPy:
         if self.aborting:
             return self
 
+
+        # Check limit hasn't already been reached
+        if self.daily_limit:
+            cur_status = get_activity(self.username)
+            if cur_status['follows'] >= amount:
+                self.logger.info('Follow limit reached')
+                return self
+            else:
+                # Deduct any work done already
+                amount = amount - cur_status['follows']
+
         inap_img = 0
         followed = 0
 
@@ -1646,7 +1674,8 @@ class InstaPy:
                                           amount,
                                           self.logger,
                                           media,
-                                          skip_top_posts)
+                                          skip_top_posts,
+                                          self.username)
             except NoSuchElementException:
                 self.logger.error('Too few images, skipping this tag')
                 continue
@@ -1690,3 +1719,12 @@ class InstaPy:
         self.inap_img += inap_img
 
         return self
+
+    def set_daily_limit(self, enabled=False):
+        """Defines if limits should be per-run or per-day"""
+        if self.aborting:
+            return self
+
+        self.daily_limit = enabled
+        return self
+
