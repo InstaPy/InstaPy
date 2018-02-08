@@ -138,7 +138,7 @@ def login_user(browser,
         "//form/span/button[text()='Log in']")
     ActionChains(browser).move_to_element(login_button).click().perform()
     # update server calls
-    update_activity(insta_username=insta_username)
+    update_activity(insta_username=username)
 
     if bypass_suspicious_attempt is True:
         bypass_suspicious_login(browser)
