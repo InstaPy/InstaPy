@@ -163,16 +163,42 @@ def get_active_users(browser, username, posts, logger):
 
 def delete_line_from_file(filepath, lineToDelete, logger):
     try:
+        file_path_old = filepath+".old"
+        file_path_Temp = filepath+".temp"
+
         f = open(filepath, "r")
         lines = f.readlines()
         f.close()
-        f = open(filepath, "w")
 
+        f = open(file_path_Temp, "w")
         for line in lines:
-
             if line != lineToDelete:
                 f.write(line)
+            else:
+                logger.info("{} removed from csv".format(line))
         f.close()
+
+        # File leftovers that should not exist, but if so remove it
+        while os.path.isfile(file_path_old):
+            try:
+                os.remove(file_path_old)
+            except OSError as e:
+                logger.error("Can't remove file_path_old {}".format(str(e)))
+                sleep(5)
+
+        # rename original file to _old
+        os.rename(filepath, file_path_old)
+        # rename new temp file to filepath
+        while os.path.isfile(file_path_Temp):
+            try:
+                os.rename(file_path_Temp, filepath)
+            except OSError as e:
+                logger.error("Can't rename file_path_Temp to filepath {}".format(str(e)))
+                sleep(5)
+
+        # remove old and temp file
+        os.remove(file_path_old)
+
     except BaseException as e:
         logger.error("delete_line_from_file error {}".format(str(e)))
 
