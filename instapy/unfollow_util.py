@@ -108,7 +108,7 @@ def unfollow(browser,
                         follow_button = browser.find_element_by_xpath(
                             "//*[contains(text(), 'Follow')]")
 
-                        if follow_button.text == 'Follow':
+                        if follow_button.text in ['Follow','Follow Back']:
 
                             unfollowNum += 1
                             update_activity('unfollows')
