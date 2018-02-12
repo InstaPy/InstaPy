@@ -36,23 +36,23 @@ def log_uncertain_unfollowed_pool(login, unfollowed, logger, logfolder):
         with open('{0}{1}_uncertain_unfollowedPool.csv'.format(logfolder, login), 'a+') as followPool:
             followPool.write(unfollowed + ",\n")
     except BaseException as e:
-        logger.error("log_followed_pool error {}".format(str(e)))
+        logger.error("log_uncertain_unfollowed_pool error {}".format(str(e)))
 
 
 def log_record_all_unfollowed(login, unfollowed, logger, logfolder):
-    """Prints and logs the uncertain unfollowed to
+    """logs all unfollowed ever to
     a seperate file"""
     try:
         with open('{0}{1}_record_all_unfollowed.csv'.format(logfolder, login), 'a+') as followPool:
             followPool.write(unfollowed + ",\n")
     except BaseException as e:
-        logger.error("log_followed_pool error {}".format(str(e)))
+        logger.error("log_record_all_unfollowed_pool error {}".format(str(e)))
 
 
 def log_record_all_followed(login, followed, logger, logfolder):
-    """We save all followed to a pool that will never be erase"""
+    """logs all followed ever to a pool that will never be erase"""
     try:
         with open('{0}{1}_record_all_followed.csv'.format(logfolder, login), 'a+') as followPool:
             followPool.write(followed + ",\n")
     except BaseException as e:
-        logger.error("log_followed_pool error {}".format(str(e)))
+        logger.error("log__record_all_followed_pool error {}".format(str(e)))
