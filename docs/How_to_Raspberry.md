@@ -22,8 +22,6 @@ _NOTE: If you add an empty file named ssh to the boot directory, ssh will be ena
 ## For Chrome
 > This assumes you're using the latest version of raspbian (stretch). Note that this works best running headless.
 
-1. Switch to the root user `sudo su`
-1. Update apt source lists `echo "deb http://security.debian.org/debian-security stretch/updates main" >> /etc/apt/sources.list`
 1. Update `apt-get update`
 1. Install the browser `apt-get install chromium-browser`
 1. Install the driver `apt-get install chromedriver`
