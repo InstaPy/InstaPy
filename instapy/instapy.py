@@ -1563,7 +1563,8 @@ class InstaPy:
                 else:
                     if link in history:
                         self.logger.info('This link has already '
-                                         'been visited:\n', link, '\n')
+                                         'been visited: {}'
+                                         .format(link))
                     else:
                         self.logger.info('New link found...')
                         history.append(link)
