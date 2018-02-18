@@ -1221,12 +1221,15 @@ class InstaPy:
         userFollowed = []
         if not isinstance(usernames, list):
             usernames = [usernames]
-        for user in usernames:
 
+        amount_per_user = int(ceil(amount / len(usernames)))
+        self.logger.info('--> Follow for {} each giving user'.format(amount_per_user))
+
+        for user in usernames:
             try:
                 userFollowed += follow_given_user_followers(self.browser,
                                                             user,
-                                                            amount,
+                                                            amount_per_user,
                                                             self.dont_include,
                                                             self.username,
                                                             self.follow_restrict,
