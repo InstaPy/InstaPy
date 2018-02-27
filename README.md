@@ -68,8 +68,10 @@ Table of Contents
 * [Running Multiple Accounts](#running-multiple-accounts)
 * [Running with Docker microservices manual](#running-with-docker-microservices-manual)
 * [Running all-in-one with Docker (obsolete)](#running-all-in-one-with-docker-obsolete)
-* [Automate with cron](#automate-with-cron)
-* [Automate with Schedule](#automate-with-schedule)
+* [Automate Instapy](#automate-instapy)
+  * [Windows Task Scheduler](#windows-task-scheduler)
+  * [cron](#cron)
+  * [Schedule](#schedule)
 * [Extra Informations](#extra-informations)
 
 ## Getting started
@@ -672,7 +674,25 @@ After the build succeeds, you can simply run the container with:
 docker run --name=instapy -e INSTA_USER=<your-user> -e INSTA_PW=<your-pw> -d --rm instapy
 ```
 
-## Automate with `cron`
+## Automate Instapy
+
+### [Windows Task Scheduler](https://msdn.microsoft.com/en-us/library/windows/desktop/aa383614(v=vs.85).aspx)
+
+You can use Window's built in Task Scheduler to automate Instapy, using a variety of trigger types: time, login, computer idles, etc. To schedule a simple daily run of an Instapy script follow the below directions
+1. Open [Windows Task Scheduler](https://msdn.microsoft.com/en-us/library/windows/desktop/aa383614(v=vs.85).aspx)
+2. Select "Create Basic Task"
+3. Fill out "Name" and "Description" as desired, click "Next"
+4. On "Trigger" screen select how frequently to run, click "Next" (Frequency can be modified later)
+5. On "Daily" screen, hit "Next"
+6. "Action Screen" select "Start a program" and then click "Next"
+7. "Program/script" enter the path, or browse to select the path to python. ([How to find python path on Windows](https://stackoverflow.com/questions/647515/how-can-i-get-python-path-under-windows))
+8. "Add arguments" input the Instapy script path you wish to run. (Example: C:\Users\USER_NAME\Documents\GitHub\InstaPy\craigquick.py)
+9. "Start in" input Instapy install location (Example: C:\Users\USER_NAME\Documents\GitHub\InstaPy\). Click "Next"
+10. To finish the process, hit "Finish"
+
+
+
+### `cron`
 
 You can add InstaPy to your crontab, so that the script will be executed regularly. This is especially useful for servers, but be sure not to break Instagrams follow and like limits.
 
@@ -686,7 +706,7 @@ crontab -e
 45 */4 * * * cd /home/user/InstaPy && /usr/bin/python ./quickstart.py
 ```
 
-## Automate with [Schedule](https://github.com/dbader/schedule)
+### [Schedule](https://github.com/dbader/schedule)
 
 > Schedule is an in-process scheduler for periodic jobs that uses the builder pattern for configuration. Schedule lets you run Python functions periodically at pre-determined intervals using a simple, human-friendly syntax.
 
