@@ -68,7 +68,7 @@ Table of Contents
 * [Running Multiple Accounts](#running-multiple-accounts)
 * [Running with Docker microservices manual](#running-with-docker-microservices-manual)
 * [Running all-in-one with Docker (obsolete)](#running-all-in-one-with-docker-obsolete)
-* [Automate Instapy](#automate-instapy)
+* [Automate InstaPy](#automate-instapy)
   * [Windows Task Scheduler](#windows-task-scheduler)
   * [cron](#cron)
   * [Schedule](#schedule)
@@ -674,11 +674,11 @@ After the build succeeds, you can simply run the container with:
 docker run --name=instapy -e INSTA_USER=<your-user> -e INSTA_PW=<your-pw> -d --rm instapy
 ```
 
-## Automate Instapy
+## Automate InstaPy
 
 ### [Windows Task Scheduler](https://msdn.microsoft.com/en-us/library/windows/desktop/aa383614(v=vs.85).aspx)
 
-You can use Window's built in Task Scheduler to automate Instapy, using a variety of trigger types: time, login, computer idles, etc. To schedule a simple daily run of an Instapy script follow the below directions
+You can use Window's built in Task Scheduler to automate InstaPy, using a variety of trigger types: time, login, computer idles, etc. To schedule a simple daily run of an Instapy script follow the below directions
 1. Open [Windows Task Scheduler](https://msdn.microsoft.com/en-us/library/windows/desktop/aa383614(v=vs.85).aspx)
 2. Select "Create Basic Task"
 3. Fill out "Name" and "Description" as desired, click "Next"
@@ -686,7 +686,7 @@ You can use Window's built in Task Scheduler to automate Instapy, using a variet
 5. On "Daily" screen, hit "Next"
 6. "Action Screen" select "Start a program" and then click "Next"
 7. "Program/script" enter the path, or browse to select the path to python. ([How to find python path on Windows](https://stackoverflow.com/questions/647515/how-can-i-get-python-path-under-windows))
-8. "Add arguments" input the Instapy script path you wish to run. (Example: C:\Users\USER_NAME\Documents\GitHub\InstaPy\craigquick.py)
+8. "Add arguments" input the InstaPy script path you wish to run. (Example: C:\Users\USER_NAME\Documents\GitHub\InstaPy\craigquick.py)
 9. "Start in" input Instapy install location (Example: C:\Users\USER_NAME\Documents\GitHub\InstaPy\). Click "Next"
 10. To finish the process, hit "Finish"
 
