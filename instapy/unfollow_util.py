@@ -96,10 +96,28 @@ def unfollow(browser,
                 if person not in dont_include:
                     browser.get('https://www.instagram.com/' + person)
                     sleep(2)
-                    follow_button = browser.find_element_by_xpath(
-                        "//*[contains(text(), 'Follow')]")
 
-                    if follow_button.text == 'Following':
+                    following = False
+                    try:
+                        follow_button = browser.find_element_by_xpath(
+                            "//*[contains(text(), 'Follow')]")
+                        if (follow_button.text == 'Following'):
+                            following = "Following"
+                        else:
+                            if follow_button.text in ['Follow', 'Follow Back']:
+                                following = False
+                            else:
+                                follow_button = browser.find_element_by_xpath(
+                                    "//*[contains(text(), 'Requested')]")
+                                if (follow_button.text == "Requested"):
+                                    following = "Requested"
+                    except:
+                        logger.error(
+                            '--> Unfollow error with {},'
+                            ' maybe no longer exists...'
+                                .format(person.encode('utf-8')))
+
+                    if following:
                         # click the button
                         click_element(browser, follow_button) # follow_button.click()
                         sleep(4)
