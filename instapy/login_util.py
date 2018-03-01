@@ -94,6 +94,7 @@ def login_user(browser,
     browser.get('https://www.instagram.com')
     # update server calls
     update_activity()
+    cookie_loaded = False
 
     # try to load cookie from username
     try:
@@ -101,11 +102,28 @@ def login_user(browser,
         for cookie in pickle.load(open('{0}{1}_cookie.pkl'
                                        .format(logfolder,username), 'rb')):
             browser.add_cookie(cookie)
-        # logged in!
-        return True
+            cookie_loaded = True
     except (WebDriverException, OSError, IOError):
         print("Cookie file not found, creating cookie...")
-        browser.get('https://www.instagram.com')
+
+    browser.get('https://www.instagram.com')
+
+    # Cookie has been loaded, user should be logged in. Ensurue this is true
+    login_elem = browser.find_elements_by_xpath(
+        "//*[contains(text(), 'Log in')]")
+    # Login text is not found, user logged in
+    # If not, issue with cookie, create new cookie
+    if len(login_elem) == 0:
+        return True
+
+    # If not, issue with cookie, create new cookie
+    if cookie_loaded:
+        print("Issue with cookie for user " + username
+              + ". Creating new cookie...")
+
+
+
+
 
     # Changes instagram language to english, to ensure no errors ensue from
     # having the site on a different language
@@ -119,6 +137,7 @@ def login_user(browser,
         "//article/div/div/p/a[text()='Log in']")
     if login_elem is not None:
         ActionChains(browser).move_to_element(login_elem).click().perform()
+
 
     # Enter username and password and logs the user in
     # Sometimes the element name isn't 'Username' and 'Password'
