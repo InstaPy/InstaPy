@@ -1158,6 +1158,9 @@ class InstaPy:
             # Reset like counter for every username
             liked_img = 0
 
+            # Will we follow this user?
+            following = random.randint(0, 100) <= self.follow_percentage
+
             for i, link in enumerate(links):
                 # Check if target has reached
                 if liked_img >= amount:
@@ -1184,8 +1187,6 @@ class InstaPy:
 
                     if not inappropriate:
 
-                        following = (
-                            random.randint(0, 100) <= self.follow_percentage)
                         if (self.do_follow and
                             username not in self.dont_include and
                             following and
