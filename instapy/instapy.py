@@ -1201,6 +1201,8 @@ class InstaPy:
                                 self.blacklist,
                                 self.logger,
                                 self.logfolder)
+
+                            following = False
                         else:
                             self.logger.info('--> Not following')
                             sleep(1)
