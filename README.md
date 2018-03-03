@@ -485,6 +485,19 @@ You can use InstaPy behind a proxy by specifying server address and port
 session = InstaPy(username=insta_username, password=insta_password, proxy_address='8.8.8.8', proxy_port=8080)
 ```
 
+### Use a proxy with authentication
+
+To use proxy with authentication you should firstly generate proxy_chrome_extension (works only with headless_browser=False).
+
+```python
+from proxy_extension import create_proxy_extension
+
+proxy = 'login:password@ip:port'
+proxy_chrome_extension = create_proxy_extension(proxy)
+
+session = InstaPy(username=insta_username, password=insta_password, proxy_chrome_extension=proxy_chrome_extension, nogui=True)
+```
+
 ### Switching to Firefox
 
 Chrome is the default browser, but InstaPy provides support for Firefox as well.
