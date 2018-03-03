@@ -2,7 +2,7 @@ import zipfile
 import os
 
 
-def create_proxy_extention(proxy):
+def create_proxy_extension(proxy):
     """ takes proxy looks like login:password@ip:port """
 
     ip = proxy.split('@')[1].split(':')[0]
