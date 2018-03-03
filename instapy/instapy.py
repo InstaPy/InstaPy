@@ -1162,7 +1162,7 @@ class InstaPy:
 
             # Reset like counter for every username
             liked_img = 0
-            
+
             # Will we follow this user?
             following = random.randint(0, 100) <= self.follow_percentage
 
