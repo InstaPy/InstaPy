@@ -5,10 +5,10 @@ import os
 def create_proxy_extention(proxy):
     """ takes proxy looks like login:password@ip:port """
 
-    proxy_ip = proxy.split('@')[1].split(':')[0]
-    proxy_port = int(proxy.split(':')[-1])
-    proxy_login = proxy.split(':')[0]
-    proxy_password = proxy.split('@')[0].split(':')[1]
+    ip = proxy.split('@')[1].split(':')[0]
+    port = int(proxy.split(':')[-1])
+    login = proxy.split(':')[0]
+    password = proxy.split('@')[0].split(':')[1]
    
     manifest_json = """
         {
