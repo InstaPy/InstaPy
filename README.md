@@ -485,8 +485,6 @@ You can use InstaPy behind a proxy by specifying server address and port
 session = InstaPy(username=insta_username, password=insta_password, proxy_address='8.8.8.8', proxy_port=8080)
 ```
 
-### Use a proxy with authentication
-
 To use proxy with authentication you should firstly generate proxy_chrome_extension (works only with headless_browser=False).
 
 ```python
