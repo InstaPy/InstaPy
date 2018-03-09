@@ -1,11 +1,14 @@
 import csv
+import datetime
 import os
+import re
+import sqlite3
+
+from selenium.common.exceptions import NoSuchElementException
+
+from .settings import Settings
 from .time_util import sleep
 from .time_util import sleep_actual
-from selenium.common.exceptions import NoSuchElementException
-import sqlite3
-import datetime
-from .settings import Settings
 
 
 def validate_username(browser,
@@ -25,7 +28,7 @@ def validate_username(browser,
     browser.get('https://www.instagram.com/{}'.format(username))
     sleep(1)
     try:
-        followers = (formatNumber(browser.find_element_by_xpath("//a[contains"
+        followers = (format_number(browser.find_element_by_xpath("//a[contains"
                      "(@href,'followers')]/span").text))
     except NoSuchElementException:
         return '---> {} account is private, skipping user...'.format(username)
@@ -111,7 +114,7 @@ def get_active_users(browser, username, posts, logger):
     browser.get('https://www.instagram.com/' + username)
     sleep(2)
 
-    total_posts = formatNumber(browser.find_element_by_xpath(
+    total_posts = format_number(browser.find_element_by_xpath(
         "//span[contains(@class,'_t98z6')]//span").text)
 
     # if posts > total user posts, assume total posts
@@ -267,7 +270,16 @@ def click_element(browser, element, tryNum=0):
         click_element(browser, element, tryNum)
 
 
-def formatNumber(number):
-    formattedNum = number.replace(',', '').replace('.', '')
-    formattedNum = int(formattedNum.replace('k', '00').replace('m', '00000'))
-    return formattedNum
+def format_number(number):
+    """
+    Format number. Remove the unused comma. Replace the concatenation with relevant zeros. Remove the dot.
+
+    :param number: str
+
+    :return: int
+    """
+    formatted_num = number.replace(',', '')
+    formatted_num = re.sub(r'(k)$', '00' if '.' in formatted_num else '000', formatted_num)
+    formatted_num = re.sub(r'(m)$', '00000' if '.' in formatted_num else '000000', formatted_num)
+    formatted_num = formatted_num.replace('.', '')
+    return int(formatted_num)

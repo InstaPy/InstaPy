@@ -99,3 +99,6 @@ ENV/
 # Editors
 .idea
 .vscode
+
+# pytest
+.pytest_cache/

@@ -4,7 +4,7 @@ import csv
 from .time_util import sleep
 from .util import delete_line_from_file
 from .util import scroll_bottom
-from .util import formatNumber
+from .util import format_number
 from .util import update_activity
 from .util import add_user_to_blacklist
 from .util import click_element
@@ -56,7 +56,7 @@ def unfollow(browser,
     #  check how many poeple we are following
     #  throw RuntimeWarning if we are 0 people following
     try:
-        allfollowing = formatNumber(
+        allfollowing = format_number(
             browser.find_element_by_xpath('//li[3]/a/span').text)
     except NoSuchElementException:
         logger.warning('There are 0 people to unfollow')
@@ -613,7 +613,7 @@ def get_given_user_followers(browser,
     # throw RuntimeWarning if we are 0 people following this user or
     # if its a private account
     try:
-        allfollowing = formatNumber(
+        allfollowing = format_number(
             browser.find_element_by_xpath("//li[2]/a/span").text)
     except NoSuchElementException:
         logger.warning('Can\'t interact with private account')
@@ -677,7 +677,7 @@ def get_given_user_following(browser,
     #  check how many poeple are following this user.
     #  throw RuntimeWarning if we are 0 people following this user
     try:
-        allfollowing = formatNumber(
+        allfollowing = format_number(
             browser.find_element_by_xpath("//li[3]/a/span").text)
     except NoSuchElementException:
         logger.warning('There are 0 people to follow')
@@ -748,7 +748,7 @@ def follow_given_user_followers(browser,
     #  check how many poeple are following this user.
     #  throw RuntimeWarning if we are 0 people following this user
     try:
-        allfollowing = formatNumber(
+        allfollowing = format_number(
             browser.find_element_by_xpath("//li[2]/a/span").text)
     except NoSuchElementException:
         logger.warning('There are 0 people to follow')
@@ -800,7 +800,7 @@ def follow_given_user_following(browser,
     #  check how many poeple are following this user.
     #  throw RuntimeWarning if we are 0 people following this user
     try:
-        allfollowing = formatNumber(
+        allfollowing = format_number(
             browser.find_element_by_xpath("//li[3]/a/span").text)
     except NoSuchElementException:
         logger.warning('There are 0 people to follow')
