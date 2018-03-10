@@ -102,3 +102,4 @@ ENV/
 
 # pytest
 .pytest_cache/
+tests/logs
