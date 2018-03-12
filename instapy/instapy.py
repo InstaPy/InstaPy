@@ -16,9 +16,7 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver import DesiredCapabilities
 import requests
 
-if os.name != 'nt':
-    from .clarifai_util import check_image
-from .settings import Settings
+from .clarifai_util import check_image
 from .comment_util import comment_image
 from .like_util import check_link
 from .like_util import get_links_for_tag
@@ -29,6 +27,7 @@ from .like_util import like_image
 from .like_util import get_links_for_username
 from .login_util import login_user
 from .print_log_writer import log_follower_num
+from .settings import Settings
 from .time_util import sleep
 from .time_util import set_sleep_percentage
 from .util import get_active_users
@@ -48,6 +47,10 @@ from .unfollow_util import set_automated_followed_pool
 
 # Set a logger cache outside the InstaPy object to avoid re-instantiation issues
 loggers = {}
+
+
+class InstaPyError(Exception):
+    """General error for InstaPy exceptions"""
 
 
 class InstaPy:
@@ -81,9 +84,9 @@ class InstaPy:
         self.username = username or os.environ.get('INSTA_USER')
         self.password = password or os.environ.get('INSTA_PW')
         self.nogui = nogui
-        self.logfolder = './logs/'
+        self.logfolder = Settings.log_location + os.path.sep
         if multi_logs is True:
-            self.logfolder = './logs/{}/'.format(self.username)
+            self.logfolder = '{}{}/'.format(Settings.log_location, self.username)
         if not os.path.exists(self.logfolder):
             os.makedirs(self.logfolder)
 
@@ -160,7 +163,7 @@ class InstaPy:
             # initialize and setup logging system for the InstaPy object
             logger = logging.getLogger(__name__)
             logger.setLevel(logging.DEBUG)
-            file_handler = logging.FileHandler( '{}general.log'.format(self.logfolder))
+            file_handler = logging.FileHandler('{}general.log'.format(self.logfolder))
             file_handler.setLevel(logging.DEBUG)
             extra = {"username": self.username}
             logger_formatter = logging.Formatter('%(levelname)s [%(asctime)s] [%(username)s]  %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
@@ -209,7 +212,7 @@ class InstaPy:
             self.browser = webdriver.Firefox(firefox_profile=firefox_profile)
 
         else:
-            chromedriver_location = Settings.browser_location
+            chromedriver_location = Settings.chromedriver_location
             chrome_options = Options()
             chrome_options.add_argument('--dns-prefetch-disable')
             chrome_options.add_argument('--no-sandbox')
@@ -398,10 +401,18 @@ class InstaPy:
         return self
 
     def set_use_clarifai(self, enabled=False, api_key=None, full_match=False):
-        """Defines if the clarifai img api should be used
-        Which 'project' will be used (only 5000 calls per month)"""
+        """
+        Defines if the clarifai img api should be used
+        Which 'project' will be used (only 5000 calls per month)
+
+        Raises:
+            InstaPyError if os is windows
+        """
         if self.aborting:
             return self
+
+        if os.name == 'nt':
+            raise InstaPyError('Clarifai is not supported on Windows')
 
         self.use_clarifai = enabled
 
