@@ -529,8 +529,11 @@ def check_link(browser,
     for dont_likes_regex in dont_like_regex:
         quash = re.search(dont_likes_regex, image_text, re.IGNORECASE)
         if quash:
-            quashed = (quash.group(0)).split('#')[1]
-            iffy = (re.split(r'\W+', dont_likes_regex))[3]
+            quashed = (((quash.group(0)).split('#')[1]).split(' ')[0]).split('\n')[0]   # dismiss possible space and newlines
+            iffy = ((re.split(r'\W+', dont_likes_regex))[3] if dont_likes_regex.endswith('*([^\\d\\w]|$)') else   # 'word' without format
+                     (re.split(r'\W+', dont_likes_regex))[1] if dont_likes_regex.endswith('+([^\\d\\w]|$)') else   # '[word'
+                      (re.split(r'\W+', dont_likes_regex))[3] if dont_likes_regex.startswith('#[\\d\\w]+') else     # ']word'
+                       (re.split(r'\W+', dont_likes_regex))[1])                                                    # '#word'
             inapp_unit = ('Inappropriate! ~ contains \'{}\''.format(quashed) if quashed == iffy else
                               'Inappropriate! ~ contains \'{}\' in \'{}\''.format(iffy, quashed))
             return True, user_name, is_video, inapp_unit

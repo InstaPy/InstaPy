@@ -4,6 +4,7 @@ import json
 import logging
 from math import ceil
 import os
+from platform import python_version
 from datetime import datetime
 from sys import maxsize
 import random
@@ -476,6 +477,7 @@ class InstaPy:
 
             if self.follow_restrict.get(acc_to_follow, 0) < self.follow_times:
                 followed += follow_given_user(self.browser,
+                                              self.username,
                                               acc_to_follow,
                                               self.follow_restrict,
                                               self.blacklist,
@@ -1487,11 +1489,20 @@ class InstaPy:
                        onlyInstapyFollowed=False,
                        onlyInstapyMethod='FIFO',
                        sleep_delay=600,
-                       onlyNotFollowMe=False):
+                       onlyNotFollowMe=False,
+                       unfollow_after=None):
         """Unfollows (default) 10 users from your following list"""
-        self.automatedFollowedPool = set_automated_followed_pool(self.username,
-                                                                 self.logger,
-                                                                 self.logfolder)
+        
+        if unfollow_after is not None:
+            if not python_version().startswith(('2.7', '3')):
+                self.logger.info("`unfollow_after` argument is not available for Python versions below 2.7")
+                unfollow_after = None
+        
+        if onlyInstapyFollowed:
+            self.automatedFollowedPool = set_automated_followed_pool(self.username,
+                                                                     self.logger,
+                                                                     self.logfolder,
+                                                                     unfollow_after)
 
         try:
             unfollowNumber = unfollow(self.browser,

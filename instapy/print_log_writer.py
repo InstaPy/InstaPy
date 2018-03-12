@@ -18,12 +18,12 @@ def log_follower_num(browser, username, logfolder):
     return followed_by
 
 
-def log_followed_pool(login, followed, logger, logfolder):
+def log_followed_pool(login, followed, logger, logfolder, logtime):
     """Prints and logs the followed to
     a seperate file"""
     try:
         with open('{0}{1}_followedPool.csv'.format(logfolder, login), 'a+') as followPool:
-            followPool.write('{},\n'.format(followed))
+            followPool.write('{} ~ {},\n'.format(logtime, followed))
     except BaseException as e:
         logger.error("log_followed_pool error {}".format(str(e)))
 
@@ -57,4 +57,4 @@ def log_record_all_followed(login, followed, logger, logfolder):
         with open('{0}{1}_record_all_followed.csv'.format(logfolder, login), 'a+') as followPool:
             followPool.write('{},\n'.format(followed))
     except BaseException as e:
-        logger.error("log__record_all_followed_pool error {}".format(str(e)))
+        logger.error("log_record_all_followed_pool error {}".format(str(e)))
