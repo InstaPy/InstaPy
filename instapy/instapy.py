@@ -975,6 +975,8 @@ class InstaPy:
         commented = 0
         followed = 0
         usernames = usernames or []
+        # Reset like counter for every username
+        liked_img = 0
 
         for index, username in enumerate(usernames):
             self.logger.info(
@@ -1022,8 +1024,6 @@ class InstaPy:
             if links is False:
                 continue
 
-            # Reset like counter for every username
-            liked_img = 0
 
             for i, link in enumerate(links):
                 # Check if target has reached
