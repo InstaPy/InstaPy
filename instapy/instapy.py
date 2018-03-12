@@ -63,6 +63,7 @@ class InstaPy:
                  show_logs=True,
                  headless_browser=False,
                  proxy_address=None,
+                 proxy_chrome_extension=None,
                  proxy_port=0,
                  bypass_suspicious_attempt=False,
                  multi_logs=False):
@@ -75,6 +76,7 @@ class InstaPy:
         self.headless_browser = headless_browser
         self.proxy_address = proxy_address
         self.proxy_port = proxy_port
+        self.proxy_chrome_extension = proxy_chrome_extension
 
         self.username = username or os.environ.get('INSTA_USER')
         self.password = password or os.environ.get('INSTA_PW')
@@ -222,6 +224,9 @@ class InstaPy:
                 user_agent = "Chrome"
                 chrome_options.add_argument('user-agent={user_agent}'
                                             .format(user_agent=user_agent))
+            # add proxy extension
+            if self.proxy_chrome_extension and not self.headless_browser:
+                chrome_options.add_extension(self.proxy_chrome_extension)
 
             chrome_prefs = {
                 'intl.accept_languages': 'en-US'
