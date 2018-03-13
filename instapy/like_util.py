@@ -481,7 +481,7 @@ def check_link(browser,
         sleep(1)
         num_followers = browser.execute_script(
             "return window._sharedData.entry_data."
-            "ProfilePage[0].user.followed_by.count")
+            "ProfilePage[0].graphql.user.edge_followed_by.count")
         browser.get(link)
         # update server calls
         update_activity()
