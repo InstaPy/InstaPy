@@ -135,7 +135,7 @@ def unfollow(browser,
             browser.get(
                 'https://www.instagram.com/' + username + '/?__a=1')
             pre = browser.find_element_by_tag_name("pre").text
-            user_data = json.loads(pre)['user']
+            user_data = json.loads(pre)['graphql']['user']
         except BaseException as e:
             print("unable to get user information\n", str(e))
 
