@@ -98,3 +98,8 @@ ENV/
 
 # Editors
 .idea
+.vscode
+
+# pytest
+.pytest_cache/
+tests/logs
