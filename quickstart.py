@@ -3,20 +3,28 @@ from instapy import InstaPy
 insta_username = ''
 insta_password = ''
 
-# if you want to run this script on a server, 
-# simply add nogui=True to the InstaPy() constructor
-session = InstaPy(username=insta_username, password=insta_password)
-session.login()
+# set headless_browser=True if you want to run InstaPy on a server
+try:
+    # set these if you're locating the library in the /usr/lib/pythonX.X/ directory
+    # Settings.database_location = '/path/to/instapy.db'
+    # Settings.browser_location = '/path/to/chromedriver'
 
-# set up all the settings
-session.set_upper_follower_count(limit=2500)
-session.set_do_comment(True, percentage=10)
-session.set_comments(['aMEIzing!', 'So much fun!!', 'Nicey!'])
-session.set_dont_include(['friend1', 'friend2', 'friend3'])
-session.set_dont_like(['pizza', 'girl'])
+    session = InstaPy(username=insta_username,
+                      password=insta_password,
+                      headless_browser=False,
+                      multi_logs=True)
+    session.login()
 
-# do the actual liking
-session.like_by_tags(['natgeo', 'world'], amount=100)
+    # settings
+    session.set_upper_follower_count(limit=2500)
+    session.set_do_comment(True, percentage=10)
+    session.set_comments(['aMEIzing!', 'So much fun!!', 'Nicey!'])
+    session.set_dont_include(['friend1', 'friend2', 'friend3'])
+    session.set_dont_like(['pizza', 'girl'])
 
-# end the bot session
-session.end()
+    # actions
+    session.like_by_tags(['natgeo'], amount=1)
+
+finally:
+    # end the bot session
+    session.end()
