@@ -160,7 +160,7 @@ class InstaPy:
             # initialize and setup logging system for the InstaPy object
             logger = logging.getLogger(__name__)
             logger.setLevel(logging.DEBUG)
-            file_handler = logging.FileHandler( '{}general.log'.format(self.logfolder))
+            file_handler = logging.FileHandler('{}general.log'.format(self.logfolder))
             file_handler.setLevel(logging.DEBUG)
             extra = {"username": self.username}
             logger_formatter = logging.Formatter('%(levelname)s [%(asctime)s] [%(username)s]  %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
@@ -494,7 +494,7 @@ class InstaPy:
             else:
                 self.logger.info('---> {} has already been followed more than '
                                  '{} times'.format(
-                                    acc_to_follow, str(self.follow_times)))
+                    acc_to_follow, str(self.follow_times)))
                 sleep(1)
 
         return self
@@ -589,8 +589,8 @@ class InstaPy:
                                         'Image check error: {}'.format(err))
 
                             if (self.do_comment and
-                                user_name not in self.dont_include and
-                                checked_img and
+                                    user_name not in self.dont_include and
+                                    checked_img and
                                     commenting):
 
                                 if temp_comments:
@@ -613,10 +613,10 @@ class InstaPy:
                                 sleep(1)
 
                             if (self.do_follow and
-                                user_name not in self.dont_include and
-                                checked_img and
-                                following and
-                                self.follow_restrict.get(user_name, 0) <
+                                    user_name not in self.dont_include and
+                                    checked_img and
+                                    following and
+                                    self.follow_restrict.get(user_name, 0) <
                                     self.follow_times):
 
                                 followed += follow_user(self.browser,
@@ -654,10 +654,10 @@ class InstaPy:
         return self
 
     def comment_by_locations(self,
-                      locations=None,
-                      amount=50,
-                      media=None,
-                      skip_top_posts=True):
+                             locations=None,
+                             amount=50,
+                             media=None,
+                             skip_top_posts=True):
         """Likes (default) 50 images per given locations"""
         if self.aborting:
             return self
@@ -731,8 +731,8 @@ class InstaPy:
                                         'Image check error: {}'.format(err))
 
                             if (self.do_comment and
-                                user_name not in self.dont_include and
-                                checked_img and
+                                    user_name not in self.dont_include and
+                                    checked_img and
                                     commenting):
 
                                 if temp_comments:
@@ -755,10 +755,10 @@ class InstaPy:
                                 sleep(1)
 
                             if (self.do_follow and
-                                user_name not in self.dont_include and
-                                checked_img and
-                                following and
-                                self.follow_restrict.get(user_name, 0) <
+                                    user_name not in self.dont_include and
+                                    checked_img and
+                                    following and
+                                    self.follow_restrict.get(user_name, 0) <
                                     self.follow_times):
 
                                 followed += follow_user(self.browser,
@@ -862,8 +862,8 @@ class InstaPy:
                             if interact:
                                 username = (self.browser.
                                     find_element_by_xpath(
-                                        '//article/header/div[2]/'
-                                        'div[1]/div/a'))
+                                    '//article/header/div[2]/'
+                                    'div[1]/div/a'))
 
                                 username = username.get_attribute("title")
                                 name = []
@@ -871,7 +871,7 @@ class InstaPy:
 
                                 self.logger.info(
                                     '--> User followed: {}'
-                                    .format(name))
+                                        .format(name))
                                 self.like_by_users(
                                     name,
                                     self.user_interact_amount,
@@ -900,8 +900,8 @@ class InstaPy:
                                         'Image check error: {}'.format(err))
 
                             if (self.do_comment and
-                                user_name not in self.dont_include and
-                                checked_img and
+                                    user_name not in self.dont_include and
+                                    checked_img and
                                     commenting):
 
                                 if temp_comments:
@@ -924,10 +924,10 @@ class InstaPy:
                                 sleep(1)
 
                             if (self.do_follow and
-                                user_name not in self.dont_include and
-                                checked_img and
-                                following and
-                                self.follow_restrict.get(user_name, 0) <
+                                    user_name not in self.dont_include and
+                                    checked_img and
+                                    following and
+                                    self.follow_restrict.get(user_name, 0) <
                                     self.follow_times):
 
                                 followed += follow_user(self.browser,
@@ -1005,8 +1005,8 @@ class InstaPy:
                 continue
 
             if (self.do_follow and
-                username not in self.dont_include and
-                following and
+                    username not in self.dont_include and
+                    following and
                     self.follow_restrict.get(username, 0) < self.follow_times):
                 followed += follow_user(self.browser,
                                         self.follow_restrict,
@@ -1077,8 +1077,8 @@ class InstaPy:
                                     self.logger.error(
                                         'Image check error: {}'.format(err))
                             if (self.do_comment and
-                                user_name not in self.dont_include and
-                                checked_img and
+                                    user_name not in self.dont_include and
+                                    checked_img and
                                     commenting):
 
                                 if temp_comments:
@@ -1196,10 +1196,10 @@ class InstaPy:
                     if not inappropriate:
 
                         if (self.do_follow and
-                            username not in self.dont_include and
-                            following and
-                            self.follow_restrict.get(
-                                username, 0) < self.follow_times):
+                                username not in self.dont_include and
+                                following and
+                                self.follow_restrict.get(
+                                    username, 0) < self.follow_times):
 
                             followed += follow_user(
                                 self.browser,
@@ -1246,8 +1246,8 @@ class InstaPy:
                                     self.logger.error(
                                         'Image check error: {}'.format(err))
                             if (self.do_comment and
-                                user_name not in self.dont_include and
-                                checked_img and
+                                    user_name not in self.dont_include and
+                                    checked_img and
                                     commenting):
 
                                 if temp_comments:
@@ -1356,17 +1356,22 @@ class InstaPy:
 
         return self
 
-    def interact_user_following(self, usernames, amount=10, randomize=False):
+    def interact_user_following(self, usernames, amount=10, randomize=False, split_follow=False):
 
         userToInteract = []
         if not isinstance(usernames, list):
             usernames = [usernames]
+
+        amount_per_user = amount
+        if split_follow:
+            amount_per_user = int(ceil(amount / len(usernames)))
+            self.logger.info('--> Follow for {} each giving user'.format(amount_per_user))
         try:
             for user in usernames:
                 userToInteract += get_given_user_following(
                     self.browser,
                     user,
-                    amount,
+                    amount_per_user,
                     self.dont_include,
                     self.username,
                     randomize,
@@ -1398,17 +1403,21 @@ class InstaPy:
                               amount=10,
                               randomize=False,
                               interact=False,
-                              sleep_delay=600):
+                              sleep_delay=600,
+                              split_follow=False):
 
         userFollowed = []
         if not isinstance(usernames, list):
             usernames = [usernames]
 
-        amount_per_user = int(ceil(amount / len(usernames)))
-        self.logger.info('--> Follow for {} each giving user'.format(amount_per_user))
+        amount_per_user = amount
+        if split_follow:
+            amount_per_user = int(ceil(amount / len(usernames)))
+            self.logger.info('--> Follow for {} each giving user'.format(amount_per_user))
 
         for user in usernames:
             try:
+                self.logger.info('--> Follow for: {} followers'.format(user))
                 userFollowed += follow_given_user_followers(self.browser,
                                                             user,
                                                             amount_per_user,
@@ -1451,16 +1460,21 @@ class InstaPy:
                               amount=10,
                               randomize=False,
                               interact=False,
-                              sleep_delay=600):
+                              sleep_delay=600,
+                              split_follow=False):
         userFollowed = []
         if not isinstance(usernames, list):
             usernames = [usernames]
 
+        amount_per_user = amount
+        if split_follow:
+            amount_per_user = int(ceil(amount / len(usernames)))
+            self.logger.info('--> Follow for {} each giving user'.format(amount_per_user))
         for user in usernames:
             try:
                 userFollowed += follow_given_user_following(self.browser,
                                                             user,
-                                                            amount,
+                                                            amount_per_user,
                                                             self.dont_include,
                                                             self.username,
                                                             self.follow_restrict,
@@ -1504,12 +1518,12 @@ class InstaPy:
                        onlyNotFollowMe=False,
                        unfollow_after=None):
         """Unfollows (default) 10 users from your following list"""
-        
+
         if unfollow_after is not None:
             if not python_version().startswith(('2.7', '3')):
                 self.logger.info("`unfollow_after` argument is not available for Python versions below 2.7")
                 unfollow_after = None
-        
+
         if onlyInstapyFollowed:
             self.automatedFollowedPool = set_automated_followed_pool(self.username,
                                                                      self.logger,
@@ -1617,9 +1631,9 @@ class InstaPy:
 
                                 if liked:
                                     username = (self.browser.
-                                                find_element_by_xpath(
-                                                    '//article/header/div[2]/'
-                                                    'div[1]/div/a'))
+                                        find_element_by_xpath(
+                                        '//article/header/div[2]/'
+                                        'div[1]/div/a'))
 
                                     username = username.get_attribute("title")
                                     name = []
@@ -1628,7 +1642,7 @@ class InstaPy:
                                     if interact:
                                         self.logger.info(
                                             '--> User followed: {}'
-                                            .format(name))
+                                                .format(name))
                                         self.like_by_users(
                                             name,
                                             self.user_interact_amount,
@@ -1660,7 +1674,7 @@ class InstaPy:
                                                 ' {}'.format(err))
 
                                     if (self.do_comment and
-                                        user_name not in self.dont_include and
+                                            user_name not in self.dont_include and
                                             checked_img and commenting):
                                         if temp_comments:
                                             # use clarifai related
@@ -1668,29 +1682,29 @@ class InstaPy:
                                             comments = temp_comments
                                         elif is_video:
                                             comments = (
-                                                self.comments +
-                                                self.video_comments)
+                                                    self.comments +
+                                                    self.video_comments)
                                         else:
                                             comments = (
-                                                self.comments +
-                                                self.photo_comments)
+                                                    self.comments +
+                                                    self.photo_comments)
                                         commented += comment_image(
-                                                        self.browser,
-                                                        user_name,
-                                                        comments,
-                                                        self.blacklist,
-                                                        self.logger,
-                                                        self.logfolder)
+                                            self.browser,
+                                            user_name,
+                                            comments,
+                                            self.blacklist,
+                                            self.logger,
+                                            self.logfolder)
                                     else:
                                         self.logger.info('--> Not commented')
                                         sleep(1)
 
                                     if (self.do_follow and
-                                        user_name not in self.dont_include and
-                                        checked_img and
-                                        following and
-                                        self.follow_restrict.get(
-                                            user_name, 0) < self.follow_times):
+                                            user_name not in self.dont_include and
+                                            checked_img and
+                                            following and
+                                            self.follow_restrict.get(
+                                                user_name, 0) < self.follow_times):
                                         followed += follow_user(
                                             self.browser,
                                             self.follow_restrict,
@@ -1775,18 +1789,18 @@ class InstaPy:
             self.display.stop()
 
         self.logger.info('Session ended - {}'.format(
-                datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
+            datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
         self.logger.info('-' * 20 + '\n\n')
 
         with open('{}followed.txt'.format(self.logfolder), 'w') as followFile:
             followFile.write(str(self.followed))
 
     def follow_by_tags(self,
-                     tags=None,
-                     amount=50,
-                     media=None,
-                     skip_top_posts=True,
-                     use_smart_hashtags=False):
+                       tags=None,
+                       amount=50,
+                       media=None,
+                       skip_top_posts=True,
+                       use_smart_hashtags=False):
         if self.aborting:
             return self
 
@@ -1837,12 +1851,12 @@ class InstaPy:
 
                     if not inappropriate:
                         followed += follow_user(self.browser,
-                                                        self.follow_restrict,
-                                                        self.username,
-                                                        user_name,
-                                                        self.blacklist,
-                                                        self.logger,
-                                                        self.logfolder)
+                                                self.follow_restrict,
+                                                self.username,
+                                                user_name,
+                                                self.blacklist,
+                                                self.logger,
+                                                self.logfolder)
                     else:
                         self.logger.info(
                             '--> User not followed: {}'.format(reason))
