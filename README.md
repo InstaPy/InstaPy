@@ -46,6 +46,7 @@ Table of Contents
   * [Unfollowing](#unfollowing)
   * [Don't unfollow active users](#dont-unfollow-active-users)
   * [Interactions based on the number of followers a user has](#interactions-based-on-the-number-of-followers-a-user-has)
+  * [Comment by Locations](#comment-by-locations)
   * [Like by Locations](#like-by-locations)
   * [Like by Tags](#like-by-tags)
   * [Like by Feeds](#like-by-feeds)
@@ -67,8 +68,10 @@ Table of Contents
 * [Running Multiple Accounts](#running-multiple-accounts)
 * [Running with Docker microservices manual](#running-with-docker-microservices-manual)
 * [Running all-in-one with Docker (obsolete)](#running-all-in-one-with-docker-obsolete)
-* [Automate with cron](#automate-with-cron)
-* [Automate with Schedule](#automate-with-schedule)
+* [Automate InstaPy](#automate-instapy)
+  * [Windows Task Scheduler](#windows-task-scheduler)
+  * [cron](#cron)
+  * [Schedule](#schedule)
 * [Extra Informations](#extra-informations)
 
 ## Getting started
@@ -287,13 +290,20 @@ session.interact_user_followers(['natgeo'], amount=10, randomize=True)
 # onlyInstapyMethod is using only when onlyInstapyFollowed = True
 # sleep_delay sets the time it will sleep every 10 profile unfollow, default
 # is 10min
-
 session.unfollow_users(amount=10, onlyInstapyFollowed = True, onlyInstapyMethod = 'FIFO', sleep_delay=60 )
 
 # You can only unfollow user that won't follow you back by adding
 # onlyNotFollowMe = True it still only support on profile following
 # you should disable onlyInstapyFollowed when use this
 session.unfollow_users(amount=10, onlyNotFollowMe=True, sleep_delay=60)
+
+# You can also unfollow users only after following them certain amount of time,
+# this will provide seamless unfollow activity without the notice of the targeted user
+# To use, just add `unfollow_after` argument with the desired time, e.g.
+session.unfollow_users(amount=10, onlyInstapyFollowed = True, onlyInstapyMethod = 'FIFO', sleep_delay=600, unfollow_after=48*60*60)
+# will unfollow users only after following them 48 hours (2 days), since `unfollow_after`s value
+# is seconds, you can simply give it `unfollow_after=100` to unfollow after 100 seconds,
+# but `1*60*60` (which is equal to 1 hour or 3600 seconds) style is a lot simpler to use 👍
 ```
 
 ### Don't unfollow active users
@@ -319,6 +329,19 @@ session.set_upper_follower_count(limit = 250)
 
 session.set_lower_follower_count(limit = 1)
 ```
+
+### Comment by Locations
+
+```python
+session.comment_by_locations(['224442573/salton-sea/'], amount=100)
+# or
+session.comment_by_locations(['224442573'], amount=100)
+# or include media entities from top posts section
+
+session.comment_by_locations(['224442573'], amount=5, skip_top_posts=False)
+```
+
+This method allows commenting by locations, without liking posts. To get locations follow instructions in 'Like by Locations'
 
 ### Like by Locations
 
@@ -467,6 +490,17 @@ You can use InstaPy behind a proxy by specifying server address and port
 
 ```python
 session = InstaPy(username=insta_username, password=insta_password, proxy_address='8.8.8.8', proxy_port=8080)
+```
+
+To use proxy with authentication you should firstly generate proxy chrome extension (works only with Chrome and headless_browser=False).
+
+```python
+from proxy_extension import create_proxy_extension
+
+proxy = 'login:password@ip:port'
+proxy_chrome_extension = create_proxy_extension(proxy)
+
+session = InstaPy(username=insta_username, password=insta_password, proxy_chrome_extension=proxy_chrome_extension, nogui=True)
 ```
 
 ### Switching to Firefox
@@ -658,7 +692,25 @@ After the build succeeds, you can simply run the container with:
 docker run --name=instapy -e INSTA_USER=<your-user> -e INSTA_PW=<your-pw> -d --rm instapy
 ```
 
-## Automate with `cron`
+## Automate InstaPy
+
+### [Windows Task Scheduler](https://msdn.microsoft.com/en-us/library/windows/desktop/aa383614(v=vs.85).aspx)
+
+You can use Window's built in Task Scheduler to automate InstaPy, using a variety of trigger types: time, login, computer idles, etc. To schedule a simple daily run of an Instapy script follow the below directions
+1. Open [Windows Task Scheduler](https://msdn.microsoft.com/en-us/library/windows/desktop/aa383614(v=vs.85).aspx)
+2. Select "Create Basic Task"
+3. Fill out "Name" and "Description" as desired, click "Next"
+4. On "Trigger" screen select how frequently to run, click "Next" (Frequency can be modified later)
+5. On "Daily" screen, hit "Next"
+6. "Action Screen" select "Start a program" and then click "Next"
+7. "Program/script" enter the path, or browse to select the path to python. ([How to find python path on Windows](https://stackoverflow.com/questions/647515/how-can-i-get-python-path-under-windows))
+8. "Add arguments" input the InstaPy script path you wish to run. (Example: C:\Users\USER_NAME\Documents\GitHub\InstaPy\craigquick.py)
+9. "Start in" input Instapy install location (Example: C:\Users\USER_NAME\Documents\GitHub\InstaPy\). Click "Next"
+10. To finish the process, hit "Finish"
+
+
+
+### `cron`
 
 You can add InstaPy to your crontab, so that the script will be executed regularly. This is especially useful for servers, but be sure not to break Instagrams follow and like limits.
 
@@ -672,7 +724,7 @@ crontab -e
 45 */4 * * * cd /home/user/InstaPy && /usr/bin/python ./quickstart.py
 ```
 
-## Automate with [Schedule](https://github.com/dbader/schedule)
+### [Schedule](https://github.com/dbader/schedule)
 
 > Schedule is an in-process scheduler for periodic jobs that uses the builder pattern for configuration. Schedule lets you run Python functions periodically at pre-determined intervals using a simple, human-friendly syntax.
 

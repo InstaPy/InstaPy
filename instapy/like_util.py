@@ -341,6 +341,9 @@ def get_links_for_username(browser,
     main_elem = browser.find_element_by_tag_name('main')
     link_elems = main_elem.find_elements_by_tag_name('a')
     total_links = len(link_elems)
+    # Check there is at least one link
+    if total_links == 0:
+        return False
     links = []
     filtered_links = 0
     try:
@@ -358,8 +361,10 @@ def get_links_for_username(browser,
 
     while (filtered_links < amount) and not abort:
         amount_left = amount - filtered_links
-        # Average items of the right media per page loaded
+
+        # Average items of the right media per page loaded (total links checked for not zero)
         new_per_page = ceil(12 * filtered_links / total_links)
+
         if new_per_page == 0:
             # Avoid division by zero
             new_per_page = 1. / 12.
@@ -481,7 +486,7 @@ def check_link(browser,
         sleep(1)
         num_followers = browser.execute_script(
             "return window._sharedData.entry_data."
-            "ProfilePage[0].user.followed_by.count")
+            "ProfilePage[0].graphql.user.edge_followed_by.count")
         browser.get(link)
         # update server calls
         update_activity()
@@ -522,39 +527,54 @@ def check_link(browser,
                 "#[\d\w]*" + dont_likes + "[\d\w]*([^\d\w]|$)")
 
     for dont_likes_regex in dont_like_regex:
-        if re.search(dont_likes_regex, image_text, re.IGNORECASE):
-            return True, user_name, is_video, 'Inappropriate'
+        quash = re.search(dont_likes_regex, image_text, re.IGNORECASE)
+        if quash:
+            quashed = (((quash.group(0)).split('#')[1]).split(' ')[0]).split('\n')[0]   # dismiss possible space and newlines
+            iffy = ((re.split(r'\W+', dont_likes_regex))[3] if dont_likes_regex.endswith('*([^\\d\\w]|$)') else   # 'word' without format
+                     (re.split(r'\W+', dont_likes_regex))[1] if dont_likes_regex.endswith('+([^\\d\\w]|$)') else   # '[word'
+                      (re.split(r'\W+', dont_likes_regex))[3] if dont_likes_regex.startswith('#[\\d\\w]+') else     # ']word'
+                       (re.split(r'\W+', dont_likes_regex))[1])                                                    # '#word'
+            inapp_unit = ('Inappropriate! ~ contains \'{}\''.format(quashed) if quashed == iffy else
+                              'Inappropriate! ~ contains \'{}\' in \'{}\''.format(iffy, quashed))
+            return True, user_name, is_video, inapp_unit
 
     return False, user_name, is_video, 'None'
 
 
-def like_image(browser, username, blacklist, logger):
+def like_image(browser, username, blacklist, logger, logfolder):
     """Likes the browser opened image"""
     like_elem = browser.find_elements_by_xpath(
         "//a[@role='button']/span[text()='Like']/..")
-    liked_elem = browser.find_elements_by_xpath(
-        "//a[@role='button']/span[text()='Unlike']")
-
     if len(like_elem) == 1:
         # sleep real quick right before clicking the element
         sleep(2)
         click_element(browser, like_elem[0])
-
-        logger.info('--> Image Liked!')
-        update_activity('likes')
-        if blacklist['enabled'] is True:
-            action = 'liked'
-            add_user_to_blacklist(
-                browser, username, blacklist['campaign'], action, logger
-            )
-        sleep(2)
-        return True
-    elif len(liked_elem) == 1:
-        logger.info('--> Already Liked!')
-        return False
+        # check now we have unlike instead of like
+        liked_elem = browser.find_elements_by_xpath(
+            "//a[@role='button']/span[text()='Unlike']")
+        if len(liked_elem) == 1:
+            logger.info('--> Image Liked!')
+            update_activity('likes')
+            if blacklist['enabled'] is True:
+                action = 'liked'
+                add_user_to_blacklist(
+                    browser, username, blacklist['campaign'], action, logger, logfolder
+                )
+            sleep(2)
+            return True
+        else:
+            # if like not seceded wait for 2 min
+            logger.info('--> Image was not able to get Liked! maybe blocked ?')
+            sleep(120)
     else:
-        logger.info('--> Invalid Like Element!')
-        return False
+        liked_elem = browser.find_elements_by_xpath(
+            "//a[@role='button']/span[text()='Unlike']")
+        if len(liked_elem) == 1:
+            logger.info('--> Image already liked! ')
+            return False
+
+    logger.info('--> Invalid Like Element!')
+    return False
 
 
 def get_tags(browser, url):

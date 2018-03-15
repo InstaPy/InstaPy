@@ -1,10 +1,14 @@
 import csv
+import datetime
 import os
+import re
+import sqlite3
+
+from selenium.common.exceptions import NoSuchElementException
+
+from .settings import Settings
 from .time_util import sleep
 from .time_util import sleep_actual
-from selenium.common.exceptions import NoSuchElementException
-import sqlite3
-import datetime
 
 
 def validate_username(browser,
@@ -24,7 +28,7 @@ def validate_username(browser,
     browser.get('https://www.instagram.com/{}'.format(username))
     sleep(1)
     try:
-        followers = (formatNumber(browser.find_element_by_xpath("//a[contains"
+        followers = (format_number(browser.find_element_by_xpath("//a[contains"
                      "(@href,'followers')]/span").text))
     except NoSuchElementException:
         return '---> {} account is private, skipping user...'.format(username)
@@ -43,7 +47,7 @@ def update_activity(action=None):
     """Record every Instagram server call (page load, content load, likes,
     comments, follows, unfollow)."""
 
-    conn = sqlite3.connect('./db/instapy.db')
+    conn = sqlite3.connect(Settings.database_location)
     with conn:
         conn.row_factory = sqlite3.Row
         cur = conn.cursor()
@@ -110,7 +114,7 @@ def get_active_users(browser, username, posts, logger):
     browser.get('https://www.instagram.com/' + username)
     sleep(2)
 
-    total_posts = formatNumber(browser.find_element_by_xpath(
+    total_posts = format_number(browser.find_element_by_xpath(
         "//span[contains(@class,'_t98z6')]//span").text)
 
     # if posts > total user posts, assume total posts
@@ -162,16 +166,42 @@ def get_active_users(browser, username, posts, logger):
 
 def delete_line_from_file(filepath, lineToDelete, logger):
     try:
+        file_path_old = filepath+".old"
+        file_path_Temp = filepath+".temp"
+
         f = open(filepath, "r")
         lines = f.readlines()
         f.close()
-        f = open(filepath, "w")
 
+        f = open(file_path_Temp, "w")
         for line in lines:
-
-            if line != lineToDelete:
+            if not line.endswith(lineToDelete):
                 f.write(line)
+            else:
+                logger.info("{} removed from csv".format(line))
         f.close()
+
+        # File leftovers that should not exist, but if so remove it
+        while os.path.isfile(file_path_old):
+            try:
+                os.remove(file_path_old)
+            except OSError as e:
+                logger.error("Can't remove file_path_old {}".format(str(e)))
+                sleep(5)
+
+        # rename original file to _old
+        os.rename(filepath, file_path_old)
+        # rename new temp file to filepath
+        while os.path.isfile(file_path_Temp):
+            try:
+                os.rename(file_path_Temp, filepath)
+            except OSError as e:
+                logger.error("Can't rename file_path_Temp to filepath {}".format(str(e)))
+                sleep(5)
+
+        # remove old and temp file
+        os.remove(file_path_old)
+
     except BaseException as e:
         logger.error("delete_line_from_file error {}".format(str(e)))
 
@@ -197,17 +227,17 @@ def scroll_bottom(browser, element, range_int):
 
 # I'm guessing all three have their advantages/disadvantages
 # Before committing over this code, you MUST justify your change
-# and potentially adding an 'if' statement that applies to your 
+# and potentially adding an 'if' statement that applies to your
 # specific case. See the following issue for more details
 # https://github.com/timgrossmann/InstaPy/issues/1232
 def click_element(browser, element, tryNum=0):
     # explaination of the following recursive function:
     #   we will attempt to click the element given, if an error is thrown
-    #   we know something is wrong (element not in view, element doesn't 
-    #   exist, ...). on each attempt try and move the screen around in 
+    #   we know something is wrong (element not in view, element doesn't
+    #   exist, ...). on each attempt try and move the screen around in
     #   various ways. if all else fails, programmically click the button
     #   using `execute_script` in the browser.
-    
+
     try:
         # use Selenium's built in click function
         element.click()
@@ -229,7 +259,7 @@ def click_element(browser, element, tryNum=0):
             # print("attempting last ditch effort for click, `execute_script`")
             browser.execute_script("document.getElementsByClassName('" +  element.get_attribute("class") + "')[0].click()")
             return # end condition for the recursive function
-            
+
 
         # sleep for 1 second to allow window to adjust (may or may not be needed)
         sleep_actual(1)
@@ -238,9 +268,18 @@ def click_element(browser, element, tryNum=0):
 
         # try again!
         click_element(browser, element, tryNum)
-    
 
-def formatNumber(number):
-    formattedNum = number.replace(',', '').replace('.', '')
-    formattedNum = int(formattedNum.replace('k', '00').replace('m', '00000'))
-    return formattedNum
+
+def format_number(number):
+    """
+    Format number. Remove the unused comma. Replace the concatenation with relevant zeros. Remove the dot.
+
+    :param number: str
+
+    :return: int
+    """
+    formatted_num = number.replace(',', '')
+    formatted_num = re.sub(r'(k)$', '00' if '.' in formatted_num else '000', formatted_num)
+    formatted_num = re.sub(r'(m)$', '00000' if '.' in formatted_num else '000000', formatted_num)
+    formatted_num = formatted_num.replace('.', '')
+    return int(formatted_num)
