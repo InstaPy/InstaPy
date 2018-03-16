@@ -1316,7 +1316,7 @@ class InstaPy:
 
         return self
 
-    def interact_user_followers(self, usernames, amount=10, randomize=False):
+    def interact_user_followers(self, usernames, amount=10, randomize=False, respectAmount=False):
 
         userToInteract = []
         if not isinstance(usernames, list):
@@ -1353,6 +1353,12 @@ class InstaPy:
                            self.user_interact_amount,
                            self.user_interact_random,
                            self.user_interact_media)
+
+        if self.followed < amount and respectAmount:
+            self.logger.info('!!! Followed : {} < Amount : {}'.format(self.followed, amount))
+            newAmount = amount - self.followed
+            self.logger.info('Restarting with New amount : {}'.format(newAmount))
+            return self.interact_user_followers(usernames, newAmount, randomize, respectAmount)
 
         return self
 
