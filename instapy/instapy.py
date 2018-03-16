@@ -9,6 +9,7 @@ from datetime import datetime
 from sys import maxsize
 import random
 
+import pickle
 from pyvirtualdisplay import Display
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
@@ -1854,3 +1855,19 @@ class InstaPy:
         self.inap_img += inap_img
 
         return self
+
+    def load_cookies(self):
+        if os.path.isfile('cookies.pkl'):
+            self.browser.get('https://www.instagram.com')
+            cookies = pickle.load(open("cookies.pkl", "rb"))
+            for cookie in cookies:
+                self.browser.add_cookie(cookie)
+            print('Cookies loaded successfully!')
+
+            log_follower_num(self.browser, self.username, self.logfolder)
+            return True
+        return False
+
+    def save_cookies(self):
+        pickle.dump(self.browser.get_cookies(), open("cookies.pkl", "wb"))
+        print('Cookies saved successfully!')
