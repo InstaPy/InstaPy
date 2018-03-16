@@ -91,6 +91,8 @@ Table of Contents
 ### Basic Installation:
 
 ```bash
+1. pip install git+https://github.com/timgrossmann/InstaPy.git
+or
 1. git clone https://github.com/timgrossmann/InstaPy.git
 2. cd InstaPy
 3. pip install .

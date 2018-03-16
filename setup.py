@@ -20,5 +20,7 @@ setup(
     url='https://github.com/timgrossmann/InstaPy',
     py_modules='instapy',
     description=description,
-    install_requires=requirements
+    install_requires=requirements,
+    packages=['instapy'],
+    include_package_data=True,
 )
