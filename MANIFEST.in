@@ -1,2 +1,2 @@
-recursive-exclude assets *
+recursive-include assets *
 recursive-include db *
