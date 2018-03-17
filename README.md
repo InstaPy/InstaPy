@@ -90,9 +90,22 @@ Table of Contents
 
 ### Basic Installation:
 
+The best way to install InstaPy is to create a virtualenv, install InstaPy there and run it from a separate file:
+
 ```bash
-1. pip install git+https://github.com/timgrossmann/InstaPy.git
-or
+1. virtualenv venv
+2. source venv/bin/activate
+3. pip install git+https://github.com/timgrossmann/InstaPy.git
+```
+
+If you're not familiar with virtualenv, please [read about it here](https://virtualenv.pypa.io/en/stable/) and use it to your advantage.
+In essence, this is be the _only_ Python library you should install as root (e.g., with sudo). All other Python libraries should be in a virtualenv.
+Now copy/paste the `quickstart.py` Python code below and run your first InstaPy script. Remember to run it with Python from the virtualenv, so from `venv/bin/python`. To make sure which Python is used, run `which python`, it will tell you which Python is 'active'.
+Running `source venv/bin/activate` will activate the correct Python to run InstaPy. To exit an activated virtualenv run `deactivate'.
+
+Another - the old - way of installing InstaPy is to use the source itself:
+
+```bash
 1. git clone https://github.com/timgrossmann/InstaPy.git
 2. cd InstaPy
 3. pip install .
