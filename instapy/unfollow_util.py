@@ -109,7 +109,7 @@ def unfollow(browser,
                                        .format(int(sleep_delay/60)))
                         sleep(sleep_delay)
                         hasSlept = True
-                        continue
+                        pass
 
                 if person not in dont_include:
                     browser.get('https://www.instagram.com/' + person)
@@ -315,7 +315,7 @@ def unfollow(browser,
         try:
             following_link = browser.find_elements_by_xpath(
                 '//article//ul//li[3]')
-            
+
             click_element(browser, following_link[0]) # following_link[0].click()
             # update server calls
             update_activity()
@@ -360,7 +360,7 @@ def unfollow(browser,
                                     .format(int(sleep_delay/60)))
                         sleep(sleep_delay)
                         hasSlept = True
-                        continue
+                        pass
 
                 if person not in dont_include:
                     unfollowNum += 1
@@ -432,7 +432,7 @@ def unfollow_user(browser, logger):
 
     if unfollow_button.text == 'Following':
         click_element(browser, unfollow_button) # unfollow_button.send_keys("\n")
-        
+
         update_activity('unfollows')
         logger.warning('--> User unfollowed due to Inappropriate Content')
         sleep(3)

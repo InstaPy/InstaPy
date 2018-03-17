@@ -5,6 +5,7 @@ import random
 from math import ceil
 from re import findall
 from selenium.webdriver.common.keys import Keys
+from selenium.common.exceptions import WebDriverException
 
 from .time_util import sleep
 from .util import update_activity
@@ -484,9 +485,27 @@ def check_link(browser,
         # update server calls
         update_activity()
         sleep(1)
-        num_followers = browser.execute_script(
-            "return window._sharedData.entry_data."
-            "ProfilePage[0].graphql.user.edge_followed_by.count")
+
+        # num_followers = browser.execute_script(
+        #     "return window._sharedData.entry_data."
+        #     "ProfilePage[0].graphql.user.edge_followed_by.count")
+
+        try:
+            num_followers = browser.execute_script(
+                "return window._sharedData.entry_data."
+                "ProfilePage[0].graphql.user.edge_followed_by.count")
+        except WebDriverException:
+            try:
+                browser.execute_script("location.reload()")
+                num_followers = browser.execute_script(
+                    "return window._sharedData.entry_data."
+                    "ProfilePage[0].graphql.user.edge_followed_by.count")
+            except WebDriverException:
+                num_followers = 'undefined'
+                like_by_followers_lower_limit = None
+                like_by_followers_upper_limit = None
+
+
         browser.get(link)
         # update server calls
         update_activity()
@@ -533,7 +552,8 @@ def check_link(browser,
             iffy = ((re.split(r'\W+', dont_likes_regex))[3] if dont_likes_regex.endswith('*([^\\d\\w]|$)') else   # 'word' without format
                      (re.split(r'\W+', dont_likes_regex))[1] if dont_likes_regex.endswith('+([^\\d\\w]|$)') else   # '[word'
                       (re.split(r'\W+', dont_likes_regex))[3] if dont_likes_regex.startswith('#[\\d\\w]+') else     # ']word'
-                       (re.split(r'\W+', dont_likes_regex))[1])                                                    # '#word'
+                       (re.split(r'\W+', dont_likes_regex))[1])                                                      # '#word'
+            quashed = quashed.encode('ascii', 'ignore')
             inapp_unit = ('Inappropriate! ~ contains \'{}\''.format(quashed) if quashed == iffy else
                               'Inappropriate! ~ contains \'{}\' in \'{}\''.format(iffy, quashed))
             return True, user_name, is_video, inapp_unit
