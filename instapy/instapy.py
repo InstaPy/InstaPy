@@ -1541,7 +1541,12 @@ class InstaPy:
 
         return self
 
-    def like_by_feed(self,
+    def like_by_feed(self, **kwargs):
+        """Like the users feed"""
+        self.like_by_feed_generator(**kwargs)
+        return self
+
+    def like_by_feed_generator(self,
                      amount=50,
                      randomize=False,
                      unfollow=False,
@@ -1549,7 +1554,7 @@ class InstaPy:
         """Like the users feed"""
 
         if self.aborting:
-            return self
+            return
 
         liked_img = 0
         already_liked = 0
@@ -1570,7 +1575,7 @@ class InstaPy:
             except NoSuchElementException:
                 self.logger.warning('Too few images, aborting')
                 self.aborting = True
-                return self
+                return
 
             num_of_search += 1
 
@@ -1699,6 +1704,8 @@ class InstaPy:
                                     else:
                                         self.logger.info('--> Not following')
                                         sleep(1)
+
+                                    yield self
                                 else:
                                     already_liked += 1
                             else:
@@ -1723,7 +1730,7 @@ class InstaPy:
         self.inap_img += inap_img
         self.commented += commented
 
-        return self
+        return
 
     def set_dont_unfollow_active_users(self, enabled=False, posts=4):
         """Prevents unfollow followers who have liked one of
