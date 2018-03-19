@@ -6,9 +6,10 @@ from datetime import datetime, timedelta
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.keys import Keys 
 from .util import get_number_of_posts
+from .util import click_element
+from .util import update_activity    
 
-#remove duplicates from arrawy while preserving order
-def f7(seq):
+def remove_duplicates_preserving_order(seq):
     seen = set()
     seen_add = seen.add
     return [x for x in seq if not (x in seen or seen_add(x))]
@@ -161,8 +162,7 @@ def extract_information(browser, nick, daysold, max_pic):
     except NoSuchElementException as err:
         print('\n- Something went terribly wrong\n - Stopping everything and moving on with what I have\n')
   
-    # remove duplicates, preserve order:
-    links4 = f7(links3)
+    links4 = remove_duplicates_preserving_order(links3)
     post_infos = []
             
     #PICTURES SCRAPPER ONE BY ONE
@@ -177,12 +177,12 @@ def extract_information(browser, nick, daysold, max_pic):
         counter = counter + 1
         print ("\nScrapping link: ", link)
         
-        
         try:
             browser.get(link)  
             user_commented_list, pic_date_time = extract_post_info(browser)     
             user_commented_total_list = user_commented_total_list + user_commented_list
 
+            #stop if date older than daysago
             pastdate = datetime.now() - timedelta(days=daysold)
             date_of_pic = datetime.strptime(pic_date_time, "%Y-%m-%dT%H:%M:%S.%fZ")
             print ("date of pic: ", date_of_pic)
@@ -217,3 +217,65 @@ def extract_information(browser, nick, daysold, max_pic):
     print ("\nGetting list of users who commented on this profile finished: ")
     print (user_commented_list, "\n")
     return user_commented_list
+
+def users_liked (browser, photo_url, amount=100):
+    
+    try:
+            browser.get(photo_url)  
+            photo_likers = likers_from_photo(browser, amount)     
+    except NoSuchElementException:
+            print('- Could not get information from post: ' + photo_url)
+            
+    return photo_likers
+    
+def likers_from_photo(browser, amount):                                        
+    print ("runnink likers from photo function")
+    user_liked_list = []
+    
+    liked_this = browser.find_elements_by_xpath("//section/main/div/div[1]/article/div[2]/section[2]/div/a/span")
+    sleep(0.5)
+    click_element(browser, liked_this[0])
+    print ("opening likes")
+    # update server calls
+    #update_activity()    
+        
+    sleep(2)
+
+    # find dialog box
+    dialog = browser.find_element_by_xpath(
+        "//div[text()='Likes']/following-sibling::div")
+    print (dialog)
+
+    # scroll down the page
+    previous_len = -1
+    follow_buttons = []
+    
+    while (len(follow_buttons) != previous_len):
+        if previous_len+10 >= amount:
+            break
+        previous_len = len(follow_buttons)
+        browser.execute_script(
+            "arguments[0].scrollTop = arguments[0].scrollHeight", dialog)
+        follow_buttons = dialog.find_elements_by_xpath(
+        "//div/div/span/button[text()='Follow']")
+        print ("Scrolling down... ", len(follow_buttons) ," / ",amount)
+        sleep(1)
+    
+    print ("Scrolling finished")
+    person_list = []
+    
+    for person in follow_buttons:
+        person_list.append(person.find_element_by_xpath(
+            "../../../*").find_elements_by_tag_name("a")[1].text)
+    sleep(1)
+    try:
+        close = browser.find_element_by_xpath("//span[text()='Close']")
+        click_element(browser, close)
+        print ("picture closed")
+    except:
+        pass
+           
+    print ("\nGot ",len(person_list)," likers:\n", person_list, "\n")      
+    sleep(2)
+    return person_list    
+                        

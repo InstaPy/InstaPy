@@ -48,7 +48,7 @@ from .unfollow_util import set_automated_followed_pool
 from .feed_util import get_like_on_feed
 from .commenters_util import extract_post_info     
 from .commenters_util import extract_information
-
+from .commenters_util import users_liked
 
 
 # Set a logger cache outside the InstaPy object to avoid re-instantiation issues
@@ -471,6 +471,11 @@ class InstaPy:
         elif tags:
             self.clarifai_img_tags.append((tags, comment, comments))
 
+        return self
+                                 
+    def follow_likers(self, photo_url, amount=2):
+        user_liked_list = users_liked (self.browser, photo_url, amount)
+        self.follow_by_list(user_liked_list[:amount])
         return self
 
     def follow_commenters(self, nick_array, amount=100, daysold=365, max_pic = 100):
