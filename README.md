@@ -99,6 +99,21 @@ or
 ```
 4. Download ```chromedriver``` for your system [from here](https://sites.google.com/a/chromium.org/chromedriver/downloads). Extract the .zip file and put it in ```/assets``` folder.
 
+### Preferred Installation:
+
+The best way to install InstaPy is to create a virtualenv, install InstaPy there and run it from a separate file:
+
+```bash
+1. virtualenv venv
+2. source venv/bin/activate
+3. pip install git+https://github.com/timgrossmann/InstaPy.git
+```
+
+If you're not familiar with virtualenv, please [read about it here](https://virtualenv.pypa.io/en/stable/) and use it to your advantage.
+In essence, this is be the _only_ Python library you should install as root (e.g., with sudo). All other Python libraries should be inside a virtualenv.
+Now copy/paste the `quickstart.py` Python code below and run your first InstaPy script. Remember to run it with Python from the virtualenv, so from `venv/bin/python`. To make sure which Python is used, run `which python`, it will tell you which Python is 'active'.
+Running `source venv/bin/activate` will activate the correct Python to run InstaPy. To exit an activated virtualenv run `deactivate'.
+
 ### Set it up yourself with this Basic Setup
 
 Basic setup is a good way to test the tool. At project root folder open `quickstart.py` and update with your username and password.
