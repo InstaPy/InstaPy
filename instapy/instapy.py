@@ -1564,7 +1564,6 @@ class InstaPy:
 
         return self
 
-
     def like_by_feed(self, **kwargs):
         """Like the users feed"""
         self.like_by_feed_generator(**kwargs)
@@ -1755,7 +1754,6 @@ class InstaPy:
         self.commented += commented
 
         return
-
 
     def set_dont_unfollow_active_users(self, enabled=False, posts=4):
         """Prevents unfollow followers who have liked one of
