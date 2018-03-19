@@ -91,6 +91,9 @@ def login_user(browser,
                switch_language=True,
                bypass_suspicious_attempt=False):
     """Logins the user with the given username and password"""
+    assert username, 'Username not provided'
+    assert password, 'Password not provided'
+
     browser.get('https://www.instagram.com')
     # update server calls
     update_activity()
@@ -121,10 +124,6 @@ def login_user(browser,
         print("Issue with cookie for user " + username
               + ". Creating new cookie...")
 
-
-
-
-
     # Changes instagram language to english, to ensure no errors ensue from
     # having the site on a different language
     # Might cause problems if the OS language is english
@@ -137,7 +136,6 @@ def login_user(browser,
         "//article/div/div/p/a[text()='Log in']")
     if login_elem is not None:
         ActionChains(browser).move_to_element(login_elem).click().perform()
-
 
     # Enter username and password and logs the user in
     # Sometimes the element name isn't 'Username' and 'Password'
