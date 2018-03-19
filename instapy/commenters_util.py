@@ -219,63 +219,74 @@ def extract_information(browser, nick, daysold, max_pic):
     return user_commented_list
 
 def users_liked (browser, photo_url, amount=100):
-    
+    photo_likers = []
     try:
             browser.get(photo_url)  
-            photo_likers = likers_from_photo(browser, amount)     
+            photo_likers = likers_from_photo(browser, amount)   
+            sleep(2)  
     except NoSuchElementException:
-            print('- Could not get information from post: ' + photo_url)
+            print('Could not get information from post: ' + photo_url,' nothing to return')
             
     return photo_likers
     
 def likers_from_photo(browser, amount):                                        
-    print ("runnink likers from photo function")
+
     user_liked_list = []
-    
-    liked_this = browser.find_elements_by_xpath("//section/main/div/div[1]/article/div[2]/section[2]/div/a/span")
-    sleep(0.5)
-    click_element(browser, liked_this[0])
-    print ("opening likes")
-    # update server calls
-    #update_activity()    
-        
-    sleep(2)
-
-    # find dialog box
-    dialog = browser.find_element_by_xpath(
-        "//div[text()='Likes']/following-sibling::div")
-    print (dialog)
-
-    # scroll down the page
-    previous_len = -1
-    follow_buttons = []
-    
-    while (len(follow_buttons) != previous_len):
-        if previous_len+10 >= amount:
-            break
-        previous_len = len(follow_buttons)
-        browser.execute_script(
-            "arguments[0].scrollTop = arguments[0].scrollHeight", dialog)
-        follow_buttons = dialog.find_elements_by_xpath(
-        "//div/div/span/button[text()='Follow']")
-        print ("Scrolling down... ", len(follow_buttons) ," / ",amount)
-        sleep(1)
-    
-    print ("Scrolling finished")
-    person_list = []
-    
-    for person in follow_buttons:
-        person_list.append(person.find_element_by_xpath(
-            "../../../*").find_elements_by_tag_name("a")[1].text)
-    sleep(1)
     try:
-        close = browser.find_element_by_xpath("//span[text()='Close']")
-        click_element(browser, close)
-        print ("picture closed")
+        liked_this = browser.find_elements_by_xpath("//div/article/div[2]/section[2]/div/a")
+        likers = []
+        for liker in liked_this:
+            if "like this" not in liker.text:
+                likers.append(liker.text)
+        if "likes" not in liked_this[0].text:
+            print ("Few likes, finished here.\nGot photo likers: ", likers," \n")
+            return likers 
+   
+        sleep(1)
+        click_element(browser, liked_this[0])
+        print ("opening likes")
+        # update server calls
+        #update_activity()    
+            
+        sleep(2)
+    
+        # find dialog box
+        dialog = browser.find_element_by_xpath(
+            "//div[text()='Likes']/following-sibling::div")
+        print (dialog)
+    
+        # scroll down the page
+        previous_len = -1
+        follow_buttons = []
+        
+        while (len(follow_buttons) != previous_len):
+            if previous_len+10 >= amount:
+                break
+            previous_len = len(follow_buttons)
+            browser.execute_script(
+                "arguments[0].scrollTop = arguments[0].scrollHeight", dialog)
+            follow_buttons = dialog.find_elements_by_xpath(
+            "//div/div/span/button[text()='Follow']")
+            print ("Scrolling down... ", len(follow_buttons) ," / ",amount)
+            sleep(1)
+        
+        print ("Scrolling finished")
+        person_list = []
+        
+        for person in follow_buttons:
+            person_list.append(person.find_element_by_xpath(
+                "../../../*").find_elements_by_tag_name("a")[1].text)
+        sleep(1)
+        try:
+            close = browser.find_element_by_xpath("//span[text()='Close']")
+            click_element(browser, close)
+            print ("picture closed")
+        except:
+            pass
+               
+        print ("\nGot ",len(person_list)," likers:\n", person_list, "\n")      
+        sleep(2)
+        return person_list    
     except:
-        pass
-           
-    print ("\nGot ",len(person_list)," likers:\n", person_list, "\n")      
-    sleep(2)
-    return person_list    
-                        
+        print ("Some problem")
+        return []              
