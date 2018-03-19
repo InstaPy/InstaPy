@@ -46,8 +46,8 @@ from .unfollow_util import load_follow_restriction
 from .unfollow_util import dump_follow_restriction
 from .unfollow_util import set_automated_followed_pool
 from .feed_util import get_like_on_feed
-from .follow_commenters import extract_post_info     
-from .follow_commenters import extract_information
+from .commenters_util import extract_post_info     
+from .commenters_util import extract_information
 
 
 
@@ -473,31 +473,34 @@ class InstaPy:
 
         return self
 
-    def follow_commenters(self, nicknamegetarr):
-        print ("running fc")
-        for nicknameget in nicknamegetarr:
-          self.nicknameget = nicknameget
-          user_commented_list = extract_information(self.browser, self.nicknameget)
-          print (user_commented_list)
-          if (len(user_commented_list))>0:
-            self.follow_by_list(user_commented_list)
-          else:
-            print ("Noone commented, noone to follow.")
-          sleep(1)
+    def follow_commenters(self, nick_array, amount=100, daysold=365, max_pic = 100):
+       
+        print ("\nFollowing commenters of given user from within last ", daysold, " days...")
+        for nick in nick_array: 
+            print ("Scrapping user", nick)                      
+            user_commented_list = extract_information(self.browser, nick, daysold, max_pic)
+            if (len(user_commented_list))>0:  
+                print ("Going to follow top ", amount, " users.\n")            
+                sleep(1)
+                self.follow_by_list(user_commented_list[:amount])
+            else:
+                print ("Noone commented, noone to follow.\n")
+            sleep(1)
+        print ("\nFinished.\n")
         return self
     
-    def follow_by_list(self, followlist, times=1):
+    def follow_by_list(self, followlist, times=1): 
         """Allows to follow by any scrapped list"""
         self.follow_times = times or 0
         if self.aborting:
-            return self
-
+            print (">>>self aborting prevented")
+            #return self
+            
         followed = 0
-
         for acc_to_follow in followlist:
             if acc_to_follow in self.dont_include:
                 continue
-
+            
             if self.follow_restrict.get(acc_to_follow, 0) < self.follow_times:
                 followed += follow_given_user(self.browser,
                                               self.username,
