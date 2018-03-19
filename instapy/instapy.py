@@ -1561,70 +1561,7 @@ class InstaPy:
 
         return self
 
-    ######################
-    def like_by_feed2(self,
-                      amount, probability):
-      '''
-          probability - probability of giving a like, otherwise I'll try to skip it
-          amount - total amount of likes to perform
-  
-          --------------------------------------
-          The function is trying to find a like button directly in the feed and click them.
-          Scrolling using Page Down keys. Sometimes it doesnt work though, or scrolling gets sthuck
-          I try to address getting stuck by hitting END key.
-          If function fails to like too many times 
-          (either because it got stuck or because all feed is liked already), it will terminate.
-      '''
-    
-      likes_performed = 0
-      self.browser.get('https://www.instagram.com')
-      body_elem = self.browser.find_element_by_tag_name('body')
-      likes_given = 0
-      #self.browser.execute_script("window.scrollTo(0, 1222)") 
-      sleep(2)
-      couldnt = 0
-      once_send_end = 0
-      random0to1 = random.uniform(0, 1)
-      while (likes_given < amount): 
-       
-        try:
-          sleep (1)
-          like_elem = self.browser.find_elements_by_xpath(
-          "//a[@role='button']/span[text()='Like']/..")
-          sleep(1)
-          random0to1 = random.uniform(0, 1) 
-          
-          if (random0to1 < probability):
 
-            like_elem[1].click()
-            likes_given = likes_given + 1
-            print ("Liked ", likes_given, "/" , amount)
-            sleep(0.5)
-            body_elem.send_keys(Keys.PAGE_DOWN)
-            sleep(0.5)
-            couldnt = 0
-          else:
-            print ("Skipped like..")
-            body_elem.send_keys(Keys.PAGE_DOWN)
-            body_elem.send_keys(Keys.PAGE_DOWN)
-  
-        except:
-          if couldnt > once_send_end+3:
-            once_send_end += 3
-            body_elem.send_keys(Keys.END)   
-            print ("Trying to scroll to the bottom of the page.")
-          if couldnt > 11:  
-            print ("Unable to like too many times, ending this script")
-            likes_given = amount + 1
-          else:
-            couldnt += 1
-            print ("couldnt give like ",couldnt," times" )
-            body_elem.send_keys(Keys.SPACE)
-            
-            
-        
-          
-    ###''''''''''''''''''''''''''
     def like_by_feed(self,
                      amount=50,
                      randomize=False,
@@ -1634,7 +1571,7 @@ class InstaPy:
 
         if self.aborting:
             return self
-        print ("trying")
+        
         liked_img = 0
         already_liked = 0
         inap_img = 0
