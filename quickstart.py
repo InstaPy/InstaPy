@@ -4,15 +4,18 @@ insta_username = ''
 insta_password = ''
 
 # set headless_browser=True if you want to run InstaPy on a server
-try:
-    # set these if you're locating the library in the /usr/lib/pythonX.X/ directory
-    # Settings.database_location = '/path/to/instapy.db'
-    # Settings.browser_location = '/path/to/chromedriver'
 
-    session = InstaPy(username=insta_username,
-                      password=insta_password,
-                      headless_browser=False,
-                      multi_logs=True)
+# set these in instapy/settings.py if you're locating the
+# library in the /usr/lib/pythonX.X/ directory:
+#   Settings.database_location = '/path/to/instapy.db'
+#   Settings.chromedriver_location = '/path/to/chromedriver'
+
+session = InstaPy(username=insta_username,
+                  password=insta_password,
+                  headless_browser=False,
+                  multi_logs=True)
+
+try:
     session.login()
 
     # settings
@@ -24,6 +27,9 @@ try:
 
     # actions
     session.like_by_tags(['natgeo'], amount=1)
+
+except Exception as e:
+    print(e)
 
 finally:
     # end the bot session
