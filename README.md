@@ -257,7 +257,7 @@ session.follow_by_tags(['tag1', 'tag2'], amount=10)
 
 ```python
 # Follows the people that liked given photo
-# The photo_url_arr is array of urls of photos
+# The photo_url_arr is array of urls of photos, can also be just 1 url as string
 # The amount is how many people to follow
 # In this case 10 people who liked photo in photo_url_arr will be followed, for each photo
 
