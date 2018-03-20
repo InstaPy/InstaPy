@@ -11,6 +11,13 @@ from .util import update_activity
 from .util import username_url_to_username
 import random
 
+def check_exists_by_xpath(browser, xpath):
+    try:
+        browser.find_element_by_xpath(xpath)
+    except NoSuchElementException:
+        return False
+    return True
+
 def remove_duplicates_preserving_order(seq):
     seen = set()
     seen_add = seen.add
@@ -239,12 +246,16 @@ def likers_from_photo(browser, amount=20):
         likers = []
         for liker in liked_this:
             if "like this" not in liker.text:
-                likers.append(liker.text)
-        if "likes" not in liked_this[0].text:
-            print ("Few likes, not guaranteed you don't follow these likers already.\nGot photo likers: ", likers," \n")
-            #hovewer, likers obtained this way are not necessarily the ones we don't follow already
-            return likers 
-    
+                likers.append(liker.text)        
+        if check_exists_by_xpath(browser, "//div/article/div[2]/section[2]/div/a"):
+            if "likes" not in liked_this[0].text:
+                print ("Few likes, not guaranteed you don't follow these likers already.\nGot photo likers: ", likers," \n")
+                return likers 
+        else:
+            print ("Video has no likes?")
+            print ("Moving on..")
+            return []
+            
         sleep(1)
         click_element(browser, liked_this[0])
         print ("opening likes")
@@ -296,8 +307,9 @@ def likers_from_photo(browser, amount=20):
         print ("\nGot ",len(person_list)," likers shuffled randomly, who you can follow:\n", person_list, "\n")      
         return person_list    
         sleep(2)
-    except:
+    except Exception as e:
         print ("Some problem")
+        print (e)
         return []              
         
 def get_photo_urls_from_profile (browser, username, links_to_return_amount=1, randomize=True):

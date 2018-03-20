@@ -475,6 +475,10 @@ class InstaPy:
         return self
                                  
     def follow_likers(self, photo_url_arr, amount=10):
+        if not isinstance(photo_url_arr, list):
+            photo_url = photo_url_arr 
+            photo_url_arr= []
+            photo_url_arr.append(photo_url)
         for photo_url in photo_url_arr:
             user_liked_list = users_liked (self.browser, photo_url, amount)
             self.follow_by_list(user_liked_list[:amount])
