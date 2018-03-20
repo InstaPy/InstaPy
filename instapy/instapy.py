@@ -49,6 +49,7 @@ from .feed_util import get_like_on_feed
 from .commenters_util import extract_post_info     
 from .commenters_util import extract_information
 from .commenters_util import users_liked
+from .commenters_util import get_photo_urls_from_profile
 
 
 # Set a logger cache outside the InstaPy object to avoid re-instantiation issues
@@ -480,7 +481,6 @@ class InstaPy:
         return self
 
     def follow_commenters(self, nick_array, amount=100, daysold=365, max_pic = 100):
-       
         print ("\nFollowing commenters of given user from within last ", daysold, " days...")
         for nick in nick_array: 
             print ("Scrapping user", nick)                      
@@ -494,7 +494,20 @@ class InstaPy:
             sleep(1)
         print ("\nFinished.\n")
         return self
-    
+
+    def follow_user_likers (self, usernames, photos_grab_amount=3, follow_likers_per_photo=3, randomize=True):
+        print ("Starting..")
+        if photos_grab_amount>12:
+            print ("\nSorry, you can only grab likers from first 12 photos for given username now.\n")
+            photos_grab_amount = 12
+        for username in usernames:
+            photo_url_arr = get_photo_urls_from_profile (self.browser, username, photos_grab_amount, randomize)
+            sleep(1)
+            self.follow_likers (photo_url_arr, amount=follow_likers_per_photo)
+        
+        print ("\nFinished following likers.\n")    
+        return self
+        
     def follow_by_list(self, followlist, times=1): 
         """Allows to follow by any scrapped list"""
         self.follow_times = times or 0

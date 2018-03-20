@@ -284,6 +284,11 @@ def format_number(number):
     formatted_num = formatted_num.replace('.', '')
     return int(formatted_num)
 
+def username_url_to_username(username_url):
+    a = username_url.replace ("https://www.instagram.com/","")
+    username = a.split ('/')
+    return username[0]
+                                           
 def get_number_of_posts(browser):
     """Get the number of posts from the profile screen"""
     num_of_posts_txt = browser.find_element_by_xpath("//section/main/article/header/section/ul/li[1]/span/span").text
