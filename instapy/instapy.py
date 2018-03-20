@@ -1299,7 +1299,7 @@ class InstaPy:
         self.logger.info('Inappropriate: {}'.format(inap_img))
         self.logger.info('Commented: {}'.format(commented))
 
-        self.liked_img += liked_img
+        self.liked_img += total_liked_img
         self.already_liked += already_liked
         self.inap_img += inap_img
         self.commented += commented

@@ -5,6 +5,17 @@ import pytest
 from instapy.instapy import InstaPy, InstaPyError
 
 
+def test_interact_by_users_with_no_usernames():
+    """ensure no usernames input is handled"""
+    instapy = InstaPy(selenium_local_session=False)
+    res = instapy.interact_by_users(None)
+    assert isinstance(res, InstaPy)
+    assert instapy.liked_img == 0
+    assert instapy.already_liked == 0
+    assert instapy.inap_img == 0
+    assert instapy.commented == 0
+
+
 def test_like_by_users_with_no_usernames():
     """test no inputs returns instance without errors"""
     instapy = InstaPy(selenium_local_session=False)
