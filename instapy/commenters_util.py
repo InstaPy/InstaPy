@@ -240,6 +240,7 @@ def likers_from_photo(browser, amount):
                 likers.append(liker.text)
         if "likes" not in liked_this[0].text:
             print ("Few likes, finished here.\nGot photo likers: ", likers," \n")
+            #hovewer, likers obtained this way are not necessarily the ones we don't follow already
             return likers 
    
         sleep(1)
@@ -258,19 +259,21 @@ def likers_from_photo(browser, amount):
         # scroll down the page
         previous_len = -1
         follow_buttons = []
-        
-        while (len(follow_buttons) != previous_len):
+        follow_buttons = dialog.find_elements_by_xpath(
+            "//div/div/span/button[text()='Follow']")
+        while (len(follow_buttons) != previous_len) and (len(follow_buttons)<amount):
             if previous_len+10 >= amount:
+                print ("Scrolling finished")
                 break
             previous_len = len(follow_buttons)
             browser.execute_script(
                 "arguments[0].scrollTop = arguments[0].scrollHeight", dialog)
             follow_buttons = dialog.find_elements_by_xpath(
             "//div/div/span/button[text()='Follow']")
-            print ("Scrolling down... ", len(follow_buttons) ," / ",amount)
+            print ("Scrolling down... ", len(follow_buttons) ," / ",amount) 
             sleep(1)
         
-        print ("Scrolling finished")
+        
         person_list = []
         
         for person in follow_buttons:
@@ -284,7 +287,7 @@ def likers_from_photo(browser, amount):
         except:
             pass
                
-        print ("\nGot ",len(person_list)," likers:\n", person_list, "\n")      
+        print ("\nGot ",len(person_list)," likers who you can follow:\n", person_list, "\n")      
         sleep(2)
         return person_list    
     except:
