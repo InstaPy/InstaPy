@@ -99,6 +99,21 @@ or
 ```
 4. Download ```chromedriver``` for your system [from here](https://sites.google.com/a/chromium.org/chromedriver/downloads). Extract the .zip file and put it in ```/assets``` folder.
 
+### Preferred Installation:
+
+The best way to install InstaPy is to create a virtualenv, install InstaPy there and run it from a separate file:
+
+```bash
+1. virtualenv venv
+2. source venv/bin/activate
+3. pip install git+https://github.com/timgrossmann/InstaPy.git
+```
+
+If you're not familiar with virtualenv, please [read about it here](https://virtualenv.pypa.io/en/stable/) and use it to your advantage.
+In essence, this is be the _only_ Python library you should install as root (e.g., with sudo). All other Python libraries should be inside a virtualenv.
+Now copy/paste the `quickstart.py` Python code below and run your first InstaPy script. Remember to run it with Python from the virtualenv, so from `venv/bin/python`. To make sure which Python is used, run `which python`, it will tell you which Python is 'active'.
+Running `source venv/bin/activate` will activate the correct Python to run InstaPy. To exit an activated virtualenv run `deactivate'.
+
 ### Set it up yourself with this Basic Setup
 
 Basic setup is a good way to test the tool. At project root folder open `quickstart.py` and update with your username and password.
@@ -236,6 +251,43 @@ session.follow_user_followers(['friend1', 'friend2', 'friend3'], amount=10, rand
 # Follow user based on hashtags (without liking the image)
 
 session.follow_by_tags(['tag1', 'tag2'], amount=10)
+```
+
+### Follow users that liked some photo(s)
+
+```python
+# Follows the people that liked given photo
+# The photo_url_arr is array of urls of photos
+# The amount is how many people to follow
+# In this case 10 people who liked photo in photo_url_arr will be followed, for each photo
+
+def follow_likers(self, photo_url_arr, amount=10):
+```
+
+### Follow users that liked some user's post(s)
+
+```python
+# Follows the people that liked photos of given array of users
+# The usernames can be array
+# The photos_grab_amount is how many photos will I grat from users profile and analyze who liked it.
+# The follow_likers_per_photo is how many people to follow per each photo
+# Randomize=False will take photos from newes, true will take random from first 12
+# In this case 2 random photos from each given user will be analyzed and 3 people who liked them will be followed, so 6 follows in total
+
+session.follow_user_likers (['user1' , 'user2'], photos_grab_amount = 2, follow_likers_per_photo = 3, randomize=True)
+```
+
+### Follow users who comment the most on given user(s)'s photo
+
+```python
+# Follows the people that commented photos of given array of users
+# The usernames can be array
+# The amount is how many people to follow
+# The daysold will only take commenters from photos no older than daysold days
+# The max_pic will limit number of photos to analyze
+# In thi case (max 100 newest photos & maximum 365 days old) from each given user will be analyzed and 100 people who commented the most will be followed
+
+session.follow_commenters(['user1', 'user2', 'user3'], amount=100, daysold=365, max_pic = 100)
 ```
 
 ### Interact with specific users
