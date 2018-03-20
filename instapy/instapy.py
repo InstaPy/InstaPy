@@ -2,6 +2,7 @@
 import csv
 import json
 import logging
+import re
 from math import ceil
 import os
 from platform import python_version
@@ -9,6 +10,7 @@ from datetime import datetime
 from sys import maxsize
 import random
 
+import selenium
 from pyvirtualdisplay import Display
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException, WebDriverException
@@ -247,9 +249,22 @@ class InstaPy:
                 'intl.accept_languages': 'en-US'
             }
             chrome_options.add_experimental_option('prefs', chrome_prefs)
-            self.browser = webdriver.Chrome(chromedriver_location,
-                                            desired_capabilities=capabilities,
-                                            chrome_options=chrome_options)
+            try:
+                self.browser = webdriver.Chrome(chromedriver_location,
+                                                desired_capabilities=capabilities,
+                                                chrome_options=chrome_options)
+            except selenium.common.exceptions.WebDriverException as exc:
+                self.logger.exception(exc)
+                raise InstaPyError('ensure chromedriver is installed at {}'.format(
+                    Settings.chromedriver_location))
+
+            # prevent: Message: unknown error: call function result missing 'value'
+            matches = re.match(r'^(\d+\.\d+)',
+                               self.browser.capabilities['chrome']['chromedriverVersion'])
+            if float(matches.groups()[0]) < Settings.chromedriver_min_version:
+                raise InstaPyError('chromedriver {} is not supported, expects {}+'.format(
+                    float(matches.groups()[0]), Settings.chromedriver_min_version))
+
         self.browser.implicitly_wait(self.page_delay)
         self.logger.info('Session started - %s'
                          % (datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
