@@ -543,9 +543,13 @@ def check_link(browser,
 
 def like_image(browser, username, blacklist, logger, logfolder):
     """Likes the browser opened image"""
-    like_elem = browser.find_elements_by_xpath(
-        "//a[@role='button']/span[text()='Like']/..")
-    if len(like_elem) == 1:
+    # fetch spans fast
+    spans = [x.text.lower() for x in browser.find_elements_by_xpath("//article//a[@role='button']/span")]
+
+    if 'like' in spans:
+        like_elem = browser.find_elements_by_xpath(
+            "//a[@role='button']/span[text()='Like']/..")
+
         # sleep real quick right before clicking the element
         sleep(2)
         click_element(browser, like_elem[0])
