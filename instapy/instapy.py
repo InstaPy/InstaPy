@@ -473,9 +473,10 @@ class InstaPy:
 
         return self
                                  
-    def follow_likers(self, photo_url, amount=2):
-        user_liked_list = users_liked (self.browser, photo_url, amount)
-        self.follow_by_list(user_liked_list[:amount])
+    def follow_likers(self, photo_url_arr, amount=10):
+        for photo_url in photo_url_arr:
+            user_liked_list = users_liked (self.browser, photo_url, amount)
+            self.follow_by_list(user_liked_list[:amount])
         return self
 
     def follow_commenters(self, nick_array, amount=100, daysold=365, max_pic = 100):
