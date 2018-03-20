@@ -1,4 +1,4 @@
-from unittest.mock import patch
+from unittest.mock import patch, PropertyMock
 
 import pytest
 
@@ -27,6 +27,7 @@ def test_like_by_users_with_no_usernames():
 def test_set_use_clarifai_raises_on_windows(load_follow_restriction):
     """windows not supported"""
     instapy = InstaPy(selenium_local_session=False)
-    with patch('instapy.instapy.os'):
+    with patch('instapy.instapy.os') as os:
+        type(os).name = PropertyMock(return_value='nt')
         with pytest.raises(InstaPyError):
             instapy.set_use_clarifai()
