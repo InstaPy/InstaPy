@@ -59,6 +59,7 @@ class InstaPy:
     def __init__(self,
                  username=None,
                  password=None,
+                 slack=None,
                  nogui=False,
                  selenium_local_session=True,
                  use_firefox=False,
@@ -83,6 +84,7 @@ class InstaPy:
 
         self.username = username or os.environ.get('INSTA_USER')
         self.password = password or os.environ.get('INSTA_PW')
+        self.slack = slack or os.environ.get('SLACK_URL')
         self.nogui = nogui
         self.logfolder = Settings.log_location + os.path.sep
         if multi_logs is True:
@@ -501,6 +503,12 @@ class InstaPy:
                                               self.logfolder)
                 self.followed += followed
                 self.logger.info('Followed: {}'.format(str(followed)))
+
+                payload = {'text': "Followed: " + format(str(followed))}
+                #payload = {{"text":"Liked: {0}\\n Already Liked: {1}"}}.format(liked_img), .format(already_liked)
+                headers = {'content-type': 'application/json', 'Accept-Charset': 'UTF-8'}
+                r = requests.post(self.slack, data=json.dumps(payload), headers=headers)
+
                 followed = 0
             else:
                 self.logger.info('---> {} has already been followed more than '
@@ -655,6 +663,11 @@ class InstaPy:
         self.logger.info('Inappropriate: {}'.format(inap_img))
         self.logger.info('Commented: {}'.format(commented))
         self.logger.info('Followed: {}'.format(followed))
+
+        payload = {'text': "Liked: " + format(liked_img) + "\n Already liked: " + format(already_liked) + "\n Inappropriate: " + format(inap_img) + "\n Commented: " + format(commented) + "\n Followed: " + format(followed)}
+        #payload = {{"text":"Liked: {0}\\n Already Liked: {1}"}}.format(liked_img), .format(already_liked)
+        headers = {'content-type': 'application/json', 'Accept-Charset': 'UTF-8'}
+        r = requests.post(self.slack, data=json.dumps(payload), headers=headers)
 
         self.followed += followed
         self.liked_img += liked_img
@@ -966,6 +979,11 @@ class InstaPy:
         self.logger.info('Commented: {}'.format(commented))
         self.logger.info('Followed: {}'.format(followed))
 
+        payload = {'text': "Liked: " + format(liked_img) + "\n Already liked: " + format(already_liked) + "\n Inappropriate: " + format(inap_img) + "\n Commented: " + format(commented) + "\n Followed: " + format(followed)}
+        #payload = {{"text":"Liked: {0}\\n Already Liked: {1}"}}.format(liked_img), .format(already_liked)
+        headers = {'content-type': 'application/json', 'Accept-Charset': 'UTF-8'}
+        r = requests.post(self.slack, data=json.dumps(payload), headers=headers)
+
         self.followed += followed
         self.liked_img += liked_img
         self.already_liked += already_liked
@@ -1130,6 +1148,11 @@ class InstaPy:
         self.logger.info('Already Liked: {}'.format(already_liked))
         self.logger.info('Inappropriate: {}'.format(inap_img))
         self.logger.info('Commented: {}'.format(commented))
+
+        payload = {'text': "Liked: " + format(liked_img) + "\n Already liked: " + format(already_liked) + "\n Inappropriate: " + format(inap_img) + "\n Commented: " + format(commented)}
+        #payload = {{"text":"Liked: {0}\\n Already Liked: {1}"}}.format(liked_img), .format(already_liked)
+        headers = {'content-type': 'application/json', 'Accept-Charset': 'UTF-8'}
+        r = requests.post(self.slack, data=json.dumps(payload), headers=headers)
 
         self.liked_img += liked_img
         self.already_liked += already_liked
@@ -1299,6 +1322,11 @@ class InstaPy:
         self.logger.info('Inappropriate: {}'.format(inap_img))
         self.logger.info('Commented: {}'.format(commented))
 
+        payload = {'text': "Liked: " + format(liked_img) + "\n Already liked: " + format(already_liked) + "\n Inappropriate: " + format(inap_img) + "\n Commented: " + format(commented)}
+        #payload = {{"text":"Liked: {0}\\n Already Liked: {1}"}}.format(liked_img), .format(already_liked)
+        headers = {'content-type': 'application/json', 'Accept-Charset': 'UTF-8'}
+        r = requests.post(self.slack, data=json.dumps(payload), headers=headers)
+
         self.liked_img += total_liked_img
         self.already_liked += already_liked
         self.inap_img += inap_img
@@ -1443,6 +1471,11 @@ class InstaPy:
         self.logger.info(
             "--> Total people followed : {} ".format(len(userFollowed)))
 
+        payload = {'text': "Followed: " + format(len(userFollowed))}
+        #payload = {{"text":"Liked: {0}\\n Already Liked: {1}"}}.format(liked_img), .format(already_liked)
+        headers = {'content-type': 'application/json', 'Accept-Charset': 'UTF-8'}
+        r = requests.post(self.slack, data=json.dumps(payload), headers=headers)
+
         if interact:
             self.logger.info('--> User followed: {}'.format(userFollowed))
             userFollowed = random.sample(userFollowed, int(ceil(
@@ -1493,6 +1526,12 @@ class InstaPy:
         self.logger.info("--> Total people followed : {} "
                          .format(len(userFollowed)))
 
+        payload = {'text': "Followed: " + format(len(userFollowed))}
+        #payload = {{"text":"Liked: {0}\\n Already Liked: {1}"}}.format(liked_img), .format(already_liked)
+        headers = {'content-type': 'application/json', 'Accept-Charset': 'UTF-8'}
+        r = requests.post(self.slack, data=json.dumps(payload), headers=headers)
+
+
         if interact:
             self.logger.info('--> User followed: {}'.format(userFollowed))
             userFollowed = random.sample(userFollowed, int(ceil(
@@ -1512,12 +1551,12 @@ class InstaPy:
                        onlyNotFollowMe=False,
                        unfollow_after=None):
         """Unfollows (default) 10 users from your following list"""
-        
+
         if unfollow_after is not None:
             if not python_version().startswith(('2.7', '3')):
                 self.logger.info("`unfollow_after` argument is not available for Python versions below 2.7")
                 unfollow_after = None
-        
+
         if onlyInstapyFollowed:
             self.automatedFollowedPool = set_automated_followed_pool(self.username,
                                                                      self.logger,
@@ -1539,6 +1578,12 @@ class InstaPy:
             self.logger.info(
                 "--> Total people unfollowed : {} ".format(unfollowNumber))
             self.unfollowNumber += unfollowNumber
+            self.logger.info('Test')
+            payload = {'text': "Total people unfollowed: " + format(unfollowNumber)}
+            #payload = {{"text":"Liked: {0}\\n Already Liked: {1}"}}.format(liked_img), .format(already_liked)
+            headers = {'content-type': 'application/json', 'Accept-Charset': 'UTF-8'}
+            r = requests.post(self.slack, data=json.dumps(payload), headers=headers)
+
 
         except (TypeError, RuntimeWarning) as err:
             if isinstance(err, RuntimeWarning):
@@ -1734,6 +1779,12 @@ class InstaPy:
         self.logger.info('Commented: {}'.format(commented))
         self.logger.info('Followed: {}'.format(followed))
         self.logger.info('Randomly Skipped: {}'.format(skipped_img))
+
+        payload = {'text': "Liked: " + format(liked_img) + "\n Already liked: " + format(already_liked) + "\n Inappropriate: " + format(inap_img) + "\n Commented: " + format(commented) + "\n Followed: " + format(followed) + "\n Randomly skipped: " + format(skipped_img)}
+        #payload = {{"text":"Liked: {0}\\n Already Liked: {1}"}}.format(liked_img), .format(already_liked)
+        headers = {'content-type': 'application/json', 'Accept-Charset': 'UTF-8'}
+        r = requests.post(self.slack, data=json.dumps(payload), headers=headers)
+
 
         self.followed += followed
         self.liked_img += liked_img
