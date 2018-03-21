@@ -65,6 +65,7 @@ Table of Contents
 * [Clarifai ImageAPI](#clarifai-imageapi)
 * [Running on a Server](#running-on-a-server)
 * [Running on a Headless Browser](#running-on-a-headless-browser)
+* [Slack Notifications](#slack-notifications)
 * [Running Multiple Accounts](#running-multiple-accounts)
 * [Running with Docker microservices manual](#running-with-docker-microservices-manual)
 * [Running all-in-one with Docker (obsolete)](#running-all-in-one-with-docker-obsolete)
@@ -611,6 +612,18 @@ Use `headless_browser` parameter to run the bot via the CLI. Works great if runn
 
 ```
 session = InstaPy(username='test', password='test', headless_browser=True)
+```
+
+## Slack Notifications
+
+If you're running on a server or in headless mode, it's nice to get an output of your script's performance. This will output the logging to a Slack channel or user through a [webhook](https://api.slack.com/incoming-webhooks)
+
+Add your webhook URL to your InstaPy() constructor
+
+```
+slack_url = 'https://hooks.slack.com/services/XXXXXXXXX/XXXXXXXXX/XXXXxxxxxxxxxxxxxxxxxxxx'
+
+session = InstaPy(username=insta_username, password=insta_password, slack=slack_url)
 ```
 
 ## Running Multiple Accounts
