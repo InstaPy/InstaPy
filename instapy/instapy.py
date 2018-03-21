@@ -1757,6 +1757,13 @@ class InstaPy:
         self.logger.info('Followed: {}'.format(followed))
         self.logger.info('Randomly Skipped: {}'.format(skipped_img))
 
+        url = self.slack
+        payload = {'text': "Liked: " + format(liked_img) + "\n Already liked: " + format(already_liked) + "\n Inappropriate: " + format(inap_img) + "\n Commented: " + format(commented) + "\n Followed: " + format(followed) + "\n Randomly skipped: " + format(skipped_img)}
+        #payload = {{"text":"Liked: {0}\\n Already Liked: {1}"}}.format(liked_img), .format(already_liked)
+        headers = {'content-type': 'application/json', 'Accept-Charset': 'UTF-8'}
+        r = requests.post(url, data=json.dumps(payload), headers=headers)
+
+
         self.followed += followed
         self.liked_img += liked_img
         self.already_liked += already_liked
