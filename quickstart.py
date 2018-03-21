@@ -1,3 +1,5 @@
+import traceback
+
 from instapy import InstaPy
 
 insta_username = ''
@@ -28,8 +30,9 @@ try:
     # actions
     session.like_by_tags(['natgeo'], amount=1)
 
-except Exception as e:
-    print(e)
+except Exception as exc:
+    # full stacktrace when raising Github issue
+    traceback.print_exc(exc)
 
 finally:
     # end the bot session
