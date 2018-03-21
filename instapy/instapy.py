@@ -482,11 +482,12 @@ class InstaPy:
             self.follow_by_list(user_liked_list[:amount])
         return self
 
-    def follow_commenters(self, nick_array, amount=100, daysold=365, max_pic = 100):
-        print ("\nFollowing commenters of given user from within last ", daysold, " days...")
-        for nick in nick_array: 
-            print ("Scrapping user", nick)                      
-            user_commented_list = extract_information(self.browser, nick, daysold, max_pic)
+    def follow_commenters(self, usernames, amount=10, daysold=365, max_pic = 50):
+        if not isinstance(usernames, list):
+            usernames = [usernames]
+        for username in usernames: 
+            print ("\nFollowing commenters of ", username ," from pictures in last ", daysold, " days...\nScrapping wall..")                      
+            user_commented_list = extract_information(self.browser, username, daysold, max_pic)
             if (len(user_commented_list))>0:  
                 print ("Going to follow top ", amount, " users.\n")            
                 sleep(1)
