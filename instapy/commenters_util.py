@@ -75,10 +75,10 @@ def extract_post_info(browser):
         
     return user_commented_list, date_time
 
-def extract_information(browser, nick, daysold, max_pic):
+def extract_information(browser, username, daysold, max_pic):
   
     """Get all the information for the given username"""
-    browser.get('https://www.instagram.com/' + nick)
+    browser.get('https://www.instagram.com/' + username)
     
     try:
         num_of_posts = get_number_of_posts(browser)
@@ -218,7 +218,7 @@ def extract_information(browser, nick, daysold, max_pic):
     user_commented_list = []
     last = ''
     for i in range(len(user_commented_total_list)):
-        if nick.lower() != user_commented_total_list[i]:
+        if username.lower() != user_commented_total_list[i]:
             if (last != user_commented_total_list[i] and 'p' not in user_commented_total_list[i]):
                user_commented_list.append(user_commented_total_list[i])
             last = user_commented_total_list[i]     
