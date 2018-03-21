@@ -1562,6 +1562,13 @@ class InstaPy:
                 "--> Total people unfollowed : {} ".format(unfollowNumber))
             self.unfollowNumber += unfollowNumber
 
+        url = self.slack
+        payload = {'text': "Total people unfollowed: " + format(unfollowNumber)}
+        #payload = {{"text":"Liked: {0}\\n Already Liked: {1}"}}.format(liked_img), .format(already_liked)
+        headers = {'content-type': 'application/json', 'Accept-Charset': 'UTF-8'}
+        r = requests.post(url, data=json.dumps(payload), headers=headers)
+
+
         except (TypeError, RuntimeWarning) as err:
             if isinstance(err, RuntimeWarning):
                 self.logger.warning(
