@@ -1308,6 +1308,13 @@ class InstaPy:
         self.logger.info('Inappropriate: {}'.format(inap_img))
         self.logger.info('Commented: {}'.format(commented))
 
+        url = self.slack
+        payload = {'text': "Liked: " + format(liked_img) + "\n Already liked: " + format(already_liked) + "\n Inappropriate: " + format(inap_img) + "\n Commented: " + format(commented)}
+        #payload = {{"text":"Liked: {0}\\n Already Liked: {1}"}}.format(liked_img), .format(already_liked)
+        headers = {'content-type': 'application/json', 'Accept-Charset': 'UTF-8'}
+        r = requests.post(url, data=json.dumps(payload), headers=headers)
+
+
         self.liked_img += total_liked_img
         self.already_liked += already_liked
         self.inap_img += inap_img
