@@ -11,7 +11,7 @@ import random
 
 from pyvirtualdisplay import Display
 from selenium import webdriver
-from selenium.common.exceptions import NoSuchElementException
+from selenium.common.exceptions import NoSuchElementException, WebDriverException
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver import DesiredCapabilities
 import requests
@@ -1783,8 +1783,11 @@ class InstaPy:
     def end(self):
         """Closes the current session"""
         dump_follow_restriction(self.follow_restrict, self.logfolder)
-        self.browser.delete_all_cookies()
-        self.browser.quit()
+        try:
+            self.browser.delete_all_cookies()
+            self.browser.quit()
+        except WebDriverException as exc:
+            self.logger.warning('Could not locate Chrome: {}'.format(exc))
 
         if self.nogui:
             self.display.stop()
