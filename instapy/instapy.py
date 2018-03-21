@@ -503,6 +503,13 @@ class InstaPy:
                                               self.logfolder)
                 self.followed += followed
                 self.logger.info('Followed: {}'.format(str(followed)))
+
+                url = self.slack
+                payload = {'text': "Followed: " + format(str(followed))}
+                #payload = {{"text":"Liked: {0}\\n Already Liked: {1}"}}.format(liked_img), .format(already_liked)
+                headers = {'content-type': 'application/json', 'Accept-Charset': 'UTF-8'}
+                r = requests.post(url, data=json.dumps(payload), headers=headers)
+
                 followed = 0
             else:
                 self.logger.info('---> {} has already been followed more than '
