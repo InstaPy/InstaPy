@@ -11,14 +11,13 @@ import random
 
 from pyvirtualdisplay import Display
 from selenium import webdriver
-from selenium.common.exceptions import NoSuchElementException
+from selenium.common.exceptions import NoSuchElementException, WebDriverException
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver import DesiredCapabilities
+from selenium.webdriver.common.proxy import Proxy, ProxyType
 import requests
 
-if os.name != 'nt':
-    from .clarifai_util import check_image
-from .settings import Settings
+from .clarifai_util import check_image
 from .comment_util import comment_image
 from .like_util import check_link
 from .like_util import get_links_for_tag
@@ -29,6 +28,7 @@ from .like_util import like_image
 from .like_util import get_links_for_username
 from .login_util import login_user
 from .print_log_writer import log_follower_num
+from .settings import Settings
 from .time_util import sleep
 from .time_util import set_sleep_percentage
 from .util import get_active_users
@@ -48,6 +48,10 @@ from .unfollow_util import set_automated_followed_pool
 
 # Set a logger cache outside the InstaPy object to avoid re-instantiation issues
 loggers = {}
+
+
+class InstaPyError(Exception):
+    """General error for InstaPy exceptions"""
 
 
 class InstaPy:
@@ -81,9 +85,9 @@ class InstaPy:
         self.username = username or os.environ.get('INSTA_USER')
         self.password = password or os.environ.get('INSTA_PW')
         self.nogui = nogui
-        self.logfolder = './logs/'
+        self.logfolder = Settings.log_location + os.path.sep
         if multi_logs is True:
-            self.logfolder = './logs/{}/'.format(self.username)
+            self.logfolder = '{}{}/'.format(Settings.log_location, self.username)
         if not os.path.exists(self.logfolder):
             os.makedirs(self.logfolder)
 
@@ -160,7 +164,7 @@ class InstaPy:
             # initialize and setup logging system for the InstaPy object
             logger = logging.getLogger(__name__)
             logger.setLevel(logging.DEBUG)
-            file_handler = logging.FileHandler( '{}general.log'.format(self.logfolder))
+            file_handler = logging.FileHandler('{}general.log'.format(self.logfolder))
             file_handler.setLevel(logging.DEBUG)
             extra = {"username": self.username}
             logger_formatter = logging.Formatter('%(levelname)s [%(asctime)s] [%(username)s]  %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
@@ -209,7 +213,7 @@ class InstaPy:
             self.browser = webdriver.Firefox(firefox_profile=firefox_profile)
 
         else:
-            chromedriver_location = Settings.browser_location
+            chromedriver_location = Settings.chromedriver_location
             chrome_options = Options()
             chrome_options.add_argument('--dns-prefetch-disable')
             chrome_options.add_argument('--no-sandbox')
@@ -224,6 +228,17 @@ class InstaPy:
                 user_agent = "Chrome"
                 chrome_options.add_argument('user-agent={user_agent}'
                                             .format(user_agent=user_agent))
+            capabilities = DesiredCapabilities.CHROME
+            # Proxy for chrome
+            if self.proxy_address and self.proxy_port > 0:
+                prox = Proxy()
+                proxy = ":".join([self.proxy_address, self.proxy_port])
+                prox.proxy_type = ProxyType.MANUAL
+                prox.http_proxy = proxy
+                prox.socks_proxy = proxy
+                prox.ssl_proxy = proxy
+                prox.add_to_capabilities(capabilities)
+
             # add proxy extension
             if self.proxy_chrome_extension and not self.headless_browser:
                 chrome_options.add_extension(self.proxy_chrome_extension)
@@ -233,6 +248,7 @@ class InstaPy:
             }
             chrome_options.add_experimental_option('prefs', chrome_prefs)
             self.browser = webdriver.Chrome(chromedriver_location,
+                                            desired_capabilities=capabilities,
                                             chrome_options=chrome_options)
         self.browser.implicitly_wait(self.page_delay)
         self.logger.info('Session started - %s'
@@ -398,10 +414,18 @@ class InstaPy:
         return self
 
     def set_use_clarifai(self, enabled=False, api_key=None, full_match=False):
-        """Defines if the clarifai img api should be used
-        Which 'project' will be used (only 5000 calls per month)"""
+        """
+        Defines if the clarifai img api should be used
+        Which 'project' will be used (only 5000 calls per month)
+
+        Raises:
+            InstaPyError if os is windows
+        """
         if self.aborting:
             return self
+
+        if os.name == 'nt':
+            raise InstaPyError('Clarifai is not supported on Windows')
 
         self.use_clarifai = enabled
 
@@ -1288,7 +1312,7 @@ class InstaPy:
         self.logger.info('Inappropriate: {}'.format(inap_img))
         self.logger.info('Commented: {}'.format(commented))
 
-        self.liked_img += liked_img
+        self.liked_img += total_liked_img
         self.already_liked += already_liked
         self.inap_img += inap_img
         self.commented += commented
@@ -1541,7 +1565,12 @@ class InstaPy:
 
         return self
 
-    def like_by_feed(self,
+    def like_by_feed(self, **kwargs):
+        """Like the users feed"""
+        self.like_by_feed_generator(**kwargs)
+        return self
+
+    def like_by_feed_generator(self,
                      amount=50,
                      randomize=False,
                      unfollow=False,
@@ -1549,7 +1578,7 @@ class InstaPy:
         """Like the users feed"""
 
         if self.aborting:
-            return self
+            return
 
         liked_img = 0
         already_liked = 0
@@ -1570,7 +1599,7 @@ class InstaPy:
             except NoSuchElementException:
                 self.logger.warning('Too few images, aborting')
                 self.aborting = True
-                return self
+                return
 
             num_of_search += 1
 
@@ -1699,6 +1728,8 @@ class InstaPy:
                                     else:
                                         self.logger.info('--> Not following')
                                         sleep(1)
+
+                                    yield self
                                 else:
                                     already_liked += 1
                             else:
@@ -1723,7 +1754,7 @@ class InstaPy:
         self.inap_img += inap_img
         self.commented += commented
 
-        return self
+        return
 
     def set_dont_unfollow_active_users(self, enabled=False, posts=4):
         """Prevents unfollow followers who have liked one of
@@ -1765,8 +1796,11 @@ class InstaPy:
     def end(self):
         """Closes the current session"""
         dump_follow_restriction(self.follow_restrict, self.logfolder)
-        self.browser.delete_all_cookies()
-        self.browser.quit()
+        try:
+            self.browser.delete_all_cookies()
+            self.browser.quit()
+        except WebDriverException as exc:
+            self.logger.warning('Could not locate Chrome: {}'.format(exc))
 
         if self.nogui:
             self.display.stop()

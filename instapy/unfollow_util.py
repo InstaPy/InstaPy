@@ -751,56 +751,61 @@ def get_given_user_following(browser,
     return person_list
 
 
-def follow_given_user_followers(browser,
-                                user_name,
-                                amount,
-                                dont_include,
-                                login,
-                                follow_restrict,
-                                random,
-                                delay,
-                                blacklist,
-                                logger,
-                                logfolder,
-                                follow_times):
+def follow_given_user_followers(browser, user_name, amount, dont_include, login, follow_restrict,
+                                random, delay, blacklist, logger, logfolder, follow_times):
+    """
+    For the given username, follow their followers.
 
-    browser.get('https://www.instagram.com/' + user_name)
-    # update server calls
+    :param browser: webdriver instance
+    :param user_name: given username of account to follow
+    :param amount: the number of followers to follow
+    :param dont_include: ignore these usernames
+    :param login:
+    :param follow_restrict:
+    :param random: randomly select from users' followers
+    :param delay: the seconds to delay between each follow
+    :param blacklist:
+    :param logger: the logger instance
+    :param logfolder: the logger folder
+    :param follow_times:
+    :return: list of user's followers also followed
+    """
+    browser.get('https://www.instagram.com/{}'.format(user_name))
     update_activity()
 
-    #  check how many poeple are following this user.
-    #  throw RuntimeWarning if we are 0 people following this user
+    # check how many people are following this user.
     try:
-        allfollowing = format_number(
-            browser.find_element_by_xpath("//li[2]/a/span").text)
+        user_followers_count = format_number(browser.find_element_by_xpath(
+            '//li[2]/a/span').text)
     except NoSuchElementException:
-        logger.warning('There are 0 people to follow')
+        # todo check if private account?
+        logger.error('Could not determine if {} has followers'.format(user_name))
+        return []
 
+    # skip early for no followers
+    if not user_followers_count:
+        logger.info('{} has no followers'.format(user_name))
+        return []
+    elif user_followers_count < amount:
+        logger.warning('{} has less followers than given amount of {}'.format(
+            user_followers_count, amount))
+
+    # locate element to user's followers
     try:
-        following_link = browser.find_elements_by_xpath(
-            '//a[@href="/' + user_name + '/followers/"]')
-        click_element(browser, following_link[0]) # following_link.send_keys("\n")
-        # update server calls
+        user_followers_link = browser.find_elements_by_xpath(
+            '//a[@href="/{}/followers/"]'.format(user_name))
+        click_element(browser, user_followers_link[0])
         update_activity()
     except BaseException as e:
         logger.error("following_link error {}".format(str(e)))
+        return []
 
-    personFollowed = follow_through_dialog(browser,
-                                           user_name,
-                                           amount,
-                                           dont_include,
-                                           login,
-                                           follow_restrict,
-                                           allfollowing,
-                                           random,
-                                           delay,
-                                           blacklist,
-                                           logger,
-                                           logfolder,
-                                           follow_times,
-                                           callbacks=[])
+    persons_followed = follow_through_dialog(browser, user_name, amount, dont_include, login,
+                                             follow_restrict, user_followers_count, random, delay,
+                                             blacklist, logger, logfolder, follow_times,
+                                             callbacks=[])
 
-    return personFollowed
+    return persons_followed
 
 
 def follow_given_user_following(browser,
