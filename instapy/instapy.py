@@ -14,6 +14,7 @@ from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException, WebDriverException
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver import DesiredCapabilities
+from selenium.webdriver.common.proxy import Proxy, ProxyType
 import requests
 
 from .clarifai_util import check_image
@@ -227,6 +228,17 @@ class InstaPy:
                 user_agent = "Chrome"
                 chrome_options.add_argument('user-agent={user_agent}'
                                             .format(user_agent=user_agent))
+            capabilities = DesiredCapabilities.CHROME
+            # Proxy for chrome
+            if self.proxy_address and self.proxy_port > 0:
+                prox = Proxy()
+                proxy = ":".join([self.proxy_address, self.proxy_port])
+                prox.proxy_type = ProxyType.MANUAL
+                prox.http_proxy = proxy
+                prox.socks_proxy = proxy
+                prox.ssl_proxy = proxy
+                prox.add_to_capabilities(capabilities)
+
             # add proxy extension
             if self.proxy_chrome_extension and not self.headless_browser:
                 chrome_options.add_extension(self.proxy_chrome_extension)
@@ -236,6 +248,7 @@ class InstaPy:
             }
             chrome_options.add_experimental_option('prefs', chrome_prefs)
             self.browser = webdriver.Chrome(chromedriver_location,
+                                            desired_capabilities=capabilities,
                                             chrome_options=chrome_options)
         self.browser.implicitly_wait(self.page_delay)
         self.logger.info('Session started - %s'
