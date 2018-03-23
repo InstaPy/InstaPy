@@ -87,7 +87,8 @@ class InstaPy:
         self.nogui = nogui
         self.logfolder = Settings.log_location + os.path.sep
         if multi_logs is True:
-            self.logfolder = '{}/{}/'.format(Settings.log_location, self.username)
+            self.logfolder = '{0}{1}{2}{1}'.format(
+                Settings.log_location, os.path.sep, self.username)
         if not os.path.exists(self.logfolder):
             os.makedirs(self.logfolder)
 

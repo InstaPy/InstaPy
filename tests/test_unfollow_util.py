@@ -28,6 +28,6 @@ def test_follow_given_user_followers_with_missing_link():
     webdriver = MagicMock()
     webdriver.find_element_by_xpath.return_value = Mock(text='123')
     webdriver.find_elements_by_xpath.side_effect = BaseException
-    params = [MagicMock()] * 11
-    res = follow_given_user_followers(webdriver, *params)
+    params = [MagicMock()] * 9
+    res = follow_given_user_followers(webdriver, 'foo', 10, *params)
     assert len(res) == 0
