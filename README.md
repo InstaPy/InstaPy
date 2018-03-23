@@ -261,7 +261,7 @@ session.follow_by_tags(['tag1', 'tag2'], amount=10)
 # The amount is how many people to follow
 # In this case 10 people who liked photo in photo_url_arr will be followed, for each photo
 
-def follow_likers(self, photo_url_arr, amount=10):
+session.follow_likers(['https://www.instagram.com/p/Bga_UUrDFoc/', 'https://www.instagram.com/p/BgbOtLHD7yp/?taken-by=natgeo'], amount=10)
 ```
 
 ### Follow users that liked some user's post(s)
@@ -277,7 +277,7 @@ def follow_likers(self, photo_url_arr, amount=10):
 session.follow_user_likers (['user1' , 'user2'], photos_grab_amount = 2, follow_likers_per_photo = 3, randomize=True)
 ```
 
-### Follow users who comment the most on given user(s)'s photo
+### Follow users who comment the most on given user(s)'s photos
 
 ```python
 # Follows the people that commented photos of given array of users
