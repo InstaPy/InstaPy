@@ -620,13 +620,21 @@ def follow_through_dialog(browser,
     return person_followed
 
 
-def get_given_user_followers(browser,
-                             user_name,
-                             amount,
-                             dont_include,
-                             login,
-                             randomize,
-                             logger):
+def get_given_user_followers(browser, user_name, amount, dont_include, login, randomize, logger):
+    """
+    Get the followers of the user
+
+    :param browser: webdriver instance
+    :param user_name: the user who's followers to retrieve
+    :param amount: limit the number of users to this
+    :param dont_include: not used
+    :param login: not used
+    :param randomize: randomize the list of users
+    :param logger: logger instance
+    :return:
+        list of followers links
+        None on error
+    """
 
     browser.get('https://www.instagram.com/' + user_name)
     # update server calls
@@ -642,9 +650,13 @@ def get_given_user_followers(browser,
         logger.warning('Can\'t interact with private account')
         return
 
-    following_link = browser.find_elements_by_xpath(
-        '//a[@href="/' + user_name + '/followers/"]')
-    click_element(browser, following_link[0]) # following_link.send_keys("\n")
+    try:
+        following_link = browser.find_element_by_xpath(
+            '//a[@href="/' + user_name.lower() + '/followers/"]')
+    except NoSuchElementException:
+        logger.error('Could not find followers link for {}'.format(user_name))
+        return
+    click_element(browser, following_link)
     # update server calls
     update_activity()
 
