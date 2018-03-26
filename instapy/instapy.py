@@ -10,7 +10,6 @@ from datetime import datetime
 from sys import maxsize
 import random
 
-import selenium
 from pyvirtualdisplay import Display
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException, WebDriverException
@@ -254,17 +253,18 @@ class InstaPy:
                 self.browser = webdriver.Chrome(chromedriver_location,
                                                 desired_capabilities=capabilities,
                                                 chrome_options=chrome_options)
-            except selenium.common.exceptions.WebDriverException as exc:
+            except WebDriverException as exc:
                 self.logger.exception(exc)
                 raise InstaPyError('ensure chromedriver is installed at {}'.format(
                     Settings.chromedriver_location))
 
-            # prevent: Message: unknown error: call function result missing 'value'
-            matches = re.match(r'^(\d+\.\d+)',
-                               self.browser.capabilities['chrome']['chromedriverVersion'])
-            if float(matches.groups()[0]) < Settings.chromedriver_min_version:
-                raise InstaPyError('chromedriver {} is not supported, expects {}+'.format(
-                    float(matches.groups()[0]), Settings.chromedriver_min_version))
+            if Settings.perform_chromedriver_validation:
+                # prevent: Message: unknown error: call function result missing 'value'
+                matches = re.match(r'^(\d+\.\d+)',
+                                   self.browser.capabilities['chrome']['chromedriverVersion'])
+                if float(matches.groups()[0]) < Settings.chromedriver_min_version:
+                    raise InstaPyError('chromedriver {} is not supported, expects {}+'.format(
+                        float(matches.groups()[0]), Settings.chromedriver_min_version))
 
         self.browser.implicitly_wait(self.page_delay)
         self.logger.info('Session started - %s'
