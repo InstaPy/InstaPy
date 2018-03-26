@@ -3,6 +3,7 @@ from unittest.mock import patch, PropertyMock
 import pytest
 from selenium.common.exceptions import WebDriverException
 
+from instapy import Settings
 from instapy.instapy import InstaPy, InstaPyError
 
 
@@ -24,31 +25,6 @@ def test_like_by_users_with_no_usernames():
     assert isinstance(res, InstaPy)
 
 
-@patch('instapy.instapy.webdriver')
-def test_set_selenium_local_session_raises_missing_chromedriver(webdriver):
-    """Ensure chromedriver is installed"""
-    webdriver.Chrome.side_effect = WebDriverException()
-    with pytest.raises(InstaPyError):
-        InstaPy()
-
-
-@patch('instapy.instapy.webdriver')
-def test_set_selenium_local_session_raises_chromedriver_version(webdriver):
-    """Ensure chromedriver version is supported"""
-    webdriver.Chrome.return_value.capabilities = {'chrome': {
-        'chromedriverVersion': '2.35.540470 (e522d04694c7ebea4ba8821272dbef4f9b818c91)'}}
-    with pytest.raises(InstaPyError):
-        InstaPy()
-
-
-@patch('instapy.instapy.webdriver')
-def test_set_selenium_local_session_supports_chromedriver_version(webdriver):
-    """Ensure chromedriver version is supported"""
-    webdriver.Chrome.return_value.capabilities = {'chrome': {
-        'chromedriverVersion': '2.36.540470 (e522d04694c7ebea4ba8821272dbef4f9b818c91)'}}
-    InstaPy()
-
-
 @patch('instapy.instapy.load_follow_restriction')
 def test_set_use_clarifai_raises_on_windows(load_follow_restriction):
     """windows not supported"""
@@ -57,3 +33,32 @@ def test_set_use_clarifai_raises_on_windows(load_follow_restriction):
         type(os).name = PropertyMock(return_value='nt')
         with pytest.raises(InstaPyError):
             instapy.set_use_clarifai()
+
+
+@patch('instapy.instapy.webdriver')
+class TestSetSeleniumLocalSession:
+
+    def test_raises_missing_chromedriver(self, webdriver):
+        """Ensure chromedriver is installed"""
+        webdriver.Chrome.side_effect = WebDriverException()
+        with pytest.raises(InstaPyError):
+            InstaPy()
+
+    def test_raises_chromedriver_version(self, webdriver):
+        """Ensure chromedriver version is supported"""
+        webdriver.Chrome.return_value.capabilities = {'chrome': {
+            'chromedriverVersion': '2.35.540470 (e522d04694c7ebea4ba8821272dbef4f9b818c91)'}}
+        with pytest.raises(InstaPyError):
+            InstaPy()
+
+    def test_supports_chromedriver_version(self, webdriver):
+        """Ensure chromedriver version is supported"""
+        webdriver.Chrome.return_value.capabilities = {'chrome': {
+            'chromedriverVersion': '2.36.540470 (e522d04694c7ebea4ba8821272dbef4f9b818c91)'}}
+        InstaPy()
+
+    @patch.object(Settings, 'perform_chromedriver_validation', False)
+    def test_setting_perform_chromedriver_validation(self, webdriver):
+        webdriver.Chrome.return_value.capabilities = {'chrome': {
+            'chromedriverVersion': '2.35.540470 (e522d04694c7ebea4ba8821272dbef4f9b818c91)'}}
+        InstaPy()
