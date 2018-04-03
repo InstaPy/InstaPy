@@ -635,6 +635,7 @@ def get_given_user_followers(browser, user_name, amount, dont_include, login, ra
         list of followers links
         None on error
     """
+    user_name = user_name.strip()
 
     browser.get('https://www.instagram.com/' + user_name)
     # update server calls
@@ -704,6 +705,7 @@ def get_given_user_following(browser,
                              login,
                              randomize,
                              logger):
+    user_name = user_name.strip()
 
     browser.get('https://www.instagram.com/' + user_name)
     # update server calls
@@ -782,6 +784,8 @@ def follow_given_user_followers(browser, user_name, amount, dont_include, login,
     :param follow_times:
     :return: list of user's followers also followed
     """
+    user_name = user_name.strip()
+
     browser.get('https://www.instagram.com/{}'.format(user_name))
     update_activity()
 
@@ -832,6 +836,7 @@ def follow_given_user_following(browser,
                                 logger,
                                 logfolder,
                                 follow_times):
+    user_name = user_name.strip()
 
     browser.get('https://www.instagram.com/' + user_name)
     # update server calls
