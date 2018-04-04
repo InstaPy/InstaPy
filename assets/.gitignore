@@ -1,0 +1,5 @@
+# Ignore everything
+*
+
+# But not these files...
+!unicodes.md

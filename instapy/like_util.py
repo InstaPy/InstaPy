@@ -402,16 +402,26 @@ def get_links_for_username(browser,
     return links[:amount]
 
 
-def check_link(browser,
-               link,
-               dont_like,
-               ignore_if_contains,
-               ignore_users,
-               username,
-               like_by_followers_upper_limit,
-               like_by_followers_lower_limit,
-               logger):
+def check_link(browser, link, dont_like, ignore_if_contains, ignore_users, username,
+               like_by_followers_upper_limit, like_by_followers_lower_limit, logger):
+    """
+    Check the given link if it is appropriate
 
+    :param browser: The selenium webdriver instance
+    :param link:
+    :param dont_like: hashtags of inappropriate phrases
+    :param ignore_if_contains:
+    :param ignore_users:
+    :param username:
+    :param like_by_followers_upper_limit:
+    :param like_by_followers_lower_limit:
+    :param logger: the logger instance
+    :return: tuple of
+        boolean: True if inappropriate,
+        string: the username,
+        boolean: True if it is video media,
+        string: the message if inappropriate else 'None'
+    """
     browser.get(link)
     # update server calls
     update_activity()
@@ -548,10 +558,10 @@ def check_link(browser,
             iffy = ((re.split(r'\W+', dont_likes_regex))[3] if dont_likes_regex.endswith('*([^\\d\\w]|$)') else   # 'word' without format
                      (re.split(r'\W+', dont_likes_regex))[1] if dont_likes_regex.endswith('+([^\\d\\w]|$)') else   # '[word'
                       (re.split(r'\W+', dont_likes_regex))[3] if dont_likes_regex.startswith('#[\\d\\w]+') else     # ']word'
-                       (re.split(r'\W+', dont_likes_regex))[1])                                                      # '#word'
-            quashed = quashed.encode('ascii', 'ignore')
-            inapp_unit = ('Inappropriate! ~ contains \'{}\''.format(quashed) if quashed == iffy else
-                              'Inappropriate! ~ contains \'{}\' in \'{}\''.format(iffy, quashed))
+                       (re.split(r'\W+', dont_likes_regex))[1])                                                    # '#word'
+            inapp_unit = 'Inappropriate! ~ contains "{}"'.format(
+                quashed.encode('utf-8') if iffy == quashed else
+                '" in "'.join([iffy, quashed]).encode('utf-8'))
             return True, user_name, is_video, inapp_unit
 
     return False, user_name, is_video, 'None'
