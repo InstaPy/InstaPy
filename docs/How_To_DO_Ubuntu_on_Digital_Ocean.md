@@ -35,7 +35,8 @@ $ sudo rm google-chrome-stable_current_amd64.deb
 
 ```bash
 $ git clone https://github.com/timgrossmann/InstaPy.git
-$ wget "https://chromedriver.storage.googleapis.com/2.34/chromedriver_linux64.zip"
+$ latest_version=$(wget https://chromedriver.storage.googleapis.com/LATEST_RELEASE -O -)
+$ wget https://chromedriver.storage.googleapis.com/${latest_version}/chromedriver_linux64.zip
 $ unzip chromedriver_linux64
 $ mv chromedriver InstaPy/assets/chromedriver
 $ chmod +x InstaPy/assets/chromedriver
