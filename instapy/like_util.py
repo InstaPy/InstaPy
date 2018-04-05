@@ -559,9 +559,9 @@ def check_link(browser, link, dont_like, ignore_if_contains, ignore_users, usern
                      (re.split(r'\W+', dont_likes_regex))[1] if dont_likes_regex.endswith('+([^\\d\\w]|$)') else   # '[word'
                       (re.split(r'\W+', dont_likes_regex))[3] if dont_likes_regex.startswith('#[\\d\\w]+') else     # ']word'
                        (re.split(r'\W+', dont_likes_regex))[1])                                                    # '#word'
-            inapp_unit = 'Inappropriate! ~ contains "{}"'.format(
-                quashed.encode('utf-8') if iffy == quashed else
-                '" in "'.join([iffy, quashed]).encode('utf-8'))
+            quashed = quashed.encode('ascii', 'ignore')
+            inapp_unit = ('Inappropriate! ~ contains \'{}\''.format(quashed) if quashed == iffy else
+                              'Inappropriate! ~ contains \'{}\' in \'{}\''.format(iffy, quashed))
             return True, user_name, is_video, inapp_unit
 
     return False, user_name, is_video, 'None'
