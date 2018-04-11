@@ -561,7 +561,7 @@ def check_link(browser, link, dont_like, ignore_if_contains, ignore_users, usern
                        (re.split(r'\W+', dont_likes_regex))[1])                                                      # '#word'
             inapp_unit = 'Inappropriate! ~ contains "{}"'.format(
                 quashed if iffy == quashed else
-                '" in "'.join([iffy, quashed]))
+                '" in "'.join([str(iffy), str(quashed)]))
             return True, user_name, is_video, inapp_unit
 
     return False, user_name, is_video, 'None'
