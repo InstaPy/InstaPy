@@ -1773,7 +1773,7 @@ class InstaPy:
 
         return
 
-    def set_dont_unfollow_active_users(self, enabled=False, posts=4):
+    def set_dont_unfollow_active_users(self, enabled=False, posts=4, boundary=500):
         """Prevents unfollow followers who have liked one of
         your latest X posts"""
 
@@ -1785,6 +1785,7 @@ class InstaPy:
         active_users = get_active_users(self.browser,
                                         self.username,
                                         posts,
+                                        boundary,
                                         self.logger)
 
         for user in active_users:

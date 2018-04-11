@@ -3,6 +3,7 @@ import datetime
 import os
 import re
 import sqlite3
+import time
 
 from selenium.common.exceptions import NoSuchElementException
 
@@ -108,8 +109,8 @@ def add_user_to_blacklist(browser, username, campaign, action, logger, logfolder
                 .format(username, campaign, action))
 
 
-def get_active_users(browser, username, posts, logger):
-    """Returns a list with users who liked the latest posts"""
+def get_active_users(browser, username, posts, boundary, logger):
+    """Returns a list with usernames who liked the latest n posts"""
 
     browser.get('https://www.instagram.com/' + username)
     sleep(2)
@@ -127,15 +128,77 @@ def get_active_users(browser, username, posts, logger):
         "(//div[contains(@class, '_si7dy')])[1]").click()
 
     active_users = []
+    sc_rolled = 0
+    start_time = time.time()
+    too_many_requests = 0  # this will help to prevent misbehaviours when you request the list of active users repeatedly within less than 10 min of breaks
 
+    message = (("~collecting the entire usernames from posts without a boundary!\n") if boundary is None else
+               (
+               "~collecting only the visible usernames from posts without scrolling at the boundary of zero..\n") if boundary == 0 else
+               ("~collecting the usernames from posts with the boundary of {}\n".format(boundary)))
     # posts argument is the number of posts to collect usernames
+    logger.info("Getting active users who liked the latest {} posts:\n  {}".format(posts, message))
+
     for count in range(1, posts):
         try:
+            likes_count = format_number(browser.find_element_by_xpath(
+                "//a[contains(@class, '_nzn1h')]/span").text)
+
             browser.find_element_by_xpath(
                 "//a[contains(@class, '_nzn1h')]").click()
-            sleep(1)
+            sleep(4)
+
+            logger.info("We are here")
+            dialog = browser.find_element_by_xpath(
+                "//div[text()='Likes']/following-sibling::div")
+
+            scroll_it = True
+            try_again = 0
+
+            while scroll_it != False and boundary != 0:
+                scroll_it = browser.execute_script('''
+                    var div = arguments[0];
+                    if (div.offsetHeight + div.scrollTop < div.scrollHeight) {
+                        div.scrollTop = div.scrollHeight;
+                        return true;}
+                    else {
+                        return false;}
+                    ''', dialog)
+
+                logger.info("Scrolled Once")
+                if sc_rolled > 91 or too_many_requests > 1:  # old value 100
+                    logger.info("Too Many Requests sent! ~will sleep some :>")
+                    sleep(600)
+                    sc_rolled = 0
+                    too_many_requests = 0 if too_many_requests >= 1 else too_many_requests
+                else:
+                    sleep(4.2)  # old value 5.6
+                    sc_rolled += 1
+
+                tmp_list = browser.find_elements_by_xpath(
+                    "//a[contains(@class, '_2g7d5')]")
+                if boundary is not None:
+                    if len(tmp_list) >= boundary:
+                        break
+
+                if (scroll_it == False and
+                                likes_count - 1 > len(tmp_list)):
+                    if ((boundary is not None and likes_count - 1 > boundary) or
+                                boundary is None):
+                        if try_again <= 1:  # you can increase the amount of tries here
+                            logger.info(
+                                "Cor! ~failed to get the desired amount of usernames, trying again!  |  post:{}  |  attempt: {}".format(
+                                    posts, try_again + 1))
+                            try_again += 1
+                            too_many_requests += 1
+                            scroll_it = True
+                            nap_it = 4 if try_again == 0 else 7
+                            sleep(nap_it)
+
             tmp_list = browser.find_elements_by_xpath(
                 "//a[contains(@class, '_2g7d5')]")
+            logger.info("Post {}  |  Likers: found {}, catched {}".format(count + 1, likes_count, len(tmp_list)))
+
         except NoSuchElementException:
             try:
                 tmp_list = browser.find_elements_by_xpath(
@@ -145,11 +208,12 @@ def get_active_users(browser, username, posts, logger):
 
         if len(tmp_list) is not 0:
             for user in tmp_list:
+                logger.info(user.text)
                 active_users.append(user.text)
 
         sleep(1)
         # if not reached posts(parameter) value, continue
-        if count+1 != posts:
+        if count + 1 != posts:
             try:
                 # click next button
                 browser.find_element_by_xpath(
@@ -158,8 +222,14 @@ def get_active_users(browser, username, posts, logger):
             except:
                 logger.error('Unable to go to next profile post')
 
+    real_time = time.time()
+    diff_in_minutes = int((real_time - start_time) / 60)
     # delete duplicated users
     active_users = list(set(active_users))
+    logger.info(
+        "Gathered total of {} unique active followers from the latest {} posts in {} minutes".format(len(active_users),
+                                                                                                     posts,
+                                                                                                     diff_in_minutes))
 
     return active_users
 
