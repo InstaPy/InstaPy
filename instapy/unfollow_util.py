@@ -186,13 +186,7 @@ def unfollow(browser,
 
     elif onlyInstapyFollowed is False and onlyNotFollowMe is True:
         # unfollow only not follow me
-        try:
-            browser.get(
-                'https://www.instagram.com/' + username + '/?__a=1')
-            pre = browser.find_element_by_tag_name("pre").text
-            user_data = json.loads(pre)['graphql']['user']
-        except BaseException as e:
-            print("unable to get user information\n", str(e))
+        user_data = {}
 
         graphql_endpoint = 'https://www.instagram.com/graphql/query/'
         graphql_followers = (
@@ -204,6 +198,9 @@ def unfollow(browser,
         all_following = []
 
         variables = {}
+        user_data['id'] = browser.execute_script(
+            "return window._sharedData.entry_data.ProfilePage[0]."
+            "graphql.user.id")
         variables['id'] = user_data['id']
         variables['first'] = 100
 
