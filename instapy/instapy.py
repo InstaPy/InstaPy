@@ -2,6 +2,7 @@
 import csv
 import json
 import logging
+import re
 from math import ceil
 import os
 from platform import python_version
@@ -9,11 +10,13 @@ from datetime import datetime
 from sys import maxsize
 import random
 
+import selenium
 from pyvirtualdisplay import Display
 from selenium import webdriver
-from selenium.common.exceptions import NoSuchElementException
+from selenium.common.exceptions import NoSuchElementException, WebDriverException
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver import DesiredCapabilities
+from selenium.webdriver.common.proxy import Proxy, ProxyType
 import requests
 
 from .clarifai_util import check_image
@@ -43,6 +46,11 @@ from .unfollow_util import follow_given_user
 from .unfollow_util import load_follow_restriction
 from .unfollow_util import dump_follow_restriction
 from .unfollow_util import set_automated_followed_pool
+from .feed_util import get_like_on_feed
+from .commenters_util import extract_post_info     
+from .commenters_util import extract_information
+from .commenters_util import users_liked
+from .commenters_util import get_photo_urls_from_profile
 
 
 # Set a logger cache outside the InstaPy object to avoid re-instantiation issues
@@ -86,7 +94,8 @@ class InstaPy:
         self.nogui = nogui
         self.logfolder = Settings.log_location + os.path.sep
         if multi_logs is True:
-            self.logfolder = '{}{}/'.format(Settings.log_location, self.username)
+            self.logfolder = '{0}{1}{2}{1}'.format(
+                Settings.log_location, os.path.sep, self.username)
         if not os.path.exists(self.logfolder):
             os.makedirs(self.logfolder)
 
@@ -227,6 +236,17 @@ class InstaPy:
                 user_agent = "Chrome"
                 chrome_options.add_argument('user-agent={user_agent}'
                                             .format(user_agent=user_agent))
+            capabilities = DesiredCapabilities.CHROME
+            # Proxy for chrome
+            if self.proxy_address and self.proxy_port > 0:
+                prox = Proxy()
+                proxy = ":".join([self.proxy_address, self.proxy_port])
+                prox.proxy_type = ProxyType.MANUAL
+                prox.http_proxy = proxy
+                prox.socks_proxy = proxy
+                prox.ssl_proxy = proxy
+                prox.add_to_capabilities(capabilities)
+
             # add proxy extension
             if self.proxy_chrome_extension and not self.headless_browser:
                 chrome_options.add_extension(self.proxy_chrome_extension)
@@ -235,8 +255,22 @@ class InstaPy:
                 'intl.accept_languages': 'en-US'
             }
             chrome_options.add_experimental_option('prefs', chrome_prefs)
-            self.browser = webdriver.Chrome(chromedriver_location,
-                                            chrome_options=chrome_options)
+            try:
+                self.browser = webdriver.Chrome(chromedriver_location,
+                                                desired_capabilities=capabilities,
+                                                chrome_options=chrome_options)
+            except selenium.common.exceptions.WebDriverException as exc:
+                self.logger.exception(exc)
+                raise InstaPyError('ensure chromedriver is installed at {}'.format(
+                    Settings.chromedriver_location))
+
+            # prevent: Message: unknown error: call function result missing 'value'
+            matches = re.match(r'^(\d+\.\d+)',
+                               self.browser.capabilities['chrome']['chromedriverVersion'])
+            if float(matches.groups()[0]) < Settings.chromedriver_min_version:
+                raise InstaPyError('chromedriver {} is not supported, expects {}+'.format(
+                    float(matches.groups()[0]), Settings.chromedriver_min_version))
+
         self.browser.implicitly_wait(self.page_delay)
         self.logger.info('Session started - %s'
                          % (datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
@@ -478,19 +512,56 @@ class InstaPy:
             self.clarifai_img_tags.append((tags, comment, comments))
 
         return self
+                                 
+    def follow_likers(self, photo_urls, amount=10):
+        if not isinstance(photo_urls, list):
+            photo_urls = [photo_urls]
+        for photo_url in photo_urls:
+            user_liked_list = users_liked (self.browser, photo_url, amount)
+            self.follow_by_list(user_liked_list[:amount])
+        return self
 
-    def follow_by_list(self, followlist, times=1):
+    def follow_commenters(self, usernames, amount=10, daysold=365, max_pic = 50):
+        if not isinstance(usernames, list):
+            usernames = [usernames]
+        for username in usernames: 
+            print ("\nFollowing commenters of ", username ," from pictures in last ", daysold, " days...\nScrapping wall..")                      
+            user_commented_list = extract_information(self.browser, username, daysold, max_pic)
+            if (len(user_commented_list))>0:  
+                print ("Going to follow top ", amount, " users.\n")            
+                sleep(1)
+                self.follow_by_list(user_commented_list[:amount])
+            else:
+                print ("Noone commented, noone to follow.\n")
+            sleep(1)
+        print ("\nFinished.\n")
+        return self
+
+    def follow_user_likers (self, usernames, photos_grab_amount=3, follow_likers_per_photo=3, randomize=True):
+        print ("Starting..")
+        if photos_grab_amount>12:
+            print ("\nSorry, you can only grab likers from first 12 photos for given username now.\n")
+            photos_grab_amount = 12
+        for username in usernames:
+            photo_url_arr = get_photo_urls_from_profile (self.browser, username, photos_grab_amount, randomize)
+            sleep(1)
+            self.follow_likers (photo_url_arr, amount=follow_likers_per_photo)
+        
+        print ("\nFinished following likers.\n")    
+        return self
+        
+    def follow_by_list(self, followlist, times=1): 
         """Allows to follow by any scrapped list"""
         self.follow_times = times or 0
         if self.aborting:
-            return self
-
+            print (">>>self aborting prevented")
+            #return self
+            
         followed = 0
-
         for acc_to_follow in followlist:
             if acc_to_follow in self.dont_include:
                 continue
-
+            
             if self.follow_restrict.get(acc_to_follow, 0) < self.follow_times:
                 followed += follow_given_user(self.browser,
                                               self.username,
@@ -519,6 +590,8 @@ class InstaPy:
         """Used to chose if a post is liked by the number of likes"""
         self.like_by_followers_lower_limit = limit or 0
         return self
+
+
 
     def like_by_locations(self,
                           locations=None,
@@ -1783,8 +1856,11 @@ class InstaPy:
     def end(self):
         """Closes the current session"""
         dump_follow_restriction(self.follow_restrict, self.logfolder)
-        self.browser.delete_all_cookies()
-        self.browser.quit()
+        try:
+            self.browser.delete_all_cookies()
+            self.browser.quit()
+        except WebDriverException as exc:
+            self.logger.warning('Could not locate Chrome: {}'.format(exc))
 
         if self.nogui:
             self.display.stop()
