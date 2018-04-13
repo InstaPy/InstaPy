@@ -253,6 +253,43 @@ session.follow_user_followers(['friend1', 'friend2', 'friend3'], amount=10, rand
 session.follow_by_tags(['tag1', 'tag2'], amount=10)
 ```
 
+### Follow users that liked some photo(s)
+
+```python
+# Follows the people that liked given photo
+# The photo_url_arr is array of urls of photos, can also be just 1 url as string
+# The amount is how many people to follow
+# In this case 10 people who liked photo in photo_url_arr will be followed, for each photo
+
+session.follow_likers(['https://www.instagram.com/p/Bga_UUrDFoc/', 'https://www.instagram.com/p/BgbOtLHD7yp/?taken-by=natgeo'], amount=10)
+```
+
+### Follow users that liked some user's post(s)
+
+```python
+# Follows the people that liked photos of given array of users
+# The usernames can be array
+# The photos_grab_amount is how many photos will I grat from users profile and analyze who liked it.
+# The follow_likers_per_photo is how many people to follow per each photo
+# Randomize=False will take photos from newes, true will take random from first 12
+# In this case 2 random photos from each given user will be analyzed and 3 people who liked them will be followed, so 6 follows in total
+
+session.follow_user_likers (['user1' , 'user2'], photos_grab_amount = 2, follow_likers_per_photo = 3, randomize=True)
+```
+
+### Follow users who comment the most on given user(s)'s photos
+
+```python
+# Follows the people that commented photos of given array of users
+# The usernames can be array
+# The amount is how many people to follow
+# The daysold will only take commenters from photos no older than daysold days
+# The max_pic will limit number of photos to analyze
+# In thi case (max 100 newest photos & maximum 365 days old) from each given user will be analyzed and 100 people who commented the most will be followed
+
+session.follow_commenters(['user1', 'user2', 'user3'], amount=100, daysold=365, max_pic = 100)
+```
+
 ### Interact with specific users
 ```python
 # Interact with specific users

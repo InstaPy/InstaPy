@@ -46,6 +46,11 @@ from .unfollow_util import follow_given_user
 from .unfollow_util import load_follow_restriction
 from .unfollow_util import dump_follow_restriction
 from .unfollow_util import set_automated_followed_pool
+from .feed_util import get_like_on_feed
+from .commenters_util import extract_post_info     
+from .commenters_util import extract_information
+from .commenters_util import users_liked
+from .commenters_util import get_photo_urls_from_profile
 
 
 # Set a logger cache outside the InstaPy object to avoid re-instantiation issues
@@ -507,19 +512,56 @@ class InstaPy:
             self.clarifai_img_tags.append((tags, comment, comments))
 
         return self
+                                 
+    def follow_likers(self, photo_urls, amount=10):
+        if not isinstance(photo_urls, list):
+            photo_urls = [photo_urls]
+        for photo_url in photo_urls:
+            user_liked_list = users_liked (self.browser, photo_url, amount)
+            self.follow_by_list(user_liked_list[:amount])
+        return self
 
-    def follow_by_list(self, followlist, times=1):
+    def follow_commenters(self, usernames, amount=10, daysold=365, max_pic = 50):
+        if not isinstance(usernames, list):
+            usernames = [usernames]
+        for username in usernames: 
+            print ("\nFollowing commenters of ", username ," from pictures in last ", daysold, " days...\nScrapping wall..")                      
+            user_commented_list = extract_information(self.browser, username, daysold, max_pic)
+            if (len(user_commented_list))>0:  
+                print ("Going to follow top ", amount, " users.\n")            
+                sleep(1)
+                self.follow_by_list(user_commented_list[:amount])
+            else:
+                print ("Noone commented, noone to follow.\n")
+            sleep(1)
+        print ("\nFinished.\n")
+        return self
+
+    def follow_user_likers (self, usernames, photos_grab_amount=3, follow_likers_per_photo=3, randomize=True):
+        print ("Starting..")
+        if photos_grab_amount>12:
+            print ("\nSorry, you can only grab likers from first 12 photos for given username now.\n")
+            photos_grab_amount = 12
+        for username in usernames:
+            photo_url_arr = get_photo_urls_from_profile (self.browser, username, photos_grab_amount, randomize)
+            sleep(1)
+            self.follow_likers (photo_url_arr, amount=follow_likers_per_photo)
+        
+        print ("\nFinished following likers.\n")    
+        return self
+        
+    def follow_by_list(self, followlist, times=1): 
         """Allows to follow by any scrapped list"""
         self.follow_times = times or 0
         if self.aborting:
-            return self
-
+            print (">>>self aborting prevented")
+            #return self
+            
         followed = 0
-
         for acc_to_follow in followlist:
             if acc_to_follow in self.dont_include:
                 continue
-
+            
             if self.follow_restrict.get(acc_to_follow, 0) < self.follow_times:
                 followed += follow_given_user(self.browser,
                                               self.username,
@@ -548,6 +590,8 @@ class InstaPy:
         """Used to chose if a post is liked by the number of likes"""
         self.like_by_followers_lower_limit = limit or 0
         return self
+
+
 
     def like_by_locations(self,
                           locations=None,
@@ -1583,8 +1627,7 @@ class InstaPy:
 
     def like_by_feed(self, **kwargs):
         """Like the users feed"""
-        for i in self.like_by_feed_generator(**kwargs):
-            pass
+        self.like_by_feed_generator(**kwargs)
         return self
 
     def like_by_feed_generator(self,
