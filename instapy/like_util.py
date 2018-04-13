@@ -5,6 +5,7 @@ import random
 from math import ceil
 from re import findall
 from selenium.webdriver.common.keys import Keys
+from selenium.common.exceptions import WebDriverException
 
 from .time_util import sleep
 from .util import update_activity
@@ -401,16 +402,26 @@ def get_links_for_username(browser,
     return links[:amount]
 
 
-def check_link(browser,
-               link,
-               dont_like,
-               ignore_if_contains,
-               ignore_users,
-               username,
-               like_by_followers_upper_limit,
-               like_by_followers_lower_limit,
-               logger):
+def check_link(browser, link, dont_like, ignore_if_contains, ignore_users, username,
+               like_by_followers_upper_limit, like_by_followers_lower_limit, logger):
+    """
+    Check the given link if it is appropriate
 
+    :param browser: The selenium webdriver instance
+    :param link:
+    :param dont_like: hashtags of inappropriate phrases
+    :param ignore_if_contains:
+    :param ignore_users:
+    :param username:
+    :param like_by_followers_upper_limit:
+    :param like_by_followers_lower_limit:
+    :param logger: the logger instance
+    :return: tuple of
+        boolean: True if inappropriate,
+        string: the username,
+        boolean: True if it is video media,
+        string: the message if inappropriate else 'None'
+    """
     browser.get(link)
     # update server calls
     update_activity()
@@ -484,9 +495,23 @@ def check_link(browser,
         # update server calls
         update_activity()
         sleep(1)
-        num_followers = browser.execute_script(
-            "return window._sharedData.entry_data."
-            "ProfilePage[0].graphql.user.edge_followed_by.count")
+
+        try:
+            num_followers = browser.execute_script(
+                "return window._sharedData.entry_data."
+                "ProfilePage[0].graphql.user.edge_followed_by.count")
+        except WebDriverException:
+            try:
+                browser.execute_script("location.reload()")
+                num_followers = browser.execute_script(
+                    "return window._sharedData.entry_data."
+                    "ProfilePage[0].graphql.user.edge_followed_by.count")
+            except WebDriverException:
+                num_followers = 'undefined'
+                like_by_followers_lower_limit = None
+                like_by_followers_upper_limit = None
+
+
         browser.get(link)
         # update server calls
         update_activity()
@@ -511,7 +536,7 @@ def check_link(browser,
         return True, user_name, is_video, 'Username'
 
     if any((word in image_text for word in ignore_if_contains)):
-        return True, user_name, is_video, 'None'
+        return False, user_name, is_video, 'None'
 
     dont_like_regex = []
 
@@ -529,13 +554,14 @@ def check_link(browser,
     for dont_likes_regex in dont_like_regex:
         quash = re.search(dont_likes_regex, image_text, re.IGNORECASE)
         if quash:
-            quashed = (((quash.group(0)).split('#')[1]).split(' ')[0]).split('\n')[0]   # dismiss possible space and newlines
+            quashed = (((quash.group(0)).split('#')[1]).split(' ')[0]).split('\n')[0].encode('utf-8')   # dismiss possible space and newlines
             iffy = ((re.split(r'\W+', dont_likes_regex))[3] if dont_likes_regex.endswith('*([^\\d\\w]|$)') else   # 'word' without format
                      (re.split(r'\W+', dont_likes_regex))[1] if dont_likes_regex.endswith('+([^\\d\\w]|$)') else   # '[word'
                       (re.split(r'\W+', dont_likes_regex))[3] if dont_likes_regex.startswith('#[\\d\\w]+') else     # ']word'
-                       (re.split(r'\W+', dont_likes_regex))[1])                                                    # '#word'
-            inapp_unit = ('Inappropriate! ~ contains \'{}\''.format(quashed) if quashed == iffy else
-                              'Inappropriate! ~ contains \'{}\' in \'{}\''.format(iffy, quashed))
+                       (re.split(r'\W+', dont_likes_regex))[1])                                                      # '#word'
+            inapp_unit = 'Inappropriate! ~ contains "{}"'.format(
+                quashed if iffy == quashed else
+                '" in "'.join([str(iffy), str(quashed)]))
             return True, user_name, is_video, inapp_unit
 
     return False, user_name, is_video, 'None'
@@ -543,9 +569,13 @@ def check_link(browser,
 
 def like_image(browser, username, blacklist, logger, logfolder):
     """Likes the browser opened image"""
-    like_elem = browser.find_elements_by_xpath(
-        "//a[@role='button']/span[text()='Like']/..")
-    if len(like_elem) == 1:
+    # fetch spans fast
+    spans = [x.text.lower() for x in browser.find_elements_by_xpath("//article//a[@role='button']/span")]
+
+    if 'like' in spans:
+        like_elem = browser.find_elements_by_xpath(
+            "//a[@role='button']/span[text()='Like']/..")
+
         # sleep real quick right before clicking the element
         sleep(2)
         click_element(browser, like_elem[0])
