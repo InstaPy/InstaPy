@@ -536,7 +536,7 @@ def check_link(browser, link, dont_like, ignore_if_contains, ignore_users, usern
         return True, user_name, is_video, 'Username'
 
     if any((word in image_text for word in ignore_if_contains)):
-        return True, user_name, is_video, 'None'
+        return False, user_name, is_video, 'None'
 
     dont_like_regex = []
 
