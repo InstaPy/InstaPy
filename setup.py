@@ -5,7 +5,7 @@ __author__ = 'Tim Grossmann'
 
 requirements = [
     'selenium==2.53.6',
-    'clarifai==2.0.31',
+    'clarifai==2.0.32',
     'pyvirtualdisplay',
     'emoji'
 ]
@@ -20,5 +20,7 @@ setup(
     url='https://github.com/timgrossmann/InstaPy',
     py_modules='instapy',
     description=description,
-    install_requires=requirements
+    install_requires=requirements,
+    packages=['instapy'],
+    include_package_data=True,
 )
