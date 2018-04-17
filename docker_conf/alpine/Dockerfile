@@ -1,7 +1,6 @@
 FROM gliderlabs/alpine:latest
 
 RUN apk add --update \
-    git \
     python \
     python-dev \
     py-pip \
@@ -11,7 +10,6 @@ RUN apk add --update \
 
 RUN mkdir /code 
 RUN mkdir /config
-RUN mkdir /srv
 
 WORKDIR /code
 COPY ./requirements.txt /config/
