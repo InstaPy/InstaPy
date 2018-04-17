@@ -1,3 +1,6 @@
+# This is the swarm version of docker-compose.yml, for running InstaPy under Docker swarm
+# An example configuration / process is available at https://geek-cookbook.funkypenguin.co.nz/recipies/instapy/
+
 version: '3'
 services:
   web:
@@ -26,4 +29,3 @@ services:
     image: selenium/standalone-chrome-debug
     ports:
       - "5900:5900"
-    shm_size: 128M
