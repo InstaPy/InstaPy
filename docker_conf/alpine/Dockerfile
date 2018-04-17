@@ -1,4 +1,4 @@
-FROM gliderlabs/alpine:3.3
+FROM gliderlabs/alpine:latest
 
 RUN apk add --update \
     git \
@@ -21,4 +21,4 @@ RUN pip install -r /config/requirements.txt
 ADD https://raw.githubusercontent.com/Eficode/wait-for/master/wait-for /code
 RUN chmod 755 /code/wait-for
 
-COPY ./ /code/%
+COPY ./ /code/
