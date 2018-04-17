@@ -23,8 +23,7 @@ services:
 
 
   selenium:
-    container_name: selenium
     image: selenium/standalone-chrome-debug
     ports:
-      - "5999:5900"
+      - "5900:5900"
     shm_size: 128M
