@@ -15,11 +15,11 @@ services:
       - /full/path/to/docker_quickstart.py:/code/docker_quickstart.py:ro
 
     # This section allows docker to restart the container when it exits (either normally or abnormally), which ensures that
-    # InstaPy keeps re-reunning. Tweak the delay to avoid being banned for excessive activity 
+    # InstaPy keeps re-running. Tweak the delay to avoid being banned for excessive activity 
     deploy:
       restart_policy:
         condition: any
-        delay: 3600ss
+        delay: 3600s
 
 
   selenium:
