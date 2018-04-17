@@ -9,10 +9,16 @@ RUN apk add --update \
   && pip install virtualenv \
   && rm -rf /var/cache/apk/*
 
-RUN mkdir /code && mkdir /config
+RUN mkdir /code 
+RUN mkdir /config
+RUN mkdir /srv
 
 WORKDIR /code
 COPY ./requirements.txt /config/
-ONBUILD RUN virtualenv /env && /env/bin/pip install -r /code/requirements.txt
+RUN pip install -r /config/requirements.txt
+
+# Add wait-for
+ADD https://raw.githubusercontent.com/Eficode/wait-for/master/wait-for /code
+RUN chmod 755 /code/wait-for
 
 COPY ./ /code/%
