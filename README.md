@@ -130,7 +130,13 @@ session = InstaPy(username=insta_username, password=insta_password)
 session.login()
 
 # set up all the settings
-session.set_upper_follower_count(limit=2500)
+session.set_relationship_bounds(enabled=True,
+								 potency_ratio=1.2,
+								  delimit_by_numbers=True,
+								   max_followers=12668,
+									max_following=5555, 
+									 min_followers=77, 
+									  min_following=55)
 session.set_do_comment(True, percentage=10)
 session.set_comments(['aMEIzing!', 'So much fun!!', 'Nicey!'])
 session.set_dont_include(['friend1', 'friend2', 'friend3'])
@@ -366,21 +372,31 @@ session.unfollow_users(amount=10, onlyInstapyFollowed = True, onlyInstapyMethod 
 session.set_dont_unfollow_active_users(enabled=True, posts=5)
 ```
 
-### Interactions based on the number of followers a user has
+### Interactions based on the number of followers & following a user has
 
 ```python
-# This is used to check the number of followers a user has and if this number
-# exceeds the number set then no further interaction happens
+# This is used to check the number of followers & following a user has and if these numbers
+# exceed the number set or does not pass the number set or
+# if their ratio does not reach desired potency ratio then no further interaction happens
 
-session.set_upper_follower_count(limit = 250)
+session.set_relationship_bounds (enabled=True,
+								  potency_ratio=1.21,
+								   delimit_by_numbers=False,
+									max_followers=12668,
+									 max_following=5555,
+									  min_followers=77,
+									   min_following=55)
+
+# `potency_ratio` == followers count / following count
+
+# 1. you can use `potency_ratio` or not (`potency_ratio=None`, `delimit_by_numbers=True`) - will decide only by your pre-defined max & min values regardless of the ratio
+# 2. also, you can use only `potency_ratio` (`potency_ratio=1.5`, `delimit_by_numbers=False`) - will decide per ratio regardless of the counts
+# 3. or use both `potency_ratio` and pre-defined max & min values (`potency_ratio=1.5`, `delimit_by_numbers=True`) - will decide per `potency_ratio` & your predefined max & min values
+
+# all of the 4 max & min values are able to freely operate, e.g., you may want to only delimit `max_followers` (`max_followers=52639`, `max_following=None`, `min_followers=None`, `min_following=None`)
+
 ```
 
-```python
-# This is used to check the number of followers a user has and if this number
-# does not pass the number set then no further interaction happens
-
-session.set_lower_follower_count(limit = 1)
-```
 
 ### Comment by Locations
 
