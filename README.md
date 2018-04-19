@@ -384,11 +384,11 @@ session.set_relationship_bounds (enabled=True,
 									  min_followers=77,
 									   min_following=55)
 ```
-`potency_ratio` == **followers count** / **following count**
-> `potency_ratio` can be used to _route_ interactions to **only** **potential** (_real_) users _who_ have _higher_ **relationship ratio** than desired
->>_**e.g.**_, target user has _5000 followers_ & _4000 following_ and you set `potency_ratio=1.35`. **Now** it _will not interact_ with this user, **cos** the user's **relationship ratio** is `5000/4000==1.25` and 1.25 is **below** _desired_ `potency_ratio` _of 1.35_
+`potency_ratio` can be used to _route_ interactions to **only** **potential** (_real_) users _whose_ **followers count** is higher than **following count**  
+_it matches_: `potency_ratio` == **followers count** / **following count**   (_find your desired_ `potency_ratio` _with this formula_)  
+>_**e.g.**_, target user has _5000 followers_ & _4000 following_ and you set `potency_ratio=1.35`. **Now** it _will not interact_ with this user, **cos** the user's **relationship ratio** is `5000/4000==1.25` and 1.25 is **below** _desired_ `potency_ratio` _of 1.35_  
 
-> `delimit_by_numbers` is used to activate & deactivate the usage of max & min values
+`delimit_by_numbers` is used to activate & deactivate the usage of max & min values
 
 ###### there are **three** **COMBINATIONS** _available_ to use:
 * **1**. You can use `potency_ratio` **or not** (`potency_ratio=None`, `delimit_by_numbers=True`) - _will decide only by your **pre-defined** max & min values regardless of the_ `potency_ratio`
@@ -408,8 +408,11 @@ session.set_relationship_bounds (enabled=True, potency_ratio=2.35, delimit_by_nu
 > **All** of the **4** max & min values are _able to **freely** operate_, **e.g.**, you may want to _**only** delimit_ `max_followers` and `min_following` (`max_followers=52639`, `max_following=None`, `min_followers=None`, `min_following=2240`)
 ```python
 session.set_relationship_bounds (enabled=True, potency_ratio=1.44, delimit_by_numbers=True, max_followers=52639, max_following=None, min_followers=None, min_following=2240)
-```
+```  
 
+**BONUS**: **if** you want to interact only with _massive followers_ whose **following count** is higher than **followers count**, just put _negative sign_ in `potency_ratio`'s value (`potency_ratio = -1.2`)  
+_now, it matches_:  `potency_ratio` == **following count** / **followers count**  (_find your desired_ `potency_ratio` _with this formula_)
+>_**e.g.**_, target user has _2000 followers_ & _3000 following_ and you set `potency_ratio = -1.7`. **Now** it _will not interact_ with this user, **cos** the user's **relationship ratio** is `3000/2000==1.5` and 1.5 is **below** _desired_ `potency_ratio` _of 1.7_ (_note that, negative `-` sign is only used to determine your style_)
 
 ### Comment by Locations
 

@@ -506,11 +506,14 @@ def check_link(browser, link, dont_like, ignore_if_contains, ignore_users, usern
 
         userlink = 'https://www.instagram.com/' + user_name
         browser.get(userlink)
-        
+
         # update server calls
         update_activity()
         sleep(1)
-        
+
+        relationship_ratio = None
+        reverse_relationship = False
+
         try:
             followers_count = format_number(browser.find_element_by_xpath("//a[contains"
                                     "(@href,'followers')]/span").text)
@@ -560,10 +563,14 @@ def check_link(browser, link, dont_like, ignore_if_contains, ignore_users, usern
         update_activity()
         sleep(1)
 
-        relationship_ratio = (followers_count/following_count if
-                                followers_count and
-                                following_count else
-                                 None)
+        if potency_ratio < 0:
+            potency_ratio *= -1
+            reverse_relationship = True
+            
+        if followers_count and following_count:
+            relationship_ratio = (followers_count/following_count
+                                   if not reverse_relationship
+                                    else following_count/followers_count)
         
         logger.info('User: {} >> followers: {}  |  following: {}  |  relationship ratio: {}'.format(user_name,
         followers_count if followers_count else 'unknown',
@@ -574,7 +581,9 @@ def check_link(browser, link, dont_like, ignore_if_contains, ignore_users, usern
             if potency_ratio and not delimit_by_numbers:
                 if relationship_ratio and relationship_ratio < potency_ratio:
                         return True, user_name, is_video, \
-                                "{} is not a potential user with the relationship ratio of {}".format(user_name, float("{0:.2f}".format(relationship_ratio)))                    
+                            "{} is not a {} with the relationship ratio of {}".format(
+                            user_name, "potential user" if not reverse_relationship else "massive follower",
+                            float("{0:.2f}".format(relationship_ratio)))
 
             elif delimit_by_numbers:
                 if followers_count:
@@ -598,7 +607,9 @@ def check_link(browser, link, dont_like, ignore_if_contains, ignore_users, usern
                 if potency_ratio:
                     if relationship_ratio and relationship_ratio < potency_ratio:
                         return True, user_name, is_video, \
-                            "{} is not a potential user with the relationship ratio of {}".format(user_name, float("{0:.2f}".format(relationship_ratio)))
+                            "{} is not a {} with the relationship ratio of {}".format(
+                            user_name, "potential user" if not reverse_relationship else "massive follower",
+                            float("{0:.2f}".format(relationship_ratio)))
                             
 
     logger.info('Link: {}'.format(link.encode('utf-8')))
