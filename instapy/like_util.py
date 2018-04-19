@@ -516,20 +516,20 @@ def check_link(browser, link, dont_like, ignore_if_contains, ignore_users, usern
                                     "(@href,'followers')]/span").text)
         except NoSuchElementException:
             try:
-                followers_count = format_number(browser.find_element_by_xpath(
-                                "//li[2]/a/span[contains(@class, '_fd86t')]").text)
-            except NoSuchElementException:
+                followers_count = browser.execute_script(
+                    "return window._sharedData.entry_data."
+                    "ProfilePage[0].graphql.user.edge_followed_by.count")
+            except WebDriverException:
                 try:
+                    browser.execute_script("location.reload()")
                     followers_count = browser.execute_script(
                         "return window._sharedData.entry_data."
                         "ProfilePage[0].graphql.user.edge_followed_by.count")
-                except WebDriverException:
+                except WebDriverException:            
                     try:
-                        browser.execute_script("location.reload()")
-                        followers_count = browser.execute_script(
-                            "return window._sharedData.entry_data."
-                            "ProfilePage[0].graphql.user.edge_followed_by.count")
-                    except WebDriverException:
+                        followers_count = format_number(browser.find_element_by_xpath(
+                                        "//li[2]/a/span[contains(@class, '_fd86t')]").text)
+                    except NoSuchElementException:
                         logger.info("Error occured during getting the followers count of '{}'\n".format(user_name))
                         followers_count = None
         
@@ -538,20 +538,20 @@ def check_link(browser, link, dont_like, ignore_if_contains, ignore_users, usern
                                     "(@href,'following')]/span").text)
         except NoSuchElementException:
             try:
-                following_count = format_number(browser.find_element_by_xpath(
-                                    "//li[3]/a/span[contains(@class, '_fd86t')]").text)
-            except NoSuchElementException:
+                following_count = browser.execute_script(
+                    "return window._sharedData.entry_data."
+                    "ProfilePage[0].graphql.user.edge_follow.count")
+            except WebDriverException:
                 try:
+                    browser.execute_script("location.reload()")
                     following_count = browser.execute_script(
                         "return window._sharedData.entry_data."
                         "ProfilePage[0].graphql.user.edge_follow.count")
                 except WebDriverException:
                     try:
-                        browser.execute_script("location.reload()")
-                        following_count = browser.execute_script(
-                            "return window._sharedData.entry_data."
-                            "ProfilePage[0].graphql.user.edge_follow.count")
-                    except WebDriverException:
+                        following_count = format_number(browser.find_element_by_xpath(
+                                            "//li[3]/a/span[contains(@class, '_fd86t')]").text)
+                    except NoSuchElementException:
                         logger.info("\nError occured during getting the following count of '{}'\n".format(user_name))
                         following_count = None
             
