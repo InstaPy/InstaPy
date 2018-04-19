@@ -190,9 +190,9 @@ def unfollow(browser,
 
         graphql_endpoint = 'https://www.instagram.com/graphql/query/'
         graphql_followers = (
-            graphql_endpoint + '?query_id=17851374694183129')
+                graphql_endpoint + '?query_hash=37479f2b8209594dde7facb0d904896a')
         graphql_following = (
-            graphql_endpoint + '?query_id=17874545323001329')
+                graphql_endpoint + '?query_hash=58712303d941c6855d4e888c5f0cd22f')
 
         all_followers = []
         all_following = []
@@ -202,7 +202,7 @@ def unfollow(browser,
             "return window._sharedData.entry_data.ProfilePage[0]."
             "graphql.user.id")
         variables['id'] = user_data['id']
-        variables['first'] = 100
+        variables['first'] = 50
 
         # get follower and following user loop
         try:
