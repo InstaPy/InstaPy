@@ -131,12 +131,12 @@ session.login()
 
 # set up all the settings
 session.set_relationship_bounds(enabled=True,
-								 potency_ratio=-1.2,
-								  delimit_by_numbers=True,
-								   max_followers=12668,
-									max_following=5555,
-									 min_followers=77,
-									  min_following=55)
+				 potency_ratio=-1.21,
+				  delimit_by_numbers=True,
+				   max_followers=2668,
+				    max_following=5555,
+				     min_followers=45,
+				      min_following=77)
 session.set_do_comment(True, percentage=10)
 session.set_comments(['aMEIzing!', 'So much fun!!', 'Nicey!'])
 session.set_dont_include(['friend1', 'friend2', 'friend3'])
@@ -376,13 +376,13 @@ session.set_dont_unfollow_active_users(enabled=True, posts=5)
 
 ##### This is used to check the number of _followers_ & _following_ a user has and if these numbers _either_ **exceed** the number set OR **does not pass** the number set OR if **their ratio does not reach** desired potency ratio then no further interaction happens
 ```python
-session.set_relationship_bounds (enabled=True,
-								  potency_ratio=1.21,
-								   delimit_by_numbers=True,
-									max_followers=12668,
-									 max_following=5555,
-									  min_followers=77,
-									   min_following=55)
+session.set_relationship_bounds(enabled=True,
+				 potency_ratio=1.34,
+				  delimit_by_numbers=True,
+				   max_followers=8500,
+				    max_following=4490,
+				     min_followers=100,
+				      min_following=56)
 ```
 `delimit_by_numbers` is used to **activate** & **deactivate** the usage of max & min values  
 `potency_ratio` accepts values in **2 format**s _according to your_ **style**: _positive_ & _negative_  
