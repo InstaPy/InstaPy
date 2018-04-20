@@ -8,11 +8,12 @@ from re import findall
 from selenium.webdriver.common.keys import Keys
 from selenium.common.exceptions import WebDriverException
 
+from .settings import Settings
 from .time_util import sleep
 from .util import update_activity
 from .util import add_user_to_blacklist
 from .util import click_element
-
+from .statistic_util import Profilestatistic
 
 def get_links_from_feed(browser, amount, num_of_search, logger):
     """Fetches random number of links from feed and returns a list of links"""
@@ -524,6 +525,8 @@ def check_link(browser, link, dont_like, ignore_if_contains, ignore_users, usern
         update_activity()
         sleep(1)
         logger.info('Number of Followers: {}'.format(num_followers))
+        if Settings.log_profile_statistic:
+            Profilestatistic.log_statistic_user_follower(format(user_name.encode('utf-8')),num_followers)
 
         if like_by_followers_upper_limit and \
            num_followers > like_by_followers_upper_limit:
