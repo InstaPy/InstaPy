@@ -45,7 +45,7 @@ Table of Contents
   * [Interact with someone else's followers](#interact-with-someone-elses-followers)
   * [Unfollowing](#unfollowing)
   * [Don't unfollow active users](#dont-unfollow-active-users)
-  * [Interactions based on the number of followers & following a user has](#interactions-based-on-the-number-of-followers-&-following-a-user-has)
+  * [Interactions based on the number of followers and/or following a user has](#interactions-based-on-the-number-of-followers-and/or-following-a-user-has)
   * [Comment by Locations](#comment-by-locations)
   * [Like by Locations](#like-by-locations)
   * [Like by Tags](#like-by-tags)
@@ -372,9 +372,9 @@ session.unfollow_users(amount=10, onlyInstapyFollowed = True, onlyInstapyMethod 
 session.set_dont_unfollow_active_users(enabled=True, posts=5)
 ```
 
-### Interactions based on the number of followers & following a user has
+### Interactions based on the number of followers and/or following a user has
 
-##### This is used to check the number of _followers_ & _following_ a user has and if these numbers _either_ **exceed** the number set OR **does not pass** the number set OR if **their ratio does not reach** desired potency ratio then no further interaction happens
+##### This is used to check the number of _followers_ and/or _following_ a user has and if these numbers _either_ **exceed** the number set OR **does not pass** the number set OR if **their ratio does not reach** desired potency ratio then no further interaction happens
 ```python
 session.set_relationship_bounds(enabled=True,
 				 potency_ratio=1.34,
