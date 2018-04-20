@@ -19,7 +19,13 @@ def worker(selection):
 
     session.set_dont_unfollow_active_users(enabled=True, posts=7)
     session.set_user_interact(amount=2, randomize=True, percentage=20, media='Photo')
-    session.set_upper_follower_count(limit = 500)
+    session.set_relationship_bounds(enabled=True,
+             potency_ratio=-1.21,
+              delimit_by_numbers=True,
+               max_followers=4590,
+                max_following=5555,
+                 min_followers=45,
+                  min_following=77)
 
     session.like_by_feed(amount=random.randint(5,11), randomize=True, unfollow=True, interact=True)
     print("MULTI -",instaUser[selection],"finished liking by feed at",datetime.datetime.now().strftime("%H:%M:%S"))

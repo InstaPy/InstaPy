@@ -133,7 +133,7 @@ session.login()
 session.set_relationship_bounds(enabled=True,
 				 potency_ratio=-1.21,
 				  delimit_by_numbers=True,
-				   max_followers=2668,
+				   max_followers=4590,
 				    max_following=5555,
 				     min_followers=45,
 				      min_following=77)
