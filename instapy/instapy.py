@@ -145,6 +145,7 @@ class InstaPy:
 
         self.like_by_followers_upper_limit = 90000
         self.like_by_followers_lower_limit = 0
+        self.like_by_following_lower_limit = 0
 
         self.bypass_suspicious_attempt = bypass_suspicious_attempt
 
@@ -582,16 +583,19 @@ class InstaPy:
         return self
 
     def set_upper_follower_count(self, limit=None):
-        """Used to chose if a post is liked by the number of likes"""
+        """Used to chose if a post is liked by the number of followers"""
         self.like_by_followers_upper_limit = limit or maxsize
         return self
 
     def set_lower_follower_count(self, limit=None):
-        """Used to chose if a post is liked by the number of likes"""
+        """Used to chose if a post is liked by the number of followers"""
         self.like_by_followers_lower_limit = limit or 0
         return self
 
-
+    def set_lower_following_count(self, limit=None):
+        """Used to chose if a post is liked by the number of users the profile follows"""
+        self.like_by_following_lower_limit = limit or 0
+        return self
 
     def like_by_locations(self,
                           locations=None,
@@ -640,6 +644,7 @@ class InstaPy:
                                    self.username,
                                    self.like_by_followers_upper_limit,
                                    self.like_by_followers_lower_limit,
+                                   self.like_by_following_lower_limit,
                                    self.logger)
                     )
 
@@ -931,6 +936,7 @@ class InstaPy:
                                    self.username,
                                    self.like_by_followers_upper_limit,
                                    self.like_by_followers_lower_limit,
+                                   self.like_by_following_lower_limit,
                                    self.logger)
                     )
 
@@ -1071,7 +1077,8 @@ class InstaPy:
                                            self.ignore_users,
                                            self.blacklist,
                                            self.like_by_followers_upper_limit,
-                                           self.like_by_followers_lower_limit)
+                                           self.like_by_followers_lower_limit,
+                                           self.like_by_following_lower_limit)
             if valid_user is not True:
                 self.logger.info(valid_user)
                 continue
@@ -1130,6 +1137,7 @@ class InstaPy:
                                    self.username,
                                    self.like_by_followers_upper_limit,
                                    self.like_by_followers_lower_limit,
+                                   self.like_by_following_lower_limit,
                                    self.logger)
                     )
 
@@ -1274,6 +1282,7 @@ class InstaPy:
                                    self.username,
                                    self.like_by_followers_upper_limit,
                                    self.like_by_followers_lower_limit,
+                                   self.like_by_following_lower_limit,
                                    self.logger)
                     )
 
@@ -1691,6 +1700,7 @@ class InstaPy:
                                            self.username,
                                            self.like_by_followers_upper_limit,
                                            self.like_by_followers_lower_limit,
+                                           self.like_by_following_lower_limit,
                                            self.logger)
                             )
 

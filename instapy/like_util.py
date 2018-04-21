@@ -9,6 +9,7 @@ from selenium.webdriver.common.keys import Keys
 from selenium.common.exceptions import WebDriverException
 
 from .time_util import sleep
+from .util import is_number_of_followers_valid
 from .util import update_activity
 from .util import add_user_to_blacklist
 from .util import click_element
@@ -408,9 +409,18 @@ def get_links_for_username(browser,
 
     return links[:amount]
 
+  
+def check_link(browser,
+               link,
+               dont_like,
+               ignore_if_contains,
+               ignore_users,
+               username,
+               like_by_followers_upper_limit,
+               like_by_followers_lower_limit,
+               like_by_following_lower_limit,
+               logger):
 
-def check_link(browser, link, dont_like, ignore_if_contains, ignore_users, username,
-               like_by_followers_upper_limit, like_by_followers_lower_limit, logger):
     """
     Check the given link if it is appropriate
 
@@ -422,6 +432,7 @@ def check_link(browser, link, dont_like, ignore_if_contains, ignore_users, usern
     :param username:
     :param like_by_followers_upper_limit:
     :param like_by_followers_lower_limit:
+    :param like_by_following_lower_limit,
     :param logger: the logger instance
     :return: tuple of
         boolean: True if inappropriate,
@@ -429,6 +440,7 @@ def check_link(browser, link, dont_like, ignore_if_contains, ignore_users, usern
         boolean: True if it is video media,
         string: the message if inappropriate else 'None'
     """
+    
     browser.get(link)
     # update server calls
     update_activity()
@@ -525,15 +537,32 @@ def check_link(browser, link, dont_like, ignore_if_contains, ignore_users, usern
         sleep(1)
         logger.info('Number of Followers: {}'.format(num_followers))
 
-        if like_by_followers_upper_limit and \
-           num_followers > like_by_followers_upper_limit:
-                return True, user_name, is_video, \
-                    'Number of followers exceeds limit'
+        number_of_followers_valid, error_text = is_number_of_followers_valid(num_followers,
+                                                                            like_by_followers_upper_limit,
+                                                                            like_by_followers_lower_limit)
+        if number_of_followers_valid == False:
+            return True, user_name, is_video, error_text
 
-        if like_by_followers_lower_limit and \
-           num_followers < like_by_followers_lower_limit:
+
+    if like_by_following_lower_limit:
+        userlink = 'https://www.instagram.com/' + user_name
+        browser.get(userlink)
+        # update server calls
+        update_activity()
+        sleep(1)
+        num_following = browser.execute_script(
+            "return window._sharedData.entry_data."
+            "ProfilePage[0].user.follows.count")
+        browser.get(link)
+        # update server calls
+        update_activity()
+        sleep(1)
+        logger.info('Number of Following: {}'.format(num_following))
+
+        if  num_following < like_by_following_lower_limit:
                 return True, user_name, is_video, \
-                    'Number of followers does not reach minimum'
+                    'Number of following does not reach minimum'
+
 
     logger.info('Link: {}'.format(link.encode('utf-8')))
     logger.info('Description: {}'.format(image_text.encode('utf-8')))
