@@ -157,20 +157,6 @@ session.follow_by_list(accs, times=1)
 session.unfollow_users(amount=10)
 ```
 
-### Interactions based on the number of followers a user has
-
-```python
-#This is used to check the number of followers a user has and if this number exceeds the number set then no further interaction happens
-
-session.set_upper_follower_count(limit = 250)
-```
-
-```python
-#This is used to check the number of followers a user has and if this number does not pass the number set then no further interaction happens
-
-session.set_lower_follower_count(limit = 1)
-```
-
 ### Locations
 
 ```python
@@ -557,20 +543,6 @@ session.follow_by_list(accs, times=1)
 #will prevent commenting on and unfollowing your good friends (the images will still be liked)
 
 session.set_dont_include(['friend1', 'friend2', 'friend3'])
-```
-
-##### Interactions based on the number of followers a user has
-
-```python
-#This is used to check the number of followers a user has and if this number exceeds the number set then no further interaction happens
-
-session.set_upper_follower_count(limit = 250)
-```
-
-```python
-#This is used to check the number of followers a user has and if this number does not pass the number set then no further interaction happens
-
-session.set_lower_follower_count(limit = 1)
 ```
 
 ##### Unfollowing

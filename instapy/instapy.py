@@ -7,7 +7,6 @@ from math import ceil
 import os
 from platform import python_version
 from datetime import datetime
-from sys import maxsize
 import random
 
 import selenium
@@ -142,9 +141,14 @@ class InstaPy:
         self.clarifai_api_key = None
         self.clarifai_img_tags = []
         self.clarifai_full_match = False
-
-        self.like_by_followers_upper_limit = 90000
-        self.like_by_followers_lower_limit = 0
+        
+        self.potency_ratio = 1.3466
+        self.delimit_by_numbers = True
+        
+        self.max_followers = 90000
+        self.max_following = 66834
+        self.min_followers = 35
+        self.min_following = 27
 
         self.bypass_suspicious_attempt = bypass_suspicious_attempt
 
@@ -581,17 +585,25 @@ class InstaPy:
 
         return self
 
-    def set_upper_follower_count(self, limit=None):
-        """Used to chose if a post is liked by the number of likes"""
-        self.like_by_followers_upper_limit = limit or maxsize
-        return self
-
-    def set_lower_follower_count(self, limit=None):
-        """Used to chose if a post is liked by the number of likes"""
-        self.like_by_followers_lower_limit = limit or 0
-        return self
-
-
+    def set_relationship_bounds (self,
+                                  enabled=False,
+                                   potency_ratio=None,
+                                    delimit_by_numbers=True,
+                                     max_followers=None,
+                                      max_following=None, 
+                                       min_followers=None, 
+                                        min_following=None):
+        """Sets the potency ratio and limits to the provide an efficient activity between the targeted masses"""
+        if enabled:
+            self.potency_ratio = potency_ratio
+            self.delimit_by_numbers = delimit_by_numbers
+            
+            self.max_followers = max_followers
+            self.min_followers = min_followers
+            
+            self.max_following = max_following
+            self.min_following = min_following
+        
 
     def like_by_locations(self,
                           locations=None,
@@ -638,8 +650,12 @@ class InstaPy:
                                    self.ignore_if_contains,
                                    self.ignore_users,
                                    self.username,
-                                   self.like_by_followers_upper_limit,
-                                   self.like_by_followers_lower_limit,
+                                   self.potency_ratio,
+                                   self.delimit_by_numbers,
+                                   self.max_followers,
+                                   self.max_following,
+                                   self.min_followers,
+                                   self.min_following,
                                    self.logger)
                     )
 
@@ -782,8 +798,12 @@ class InstaPy:
                                    self.ignore_if_contains,
                                    self.ignore_users,
                                    self.username,
-                                   self.like_by_followers_upper_limit,
-                                   self.like_by_followers_lower_limit,
+                                   self.potency_ratio,
+                                   self.delimit_by_numbers,
+                                   self.max_followers,
+                                   self.max_following,
+                                   self.min_followers,
+                                   self.min_following,
                                    self.logger)
                     )
 
@@ -929,8 +949,12 @@ class InstaPy:
                                    self.ignore_if_contains,
                                    self.ignore_users,
                                    self.username,
-                                   self.like_by_followers_upper_limit,
-                                   self.like_by_followers_lower_limit,
+                                   self.potency_ratio,
+                                   self.delimit_by_numbers,
+                                   self.max_followers,
+                                   self.max_following,
+                                   self.min_followers,
+                                   self.min_following,
                                    self.logger)
                     )
 
@@ -1069,9 +1093,7 @@ class InstaPy:
             valid_user = validate_username(self.browser,
                                            username,
                                            self.ignore_users,
-                                           self.blacklist,
-                                           self.like_by_followers_upper_limit,
-                                           self.like_by_followers_lower_limit)
+                                           self.blacklist)
             if valid_user is not True:
                 self.logger.info(valid_user)
                 continue
@@ -1128,8 +1150,12 @@ class InstaPy:
                                    self.ignore_if_contains,
                                    self.ignore_users,
                                    self.username,
-                                   self.like_by_followers_upper_limit,
-                                   self.like_by_followers_lower_limit,
+                                   self.potency_ratio,
+                                   self.delimit_by_numbers,
+                                   self.max_followers,
+                                   self.max_following,
+                                   self.min_followers,
+                                   self.min_following,
                                    self.logger)
                     )
 
@@ -1272,8 +1298,12 @@ class InstaPy:
                                    self.ignore_if_contains,
                                    self.ignore_users,
                                    self.username,
-                                   self.like_by_followers_upper_limit,
-                                   self.like_by_followers_lower_limit,
+                                   self.potency_ratio,
+                                   self.delimit_by_numbers,
+                                   self.max_followers,
+                                   self.max_following,
+                                   self.min_followers,
+                                   self.min_following,
                                    self.logger)
                     )
 
@@ -1689,8 +1719,12 @@ class InstaPy:
                                            self.ignore_if_contains,
                                            self.ignore_users,
                                            self.username,
-                                           self.like_by_followers_upper_limit,
-                                           self.like_by_followers_lower_limit,
+                                           self.potency_ratio,
+                                           self.delimit_by_numbers,
+                                           self.max_followers,
+                                           self.max_following,
+                                           self.min_followers,
+                                           self.min_following,
                                            self.logger)
                             )
 
@@ -1922,8 +1956,12 @@ class InstaPy:
                                    self.ignore_if_contains,
                                    self.ignore_users,
                                    self.username,
-                                   self.like_by_followers_upper_limit,
-                                   self.like_by_followers_lower_limit,
+                                   self.potency_ratio,
+                                   self.delimit_by_numbers,
+                                   self.max_followers,
+                                   self.max_following,
+                                   self.min_followers,
+                                   self.min_following,
                                    self.logger)
                     )
 

@@ -13,7 +13,13 @@ friend_list = ['friend1', 'friend2', 'friend3']
 
 InstaPy() \
     .login() \
-    .set_upper_follower_count(limit=2500) \
+    .set_relationship_bounds(enabled=True, \
+                 potency_ratio=-1.21, \
+                  delimit_by_numbers=True, \
+                   max_followers=4590, \
+                    max_following=5555, \
+                     min_followers=45, \
+                      min_following=77) \
     .set_do_comment(True, percentage=10) \
     .set_comments(['Cool!', 'Awesome!', 'Nice!']) \
     .set_dont_include(friend_list) \

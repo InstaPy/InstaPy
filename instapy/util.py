@@ -15,9 +15,7 @@ from .time_util import sleep_actual
 def validate_username(browser,
                       username,
                       ignore_users,
-                      blacklist,
-                      like_by_followers_upper_limit,
-                      like_by_followers_lower_limit):
+                      blacklist):
     """Check if we can interact with the user"""
 
     if username in ignore_users:
@@ -25,20 +23,6 @@ def validate_username(browser,
                 'user...'.format(username))
     if username in blacklist:
         return '---> {} is in blacklist, skipping user...'
-
-    browser.get('https://www.instagram.com/{}'.format(username))
-    sleep(1)
-    try:
-        followers = (format_number(browser.find_element_by_xpath("//a[contains"
-                     "(@href,'followers')]/span").text))
-    except NoSuchElementException:
-        return '---> {} account is private, skipping user...'.format(username)
-
-    if followers > like_by_followers_upper_limit:
-        return '---> User {} exceeds followers limit'.format(username)
-    elif followers < like_by_followers_lower_limit:
-        return ('---> {}, number of followers does not reach '
-                'minimum'.format(username))
 
     # if everything ok
     return True

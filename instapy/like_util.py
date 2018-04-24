@@ -7,6 +7,7 @@ from math import ceil
 from re import findall
 from selenium.webdriver.common.keys import Keys
 from selenium.common.exceptions import WebDriverException
+from selenium.common.exceptions import NoSuchElementException
 
 from .time_util import sleep
 from .util import update_activity
@@ -410,7 +411,7 @@ def get_links_for_username(browser,
 
 
 def check_link(browser, link, dont_like, ignore_if_contains, ignore_users, username,
-               like_by_followers_upper_limit, like_by_followers_lower_limit, logger):
+               potency_ratio, delimit_by_numbers, max_followers, max_following, min_followers, min_following, logger):
     """
     Check the given link if it is appropriate
 
@@ -420,8 +421,12 @@ def check_link(browser, link, dont_like, ignore_if_contains, ignore_users, usern
     :param ignore_if_contains:
     :param ignore_users:
     :param username:
-    :param like_by_followers_upper_limit:
-    :param like_by_followers_lower_limit:
+    :param potency_ratio:
+    :param delimit_by_numbers: pre-defined precise relationship bounds
+    :param max_followers:
+    :param max_following:
+    :param min_followers:
+    :param min_following:
     :param logger: the logger instance
     :return: tuple of
         boolean: True if inappropriate,
@@ -495,45 +500,117 @@ def check_link(browser, link, dont_like, ignore_if_contains, ignore_users, usern
 
     logger.info('Image from: {}'.format(user_name.encode('utf-8')))
 
-    """Find the number of followes the user has"""
-    if like_by_followers_upper_limit or like_by_followers_lower_limit:
+    
+    """Checks the potential of target user by relationship status in order to delimit actions within the desired boundary"""
+    if potency_ratio or delimit_by_numbers and (max_followers or max_following or min_followers or min_following):
+
         userlink = 'https://www.instagram.com/' + user_name
         browser.get(userlink)
+
         # update server calls
         update_activity()
         sleep(1)
 
+        relationship_ratio = None
+        reverse_relationship = False
+
         try:
-            num_followers = browser.execute_script(
-                "return window._sharedData.entry_data."
-                "ProfilePage[0].graphql.user.edge_followed_by.count")
-        except WebDriverException:
+            followers_count = format_number(browser.find_element_by_xpath("//a[contains"
+                                    "(@href,'followers')]/span").text)
+        except NoSuchElementException:
             try:
-                browser.execute_script("location.reload()")
-                num_followers = browser.execute_script(
+                followers_count = browser.execute_script(
                     "return window._sharedData.entry_data."
                     "ProfilePage[0].graphql.user.edge_followed_by.count")
             except WebDriverException:
-                num_followers = 'undefined'
-                like_by_followers_lower_limit = None
-                like_by_followers_upper_limit = None
-
-
+                try:
+                    browser.execute_script("location.reload()")
+                    followers_count = browser.execute_script(
+                        "return window._sharedData.entry_data."
+                        "ProfilePage[0].graphql.user.edge_followed_by.count")
+                except WebDriverException:            
+                    try:
+                        followers_count = format_number(browser.find_element_by_xpath(
+                                        "//li[2]/a/span[contains(@class, '_fd86t')]").text)
+                    except NoSuchElementException:
+                        logger.info("Error occured during getting the followers count of '{}'\n".format(user_name))
+                        followers_count = None
+        
+        try:
+            following_count = format_number(browser.find_element_by_xpath("//a[contains"
+                                    "(@href,'following')]/span").text)
+        except NoSuchElementException:
+            try:
+                following_count = browser.execute_script(
+                    "return window._sharedData.entry_data."
+                    "ProfilePage[0].graphql.user.edge_follow.count")
+            except WebDriverException:
+                try:
+                    browser.execute_script("location.reload()")
+                    following_count = browser.execute_script(
+                        "return window._sharedData.entry_data."
+                        "ProfilePage[0].graphql.user.edge_follow.count")
+                except WebDriverException:
+                    try:
+                        following_count = format_number(browser.find_element_by_xpath(
+                                            "//li[3]/a/span[contains(@class, '_fd86t')]").text)
+                    except NoSuchElementException:
+                        logger.info("\nError occured during getting the following count of '{}'\n".format(user_name))
+                        following_count = None
+            
         browser.get(link)
         # update server calls
         update_activity()
         sleep(1)
-        logger.info('Number of Followers: {}'.format(num_followers))
 
-        if like_by_followers_upper_limit and \
-           num_followers > like_by_followers_upper_limit:
-                return True, user_name, is_video, \
-                    'Number of followers exceeds limit'
+        if potency_ratio < 0:
+            potency_ratio *= -1
+            reverse_relationship = True
+            
+        if followers_count and following_count:
+            relationship_ratio = (followers_count/following_count
+                                   if not reverse_relationship
+                                    else following_count/followers_count)
+        
+        logger.info('User: {} >> followers: {}  |  following: {}  |  relationship ratio: {}'.format(user_name,
+        followers_count if followers_count else 'unknown',
+        following_count if following_count else 'unknown',
+        float("{0:.2f}".format(relationship_ratio)) if relationship_ratio else 'unknown'))
+        
+        if followers_count  or following_count:
+            if potency_ratio and not delimit_by_numbers:
+                if relationship_ratio and relationship_ratio < potency_ratio:
+                        return True, user_name, is_video, \
+                            "{} is not a {} with the relationship ratio of {}".format(
+                            user_name, "potential user" if not reverse_relationship else "massive follower",
+                            float("{0:.2f}".format(relationship_ratio)))
 
-        if like_by_followers_lower_limit and \
-           num_followers < like_by_followers_lower_limit:
-                return True, user_name, is_video, \
-                    'Number of followers does not reach minimum'
+            elif delimit_by_numbers:
+                if followers_count:
+                    if max_followers:
+                        if followers_count > max_followers:
+                            return True, user_name, is_video, \
+                                "User {}'s followers count exceeds maximum limit".format(user_name)
+                    if min_followers:
+                        if followers_count < min_followers:
+                            return True, user_name, is_video, \
+                                "User {}'s followers count is less than minimum limit".format(user_name)
+                if following_count:                
+                    if max_following:
+                        if following_count > max_following:
+                            return True, user_name, is_video, \
+                                "User {}'s following count exceeds maximum limit".format(user_name)
+                    if min_following:
+                        if following_count < min_following:
+                            return True, user_name, is_video, \
+                                "User {}'s following count is less than minimum limit".format(user_name)
+                if potency_ratio:
+                    if relationship_ratio and relationship_ratio < potency_ratio:
+                        return True, user_name, is_video, \
+                            "{} is not a {} with the relationship ratio of {}".format(
+                            user_name, "potential user" if not reverse_relationship else "massive follower",
+                            float("{0:.2f}".format(relationship_ratio)))
+                            
 
     logger.info('Link: {}'.format(link.encode('utf-8')))
     logger.info('Description: {}'.format(image_text.encode('utf-8')))
