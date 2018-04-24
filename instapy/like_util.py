@@ -159,6 +159,7 @@ def get_links_for_tag(browser,
                       skip_top_posts=True):
     """Fetches the number of links specified
     by amount and returns a list of links"""
+
     if media is None:
         # All known media types
         media = ['', 'Post', 'Video']
@@ -175,104 +176,88 @@ def get_links_for_tag(browser,
     update_activity()
     sleep(2)
 
-    # clicking load more
-    body_elem = browser.find_element_by_tag_name('body')
-    sleep(2)
+    top_elements = browser.find_element_by_xpath('//main/article/div[1]')
+    top_posts = top_elements.find_elements_by_tag_name('a')
+    sleep(1)
 
-    abort = True
-
-    # Get links
     if skip_top_posts:
         main_elem = browser.find_element_by_xpath('//main/article/div[2]')
     else:
         main_elem = browser.find_element_by_tag_name('main')
-    total_links = 0
-    links = []
-    filtered_links = 0
+    link_elems = main_elem.find_elements_by_tag_name('a')
+    sleep(1)
+
+    if not link_elems:   #this tag does not have `Top Posts` or it really is empty..
+        main_elem = browser.find_element_by_xpath('//main/article/div[1]')
+        top_posts = []
+    sleep(2)
+
+    possible_posts = format_number(browser.find_element_by_xpath(
+                                "//span[contains(@class, '_fd86t')]").text)
+
+    logger.info("desired amount: {}  |  top posts [{}]: {}  |  possible posts: {}".format(amount,
+                                      ('enabled' if not skip_top_posts else 'disabled'), len(top_posts), possible_posts))
+    possible_posts = possible_posts if not skip_top_posts else possible_posts-len(top_posts)
+    amount = possible_posts if amount > possible_posts else amount
+    #sometimes pages do not have the correct amount of posts as it is written there, it may be cos of some posts is deleted but still keeps counted for the tag
+
+    #Get links
+    links = get_links(browser, tag, logger, media, main_elem)
+    filtered_links = len(links)
     try_again = 0
-    default_load = 21 if not skip_top_posts else 12
+    sc_rolled = 0
+    nap = 1.5
+    put_sleep = 0
+    try:
+        while filtered_links in range(1, amount):
+            if sc_rolled > 100:
+                logger.info("Scrolled too much! ~ sleeping a bit :>")
+                sleep(600)
+                sc_rolled = 0
+            for i in range(3):
+                browser.execute_script(
+                    "window.scrollTo(0, document.body.scrollHeight);")
+                sc_rolled += 1
+                update_activity()
+                sleep(nap)   #if not slept, and internet speed is low, instagram will only scroll one time, instead of many times you sent scoll command...
+            sleep(3)
+            links.extend(get_links(browser, tag, logger, media, main_elem))
 
-    while filtered_links < amount:
-        if amount >= default_load:
-            if filtered_links >= default_load:
-                for i in range(3):
-                    browser.execute_script(
-                        "window.scrollTo(0, document.body.scrollHeight);")
-                    update_activity()
-                    sleep(1.5)
-        link_elems = main_elem.find_elements_by_tag_name('a')
-        if not link_elems:
-            main_elem2 = browser.find_element_by_xpath('//main/article/div[1]')
-            link_elems = main_elem2.find_elements_by_tag_name('a')
-        total_links += len(link_elems)
-
-        try:
-            if link_elems:
-                new_links = [link_elem.get_attribute('href') for link_elem in link_elems
-                             if link_elem and link_elem.text in media]
-                for new_link in new_links:
-                    links.append(new_link)
-
-                links_all = links
-                s = set()
-                links = []
-                for i in links_all:
-                    if i not in s:
-                        s.add(i)
-                        links.append(i)
-
-                if len(links) == filtered_links:
-                    try_again += 1
-                    if try_again > 1:
-                        logger.info("This tag has less pictures than intended..")
+            links_all = links   #uniqify links while preserving order
+            s = set()
+            links = []
+            for i in links_all:
+                if i not in s:
+                    s.add(i)
+                    links.append(i)
+            if len(links) == filtered_links:
+                try_again += 1
+                nap = 3 if try_again==1 else 5
+                logger.info("Insufficient amount of links ~ trying again: {}".format(try_again))
+                sleep(3)
+                if try_again > 2:   #you can try again as much as you want by changing this number
+                    if put_sleep < 1 and filtered_links <= 21 :
+                        logger.info("Cor! Did you send too many requests? ~ let's rest some")
+                        sleep(600)
+                        put_sleep += 1
+                        browser.execute_script("location.reload()")
+                        try_again = 0
+                        sleep(10)
+                        main_elem = (browser.find_element_by_xpath('//main/article/div[1]') if not link_elems else
+                                      browser.find_element_by_xpath('//main/article/div[2]') if skip_top_posts else
+                                       browser.find_element_by_tag_name('main'))
+                    else:
+                        logger.info("'{}' tag POSSIBLY has less images than desired...".format(tag[1:] if tag[:1] == '#' else tag))
                         break
-                else:
-                    filtered_links = len(links)
-                    try_again = 0
-                if filtered_links < default_load and amount > filtered_links:
-                    logger.info("This tag has so less pictures than expected...")
-                    break
             else:
-                logger.warning("This tag does not contain a picture")
-                break
-
-        except BaseException as e:
-            logger.error("link_elems error {}".format(str(e)))
-            break
-
-    while (filtered_links < amount) and not abort:
-        amount_left = amount - filtered_links
-        # Average items of the right media per page loaded
-        new_per_page = ceil(12 * filtered_links / total_links)
-        if new_per_page == 0:
-            # Avoid division by zero
-            new_per_page = 1. / 12.
-        # Number of page load needed
-        new_needed = int(ceil(amount_left / new_per_page))
-
-        if new_needed > 12:
-            # Don't go bananas trying to get all of instagram!
-            new_needed = 12
-
-        for i in range(new_needed):  # add images x * 12
-            # Keep the latest window active while loading more posts
-            before_load = total_links
-            body_elem.send_keys(Keys.END)
-            # update server calls
-            update_activity()
-            sleep(1)
-            body_elem.send_keys(Keys.HOME)
-            sleep(1)
-            link_elems = main_elem.find_elements_by_tag_name('a')
-            total_links = len(link_elems)
-            abort = (before_load == total_links)
-            if abort:
-                break
-
-        links = [link_elem.get_attribute('href') for link_elem in link_elems
-                 if link_elem.text in media]
-        filtered_links = len(links)
-
+                filtered_links = len(links)
+                try_again = 0
+                nap = 1.5
+    except:
+        raise
+    
+    sleep(4)
+    
     return links[:amount]
 
 
