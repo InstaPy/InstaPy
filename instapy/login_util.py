@@ -148,6 +148,8 @@ def login_user(browser,
     sleep(1)
     input_password = browser.find_elements_by_xpath(
         "//input[@name='password']")
+    if not isinstance(password, str):
+        password = str(password)
     ActionChains(browser).move_to_element(input_password[0]). \
         click().send_keys(password).perform()
 
