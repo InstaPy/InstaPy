@@ -547,8 +547,8 @@ def check_link(browser, link, dont_like, ignore_if_contains, ignore_users, usern
         # update server calls
         update_activity()
         sleep(1)
-
-        if potency_ratio < 0:
+        
+        if potency_ratio and potency_ratio < 0:
             potency_ratio *= -1
             reverse_relationship = True
             
