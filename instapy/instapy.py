@@ -52,9 +52,6 @@ from .commenters_util import users_liked
 from .commenters_util import get_photo_urls_from_profile
 
 
-# Set a logger cache outside the InstaPy object to avoid re-instantiation issues
-loggers = {}
-
 
 class InstaPyError(Exception):
     """General error for InstaPy exceptions"""
@@ -169,7 +166,8 @@ class InstaPy:
         """
         Handles the creation and retrieval of loggers to avoid re-instantiation.
         """
-        existing_logger = loggers.get(__name__)
+
+        existing_logger = Settings.loggers.get(__name__)
         if existing_logger is not None:
             return existing_logger
         else:
@@ -191,7 +189,8 @@ class InstaPy:
 
             logger = logging.LoggerAdapter(logger, extra)
 
-            loggers[__name__] = logger
+            Settings.loggers[__name__] = logger
+            Settings.logger = logger
             return logger
 
     def set_selenium_local_session(self):
