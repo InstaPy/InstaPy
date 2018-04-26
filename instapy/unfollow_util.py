@@ -389,9 +389,6 @@ def follow_user(browser, follow_restrict, login, user_name, blacklist, logger, l
         follow_button = browser.find_element_by_xpath(
                 "//button[text()='Follow']")
 
-        # Do we still need this sleep?
-        sleep(2)
-
         if follow_button.is_displayed():
             click_element(browser, follow_button) # follow_button.click()
             update_activity('follows')
