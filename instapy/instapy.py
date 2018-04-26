@@ -21,6 +21,8 @@ import requests
 from .clarifai_util import check_image
 from .comment_util import comment_image
 from .like_util import check_link
+from .like_util import verify_liking
+from .like_util import verify_commenting
 from .like_util import get_links_for_tag
 from .like_util import get_links_from_feed
 from .like_util import get_tags
@@ -146,6 +148,16 @@ class InstaPy:
         self.max_following = 66834
         self.min_followers = 35
         self.min_following = 27
+        
+        self.delimit_liking = False
+        self.liking_approved = True
+        self.max_likes = 1000
+        self.min_likes = 0
+        
+        self.delimit_commenting = False
+        self.commenting_approved = True
+        self.max_comments = 35
+        self.min_comments = 0
 
         self.bypass_suspicious_attempt = bypass_suspicious_attempt
 
@@ -585,24 +597,46 @@ class InstaPy:
         return self
 
     def set_relationship_bounds (self,
-                                  enabled=False,
+                                  enabled=None,
                                    potency_ratio=None,
-                                    delimit_by_numbers=True,
+                                    delimit_by_numbers=None,
                                      max_followers=None,
                                       max_following=None, 
                                        min_followers=None, 
                                         min_following=None):
         """Sets the potency ratio and limits to the provide an efficient activity between the targeted masses"""
-        if enabled:
-            self.potency_ratio = potency_ratio
-            self.delimit_by_numbers = delimit_by_numbers
-            
-            self.max_followers = max_followers
-            self.min_followers = min_followers
-            
-            self.max_following = max_following
-            self.min_following = min_following
+        self.potency_ratio = potency_ratio if enabled==True else None
+        self.delimit_by_numbers = delimit_by_numbers if enabled==True else None
         
+        self.max_followers = max_followers
+        self.min_followers = min_followers
+        
+        self.max_following = max_following
+        self.min_following = min_following
+
+
+
+    def set_delimit_liking(self,
+                            enabled=None,
+                             max=None,
+                              min=None):
+
+        self.delimit_liking = True if enabled==True else False
+        self.max_likes = max
+        self.min_likes = min
+        
+
+
+    def set_delimit_commenting(self,
+                                enabled=False,
+                                 max=None,
+                                  min=None):
+
+        self.delimit_commenting = True if enabled==True else False
+        self.max_comments = max
+        self.min_comments = min
+
+
 
     def like_by_locations(self,
                           locations=None,
@@ -658,7 +692,10 @@ class InstaPy:
                                    self.logger)
                     )
 
-                    if not inappropriate:
+                    if not inappropriate and self.delimit_liking:
+                        self.liking_approved = verify_liking(self.browser, self.max_likes, self.min_likes, self.logger)
+                    
+                    if not inappropriate and self.liking_approved:
                         liked = like_image(self.browser,
                                            user_name,
                                            self.blacklist,
@@ -687,26 +724,33 @@ class InstaPy:
                                     self.logger.error(
                                         'Image check error: {}'.format(err))
 
+
                             if (self.do_comment and
                                 user_name not in self.dont_include and
                                 checked_img and
                                     commenting):
+                                
+                                if self.delimit_commenting:
+                                    self.commenting_approved, disapproval_reason = verify_commenting(self.browser, self.max_comments, self.min_comments, self.logger)
 
-                                if temp_comments:
-                                    # Use clarifai related comments only!
-                                    comments = temp_comments
-                                elif is_video:
-                                    comments = (self.comments +
-                                                self.video_comments)
+                                if self.commenting_approved:
+                                    if temp_comments:
+                                        # Use clarifai related comments only!
+                                        comments = temp_comments
+                                    elif is_video:
+                                        comments = (self.comments +
+                                                    self.video_comments)
+                                    else:
+                                        comments = (self.comments +
+                                                    self.photo_comments)
+                                    commented += comment_image(self.browser,
+                                                               user_name,
+                                                               comments,
+                                                               self.blacklist,
+                                                               self.logger,
+                                                               self.logfolder)
                                 else:
-                                    comments = (self.comments +
-                                                self.photo_comments)
-                                commented += comment_image(self.browser,
-                                                           user_name,
-                                                           comments,
-                                                           self.blacklist,
-                                                           self.logger,
-                                                           self.logfolder)
+                                    self.logger.info(disapproval_reason)
                             else:
                                 self.logger.info('--> Not commented')
                                 sleep(1)
@@ -833,26 +877,33 @@ class InstaPy:
                                     self.logger.error(
                                         'Image check error: {}'.format(err))
 
+
                             if (self.do_comment and
                                 user_name not in self.dont_include and
                                 checked_img and
                                     commenting):
 
-                                if temp_comments:
-                                    # Use clarifai related comments only!
-                                    comments = temp_comments
-                                elif is_video:
-                                    comments = (self.comments +
-                                                self.video_comments)
+                                if self.delimit_commenting:
+                                    self.commenting_approved, disapproval_reason = verify_commenting(self.browser, self.max_comments, self.min_comments, self.logger)
+
+                                if self.commenting_approved:
+                                    if temp_comments:
+                                        # Use clarifai related comments only!
+                                        comments = temp_comments
+                                    elif is_video:
+                                        comments = (self.comments +
+                                                    self.video_comments)
+                                    else:
+                                        comments = (self.comments +
+                                                    self.photo_comments)
+                                    commented += comment_image(self.browser,
+                                                               user_name,
+                                                               comments,
+                                                               self.blacklist,
+                                                               self.logger,
+                                                               self.logfolder)
                                 else:
-                                    comments = (self.comments +
-                                                self.photo_comments)
-                                commented += comment_image(self.browser,
-                                                           user_name,
-                                                           comments,
-                                                           self.blacklist,
-                                                           self.logger,
-                                                           self.logfolder)
+                                    self.logger.info(disapproval_reason)
                             else:
                                 self.logger.info('--> Not commented')
                                 sleep(1)
@@ -957,7 +1008,10 @@ class InstaPy:
                                    self.logger)
                     )
 
-                    if not inappropriate:
+                    if not inappropriate and self.delimit_liking:
+                        self.liking_approved = verify_liking(self.browser, self.max_likes, self.min_likes, self.logger)
+
+                    if not inappropriate and self.liking_approved:
                         liked = like_image(self.browser,
                                            user_name,
                                            self.blacklist,
@@ -1006,26 +1060,33 @@ class InstaPy:
                                     self.logger.error(
                                         'Image check error: {}'.format(err))
 
+
                             if (self.do_comment and
                                 user_name not in self.dont_include and
                                 checked_img and
                                     commenting):
+                                
+                                if self.delimit_commenting:
+                                    self.commenting_approved, disapproval_reason = verify_commenting(self.browser, self.max_comments, self.min_comments, self.logger)
 
-                                if temp_comments:
-                                    # Use clarifai related comments only!
-                                    comments = temp_comments
-                                elif is_video:
-                                    comments = (self.comments +
-                                                self.video_comments)
+                                if self.commenting_approved:
+                                    if temp_comments:
+                                        # Use clarifai related comments only!
+                                        comments = temp_comments
+                                    elif is_video:
+                                        comments = (self.comments +
+                                                    self.video_comments)
+                                    else:
+                                        comments = (self.comments +
+                                                    self.photo_comments)
+                                    commented += comment_image(self.browser,
+                                                               user_name,
+                                                               comments,
+                                                               self.blacklist,
+                                                               self.logger,
+                                                               self.logfolder)
                                 else:
-                                    comments = (self.comments +
-                                                self.photo_comments)
-                                commented += comment_image(self.browser,
-                                                           user_name,
-                                                           comments,
-                                                           self.blacklist,
-                                                           self.logger,
-                                                           self.logfolder)
+                                    self.logger.info(disapproval_reason)
                             else:
                                 self.logger.info('--> Not commented')
                                 sleep(1)
@@ -1158,7 +1219,10 @@ class InstaPy:
                                    self.logger)
                     )
 
-                    if not inappropriate:
+                    if not inappropriate and self.delimit_liking:
+                        self.liking_approved = verify_liking(self.browser, self.max_likes, self.min_likes, self.logger)
+                    
+                    if not inappropriate and self.liking_approved:
                         liked = like_image(self.browser,
                                            user_name,
                                            self.blacklist,
@@ -1185,26 +1249,35 @@ class InstaPy:
                                 except Exception as err:
                                     self.logger.error(
                                         'Image check error: {}'.format(err))
+
+
                             if (self.do_comment and
                                 user_name not in self.dont_include and
                                 checked_img and
                                     commenting):
 
-                                if temp_comments:
-                                    # use clarifai related comments only!
-                                    comments = temp_comments
-                                elif is_video:
-                                    comments = (self.comments +
-                                                self.video_comments)
+                                if self.delimit_commenting:
+                                    self.commenting_approved, disapproval_reason = verify_commenting(self.browser, self.max_comments, self.min_comments, self.logger)
+
+                                if self.commenting_approved:
+                                    if temp_comments:
+                                        # use clarifai related comments only!
+                                        comments = temp_comments
+                                    elif is_video:
+                                        comments = (self.comments +
+                                                    self.video_comments)
+                                    else:
+                                        comments = (self.comments +
+                                                    self.photo_comments)
+                                    commented += comment_image(self.browser,
+                                                               user_name,
+                                                               comments,
+                                                               self.blacklist,
+                                                               self.logger,
+                                                               self.logfolder)
                                 else:
-                                    comments = (self.comments +
-                                                self.photo_comments)
-                                commented += comment_image(self.browser,
-                                                           user_name,
-                                                           comments,
-                                                           self.blacklist,
-                                                           self.logger,
-                                                           self.logfolder)
+                                    self.logger.info(disapproval_reason)
+
                             else:
                                 self.logger.info('--> Not commented')
                                 sleep(1)
@@ -1329,7 +1402,11 @@ class InstaPy:
                             sleep(1)
 
                         liking = random.randint(0, 100) <= self.like_percentage
-                        if self.do_like and liking:
+                        
+                        if self.do_like and liking and self.delimit_liking:
+                            self.liking_approved = verify_liking(self.browser, self.max_likes, self.min_likes, self.logger)
+                        
+                        if self.do_like and liking and self.liking_approved:
                             liked = like_image(self.browser,
                                                user_name,
                                                self.blacklist,
@@ -1358,26 +1435,33 @@ class InstaPy:
                                 except Exception as err:
                                     self.logger.error(
                                         'Image check error: {}'.format(err))
+
                             if (self.do_comment and
                                 user_name not in self.dont_include and
                                 checked_img and
                                     commenting):
 
-                                if temp_comments:
-                                    # use clarifai related comments only!
-                                    comments = temp_comments
-                                elif is_video:
-                                    comments = (self.comments +
-                                                self.video_comments)
+                                if self.delimit_commenting:
+                                    self.commenting_approved, disapproval_reason = verify_commenting(self.browser, self.max_comments, self.min_comments, self.logger)
+
+                                if self.commenting_approved:
+                                    if temp_comments:
+                                        # use clarifai related comments only!
+                                        comments = temp_comments
+                                    elif is_video:
+                                        comments = (self.comments +
+                                                    self.video_comments)
+                                    else:
+                                        comments = (self.comments +
+                                                    self.photo_comments)
+                                    commented += comment_image(self.browser,
+                                                               user_name,
+                                                               comments,
+                                                               self.blacklist,
+                                                               self.logger,
+                                                               self.logfolder)
                                 else:
-                                    comments = (self.comments +
-                                                self.photo_comments)
-                                commented += comment_image(self.browser,
-                                                           user_name,
-                                                           comments,
-                                                           self.blacklist,
-                                                           self.logger,
-                                                           self.logfolder)
+                                    self.logger.info(disapproval_reason)
                             else:
                                 self.logger.info('--> Not commented')
                                 sleep(1)
@@ -1727,7 +1811,10 @@ class InstaPy:
                                            self.logger)
                             )
 
-                            if not inappropriate:
+                            if not inappropriate and self.delimit_liking:
+                                self.liking_approved = verify_liking(self.browser, self.max_likes, self.min_likes, self.logger)
+
+                            if not inappropriate and self.liking_approved:
                                 liked = like_image(self.browser,
                                                    user_name,
                                                    self.blacklist,
@@ -1778,28 +1865,36 @@ class InstaPy:
                                                 'Image check error:'
                                                 ' {}'.format(err))
 
+
                                     if (self.do_comment and
                                         user_name not in self.dont_include and
-                                            checked_img and commenting):
-                                        if temp_comments:
-                                            # use clarifai related
-                                            # comments only!
-                                            comments = temp_comments
-                                        elif is_video:
-                                            comments = (
-                                                self.comments +
-                                                self.video_comments)
+                                            checked_img and
+                                            commenting):
+                                        if self.delimit_commenting:
+                                            self.commenting_approved, disapproval_reason = verify_commenting(self.browser, self.max_comments, self.min_comments, self.logger)
+
+                                        if self.commenting_approved:
+                                            if temp_comments:
+                                                # use clarifai related
+                                                # comments only!
+                                                comments = temp_comments
+                                            elif is_video:
+                                                comments = (
+                                                    self.comments +
+                                                    self.video_comments)
+                                            else:
+                                                comments = (
+                                                    self.comments +
+                                                    self.photo_comments)
+                                            commented += comment_image(
+                                                            self.browser,
+                                                            user_name,
+                                                            comments,
+                                                            self.blacklist,
+                                                            self.logger,
+                                                            self.logfolder)
                                         else:
-                                            comments = (
-                                                self.comments +
-                                                self.photo_comments)
-                                        commented += comment_image(
-                                                        self.browser,
-                                                        user_name,
-                                                        comments,
-                                                        self.blacklist,
-                                                        self.logger,
-                                                        self.logfolder)
+                                            self.logger.info(disapproval_reason)
                                     else:
                                         self.logger.info('--> Not commented')
                                         sleep(1)

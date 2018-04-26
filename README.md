@@ -46,6 +46,8 @@ Table of Contents
   * [Unfollowing](#unfollowing)
   * [Don't unfollow active users](#dont-unfollow-active-users)
   * [Interactions based on the number of followers and/or following a user has](#interactions-based-on-the-number-of-followers-andor-following-a-user-has)
+  * [Liking based on the number of existing likes a post has](#liking-based-on-the-number-of-existing-likes-a-post-has)
+  * [Commenting based on the number of existing comments a post has](#commenting-based-on-the-number of-existing-comments-a-post-has)
   * [Comment by Locations](#comment-by-locations)
   * [Like by Locations](#like-by-locations)
   * [Like by Tags](#like-by-tags)
@@ -384,6 +386,7 @@ session.set_relationship_bounds(enabled=True,
 				     min_followers=100,
 				      min_following=56)
 ```
+Use `enabled=True` to **activate** this feature, and `enabled=False` to **deactivate** it, _any time_
 `delimit_by_numbers` is used to **activate** & **deactivate** the usage of max & min values  
 `potency_ratio` accepts values in **2 format**s _according to your_ **style**: _positive_ & _negative_  
 * `potency_ratio` with **POSITIVE** values can be used to _route_ interactions to _only_ **potential** (_real_) **users** _WHOSE_ **followers count** is higher than **following count** (**e.g.**, `potency_ratio = 1.39`)  
@@ -418,6 +421,54 @@ session.set_relationship_bounds (enabled=True, potency_ratio=-1.44, delimit_by_n
 
 
 
+### Liking based on the number of existing likes a post has
+
+##### This is used to check the number of existing likes a post has and if it _either_ **exceed** the _maximum_ value set OR **does not pass** the _minimum_ value set then it will not like that post
+```python
+session.set_delimit_liking(enabled=True, max=1005, min=20)
+```
+Use `enabled=True` to **activate** and `enabled=False` to **deactivate** it, _any time_  
+`max` is the maximum number of likes to compare  
+`min` is the minimum number of likes to compare
+> You can use **both** _max_ & _min_ values OR **one of them** _as you desire_, just **put** the value of `None` _to the one_ you **don't want to** check for., _e.g._,
+```python
+session.set_delimit_liking(enabled=True, max=242, min=None)
+```
+_at this configuration above, it **will not** check number of the existing likes against **minimum** value_
+
+* **_Example_**:  
+```
+session.set_delimit_liking(enabled=True, max=500, min=7)
+```
+**Now**, if a post has more existing likes than maximum value of `500`, then it will not like that post,
+**similarly**, if that post has less existing likes than the minimum value of `7`, then it will not like that post...
+
+
+
+### Commenting based on the number of existing comments a post has
+
+##### This is used to check the number of existing comments a post has and if it _either_ **exceed** the _maximum_ value set OR **does not pass** the _minimum_ value set then it will not comment on that post
+```python
+session.set_delimit_commenting(enabled=True, max=32, min=0)
+```
+Use `enabled=True` to **activate** and `enabled=False` to **deactivate** it, _any time_  
+`max` is the maximum number of comments to compare  
+`min` is the minimum number of comments to compare
+> You can use **both** _max_ & _min_ values OR **one of them** _as you desire_, just **put** the value of `None` _to the one_ you **don't want to** check for., _e.g._,
+```python
+session.set_delimit_commenting(enabled=True, max=None, min=4)
+```
+_at this configuration above, it **will not** check number of the existing comments against **maximum** value_
+
+* **_Example_**:  
+```
+session.set_delimit_commenting(enabled=True, max=70, min=5)
+```
+**Now**, if a post has more comments than the maximum value of `70`, then it will not comment on that post,
+**similarly**, if that post has less comments than the minimum value of `5`, then it will not comment on that post...
+
+
+
 ### Comment by Locations
 
 ```python
@@ -430,6 +481,8 @@ session.comment_by_locations(['224442573'], amount=5, skip_top_posts=False)
 ```
 
 This method allows commenting by locations, without liking posts. To get locations follow instructions in 'Like by Locations'
+
+
 
 ### Like by Locations
 
@@ -450,6 +503,7 @@ Example:
 * Search 'Salton Sea' and select the result with a location icon
 * The url is: https://www.instagram.com/explore/locations/224442573/salton-sea/
 * Use everything after 'locations/' or just the number
+
 
 ### Like by Tags
 
