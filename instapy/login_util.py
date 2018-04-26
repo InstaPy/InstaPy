@@ -5,6 +5,7 @@ from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import WebDriverException
 from .util import update_activity
 import pickle
+import time
 
 
 def bypass_suspicious_login(browser):
@@ -109,6 +110,9 @@ def login_user(browser,
     except (WebDriverException, OSError, IOError):
         print("Cookie file not found, creating cookie...")
 
+    # include time.sleep(1) to prevent getting stuck on google.com
+    time.sleep(1)
+    
     browser.get('https://www.instagram.com')
 
     # Cookie has been loaded, user should be logged in. Ensurue this is true
