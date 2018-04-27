@@ -22,7 +22,7 @@ from .clarifai_util import check_image
 from .comment_util import comment_image
 from .like_util import check_link
 from .like_util import verify_liking
-from .like_util import verify_commenting
+from .comment_util import verify_commenting
 from .like_util import get_links_for_tag
 from .like_util import get_links_from_feed
 from .like_util import get_tags
