@@ -386,7 +386,7 @@ session.set_relationship_bounds(enabled=True,
 				     min_followers=100,
 				      min_following=56)
 ```
-Use `enabled=True` to **activate** this feature, and `enabled=False` to **deactivate** it, _any time_
+Use `enabled=True` to **activate** this feature, and `enabled=False` to **deactivate** it, _any time_  
 `delimit_by_numbers` is used to **activate** & **deactivate** the usage of max & min values  
 `potency_ratio` accepts values in **2 format**s _according to your_ **style**: _positive_ & _negative_  
 * `potency_ratio` with **POSITIVE** values can be used to _route_ interactions to _only_ **potential** (_real_) **users** _WHOSE_ **followers count** is higher than **following count** (**e.g.**, `potency_ratio = 1.39`)  
@@ -398,6 +398,7 @@ _**find** desired_ `potency_ratio` _with this formula_: `potency_ratio` == **fol
 _**find** desired_ `potency_ratio` _with this formula_: `potency_ratio` == **following count** / **followers count**  (_use desired counts_)
 >_**e.g.**_, target user has _`2000` followers_ & _`3000` following_ and you set `potency_ratio = -1.7`.  
 **Now** it _will **not** interact_ with this user, **cos** the user's **relationship ratio** is `3000/2000==1.5` and `1.5` is **below** _desired_ `potency_ratio` _of `1.7`_ (_**note that**, negative `-` sign is only used to determine your style, nothing more_)
+
 
 ###### There are **3** **COMBINATIONS** _available_ to use:
 * **1**. You can use `potency_ratio` **or not** (**e.g.**, `potency_ratio=None`, `delimit_by_numbers=True`) - _will decide only by your **pre-defined** max & min values regardless of the_ `potency_ratio`
@@ -440,8 +441,8 @@ _at this configuration above, it **will not** check number of the existing likes
 ```
 session.set_delimit_liking(enabled=True, max=500, min=7)
 ```
-**Now**, if a post has more existing likes than maximum value of `500`, then it will not like that post,
-**similarly**, if that post has less existing likes than the minimum value of `7`, then it will not like that post...
+_**Now**, if a post has more existing likes than maximum value of `500`, then it will not like that post,
+**similarly**, if that post has less existing likes than the minimum value of `7`, then it will not like that post..._
 
 
 
@@ -464,8 +465,8 @@ _at this configuration above, it **will not** check number of the existing comme
 ```
 session.set_delimit_commenting(enabled=True, max=70, min=5)
 ```
-**Now**, if a post has more comments than the maximum value of `70`, then it will not comment on that post,
-**similarly**, if that post has less comments than the minimum value of `5`, then it will not comment on that post...
+_**Now**, if a post has more comments than the maximum value of `70`, then it will not comment on that post,
+**similarly**, if that post has less comments than the minimum value of `5`, then it will not comment on that post..._
 
 
 
