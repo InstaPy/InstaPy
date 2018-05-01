@@ -166,32 +166,28 @@ class InstaPy:
         """
         Handles the creation and retrieval of loggers to avoid re-instantiation.
         """
+        # initialize and setup logging system for the InstaPy object
+        logger = logging.getLogger(__name__)
+        if (logger.hasHandlers()):
+            logger.handlers.clear()
+        logger.setLevel(logging.DEBUG)
+        file_handler = logging.FileHandler('{}general.log'.format(self.logfolder))
+        file_handler.setLevel(logging.DEBUG)
+        extra = {"username": self.username}
+        logger_formatter = logging.Formatter('%(levelname)s [%(asctime)s] [%(username)s]  %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
+        file_handler.setFormatter(logger_formatter)
+        logger.addHandler(file_handler)
 
-        existing_logger = Settings.loggers.get(__name__)
-        if existing_logger is not None:
-            return existing_logger
-        else:
-            # initialize and setup logging system for the InstaPy object
-            logger = logging.getLogger(__name__)
-            logger.setLevel(logging.DEBUG)
-            file_handler = logging.FileHandler('{}general.log'.format(self.logfolder))
-            file_handler.setLevel(logging.DEBUG)
-            extra = {"username": self.username}
-            logger_formatter = logging.Formatter('%(levelname)s [%(asctime)s] [%(username)s]  %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
-            file_handler.setFormatter(logger_formatter)
-            logger.addHandler(file_handler)
+        if show_logs is True:
+            console_handler = logging.StreamHandler()
+            console_handler.setLevel(logging.DEBUG)
+            console_handler.setFormatter(logger_formatter)
+            logger.addHandler(console_handler)
 
-            if show_logs is True:
-                console_handler = logging.StreamHandler()
-                console_handler.setLevel(logging.DEBUG)
-                console_handler.setFormatter(logger_formatter)
-                logger.addHandler(console_handler)
+        logger = logging.LoggerAdapter(logger, extra)
 
-            logger = logging.LoggerAdapter(logger, extra)
-
-            Settings.loggers[__name__] = logger
-            Settings.logger = logger
-            return logger
+        loggers[__name__] = logger
+        return logger
 
     def set_selenium_local_session(self):
         """Starts local session for a selenium server.
