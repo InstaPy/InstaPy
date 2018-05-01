@@ -52,9 +52,6 @@ from .commenters_util import users_liked
 from .commenters_util import get_photo_urls_from_profile
 
 
-# Set a logger cache outside the InstaPy object to avoid re-instantiation issues
-loggers = {}
-
 
 class InstaPyError(Exception):
     """General error for InstaPy exceptions"""
