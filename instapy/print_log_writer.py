@@ -7,9 +7,18 @@ def log_follower_num(browser, username, logfolder):
     a seperate file"""
     browser.get('https://www.instagram.com/' + username)
 
-    followed_by = browser.execute_script(
-        "return window._sharedData.""entry_data.ProfilePage[0]."
-        "graphql.user.edge_followed_by.count")
+    try:
+        followed_by = browser.execute_script(
+            "return window._sharedData.""entry_data.ProfilePage."
+            "graphql.user.edge_followed_by.count")
+    except WebDriverException:   #handle the possible `entry_data` error
+        try:
+            browser.execute_script("location.reload()")
+            followed_by = browser.execute_script(
+                "return window._sharedData.""entry_data.ProfilePage."
+                "graphql.user.edge_followed_by.count")
+        except WebDriverException:
+            followed_by = None
 
     with open('{}followerNum.txt'.format(logfolder), 'a') as numFile:
         numFile.write(
