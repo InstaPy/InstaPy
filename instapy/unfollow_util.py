@@ -186,26 +186,23 @@ def unfollow(browser,
 
     elif onlyInstapyFollowed is False and onlyNotFollowMe is True:
         # unfollow only not follow me
-        try:
-            browser.get(
-                'https://www.instagram.com/' + username + '/?__a=1')
-            pre = browser.find_element_by_tag_name("pre").text
-            user_data = json.loads(pre)['graphql']['user']
-        except BaseException as e:
-            print("unable to get user information\n", str(e))
+        user_data = {}
 
         graphql_endpoint = 'https://www.instagram.com/graphql/query/'
         graphql_followers = (
-            graphql_endpoint + '?query_id=17851374694183129')
+                graphql_endpoint + '?query_hash=37479f2b8209594dde7facb0d904896a')
         graphql_following = (
-            graphql_endpoint + '?query_id=17874545323001329')
+                graphql_endpoint + '?query_hash=58712303d941c6855d4e888c5f0cd22f')
 
         all_followers = []
         all_following = []
 
         variables = {}
+        user_data['id'] = browser.execute_script(
+            "return window._sharedData.entry_data.ProfilePage[0]."
+            "graphql.user.id")
         variables['id'] = user_data['id']
-        variables['first'] = 100
+        variables['first'] = 50
 
         # get follower and following user loop
         try:
@@ -391,9 +388,6 @@ def follow_user(browser, follow_restrict, login, user_name, blacklist, logger, l
     try:
         follow_button = browser.find_element_by_xpath(
                 "//button[text()='Follow']")
-
-        # Do we still need this sleep?
-        sleep(2)
 
         if follow_button.is_displayed():
             click_element(browser, follow_button) # follow_button.click()

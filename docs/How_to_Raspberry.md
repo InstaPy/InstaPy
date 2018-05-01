@@ -28,6 +28,8 @@ _NOTE: If you add an empty file named ssh to the boot directory, ssh will be ena
 1. Install the browser `apt-get install chromium-browser`
 1. Install the driver `apt-get install chromedriver`
 1. Move the driver into the InstaPy/assets directory `mv /usr/bin/chromedriver /path/to/InstaPy/assets/chromedriver`
+1. nano instapy/settings.py
+1. change "chromedriver_min_version = 2.36" to "chromedriver_min_version = 2.33" & save file
 
 ## For Firefox
 > Remove any versions of Firefox as it will conflict with the correct one installed below:

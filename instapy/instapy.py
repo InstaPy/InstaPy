@@ -7,7 +7,6 @@ from math import ceil
 import os
 from platform import python_version
 from datetime import datetime
-from sys import maxsize
 import random
 
 import selenium
@@ -46,10 +45,12 @@ from .unfollow_util import follow_given_user
 from .unfollow_util import load_follow_restriction
 from .unfollow_util import dump_follow_restriction
 from .unfollow_util import set_automated_followed_pool
+from .feed_util import get_like_on_feed
+from .commenters_util import extract_post_info     
+from .commenters_util import extract_information
+from .commenters_util import users_liked
+from .commenters_util import get_photo_urls_from_profile
 
-
-# Set a logger cache outside the InstaPy object to avoid re-instantiation issues
-loggers = {}
 
 
 class InstaPyError(Exception):
@@ -137,9 +138,14 @@ class InstaPy:
         self.clarifai_api_key = None
         self.clarifai_img_tags = []
         self.clarifai_full_match = False
-
-        self.like_by_followers_upper_limit = 90000
-        self.like_by_followers_lower_limit = 0
+        
+        self.potency_ratio = 1.3466
+        self.delimit_by_numbers = True
+        
+        self.max_followers = 90000
+        self.max_following = 66834
+        self.min_followers = 35
+        self.min_following = 27
 
         self.bypass_suspicious_attempt = bypass_suspicious_attempt
 
@@ -160,7 +166,8 @@ class InstaPy:
         """
         Handles the creation and retrieval of loggers to avoid re-instantiation.
         """
-        existing_logger = loggers.get(__name__)
+
+        existing_logger = Settings.loggers.get(__name__)
         if existing_logger is not None:
             return existing_logger
         else:
@@ -182,7 +189,8 @@ class InstaPy:
 
             logger = logging.LoggerAdapter(logger, extra)
 
-            loggers[__name__] = logger
+            Settings.loggers[__name__] = logger
+            Settings.logger = logger
             return logger
 
     def set_selenium_local_session(self):
@@ -507,19 +515,56 @@ class InstaPy:
             self.clarifai_img_tags.append((tags, comment, comments))
 
         return self
+                                 
+    def follow_likers(self, photo_urls, amount=10):
+        if not isinstance(photo_urls, list):
+            photo_urls = [photo_urls]
+        for photo_url in photo_urls:
+            user_liked_list = users_liked (self.browser, photo_url, amount)
+            self.follow_by_list(user_liked_list[:amount])
+        return self
 
-    def follow_by_list(self, followlist, times=1):
+    def follow_commenters(self, usernames, amount=10, daysold=365, max_pic = 50):
+        if not isinstance(usernames, list):
+            usernames = [usernames]
+        for username in usernames: 
+            print ("\nFollowing commenters of ", username ," from pictures in last ", daysold, " days...\nScrapping wall..")                      
+            user_commented_list = extract_information(self.browser, username, daysold, max_pic)
+            if (len(user_commented_list))>0:  
+                print ("Going to follow top ", amount, " users.\n")            
+                sleep(1)
+                self.follow_by_list(user_commented_list[:amount])
+            else:
+                print ("Noone commented, noone to follow.\n")
+            sleep(1)
+        print ("\nFinished.\n")
+        return self
+
+    def follow_user_likers (self, usernames, photos_grab_amount=3, follow_likers_per_photo=3, randomize=True):
+        print ("Starting..")
+        if photos_grab_amount>12:
+            print ("\nSorry, you can only grab likers from first 12 photos for given username now.\n")
+            photos_grab_amount = 12
+        for username in usernames:
+            photo_url_arr = get_photo_urls_from_profile (self.browser, username, photos_grab_amount, randomize)
+            sleep(1)
+            self.follow_likers (photo_url_arr, amount=follow_likers_per_photo)
+        
+        print ("\nFinished following likers.\n")    
+        return self
+        
+    def follow_by_list(self, followlist, times=1): 
         """Allows to follow by any scrapped list"""
         self.follow_times = times or 0
         if self.aborting:
-            return self
-
+            print (">>>self aborting prevented")
+            #return self
+            
         followed = 0
-
         for acc_to_follow in followlist:
             if acc_to_follow in self.dont_include:
                 continue
-
+            
             if self.follow_restrict.get(acc_to_follow, 0) < self.follow_times:
                 followed += follow_given_user(self.browser,
                                               self.username,
@@ -539,15 +584,25 @@ class InstaPy:
 
         return self
 
-    def set_upper_follower_count(self, limit=None):
-        """Used to chose if a post is liked by the number of likes"""
-        self.like_by_followers_upper_limit = limit or maxsize
-        return self
-
-    def set_lower_follower_count(self, limit=None):
-        """Used to chose if a post is liked by the number of likes"""
-        self.like_by_followers_lower_limit = limit or 0
-        return self
+    def set_relationship_bounds (self,
+                                  enabled=False,
+                                   potency_ratio=None,
+                                    delimit_by_numbers=True,
+                                     max_followers=None,
+                                      max_following=None, 
+                                       min_followers=None, 
+                                        min_following=None):
+        """Sets the potency ratio and limits to the provide an efficient activity between the targeted masses"""
+        if enabled:
+            self.potency_ratio = potency_ratio
+            self.delimit_by_numbers = delimit_by_numbers
+            
+            self.max_followers = max_followers
+            self.min_followers = min_followers
+            
+            self.max_following = max_following
+            self.min_following = min_following
+        
 
     def like_by_locations(self,
                           locations=None,
@@ -594,8 +649,12 @@ class InstaPy:
                                    self.ignore_if_contains,
                                    self.ignore_users,
                                    self.username,
-                                   self.like_by_followers_upper_limit,
-                                   self.like_by_followers_lower_limit,
+                                   self.potency_ratio,
+                                   self.delimit_by_numbers,
+                                   self.max_followers,
+                                   self.max_following,
+                                   self.min_followers,
+                                   self.min_following,
                                    self.logger)
                     )
 
@@ -738,8 +797,12 @@ class InstaPy:
                                    self.ignore_if_contains,
                                    self.ignore_users,
                                    self.username,
-                                   self.like_by_followers_upper_limit,
-                                   self.like_by_followers_lower_limit,
+                                   self.potency_ratio,
+                                   self.delimit_by_numbers,
+                                   self.max_followers,
+                                   self.max_following,
+                                   self.min_followers,
+                                   self.min_following,
                                    self.logger)
                     )
 
@@ -885,8 +948,12 @@ class InstaPy:
                                    self.ignore_if_contains,
                                    self.ignore_users,
                                    self.username,
-                                   self.like_by_followers_upper_limit,
-                                   self.like_by_followers_lower_limit,
+                                   self.potency_ratio,
+                                   self.delimit_by_numbers,
+                                   self.max_followers,
+                                   self.max_following,
+                                   self.min_followers,
+                                   self.min_following,
                                    self.logger)
                     )
 
@@ -1025,9 +1092,7 @@ class InstaPy:
             valid_user = validate_username(self.browser,
                                            username,
                                            self.ignore_users,
-                                           self.blacklist,
-                                           self.like_by_followers_upper_limit,
-                                           self.like_by_followers_lower_limit)
+                                           self.blacklist)
             if valid_user is not True:
                 self.logger.info(valid_user)
                 continue
@@ -1084,8 +1149,12 @@ class InstaPy:
                                    self.ignore_if_contains,
                                    self.ignore_users,
                                    self.username,
-                                   self.like_by_followers_upper_limit,
-                                   self.like_by_followers_lower_limit,
+                                   self.potency_ratio,
+                                   self.delimit_by_numbers,
+                                   self.max_followers,
+                                   self.max_following,
+                                   self.min_followers,
+                                   self.min_following,
                                    self.logger)
                     )
 
@@ -1228,8 +1297,12 @@ class InstaPy:
                                    self.ignore_if_contains,
                                    self.ignore_users,
                                    self.username,
-                                   self.like_by_followers_upper_limit,
-                                   self.like_by_followers_lower_limit,
+                                   self.potency_ratio,
+                                   self.delimit_by_numbers,
+                                   self.max_followers,
+                                   self.max_following,
+                                   self.min_followers,
+                                   self.min_following,
                                    self.logger)
                     )
 
@@ -1583,8 +1656,7 @@ class InstaPy:
 
     def like_by_feed(self, **kwargs):
         """Like the users feed"""
-        for i in self.like_by_feed_generator(**kwargs):
-            pass
+        self.like_by_feed_generator(**kwargs)
         return self
 
     def like_by_feed_generator(self,
@@ -1646,8 +1718,12 @@ class InstaPy:
                                            self.ignore_if_contains,
                                            self.ignore_users,
                                            self.username,
-                                           self.like_by_followers_upper_limit,
-                                           self.like_by_followers_lower_limit,
+                                           self.potency_ratio,
+                                           self.delimit_by_numbers,
+                                           self.max_followers,
+                                           self.max_following,
+                                           self.min_followers,
+                                           self.min_following,
                                            self.logger)
                             )
 
@@ -1773,7 +1849,7 @@ class InstaPy:
 
         return
 
-    def set_dont_unfollow_active_users(self, enabled=False, posts=4):
+    def set_dont_unfollow_active_users(self, enabled=False, posts=4, boundary=500):
         """Prevents unfollow followers who have liked one of
         your latest X posts"""
 
@@ -1785,6 +1861,7 @@ class InstaPy:
         active_users = get_active_users(self.browser,
                                         self.username,
                                         posts,
+                                        boundary,
                                         self.logger)
 
         for user in active_users:
@@ -1878,8 +1955,12 @@ class InstaPy:
                                    self.ignore_if_contains,
                                    self.ignore_users,
                                    self.username,
-                                   self.like_by_followers_upper_limit,
-                                   self.like_by_followers_lower_limit,
+                                   self.potency_ratio,
+                                   self.delimit_by_numbers,
+                                   self.max_followers,
+                                   self.max_following,
+                                   self.min_followers,
+                                   self.min_following,
                                    self.logger)
                     )
 
