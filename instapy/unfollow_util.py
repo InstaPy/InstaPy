@@ -199,7 +199,7 @@ def unfollow(browser,
 
         variables = {}
         user_data['id'] = browser.execute_script(
-            "return window._sharedData.entry_data.ProfilePage[0]."
+            "return window._sharedData.entry_data.ProfilePage."
             "graphql.user.id")
         variables['id'] = user_data['id']
         variables['first'] = 50
