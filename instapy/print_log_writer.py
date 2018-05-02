@@ -1,6 +1,6 @@
 """Module only used to log the number of followers to a file"""
 from datetime import datetime
-
+from selenium.common.exceptions import WebDriverException
 
 def log_follower_num(browser, username, logfolder):
     """Prints and logs the current number of followers to
