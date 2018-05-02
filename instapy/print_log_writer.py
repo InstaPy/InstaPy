@@ -8,7 +8,7 @@ def log_follower_num(browser, username, logfolder):
     browser.get('https://www.instagram.com/' + username)
 
     followed_by = browser.execute_script(
-        "return window._sharedData.""entry_data.ProfilePage[0]."
+        "return window._sharedData.""entry_data.ProfilePage."
         "graphql.user.edge_followed_by.count")
 
     with open('{}followerNum.txt'.format(logfolder), 'a') as numFile:
