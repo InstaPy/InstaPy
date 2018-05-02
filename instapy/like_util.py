@@ -425,8 +425,17 @@ def check_link(browser, link, dont_like, ignore_if_contains, ignore_users, usern
     sleep(2)
 
     """Check if the Post is Valid/Exists"""
-    post_page = browser.execute_script(
-        "return window._sharedData.entry_data.PostPage")
+    try:
+        post_page = browser.execute_script(
+            "return window._sharedData.entry_data.PostPage")
+    except WebDriverException:   #handle the possible `entry_data` error
+        try:
+            browser.execute_script("location.reload()")
+            post_page = browser.execute_script(
+            "return window._sharedData.entry_data.PostPage")
+        except WebDriverException:
+            post_page = None
+
     if post_page is None:
         logger.warning('Unavailable Page: {}'.format(link.encode('utf-8')))
         return True, None, None, 'Unavailable Page'

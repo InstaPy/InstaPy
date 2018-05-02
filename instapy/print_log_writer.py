@@ -1,15 +1,24 @@
 """Module only used to log the number of followers to a file"""
 from datetime import datetime
-
+from selenium.common.exceptions import WebDriverException
 
 def log_follower_num(browser, username, logfolder):
     """Prints and logs the current number of followers to
     a seperate file"""
     browser.get('https://www.instagram.com/' + username)
 
-    followed_by = browser.execute_script(
-        "return window._sharedData.""entry_data.ProfilePage."
-        "graphql.user.edge_followed_by.count")
+    try:
+        followed_by = browser.execute_script(
+            "return window._sharedData.""entry_data.ProfilePage."
+            "graphql.user.edge_followed_by.count")
+    except WebDriverException:   #handle the possible `entry_data` error
+        try:
+            browser.execute_script("location.reload()")
+            followed_by = browser.execute_script(
+                "return window._sharedData.""entry_data.ProfilePage."
+                "graphql.user.edge_followed_by.count")
+        except WebDriverException:
+            followed_by = None
 
     with open('{}followerNum.txt'.format(logfolder), 'a') as numFile:
         numFile.write(
