@@ -1740,7 +1740,8 @@ class InstaPy:
 
     def like_by_feed(self, **kwargs):
         """Like the users feed"""
-        self.like_by_feed_generator(**kwargs)
+        for i in self.like_by_feed_generator(**kwargs):
+            pass
         return self
 
     def like_by_feed_generator(self,
