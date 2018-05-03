@@ -255,9 +255,9 @@ def get_links_for_tag(browser,
                 nap = 1.5
     except:
         raise
-
+    
     sleep(4)
-
+    
     return links[:amount]
 
 
@@ -441,15 +441,15 @@ def check_link(browser, link, dont_like, ignore_if_contains, ignore_users, usern
         return True, None, None, 'Unavailable Page'
 
     """Gets the description of the link and checks for the dont_like tags"""
-    graphql = 'graphql' in post_page
+    graphql = 'graphql' in post_page[0]
     if graphql:
-        media = post_page['graphql']['shortcode_media']
+        media = post_page[0]['graphql']['shortcode_media']
         is_video = media['is_video']
         user_name = media['owner']['username']
         image_text = media['edge_media_to_caption']['edges']
         image_text = image_text[0]['node']['text'] if image_text else None
         owner_comments = browser.execute_script('''
-      latest_comments = window._sharedData.entry_data.PostPage.graphql.shortcode_media.edge_media_to_comment.edges;
+      latest_comments = window._sharedData.entry_data.PostPage[0].graphql.shortcode_media.edge_media_to_comment.edges;
       if (latest_comments === undefined) latest_comments = Array();
       owner_comments = latest_comments
         .filter(item => item.node.owner.username == '{}')
@@ -458,12 +458,12 @@ def check_link(browser, link, dont_like, ignore_if_contains, ignore_users, usern
       return owner_comments;
     '''.format(user_name))
     else:
-        media = post_page['media']
+        media = post_page[0]['media']
         is_video = media['is_video']
         user_name = media['owner']['username']
         image_text = media['caption']
         owner_comments = browser.execute_script('''
-      latest_comments = window._sharedData.entry_data.PostPage.media.comments.nodes;
+      latest_comments = window._sharedData.entry_data.PostPage[0].media.comments.nodes;
       if (latest_comments === undefined) latest_comments = Array();
       owner_comments = latest_comments
         .filter(item => item.user.username == '{}')
@@ -494,7 +494,7 @@ def check_link(browser, link, dont_like, ignore_if_contains, ignore_users, usern
 
     logger.info('Image from: {}'.format(user_name.encode('utf-8')))
 
-
+    
     """Checks the potential of target user by relationship status in order to delimit actions within the desired boundary"""
     if potency_ratio or delimit_by_numbers and (max_followers or max_following or min_followers or min_following):
 
@@ -515,21 +515,21 @@ def check_link(browser, link, dont_like, ignore_if_contains, ignore_users, usern
             try:
                 followers_count = browser.execute_script(
                     "return window._sharedData.entry_data."
-                    "ProfilePage.graphql.user.edge_followed_by.count")
+                    "ProfilePage[0].graphql.user.edge_followed_by.count")
             except WebDriverException:
                 try:
                     browser.execute_script("location.reload()")
                     followers_count = browser.execute_script(
                         "return window._sharedData.entry_data."
-                        "ProfilePage.graphql.user.edge_followed_by.count")
-                except WebDriverException:
+                        "ProfilePage[0].graphql.user.edge_followed_by.count")
+                except WebDriverException:            
                     try:
                         followers_count = format_number(browser.find_element_by_xpath(
                                         "//li[2]/a/span[contains(@class, '_fd86t')]").text)
                     except NoSuchElementException:
                         logger.info("Error occured during getting the followers count of '{}'\n".format(user_name))
                         followers_count = None
-
+        
         try:
             following_count = format_number(browser.find_element_by_xpath("//a[contains"
                                     "(@href,'following')]/span").text)
@@ -537,13 +537,13 @@ def check_link(browser, link, dont_like, ignore_if_contains, ignore_users, usern
             try:
                 following_count = browser.execute_script(
                     "return window._sharedData.entry_data."
-                    "ProfilePage.graphql.user.edge_follow.count")
+                    "ProfilePage[0].graphql.user.edge_follow.count")
             except WebDriverException:
                 try:
                     browser.execute_script("location.reload()")
                     following_count = browser.execute_script(
                         "return window._sharedData.entry_data."
-                        "ProfilePage.graphql.user.edge_follow.count")
+                        "ProfilePage[0].graphql.user.edge_follow.count")
                 except WebDriverException:
                     try:
                         following_count = format_number(browser.find_element_by_xpath(
@@ -551,26 +551,26 @@ def check_link(browser, link, dont_like, ignore_if_contains, ignore_users, usern
                     except NoSuchElementException:
                         logger.info("\nError occured during getting the following count of '{}'\n".format(user_name))
                         following_count = None
-
+            
         browser.get(link)
         # update server calls
         update_activity()
         sleep(1)
-
+        
         if potency_ratio and potency_ratio < 0:
             potency_ratio *= -1
             reverse_relationship = True
-
+            
         if followers_count and following_count:
             relationship_ratio = (followers_count/following_count
                                    if not reverse_relationship
                                     else following_count/followers_count)
-
+        
         logger.info('User: {} >> followers: {}  |  following: {}  |  relationship ratio: {}'.format(user_name,
         followers_count if followers_count else 'unknown',
         following_count if following_count else 'unknown',
         float("{0:.2f}".format(relationship_ratio)) if relationship_ratio else 'unknown'))
-
+        
         if followers_count  or following_count:
             if potency_ratio and not delimit_by_numbers:
                 if relationship_ratio and relationship_ratio < potency_ratio:
@@ -589,7 +589,7 @@ def check_link(browser, link, dont_like, ignore_if_contains, ignore_users, usern
                         if followers_count < min_followers:
                             return True, user_name, is_video, \
                                 "User {}'s followers count is less than minimum limit".format(user_name)
-                if following_count:
+                if following_count:                
                     if max_following:
                         if following_count > max_following:
                             return True, user_name, is_video, \
@@ -604,7 +604,7 @@ def check_link(browser, link, dont_like, ignore_if_contains, ignore_users, usern
                             "{} is not a {} with the relationship ratio of {}".format(
                             user_name, "potential user" if not reverse_relationship else "massive follower",
                             float("{0:.2f}".format(relationship_ratio)))
-
+                            
 
     logger.info('Link: {}'.format(link.encode('utf-8')))
     logger.info('Description: {}'.format(image_text.encode('utf-8')))
@@ -693,15 +693,15 @@ def get_tags(browser, url):
     sleep(1)
 
     graphql = browser.execute_script(
-        "return ('graphql' in window._sharedData.entry_data.PostPage)")
+        "return ('graphql' in window._sharedData.entry_data.PostPage[0])")
     if graphql:
         image_text = browser.execute_script(
-            "return window._sharedData.entry_data.PostPage.graphql."
+            "return window._sharedData.entry_data.PostPage[0].graphql."
             "shortcode_media.edge_media_to_caption.edges[0].node.text")
     else:
         image_text = browser.execute_script(
             "return window._sharedData.entry_data."
-            "PostPage.media.caption.text")
+            "PostPage[0].media.caption.text")
 
     tags = findall(r'#\w*', image_text)
     return tags
