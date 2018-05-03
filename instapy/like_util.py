@@ -722,3 +722,35 @@ def get_links(browser, tag, logger, media, element):
     except BaseException as e:
         logger.error("link_elems error {}".format(str(e)))
     return links
+
+
+
+def verify_liking(browser, max, min, logger):
+        """ Get the amount of existing existing likes and compare it against max & min values defined by user """
+        try:
+            likes_count = browser.execute_script(
+                "return window._sharedData.entry_data."
+                "PostPage[0].graphql.shortcode_media.edge_media_preview_like.count")
+        except WebDriverException:
+            try:
+                browser.execute_script("location.reload()")
+                likes_count = browser.execute_script(
+                    "return window._sharedData.entry_data."
+                    "PostPage[0].graphql.shortcode_media.edge_media_preview_like.count")
+            except WebDriverException:
+                try:
+                    likes_count = format_number(browser.find_element_by_css_selector(
+                                        "section._1w76c._nlmjy > div > a > span").text)
+                except NoSuchElementException:
+                    logger.info("Failed to check likes' count...\n")
+                    raise
+                    return True
+        
+        if max is not None and likes_count > max:
+            logger.info("Not liked this post! ~more likes exist off maximum limit at {}".format(likes_count))
+            return False
+        elif min is not None and likes_count < min:
+            logger.info("Not liked this post! ~less likes exist off minumum limit at {}".format(likes_count))
+            return False
+
+        return True
