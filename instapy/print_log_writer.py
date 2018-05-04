@@ -9,13 +9,13 @@ def log_follower_num(browser, username, logfolder):
 
     try:
         followed_by = browser.execute_script(
-            "return window._sharedData.""entry_data.ProfilePage."
+            "return window._sharedData.""entry_data.ProfilePage[0]."
             "graphql.user.edge_followed_by.count")
     except WebDriverException:   #handle the possible `entry_data` error
         try:
             browser.execute_script("location.reload()")
             followed_by = browser.execute_script(
-                "return window._sharedData.""entry_data.ProfilePage."
+                "return window._sharedData.""entry_data.ProfilePage[0]."
                 "graphql.user.edge_followed_by.count")
         except WebDriverException:
             followed_by = None
