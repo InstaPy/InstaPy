@@ -921,7 +921,7 @@ def get_relationship_counts(browser, username, logger):
                     followers_count = format_number(browser.find_element_by_xpath(
                                     "//li[2]/a/span[contains(@class, '_fd86t')]").text)
                 except NoSuchElementException:
-                    logger.info("Error occured during getting the followers count of '{}'\n".format(user_name))
+                    logger.info("Error occured during getting the followers count of '{}'\n".format(username))
                     followers_count = None
 
     try:
@@ -943,7 +943,7 @@ def get_relationship_counts(browser, username, logger):
                     following_count = format_number(browser.find_element_by_xpath(
                                         "//li[3]/a/span[contains(@class, '_fd86t')]").text)
                 except NoSuchElementException:
-                    logger.info("\nError occured during getting the following count of '{}'\n".format(user_name))
+                    logger.info("\nError occured during getting the following count of '{}'\n".format(username))
                     following_count = None
     
     return followers_count, following_count
