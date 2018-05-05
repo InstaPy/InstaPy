@@ -676,7 +676,7 @@ class InstaPy:
                 self.logger.info(link)
 
                 try:
-                    inappropriate, user_name, is_video, reason = (
+                    inappropriate, user_name, is_video, reason, scope = (
                         check_link(self.browser,
                                    link,
                                    self.dont_like,
@@ -834,7 +834,7 @@ class InstaPy:
                 self.logger.info(link)
 
                 try:
-                    inappropriate, user_name, is_video, reason = (
+                    inappropriate, user_name, is_video, reason, scope = (
                         check_link(self.browser,
                                    link,
                                    self.dont_like,
@@ -992,7 +992,7 @@ class InstaPy:
                 self.logger.info(link)
 
                 try:
-                    inappropriate, user_name, is_video, reason = (
+                    inappropriate, user_name, is_video, reason, scope = (
                         check_link(self.browser,
                                    link,
                                    self.dont_like,
@@ -1145,6 +1145,10 @@ class InstaPy:
         usernames = usernames or []
 
         for index, username in enumerate(usernames):
+
+            potency_ratio = self.potency_ratio
+            delimit_by_numbers = self.delimit_by_numbers
+
             self.logger.info(
                 'Username [{}/{}]'.format(index + 1, len(usernames)))
             self.logger.info('--> {}'.format(username.encode('utf-8')))
@@ -1203,15 +1207,15 @@ class InstaPy:
                 self.logger.info(link)
 
                 try:
-                    inappropriate, user_name, is_video, reason = (
+                    inappropriate, user_name, is_video, reason, scope = (
                         check_link(self.browser,
                                    link,
                                    self.dont_like,
                                    self.ignore_if_contains,
                                    self.ignore_users,
                                    self.username,
-                                   self.potency_ratio,
-                                   self.delimit_by_numbers,
+                                   potency_ratio,
+                                   delimit_by_numbers,
                                    self.max_followers,
                                    self.max_following,
                                    self.min_followers,
@@ -1219,9 +1223,19 @@ class InstaPy:
                                    self.logger)
                     )
 
+                    if inappropriate==False:
+                        # Skip verifying relationship bounds in further posts of this user cos it is already verified
+                        potency_ratio = None
+                        delimit_by_numbers = False
+                    elif scope=="Relationship bounds":
+                        # Skip this user completely cos of relationship bounds is not verified
+                        self.logger.info(
+                            '--> {} ~skipping user'.format(reason.encode('utf-8')))
+                        break
+
                     if not inappropriate and self.delimit_liking:
                         self.liking_approved = verify_liking(self.browser, self.max_likes, self.min_likes, self.logger)
-                    
+
                     if not inappropriate and self.liking_approved:
                         liked = like_image(self.browser,
                                            user_name,
@@ -1363,7 +1377,7 @@ class InstaPy:
                 self.logger.info(link)
 
                 try:
-                    inappropriate, user_name, is_video, reason = (
+                    inappropriate, user_name, is_video, reason, scope = (
                         check_link(self.browser,
                                    link,
                                    self.dont_like,
@@ -1796,7 +1810,7 @@ class InstaPy:
                         self.logger.info(link)
 
                         try:
-                            inappropriate, user_name, is_video, reason = (
+                            inappropriate, user_name, is_video, reason, scope = (
                                 check_link(self.browser,
                                            link,
                                            self.dont_like,
@@ -2044,7 +2058,7 @@ class InstaPy:
                 self.logger.info(link)
 
                 try:
-                    inappropriate, user_name, is_video, reason = (
+                    inappropriate, user_name, is_video, reason, scope = (
                         check_link(self.browser,
                                    link,
                                    self.dont_like,
