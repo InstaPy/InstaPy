@@ -676,10 +676,13 @@ class InstaPy:
                         # Do interactions if any
                         if do_interact and self.user_interact_amount>0:
                             interaction_user = [acc_to_follow]
+                            original_do_follow = self.do_follow   # store the original value of `self.do_follow`
+                            self.do_follow = False   # disable following temporarily cos the user is already followed above
                             self.interact_by_users(interaction_user,
                                                      self.user_interact_amount,
                                                       self.user_interact_random,
                                                         self.user_interact_media)
+                            self.do_follow = original_do_follow   # revert back original `self.do_follow` value (either it was `False` or `True`)
             else:
                 self.logger.info('---> {} has already been followed more than '
                                  '{} times'.format(
