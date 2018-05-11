@@ -515,10 +515,10 @@ def check_link(browser, link, dont_like, ignore_if_contains, ignore_users, usern
             reverse_relationship = True
 
         if followers_count and following_count:
-            relationship_ratio = (followers_count/following_count
-                                   if not reverse_relationship
-                                    else following_count/followers_count)
-
+            relationship_ratio = (float(followers_count)/float(following_count)
+                       if not reverse_relationship
+                        else float(following_count)/float(followers_count))
+            
         logger.info('User: {} >> followers: {}  |  following: {}  |  relationship ratio: {}'.format(user_name,
         followers_count if followers_count else 'unknown',
         following_count if following_count else 'unknown',
