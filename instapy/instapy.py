@@ -527,74 +527,171 @@ class InstaPy:
             self.clarifai_img_tags.append((tags, comment, comments))
 
         return self
-                                 
-    def follow_likers(self, photo_urls, amount=10):
-        if not isinstance(photo_urls, list):
-            photo_urls = [photo_urls]
-        for photo_url in photo_urls:
-            user_liked_list = users_liked (self.browser, photo_url, amount)
-            self.follow_by_list(user_liked_list[:amount])
-        return self
 
-    def follow_commenters(self, usernames, amount=10, daysold=365, max_pic = 50):
+
+    def follow_commenters(self, usernames, amount=10, daysold=365, max_pic=50, sleep_delay=600, interact=False):
+        """ Follows users' commenters """
+        self.logger.info ("Starting to follow commenters..")
+
         if not isinstance(usernames, list):
             usernames = [usernames]
-        for username in usernames: 
-            print ("\nFollowing commenters of ", username ," from pictures in last ", daysold, " days...\nScrapping wall..")                      
-            user_commented_list = extract_information(self.browser, username, daysold, max_pic)
-            if (len(user_commented_list))>0:  
-                print ("Going to follow top ", amount, " users.\n")            
+
+        followed_all = 0
+        followed_new = 0
+        relax_point = random.randint(7, 14)   # you can use some plain value `10` instead of this quitely randomized score
+
+        for username in usernames:
+            self.logger.info("Following commenters of '{}' from pictures in last {} days...\nScrapping wall..".format(username, daysold))
+            commenters = extract_information(self.browser, username, daysold, max_pic)
+
+            if len(commenters)>0:  
+                self.logger.info("Going to follow top {} users.\n".format(amount))
                 sleep(1)
-                self.follow_by_list(user_commented_list[:amount])
+                # This way of iterating will prevent sleep interference between functions
+                random.shuffle(commenters)
+                for commenter in commenters[:amount] :
+                    followed = self.follow_by_list([commenter], self.follow_times, sleep_delay, interact)
+                    if followed > 0:
+                        followed_all += 1
+                        followed_new += 1
+                        self.logger.info('Total Follow: {}'.format(str(followed_all)))
+                        # Take a break after a good following
+                        if followed_new >= relax_point:
+                            delay_random = random.randint(ceil(sleep_delay*0.85), ceil(sleep_delay*1.14))
+                            self.logger.info('------=>  Followed {} new users ~sleeping about {}'.format(followed_new,
+                                                                        '{} seconds'.format(delay_random) if delay_random < 60 else
+                                                                        '{} minutes'.format(float("{0:.2f}".format(delay_random/60)))))
+                            sleep(delay_random)
+                            relax_point = random.randint(7, 14)
+                            followed_new = 0
+                            pass
+
             else:
-                print ("Noone commented, noone to follow.\n")
+                self.logger.info("Noone commented, noone to follow.\n")
+
             sleep(1)
-        print ("\nFinished.\n")
+
+        self.logger.info("Finished following commenters!\n")
+
         return self
 
-    def follow_user_likers (self, usernames, photos_grab_amount=3, follow_likers_per_photo=3, randomize=True):
-        print ("Starting..")
+
+    def follow_likers (self, usernames, photos_grab_amount=3, follow_likers_per_photo=3, randomize=True, sleep_delay=600, interact=False):
+        """ Follows users' likers """
+        self.logger.info ("Starting to follow likers..")
+
+        if not isinstance(usernames, list):
+            usernames = [usernames]
+
         if photos_grab_amount>12:
-            print ("\nSorry, you can only grab likers from first 12 photos for given username now.\n")
+            self.logger.info ("Sorry, you can only grab likers from first 12 photos for given username now.\n")
             photos_grab_amount = 12
+
+        followed_all = 0
+        followed_new = 0
+        relax_point = random.randint(7, 14)   # you can use some plain value `10` instead of this quitely randomized score
+
         for username in usernames:
-            photo_url_arr = get_photo_urls_from_profile (self.browser, username, photos_grab_amount, randomize)
+            photo_urls = get_photo_urls_from_profile(self.browser, username, photos_grab_amount, randomize)
             sleep(1)
-            self.follow_likers (photo_url_arr, amount=follow_likers_per_photo)
-        
-        print ("\nFinished following likers.\n")    
+            if not isinstance(photo_urls, list):
+                photo_urls = [photo_urls]
+
+            for photo_url in photo_urls:
+                likers = users_liked(self.browser, photo_url, follow_likers_per_photo)
+                # This way of iterating will prevent sleep interference between functions
+                random.shuffle(likers)
+                for liker in likers[:follow_likers_per_photo] :
+                    followed = self.follow_by_list([liker], self.follow_times, sleep_delay, interact)
+                    if followed > 0:
+                        followed_all += 1
+                        followed_new += 1
+                        self.logger.info('Total Follow: {}'.format(str(followed_all)))
+                        # Take a break after a good following
+                        if followed_new >= relax_point:
+                            delay_random = random.randint(ceil(sleep_delay*0.85), ceil(sleep_delay*1.14))
+                            self.logger.info('------=>  Followed {} new users ~sleeping about {}'.format(followed_new,
+                                                                        '{} seconds'.format(delay_random) if delay_random < 60 else
+                                                                        '{} minutes'.format(float("{0:.2f}".format(delay_random/60)))))
+                            sleep(delay_random)
+                            relax_point = random.randint(7, 14)
+                            followed_new=0
+                            pass
+
+        self.logger.info("Finished following likers!\n")    
+
         return self
-        
-    def follow_by_list(self, followlist, times=1): 
+
+
+    def follow_by_list(self, followlist, times=1, sleep_delay=600, interact=False): 
         """Allows to follow by any scrapped list"""
+        if not isinstance(followlist, list):
+            followlist = [followlist]
+        
         self.follow_times = times or 0
         if self.aborting:
-            print (">>>self aborting prevented")
+            self.logger.info(">>> self aborting prevented")
             #return self
-            
-        followed = 0
+
+        followed_all = 0
+        followed_new = 0
+        relax_point = random.randint(7, 14)   # you can use some plain value `10` instead of this quitely randomized score
+
         for acc_to_follow in followlist:
-            if acc_to_follow in self.dont_include:
+            # Verify if the user should be followed
+            if ((acc_to_follow in self.ignore_users) or
+                        (acc_to_follow in self.dont_include) or
+                            (acc_to_follow==self.username)):
+                self.logger.info("Inappropriate user ~skipping '{}'".format(acc_to_follow))
                 continue
-            
+            # Take a break after a good following
+            if followed_new >= relax_point:
+                delay_random = random.randint(ceil(sleep_delay*0.85), ceil(sleep_delay*1.14))
+                self.logger.info('Followed {} new users ~sleeping about {}'.format(followed_new,
+                                                            '{} seconds'.format(delay_random) if delay_random < 60 else
+                                                            '{} minutes'.format(float("{0:.2f}".format(delay_random/60)))))
+                sleep(delay_random)
+                followed_new = 0
+                relax_point = random.randint(7, 14)
+                pass
+
             if self.follow_restrict.get(acc_to_follow, 0) < self.follow_times:
-                followed += follow_given_user(self.browser,
+                followed = follow_given_user(self.browser,
                                               self.username,
                                               acc_to_follow,
                                               self.follow_restrict,
                                               self.blacklist,
                                               self.logger,
                                               self.logfolder)
-                self.followed += followed
-                self.logger.info('Followed: {}'.format(str(followed)))
-                followed = 0
+                if followed:
+                    self.followed += 1
+                    followed_all += 1
+                    followed_new += 1
+                    if len(followlist) > 1:
+                        self.logger.info('Total Follow: {}'.format(str(followed_all)))
+
+                    # Check if interaction is expected
+                    if interact and self.do_like: 
+                        do_interact = random.randint(0, 100) <= self.user_interact_percentage
+                        # Do interactions if any
+                        if do_interact and self.user_interact_amount>0:
+                            interaction_user = [acc_to_follow]
+                            original_do_follow = self.do_follow   # store the original value of `self.do_follow`
+                            self.do_follow = False   # disable following temporarily cos the user is already followed above
+                            self.interact_by_users(interaction_user,
+                                                     self.user_interact_amount,
+                                                      self.user_interact_random,
+                                                        self.user_interact_media)
+                            self.do_follow = original_do_follow   # revert back original `self.do_follow` value (either it was `False` or `True`)
             else:
                 self.logger.info('---> {} has already been followed more than '
                                  '{} times'.format(
                                     acc_to_follow, str(self.follow_times)))
                 sleep(1)
 
-        return self
+
+        return followed_all
+
 
     def set_relationship_bounds (self,
                                   enabled=None,
@@ -1365,7 +1462,7 @@ class InstaPy:
             # Will we follow this user?
             following = random.randint(0, 100) <= self.follow_percentage
 
-            for i, link in enumerate(links):
+            for i, link in enumerate(links[:amount]):
                 # Check if target has reached
                 if liked_img >= amount:
                     self.logger.info('-------------')
