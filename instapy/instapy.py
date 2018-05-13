@@ -115,6 +115,7 @@ class InstaPy:
         self.commented = 0
         self.followed_by = 0
         self.unfollowNumber = 0
+        self.valid_users = 0
 
         self.follow_restrict = load_follow_restriction(self.logfolder)
         self.follow_times = 1
@@ -1239,6 +1240,7 @@ class InstaPy:
         inap_img = 0
         commented = 0
         followed = 0
+        valid_users = 0
         usernames = usernames or []
 
         for index, username in enumerate(usernames):
@@ -1258,6 +1260,8 @@ class InstaPy:
             if valid_user is not True:
                 self.logger.info(valid_user)
                 continue
+            else:
+                valid_users += 1
 
             try:
                 links = get_links_for_username(
@@ -1412,11 +1416,15 @@ class InstaPy:
         self.logger.info('Already Liked: {}'.format(already_liked))
         self.logger.info('Inappropriate: {}'.format(inap_img))
         self.logger.info('Commented: {}'.format(commented))
+        self.logger.info('Followed: {}'.format(followed))
+        self.logger.info('Valid Users: {}'.format(valid_users))
 
         self.liked_img += liked_img
         self.already_liked += already_liked
         self.inap_img += inap_img
         self.commented += commented
+        self.followed += followed
+        self.valid_users += valid_users
 
         return self
 
@@ -1624,43 +1632,60 @@ class InstaPy:
 
         return self
 
-    def interact_user_followers(self, usernames, amount=10, randomize=False):
+    def interact_user_followers(self, usernames, amount=10, randomize=False, respect_amount=False):
 
-        userToInteract = []
         if not isinstance(usernames, list):
             usernames = [usernames]
-        try:
-            for user in usernames:
 
-                user = get_given_user_followers(self.browser,
-                                                user,
-                                                amount,
-                                                self.dont_include,
-                                                self.username,
-                                                randomize,
-                                                self.logger)
-                if isinstance(user, list):
-                    userToInteract += user
-        except (TypeError, RuntimeWarning) as err:
-            if isinstance(err, RuntimeWarning):
-                self.logger.warning(
-                    u'Warning: {} , stopping follow_users'.format(err))
-                return self
-            else:
-                self.logger.error('Sorry, an error occured: {}'.format(err))
-                self.aborting = True
-                return self
+        restart = 0
+        while self.valid_users is not self.valid_users or (amount - self.valid_users > 0 and respect_amount):
+            userToInteract = []
+            realAmount = amount - self.valid_users
+            try:
+                for user in usernames:
+                    user = get_given_user_followers(self.browser,
+                                                    user,
+                                                    realAmount,
+                                                    self.dont_include,
+                                                    self.username,
+                                                    randomize,
+                                                    self.logger)
+                    if isinstance(user, list):
+                        userToInteract += user
+            except (TypeError, RuntimeWarning) as err:
+                if isinstance(err, RuntimeWarning):
+                    self.logger.warning(
+                        u'Warning: {} , stopping follow_users'.format(err))
+                    return self
+                else:
+                    self.logger.error('Sorry, an error occured: {}'.format(err))
+                    self.aborting = True
+                    return self
 
-        self.logger.info('--> Users: {} \n'.format(len(userToInteract)))
-        userToInteract = random.sample(
-            userToInteract,
-            int(ceil(
-                self.user_interact_percentage * len(userToInteract) / 100)))
+            self.logger.info('--> Users: {} \n'.format(len(userToInteract)))
+            userToInteract = random.sample(
+                userToInteract,
+                int(ceil(
+                    self.user_interact_percentage * len(userToInteract) / 100)))
 
-        self.like_by_users(userToInteract,
-                           self.user_interact_amount,
-                           self.user_interact_random,
-                           self.user_interact_media)
+            self.like_by_users(userToInteract,
+                               self.user_interact_amount,
+                               self.user_interact_random,
+                               self.user_interact_media)
+
+            if respect_amount and 0 < self.valid_users < amount:
+                restart += 1
+                self.logger.info('--> Amount ({}) not respected ! Restarting with new amount : {} \n'.format(realAmount, amount-self.valid_users))
+
+        if respect_amount:
+            self.logger.info('--> Initial Amount ({}) respected !'.format(amount))
+            self.logger.info('Restared: {}'.format(restart))
+            self.logger.info('Liked: {}'.format(self.liked_img))
+            self.logger.info('Already Liked: {}'.format(self.already_liked))
+            self.logger.info('Inappropriate: {}'.format(self.inap_img))
+            self.logger.info('Commented: {}'.format(self.commented))
+            self.logger.info('Followed: {}'.format(self.followed))
+            self.logger.info('Valid Users: {}'.format(self.valid_users))
 
         return self
 
