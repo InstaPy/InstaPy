@@ -6,6 +6,7 @@ import sqlite3
 import time
 
 from selenium.common.exceptions import NoSuchElementException
+from selenium.common.exceptions import WebDriverException
 
 from .settings import Settings
 from .time_util import sleep
@@ -13,19 +14,114 @@ from .time_util import sleep_actual
 
 
 def validate_username(browser,
-                      username,
+                      username_or_link,
+                      own_username,
                       ignore_users,
-                      blacklist):
+                      blacklist,
+                      potency_ratio,
+                      delimit_by_numbers,
+                      max_followers,
+                      max_following,
+                      min_followers,
+                      min_following,
+                      logger):
     """Check if we can interact with the user"""
 
+    # Some features may not povide `username` and in those cases we will get it from post's page.
+    if '/' in username_or_link:
+        link = username_or_link   # if there is a `/` in `username_or_link`, then it is a `link`
+        browser.get(link)
+        # update server calls
+        update_activity()
+        sleep(2)
+        try:
+            username = browser.execute_script(
+                    "return window._sharedData.entry_data."
+                    "PostPage[0].graphql.shortcode_media.owner.username")
+        except WebDriverException:
+            try:
+                browser.execute_script("location.relaod()")
+                username = browser.execute_script(
+                        "return window._sharedData.entry_data."
+                        "PostPage[0].graphql.shortcode_media.owner.username")
+            except WebDriverException:
+                logger.error("Username validation failed! ~cannot get the post owner's username\n")
+                return True
+    else:
+        username = username_or_link   # if there is no `/` in `username_or_link`, then it is a `username`
+
+    if username == own_username:
+        return False, \
+                "---> Username '{}' is yours!  ~skipping user\n".format(own_username)
+        
     if username in ignore_users:
-        return ('---> {} is in ignore_users list, skipping '
-                'user...'.format(username))
+        return False, \
+                "---> {} is in ignore_users list  ~skipping user\n".format(username)
+                
     if username in blacklist:
-        return '---> {} is in blacklist, skipping user...'
+        return False, \
+                "---> {} is in blacklist  ~skipping user\n".format(username)
+    
+    """Checks the potential of target user by relationship status in order to delimit actions within the desired boundary"""
+    if potency_ratio or delimit_by_numbers and (max_followers or max_following or min_followers or min_following):
+
+        relationship_ratio = None
+        reverse_relationship = False
+
+        # Get followers & following counts
+        followers_count, following_count = get_relationship_counts(browser, username, logger)
+
+        if potency_ratio and potency_ratio < 0:
+            potency_ratio *= -1
+            reverse_relationship = True
+
+        if followers_count and following_count:
+            relationship_ratio = (float(followers_count)/float(following_count)
+                       if not reverse_relationship
+                        else float(following_count)/float(followers_count))
+
+        logger.info('User: {} >> followers: {}  |  following: {}  |  relationship ratio: {}'.format(username,
+        followers_count if followers_count else 'unknown',
+        following_count if following_count else 'unknown',
+        float("{0:.2f}".format(relationship_ratio)) if relationship_ratio else 'unknown'))
+
+        if followers_count  or following_count:
+            if potency_ratio and not delimit_by_numbers:
+                if relationship_ratio and relationship_ratio < potency_ratio:
+                        return False, \
+                            "{} is not a {} with the relationship ratio of {}  ~skipping user\n".format(
+                            username, "potential user" if not reverse_relationship else "massive follower",
+                            float("{0:.2f}".format(relationship_ratio)))
+
+            elif delimit_by_numbers:
+                if followers_count:
+                    if max_followers:
+                        if followers_count > max_followers:
+                            return False, \
+                                "User {}'s followers count exceeds maximum limit  ~skipping user\n".format(username)
+                    if min_followers:
+                        if followers_count < min_followers:
+                            return False, \
+                                "User {}'s followers count is less than minimum limit  ~skipping user\n".format(username)
+                if following_count:
+                    if max_following:
+                        if following_count > max_following:
+                            return False, \
+                                "User {}'s following count exceeds maximum limit  ~skipping user\n".format(username)
+                    if min_following:
+                        if following_count < min_following:
+                            return False, \
+                                "User {}'s following count is less than minimum limit  ~skipping user\n".format(username)
+                if potency_ratio:
+                    if relationship_ratio and relationship_ratio < potency_ratio:
+                        return False, \
+                            "{} is not a {} with the relationship ratio of {}  ~skipping user\n".format(
+                            username, "potential user" if not reverse_relationship else "massive follower",
+                            float("{0:.2f}".format(relationship_ratio)))
+
 
     # if everything ok
-    return True
+    return True, "Valid user"
 
 
 def update_activity(action=None):
@@ -235,7 +331,7 @@ def delete_line_from_file(filepath, lineToDelete, logger):
             if not line.endswith(lineToDelete):
                 f.write(line)
             else:
-                logger.info("{} removed from csv".format(line))
+                logger.info("--> \"{}\" was removed from csv".format(line.split(',\n')[0]))
         f.close()
 
         # File leftovers that should not exist, but if so remove it
@@ -353,3 +449,72 @@ def get_number_of_posts(browser):
     num_of_posts_txt = num_of_posts_txt.replace(",", "")
     num_of_posts = int(num_of_posts_txt)   
     return num_of_posts
+
+
+def get_relationship_counts(browser, username, logger):
+    """ Gets the followers & following counts of a given user """
+
+    user_link = "https://www.instagram.com/{}/".format(username)
+    sleep(1)
+    #Check URL of the webpage, if it already is user's profile page, then do not navigate to it again
+    try:
+        current_url = browser.current_url
+    except WebDriverException:
+        try:
+            current_url = browser.execute_script("return window.location.href")
+        except WebDriverException:
+            raise
+            current_url = None
+    
+    if current_url is None or current_url != user_link:
+        browser.get(user_link)
+        # update server calls
+        update_activity()
+        sleep(1)
+
+    try:
+        followers_count = format_number(browser.find_element_by_xpath("//a[contains"
+                                "(@href,'followers')]/span").text)
+    except NoSuchElementException:
+        try:
+            followers_count = browser.execute_script(
+                "return window._sharedData.entry_data."
+                "ProfilePage[0].graphql.user.edge_followed_by.count")
+        except WebDriverException:
+            try:
+                browser.execute_script("location.reload()")
+                followers_count = browser.execute_script(
+                    "return window._sharedData.entry_data."
+                    "ProfilePage[0].graphql.user.edge_followed_by.count")
+            except WebDriverException:
+                try:
+                    followers_count = format_number(browser.find_element_by_xpath(
+                                    "//li[2]/a/span[contains(@class, '_fd86t')]").text)
+                except NoSuchElementException:
+                    logger.error("Error occured during getting the followers count of '{}'\n".format(username))
+                    followers_count = None
+
+    try:
+        following_count = format_number(browser.find_element_by_xpath("//a[contains"
+                                "(@href,'following')]/span").text)
+    except NoSuchElementException:
+        try:
+            following_count = browser.execute_script(
+                "return window._sharedData.entry_data."
+                "ProfilePage[0].graphql.user.edge_follow.count")
+        except WebDriverException:
+            try:
+                browser.execute_script("location.reload()")
+                following_count = browser.execute_script(
+                    "return window._sharedData.entry_data."
+                    "ProfilePage[0].graphql.user.edge_follow.count")
+            except WebDriverException:
+                try:
+                    following_count = format_number(browser.find_element_by_xpath(
+                                        "//li[3]/a/span[contains(@class, '_fd86t')]").text)
+                except NoSuchElementException:
+                    logger.error("\nError occured during getting the following count of '{}'\n".format(username))
+                    following_count = None
+    
+    return followers_count, following_count
+

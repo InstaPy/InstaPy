@@ -13,7 +13,6 @@ from .time_util import sleep
 from .util import update_activity
 from .util import add_user_to_blacklist
 from .util import click_element
-from .unfollow_util import get_relationship_counts
 
 
 def get_links_from_feed(browser, amount, num_of_search, logger):
@@ -348,7 +347,7 @@ def get_links_for_username(browser,
             filtered_links = len(links)
 
     except BaseException as e:
-        logger.error("link_elems error {}}".format(str(e)))
+        logger.error("link_elems error {}".format(str(e)))
 
     if randomize:
         # Expanding the pooulation for better random distribution
@@ -396,8 +395,7 @@ def get_links_for_username(browser,
     return links[:amount]
 
 
-def check_link(browser, link, dont_like, ignore_if_contains, ignore_users, username,
-               potency_ratio, delimit_by_numbers, max_followers, max_following, min_followers, min_following, logger):
+def check_link(browser, post_link, dont_like, ignore_if_contains, username, logger):
     """
     Check the given link if it is appropriate
 
@@ -405,26 +403,31 @@ def check_link(browser, link, dont_like, ignore_if_contains, ignore_users, usern
     :param link:
     :param dont_like: hashtags of inappropriate phrases
     :param ignore_if_contains:
-    :param ignore_users:
     :param username:
-    :param potency_ratio:
-    :param delimit_by_numbers: pre-defined precise relationship bounds
-    :param max_followers:
-    :param max_following:
-    :param min_followers:
-    :param min_following:
     :param logger: the logger instance
     :return: tuple of
         boolean: True if inappropriate,
         string: the username,
         boolean: True if it is video media,
-        string: the message if inappropriate else 'None'
+        string: the message if inappropriate else 'None',
+        string: set the scope of the return value
     """
-    browser.get(link)
-    # update server calls
-    update_activity()
-    sleep(2)
-
+    #Check URL of the webpage, if it already is post's page, then do not navigate to it again
+    try:
+        current_url = browser.current_url
+    except WebDriverException:
+        try:
+            current_url = browser.execute_script("return window.location.href")
+        except WebDriverException:
+            raise
+            current_url = None
+    
+    if current_url is None or current_url != post_link:
+        browser.get(post_link)
+        # update server calls
+        update_activity()
+        sleep(2)
+        
     """Check if the Post is Valid/Exists"""
     try:
         post_page = browser.execute_script(
@@ -438,10 +441,10 @@ def check_link(browser, link, dont_like, ignore_if_contains, ignore_users, usern
             post_page = None
 
     if post_page is None:
-        logger.warning('Unavailable Page: {}'.format(link.encode('utf-8')))
+        logger.warning('Unavailable Page: {}'.format(post_link.encode('utf-8')))
         return True, None, None, 'Unavailable Page', "Failure"
 
-    """Gets the description of the link and checks for the dont_like tags"""
+    """Gets the description of the post's link and checks for the dont_like tags"""
     graphql = 'graphql' in post_page[0]
     if graphql:
         media = post_page[0]['graphql']['shortcode_media']
@@ -494,77 +497,8 @@ def check_link(browser, link, dont_like, ignore_if_contains, ignore_users, usern
         image_text = "No description"
 
     logger.info('Image from: {}'.format(user_name.encode('utf-8')))
-
-    
-    """Checks the potential of target user by relationship status in order to delimit actions within the desired boundary"""
-    if potency_ratio or delimit_by_numbers and (max_followers or max_following or min_followers or min_following):
-
-        relationship_ratio = None
-        reverse_relationship = False
-
-        # Get followers & following counts
-        followers_count, following_count = get_relationship_counts(browser, user_name, logger)
-
-        browser.get(link)
-        # update server calls
-        update_activity()
-        sleep(1)
-
-        if potency_ratio and potency_ratio < 0:
-            potency_ratio *= -1
-            reverse_relationship = True
-
-        if followers_count and following_count:
-            relationship_ratio = (float(followers_count)/float(following_count)
-                       if not reverse_relationship
-                        else float(following_count)/float(followers_count))
-
-        logger.info('User: {} >> followers: {}  |  following: {}  |  relationship ratio: {}'.format(user_name,
-        followers_count if followers_count else 'unknown',
-        following_count if following_count else 'unknown',
-        float("{0:.2f}".format(relationship_ratio)) if relationship_ratio else 'unknown'))
-
-        if followers_count  or following_count:
-            if potency_ratio and not delimit_by_numbers:
-                if relationship_ratio and relationship_ratio < potency_ratio:
-                        return True, user_name, is_video, \
-                            "{} is not a {} with the relationship ratio of {}".format(
-                            user_name, "potential user" if not reverse_relationship else "massive follower",
-                            float("{0:.2f}".format(relationship_ratio))), "Relationship bounds"
-
-            elif delimit_by_numbers:
-                if followers_count:
-                    if max_followers:
-                        if followers_count > max_followers:
-                            return True, user_name, is_video, \
-                                "User {}'s followers count exceeds maximum limit".format(user_name), "Relationship bounds"
-                    if min_followers:
-                        if followers_count < min_followers:
-                            return True, user_name, is_video, \
-                                "User {}'s followers count is less than minimum limit".format(user_name), "Relationship bounds"
-                if following_count:
-                    if max_following:
-                        if following_count > max_following:
-                            return True, user_name, is_video, \
-                                "User {}'s following count exceeds maximum limit".format(user_name), "Relationship bounds"
-                    if min_following:
-                        if following_count < min_following:
-                            return True, user_name, is_video, \
-                                "User {}'s following count is less than minimum limit".format(user_name), "Relationship bounds"
-                if potency_ratio:
-                    if relationship_ratio and relationship_ratio < potency_ratio:
-                        return True, user_name, is_video, \
-                            "{} is not a {} with the relationship ratio of {}".format(
-                            user_name, "potential user" if not reverse_relationship else "massive follower",
-                            float("{0:.2f}".format(relationship_ratio))), "Relationship bounds"
-
-
-    logger.info('Link: {}'.format(link.encode('utf-8')))
+    logger.info('Link: {}'.format(post_link.encode('utf-8')))
     logger.info('Description: {}'.format(image_text.encode('utf-8')))
-
-    """Check if the user_name is in the ignore_users list"""
-    if (user_name in ignore_users) or (user_name == username):
-        return True, user_name, is_video, 'Username', "Undesired user"
 
     if any((word in image_text for word in ignore_if_contains)):
         return False, user_name, is_video, 'None', "Pass"
