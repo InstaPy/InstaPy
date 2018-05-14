@@ -282,10 +282,24 @@ def get_links_for_username(browser,
 
     logger.info('Getting {} image list...'.format(username))
 
-    # Get  user profile page
-    browser.get('https://www.instagram.com/' + username)
-    # update server calls
-    update_activity()
+    user_link = "https://www.instagram.com/{}/".format(username)
+    sleep(1)
+    #Check URL of the webpage, if it already is user's profile page, then do not navigate to it again
+    try:
+        current_url = browser.current_url
+    except WebDriverException:
+        try:
+            current_url = browser.execute_script("return window.location.href")
+        except WebDriverException:
+            raise
+            current_url = None
+    
+    if current_url is None or current_url != user_link:
+        browser.get(user_link)
+        # update server calls
+        update_activity()
+        sleep(1)
+
 
     body_elem = browser.find_element_by_tag_name('body')
 
