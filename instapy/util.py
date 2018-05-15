@@ -45,8 +45,9 @@ def validate_username(browser,
                         "return window._sharedData.entry_data."
                         "PostPage[0].graphql.shortcode_media.owner.username")
             except WebDriverException:
-                logger.error("Username validation failed! ~cannot get the post owner's username\n")
-                return True
+                logger.error("Username validation failed! ~cannot get the post owner's username")
+                return False, \
+                        "---> Sorry, this page isn't available! ~link is broken, or page is removed\n"
     else:
         username = username_or_link   # if there is no `/` in `username_or_link`, then it is a `username`
 
