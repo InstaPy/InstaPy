@@ -9,7 +9,7 @@ x = open('locked.txt', 'w+')
 try:
     fcntl.flock(x, fcntl.LOCK_EX | fcntl.LOCK_NB)
 except:
-    print "There is another Instance alredy Running! Delete Locked.txt if this is not true!"
+    print ("There is another Instance alredy Running! Delete Locked.txt if this is not true!")
     exit(0)
 	
 from selenium.common.exceptions import NoSuchElementException
