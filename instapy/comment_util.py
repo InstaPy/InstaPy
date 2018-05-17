@@ -51,7 +51,7 @@ def comment_image(browser, username, comments, blacklist, logger, logfolder):
             comment_input = get_comment_input(browser)
 
             browser.execute_script(
-                "arguments[0].value = '" + rand_comment + " ';", comment_input[0])
+                "arguments[0].value = arguments[1];", comment_input[0], rand_comment+' ')
             # An extra space is added here and then deleted.
             # This forces the input box to update the reactJS core
             comment_input[0].send_keys("\b")
