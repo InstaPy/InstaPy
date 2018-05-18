@@ -6,8 +6,8 @@ from selenium.common.exceptions import NoSuchElementException
 
 from instapy import InstaPy
 
-insta_username = ''
-insta_password = ''
+insta_username = 'sion_cohen'
+insta_password = 'dontletme16!'
 
 # set headless_browser=True if you want to run InstaPy on a server
 
@@ -26,12 +26,12 @@ try:
 
     # settings
     session.set_relationship_bounds(enabled=True,
-				 potency_ratio=-1.21,
-				  delimit_by_numbers=True,
-				   max_followers=4590,
-				    max_following=5555,
-				     min_followers=45,
-				      min_following=77)
+                 potency_ratio=-1.21,
+                  delimit_by_numbers=True,
+                   max_followers=4590,
+                    max_following=5555,
+                     min_followers=45,
+                      min_following=77)
     session.set_do_comment(True, percentage=10)
     session.set_comments(['aMEIzing!', 'So much fun!!', 'Nicey!'])
     session.set_dont_include(['friend1', 'friend2', 'friend3'])

@@ -32,6 +32,7 @@ from .like_util import get_links_for_username
 from .login_util import login_user
 from .print_log_writer import log_follower_num
 from .settings import Settings
+from .print_log_writer import log_following_num
 from .time_util import sleep
 from .time_util import set_sleep_percentage
 from .util import get_active_users
@@ -66,6 +67,7 @@ class InstaPy:
                  nogui=False,
                  selenium_local_session=True,
                  use_firefox=False,
+                 browser_profile_path=None,
                  page_delay=25,
                  show_logs=True,
                  headless_browser=False,
@@ -98,7 +100,7 @@ class InstaPy:
         self.page_delay = page_delay
         self.switch_language = True
         self.use_firefox = use_firefox
-        self.firefox_profile_path = None
+        self.browser_profile_path = browser_profile_path
 
         self.do_comment = False
         self.comment_percentage = 0
@@ -109,6 +111,7 @@ class InstaPy:
         self.followed = 0
         self.liked_img = 0
         self.already_liked = 0
+        self.already_Visited = 0
         self.inap_img = 0
         self.commented = 0
         self.followed_by = 0
@@ -137,6 +140,7 @@ class InstaPy:
         self.use_clarifai = False
         self.clarifai_api_key = None
         self.clarifai_img_tags = []
+        self.clarifai_img_tags_skip = []
         self.clarifai_full_match = False
         
         self.potency_ratio = 1.3466
@@ -210,9 +214,9 @@ class InstaPy:
             return self
 
         if self.use_firefox:
-            if self.firefox_profile_path is not None:
+            if self.browser_profile_path is not None:
                 firefox_profile = webdriver.FirefoxProfile(
-                    self.firefox_profile_path)
+                    self.browser_profile_path)
             else:
                 firefox_profile = webdriver.FirefoxProfile()
 
@@ -236,6 +240,8 @@ class InstaPy:
         else:
             chromedriver_location = Settings.chromedriver_location
             chrome_options = Options()
+            chrome_options.add_argument("--disable-infobars")
+            chrome_options.add_argument("--mute-audio")
             chrome_options.add_argument('--dns-prefetch-disable')
             chrome_options.add_argument('--no-sandbox')
             chrome_options.add_argument('--lang=en-US')
@@ -263,6 +269,9 @@ class InstaPy:
             # add proxy extension
             if self.proxy_chrome_extension and not self.headless_browser:
                 chrome_options.add_extension(self.proxy_chrome_extension)
+
+            if self.browser_profile_path is not None:
+                chrome_options.add_argument('user-data-dir={}'.format(self.browser_profile_path))
 
             chrome_prefs = {
                 'intl.accept_languages': 'en-US'
@@ -325,6 +334,7 @@ class InstaPy:
             self.logger.info('Logged in successfully!')
 
         self.followed_by = log_follower_num(self.browser, self.username, self.logfolder)
+        self.following_num = log_following_num(self.browser, self.username, self.logfolder)
 
         return self
 
@@ -458,8 +468,8 @@ class InstaPy:
         if self.aborting:
             return self
 
-        if os.name == 'nt':
-            raise InstaPyError('Clarifai is not supported on Windows')
+        #if os.name == 'nt':
+        #    raise InstaPyError('Clarifai is not supported on Windows')
 
         self.use_clarifai = enabled
 
@@ -514,7 +524,7 @@ class InstaPy:
         self.smart_hashtags = list(set(self.smart_hashtags))
         return self
 
-    def clarifai_check_img_for(self, tags=None, comment=False, comments=None):
+    def clarifai_check_img_for(self, tags=None, tags_skip=None, comment=False, comments=None):
         """Defines the tags, the images should be checked for"""
         if self.aborting:
             return self
@@ -523,6 +533,8 @@ class InstaPy:
             self.use_clarifai = False
         elif tags:
             self.clarifai_img_tags.append((tags, comment, comments))
+            self.clarifai_img_tags_skip.append((tags_skip, comment, comments))
+
 
         return self
 
@@ -834,6 +846,7 @@ class InstaPy:
                                         check_image(self.browser,
                                                     self.clarifai_api_key,
                                                     self.clarifai_img_tags,
+                                                    self.clarifai_img_tags_skip,
                                                     self.logger,
                                                     self.clarifai_full_match)
                                     )
@@ -841,7 +854,7 @@ class InstaPy:
                                     self.logger.error(
                                         'Image check error: {}'.format(err))
 
-
+                            # comments
                             if (self.do_comment and
                                 user_name not in self.dont_include and
                                 checked_img and
@@ -872,6 +885,7 @@ class InstaPy:
                                 self.logger.info('--> Not commented')
                                 sleep(1)
 
+                            # following
                             if (self.do_follow and
                                 user_name not in self.dont_include and
                                 checked_img and
@@ -894,7 +908,7 @@ class InstaPy:
                             already_liked += 1
                     else:
                         self.logger.info(
-                            '--> Image not liked: {}'.format(reason))
+                            '--> Image not liked: {}'.format(reason.encode('utf-8')))
                         inap_img += 1
                 except NoSuchElementException as err:
                     self.logger.error('Invalid Page: {}'.format(err))
@@ -996,6 +1010,7 @@ class InstaPy:
                                         check_image(self.browser,
                                                     self.clarifai_api_key,
                                                     self.clarifai_img_tags,
+                                                    self.clarifai_img_tags_skip,
                                                     self.logger,
                                                     self.clarifai_full_match)
                                     )
@@ -1188,6 +1203,7 @@ class InstaPy:
                                         check_image(self.browser,
                                                     self.clarifai_api_key,
                                                     self.clarifai_img_tags,
+                                                    self.clarifai_img_tags_skip,
                                                     self.logger,
                                                     self.clarifai_full_match)
                                     )
@@ -1380,6 +1396,7 @@ class InstaPy:
                                         check_image(self.browser,
                                                     self.clarifai_api_key,
                                                     self.clarifai_img_tags,
+                                                    self.clarifai_img_tags_skip,
                                                     self.logger,
                                                     self.clarifai_full_match)
                                     )
@@ -1575,6 +1592,7 @@ class InstaPy:
                                         check_image(self.browser,
                                                     self.clarifai_api_key,
                                                     self.clarifai_img_tags,
+                                                    self.clarifai_img_tags_skip,
                                                     self.logger,
                                                     self.clarifai_full_match)
                                     )
@@ -2025,8 +2043,14 @@ class InstaPy:
                        sleep_delay=600,
                        onlyNotFollowMe=False,
                        unfollow_after=None):
-        """Unfollows (default) 10 users from your following list"""
+
+        if self.aborting:
+            return self
         
+        """Unfollows (default) 10 users from your following list"""
+        self.logger.info(
+            "--> unfollow_users, amount: {} ".format(amount))
+
         if unfollow_after is not None:
             if not python_version().startswith(('2.7', '3')):
                 self.logger.warning("`unfollow_after` argument is not available for Python versions below 2.7")
@@ -2056,7 +2080,7 @@ class InstaPy:
 
         except (TypeError, RuntimeWarning) as err:
             if isinstance(err, RuntimeWarning):
-                self.logger.warning(
+                self.logger.error(
                     u'Warning: {} , stopping unfollow_users'.format(err))
                 return self
             else:
@@ -2197,6 +2221,7 @@ class InstaPy:
                                                     self.browser,
                                                     self.clarifai_api_key,
                                                     self.clarifai_img_tags,
+                                                    self.clarifai_img_tags_skip,
                                                     self.logger,
                                                     self.clarifai_full_match)
                                             )
