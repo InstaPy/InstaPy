@@ -16,6 +16,7 @@ from selenium.common.exceptions import WebDriverException
 from selenium.common.exceptions import NoSuchElementException
 import random
 import os
+from selenium.common.exceptions import StaleElementReferenceException
 
 
 def set_automated_followed_pool(username, logger, logfolder, unfollow_after):
