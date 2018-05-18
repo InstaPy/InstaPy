@@ -778,6 +778,7 @@ class InstaPy:
                                                skip_top_posts)
             except NoSuchElementException:
                 self.logger.warning('Too few images, skipping this location')
+                raise
                 continue
 
             for i, link in enumerate(links):
@@ -786,6 +787,7 @@ class InstaPy:
                 
                 validation, details = validate_username(self.browser,
                                                link,
+                                               self.username,
                                                self.ignore_users,
                                                self.blacklist,
                                                self.potency_ratio,

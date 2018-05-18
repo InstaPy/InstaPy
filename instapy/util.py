@@ -223,8 +223,22 @@ def get_active_users(browser, username, posts, boundary, logger):
     for count in range(1, posts + 1):
         try:
             sleep_actual(2)
-            likes_count = format_number(browser.find_element_by_xpath(
-                "//a[contains(@class, '_nzn1h')]/span").text)
+            try:
+                likers_count = browser.execute_script(
+                    "return window._sharedData.entry_data."
+                    "PostPage[0].graphql.shortcode_media.edge_media_preview_like.count")
+            except WebDriverException:
+                try:
+                    likers_count = (browser.find_element_by_xpath(
+                        "//a[contains(@class, '_nzn1h')]/span").text)
+                    if likers_count: ##prevent an empty string scenarios
+                        likers_count = format_number(likers_count)
+                    else:
+                        logger.info("Failed to get likers count on your post {}  ~empty string".format(count))
+                        likers_count = None
+                except NoSuchElementException:
+                    logger.info("Failed to get likers count on your post {}".format(count))
+                    likers_count = None
 
             browser.find_element_by_xpath(
                 "//a[contains(@class, '_nzn1h')]").click()
@@ -263,8 +277,9 @@ def get_active_users(browser, username, posts, boundary, logger):
                         break
 
                 if (scroll_it == False and
-                                likes_count - 1 > len(tmp_list)):
-                    if ((boundary is not None and likes_count - 1 > boundary) or
+                      likers_count and
+                        likers_count - 1 > len(tmp_list)):
+                    if ((boundary is not None and likers_count - 1 > boundary) or
                                 boundary is None):
                         if try_again <= 1:  # you can increase the amount of tries here
                             logger.info(
@@ -278,7 +293,7 @@ def get_active_users(browser, username, posts, boundary, logger):
 
             tmp_list = browser.find_elements_by_xpath(
                 "//a[contains(@class, '_2g7d5')]")
-            logger.info("Post {}  |  Likers: found {}, catched {}".format(count, likes_count, len(tmp_list)))
+            logger.info("Post {}  |  Likers: found {}, catched {}".format(count, likers_count, len(tmp_list)))
 
         except NoSuchElementException:
             try:
