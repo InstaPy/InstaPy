@@ -3,11 +3,14 @@ the image for invalid content"""
 from clarifai.rest import ClarifaiApp, Image as ClImage
 
 
-def check_image(browser, clarifai_api_key, img_tags, logger, full_match=False):
+def check_image(browser, clarifai_api_key, img_tags, img_tags_skip_if_contain, logger, full_match=False, picture_url=None):
     """Uses the link to the image to check for invalid content in the image"""
     clarifai_api = ClarifaiApp(api_key=clarifai_api_key)
-
-    img_link = get_imagelink(browser)
+    # set req image to given one or get it from current page
+    if picture_url is None:
+        img_link = get_imagelink(browser)
+    else:
+        img_link = picture_url
     # Uses Clarifai's v2 API
     model = clarifai_api.models.get('general-v1.3')
     image = ClImage(url=img_link)
@@ -21,8 +24,9 @@ def check_image(browser, clarifai_api_key, img_tags, logger, full_match=False):
                 return True, comments
         else:
             if given_tags_in_result(tags, clarifai_tags, full_match):
-                logger.info('Not Commenting, Possibly contains: "{}".'.format(', '.join(list(set(clarifai_tags)&set(tags)))))
-                return False, []
+                if not given_tags_in_result(img_tags_skip_if_contain, clarifai_tags, full_match):
+                    logger.info('Not Commenting, image reco contains: "{}".'.format(', '.join(list(set(clarifai_tags)&set(tags)))))
+                    return False, []
 
     return True, []
 
