@@ -13,15 +13,16 @@ from .time_util import sleep
 from .util import update_activity
 from .util import add_user_to_blacklist
 from .util import click_element
+from .util import web_adress_navigator
 
 
 def get_links_from_feed(browser, amount, num_of_search, logger):
     """Fetches random number of links from feed and returns a list of links"""
 
-    browser.get('https://www.instagram.com')
-    # update server calls
-    update_activity()
-    sleep(2)
+    feeds_link = 'https://www.instagram.com/'
+
+    #Check URL of the webpage, if it already is in Feeds page, then do not navigate to it again
+    web_adress_navigator(browser, feeds_link)
 
     for i in range(num_of_search + 1):
         browser.execute_script(
@@ -315,23 +316,9 @@ def get_links_for_username(browser,
     logger.info('Getting {} image list...'.format(username))
 
     user_link = "https://www.instagram.com/{}/".format(username)
-    sleep(1)
-    #Check URL of the webpage, if it already is user's profile page, then do not navigate to it again
-    try:
-        current_url = browser.current_url
-    except WebDriverException:
-        try:
-            current_url = browser.execute_script("return window.location.href")
-        except WebDriverException:
-            raise
-            current_url = None
-    
-    if current_url is None or current_url != user_link:
-        browser.get(user_link)
-        # update server calls
-        update_activity()
-        sleep(1)
 
+    #Check URL of the webpage, if it already is user's profile page, then do not navigate to it again
+    web_adress_navigator(browser, user_link)
 
     body_elem = browser.find_element_by_tag_name('body')
 
@@ -441,7 +428,7 @@ def get_links_for_username(browser,
     return links[:amount]
 
 
-def check_link(browser, post_link, dont_like, ignore_if_contains, username, logger):
+def check_link(browser, post_link, dont_like, ignore_if_contains, logger):
     """
     Check the given link if it is appropriate
 
@@ -449,7 +436,6 @@ def check_link(browser, post_link, dont_like, ignore_if_contains, username, logg
     :param link:
     :param dont_like: hashtags of inappropriate phrases
     :param ignore_if_contains:
-    :param username:
     :param logger: the logger instance
     :return: tuple of
         boolean: True if inappropriate,
@@ -458,21 +444,9 @@ def check_link(browser, post_link, dont_like, ignore_if_contains, username, logg
         string: the message if inappropriate else 'None',
         string: set the scope of the return value
     """
+
     #Check URL of the webpage, if it already is post's page, then do not navigate to it again
-    try:
-        current_url = browser.current_url
-    except WebDriverException:
-        try:
-            current_url = browser.execute_script("return window.location.href")
-        except WebDriverException:
-            raise
-            current_url = None
-    
-    if current_url is None or current_url != post_link:
-        browser.get(post_link)
-        # update server calls
-        update_activity()
-        sleep(2)
+    web_adress_navigator(browser, post_link)
         
     """Check if the Post is Valid/Exists"""
     try:
@@ -620,10 +594,9 @@ def like_image(browser, username, blacklist, logger, logfolder):
 
 def get_tags(browser, url):
     """Gets all the tags of the given description in the url"""
-    browser.get(url)
-    # update server calls
-    update_activity()
-    sleep(1)
+
+    #Check URL of the webpage, if it already is the one to be navigated, then do not navigate to it again
+    web_adress_navigator(browser, url)
 
     graphql = browser.execute_script(
         "return ('graphql' in window._sharedData.entry_data.PostPage[0])")

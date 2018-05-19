@@ -9,6 +9,7 @@ from .util import format_number
 from .util import update_activity
 from .util import add_user_to_blacklist
 from .util import click_element
+from .util import web_adress_navigator
 from .print_log_writer import log_followed_pool
 from .print_log_writer import log_uncertain_unfollowed_pool
 from .print_log_writer import log_record_all_unfollowed
@@ -68,9 +69,10 @@ def unfollow(browser,
     """unfollows the given amount of users"""
     unfollowNum = 0
 
-    browser.get('https://www.instagram.com/' + username)
-    # update server calls
-    update_activity()
+    user_link ='https://www.instagram.com/{}/'.format(username)
+
+    #Check URL of the webpage, if it already is the one to be navigated, then do not navigate to it again
+    web_adress_navigator(browser, user_link)
 
     #  check how many poeple we are following
     #  throw RuntimeWarning if we are 0 people following
@@ -449,24 +451,11 @@ def follow_given_user(browser,
                       blacklist,
                       logger,
                       logfolder):
-    """Follows a given user."""
+    """Follows a given user"""
     user_link = "https://www.instagram.com/{}/".format(acc_to_follow)
-    sleep(1)
+
     #Check URL of the webpage, if it already is user's profile page, then do not navigate to it again
-    try:
-        current_url = browser.current_url
-    except WebDriverException:
-        try:
-            current_url = browser.execute_script("return window.location.href")
-        except WebDriverException:
-            raise
-            current_url = None
-    
-    if current_url is None or current_url != user_link:
-        browser.get(user_link)
-        # update server calls
-        update_activity()
-        sleep(1)
+    web_adress_navigator(browser, user_link)
 
     logger.info('--> {} instagram account is opened...'.format(acc_to_follow))
 
