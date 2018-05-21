@@ -30,10 +30,10 @@ def validate_username(browser,
     # Some features may not povide `username` and in those cases we will get it from post's page.
     if '/' in username_or_link:
         link = username_or_link   # if there is a `/` in `username_or_link`, then it is a `link`
-        browser.get(link)
-        # update server calls
-        update_activity()
-        sleep(2)
+
+        #Check URL of the webpage, if it already is user's profile page, then do not navigate to it again
+        web_adress_navigator(browser, link)
+
         try:
             username = browser.execute_script(
                     "return window._sharedData.entry_data."
@@ -193,8 +193,10 @@ def add_user_to_blacklist(browser, username, campaign, action, logger, logfolder
 def get_active_users(browser, username, posts, boundary, logger):
     """Returns a list with usernames who liked the latest n posts"""
 
-    browser.get('https://www.instagram.com/' + username)
-    sleep(2)
+    user_link = 'https://www.instagram.com/{}/'.format(username)
+    
+    #Check URL of the webpage, if it already is user's profile page, then do not navigate to it again
+    web_adress_navigator(browser, user_link)
 
     total_posts = format_number(browser.find_element_by_xpath(
         "//span[contains(@class,'_t98z6')]//span").text)
@@ -223,8 +225,22 @@ def get_active_users(browser, username, posts, boundary, logger):
     for count in range(1, posts + 1):
         try:
             sleep_actual(2)
-            likes_count = format_number(browser.find_element_by_xpath(
-                "//a[contains(@class, '_nzn1h')]/span").text)
+            try:
+                likers_count = browser.execute_script(
+                    "return window._sharedData.entry_data."
+                    "PostPage[0].graphql.shortcode_media.edge_media_preview_like.count")
+            except WebDriverException:
+                try:
+                    likers_count = (browser.find_element_by_xpath(
+                        "//a[contains(@class, '_nzn1h')]/span").text)
+                    if likers_count: ##prevent an empty string scenarios
+                        likers_count = format_number(likers_count)
+                    else:
+                        logger.info("Failed to get likers count on your post {}  ~empty string".format(count))
+                        likers_count = None
+                except NoSuchElementException:
+                    logger.info("Failed to get likers count on your post {}".format(count))
+                    likers_count = None
 
             browser.find_element_by_xpath(
                 "//a[contains(@class, '_nzn1h')]").click()
@@ -263,8 +279,9 @@ def get_active_users(browser, username, posts, boundary, logger):
                         break
 
                 if (scroll_it == False and
-                                likes_count - 1 > len(tmp_list)):
-                    if ((boundary is not None and likes_count - 1 > boundary) or
+                      likers_count and
+                        likers_count - 1 > len(tmp_list)):
+                    if ((boundary is not None and likers_count - 1 > boundary) or
                                 boundary is None):
                         if try_again <= 1:  # you can increase the amount of tries here
                             logger.info(
@@ -278,7 +295,7 @@ def get_active_users(browser, username, posts, boundary, logger):
 
             tmp_list = browser.find_elements_by_xpath(
                 "//a[contains(@class, '_2g7d5')]")
-            logger.info("Post {}  |  Likers: found {}, catched {}".format(count, likes_count, len(tmp_list)))
+            logger.info("Post {}  |  Likers: found {}, catched {}".format(count, likers_count, len(tmp_list)))
 
         except NoSuchElementException:
             try:
@@ -456,22 +473,9 @@ def get_relationship_counts(browser, username, logger):
     """ Gets the followers & following counts of a given user """
 
     user_link = "https://www.instagram.com/{}/".format(username)
-    sleep(1)
+
     #Check URL of the webpage, if it already is user's profile page, then do not navigate to it again
-    try:
-        current_url = browser.current_url
-    except WebDriverException:
-        try:
-            current_url = browser.execute_script("return window.location.href")
-        except WebDriverException:
-            raise
-            current_url = None
-    
-    if current_url is None or current_url != user_link:
-        browser.get(user_link)
-        # update server calls
-        update_activity()
-        sleep(1)
+    web_adress_navigator(browser, user_link)
 
     try:
         followers_count = format_number(browser.find_element_by_xpath("//a[contains"
@@ -518,4 +522,23 @@ def get_relationship_counts(browser, username, logger):
                     following_count = None
     
     return followers_count, following_count
+
+
+def web_adress_navigator(browser, link):
+    """Checks and compares current URL of web page and the URL to be navigated and if it is different, it does navigate"""
+
+    try:
+        current_url = browser.current_url
+    except WebDriverException:
+        try:
+            current_url = browser.execute_script("return window.location.href")
+        except WebDriverException:
+            raise
+            current_url = None
+    
+    if current_url is None or current_url != link:
+        browser.get(link)
+        # update server calls
+        update_activity()
+        sleep(2)
 
