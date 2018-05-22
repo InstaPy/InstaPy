@@ -40,13 +40,14 @@ def log_following_num(browser, username, logfolder):
             "return window._sharedData.""entry_data.ProfilePage[0]."
             "graphql.user.edge_follow.count")
     except WebDriverException:
-        browser.execute_script("location.reload()")
-        sleep(10)
-        following_num = browser.execute_script(
-            "return window._sharedData.""entry_data.ProfilePage[0]."
-            "graphql.user.edge_follow.count")
-        # raise exception if number can't be read second time
-
+        try:
+            browser.execute_script("location.reload()")
+            sleep(10)
+            following_num = browser.execute_script(
+                "return window._sharedData.""entry_data.ProfilePage[0]."
+                "graphql.user.edge_follow.count")
+        except WebDriverException:
+            following_num = None
 
     with open('{}followingNum.txt'.format(logfolder), 'a') as numFile:
         numFile.write(
