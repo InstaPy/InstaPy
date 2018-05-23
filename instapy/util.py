@@ -4,6 +4,8 @@ import os
 import re
 import sqlite3
 import time
+import signal
+from contextlib import contextmanager
 
 from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import WebDriverException
@@ -198,13 +200,25 @@ def get_active_users(browser, username, posts, boundary, logger):
     #Check URL of the webpage, if it already is user's profile page, then do not navigate to it again
     web_adress_navigator(browser, user_link)
 
-    total_posts = format_number(browser.find_element_by_xpath(
-        "//span[contains(@class,'_t98z6')]//span").text)
+    try:
+        total_posts = browser.execute_script(
+            "return window._sharedData.entry_data."
+            "ProfilePage[0].graphql.user.edge_owner_to_timeline_media.count")
+    except WebDriverException:
+        try:
+            total_posts = (browser.find_element_by_xpath(
+                "//span[contains(@class,'_t98z6')]//span").text)
+            if total_posts: #prevent an empty string scenario
+                total_posts = format_number(total_posts)
+            else:
+                logger.info("Failed to get posts count on your profile!  ~empty string")
+                total_posts = None
+        except NoSuchElementException:
+            logger.info("Failed to get posts count on your profile!")
+            total_posts = None
 
     # if posts > total user posts, assume total posts
-    if posts >= total_posts:
-        # reaches all user posts
-        posts = total_posts
+    posts = posts if total_posts is None else total_posts if posts > total_posts else posts
 
     # click latest post
     browser.find_element_by_xpath(
@@ -541,4 +555,14 @@ def web_adress_navigator(browser, link):
         # update server calls
         update_activity()
         sleep(2)
+
+
+@contextmanager
+def interruption_handler(SIG_type=signal.SIGINT, handler=signal.SIG_IGN):
+    """ Handles external interrupt, usually initiated by the user like KeyboardInterrupt with CTRL+C """
+    original_handler = signal.signal(SIG_type, handler)
+    try:
+        yield
+    finally:
+        signal.signal(SIG_type, original_handler)
 
