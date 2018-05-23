@@ -533,7 +533,7 @@ class InstaPy:
             self.use_clarifai = False
         elif tags:
             self.clarifai_img_tags.append((tags, comment, comments))
-            self.clarifai_img_tags_skip.append((tags_skip, comment, comments))
+            self.clarifai_img_tags_skip = tags_skip
 
 
         return self
