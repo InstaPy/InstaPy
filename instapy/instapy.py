@@ -173,10 +173,6 @@ class InstaPy:
         if selenium_local_session:
             self.set_selenium_local_session()
 
-        if os.name == 'nt':
-            error_msg = ('Sorry, Record Activity is not working on Windows. '
-                         'We\'re working to fix this soon!')
-            self.logger.warning(error_msg)
 
     def get_instapy_logger(self, show_logs):
         """
