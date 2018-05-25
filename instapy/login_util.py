@@ -90,7 +90,7 @@ def login_user(browser,
                password,
                logfolder,
                switch_language=True,
-               bypass_suspicious_attempt=False):
+               bypass_suspicious_attempt=False, logger=None):
     """Logins the user with the given username and password"""
     assert username, 'Username not provided'
     assert password, 'Password not provided'
@@ -108,25 +108,25 @@ def login_user(browser,
             browser.add_cookie(cookie)
             cookie_loaded = True
     except (WebDriverException, OSError, IOError):
-        print("Cookie file not found, creating cookie...")
+        logger.info("login_user: Cookie file not found, creating cookie...")
 
     # include time.sleep(1) to prevent getting stuck on google.com
     time.sleep(1)
     
     browser.get('https://www.instagram.com')
-
     # Cookie has been loaded, user should be logged in. Ensurue this is true
     login_elem = browser.find_elements_by_xpath(
         "//*[contains(text(), 'Log in')]")
     # Login text is not found, user logged in
     # If not, issue with cookie, create new cookie
+    logger.info("login_user: Done searching for login_elem")
     if len(login_elem) == 0:
+        logger.info("login_user: User logged in !")
         return True
 
     # If not, issue with cookie, create new cookie
     if cookie_loaded:
-        print("Issue with cookie for user " + username
-              + ". Creating new cookie...")
+        logger.info("Issue with cookie for user " + username+ ". Creating new cookie...")
 
     # Changes instagram language to english, to ensure no errors ensue from
     # having the site on a different language
@@ -165,7 +165,7 @@ def login_user(browser,
 
     if bypass_suspicious_attempt is True:
         bypass_suspicious_login(browser)
-
+    print("login_user: Sleeping 5 seconds")
     sleep(5)
 
     # Check if user is logged-in (If there's two 'nav' elements)

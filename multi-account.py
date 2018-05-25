@@ -5,8 +5,8 @@ import multiprocessing
 import datetime
 import time
 
-instaUser = ['catalinbardas', 'username2']
-instaPass = ['atitudinE22c', 'pass2']
+instaUser = ['catalinbardas', 'mircea_dragomir']
+instaPass = ['atitudinE22c', 'NOEMIaviMircea651']
 tags=[['surf','music','beachtime'],['beverlyhills','gourmet','beachlife']]
 
 def worker(selection):
@@ -27,4 +27,4 @@ if __name__ == '__main__':
         p = multiprocessing.Process(target=worker, args=(i,))
         jobs.append(p)
         p.start()
-        time.sleep(5);#no delay cause some instances of chrome to give errors and stop
+        time.sleep(3)#no delay cause some instances of chrome to give errors and stop

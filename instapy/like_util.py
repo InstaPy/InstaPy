@@ -8,7 +8,7 @@ from re import findall
 from selenium.webdriver.common.keys import Keys
 from selenium.common.exceptions import WebDriverException
 from selenium.common.exceptions import NoSuchElementException
-
+import time
 from .time_util import sleep
 from .util import update_activity
 from .util import add_user_to_blacklist
@@ -159,6 +159,7 @@ def get_links_for_tag(browser,
                       skip_top_posts=True):
     """Fetches the number of links specified
     by amount and returns a list of links"""
+    logger.info("get_links_for_tag: Getting links for tag %s", tag)
 
     if media is None:
         # All known media types
@@ -195,13 +196,14 @@ def get_links_for_tag(browser,
     possible_posts = format_number(browser.find_element_by_xpath(
                                 "//span[contains(@class, '_fd86t')]").text)
 
-    logger.info("desired amount: {}  |  top posts [{}]: {}  |  possible posts: {}".format(amount,
+    logger.info("get_links_for_tag: desired amount: {}  |  top posts [{}]: {}  |  possible posts: {}".format(amount,
                                       ('enabled' if not skip_top_posts else 'disabled'), len(top_posts), possible_posts))
     possible_posts = possible_posts if not skip_top_posts else possible_posts-len(top_posts)
     amount = possible_posts if amount > possible_posts else amount
     #sometimes pages do not have the correct amount of posts as it is written there, it may be cos of some posts is deleted but still keeps counted for the tag
 
     #Get links
+    logger.info("get_links_for_tag: Trying to get %s of links", amount)
     links = get_links(browser, tag, logger, media, main_elem)
     filtered_links = len(links)
     try_again = 0
@@ -419,10 +421,14 @@ def check_link(browser, link, dont_like, ignore_if_contains, ignore_users, usern
         boolean: True if it is video media,
         string: the message if inappropriate else 'None'
     """
+    logger.info("check_link: checking  link %s", link)
     browser.get(link)
     # update server calls
     update_activity()
-    sleep(2)
+
+    sleepSeconds=random.randint(4,9)
+    logger.info("check_link: Sleeping %s seconds", sleepSeconds)
+    sleep(sleepSeconds)
 
     """Check if the Post is Valid/Exists"""
     try:
@@ -437,7 +443,7 @@ def check_link(browser, link, dont_like, ignore_if_contains, ignore_users, usern
             post_page = None
 
     if post_page is None:
-        logger.warning('Unavailable Page: {}'.format(link.encode('utf-8')))
+        logger.warning('check_link:Unavailable Page: {}'.format(link.encode('utf-8')))
         return True, None, None, 'Unavailable Page'
 
     """Gets the description of the link and checks for the dont_like tags"""
@@ -492,9 +498,9 @@ def check_link(browser, link, dont_like, ignore_if_contains, ignore_users, usern
     if image_text is None:
         image_text = "No description"
 
-    logger.info('Image from: {}'.format(user_name.encode('utf-8')))
+    #logger.info('Image from: {}'.format(user_name.encode('utf-8')))
 
-    
+
     """Checks the potential of target user by relationship status in order to delimit actions within the desired boundary"""
     if potency_ratio or delimit_by_numbers and (max_followers or max_following or min_followers or min_following):
 
@@ -503,7 +509,9 @@ def check_link(browser, link, dont_like, ignore_if_contains, ignore_users, usern
 
         # update server calls
         update_activity()
-        sleep(1)
+        sleepSeconds = random.randint(2,5)
+        logger.info("check_link: Going to sleep %s seconds after opening user profile page", sleepSeconds)
+        sleep(sleepSeconds)
 
         relationship_ratio = None
         reverse_relationship = False
@@ -551,7 +559,7 @@ def check_link(browser, link, dont_like, ignore_if_contains, ignore_users, usern
                     except NoSuchElementException:
                         logger.info("\nError occured during getting the following count of '{}'\n".format(user_name))
                         following_count = None
-            
+
         browser.get(link)
         # update server calls
         update_activity()
@@ -566,10 +574,10 @@ def check_link(browser, link, dont_like, ignore_if_contains, ignore_users, usern
                                    if not reverse_relationship
                                     else following_count/followers_count)
         
-        logger.info('User: {} >> followers: {}  |  following: {}  |  relationship ratio: {}'.format(user_name,
-        followers_count if followers_count else 'unknown',
-        following_count if following_count else 'unknown',
-        float("{0:.2f}".format(relationship_ratio)) if relationship_ratio else 'unknown'))
+        #logger.info('check_link: User: {} >> followers: {}  |  following: {}  |  relationship ratio: {}'.format(user_name,
+        #followers_count if followers_count else 'unknown',
+        #following_count if following_count else 'unknown',
+        #float("{0:.2f}".format(relationship_ratio)) if relationship_ratio else 'unknown'))
         
         if followers_count  or following_count:
             if potency_ratio and not delimit_by_numbers:
@@ -606,8 +614,8 @@ def check_link(browser, link, dont_like, ignore_if_contains, ignore_users, usern
                             float("{0:.2f}".format(relationship_ratio)))
                             
 
-    logger.info('Link: {}'.format(link.encode('utf-8')))
-    logger.info('Description: {}'.format(image_text.encode('utf-8')))
+    #logger.info('check_link: Link: {}'.format(link.encode('utf-8')))
+    #logger.info('Description: {}'.format(image_text.encode('utf-8')))
 
     """Check if the user_name is in the ignore_users list"""
     if (user_name in ignore_users) or (user_name == username):
@@ -646,6 +654,10 @@ def check_link(browser, link, dont_like, ignore_if_contains, ignore_users, usern
 
 
 def like_image(browser, username, blacklist, logger, logfolder):
+
+    sleepSeconds = random.randint(2,5)
+    logger.info("like_image: Going to like image after sleeping %s seconds", sleepSeconds)
+    time.sleep(sleepSeconds)
     """Likes the browser opened image"""
     # fetch spans fast
     spans = [x.text.lower() for x in browser.find_elements_by_xpath("//article//a[@role='button']/span")]
@@ -661,7 +673,7 @@ def like_image(browser, username, blacklist, logger, logfolder):
         liked_elem = browser.find_elements_by_xpath(
             "//a[@role='button']/span[text()='Unlike']")
         if len(liked_elem) == 1:
-            logger.info('--> Image Liked!')
+            logger.info('like_image: --> Image Liked!')
             update_activity('likes')
             if blacklist['enabled'] is True:
                 action = 'liked'
@@ -672,13 +684,13 @@ def like_image(browser, username, blacklist, logger, logfolder):
             return True
         else:
             # if like not seceded wait for 2 min
-            logger.info('--> Image was not able to get Liked! maybe blocked ?')
+            logger.info('like_image: --> Image was not able to get Liked! maybe blocked ?')
             sleep(120)
     else:
         liked_elem = browser.find_elements_by_xpath(
             "//a[@role='button']/span[text()='Unlike']")
         if len(liked_elem) == 1:
-            logger.info('--> Image already liked! ')
+            logger.info('like_image: --> Image already liked! ')
             return False
 
     logger.info('--> Invalid Like Element!')
@@ -708,6 +720,8 @@ def get_tags(browser, url):
 
 
 def get_links(browser, tag, logger, media, element):
+    logger.info("get_links: Getting links for tag %s", tag)
+
     # Get image links in scope from tags
     link_elems = element.find_elements_by_tag_name('a')
     sleep(2)
@@ -721,11 +735,14 @@ def get_links(browser, tag, logger, media, element):
             logger.info("'{}' tag does not contain a picture".format(tag[1:] if tag[:1] == '#' else tag))
     except BaseException as e:
         logger.error("link_elems error {}".format(str(e)))
+
+    logger.info("get_links: Found %s links for tag %s" % (len(links), tag))
     return links
 
 
 
 def verify_liking(browser, max, min, logger):
+        logger.info("verify_liking: Going to verify liking...")
         """ Get the amount of existing existing likes and compare it against max & min values defined by user """
         try:
             likes_count = browser.execute_script(

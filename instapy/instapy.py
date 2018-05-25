@@ -1,58 +1,59 @@
 """OS Modules environ method to get the setup vars from the Environment"""
+import atexit
 import csv
 import json
 import logging
-import re
-from math import ceil
 import os
-from platform import python_version
-from datetime import datetime
 import random
-
+import re
+import signal
+import traceback
+from datetime import datetime
+from math import ceil
+from platform import python_version
+from random import randint
+from api_db import insertBotAction
+import requests
 import selenium
 from pyvirtualdisplay import Display
 from selenium import webdriver
-from selenium.common.exceptions import NoSuchElementException, WebDriverException
-from selenium.webdriver.chrome.options import Options
+from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver import DesiredCapabilities
+from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.proxy import Proxy, ProxyType
-import requests
-
+import time
 from .clarifai_util import check_image
 from .comment_util import comment_image
-from .like_util import check_link
-from .like_util import verify_liking
 from .comment_util import verify_commenting
+from .commenters_util import extract_information
+from .commenters_util import get_photo_urls_from_profile
+from .commenters_util import users_liked
+from .like_util import check_link
+from .like_util import get_links_for_location
 from .like_util import get_links_for_tag
+from .like_util import get_links_for_username
 from .like_util import get_links_from_feed
 from .like_util import get_tags
-from .like_util import get_links_for_location
 from .like_util import like_image
-from .like_util import get_links_for_username
+from .like_util import verify_liking
 from .login_util import login_user
 from .print_log_writer import log_follower_num
 from .settings import Settings
-from .time_util import sleep
 from .time_util import set_sleep_percentage
-from .util import get_active_users
-from .util import validate_username
-from .unfollow_util import get_given_user_followers
-from .unfollow_util import get_given_user_following
-from .unfollow_util import unfollow
-from .unfollow_util import unfollow_user
+from .time_util import sleep
+from .unfollow_util import dump_follow_restriction
+from .unfollow_util import follow_given_user
 from .unfollow_util import follow_given_user_followers
 from .unfollow_util import follow_given_user_following
 from .unfollow_util import follow_user
-from .unfollow_util import follow_given_user
+from .unfollow_util import get_given_user_followers
+from .unfollow_util import get_given_user_following
 from .unfollow_util import load_follow_restriction
-from .unfollow_util import dump_follow_restriction
 from .unfollow_util import set_automated_followed_pool
-from .feed_util import get_like_on_feed
-from .commenters_util import extract_post_info     
-from .commenters_util import extract_information
-from .commenters_util import users_liked
-from .commenters_util import get_photo_urls_from_profile
-
+from .unfollow_util import unfollow
+from .unfollow_util import unfollow_user
+from .util import get_active_users
+from .util import validate_username
 
 
 class InstaPyError(Exception):
@@ -63,6 +64,7 @@ class InstaPy:
     """Class to be instantiated to use the script"""
 
     def __init__(self,
+                 campaign=None,
                  username=None,
                  password=None,
                  nogui=False,
@@ -75,7 +77,7 @@ class InstaPy:
                  proxy_chrome_extension=None,
                  proxy_port=0,
                  bypass_suspicious_attempt=False,
-                 multi_logs=False):
+                 multi_logs=True):
 
         if nogui:
             self.display = Display(visible=0, size=(800, 600))
@@ -89,11 +91,12 @@ class InstaPy:
 
         self.username = username or os.environ.get('INSTA_USER')
         self.password = password or os.environ.get('INSTA_PW')
+        self.campaign = campaign
         self.nogui = nogui
         self.logfolder = Settings.log_location + os.path.sep
         if multi_logs is True:
             self.logfolder = '{0}{1}{2}{1}'.format(
-                Settings.log_location, os.path.sep, self.username)
+                Settings.log_location, os.path.sep, self.campaign['id_campaign'])
         if not os.path.exists(self.logfolder):
             os.makedirs(self.logfolder)
 
@@ -140,20 +143,20 @@ class InstaPy:
         self.clarifai_api_key = None
         self.clarifai_img_tags = []
         self.clarifai_full_match = False
-        
-        self.potency_ratio = 1.3466
+
+        self.potency_ratio = 0.1
         self.delimit_by_numbers = True
-        
+
         self.max_followers = 90000
         self.max_following = 66834
         self.min_followers = 35
         self.min_following = 27
-        
+
         self.delimit_liking = False
         self.liking_approved = True
         self.max_likes = 1000
         self.min_likes = 0
-        
+
         self.delimit_commenting = False
         self.commenting_approved = True
         self.max_comments = 35
@@ -162,9 +165,10 @@ class InstaPy:
         self.bypass_suspicious_attempt = bypass_suspicious_attempt
 
         self.aborting = False
-
         # Assign logger
         self.logger = self.get_instapy_logger(show_logs)
+
+        self.setupSignals()
 
         if selenium_local_session:
             self.set_selenium_local_session()
@@ -186,10 +190,12 @@ class InstaPy:
             # initialize and setup logging system for the InstaPy object
             logger = logging.getLogger(__name__)
             logger.setLevel(logging.DEBUG)
-            file_handler = logging.FileHandler('{}general.log'.format(self.logfolder))
+            logFileName = time.strftime("%d.%m.%Y") + ".log"
+            file_handler = logging.FileHandler(self.logfolder + logFileName)
             file_handler.setLevel(logging.DEBUG)
             extra = {"username": self.username}
-            logger_formatter = logging.Formatter('%(levelname)s [%(asctime)s] [%(username)s]  %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
+            logger_formatter = logging.Formatter('%(levelname)s [%(asctime)s] [%(username)s]  %(message)s',
+                                                 datefmt='%Y-%m-%d %H:%M:%S')
             file_handler.setFormatter(logger_formatter)
             logger.addHandler(file_handler)
 
@@ -312,19 +318,72 @@ class InstaPy:
 
         return self
 
+    def check_internet_connection(self):
+
+        self.logger.info("check_internet_connection: Checking internet connection...")
+        self.browser.get("https://google.com")
+
+        try:
+            element = self.browser.find_element_by_xpath("//*[contains(text(), 'Google')]")
+        except NoSuchElementException as err:
+            self.logger.critical(
+                "check_internet_connection: Cannot access google page, this means most likely issues with internet connection !")
+            return False
+
+        if self.proxy_address:
+            self.logger.info("check_internet_connection: Checking proxy address")
+            self.browser.get("https://api.ipify.org/?format=text")
+            try:
+                element = self.browser.find_element_by_tag_name("pre")
+            except NoSuchElementException as err:
+                self.logger.crtical("check_internet_connection: Could not detect ip using api.ipify.org")
+                return False
+
+            if element.text != self.proxy_address:
+                self.logger.critical("check_internet_connection: Proxy address is not set correctly. %s vs %s" % (
+                    self.proxy_address, element.text))
+                return False
+            else:
+                self.logger.info("check_internet_connection: Proxy settings looks good: %s", element.text)
+
+        self.logger.info("check_internet_connection: Internet works fine !")
+        return True
+
+    def canBotStart(self, id_campaign):
+        self.logger.info("canBotStart: check if another bot instance is running for campaign %s", id_campaign)
+        processname = 'angie_instapy_idc' + id_campaign + ' '
+        tmp = os.popen("ps -Af").read()
+        proccount = tmp.count(processname)
+        self.logger.info("canBotStart: Found %s running processes", proccount)
+        # this is not working properly on localhost
+        if proccount > 1:
+            self.logger.info("canBotStart: ERROR: another bot instance is running for campaign %s", id_campaign)
+            exit("canBotStart: ERROR: another bot instance is running for this campaign")
+
+        self.logger.info("canBotStart: All Good, no other bot instance is running for this campaign")
+        return True
+
     def login(self):
+
+        if not self.check_internet_connection():
+            self.logger.critical("login: Could not verify internet connection/proxy settings")
+            self.aborting = True
+            return False
+
+        self.logger.info("login: Going to login user %s into instagram ", self.username)
         """Used to login the user either with the username and password"""
         if not login_user(self.browser,
                           self.username,
                           self.password,
                           self.logfolder,
                           self.switch_language,
-                          self.bypass_suspicious_attempt):
-            self.logger.critical('Wrong login data!')
+                          self.bypass_suspicious_attempt,
+                          self.logger):
+            self.logger.critical('login: Wrong login data!')
 
             self.aborting = True
         else:
-            self.logger.info('Logged in successfully!')
+            self.logger.info('login: Logged in successfully!')
 
         self.followed_by = log_follower_num(self.browser, self.username, self.logfolder)
 
@@ -527,23 +586,25 @@ class InstaPy:
             self.clarifai_img_tags.append((tags, comment, comments))
 
         return self
-                                 
+
     def follow_likers(self, photo_urls, amount=10):
         if not isinstance(photo_urls, list):
             photo_urls = [photo_urls]
         for photo_url in photo_urls:
-            user_liked_list = users_liked (self.browser, photo_url, amount)
+            user_liked_list = users_liked(self.browser, photo_url, amount)
             self.follow_by_list(user_liked_list[:amount])
         return self
 
-    def follow_commenters(self, usernames, amount=10, daysold=365, max_pic = 50):
+    def follow_commenters(self, usernames, amount=10, daysold=365, max_pic=50):
         if not isinstance(usernames, list):
             usernames = [usernames]
-        for username in usernames: 
-            print ("\nFollowing commenters of ", username ," from pictures in last ", daysold, " days...\nScrapping wall..")                      
+        for username in usernames:
+            print (
+                "\nFollowing commenters of ", username, " from pictures in last ", daysold,
+                " days...\nScrapping wall..")
             user_commented_list = extract_information(self.browser, username, daysold, max_pic)
-            if (len(user_commented_list))>0:  
-                print ("Going to follow top ", amount, " users.\n")            
+            if (len(user_commented_list)) > 0:
+                print ("Going to follow top ", amount, " users.\n")
                 sleep(1)
                 self.follow_by_list(user_commented_list[:amount])
             else:
@@ -552,31 +613,31 @@ class InstaPy:
         print ("\nFinished.\n")
         return self
 
-    def follow_user_likers (self, usernames, photos_grab_amount=3, follow_likers_per_photo=3, randomize=True):
+    def follow_user_likers(self, usernames, photos_grab_amount=3, follow_likers_per_photo=3, randomize=True):
         print ("Starting..")
-        if photos_grab_amount>12:
+        if photos_grab_amount > 12:
             print ("\nSorry, you can only grab likers from first 12 photos for given username now.\n")
             photos_grab_amount = 12
         for username in usernames:
-            photo_url_arr = get_photo_urls_from_profile (self.browser, username, photos_grab_amount, randomize)
+            photo_url_arr = get_photo_urls_from_profile(self.browser, username, photos_grab_amount, randomize)
             sleep(1)
-            self.follow_likers (photo_url_arr, amount=follow_likers_per_photo)
-        
-        print ("\nFinished following likers.\n")    
+            self.follow_likers(photo_url_arr, amount=follow_likers_per_photo)
+
+        print ("\nFinished following likers.\n")
         return self
-        
-    def follow_by_list(self, followlist, times=1): 
+
+    def follow_by_list(self, followlist, times=1):
         """Allows to follow by any scrapped list"""
         self.follow_times = times or 0
         if self.aborting:
             print (">>>self aborting prevented")
-            #return self
-            
+            # return self
+
         followed = 0
         for acc_to_follow in followlist:
             if acc_to_follow in self.dont_include:
                 continue
-            
+
             if self.follow_restrict.get(acc_to_follow, 0) < self.follow_times:
                 followed += follow_given_user(self.browser,
                                               self.username,
@@ -591,52 +652,46 @@ class InstaPy:
             else:
                 self.logger.info('---> {} has already been followed more than '
                                  '{} times'.format(
-                                    acc_to_follow, str(self.follow_times)))
+                    acc_to_follow, str(self.follow_times)))
                 sleep(1)
 
         return self
 
-    def set_relationship_bounds (self,
-                                  enabled=None,
-                                   potency_ratio=None,
-                                    delimit_by_numbers=None,
-                                     max_followers=None,
-                                      max_following=None, 
-                                       min_followers=None, 
-                                        min_following=None):
+    def set_relationship_bounds(self,
+                                enabled=None,
+                                potency_ratio=None,
+                                delimit_by_numbers=None,
+                                max_followers=None,
+                                max_following=None,
+                                min_followers=None,
+                                min_following=None):
         """Sets the potency ratio and limits to the provide an efficient activity between the targeted masses"""
-        self.potency_ratio = potency_ratio if enabled==True else None
-        self.delimit_by_numbers = delimit_by_numbers if enabled==True else None
-        
+        self.potency_ratio = potency_ratio if enabled == True else None
+        self.delimit_by_numbers = delimit_by_numbers if enabled == True else None
+
         self.max_followers = max_followers
         self.min_followers = min_followers
-        
+
         self.max_following = max_following
         self.min_following = min_following
 
-
-
     def set_delimit_liking(self,
-                            enabled=None,
-                             max=None,
-                              min=None):
+                           enabled=None,
+                           max=None,
+                           min=None):
 
-        self.delimit_liking = True if enabled==True else False
+        self.delimit_liking = True if enabled == True else False
         self.max_likes = max
         self.min_likes = min
-        
-
 
     def set_delimit_commenting(self,
-                                enabled=False,
-                                 max=None,
-                                  min=None):
+                               enabled=False,
+                               max=None,
+                               min=None):
 
-        self.delimit_commenting = True if enabled==True else False
+        self.delimit_commenting = True if enabled == True else False
         self.max_comments = max
         self.min_comments = min
-
-
 
     def like_by_locations(self,
                           locations=None,
@@ -692,9 +747,11 @@ class InstaPy:
                                    self.logger)
                     )
 
-                    if not inappropriate and self.delimit_liking:
-                        self.liking_approved = verify_liking(self.browser, self.max_likes, self.min_likes, self.logger)
-                    
+                    # TODO: is this check necessary ?
+                    # if not inappropriate and self.delimit_liking:
+                    # self.liking_approved = verify_liking(self.browser, self.max_likes, self.min_likes, self.logger)
+                    self.liking_approved = True
+
                     if not inappropriate and self.liking_approved:
                         liked = like_image(self.browser,
                                            user_name,
@@ -724,14 +781,16 @@ class InstaPy:
                                     self.logger.error(
                                         'Image check error: {}'.format(err))
 
-
                             if (self.do_comment and
-                                user_name not in self.dont_include and
-                                checked_img and
+                                        user_name not in self.dont_include and
+                                    checked_img and
                                     commenting):
-                                
+
                                 if self.delimit_commenting:
-                                    self.commenting_approved, disapproval_reason = verify_commenting(self.browser, self.max_comments, self.min_comments, self.logger)
+                                    self.commenting_approved, disapproval_reason = verify_commenting(self.browser,
+                                                                                                     self.max_comments,
+                                                                                                     self.min_comments,
+                                                                                                     self.logger)
 
                                 if self.commenting_approved:
                                     if temp_comments:
@@ -756,11 +815,11 @@ class InstaPy:
                                 sleep(1)
 
                             if (self.do_follow and
-                                user_name not in self.dont_include and
-                                checked_img and
-                                following and
-                                self.follow_restrict.get(user_name, 0) <
-                                    self.follow_times):
+                                        user_name not in self.dont_include and
+                                    checked_img and
+                                    following and
+                                        self.follow_restrict.get(user_name, 0) <
+                                        self.follow_times):
 
                                 followed += follow_user(self.browser,
                                                         self.follow_restrict,
@@ -797,10 +856,10 @@ class InstaPy:
         return self
 
     def comment_by_locations(self,
-                      locations=None,
-                      amount=50,
-                      media=None,
-                      skip_top_posts=True):
+                             locations=None,
+                             amount=50,
+                             media=None,
+                             skip_top_posts=True):
         """Likes (default) 50 images per given locations"""
         if self.aborting:
             return self
@@ -877,14 +936,16 @@ class InstaPy:
                                     self.logger.error(
                                         'Image check error: {}'.format(err))
 
-
                             if (self.do_comment and
-                                user_name not in self.dont_include and
-                                checked_img and
+                                        user_name not in self.dont_include and
+                                    checked_img and
                                     commenting):
 
                                 if self.delimit_commenting:
-                                    self.commenting_approved, disapproval_reason = verify_commenting(self.browser, self.max_comments, self.min_comments, self.logger)
+                                    self.commenting_approved, disapproval_reason = verify_commenting(self.browser,
+                                                                                                     self.max_comments,
+                                                                                                     self.min_comments,
+                                                                                                     self.logger)
 
                                 if self.commenting_approved:
                                     if temp_comments:
@@ -909,11 +970,11 @@ class InstaPy:
                                 sleep(1)
 
                             if (self.do_follow and
-                                user_name not in self.dont_include and
-                                checked_img and
-                                following and
-                                self.follow_restrict.get(user_name, 0) <
-                                    self.follow_times):
+                                        user_name not in self.dont_include and
+                                    checked_img and
+                                    following and
+                                        self.follow_restrict.get(user_name, 0) <
+                                        self.follow_times):
 
                                 followed += follow_user(self.browser,
                                                         self.follow_restrict,
@@ -952,6 +1013,8 @@ class InstaPy:
                      skip_top_posts=True,
                      use_smart_hashtags=False,
                      interact=False):
+        self.logger.info("like_by_tags: Starting... Going to like %s posts with hashtag %s" % (amount, tags))
+
         """Likes (default) 50 images per given tag"""
         if self.aborting:
             return self
@@ -973,8 +1036,8 @@ class InstaPy:
         tags = tags or []
 
         for index, tag in enumerate(tags):
-            self.logger.info('Tag [{}/{}]'.format(index + 1, len(tags)))
-            self.logger.info('--> {}'.format(tag.encode('utf-8')))
+            self.logger.info('like_by_tags: Tag [{}/{}], tag: {}, amount: {}'.format(index + 1, len(tags), tag, amount))
+            # self.logger.info('like_by_tags: --> {}'.format(tag.encode('utf-8')))
 
             try:
                 links = get_links_for_tag(self.browser,
@@ -987,11 +1050,13 @@ class InstaPy:
                 self.logger.error('Too few images, skipping this tag')
                 continue
 
+            self.logger.info("like_by_tags: Received %s link, going to iterate through them", len(links))
+
             for i, link in enumerate(links):
-                self.logger.info('[{}/{}]'.format(i + 1, len(links)))
-                self.logger.info(link)
+                self.logger.info('like_by_tags: TAG {}, [{}/{}]'.format(tag, i + 1, len(links)))
 
                 try:
+                    # self.logger.info("like_by_tags: check_link")
                     inappropriate, user_name, is_video, reason = (
                         check_link(self.browser,
                                    link,
@@ -1007,9 +1072,10 @@ class InstaPy:
                                    self.min_following,
                                    self.logger)
                     )
+                    # if not inappropriate and self.delimit_liking:
+                    # self.liking_approved = verify_liking(self.browser, self.max_likes, self.min_likes, self.logger)
 
-                    if not inappropriate and self.delimit_liking:
-                        self.liking_approved = verify_liking(self.browser, self.max_likes, self.min_likes, self.logger)
+                    self.liking_approved = True
 
                     if not inappropriate and self.liking_approved:
                         liked = like_image(self.browser,
@@ -1018,13 +1084,23 @@ class InstaPy:
                                            self.logger,
                                            self.logfolder)
 
+                        sleepSeconds = randint(15, 30)
+                        self.logger.info("like_by_tags: Going to sleep for %s seconds", sleepSeconds)
+                        sleep(sleepSeconds)
+
                         if liked:
+                            self.logger.info("like_by_tags: Link %s was liked. User %s" %(link, user_name))
+
+                            insertBotAction(self.campaign['id_campaign'], self.campaign['id_user'],
+                                            None, None, user_name,
+                                            None, None,None,
+                                            link, 'like_posts_by_hashtag', tag, None)
 
                             if interact:
                                 username = (self.browser.
                                     find_element_by_xpath(
-                                        '//article/header/div[2]/'
-                                        'div[1]/div/a'))
+                                    '//article/header/div[2]/'
+                                    'div[1]/div/a'))
 
                                 username = username.get_attribute("title")
                                 name = []
@@ -1032,7 +1108,7 @@ class InstaPy:
 
                                 self.logger.info(
                                     '--> User followed: {}'
-                                    .format(name))
+                                        .format(name))
                                 self.like_by_users(
                                     name,
                                     self.user_interact_amount,
@@ -1060,14 +1136,16 @@ class InstaPy:
                                     self.logger.error(
                                         'Image check error: {}'.format(err))
 
-
                             if (self.do_comment and
-                                user_name not in self.dont_include and
-                                checked_img and
+                                        user_name not in self.dont_include and
+                                    checked_img and
                                     commenting):
-                                
+
                                 if self.delimit_commenting:
-                                    self.commenting_approved, disapproval_reason = verify_commenting(self.browser, self.max_comments, self.min_comments, self.logger)
+                                    self.commenting_approved, disapproval_reason = verify_commenting(self.browser,
+                                                                                                     self.max_comments,
+                                                                                                     self.min_comments,
+                                                                                                     self.logger)
 
                                 if self.commenting_approved:
                                     if temp_comments:
@@ -1088,15 +1166,15 @@ class InstaPy:
                                 else:
                                     self.logger.info(disapproval_reason)
                             else:
-                                self.logger.info('--> Not commented')
+                                # self.logger.info('--> Not commented')
                                 sleep(1)
 
                             if (self.do_follow and
-                                user_name not in self.dont_include and
-                                checked_img and
-                                following and
-                                self.follow_restrict.get(user_name, 0) <
-                                    self.follow_times):
+                                        user_name not in self.dont_include and
+                                    checked_img and
+                                    following and
+                                        self.follow_restrict.get(user_name, 0) <
+                                        self.follow_times):
 
                                 followed += follow_user(self.browser,
                                                         self.follow_restrict,
@@ -1111,17 +1189,19 @@ class InstaPy:
                         else:
                             already_liked += 1
                     else:
-                        self.logger.info(
-                            '--> Image not liked: {}'.format(reason.encode('utf-8')))
+                        self.logger.info('--> Image not liked: {}'.format(reason.encode('utf-8')))
+                        sleepSeconds = randint(15, 30)
+                        self.logger.info("like_by_tags: Going to sleep for %s seconds", sleepSeconds)
+                        sleep(sleepSeconds)
                         inap_img += 1
                 except NoSuchElementException as err:
                     self.logger.error('Invalid Page: {}'.format(err))
 
         self.logger.info('Liked: {}'.format(liked_img))
         self.logger.info('Already Liked: {}'.format(already_liked))
-        self.logger.info('Inappropriate: {}'.format(inap_img))
-        self.logger.info('Commented: {}'.format(commented))
-        self.logger.info('Followed: {}'.format(followed))
+        # self.logger.info('Inappropriate: {}'.format(inap_img))
+        # self.logger.info('Commented: {}'.format(commented))
+        # self.logger.info('Followed: {}'.format(followed))
 
         self.followed += followed
         self.liked_img += liked_img
@@ -1129,7 +1209,7 @@ class InstaPy:
         self.inap_img += inap_img
         self.commented += commented
 
-        return self
+        return liked_img
 
     def like_by_users(self, usernames, amount=10, randomize=False, media=None):
         """Likes some amounts of images for each usernames"""
@@ -1171,9 +1251,9 @@ class InstaPy:
                 continue
 
             if (self.do_follow and
-                username not in self.dont_include and
-                following and
-                    self.follow_restrict.get(username, 0) < self.follow_times):
+                        username not in self.dont_include and
+                    following and
+                        self.follow_restrict.get(username, 0) < self.follow_times):
                 followed += follow_user(self.browser,
                                         self.follow_restrict,
                                         self.username,
@@ -1221,7 +1301,7 @@ class InstaPy:
 
                     if not inappropriate and self.delimit_liking:
                         self.liking_approved = verify_liking(self.browser, self.max_likes, self.min_likes, self.logger)
-                    
+
                     if not inappropriate and self.liking_approved:
                         liked = like_image(self.browser,
                                            user_name,
@@ -1250,14 +1330,16 @@ class InstaPy:
                                     self.logger.error(
                                         'Image check error: {}'.format(err))
 
-
                             if (self.do_comment and
-                                user_name not in self.dont_include and
-                                checked_img and
+                                        user_name not in self.dont_include and
+                                    checked_img and
                                     commenting):
 
                                 if self.delimit_commenting:
-                                    self.commenting_approved, disapproval_reason = verify_commenting(self.browser, self.max_comments, self.min_comments, self.logger)
+                                    self.commenting_approved, disapproval_reason = verify_commenting(self.browser,
+                                                                                                     self.max_comments,
+                                                                                                     self.min_comments,
+                                                                                                     self.logger)
 
                                 if self.commenting_approved:
                                     if temp_comments:
@@ -1382,10 +1464,10 @@ class InstaPy:
                     if not inappropriate:
 
                         if (self.do_follow and
-                            username not in self.dont_include and
-                            following and
-                            self.follow_restrict.get(
-                                username, 0) < self.follow_times):
+                                    username not in self.dont_include and
+                                following and
+                                    self.follow_restrict.get(
+                                        username, 0) < self.follow_times):
 
                             followed += follow_user(
                                 self.browser,
@@ -1402,10 +1484,11 @@ class InstaPy:
                             sleep(1)
 
                         liking = random.randint(0, 100) <= self.like_percentage
-                        
+
                         if self.do_like and liking and self.delimit_liking:
-                            self.liking_approved = verify_liking(self.browser, self.max_likes, self.min_likes, self.logger)
-                        
+                            self.liking_approved = verify_liking(self.browser, self.max_likes, self.min_likes,
+                                                                 self.logger)
+
                         if self.do_like and liking and self.liking_approved:
                             liked = like_image(self.browser,
                                                user_name,
@@ -1437,12 +1520,15 @@ class InstaPy:
                                         'Image check error: {}'.format(err))
 
                             if (self.do_comment and
-                                user_name not in self.dont_include and
-                                checked_img and
+                                        user_name not in self.dont_include and
+                                    checked_img and
                                     commenting):
 
                                 if self.delimit_commenting:
-                                    self.commenting_approved, disapproval_reason = verify_commenting(self.browser, self.max_comments, self.min_comments, self.logger)
+                                    self.commenting_approved, disapproval_reason = verify_commenting(self.browser,
+                                                                                                     self.max_comments,
+                                                                                                     self.min_comments,
+                                                                                                     self.logger)
 
                                 if self.commenting_approved:
                                     if temp_comments:
@@ -1698,12 +1784,12 @@ class InstaPy:
                        onlyNotFollowMe=False,
                        unfollow_after=None):
         """Unfollows (default) 10 users from your following list"""
-        
+
         if unfollow_after is not None:
             if not python_version().startswith(('2.7', '3')):
                 self.logger.info("`unfollow_after` argument is not available for Python versions below 2.7")
                 unfollow_after = None
-        
+
         if onlyInstapyFollowed:
             self.automatedFollowedPool = set_automated_followed_pool(self.username,
                                                                      self.logger,
@@ -1745,10 +1831,10 @@ class InstaPy:
         return self
 
     def like_by_feed_generator(self,
-                     amount=50,
-                     randomize=False,
-                     unfollow=False,
-                     interact=False):
+                               amount=50,
+                               randomize=False,
+                               unfollow=False,
+                               interact=False):
         """Like the users feed"""
 
         if self.aborting:
@@ -1813,7 +1899,8 @@ class InstaPy:
                             )
 
                             if not inappropriate and self.delimit_liking:
-                                self.liking_approved = verify_liking(self.browser, self.max_likes, self.min_likes, self.logger)
+                                self.liking_approved = verify_liking(self.browser, self.max_likes, self.min_likes,
+                                                                     self.logger)
 
                             if not inappropriate and self.liking_approved:
                                 liked = like_image(self.browser,
@@ -1824,9 +1911,9 @@ class InstaPy:
 
                                 if liked:
                                     username = (self.browser.
-                                                find_element_by_xpath(
-                                                    '//article/header/div[2]/'
-                                                    'div[1]/div/a'))
+                                        find_element_by_xpath(
+                                        '//article/header/div[2]/'
+                                        'div[1]/div/a'))
 
                                     username = username.get_attribute("title")
                                     name = []
@@ -1835,7 +1922,7 @@ class InstaPy:
                                     if interact:
                                         self.logger.info(
                                             '--> User followed: {}'
-                                            .format(name))
+                                                .format(name))
                                         self.like_by_users(
                                             name,
                                             self.user_interact_amount,
@@ -1866,13 +1953,13 @@ class InstaPy:
                                                 'Image check error:'
                                                 ' {}'.format(err))
 
-
                                     if (self.do_comment and
-                                        user_name not in self.dont_include and
+                                                user_name not in self.dont_include and
                                             checked_img and
                                             commenting):
                                         if self.delimit_commenting:
-                                            self.commenting_approved, disapproval_reason = verify_commenting(self.browser, self.max_comments, self.min_comments, self.logger)
+                                            self.commenting_approved, disapproval_reason = verify_commenting(
+                                                self.browser, self.max_comments, self.min_comments, self.logger)
 
                                         if self.commenting_approved:
                                             if temp_comments:
@@ -1888,12 +1975,12 @@ class InstaPy:
                                                     self.comments +
                                                     self.photo_comments)
                                             commented += comment_image(
-                                                            self.browser,
-                                                            user_name,
-                                                            comments,
-                                                            self.blacklist,
-                                                            self.logger,
-                                                            self.logfolder)
+                                                self.browser,
+                                                user_name,
+                                                comments,
+                                                self.blacklist,
+                                                self.logger,
+                                                self.logfolder)
                                         else:
                                             self.logger.info(disapproval_reason)
                                     else:
@@ -1901,11 +1988,11 @@ class InstaPy:
                                         sleep(1)
 
                                     if (self.do_follow and
-                                        user_name not in self.dont_include and
-                                        checked_img and
-                                        following and
-                                        self.follow_restrict.get(
-                                            user_name, 0) < self.follow_times):
+                                                user_name not in self.dont_include and
+                                            checked_img and
+                                            following and
+                                                self.follow_restrict.get(
+                                                    user_name, 0) < self.follow_times):
                                         followed += follow_user(
                                             self.browser,
                                             self.follow_restrict,
@@ -1984,30 +2071,38 @@ class InstaPy:
             self.logger.info('Campaign {} first run'.format(campaign))
 
     def end(self):
+        self.logger.info("end: Going to stop the bot")
         """Closes the current session"""
         dump_follow_restriction(self.follow_restrict, self.logfolder)
         try:
             self.browser.delete_all_cookies()
+        except:
+            exceptionDetail = traceback.format_exc()
+            self.logger.warning('end: Could not execute delete_all_cookies: Error %s', exceptionDetail)
+
+        try:
             self.browser.quit()
-        except WebDriverException as exc:
-            self.logger.warning('Could not locate Chrome: {}'.format(exc))
+        except:
+            exceptionDetail = traceback.format_exc()
+            self.logger.critical("end: Coudl not execute browser.quit: Error %s", exceptionDetail)
 
         if self.nogui:
             self.display.stop()
 
         self.logger.info('Session ended - {}'.format(
-                datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
+            datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
         self.logger.info('-' * 20 + '\n\n')
 
-        with open('{}followed.txt'.format(self.logfolder), 'w') as followFile:
-            followFile.write(str(self.followed))
+        # with open('{}followed.txt'.format(self.logfolder), 'w') as followFile:
+        #    followFile.write(str(self.followed))
+        self.logger.info("end: Done stopping the bot !")
 
     def follow_by_tags(self,
-                     tags=None,
-                     amount=50,
-                     media=None,
-                     skip_top_posts=True,
-                     use_smart_hashtags=False):
+                       tags=None,
+                       amount=50,
+                       media=None,
+                       skip_top_posts=True,
+                       use_smart_hashtags=False):
         if self.aborting:
             return self
 
@@ -2062,12 +2157,12 @@ class InstaPy:
 
                     if not inappropriate:
                         followed += follow_user(self.browser,
-                                                        self.follow_restrict,
-                                                        self.username,
-                                                        user_name,
-                                                        self.blacklist,
-                                                        self.logger,
-                                                        self.logfolder)
+                                                self.follow_restrict,
+                                                self.username,
+                                                user_name,
+                                                self.blacklist,
+                                                self.logger,
+                                                self.logfolder)
                     else:
                         self.logger.info(
                             '--> User not followed: {}'.format(reason))
@@ -2082,3 +2177,96 @@ class InstaPy:
         self.inap_img += inap_img
 
         return self
+
+    def setupSignals(self):
+        signal.signal(signal.SIGTERM, self.sigtermHandler)
+        signal.signal(signal.SIGINT, self.sigIntHandler)
+        atexit.register(self.atexitHandler)
+
+    def sigtermHandler(self, *args):
+        self.logger.info("sigtermHandler: Going to execute")
+        self.end()
+
+    def sigIntHandler(self, *args):
+        self.logger.info("sigIntHandler: Going to execute")
+        self.end()
+
+    def atexitHandler(self, *args):
+        self.logger.info("atexitHandler: Going to execute")
+        self.end()
+
+    def executeAngieActions(self, operations, likeAmount, followAmount):
+        self.logger.info("executeAngieLoop: Starting angie... Going to execute %s likes, %s follow/unfollow" % (
+            likeAmount, followAmount))
+
+        # TODO: create a function that calculates the number of likes/follow per each operation
+        # Currently the entire like amount is used by like_by_hashtag
+
+        likeAmountPerformed = 0
+
+        for operation in operations:
+
+            if 'like_posts_by_hashtag' == operation['configName']:
+                self.logger.info("executeAngieActions: Going to execute action like_posts_by_hashtag")
+                hashtagLikesPerformed = self.angie_like_posts_by_hashtag(operation, likeAmount=likeAmount)
+                likeAmountPerformed += hashtagLikesPerformed
+                self.logger.info(
+                    "executeAngieActions: like_posts_by_hashtag: Done executing this operation. Total likes performed for this operation %s. Total overall performed: %s" % (
+                        hashtagLikesPerformed, likeAmountPerformed))
+            if 'like_own_followers' == operation['configName']:
+                self.logger.info("executeAngieActions: Operation '%s' is not implemented", operation['configName'])
+
+            if 'like_timeline' == operation['configName']:
+                self.logger.info("executeAngieActions: Operation '%s' is not implemented", operation['configName'])
+
+            if 'like_other_users_followers' == operation['configName']:
+                self.logger.info("executeAngieActions: Operation '%s' is not implemented", operation['configName'])
+
+            if 'like_posts_by_location' == operation['configName']:
+                self.logger.info("executeAngieActions: Operation '%s' is not implemented", operation['configName'])
+
+            if 'follow_users_by_hashtag' == operation['configName']:
+                self.logger.info("executeAngieActions: Operation '%s' is not implemented", operation['configName'])
+
+            if 'follow_users_by_location' == operation['configName']:
+                self.logger.info("executeAngieActions: Operation '%s' is not implemented", operation['configName'])
+
+            if 'follow_other_users_followers_disabled' == operation['configName']:
+                self.logger.info("executeAngieActions: Operation '%s' is not implemented", operation['configName'])
+
+            if 'unfollow' == operation['configName']:
+                self.logger.info("executeAngieActions: Operation '%s' is not implemented", operation['configName'])
+
+    def angie_like_posts_by_hashtag(self, operation, likeAmount):
+        securityBreak = 10
+        iteration = 0
+        likeAmountPerformed = 0
+
+        ####################### HACK TO SPLIT THE LIKE AMOUNT FOR EACH HASHTAG #####################
+        if len(operation['list']) >= 3:
+            likeAmountForEachTag = likeAmount // 3
+        else:
+            likeAmountForEachTag = likeAmount // len(operation)
+
+        ####################### END HACK TO CALCULATE LIKE AMOUNT FOR EACH HASHTAG #####################
+
+        # run while we have hashtags and the amount of likes is not exceeded
+        while len(operation['list']) > 0 and likeAmountPerformed < likeAmount and iteration < securityBreak:
+            likeAmountForeachRandomized = randint(likeAmountForEachTag, likeAmountForEachTag + 20)
+
+            # extract a random hashtag from the list
+            hashtagIndex = randint(0, len(operation['list']) - 1)
+            hashtagObject = operation['list'][hashtagIndex]
+
+            self.logger.info("angie_like_posts_by_hashtag: Going to perform %s amount of likes for hashtag %s" % (
+                likeAmountForeachRandomized, hashtagObject['hashtag']))
+            likeAmountPerformed = likeAmountPerformed + self.like_by_tags([hashtagObject['hashtag']],
+                                                                          amount=likeAmountForeachRandomized)
+            likeAmountPerformed += likeAmountForeachRandomized
+            self.logger.info(
+                "angie_like_posts_by_hashtag: Done with hashtag %s. Like performed so far %s, exptected: %s" % (
+                    hashtagObject['hashtag'], likeAmountPerformed, likeAmount))
+            iteration = iteration + 1
+            del operation['list'][hashtagIndex]
+
+        return likeAmountPerformed
