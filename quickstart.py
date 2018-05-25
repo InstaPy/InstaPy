@@ -1,56 +1,30 @@
-import os
-import time
-from tempfile import gettempdir
-
-from selenium.common.exceptions import NoSuchElementException
-
 from instapy import InstaPy
 
-insta_username = 'catalinbardas'
-insta_password = 'atitudinE22c'
+# Write your automation here
+# Stuck?
+#   Look at the github page
+#   or the examples in the examples folder
 
-# set headless_browser=True if you want to run InstaPy on a server
+ignore_users = ['enemy1', 'enemy2']
+friend_list = ['friend1', 'friend2', 'friend3']
+dont_like = ['food', 'girl', 'hot']
+like_anyway = ['pizza']
 
-# set these in instapy/settings.py if you're locating the
-# library in the /usr/lib/pythonX.X/ directory:
-#   Settings.database_location = '/path/to/instapy.db'
-#   Settings.chromedriver_location = '/path/to/chromedriver'
-
-session = InstaPy(username=insta_username,
-                  password=insta_password,
-                  headless_browser=False,
-                  multi_logs=True)
-
-try:
-    session.login()
-
-    # settings
-    session.set_relationship_bounds(enabled=True,
-				 potency_ratio=-1.21,
-				  delimit_by_numbers=True,
-				   max_followers=4590,
-				    max_following=5555,
-				     min_followers=45,
-				      min_following=77)
-    session.set_do_comment(True, percentage=10)
-    session.set_comments(['aMEIzing!', 'So much fun!!', 'Nicey!'])
-    session.set_dont_include(['friend1', 'friend2', 'friend3'])
-    session.set_dont_like(['pizza', 'girl'])
-
-    # actions
-    session.like_by_tags(['natgeo'], amount=1)
-
-except Exception as exc:
-    # if changes to IG layout, upload the file to help us locate the change
-    if isinstance(exc, NoSuchElementException):
-        file_path = os.path.join(gettempdir(), '{}.html'.format(time.strftime('%Y%m%d-%H%M%S')))
-        with open(file_path, 'wb') as fp:
-            fp.write(session.browser.page_source.encode('utf8'))
-        print('{0}\nIf raising an issue, please also upload the file located at:\n{1}\n{0}'.format(
-            '*' * 70, file_path))
-    # full stacktrace when raising Github issue
-    raise
-
-finally:
-    # end the bot session
-    session.end()
+# If you want to enter your Instagram Credentials directly just enter
+# username=<your-username-here> and password=<your-password> into InstaPy
+# e.g
+# InstaPy(username="instagram", password="test1234") \
+InstaPy() \
+    .login() \
+    .set_ignore_users(ignore_users) \
+    .set_follower_limit(0, 1500) \
+    .set_follow_rate() \
+    .set_comment_rate() \
+    .set_comments() \
+    .set_dont_comment_users(friend_list) \
+    .set_dont_like(dont_like) \
+    .set_like_anyway(like_anyway) \
+    .set_like_tags(["#landscape"]) \
+    .set_like_media("Photo") \
+    .like_images(amount=50) \
+    .end()
