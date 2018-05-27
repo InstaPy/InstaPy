@@ -380,6 +380,7 @@ class InstaPy:
                           self.bypass_suspicious_attempt,
                           self.logger):
             self.logger.critical('login: Wrong login data!')
+            exit('Wrong login data ')
 
             self.aborting = True
         else:
@@ -830,7 +831,7 @@ class InstaPy:
                                                         self.logfolder)
 
                             else:
-                                self.logger.info('--> Not following')
+                                #self.logger.info('--> Not following')
                                 sleep(1)
                         else:
                             already_liked += 1
@@ -1184,7 +1185,7 @@ class InstaPy:
                                                         self.logger,
                                                         self.logfolder)
                             else:
-                                self.logger.info('--> Not following')
+                                #self.logger.info('--> Not following')
                                 sleep(1)
                         else:
                             already_liked += 1
@@ -2243,8 +2244,8 @@ class InstaPy:
         likeAmountPerformed = 0
 
         ####################### HACK TO SPLIT THE LIKE AMOUNT FOR EACH HASHTAG #####################
-        if len(operation['list']) >= 3:
-            likeAmountForEachTag = likeAmount // 3
+        if len(operation['list']) >= 4:
+            likeAmountForEachTag = likeAmount // 4
         else:
             likeAmountForEachTag = likeAmount // len(operation)
 
@@ -2262,9 +2263,9 @@ class InstaPy:
                 likeAmountForeachRandomized, hashtagObject['hashtag']))
             likeAmountPerformed = likeAmountPerformed + self.like_by_tags([hashtagObject['hashtag']],
                                                                           amount=likeAmountForeachRandomized)
-            likeAmountPerformed += likeAmountForeachRandomized
+
             self.logger.info(
-                "angie_like_posts_by_hashtag: Done with hashtag %s. Like performed so far %s, exptected: %s" % (
+                "angie_like_posts_by_hashtag: Done with hashtag %s. Like performed so far %s, expected: %s" % (
                     hashtagObject['hashtag'], likeAmountPerformed, likeAmount))
             iteration = iteration + 1
             del operation['list'][hashtagIndex]
