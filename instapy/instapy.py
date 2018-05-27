@@ -2263,7 +2263,6 @@ class InstaPy:
                 likeAmountForeachRandomized, hashtagObject['hashtag']))
             likeAmountPerformed = likeAmountPerformed + self.like_by_tags([hashtagObject['hashtag']],
                                                                           amount=likeAmountForeachRandomized)
-
             self.logger.info(
                 "angie_like_posts_by_hashtag: Done with hashtag %s. Like performed so far %s, expected: %s" % (
                     hashtagObject['hashtag'], likeAmountPerformed, likeAmount))
