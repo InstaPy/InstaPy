@@ -42,14 +42,14 @@ try:
 
     session.set_relationship_bounds(enabled=True, potency_ratio=0.01, max_followers=999999, max_following=99999, min_followers=100, min_following=50)
 
-    session.logger.info("start: Instapy Started for account %s", campaign['username'])
+    session.logger.info("start: Instapy Started for account %s, using proxy: %s" % ( campaign['username'], campaign['ip']))
     session.canBotStart(args.angie_campaign)
 
     status = session.login()
     if status == False:
         exit("Could not  login")
 
-    noOfLoops = 6
+    noOfLoops = randint(5,7)
     #TODO: validate the amountForEachLoop, set a treshhold
     likeAmount = randint(200,350)
     session.logger.info("start: Bot started going to perform %s likes, %s follow/unfollow during %s loops" % (likeAmount, 0, noOfLoops))
