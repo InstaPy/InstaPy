@@ -510,7 +510,7 @@ class InstaPy:
                     for item in self.smart_hashtags:
                         print(u'[smart hashtag generated: {}]'.format(item))
             else:
-                print('Too few results for #{} tag'.format(tag))
+                print(u'Too few results for #{} tag'.format(tag))
 
         # delete duplicated tags
         self.smart_hashtags = list(set(self.smart_hashtags))
