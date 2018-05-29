@@ -60,7 +60,10 @@ def create_proxy_extension(proxy):
     """ % (ip, port, login, password)
 
     dir_path = 'assets/chrome_extensions'
-    os.makedirs(dir_path)
+    try:
+        os.makedirs(dir_path)
+    except OSError:
+        pass
     pluginfile = '%s/proxy_auth_%s:%s.zip' % (dir_path, ip, port)
     with zipfile.ZipFile(pluginfile, 'w') as zp:
         zp.writestr("manifest.json", manifest_json)
