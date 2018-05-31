@@ -9,6 +9,7 @@ from .util import format_number
 from .util import update_activity
 from .util import add_user_to_blacklist
 from .util import click_element
+from .util import web_adress_navigator
 from .print_log_writer import log_followed_pool
 from .print_log_writer import log_uncertain_unfollowed_pool
 from .print_log_writer import log_record_all_unfollowed
@@ -68,9 +69,10 @@ def unfollow(browser,
     """unfollows the given amount of users"""
     unfollowNum = 0
 
-    browser.get('https://www.instagram.com/' + username)
-    # update server calls
-    update_activity()
+    user_link ='https://www.instagram.com/{}/'.format(username)
+
+    #Check URL of the webpage, if it already is the one to be navigated, then do not navigate to it again
+    web_adress_navigator(browser, user_link)
 
     #  check how many poeple we are following
     #  throw RuntimeWarning if we are 0 people following
@@ -312,7 +314,7 @@ def unfollow(browser,
         # unfollow from profile
         try:
             following_link = browser.find_elements_by_xpath(
-                '//article//ul//li[3]')
+                '//section//ul//li[3]')
 
             click_element(browser, following_link[0]) # following_link[0].click()
             # update server calls
@@ -449,24 +451,11 @@ def follow_given_user(browser,
                       blacklist,
                       logger,
                       logfolder):
-    """Follows a given user."""
+    """Follows a given user"""
     user_link = "https://www.instagram.com/{}/".format(acc_to_follow)
-    sleep(1)
+
     #Check URL of the webpage, if it already is user's profile page, then do not navigate to it again
-    try:
-        current_url = browser.current_url
-    except WebDriverException:
-        try:
-            current_url = browser.execute_script("return window.location.href")
-        except WebDriverException:
-            raise
-            current_url = None
-    
-    if current_url is None or current_url != user_link:
-        browser.get(user_link)
-        # update server calls
-        update_activity()
-        sleep(1)
+    web_adress_navigator(browser, user_link)
 
     logger.info('--> {} instagram account is opened...'.format(acc_to_follow))
 
@@ -571,7 +560,7 @@ def get_users_through_dialog(browser,
             for i in range(0, quick_amount):
                 logger.info("Simulated follow : {}".format(len(simulated_list)+1))
 
-                quick_index = random.randint(0, len(follow_buttons))
+                quick_index = random.randint(0, len(follow_buttons)-1)
                 quick_button = follow_buttons[quick_index]
                 quick_username = dialog_username_extractor(quick_button)
                 if quick_username[0] not in simulated_list:
@@ -597,7 +586,7 @@ def get_users_through_dialog(browser,
     person_list = person_list[:(real_amount-len(simulated_list))]
     for user in simulated_list:   #add simulated users to the `person_list` in random index
         if user not in person_list:
-            person_list.insert(random.randint(0, len(person_list)), user)
+            person_list.insert(random.randint(0, len(person_list)-1), user)
 
     return person_list, simulated_list
 

@@ -36,6 +36,7 @@ from .time_util import sleep
 from .time_util import set_sleep_percentage
 from .util import get_active_users
 from .util import validate_username
+from .util import web_adress_navigator
 from .unfollow_util import get_given_user_followers
 from .unfollow_util import get_given_user_following
 from .unfollow_util import unfollow
@@ -113,6 +114,7 @@ class InstaPy:
         self.commented = 0
         self.followed_by = 0
         self.unfollowNumber = 0
+        self.not_valid_users = 0
 
         self.follow_restrict = load_follow_restriction(self.logfolder)
         self.follow_times = 1
@@ -508,7 +510,7 @@ class InstaPy:
                     for item in self.smart_hashtags:
                         print(u'[smart hashtag generated: {}]'.format(item))
             else:
-                print('Too few results for #{} tag'.format(tag))
+                print(u'Too few results for #{} tag'.format(tag))
 
         # delete duplicated tags
         self.smart_hashtags = list(set(self.smart_hashtags))
@@ -634,6 +636,7 @@ class InstaPy:
 
         followed_all = 0
         followed_new = 0
+        not_valid_users = 0
         relax_point = random.randint(7, 14)   # you can use some plain value `10` instead of this quitely randomized score
 
         for acc_to_follow in followlist:
@@ -652,6 +655,7 @@ class InstaPy:
                                            self.logger)
             if validation != True or acc_to_follow==self.username:
                 self.logger.info(details)
+                not_valid_users += 1
                 continue
 
             # Take a break after a good following
@@ -701,6 +705,7 @@ class InstaPy:
                                     acc_to_follow, str(self.follow_times)))
                 sleep(1)
 
+        self.not_valid_users += not_valid_users
 
         return followed_all
 
@@ -761,6 +766,7 @@ class InstaPy:
         inap_img = 0
         commented = 0
         followed = 0
+        not_valid_users = 0
 
         locations = locations or []
 
@@ -778,26 +784,12 @@ class InstaPy:
                                                skip_top_posts)
             except NoSuchElementException:
                 self.logger.warning('Too few images, skipping this location')
+                raise
                 continue
 
             for i, link in enumerate(links):
                 self.logger.info('[{}/{}]'.format(i + 1, len(links)))
                 self.logger.info(link)
-                
-                validation, details = validate_username(self.browser,
-                                               link,
-                                               self.ignore_users,
-                                               self.blacklist,
-                                               self.potency_ratio,
-                                               self.delimit_by_numbers,
-                                               self.max_followers,
-                                               self.max_following,
-                                               self.min_followers,
-                                               self.min_following,
-                                               self.logger)
-                if validation != True:
-                    self.logger.info(details)
-                    continue
 
                 try:
                     inappropriate, user_name, is_video, reason, scope = (
@@ -805,7 +797,6 @@ class InstaPy:
                                    link,
                                    self.dont_like,
                                    self.ignore_if_contains,
-                                   self.username,
                                    self.logger)
                     )
 
@@ -813,6 +804,27 @@ class InstaPy:
                         self.liking_approved = verify_liking(self.browser, self.max_likes, self.min_likes, self.logger)
                     
                     if not inappropriate and self.liking_approved:
+                        #validate user
+                        validation, details = validate_username(self.browser,
+                                                       user_name,
+                                                       self.username,
+                                                       self.ignore_users,
+                                                       self.blacklist,
+                                                       self.potency_ratio,
+                                                       self.delimit_by_numbers,
+                                                       self.max_followers,
+                                                       self.max_following,
+                                                       self.min_followers,
+                                                       self.min_following,
+                                                       self.logger)
+                        if validation != True:
+                            self.logger.info(details)
+                            not_valid_users += 1
+                            continue
+                        else:
+                            web_adress_navigator(self.browser, link)
+
+                        #try to like
                         liked = like_image(self.browser,
                                            user_name,
                                            self.blacklist,
@@ -901,15 +913,17 @@ class InstaPy:
 
         self.logger.info('Liked: {}'.format(liked_img))
         self.logger.info('Already Liked: {}'.format(already_liked))
-        self.logger.info('Inappropriate: {}'.format(inap_img))
         self.logger.info('Commented: {}'.format(commented))
         self.logger.info('Followed: {}'.format(followed))
+        self.logger.info('Inappropriate: {}'.format(inap_img))
+        self.logger.info('Not valid users: {}\n'.format(not_valid_users))
 
         self.followed += followed
         self.liked_img += liked_img
         self.already_liked += already_liked
-        self.inap_img += inap_img
         self.commented += commented
+        self.inap_img += inap_img
+        self.not_valid_users += not_valid_users
 
         return self
 
@@ -927,6 +941,7 @@ class InstaPy:
         inap_img = 0
         commented = 0
         followed = 0
+        not_valid_users = 0
 
         locations = locations or []
 
@@ -949,22 +964,6 @@ class InstaPy:
             for i, link in enumerate(links):
                 self.logger.info('[{}/{}]'.format(i + 1, len(links)))
                 self.logger.info(link)
-                
-                validation, details = validate_username(self.browser,
-                                               link,
-                                               self.username,
-                                               self.ignore_users,
-                                               self.blacklist,
-                                               self.potency_ratio,
-                                               self.delimit_by_numbers,
-                                               self.max_followers,
-                                               self.max_following,
-                                               self.min_followers,
-                                               self.min_following,
-                                               self.logger)
-                if validation != True:
-                    self.logger.info(details)
-                    continue
 
                 try:
                     inappropriate, user_name, is_video, reason, scope = (
@@ -972,11 +971,31 @@ class InstaPy:
                                    link,
                                    self.dont_like,
                                    self.ignore_if_contains,
-                                   self.username,
                                    self.logger)
                     )
 
                     if not inappropriate:
+                        #validate user
+                        validation, details = validate_username(self.browser,
+                                                       user_name,
+                                                       self.username,
+                                                       self.ignore_users,
+                                                       self.blacklist,
+                                                       self.potency_ratio,
+                                                       self.delimit_by_numbers,
+                                                       self.max_followers,
+                                                       self.max_following,
+                                                       self.min_followers,
+                                                       self.min_following,
+                                                       self.logger)
+                        if validation != True:
+                            self.logger.info(details)
+                            not_valid_users += 1
+                            continue
+                        else:
+                            web_adress_navigator(self.browser, link)
+
+                        #try to comment
                         liked = True
 
                         self.logger.info('--> Image not liked: Likes are disabled for method \'comment_by_locations\'')
@@ -1063,11 +1082,13 @@ class InstaPy:
 
         self.logger.info('Liked: {}'.format(liked_img))
         self.logger.info('Already Liked: {}'.format(already_liked))
-        self.logger.info('Inappropriate: {}'.format(inap_img))
         self.logger.info('Commented: {}'.format(commented))
         self.logger.info('Followed: {}'.format(followed))
+        self.logger.info('Inappropriate: {}'.format(inap_img))
+        self.logger.info('Not valid users: {}\n'.format(not_valid_users))
 
         self.followed += followed
+        self.not_valid_users += not_valid_users
 
         return self
 
@@ -1087,6 +1108,7 @@ class InstaPy:
         inap_img = 0
         commented = 0
         followed = 0
+        not_valid_users = 0
 
         # if smart hashtag is enabled
         if use_smart_hashtags is True and self.smart_hashtags is not []:
@@ -1117,29 +1139,12 @@ class InstaPy:
                 self.logger.info('[{}/{}]'.format(i + 1, len(links)))
                 self.logger.info(link)
 
-                validation, details = validate_username(self.browser,
-                                               link,
-                                               self.username,
-                                               self.ignore_users,
-                                               self.blacklist,
-                                               self.potency_ratio,
-                                               self.delimit_by_numbers,
-                                               self.max_followers,
-                                               self.max_following,
-                                               self.min_followers,
-                                               self.min_following,
-                                               self.logger)
-                if validation != True:
-                    self.logger.info(details)
-                    continue
-
                 try:
                     inappropriate, user_name, is_video, reason, scope = (
                         check_link(self.browser,
                                    link,
                                    self.dont_like,
                                    self.ignore_if_contains,
-                                   self.username,
                                    self.logger)
                     )
 
@@ -1147,6 +1152,27 @@ class InstaPy:
                         self.liking_approved = verify_liking(self.browser, self.max_likes, self.min_likes, self.logger)
 
                     if not inappropriate and self.liking_approved:
+                        #validate user
+                        validation, details = validate_username(self.browser,
+                                                       user_name,
+                                                       self.username,
+                                                       self.ignore_users,
+                                                       self.blacklist,
+                                                       self.potency_ratio,
+                                                       self.delimit_by_numbers,
+                                                       self.max_followers,
+                                                       self.max_following,
+                                                       self.min_followers,
+                                                       self.min_following,
+                                                       self.logger)
+                        if validation != True:
+                            self.logger.info(details)
+                            not_valid_users += 1
+                            continue
+                        else:
+                            web_adress_navigator(self.browser, link)
+
+                        #try to like
                         liked = like_image(self.browser,
                                            user_name,
                                            self.blacklist,
@@ -1254,15 +1280,17 @@ class InstaPy:
 
         self.logger.info('Liked: {}'.format(liked_img))
         self.logger.info('Already Liked: {}'.format(already_liked))
-        self.logger.info('Inappropriate: {}'.format(inap_img))
         self.logger.info('Commented: {}'.format(commented))
         self.logger.info('Followed: {}'.format(followed))
+        self.logger.info('Inappropriate: {}'.format(inap_img))
+        self.logger.info('Not valid users: {}\n'.format(not_valid_users))
 
-        self.followed += followed
         self.liked_img += liked_img
         self.already_liked += already_liked
-        self.inap_img += inap_img
         self.commented += commented
+        self.followed += followed
+        self.inap_img += inap_img
+        self.not_valid_users += not_valid_users
 
         return self
 
@@ -1277,6 +1305,7 @@ class InstaPy:
         inap_img = 0
         commented = 0
         followed = 0
+        not_valid_users = 0
         usernames = usernames or []
 
         for index, username in enumerate(usernames):
@@ -1300,6 +1329,7 @@ class InstaPy:
                                            self.logger)
             if validation != True:
                 self.logger.info(details)
+                not_valid_users += 1
                 continue
 
             try:
@@ -1352,7 +1382,6 @@ class InstaPy:
                                    link,
                                    self.dont_like,
                                    self.ignore_if_contains,
-                                   self.username,
                                    self.logger)
                     )
 
@@ -1436,13 +1465,15 @@ class InstaPy:
 
         self.logger.info('Liked: {}'.format(total_liked_img))
         self.logger.info('Already Liked: {}'.format(already_liked))
-        self.logger.info('Inappropriate: {}'.format(inap_img))
         self.logger.info('Commented: {}'.format(commented))
+        self.logger.info('Inappropriate: {}'.format(inap_img))
+        self.logger.info('Not valid users: {}\n'.format(not_valid_users))
 
         self.liked_img += liked_img
         self.already_liked += already_liked
-        self.inap_img += inap_img
         self.commented += commented
+        self.inap_img += inap_img
+        self.not_valid_users += not_valid_users
 
         return self
 
@@ -1460,6 +1491,7 @@ class InstaPy:
         inap_img = 0
         commented = 0
         followed = 0
+        not_valid_users = 0
 
         usernames = usernames or []
 
@@ -1482,6 +1514,7 @@ class InstaPy:
                                            self.logger)
             if validation != True:
                 self.logger.info(details)
+                not_valid_users += 1
                 continue
 
             try:
@@ -1521,7 +1554,6 @@ class InstaPy:
                                    link,
                                    self.dont_like,
                                    self.ignore_if_contains,
-                                   self.username,
                                    self.logger)
                     )
 
@@ -1628,14 +1660,16 @@ class InstaPy:
 
         self.logger.info('Liked: {}'.format(total_liked_img))
         self.logger.info('Already Liked: {}'.format(already_liked))
-        self.logger.info('Inappropriate: {}'.format(inap_img))
         self.logger.info('Commented: {}'.format(commented))
+        self.logger.info('Inappropriate: {}'.format(inap_img))
+        self.logger.info('Not valid users: {}\n'.format(not_valid_users))
 
         self.liked_img += total_liked_img
         self.already_liked += already_liked
-        self.inap_img += inap_img
         self.commented += commented
         self.followed += followed
+        self.inap_img += inap_img
+        self.not_valid_users += not_valid_users
 
         return self
 
@@ -1674,6 +1708,7 @@ class InstaPy:
 
         interacted_all = 0
         simulated_unfollow = 0
+        not_valid_users = 0
 
         for index, user in enumerate(usernames):
             self.logger.info("User '{}' [{}/{}]".format((user), index+1, len(usernames)))
@@ -1720,6 +1755,7 @@ class InstaPy:
                                self.logger)
                     if validation != True:
                         self.logger.info(details)
+                        not_valid_users += 1
                         simulated_unfollow += 1
                         self.logger.info("Simulated unfollow: {}  ~not valid user".format(simulated_unfollow))
                         unfollow_user(self.browser, self.username, person, self.logger, self.logfolder)
@@ -1743,6 +1779,8 @@ class InstaPy:
         self.logger.info(
             "--> Interacted total of {} people\n".format(interacted_all))
 
+        self.not_valid_users += not_valid_users
+        
         return self
 
 
@@ -1760,6 +1798,7 @@ class InstaPy:
 
         interacted_all = 0
         simulated_unfollow = 0
+        not_valid_users = 0
 
         for index, user in enumerate(usernames):
             self.logger.info("User '{}' [{}/{}]".format((user), index+1, len(usernames)))
@@ -1806,6 +1845,7 @@ class InstaPy:
                                self.logger)
                     if validation != True:
                         self.logger.info(details)
+                        not_valid_users += 1
                         simulated_unfollow += 1
                         self.logger.info("Simulated unfollow: {}  ~not valid user".format(simulated_unfollow))
                         unfollow_user(self.browser, self.username, person, self.logger, self.logfolder)
@@ -1829,6 +1869,8 @@ class InstaPy:
         self.logger.info(
             "--> Interacted total of {} people\n".format(interacted_all))
 
+        self.not_valid_users += not_valid_users
+
         return self
 
 
@@ -1844,6 +1886,7 @@ class InstaPy:
 
         followed_all = 0
         followed_new = 0
+        not_valid_users = 0
         relax_point = random.randint(7, 14)   # you can use some plain value `10` instead of this quitely randomized score
 
         for index, user in enumerate(usernames):
@@ -1895,6 +1938,7 @@ class InstaPy:
                                self.logger)
                     if validation != True:
                         self.logger.info(details)
+                        not_valid_users += 1
                         simulated_unfollow += 1
                         self.logger.info("Simulated unfollow: {}  ~not valid user".format(simulated_unfollow))
                         unfollow_user(self.browser, self.username, person, self.logger, self.logfolder)
@@ -1922,6 +1966,8 @@ class InstaPy:
         self.logger.info(
             "--> Followed total of {} people\n".format(followed_all))
 
+        self.not_valid_users += not_valid_users
+
         return self
 
 
@@ -1937,6 +1983,7 @@ class InstaPy:
 
         followed_all = 0
         followed_new = 0
+        not_valid_users = 0
         relax_point = random.randint(7, 14)   # you can use some plain value `10` instead of this quitely randomized score
 
         for index, user in enumerate(usernames):
@@ -1988,6 +2035,7 @@ class InstaPy:
                                self.logger)
                     if validation != True:
                         self.logger.info(details)
+                        not_valid_users += 1
                         simulated_unfollow += 1
                         self.logger.info("Simulated unfollow: {}  ~not valid user".format(simulated_unfollow))
                         unfollow_user(self.browser, self.username, person, self.logger, self.logfolder)
@@ -2014,6 +2062,8 @@ class InstaPy:
 
         self.logger.info(
                 "--> Followed total of {} people\n".format(followed_all))
+
+        self.not_valid_users += not_valid_users
 
         return self
 
@@ -2089,6 +2139,7 @@ class InstaPy:
         followed = 0
         skipped_img = 0
         num_of_search = 0
+        not_valid_users = 0
         history = []
 
         while liked_img < amount:
@@ -2125,29 +2176,12 @@ class InstaPy:
                                          .format(liked_img, amount))
                         self.logger.info(link)
 
-                        validation, details = validate_username(self.browser,
-                                                       link,
-                                                       self.username,
-                                                       self.ignore_users,
-                                                       self.blacklist,
-                                                       self.potency_ratio,
-                                                       self.delimit_by_numbers,
-                                                       self.max_followers,
-                                                       self.max_following,
-                                                       self.min_followers,
-                                                       self.min_following,
-                                                       self.logger)
-                        if validation != True:
-                            self.logger.info(details)
-                            continue
-                        
                         try:
                             inappropriate, user_name, is_video, reason, scope = (
                                 check_link(self.browser,
                                            link,
                                            self.dont_like,
                                            self.ignore_if_contains,
-                                           self.username,
                                            self.logger)
                             )
 
@@ -2155,6 +2189,27 @@ class InstaPy:
                                 self.liking_approved = verify_liking(self.browser, self.max_likes, self.min_likes, self.logger)
 
                             if not inappropriate and self.liking_approved:
+                                #validate user
+                                validation, details = validate_username(self.browser,
+                                                               user_name,
+                                                               self.username,
+                                                               self.ignore_users,
+                                                               self.blacklist,
+                                                               self.potency_ratio,
+                                                               self.delimit_by_numbers,
+                                                               self.max_followers,
+                                                               self.max_following,
+                                                               self.min_followers,
+                                                               self.min_following,
+                                                               self.logger)
+                                if validation != True:
+                                    self.logger.info(details)
+                                    not_valid_users += 1
+                                    continue
+                                else:
+                                    web_adress_navigator(self.browser, link)
+
+                                #try to like
                                 liked = like_image(self.browser,
                                                    user_name,
                                                    self.blacklist,
@@ -2271,16 +2326,18 @@ class InstaPy:
 
         self.logger.info('Liked: {}'.format(liked_img))
         self.logger.info('Already Liked: {}'.format(already_liked))
-        self.logger.info('Inappropriate: {}'.format(inap_img))
         self.logger.info('Commented: {}'.format(commented))
         self.logger.info('Followed: {}'.format(followed))
-        self.logger.info('Randomly Skipped: {}'.format(skipped_img))
+        self.logger.info('Inappropriate: {}'.format(inap_img))
+        self.logger.info('Not valid users: {}'.format(not_valid_users))
+        self.logger.info('Randomly Skipped: {}\n'.format(skipped_img))
 
-        self.followed += followed
         self.liked_img += liked_img
         self.already_liked += already_liked
-        self.inap_img += inap_img
         self.commented += commented
+        self.followed += followed
+        self.inap_img += inap_img
+        self.not_valid_users += not_valid_users
 
         return
 
@@ -2352,6 +2409,7 @@ class InstaPy:
 
         inap_img = 0
         followed = 0
+        not_valid_users = 0
 
         # if smart hashtag is enabled
         if use_smart_hashtags is True and self.smart_hashtags is not []:
@@ -2382,40 +2440,44 @@ class InstaPy:
                 self.logger.info('[{}/{}]'.format(i + 1, len(links)))
                 self.logger.info(link)
 
-                validation, details = validate_username(self.browser,
-                                               link,
-                                               self.username,
-                                               self.ignore_users,
-                                               self.blacklist,
-                                               self.potency_ratio,
-                                               self.delimit_by_numbers,
-                                               self.max_followers,
-                                               self.max_following,
-                                               self.min_followers,
-                                               self.min_following,
-                                               self.logger)
-                if validation != True:
-                    self.logger.info(details)
-                    continue
-                
                 try:
                     inappropriate, user_name, is_video, reason, scope = (
                         check_link(self.browser,
                                    link,
                                    self.dont_like,
                                    self.ignore_if_contains,
-                                   self.username,
                                    self.logger)
                     )
 
                     if not inappropriate:
+                        #validate user
+                        validation, details = validate_username(self.browser,
+                                                       user_name,
+                                                       self.username,
+                                                       self.ignore_users,
+                                                       self.blacklist,
+                                                       self.potency_ratio,
+                                                       self.delimit_by_numbers,
+                                                       self.max_followers,
+                                                       self.max_following,
+                                                       self.min_followers,
+                                                       self.min_following,
+                                                       self.logger)
+                        if validation != True:
+                            self.logger.info(details)
+                            not_valid_users += 1
+                            continue
+                        else:
+                            web_adress_navigator(self.browser, link)
+
+                        #try to follow
                         followed += follow_user(self.browser,
-                                                        self.follow_restrict,
-                                                        self.username,
-                                                        user_name,
-                                                        self.blacklist,
-                                                        self.logger,
-                                                        self.logfolder)
+                                                self.follow_restrict,
+                                                self.username,
+                                                user_name,
+                                                self.blacklist,
+                                                self.logger,
+                                                self.logfolder)
                     else:
                         self.logger.info(
                             '--> User not followed: {}'.format(reason))
@@ -2423,10 +2485,12 @@ class InstaPy:
                 except NoSuchElementException as err:
                     self.logger.error('Invalid Page: {}'.format(err))
 
-        self.logger.info('Inappropriate: {}'.format(inap_img))
         self.logger.info('Followed: {}'.format(followed))
+        self.logger.info('Inappropriate: {}'.format(inap_img))
+        self.logger.info('Not valid users: {}\n'.format(not_valid_users))
 
         self.followed += followed
         self.inap_img += inap_img
+        self.not_valid_users += not_valid_users
 
         return self
