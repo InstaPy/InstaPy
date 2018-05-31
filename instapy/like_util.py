@@ -216,7 +216,7 @@ def get_links_for_tag(browser,
     except WebDriverException:
         try:
             possible_posts = (browser.find_element_by_xpath(
-                                "//span[contains(@class, '_fd86t')]").text)
+                                "//span[contains(@class, 'g47SY')]").text)
             if possible_posts:
                 possible_posts = format_number(possible_posts)
             else:
