@@ -232,7 +232,7 @@ def get_active_users(browser, username, posts, boundary, logger):
             except WebDriverException:
                 try:
                     likers_count = (browser.find_element_by_xpath(
-                        "//a[contains(@class, '_nzn1h')]/span").text)
+                        "//a[contains(@class, 'zV_Nj')]/span").text)
                     if likers_count: ##prevent an empty string scenarios
                         likers_count = format_number(likers_count)
                     else:
@@ -243,7 +243,7 @@ def get_active_users(browser, username, posts, boundary, logger):
                     likers_count = None
 
             browser.find_element_by_xpath(
-                "//a[contains(@class, '_nzn1h')]").click()
+                "//a[contains(@class, 'zV_Nj')]").click()
             sleep_actual(5)
 
 
@@ -273,7 +273,7 @@ def get_active_users(browser, username, posts, boundary, logger):
                     sc_rolled += 1
 
                 tmp_list = browser.find_elements_by_xpath(
-                    "//a[contains(@class, '_2g7d5')]")
+                    "//a[contains(@class, 'FPmhX')]")
                 if boundary is not None:
                     if len(tmp_list) >= boundary:
                         break
@@ -294,13 +294,13 @@ def get_active_users(browser, username, posts, boundary, logger):
                             sleep_actual(nap_it)
 
             tmp_list = browser.find_elements_by_xpath(
-                "//a[contains(@class, '_2g7d5')]")
+                "//a[contains(@class, 'FPmhX')]")
             logger.info("Post {}  |  Likers: found {}, catched {}".format(count, likers_count, len(tmp_list)))
 
         except NoSuchElementException:
             try:
                 tmp_list = browser.find_elements_by_xpath(
-                    "//div[contains(@class, '_3gwk6')]/a")
+                    "//div[contains(@class, '_1xe_U')]/a")
                 if len(tmp_list) > 0:
                     logger.info("Post {}  |  Likers: found {}, catched {}".format(count, len(tmp_list), len(tmp_list)))
             except NoSuchElementException:
@@ -316,7 +316,7 @@ def get_active_users(browser, username, posts, boundary, logger):
             try:
                 # click next button
                 browser.find_element_by_xpath(
-                    "//a[@class='_3a693 coreSpriteRightPaginationArrow']"
+                    "//a[contains(@class, 'HBoOv')]"
                     "[text()='Next']").click()
             except:
                 logger.error('Unable to go to next profile post')
