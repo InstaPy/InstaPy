@@ -3,8 +3,10 @@ import datetime
 import os
 import re
 import sqlite3
+import time
 
 from selenium.common.exceptions import NoSuchElementException
+from selenium.common.exceptions import WebDriverException
 
 from .settings import Settings
 from .time_util import sleep
@@ -12,35 +14,115 @@ from .time_util import sleep_actual
 
 
 def validate_username(browser,
-                      username,
+                      username_or_link,
+                      own_username,
                       ignore_users,
                       blacklist,
-                      like_by_followers_upper_limit,
-                      like_by_followers_lower_limit):
+                      potency_ratio,
+                      delimit_by_numbers,
+                      max_followers,
+                      max_following,
+                      min_followers,
+                      min_following,
+                      logger):
     """Check if we can interact with the user"""
 
+    # Some features may not povide `username` and in those cases we will get it from post's page.
+    if '/' in username_or_link:
+        link = username_or_link   # if there is a `/` in `username_or_link`, then it is a `link`
+
+        #Check URL of the webpage, if it already is user's profile page, then do not navigate to it again
+        web_adress_navigator(browser, link)
+
+        try:
+            username = browser.execute_script(
+                    "return window._sharedData.entry_data."
+                    "PostPage[0].graphql.shortcode_media.owner.username")
+        except WebDriverException:
+            try:
+                browser.execute_script("location.relaod()")
+                username = browser.execute_script(
+                        "return window._sharedData.entry_data."
+                        "PostPage[0].graphql.shortcode_media.owner.username")
+            except WebDriverException:
+                logger.error("Username validation failed! ~cannot get the post owner's username")
+                return False, \
+                        "---> Sorry, this page isn't available! ~link is broken, or page is removed\n"
+    else:
+        username = username_or_link   # if there is no `/` in `username_or_link`, then it is a `username`
+
+    if username == own_username:
+        return False, \
+                "---> Username '{}' is yours!  ~skipping user\n".format(own_username)
+        
     if username in ignore_users:
-        return ('---> {} is in ignore_users list, skipping '
-                'user...'.format(username))
+        return False, \
+                "---> {} is in ignore_users list  ~skipping user\n".format(username)
+                
     if username in blacklist:
-        return '---> {} is in blacklist, skipping user...'
+        return False, \
+                "---> {} is in blacklist  ~skipping user\n".format(username)
+    
+    """Checks the potential of target user by relationship status in order to delimit actions within the desired boundary"""
+    if potency_ratio or delimit_by_numbers and (max_followers or max_following or min_followers or min_following):
 
-    browser.get('https://www.instagram.com/{}'.format(username))
-    sleep(1)
-    try:
-        followers = (format_number(browser.find_element_by_xpath("//a[contains"
-                     "(@href,'followers')]/span").text))
-    except NoSuchElementException:
-        return '---> {} account is private, skipping user...'.format(username)
+        relationship_ratio = None
+        reverse_relationship = False
 
-    if followers > like_by_followers_upper_limit:
-        return '---> User {} exceeds followers limit'.format(username)
-    elif followers < like_by_followers_lower_limit:
-        return ('---> {}, number of followers does not reach '
-                'minimum'.format(username))
+        # Get followers & following counts
+        followers_count, following_count = get_relationship_counts(browser, username, logger)
+
+        if potency_ratio and potency_ratio < 0:
+            potency_ratio *= -1
+            reverse_relationship = True
+
+        if followers_count and following_count:
+            relationship_ratio = (float(followers_count)/float(following_count)
+                       if not reverse_relationship
+                        else float(following_count)/float(followers_count))
+
+        logger.info('User: {} >> followers: {}  |  following: {}  |  relationship ratio: {}'.format(username,
+        followers_count if followers_count else 'unknown',
+        following_count if following_count else 'unknown',
+        float("{0:.2f}".format(relationship_ratio)) if relationship_ratio else 'unknown'))
+
+        if followers_count  or following_count:
+            if potency_ratio and not delimit_by_numbers:
+                if relationship_ratio and relationship_ratio < potency_ratio:
+                        return False, \
+                            "{} is not a {} with the relationship ratio of {}  ~skipping user\n".format(
+                            username, "potential user" if not reverse_relationship else "massive follower",
+                            float("{0:.2f}".format(relationship_ratio)))
+
+            elif delimit_by_numbers:
+                if followers_count:
+                    if max_followers:
+                        if followers_count > max_followers:
+                            return False, \
+                                "User {}'s followers count exceeds maximum limit  ~skipping user\n".format(username)
+                    if min_followers:
+                        if followers_count < min_followers:
+                            return False, \
+                                "User {}'s followers count is less than minimum limit  ~skipping user\n".format(username)
+                if following_count:
+                    if max_following:
+                        if following_count > max_following:
+                            return False, \
+                                "User {}'s following count exceeds maximum limit  ~skipping user\n".format(username)
+                    if min_following:
+                        if following_count < min_following:
+                            return False, \
+                                "User {}'s following count is less than minimum limit  ~skipping user\n".format(username)
+                if potency_ratio:
+                    if relationship_ratio and relationship_ratio < potency_ratio:
+                        return False, \
+                            "{} is not a {} with the relationship ratio of {}  ~skipping user\n".format(
+                            username, "potential user" if not reverse_relationship else "massive follower",
+                            float("{0:.2f}".format(relationship_ratio)))
+
 
     # if everything ok
-    return True
+    return True, "Valid user"
 
 
 def update_activity(action=None):
@@ -108,11 +190,13 @@ def add_user_to_blacklist(browser, username, campaign, action, logger, logfolder
                 .format(username, campaign, action))
 
 
-def get_active_users(browser, username, posts, logger):
-    """Returns a list with users who liked the latest posts"""
+def get_active_users(browser, username, posts, boundary, logger):
+    """Returns a list with usernames who liked the latest n posts"""
 
-    browser.get('https://www.instagram.com/' + username)
-    sleep(2)
+    user_link = 'https://www.instagram.com/{}/'.format(username)
+    
+    #Check URL of the webpage, if it already is user's profile page, then do not navigate to it again
+    web_adress_navigator(browser, user_link)
 
     total_posts = format_number(browser.find_element_by_xpath(
         "//span[contains(@class,'_t98z6')]//span").text)
@@ -127,19 +211,98 @@ def get_active_users(browser, username, posts, logger):
         "(//div[contains(@class, '_si7dy')])[1]").click()
 
     active_users = []
+    sc_rolled = 0
+    start_time = time.time()
+    too_many_requests = 0  # this will help to prevent misbehaviours when you request the list of active users repeatedly within less than 10 min of breaks
 
+    message = (("~collecting the entire usernames from posts without a boundary!\n") if boundary is None else
+               (
+               "~collecting only the visible usernames from posts without scrolling at the boundary of zero..\n") if boundary == 0 else
+               ("~collecting the usernames from posts with the boundary of {}\n".format(boundary)))
     # posts argument is the number of posts to collect usernames
-    for count in range(1, posts):
+    logger.info("Getting active users who liked the latest {} posts:\n  {}".format(posts, message))
+
+    for count in range(1, posts + 1):
         try:
+            sleep_actual(2)
+            try:
+                likers_count = browser.execute_script(
+                    "return window._sharedData.entry_data."
+                    "PostPage[0].graphql.shortcode_media.edge_media_preview_like.count")
+            except WebDriverException:
+                try:
+                    likers_count = (browser.find_element_by_xpath(
+                        "//a[contains(@class, '_nzn1h')]/span").text)
+                    if likers_count: ##prevent an empty string scenarios
+                        likers_count = format_number(likers_count)
+                    else:
+                        logger.info("Failed to get likers count on your post {}  ~empty string".format(count))
+                        likers_count = None
+                except NoSuchElementException:
+                    logger.info("Failed to get likers count on your post {}".format(count))
+                    likers_count = None
+
             browser.find_element_by_xpath(
                 "//a[contains(@class, '_nzn1h')]").click()
-            sleep(1)
+            sleep_actual(5)
+
+
+            dialog = browser.find_element_by_xpath(
+                "//div[text()='Likes']/following-sibling::div")
+
+            scroll_it = True
+            try_again = 0
+
+            while scroll_it != False and boundary != 0:
+                scroll_it = browser.execute_script('''
+                    var div = arguments[0];
+                    if (div.offsetHeight + div.scrollTop < div.scrollHeight) {
+                        div.scrollTop = div.scrollHeight;
+                        return true;}
+                    else {
+                        return false;}
+                    ''', dialog)
+
+                if sc_rolled > 91 or too_many_requests > 1:  # old value 100
+                    logger.info("Too Many Requests sent! ~will sleep some :>")
+                    sleep_actual(600)
+                    sc_rolled = 0
+                    too_many_requests = 0 if too_many_requests >= 1 else too_many_requests
+                else:
+                    sleep_actual(1.2)  # old value 5.6
+                    sc_rolled += 1
+
+                tmp_list = browser.find_elements_by_xpath(
+                    "//a[contains(@class, '_2g7d5')]")
+                if boundary is not None:
+                    if len(tmp_list) >= boundary:
+                        break
+
+                if (scroll_it == False and
+                      likers_count and
+                        likers_count - 1 > len(tmp_list)):
+                    if ((boundary is not None and likers_count - 1 > boundary) or
+                                boundary is None):
+                        if try_again <= 1:  # you can increase the amount of tries here
+                            logger.info(
+                                "Cor! ~failed to get the desired amount of usernames, trying again!  |  post:{}  |  attempt: {}".format(
+                                    posts, try_again + 1))
+                            try_again += 1
+                            too_many_requests += 1
+                            scroll_it = True
+                            nap_it = 4 if try_again == 0 else 7
+                            sleep_actual(nap_it)
+
             tmp_list = browser.find_elements_by_xpath(
                 "//a[contains(@class, '_2g7d5')]")
+            logger.info("Post {}  |  Likers: found {}, catched {}".format(count, likers_count, len(tmp_list)))
+
         except NoSuchElementException:
             try:
                 tmp_list = browser.find_elements_by_xpath(
                     "//div[contains(@class, '_3gwk6')]/a")
+                if len(tmp_list) > 0:
+                    logger.info("Post {}  |  Likers: found {}, catched {}".format(count, len(tmp_list), len(tmp_list)))
             except NoSuchElementException:
                 logger.error('There is some error searching active users')
 
@@ -147,9 +310,9 @@ def get_active_users(browser, username, posts, logger):
             for user in tmp_list:
                 active_users.append(user.text)
 
-        sleep(1)
+        sleep_actual(1)
         # if not reached posts(parameter) value, continue
-        if count+1 != posts:
+        if count +1 != posts +1 and count != 0:
             try:
                 # click next button
                 browser.find_element_by_xpath(
@@ -158,8 +321,16 @@ def get_active_users(browser, username, posts, logger):
             except:
                 logger.error('Unable to go to next profile post')
 
+    real_time = time.time()
+    diff_in_minutes = int((real_time - start_time) / 60)
+    diff_in_seconds = int((real_time - start_time) % 60)
     # delete duplicated users
     active_users = list(set(active_users))
+    logger.info(
+        "Gathered total of {} unique active followers from the latest {} posts in {} minutes and {} seconds".format(len(active_users),
+                                                                                                     posts,
+                                                                                                     diff_in_minutes,
+                                                                                                     diff_in_seconds))
 
     return active_users
 
@@ -178,7 +349,7 @@ def delete_line_from_file(filepath, lineToDelete, logger):
             if not line.endswith(lineToDelete):
                 f.write(line)
             else:
-                logger.info("{} removed from csv".format(line))
+                logger.info("--> \"{}\" was removed from csv".format(line.split(',\n')[0]))
         f.close()
 
         # File leftovers that should not exist, but if so remove it
@@ -291,8 +462,84 @@ def username_url_to_username(username_url):
                                            
 def get_number_of_posts(browser):
     """Get the number of posts from the profile screen"""
-    num_of_posts_txt = browser.find_element_by_xpath("//section/main/article/header/section/ul/li[1]/span/span").text
+    num_of_posts_txt = browser.find_element_by_xpath("//section/main/div/header/section/ul/li[1]/span/span").text                                                     
+                                                      
     num_of_posts_txt = num_of_posts_txt.replace(" ", "")
     num_of_posts_txt = num_of_posts_txt.replace(",", "")
     num_of_posts = int(num_of_posts_txt)   
     return num_of_posts
+
+
+def get_relationship_counts(browser, username, logger):
+    """ Gets the followers & following counts of a given user """
+
+    user_link = "https://www.instagram.com/{}/".format(username)
+
+    #Check URL of the webpage, if it already is user's profile page, then do not navigate to it again
+    web_adress_navigator(browser, user_link)
+
+    try:
+        followers_count = format_number(browser.find_element_by_xpath("//a[contains"
+                                "(@href,'followers')]/span").text)
+    except NoSuchElementException:
+        try:
+            followers_count = browser.execute_script(
+                "return window._sharedData.entry_data."
+                "ProfilePage[0].graphql.user.edge_followed_by.count")
+        except WebDriverException:
+            try:
+                browser.execute_script("location.reload()")
+                followers_count = browser.execute_script(
+                    "return window._sharedData.entry_data."
+                    "ProfilePage[0].graphql.user.edge_followed_by.count")
+            except WebDriverException:
+                try:
+                    followers_count = format_number(browser.find_element_by_xpath(
+                                    "//li[2]/a/span[contains(@class, '_fd86t')]").text)
+                except NoSuchElementException:
+                    logger.error("Error occured during getting the followers count of '{}'\n".format(username))
+                    followers_count = None
+
+    try:
+        following_count = format_number(browser.find_element_by_xpath("//a[contains"
+                                "(@href,'following')]/span").text)
+    except NoSuchElementException:
+        try:
+            following_count = browser.execute_script(
+                "return window._sharedData.entry_data."
+                "ProfilePage[0].graphql.user.edge_follow.count")
+        except WebDriverException:
+            try:
+                browser.execute_script("location.reload()")
+                following_count = browser.execute_script(
+                    "return window._sharedData.entry_data."
+                    "ProfilePage[0].graphql.user.edge_follow.count")
+            except WebDriverException:
+                try:
+                    following_count = format_number(browser.find_element_by_xpath(
+                                        "//li[3]/a/span[contains(@class, '_fd86t')]").text)
+                except NoSuchElementException:
+                    logger.error("\nError occured during getting the following count of '{}'\n".format(username))
+                    following_count = None
+    
+    return followers_count, following_count
+
+
+def web_adress_navigator(browser, link):
+    """Checks and compares current URL of web page and the URL to be navigated and if it is different, it does navigate"""
+
+    try:
+        current_url = browser.current_url
+    except WebDriverException:
+        try:
+            current_url = browser.execute_script("return window.location.href")
+        except WebDriverException:
+            raise
+            current_url = None
+    
+    if current_url is None or current_url != link:
+        browser.get(link)
+        # update server calls
+        update_activity()
+        sleep(2)
+
