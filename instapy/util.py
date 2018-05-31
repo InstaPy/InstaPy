@@ -198,8 +198,8 @@ def get_active_users(browser, username, posts, boundary, logger):
     #Check URL of the webpage, if it already is user's profile page, then do not navigate to it again
     web_adress_navigator(browser, user_link)
 
-    total_posts = format_number(browser.find_element_by_xpath(
-        "//span[contains(@class,'_t98z6')]//span").text)
+    total_posts = format_number(browser.find_elements_by_xpath(
+        "//span[contains(@class,'g47SY')]")[0].text)
 
     # if posts > total user posts, assume total posts
     if posts >= total_posts:
@@ -208,7 +208,7 @@ def get_active_users(browser, username, posts, boundary, logger):
 
     # click latest post
     browser.find_element_by_xpath(
-        "(//div[contains(@class, '_si7dy')])[1]").click()
+        "(//div[contains(@class, '_9AhH0')])[0]").click()
 
     active_users = []
     sc_rolled = 0
@@ -493,8 +493,8 @@ def get_relationship_counts(browser, username, logger):
                     "ProfilePage[0].graphql.user.edge_followed_by.count")
             except WebDriverException:
                 try:
-                    followers_count = format_number(browser.find_element_by_xpath(
-                                    "//li[2]/a/span[contains(@class, 'g47SY')]").text)
+                    followers_count = format_number((browser.find_elements_by_xpath(
+                        "//span[contains(@class,'g47SY')]")[1].text))
                 except NoSuchElementException:
                     logger.error("Error occured during getting the followers count of '{}'\n".format(username))
                     followers_count = None
@@ -515,8 +515,8 @@ def get_relationship_counts(browser, username, logger):
                     "ProfilePage[0].graphql.user.edge_follow.count")
             except WebDriverException:
                 try:
-                    following_count = format_number(browser.find_element_by_xpath(
-                                        "//li[3]/a/span[contains(@class, 'g47SY')]").text)
+                    following_count = format_number(browser.find_elements_by_xpath(
+                        "//span[contains(@class,'g47SY')]")[2].text)
                 except NoSuchElementException:
                     logger.error("\nError occured during getting the following count of '{}'\n".format(username))
                     following_count = None
