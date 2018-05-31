@@ -207,8 +207,8 @@ def get_active_users(browser, username, posts, boundary, logger):
         posts = total_posts
 
     # click latest post
-    browser.find_element_by_xpath(
-        "(//div[contains(@class, '_9AhH0')])[0]").click()
+    browser.find_elements_by_xpath(
+        "//div[contains(@class, '_9AhH0')]")[0].click()
 
     active_users = []
     sc_rolled = 0
