@@ -133,7 +133,7 @@ def login_user(browser,
     # Might cause problems if the OS language is english
     if switch_language:
         browser.find_element_by_xpath(
-          "//select[@class='_fsoey']/option[text()='English']").click()
+          "//select[@class='hztqj']/option[text()='English']").click()
 
     # Check if the first div is 'Create an Account' or 'Log In'
     login_elem = browser.find_element_by_xpath(
