@@ -532,3 +532,22 @@ def web_adress_navigator(browser, link):
         update_activity()
         sleep(2)
 
+
+def atomic_pickling(file_path, data):
+        file_path_Temp = file_path+".temp"
+        try:
+            with open(file_path_Temp, "wb") as f:
+                pickle.dump(data, f)
+                # flush from memory to disk (might be cache)
+                f.flush()
+                # sync to disk from cache
+                os.fsync(f.fileno())
+			# rename new temp file to filepath
+	        while os.path.isfile(file_path_Temp):
+	            try:
+	                os.replace(file_path_Temp, file_path)
+	            except OSError as e:
+	                logger.error("Can't rename file_path_Temp to filepath {}".format(str(e)))
+	                sleep(5)
+        except BaseException as e:
+            raise ParseError("Error saving pickle file: " + str(e))
