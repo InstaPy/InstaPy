@@ -11,6 +11,7 @@ from selenium.common.exceptions import WebDriverException
 from .settings import Settings
 from .time_util import sleep
 from .time_util import sleep_actual
+import pickle
 
 
 def validate_username(browser,
