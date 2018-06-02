@@ -337,7 +337,6 @@ def get_active_users(browser, username, posts, boundary, logger):
 
 def delete_line_from_file(filepath, lineToDelete, logger):
     try:
-        file_path_old = filepath+".old"
         file_path_Temp = filepath+".temp"
 
         f = open(filepath, "r")
@@ -350,28 +349,19 @@ def delete_line_from_file(filepath, lineToDelete, logger):
                 f.write(line)
             else:
                 logger.info("--> \"{}\" was removed from csv".format(line.split(',\n')[0]))
+        # flush from memory to disk (might be cache)
+        f.flush
+        # sync to disk from cache
+        os.fsync(f.fileno())
         f.close()
 
-        # File leftovers that should not exist, but if so remove it
-        while os.path.isfile(file_path_old):
-            try:
-                os.remove(file_path_old)
-            except OSError as e:
-                logger.error("Can't remove file_path_old {}".format(str(e)))
-                sleep(5)
-
-        # rename original file to _old
-        os.rename(filepath, file_path_old)
         # rename new temp file to filepath
         while os.path.isfile(file_path_Temp):
             try:
-                os.rename(file_path_Temp, filepath)
+                os.replace(file_path_Temp, filepath)
             except OSError as e:
                 logger.error("Can't rename file_path_Temp to filepath {}".format(str(e)))
                 sleep(5)
-
-        # remove old and temp file
-        os.remove(file_path_old)
 
     except BaseException as e:
         logger.error("delete_line_from_file error {}".format(str(e)))
@@ -494,7 +484,7 @@ def get_relationship_counts(browser, username, logger):
             except WebDriverException:
                 try:
                     followers_count = format_number(browser.find_element_by_xpath(
-                                    "//li[2]/a/span[contains(@class, '_fd86t')]").text)
+                                    "//li[2]/a/span[contains(@class, 'g47SY')]").text)
                 except NoSuchElementException:
                     logger.error("Error occured during getting the followers count of '{}'\n".format(username))
                     followers_count = None
@@ -516,7 +506,7 @@ def get_relationship_counts(browser, username, logger):
             except WebDriverException:
                 try:
                     following_count = format_number(browser.find_element_by_xpath(
-                                        "//li[3]/a/span[contains(@class, '_fd86t')]").text)
+                                        "//li[3]/a/span[contains(@class, 'g47SY')]").text)
                 except NoSuchElementException:
                     logger.error("\nError occured during getting the following count of '{}'\n".format(username))
                     following_count = None
