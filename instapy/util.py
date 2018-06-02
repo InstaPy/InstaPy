@@ -533,7 +533,7 @@ def web_adress_navigator(browser, link):
         sleep(2)
 
 
-def atomic_pickling(file_path, data):
+def atomic_pickling(file_path, data, logger):
         file_path_Temp = file_path+".temp"
         try:
             with open(file_path_Temp, "wb") as f:
@@ -542,12 +542,12 @@ def atomic_pickling(file_path, data):
                 f.flush()
                 # sync to disk from cache
                 os.fsync(f.fileno())
-			# rename new temp file to filepath
+            # rename new temp file to filepath
 	        while os.path.isfile(file_path_Temp):
-	            try:
-	                os.replace(file_path_Temp, file_path)
-	            except OSError as e:
-	                logger.error("Can't rename file_path_Temp to filepath {}".format(str(e)))
-	                sleep(5)
+               try:
+                   os.replace(file_path_Temp, file_path)
+               except OSError as e:
+                   logger.error("Can't rename file_path_Temp to filepath {}".format(str(e)))
+                   sleep(5)
         except BaseException as e:
-            raise ParseError("Error saving pickle file: " + str(e))
+            logger.error("Error saving pickle file: {}".format(str(e)))
