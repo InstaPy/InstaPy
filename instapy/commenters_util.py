@@ -230,11 +230,11 @@ def extract_information(browser, username, daysold, max_pic):
 def users_liked (browser, photo_url, amount=100):
     photo_likers = []
     try:
-            browser.get(photo_url)  
-            photo_likers = likers_from_photo(browser, amount)   
-            sleep(2)  
+        browser.get(photo_url)  
+        photo_likers = likers_from_photo(browser, amount)   
+        sleep(2)  
     except NoSuchElementException:
-            print('Could not get information from post: ' + photo_url,' nothing to return')
+        print('Could not get information from post: ' + photo_url,' nothing to return')
             
     return photo_likers
     
