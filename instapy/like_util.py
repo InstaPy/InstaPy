@@ -320,8 +320,6 @@ def get_links_for_username(browser,
     #Check URL of the webpage, if it already is user's profile page, then do not navigate to it again
     web_adress_navigator(browser, user_link)
 
-    body_elem = browser.find_element_by_tag_name('body')
-
     try:
         is_private = body_elem.find_element_by_xpath(
             '//h2[@class="_kcrwx"]')
@@ -331,6 +329,12 @@ def get_links_for_username(browser,
         if is_private:
             logger.warning('This user is private...')
             return False
+
+    if "Page Not Found" in browser.title:
+        logger.error('Intagram error: The link you followed may be broken, or the page may have been removed...')
+        return False
+
+    body_elem = browser.find_element_by_tag_name('body')
 
     abort = True
 
@@ -436,6 +440,7 @@ def check_link(browser, post_link, dont_like, ignore_if_contains, logger):
     :param link:
     :param dont_like: hashtags of inappropriate phrases
     :param ignore_if_contains:
+
     :param logger: the logger instance
     :return: tuple of
         boolean: True if inappropriate,
@@ -518,7 +523,8 @@ def check_link(browser, post_link, dont_like, ignore_if_contains, logger):
 
     logger.info('Image from: {}'.format(user_name.encode('utf-8')))
     logger.info('Link: {}'.format(post_link.encode('utf-8')))
-    logger.info('Description: {}'.format(image_text.encode('utf-8')))
+    #logger.info('Description: {}'.format(image_text.encode('utf-8')))
+
 
     if any((word in image_text for word in ignore_if_contains)):
         return False, user_name, is_video, 'None', "Pass"
@@ -554,19 +560,20 @@ def check_link(browser, post_link, dont_like, ignore_if_contains, logger):
 
 def like_image(browser, username, blacklist, logger, logfolder):
     """Likes the browser opened image"""
+    like_xpath = "//a[@role='button']/span[text()='Like']/.."
+    unlike_xpath = "//a[@role='button']/span[text()='Unlike']"
+	
     # fetch spans fast
     spans = [x.text.lower() for x in browser.find_elements_by_xpath("//article//a[@role='button']/span")]
 
     if 'like' in spans:
-        like_elem = browser.find_elements_by_xpath(
-            "//a[@role='button']/span[text()='Like']/..")
+        like_elem = browser.find_elements_by_xpath(like_xpath)
 
         # sleep real quick right before clicking the element
         sleep(2)
         click_element(browser, like_elem[0])
         # check now we have unlike instead of like
-        liked_elem = browser.find_elements_by_xpath(
-            "//a[@role='button']/span[text()='Unlike']")
+        liked_elem = browser.find_elements_by_xpath(unlike_xpath)
         if len(liked_elem) == 1:
             logger.info('--> Image Liked!')
             update_activity('likes')
@@ -582,8 +589,7 @@ def like_image(browser, username, blacklist, logger, logfolder):
             logger.info('--> Image was not able to get Liked! maybe blocked ?')
             sleep(120)
     else:
-        liked_elem = browser.find_elements_by_xpath(
-            "//a[@role='button']/span[text()='Unlike']")
+        liked_elem = browser.find_elements_by_xpath(unlike_xpath)
         if len(liked_elem) == 1:
             logger.info('--> Image already liked! ')
             return False
