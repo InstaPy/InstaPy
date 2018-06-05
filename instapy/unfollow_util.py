@@ -17,6 +17,7 @@ from selenium.common.exceptions import WebDriverException
 from selenium.common.exceptions import NoSuchElementException
 import random
 import os
+from selenium.common.exceptions import StaleElementReferenceException
 
 
 def set_automated_followed_pool(username, logger, logfolder, unfollow_after):
@@ -202,6 +203,15 @@ def unfollow(browser,
 						# this user found in our list of unfollow but is not followed
                         if follow_button.text != 'Follow':
                             log_uncertain_unfollowed_pool(username, person, logger, logfolder)
+                        # check we are now logged in
+                        valid_connection = browser.execute_script(
+                            "return window._sharedData.""activity_counts")
+                        if not valid_connection:
+                            # if no valid connection
+                            msg = '--> user:{} have no valid_connection wait 3600'.format(person)
+                            logger.warning(msg)
+                            break
+
                         delete_line_from_file('{0}{1}_followedPool.csv'.format(logfolder, username),
                                               person + ",\n", logger)
                         # save any unfollowed person
@@ -212,6 +222,11 @@ def unfollow(browser,
                             ', now unfollowing: {}'
                             .format(str(unfollowNum), person.encode('utf-8')))
                         sleep(2)
+                else:
+                    # if the user in dont include (should not be) we shall remove him from the follow list
+                    delete_line_from_file('{0}{1}_followedPool.csv'.format(logfolder, username),
+                                          person + ",\n", logger)
+                    logger.warning('This person in dont include but better not be')
 
         except BaseException as e:
             logger.error("unfollow loop error {}".format(str(e)))
@@ -445,6 +460,14 @@ def follow_user(browser, follow_restrict, login, user_name, blacklist, logger, l
         return 1
     except NoSuchElementException:
         logger.info('--> Already following')
+        sleep(1)
+        return 0
+    except StaleElementReferenceException:
+        # https://stackoverflow.com/questions/16166261/selenium-webdriver-how-to-resolve-stale-element-reference-exception
+        # 1. An element that is found on a web page referenced as a WebElement in WebDriver then the DOM changes
+        # (probably due to JavaScript functions) that WebElement goes stale.
+        # 2. The element has been deleted entirely.
+        logger.error('--> element that is found on a web page referenced  while the DOM changes')
         sleep(1)
         return 0
 

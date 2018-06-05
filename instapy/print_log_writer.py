@@ -1,6 +1,8 @@
 """Module only used to log the number of followers to a file"""
 from datetime import datetime
 from selenium.common.exceptions import WebDriverException
+from .time_util import sleep
+
 
 def log_follower_num(browser, username, logfolder):
     """Prints and logs the current number of followers to
@@ -14,6 +16,7 @@ def log_follower_num(browser, username, logfolder):
     except WebDriverException:   #handle the possible `entry_data` error
         try:
             browser.execute_script("location.reload()")
+            sleep(1)
             followed_by = browser.execute_script(
                 "return window._sharedData.""entry_data.ProfilePage[0]."
                 "graphql.user.edge_followed_by.count")
@@ -25,6 +28,32 @@ def log_follower_num(browser, username, logfolder):
             '{:%Y-%m-%d %H:%M} {}\n'.format(datetime.now(), followed_by or 0))
 
     return followed_by
+
+
+def log_following_num(browser, username, logfolder):
+    """Prints and logs the current number of followers to
+    a seperate file"""
+    browser.get('https://www.instagram.com/' + username)
+
+    try:
+        following_num = browser.execute_script(
+            "return window._sharedData.""entry_data.ProfilePage[0]."
+            "graphql.user.edge_follow.count")
+    except WebDriverException:
+        try:
+            browser.execute_script("location.reload()")
+            sleep(10)
+            following_num = browser.execute_script(
+                "return window._sharedData.""entry_data.ProfilePage[0]."
+                "graphql.user.edge_follow.count")
+        except WebDriverException:
+            following_num = None
+
+    with open('{}followingNum.txt'.format(logfolder), 'a') as numFile:
+        numFile.write(
+            '{:%Y-%m-%d %H:%M} {}\n'.format(datetime.now(), following_num or 0))
+
+    return following_num
 
 
 def log_followed_pool(login, followed, logger, logfolder, logtime):
