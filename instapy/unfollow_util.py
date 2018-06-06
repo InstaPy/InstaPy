@@ -155,8 +155,7 @@ def unfollow(browser,
                             try:
                                 logger.info('we might got confirmation request')
                                 sleep(2)
-                                confirm_unfollow_button = browser.find_element_by_xpath(
-                                                                "//*[contains(text(), 'Unfollow')]")
+                                confirm_unfollow_button = browser.find_element_by_xpath("/html/body/div[3]/div/div/div/div[3]/button[1]")
                                 click_element(browser, confirm_unfollow_button)
                                 unfollowed = True
                             except NoSuchElementException:
