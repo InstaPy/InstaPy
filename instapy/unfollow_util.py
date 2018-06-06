@@ -150,7 +150,9 @@ def unfollow(browser,
                         sleep(4)
 
                         #
-                        if not follow_button.text in ['Follow','Follow Back']:
+                        if follow_button.text in ['Follow','Follow Back']:
+                            unfollowed = True
+                        else:
                             # check we did not get confirmation request
                             try:
                                 logger.info('we might got confirmation request')
@@ -162,8 +164,7 @@ def unfollow(browser,
                                 # not having confirmation
                                 # unfollowed = False
                                 pass
-                        else:
-                            unfollowed = True
+
 
 
 
