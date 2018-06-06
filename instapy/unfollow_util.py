@@ -162,6 +162,8 @@ def unfollow(browser,
                                 # not having confirmation
                                 # unfollowed = False
                                 pass
+                        else:
+                            unfollowed = True
 
 
 
