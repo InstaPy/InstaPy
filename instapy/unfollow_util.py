@@ -42,15 +42,14 @@ def unfollow(browser,
              sleep_delay,
              onlyNotFollowMe,
              logger,
-             logfolder,
-             insta_username):
+             logfolder):
 
     """unfollows the given amount of users"""
     unfollowNum = 0
 
     browser.get('https://www.instagram.com/' + username)
     # update server calls
-    update_activity(insta_username=insta_username)
+    update_activity(insta_username=username)
 
     #  check how many poeple we are following
     #  throw RuntimeWarning if we are 0 people following
@@ -102,7 +101,7 @@ def unfollow(browser,
                         unfollowNum += 1
                         click_element(browser, follow_button) # follow_button.click()
                         
-                        update_activity('unfollows', insta_username=insta_username)
+                        update_activity('unfollows', insta_username=username)
 
                         delete_line_from_file('{0}{1}_followedPool.csv'.format(logfolder, username), person +
                                               ",\n", logger)
@@ -136,7 +135,7 @@ def unfollow(browser,
             browser.get(
                 'https://www.instagram.com/' + username + '/?__a=1')
             pre = browser.find_element_by_tag_name("pre").text
-            user_data = json.loads(pre)['user']
+            user_data = json.loads(pre)['graphql']['user']
         except BaseException as e:
             print("unable to get user information\n", str(e))
 
@@ -264,7 +263,7 @@ def unfollow(browser,
             
             click_element(browser, following_link[0]) # following_link[0].click()
             # update server calls
-            update_activity(insta_username=insta_username)
+            update_activity(insta_username=username)
         except BaseException as e:
             logger.error("following_link error {}".format(str(e)))
 
@@ -311,7 +310,7 @@ def unfollow(browser,
                 if person not in dont_include:
                     unfollowNum += 1
                     click_element(browser, button) # button.click()
-                    update_activity('unfollows', insta_username=insta_username)
+                    update_activity('unfollows', insta_username=username)
 
                     logger.info(
                         '--> Ongoing Unfollow {}, now unfollowing: {}'
