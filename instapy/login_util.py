@@ -90,7 +90,10 @@ def login_user(browser,
                password,
                logfolder,
                switch_language=True,
-               bypass_suspicious_attempt=False):
+               bypass_suspicious_attempt=False,
+               use_file=True,
+               passed_cookie=None):
+
     """Logins the user with the given username and password"""
     assert username, 'Username not provided'
     assert password, 'Password not provided'
@@ -103,10 +106,16 @@ def login_user(browser,
     # try to load cookie from username
     try:
         browser.get('https://www.google.com')
-        for cookie in pickle.load(open('{0}{1}_cookie.pkl'
-                                       .format(logfolder,username), 'rb')):
-            browser.add_cookie(cookie)
-            cookie_loaded = True
+        if passed_cookie is None:
+            for cookie in pickle.load(open('{0}{1}_cookie.pkl'
+                                           .format(logfolder,username), 'rb')):
+                browser.add_cookie(cookie)
+        else:
+            for cookie in pickle.loads(passed_cookie):
+                browser.add_cookie(cookie)
+
+        cookie_loaded = True
+
     except (WebDriverException, OSError, IOError):
         print("Cookie file not found, creating cookie...")
 
@@ -172,9 +181,16 @@ def login_user(browser,
     # Check if user is logged-in (If there's two 'nav' elements)
     nav = browser.find_elements_by_xpath('//nav')
     if len(nav) == 2:
-        # create cookie for username
-        pickle.dump(browser.get_cookies(),
-                    open('{0}{1}_cookie.pkl'.format(logfolder,username), 'wb'))
-        return True
+        if use_file:
+            # create cookie for username
+            pickle.dump(browser.get_cookies(),
+                        open('{0}{1}_cookie.pkl'.format(logfolder, username), 'wb'))
+
+            return True
+        else:
+            # create cookie for username
+            cookie = pickle.dumps(browser.get_cookies())
+
+            return True, cookie
     else:
         return False
