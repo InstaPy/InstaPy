@@ -206,8 +206,8 @@ def get_active_users(browser, username, posts, boundary, logger):
             "ProfilePage[0].graphql.user.edge_owner_to_timeline_media.count")
     except WebDriverException:
         try:
-            total_posts = (browser.find_element_by_xpath(
-                "//span[contains(@class,'_t98z6')]//span").text)
+            total_posts = format_number(browser.find_elements_by_xpath(
+                "//span[contains(@class,'g47SY')]")[0].text)
             if total_posts: #prevent an empty string scenario
                 total_posts = format_number(total_posts)
             else:
@@ -221,8 +221,8 @@ def get_active_users(browser, username, posts, boundary, logger):
     posts = posts if total_posts is None else total_posts if posts > total_posts else posts
 
     # click latest post
-    browser.find_element_by_xpath(
-        "(//div[contains(@class, '_si7dy')])[1]").click()
+    browser.find_elements_by_xpath(
+        "//div[contains(@class, '_9AhH0')]")[0].click()
 
     active_users = []
     sc_rolled = 0
@@ -246,7 +246,7 @@ def get_active_users(browser, username, posts, boundary, logger):
             except WebDriverException:
                 try:
                     likers_count = (browser.find_element_by_xpath(
-                        "//a[contains(@class, '_nzn1h')]/span").text)
+                        "//a[contains(@class, 'zV_Nj')]/span").text)
                     if likers_count: ##prevent an empty string scenarios
                         likers_count = format_number(likers_count)
                     else:
@@ -257,7 +257,7 @@ def get_active_users(browser, username, posts, boundary, logger):
                     likers_count = None
 
             browser.find_element_by_xpath(
-                "//a[contains(@class, '_nzn1h')]").click()
+                "//a[contains(@class, 'zV_Nj')]").click()
             sleep_actual(5)
 
 
@@ -287,7 +287,7 @@ def get_active_users(browser, username, posts, boundary, logger):
                     sc_rolled += 1
 
                 tmp_list = browser.find_elements_by_xpath(
-                    "//a[contains(@class, '_2g7d5')]")
+                    "//a[contains(@class, 'FPmhX')]")
                 if boundary is not None:
                     if len(tmp_list) >= boundary:
                         break
@@ -308,13 +308,13 @@ def get_active_users(browser, username, posts, boundary, logger):
                             sleep_actual(nap_it)
 
             tmp_list = browser.find_elements_by_xpath(
-                "//a[contains(@class, '_2g7d5')]")
+                "//a[contains(@class, 'FPmhX')]")
             logger.info("Post {}  |  Likers: found {}, catched {}".format(count, likers_count, len(tmp_list)))
 
         except NoSuchElementException:
             try:
                 tmp_list = browser.find_elements_by_xpath(
-                    "//div[contains(@class, '_3gwk6')]/a")
+                    "//div[contains(@class, '_1xe_U')]/a")
                 if len(tmp_list) > 0:
                     logger.info("Post {}  |  Likers: found {}, catched {}".format(count, len(tmp_list), len(tmp_list)))
             except NoSuchElementException:
@@ -330,7 +330,7 @@ def get_active_users(browser, username, posts, boundary, logger):
             try:
                 # click next button
                 browser.find_element_by_xpath(
-                    "//a[@class='_3a693 coreSpriteRightPaginationArrow']"
+                    "//a[contains(@class, 'HBoOv')]"
                     "[text()='Next']").click()
             except:
                 logger.error('Unable to go to next profile post')
@@ -476,7 +476,7 @@ def username_url_to_username(username_url):
                                            
 def get_number_of_posts(browser):
     """Get the number of posts from the profile screen"""
-    num_of_posts_txt = browser.find_element_by_xpath("//section/main/article/header/section/ul/li[1]/span/span").text
+    num_of_posts_txt = browser.find_element_by_xpath("//section/main/div/header/section/ul/li[1]/span/span").text
     num_of_posts_txt = num_of_posts_txt.replace(" ", "")
     num_of_posts_txt = num_of_posts_txt.replace(",", "")
     num_of_posts = int(num_of_posts_txt)   
@@ -507,8 +507,8 @@ def get_relationship_counts(browser, username, logger):
                     "ProfilePage[0].graphql.user.edge_followed_by.count")
             except WebDriverException:
                 try:
-                    followers_count = format_number(browser.find_element_by_xpath(
-                                    "//li[2]/a/span[contains(@class, '_fd86t')]").text)
+                    followers_count = format_number((browser.find_elements_by_xpath(
+                        "//span[contains(@class,'g47SY')]")[1].text))
                 except NoSuchElementException:
                     logger.error("Error occured during getting the followers count of '{}'\n".format(username))
                     followers_count = None
@@ -529,8 +529,8 @@ def get_relationship_counts(browser, username, logger):
                     "ProfilePage[0].graphql.user.edge_follow.count")
             except WebDriverException:
                 try:
-                    following_count = format_number(browser.find_element_by_xpath(
-                                        "//li[3]/a/span[contains(@class, '_fd86t')]").text)
+                    following_count = format_number(browser.find_elements_by_xpath(
+                        "//span[contains(@class,'g47SY')]")[2].text)
                 except NoSuchElementException:
                     logger.error("\nError occured during getting the following count of '{}'\n".format(username))
                     following_count = None
