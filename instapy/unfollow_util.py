@@ -577,10 +577,11 @@ def get_users_through_dialog(browser,
                 sc_rolled = 0
 
         # Will follow a little bit of users in order to simulate real interaction
-        if (simulator_counter > random.randint(5, 17) or
+        if ((simulator_counter > random.randint(5, 17) or
                 abort==True or
                     total_list >= amount or
-                        sc_rolled==random.randint(3, 5)):
+                        sc_rolled==random.randint(3, 5)) and
+	    			len(follow_buttons) > 0):
 
             quick_amount = 1 if not total_list >= amount else random.randint(1, 4)
 
@@ -613,7 +614,7 @@ def get_users_through_dialog(browser,
     person_list = person_list[:(real_amount-len(simulated_list))]
     for user in simulated_list:   #add simulated users to the `person_list` in random index
         if user not in person_list:
-            person_list.insert(random.randint(0, len(person_list)-1), user)
+            person_list.insert(random.randint(0, abs(len(person_list)-1)), user)
 
     return person_list, simulated_list
 
