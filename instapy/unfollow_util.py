@@ -742,8 +742,8 @@ def get_given_user_followers(browser,
                     "ProfilePage[0].graphql.user.edge_followed_by.count")
             except WebDriverException:
                 try:
-                    allfollowers = format_number(browser.find_element_by_xpath(
-                                    "//li[2]/a/span[contains(@class, '_fd86t')]").text)
+                    allfollowers = format_number(browser.find_elements_by_xpath( 
+                        "//span[contains(@class,'g47SY')]")[1].text)
                 except NoSuchElementException:
                     logger.error("Error occured during getting the followers count of '{}'\n".format(user_name))
                     return [], []
@@ -816,8 +816,8 @@ def get_given_user_following(browser,
                     "ProfilePage[0].graphql.user.edge_follow.count")
             except WebDriverException:
                 try:
-                    allfollowing = format_number(browser.find_element_by_xpath(
-                                        "//li[3]/a/span[contains(@class, '_fd86t')]").text)
+                    allfollowing = format_number(browser.find_elements_by_xpath( 
+                        "//span[contains(@class,'g47SY')]")[2].text)
                 except NoSuchElementException:
                     logger.error("\nError occured during getting the following count of '{}'\n".format(user_name))
                     return [], []

@@ -1,5 +1,4 @@
 """OS Modules environ method to get the setup vars from the Environment"""
-import time
 import csv
 import json
 import logging
@@ -39,7 +38,6 @@ from .time_util import set_sleep_percentage
 from .util import get_active_users
 from .util import validate_username
 from .util import web_adress_navigator
-from .util import interruption_handler
 from .unfollow_util import get_given_user_followers
 from .unfollow_util import get_given_user_following
 from .unfollow_util import unfollow
@@ -122,7 +120,6 @@ class InstaPy:
         self.not_valid_users = 0
 
         self.follow_restrict = load_follow_restriction(self.logfolder)
-        self.follow_restrict_init = load_follow_restriction(self.logfolder)
 
         self.follow_times = 1
         self.do_follow = False
@@ -2406,19 +2403,7 @@ class InstaPy:
 
     def end(self):
         """Closes the current session"""
-        # Dump followed users to followRestriction.json file at program exit.
-        self.logger.warning("Please wait a second to dump followed users to followRestriction.json :>")
-        with interruption_handler():
-            if self.follow_restrict != self.follow_restrict_init:
-                 ts_before_dump = time.time()
-                 dump_follow_restriction(self.follow_restrict, self.logfolder)
-                 ts_after_dump = time.time()
-                 self.logger.info("Successfully dumped newly followed users in {} seconds"
-                            "  ~ {} new users.\n".format(
-                                float("{0:.2f}".format(ts_after_dump-ts_before_dump)),
-                                    len(self.follow_restrict)-len(self.follow_restrict_init)))
-            else:
-                self.logger.info("Nobody was followed during the session.\n")
+        dump_follow_restriction(self.follow_restrict, self.logfolder)
 
         try:
             self.browser.delete_all_cookies()
