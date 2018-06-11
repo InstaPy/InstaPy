@@ -1,41 +1,34 @@
 """OS Modules environ method to get the setup vars from the Environment"""
-import atexit
 import csv
 import json
 import logging
-import os
-import random
 import re
-import signal
-import traceback
-from datetime import datetime
 from math import ceil
+import os
 from platform import python_version
-from random import randint
-from api_db import insertBotAction
-import requests
+from datetime import datetime
+import random
+
 import selenium
 from pyvirtualdisplay import Display
 from selenium import webdriver
-from selenium.common.exceptions import NoSuchElementException
-from selenium.webdriver import DesiredCapabilities
+from selenium.common.exceptions import NoSuchElementException, WebDriverException
 from selenium.webdriver.chrome.options import Options
+from selenium.webdriver import DesiredCapabilities
 from selenium.webdriver.common.proxy import Proxy, ProxyType
-import time
+import requests
+
 from .clarifai_util import check_image
 from .comment_util import comment_image
-from .comment_util import verify_commenting
-from .commenters_util import extract_information
-from .commenters_util import get_photo_urls_from_profile
-from .commenters_util import users_liked
 from .like_util import check_link
-from .like_util import get_links_for_location
+from .like_util import verify_liking
+from .comment_util import verify_commenting
 from .like_util import get_links_for_tag
-from .like_util import get_links_for_username
 from .like_util import get_links_from_feed
 from .like_util import get_tags
+from .like_util import get_links_for_location
 from .like_util import like_image
-from .like_util import verify_liking
+from .like_util import get_links_for_username
 from .login_util import login_user
 from .print_log_writer import log_follower_num
 from .settings import Settings
@@ -50,15 +43,22 @@ from .unfollow_util import get_given_user_following
 from .unfollow_util import unfollow
 from .unfollow_util import unfollow_user
 from .unfollow_util import follow_user
-from .unfollow_util import get_given_user_followers
-from .unfollow_util import get_given_user_following
+from .unfollow_util import follow_given_user
 from .unfollow_util import load_follow_restriction
+from .unfollow_util import dump_follow_restriction
 from .unfollow_util import set_automated_followed_pool
-from .unfollow_util import unfollow
-from .unfollow_util import unfollow_user
-from .util import get_active_users
-from .util import validate_username
+from .feed_util import get_like_on_feed
+from .commenters_util import extract_post_info
+from .commenters_util import extract_information
+from .commenters_util import users_liked
+from .commenters_util import get_photo_urls_from_profile
 
+import signal
+import traceback
+from random import randint
+from api_db import insertBotAction
+import time
+import atexit
 
 class InstaPyError(Exception):
     """General error for InstaPy exceptions"""
@@ -173,6 +173,7 @@ class InstaPy:
         self.bypass_suspicious_attempt = bypass_suspicious_attempt
 
         self.aborting = False
+
         # Assign logger
         self.logger = self.get_instapy_logger(show_logs)
 
@@ -603,21 +604,25 @@ class InstaPy:
 
 
         return self
-                                 
 
 
     def follow_commenters(self, usernames, amount=10, daysold=365, max_pic=50, sleep_delay=600, interact=False):
         """ Follows users' commenters """
         self.logger.info ("Starting to follow commenters..")
+
         if not isinstance(usernames, list):
             usernames = [usernames]
-followed_all = 0
+
+        followed_all = 0
         followed_new = 0
-        relax_point = random.randint(7, 14)   # you can use some plain value `10` instead of this quitely randomized score        for username in usernames:
+        relax_point = random.randint(7, 14)   # you can use some plain value `10` instead of this quitely randomized score
+
+        for username in usernames:
             self.logger.info("Following commenters of '{}' from pictures in last {} days...\nScrapping wall..".format(username, daysold))
             commenters = extract_information(self.browser, username, daysold, max_pic)
+
             if len(commenters)>0:
-                self.logger.info ("Going to follow top {} users.\n".format(amount))
+                self.logger.info("Going to follow top {} users.\n".format(amount))
                 sleep(1)
                 # This way of iterating will prevent sleep interference between functions
                 random.shuffle(commenters)
@@ -647,12 +652,14 @@ followed_all = 0
 
         return self
 
+
     def follow_likers (self, usernames, photos_grab_amount=3, follow_likers_per_photo=3, randomize=True, sleep_delay=600, interact=False):
         """ Follows users' likers """
-        self.logger.info ("Startingto follow likers..")
+        self.logger.info("Starting to follow likers..")
 
         if not isinstance(usernames, list):
             usernames = [usernames]
+
         if photos_grab_amount>12:
             self.logger.info("Sorry, you can only grab likers from first 12 photos for given username now.\n")
             photos_grab_amount = 12
@@ -668,9 +675,9 @@ followed_all = 0
                 photo_urls = [photo_urls]
 
             for photo_url in photo_urls:
-                likers = users_liked(self.browser, photo_url,follow_likers_per_photo)
-        # This way of iterating will prevent sleep interference between functions
-        random.shuffle(likers)
+                likers = users_liked(self.browser, photo_url, follow_likers_per_photo)
+                # This way of iterating will prevent sleep interference between functions
+                random.shuffle(likers)
 
                 for liker in likers[:follow_likers_per_photo] :
                     followed = self.follow_by_list(liker, self.follow_times, sleep_delay, interact)
@@ -690,8 +697,10 @@ followed_all = 0
                             pass
 
         self.logger.info("Finished following likers!\n")
+
         return self
-        
+
+
     def follow_by_list(self, followlist, times=1, sleep_delay=600, interact=False):
         """Allows to follow by any scrapped list"""
         if not isinstance(followlist, list):
@@ -700,12 +709,13 @@ followed_all = 0
         self.follow_times = times or 0
         if self.aborting:
             self.logger.info(">>> self aborting prevented")
-            # return self
+            #return self
 
         followed_all = 0
         followed_new = 0
         not_valid_users = 0
         relax_point = random.randint(7, 14)   # you can use some plain value `10` instead of this quitely randomized score
+
         for acc_to_follow in followlist:
             # Verify if the user should be followed
             validation, details = validate_username(self.browser,
@@ -724,6 +734,7 @@ followed_all = 0
                 self.logger.info(details)
                 not_valid_users += 1
                 continue
+
             # Take a break after a good following
             if followed_new >= relax_point:
                 delay_random = random.randint(ceil(sleep_delay*0.85), ceil(sleep_delay*1.14))
@@ -734,6 +745,7 @@ followed_all = 0
                 followed_new = 0
                 relax_point = random.randint(7, 14)
                 pass
+
             if self.follow_restrict.get(acc_to_follow, 0) < self.follow_times:
                 followed = follow_given_user(self.browser,
                                               self.username,
@@ -767,7 +779,7 @@ followed_all = 0
             else:
                 self.logger.info('---> {} has already been followed more than '
                                  '{} times'.format(
-                    acc_to_follow, str(self.follow_times)))
+                                    acc_to_follow, str(self.follow_times)))
                 sleep(1)
 
         self.not_valid_users += not_valid_users
@@ -775,17 +787,17 @@ followed_all = 0
         return followed_all
 
 
-    def set_relationship_bounds(self,
-                                enabled=None,
-                                potency_ratio=None,
-                                delimit_by_numbers=None,
-                                max_followers=None,
-                                max_following=None,
-                                min_followers=None,
-                                min_following=None):
+    def set_relationship_bounds (self,
+                                  enabled=None,
+                                   potency_ratio=None,
+                                    delimit_by_numbers=None,
+                                     max_followers=None,
+                                      max_following=None,
+                                       min_followers=None,
+                                        min_following=None):
         """Sets the potency ratio and limits to the provide an efficient activity between the targeted masses"""
-        self.potency_ratio = potency_ratio if enabled == True else None
-        self.delimit_by_numbers = delimit_by_numbers if enabled == True else None
+        self.potency_ratio = potency_ratio if enabled==True else None
+        self.delimit_by_numbers = delimit_by_numbers if enabled==True else None
 
         self.max_followers = max_followers
         self.min_followers = min_followers
@@ -793,23 +805,29 @@ followed_all = 0
         self.max_following = max_following
         self.min_following = min_following
 
-    def set_delimit_liking(self,
-                           enabled=None,
-                           max=None,
-                           min=None):
 
-        self.delimit_liking = True if enabled == True else False
+
+    def set_delimit_liking(self,
+                            enabled=None,
+                             max=None,
+                              min=None):
+
+        self.delimit_liking = True if enabled==True else False
         self.max_likes = max
         self.min_likes = min
 
-    def set_delimit_commenting(self,
-                               enabled=False,
-                               max=None,
-                               min=None):
 
-        self.delimit_commenting = True if enabled == True else False
+
+    def set_delimit_commenting(self,
+                                enabled=False,
+                                 max=None,
+                                  min=None):
+
+        self.delimit_commenting = True if enabled==True else False
         self.max_comments = max
         self.min_comments = min
+
+
 
     def like_by_locations(self,
                           locations=None,
@@ -915,15 +933,12 @@ followed_all = 0
 
                             # comments
                             if (self.do_comment and
-                                        user_name not in self.dont_include and
-                                    checked_img and
+                                user_name not in self.dont_include and
+                                checked_img and
                                     commenting):
 
                                 if self.delimit_commenting:
-                                    self.commenting_approved, disapproval_reason = verify_commenting(self.browser,
-                                                                                                     self.max_comments,
-                                                                                                     self.min_comments,
-                                                                                                     self.logger)
+                                    self.commenting_approved, disapproval_reason = verify_commenting(self.browser, self.max_comments, self.min_comments, self.logger)
 
                                 if self.commenting_approved:
                                     if temp_comments:
@@ -949,11 +964,11 @@ followed_all = 0
 
                             # following
                             if (self.do_follow and
-                                        user_name not in self.dont_include and
-                                    checked_img and
-                                    following and
-                                        self.follow_restrict.get(user_name, 0) <
-                                        self.follow_times):
+                                user_name not in self.dont_include and
+                                checked_img and
+                                following and
+                                self.follow_restrict.get(user_name, 0) <
+                                    self.follow_times):
 
                                 followed += follow_user(self.browser,
                                                         self.follow_restrict,
@@ -992,10 +1007,10 @@ followed_all = 0
         return self
 
     def comment_by_locations(self,
-                             locations=None,
-                             amount=50,
-                             media=None,
-                             skip_top_posts=True):
+                      locations=None,
+                      amount=50,
+                      media=None,
+                      skip_top_posts=True):
         """Likes (default) 50 images per given locations"""
         if self.aborting:
             return self
@@ -1087,16 +1102,14 @@ followed_all = 0
                                     self.logger.error(
                                         'Image check error: {}'.format(err))
 
+
                             if (self.do_comment and
-                                        user_name not in self.dont_include and
-                                    checked_img and
+                                user_name not in self.dont_include and
+                                checked_img and
                                     commenting):
 
                                 if self.delimit_commenting:
-                                    self.commenting_approved, disapproval_reason = verify_commenting(self.browser,
-                                                                                                     self.max_comments,
-                                                                                                     self.min_comments,
-                                                                                                     self.logger)
+                                    self.commenting_approved, disapproval_reason = verify_commenting(self.browser, self.max_comments, self.min_comments, self.logger)
 
                                 if self.commenting_approved:
                                     if temp_comments:
@@ -1121,11 +1134,11 @@ followed_all = 0
                                 sleep(1)
 
                             if (self.do_follow and
-                                        user_name not in self.dont_include and
-                                    checked_img and
-                                    following and
-                                        self.follow_restrict.get(user_name, 0) <
-                                        self.follow_times):
+                                user_name not in self.dont_include and
+                                checked_img and
+                                following and
+                                self.follow_restrict.get(user_name, 0) <
+                                    self.follow_times):
 
                                 followed += follow_user(self.browser,
                                                         self.follow_restrict,
@@ -1242,8 +1255,6 @@ followed_all = 0
                             continue
                         else:
                             web_adress_navigator(self.browser, link)
-                    # if not inappropriate and self.delimit_liking:
-                    # self.liking_approved = verify_liking(self.browser, self.max_likes, self.min_likes, self.logger)
 
                         #try to like
                         liked = like_image(self.browser,
@@ -1252,23 +1263,25 @@ followed_all = 0
                                            self.logger,
                                            self.logfolder)
 
-                        sleepSeconds = randint(15, 30)
-                        self.logger.info("like_by_tags: Going to sleep for %s seconds", sleepSeconds)
-                        sleep(sleepSeconds)
-
                         if liked:
-                            self.logger.info("like_by_tags: Link %s was liked. User %s" %(link, user_name))
 
-                            insertBotAction(self.campaign['id_campaign'], self.campaign['id_user'],
-                                            None, None, user_name,
-                                            None, None,None,
-                                            link, 'like_posts_by_hashtag', tag, None)
+                            sleepSeconds = randint(15, 30)
+                            self.logger.info("like_by_tags: Going to sleep for %s seconds", sleepSeconds)
+                            sleep(sleepSeconds)
+
+                            if liked:
+                                self.logger.info("like_by_tags: Link %s was liked. User %s" % (link, user_name))
+
+                                insertBotAction(self.campaign['id_campaign'], self.campaign['id_user'],
+                                                None, None, user_name,
+                                                None, None, None,
+                                                link, 'like_posts_by_hashtag', tag, None)
 
                             if interact:
                                 username = (self.browser.
                                     find_element_by_xpath(
-                                    '//article/header/div[2]/'
-                                    'div[1]/div/a'))
+                                        '//article/header/div[2]/'
+                                        'div[1]/div/a'))
 
                                 username = username.get_attribute("title")
                                 name = []
@@ -1276,7 +1289,7 @@ followed_all = 0
 
                                 self.logger.info(
                                     '--> User followed: {}'
-                                        .format(name))
+                                    .format(name))
                                 self.like_by_users(
                                     name,
                                     self.user_interact_amount,
@@ -1305,16 +1318,14 @@ followed_all = 0
                                     self.logger.error(
                                         'Image check error: {}'.format(err))
 
+
                             if (self.do_comment and
-                                        user_name not in self.dont_include and
-                                    checked_img and
+                                user_name not in self.dont_include and
+                                checked_img and
                                     commenting):
 
                                 if self.delimit_commenting:
-                                    self.commenting_approved, disapproval_reason = verify_commenting(self.browser,
-                                                                                                     self.max_comments,
-                                                                                                     self.min_comments,
-                                                                                                     self.logger)
+                                    self.commenting_approved, disapproval_reason = verify_commenting(self.browser, self.max_comments, self.min_comments, self.logger)
 
                                 if self.commenting_approved:
                                     if temp_comments:
@@ -1339,11 +1350,11 @@ followed_all = 0
                                 sleep(1)
 
                             if (self.do_follow and
-                                        user_name not in self.dont_include and
-                                    checked_img and
-                                    following and
-                                        self.follow_restrict.get(user_name, 0) <
-                                        self.follow_times):
+                                user_name not in self.dont_include and
+                                checked_img and
+                                following and
+                                self.follow_restrict.get(user_name, 0) <
+                                    self.follow_times):
 
                                 followed += follow_user(self.browser,
                                                         self.follow_restrict,
@@ -1433,9 +1444,9 @@ followed_all = 0
                 continue
 
             if (self.do_follow and
-                        username not in self.dont_include and
-                    following and
-                        self.follow_restrict.get(username, 0) < self.follow_times):
+                username not in self.dont_include and
+                following and
+                    self.follow_restrict.get(username, 0) < self.follow_times):
                 followed += follow_user(self.browser,
                                         self.follow_restrict,
                                         self.username,
@@ -1505,16 +1516,14 @@ followed_all = 0
                                     self.logger.error(
                                         'Image check error: {}'.format(err))
 
+
                             if (self.do_comment and
-                                        user_name not in self.dont_include and
-                                    checked_img and
+                                user_name not in self.dont_include and
+                                checked_img and
                                     commenting):
 
                                 if self.delimit_commenting:
-                                    self.commenting_approved, disapproval_reason = verify_commenting(self.browser,
-                                                                                                     self.max_comments,
-                                                                                                     self.min_comments,
-                                                                                                     self.logger)
+                                    self.commenting_approved, disapproval_reason = verify_commenting(self.browser, self.max_comments, self.min_comments, self.logger)
 
                                 if self.commenting_approved:
                                     if temp_comments:
@@ -1651,10 +1660,10 @@ followed_all = 0
                     if not inappropriate:
 
                         if (self.do_follow and
-                                    username not in self.dont_include and
-                                following and
-                                    self.follow_restrict.get(
-                                        username, 0) < self.follow_times):
+                            username not in self.dont_include and
+                            following and
+                            self.follow_restrict.get(
+                                username, 0) < self.follow_times):
 
                             followed += follow_user(
                                 self.browser,
@@ -1673,8 +1682,7 @@ followed_all = 0
                         liking = random.randint(0, 100) <= self.like_percentage
 
                         if self.do_like and liking and self.delimit_liking:
-                            self.liking_approved = verify_liking(self.browser, self.max_likes, self.min_likes,
-                                                                 self.logger)
+                            self.liking_approved = verify_liking(self.browser, self.max_likes, self.min_likes, self.logger)
 
                         if self.do_like and liking and self.liking_approved:
                             liked = like_image(self.browser,
@@ -1708,15 +1716,12 @@ followed_all = 0
                                         'Image check error: {}'.format(err))
 
                             if (self.do_comment and
-                                        user_name not in self.dont_include and
-                                    checked_img and
+                                user_name not in self.dont_include and
+                                checked_img and
                                     commenting):
 
                                 if self.delimit_commenting:
-                                    self.commenting_approved, disapproval_reason = verify_commenting(self.browser,
-                                                                                                     self.max_comments,
-                                                                                                     self.min_comments,
-                                                                                                     self.logger)
+                                    self.commenting_approved, disapproval_reason = verify_commenting(self.browser, self.max_comments, self.min_comments, self.logger)
 
                                 if self.commenting_approved:
                                     if temp_comments:
@@ -2178,6 +2183,7 @@ followed_all = 0
         """Unfollows (default) 10 users from your following list"""
         self.logger.info(
             "--> unfollow_users, amount: {} ".format(amount))
+
         if unfollow_after is not None:
             if not python_version().startswith(('2.7', '3')):
                 self.logger.warning("`unfollow_after` argument is not available for Python versions below 2.7")
@@ -2224,10 +2230,10 @@ followed_all = 0
         return self
 
     def like_by_feed_generator(self,
-                               amount=50,
-                               randomize=False,
-                               unfollow=False,
-                               interact=False):
+                     amount=50,
+                     randomize=False,
+                     unfollow=False,
+                     interact=False):
         """Like the users feed"""
 
         if self.aborting:
@@ -2310,7 +2316,7 @@ followed_all = 0
                                 else:
                                     web_adress_navigator(self.browser, link)
 
-                            #try to like
+                                #try to like
                                 liked = like_image(self.browser,
                                                    user_name,
                                                    self.blacklist,
@@ -2319,9 +2325,9 @@ followed_all = 0
 
                                 if liked:
                                     username = (self.browser.
-                                        find_element_by_xpath(
-                                        '//article/header/div[2]/'
-                                        'div[1]/div/a'))
+                                                find_element_by_xpath(
+                                                    '//article/header/div[2]/'
+                                                    'div[1]/div/a'))
 
                                     username = username.get_attribute("title")
                                     name = []
@@ -2330,7 +2336,7 @@ followed_all = 0
                                     if interact:
                                         self.logger.info(
                                             '--> User followed: {}'
-                                                .format(name))
+                                            .format(name))
                                         self.like_by_users(
                                             name,
                                             self.user_interact_amount,
@@ -2362,13 +2368,13 @@ followed_all = 0
                                                 'Image check error:'
                                                 ' {}'.format(err))
 
+
                                     if (self.do_comment and
-                                                user_name not in self.dont_include and
+                                        user_name not in self.dont_include and
                                             checked_img and
                                             commenting):
                                         if self.delimit_commenting:
-                                            self.commenting_approved, disapproval_reason = verify_commenting(
-                                                self.browser, self.max_comments, self.min_comments, self.logger)
+                                            self.commenting_approved, disapproval_reason = verify_commenting(self.browser, self.max_comments, self.min_comments, self.logger)
 
                                         if self.commenting_approved:
                                             if temp_comments:
@@ -2384,12 +2390,12 @@ followed_all = 0
                                                     self.comments +
                                                     self.photo_comments)
                                             commented += comment_image(
-                                                self.browser,
-                                                user_name,
-                                                comments,
-                                                self.blacklist,
-                                                self.logger,
-                                                self.logfolder)
+                                                            self.browser,
+                                                            user_name,
+                                                            comments,
+                                                            self.blacklist,
+                                                            self.logger,
+                                                            self.logfolder)
                                         else:
                                             self.logger.info(disapproval_reason)
                                     else:
@@ -2397,11 +2403,11 @@ followed_all = 0
                                         sleep(1)
 
                                     if (self.do_follow and
-                                                user_name not in self.dont_include and
-                                            checked_img and
-                                            following and
-                                                self.follow_restrict.get(
-                                                    user_name, 0) < self.follow_times):
+                                        user_name not in self.dont_include and
+                                        checked_img and
+                                        following and
+                                        self.follow_restrict.get(
+                                            user_name, 0) < self.follow_times):
                                         followed += follow_user(
                                             self.browser,
                                             self.follow_restrict,
@@ -2509,11 +2515,11 @@ followed_all = 0
         self.logger.info("end: Done stopping the bot !")
 
     def follow_by_tags(self,
-                       tags=None,
-                       amount=50,
-                       media=None,
-                       skip_top_posts=True,
-                       use_smart_hashtags=False):
+                     tags=None,
+                     amount=50,
+                     media=None,
+                     skip_top_posts=True,
+                     use_smart_hashtags=False):
         if self.aborting:
             return self
 
