@@ -523,7 +523,7 @@ def check_link(browser, post_link, dont_like, ignore_if_contains, logger):
 
     logger.info('Image from: {}'.format(user_name.encode('utf-8')))
     logger.info('Link: {}'.format(post_link.encode('utf-8')))
-    #logger.info('Description: {}'.format(image_text.encode('utf-8')))
+    logger.info('Description: {}'.format(image_text.encode('utf-8')))
 
 
     if any((word in image_text for word in ignore_if_contains)):
