@@ -1494,7 +1494,8 @@ class InstaPy:
                           usernames,
                           amount=10,
                           randomize=False,
-                          media=None):
+                          media=None,
+                          source=None):
         """Likes some amounts of images for each usernames"""
         if self.aborting:
             return self
@@ -1511,7 +1512,7 @@ class InstaPy:
         for index, username in enumerate(usernames):
             self.logger.info(
                 'Username [{}/{}]'.format(index + 1, len(usernames)))
-            self.logger.info('--> {}'.format(username.encode('utf-8')))
+            self.logger.info('--> {} / source: {}'.format(username.encode('utf-8'), source))
             
             validation, details = validate_username(self.browser,
                                            username,
@@ -1787,7 +1788,8 @@ class InstaPy:
                     self.interact_by_users(interaction_user,
                                              self.user_interact_amount,
                                               self.user_interact_random,
-                                                self.user_interact_media)
+                                                self.user_interact_media,
+                                                 user)
                     sleep(1)
 
         self.logger.info(

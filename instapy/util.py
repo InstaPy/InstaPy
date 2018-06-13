@@ -126,6 +126,42 @@ def validate_username(browser,
     # if everything ok
     return True, "Valid user"
 
+def update_analytics(username,
+                     source,
+                     action):
+    """Records activity to build analytic patterns"""
+
+    conn = sqlite3.connect(Settings.database_location)
+    
+    with conn:
+        conn.row_factory = sqlite3.Row
+        cur = conn.cursor()
+        
+        sqlFetch = ("SELECT * FROM analytics WHERE username = ?")
+        cur.execute(sqlFetch, username)
+        data = cur.fetchone()
+        
+        if data is None:
+            data = dict()
+            data['likes'] = 0
+            data['comments'] = 0
+            data['followed'] = 0
+            data[action] = 1
+            #username, source, likes, comments, followed, converted, date
+            sqlInsert = ("INSERT INTO analytics VALUES "
+                         "(?, ?, ?, ?, ?, 0, date('now'))")
+            cur.execute(sqlInsert, (username, source, data['likes'],
+                                    data['comments'], data['followed']))
+            
+        else:
+            data = dict(data)
+            data[action] += 1
+    
+            sql = ("UPDATE analytics set ? = ?
+                   "WHERE username = ?")
+            cur.execute(sql, (action, data[action], username))
+    
+        conn.commit()
 
 def update_activity(action=None):
     """Record every Instagram server call (page load, content load, likes,
