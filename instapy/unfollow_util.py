@@ -55,6 +55,30 @@ def set_automated_followed_pool(username, logger, logfolder, unfollow_after):
     return automatedFollowedPool
 
 
+def get_following_status(browser, person, logger):
+
+    following = False
+    try:
+        follow_button = browser.find_element_by_xpath(
+            "//*[contains(text(), 'Follow')]")
+        if follow_button.text == 'Following':
+            following = "Following"
+        else:
+            if follow_button.text in ['Follow', 'Follow Back']:
+                following = False
+            else:
+                follow_button = browser.find_element_by_xpath(
+                    "//*[contains(text(), 'Requested')]")
+                if follow_button.text == "Requested":
+                    following = "Requested"
+    except:
+        logger.error(
+            '--> Unfollow error with {},'
+            ' maybe no longer exists...'
+                .format(person.encode('utf-8')))
+
+    return following
+
 def unfollow(browser,
              username,
              amount,
@@ -94,6 +118,7 @@ def unfollow(browser,
         try:
             hasSlept = False
             for person in automatedFollowedPool:
+                logger.info('Start unfollowing person:{}'.format(person))
                 if unfollowNum >= amount:
                     logger.warning(
                         "--> Total unfollowNum reached it's amount given {}"
@@ -408,7 +433,8 @@ def follow_user(browser, follow_restrict, login, user_name, blacklist, logger, l
     """Follows the user of the currently opened image"""
     follow_xpath =  "//button[text()='Follow']"
     try:
-        sleep(2)
+	sleep(2)
+	
         follow_button = browser.find_element_by_xpath(follow_xpath)
 
         if follow_button.is_displayed():
