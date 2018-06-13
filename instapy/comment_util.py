@@ -61,13 +61,13 @@ def comment_image(browser, username, comments, blacklist, logger, logfolder):
             if blacklist['enabled'] is True:
                 action = 'commented'
                 add_user_to_blacklist(
-                    browser, username, blacklist['campaign'], action, logger, logfolder
+                    username, blacklist['campaign'], action, logger, logfolder
                 )
         else:
             logger.warning('--> Warning: Comment Action Likely Failed:'
                            ' Comment Element not found')
     except InvalidElementStateException:
-        logger.info('--> Warning: Comment Action Likely Failed: Probably InvalidElementStateException')
+        logger.warning('--> Warning: Comment Action Likely Failed: Probably InvalidElementStateException')
 
     logger.info("--> Commented: {}".format(rand_comment.encode('utf-8')))
     sleep(2)
@@ -87,9 +87,8 @@ def verify_commenting(browser, max, min, logger):
                 comments_disabled = browser.execute_script(
                     "return window._sharedData.entry_data."
                     "PostPage[0].graphql.shortcode_media.comments_disabled")            
-            except:
-                logger.info("Failed to check comments' status for verification...\n")
-                raise
+            except Exception as e:
+                logger.info("Failed to check comments' status for verification!\n\t{}".format(str(e).encode("utf-8"))) 
                 return True, 'Verification failure'
 
         if comments_disabled == True:
@@ -99,9 +98,8 @@ def verify_commenting(browser, max, min, logger):
             comments_count = browser.execute_script(
                 "return window._sharedData.entry_data."
                 "PostPage[0].graphql.shortcode_media.edge_media_to_comment.count")
-        except:
-            logger.info("Failed to check comments' count for verification...\n")
-            raise
+        except Exception as e:
+            logger.info("Failed to check comments' count for verification!\n\t{}".format(str(e).encode("utf-8"))) 
             return True, 'Verification failure'
 
         if max is not None and comments_count > max:

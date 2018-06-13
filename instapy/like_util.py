@@ -1,3 +1,4 @@
+import time
 import re
 import random
 
@@ -10,10 +11,13 @@ from selenium.common.exceptions import WebDriverException
 from selenium.common.exceptions import NoSuchElementException
 
 from .time_util import sleep
-from .util import update_activity
 from .util import add_user_to_blacklist
 from .util import click_element
+from .util import is_private_profile
+from .util import update_activity
 from .util import web_adress_navigator
+from .util import get_number_of_posts
+from .util import remove_duplicated_from_list_keep_order
 
 
 def get_links_from_feed(browser, amount, num_of_search, logger):
@@ -90,7 +94,7 @@ def get_links_for_location(browser,
         main_elem = browser.find_element_by_xpath('//main/article/div[1]')
         top_posts = []
     sleep(2)
-    
+
     try:
         possible_posts = browser.execute_script(
             "return window._sharedData.entry_data."
@@ -171,9 +175,10 @@ def get_links_for_location(browser,
 def get_links_for_tag(browser,
                       tag,
                       amount,
-                      logger,
-                      media=None,
-                      skip_top_posts=True):
+                      skip_top_posts,
+                      randomize,
+                      media,
+                      logger):
     """Fetches the number of links specified
     by amount and returns a list of links"""
 
@@ -228,7 +233,7 @@ def get_links_for_tag(browser,
 
     logger.info("desired amount: {}  |  top posts [{}]: {}  |  possible posts: {}".format(amount,
                                       ('enabled' if not skip_top_posts else 'disabled'), len(top_posts), possible_posts))
-    
+
     if possible_posts is not None:
         possible_posts = possible_posts if not skip_top_posts else possible_posts-len(top_posts)
         amount = possible_posts if amount > possible_posts else amount
@@ -288,9 +293,12 @@ def get_links_for_tag(browser,
                 nap = 1.5
     except:
         raise
-    
+
     sleep(4)
-    
+
+    if randomize == True:
+        random.shuffle(links)
+
     return links[:amount]
 
 
@@ -324,8 +332,7 @@ def get_links_for_username(browser,
     abort = True
 
     try:
-        is_private = body_elem.find_element_by_xpath(
-            '//h2[@class="_kcrwx"]')
+        is_private = is_private_profile(browser, logger)
     except:
         logger.info('Interaction begin...')
     else:
@@ -337,98 +344,42 @@ def get_links_for_username(browser,
         logger.error('Intagram error: The link you followed may be broken, or the page may have been removed...')
         return False
 
-    try:
-        load_button = body_elem.find_element_by_xpath(
-            '//a[contains(@class, "_1cr2e _epyes")]')
-    except:
-        try:
-            # scroll down to load posts
-            for i in range(int(ceil(amount/12))):
-                browser.execute_script(
-                    "window.scrollTo(0, document.body.scrollHeight);")
-                sleep(2)
-        except:
-            logger.warning(
-                'Load button not found, working with current images!')
-        else:
-            abort = False
-            body_elem.send_keys(Keys.END)
-            sleep(2)
-            # update server calls
-            update_activity()
-    else:
-        abort = False
-        body_elem.send_keys(Keys.END)
-        sleep(2)
-        click_element(browser, load_button) # load_button.click()
-        # update server calls
-        update_activity()
-
-    body_elem.send_keys(Keys.HOME)
-    sleep(2)
-
-    # Get Links
-    main_elem = browser.find_element_by_tag_name('article')
-    link_elems = main_elem.find_elements_by_tag_name('a')
-    total_links = len(link_elems)
-    # Check there is at least one link
-    if total_links == 0:
-        return False
+    #Get links
     links = []
-    filtered_links = 0
-    try:
-        if link_elems:
-            links = [link_elem.get_attribute('href') for link_elem in link_elems
-                     if link_elem and link_elem.text in media]
-            filtered_links = len(links)
+    main_elem = browser.find_element_by_tag_name('article')
+    posts_count = get_number_of_posts(browser)
+    attempt = 0
 
-    except BaseException as e:
-        logger.error("link_elems error {}".format(str(e)))
+    if posts_count is not None and amount > posts_count:
+        logger.info("You have requested to get {} posts from {}'s profile page BUT"
+                    " there only {} posts available :D".format(amount, username, posts_count))
+        amount = posts_count
 
-    if randomize:
-        # Expanding the pooulation for better random distribution
-        amount = amount * 5
+    while len(links) < amount:
+        initial_links = links
+        body_elem.send_keys(Keys.HOME)
+        # update server calls after a scroll request
+        update_activity()
+        sleep(0.66)
 
-    while (filtered_links < amount) and not abort:
-        amount_left = amount - filtered_links
+        # using `extend`  or `+=` results reference stay alive which affects previous assignment (can use `copy()` for it)
+        links = links + get_links(browser, username, logger, media, main_elem)
+        links = sorted(set(links), key=links.index)
 
-        # Average items of the right media per page loaded (total links checked for not zero)
-        new_per_page = ceil(12 * filtered_links / total_links)
-
-        if new_per_page == 0:
-            # Avoid division by zero
-            new_per_page = 1. / 12.
-        # Number of page load needed
-        new_needed = int(ceil(amount_left / new_per_page))
-
-        if new_needed > 12:
-            # Don't go bananas trying to get all of instagram!
-            new_needed = 12
-
-        for i in range(new_needed):  # add images x * 12
-            # Keep the latest window active while loading more posts
-            before_load = total_links
-            body_elem.send_keys(Keys.END)
-            # update server calls
-            update_activity()
-            sleep(1)
-            body_elem.send_keys(Keys.HOME)
-            sleep(1)
-            link_elems = main_elem.find_elements_by_tag_name('a')
-            total_links = len(link_elems)
-            abort = (before_load == total_links)
-            if abort:
+        if len(links) == len(initial_links):
+            if attempt >= 7:
+                logger.info("There are possibly less posts than {} in {}'s profile page!".format(amount, username))
                 break
+            else:
+                attempt += 1
+        else:
+            attempt = 0
 
-        links = [link_elem.get_attribute('href') for link_elem in link_elems
-                 if link_elem.text in media]
-        filtered_links = len(links)
-
-    if randomize:
-        # Shuffle the population index
-        links = random.sample(links, filtered_links)
+    if randomize == True:
+        random.shuffle(links)
 
     return links[:amount]
+
 
 
 def check_link(browser, post_link, dont_like, ignore_if_contains, logger):
@@ -451,7 +402,7 @@ def check_link(browser, post_link, dont_like, ignore_if_contains, logger):
 
     #Check URL of the webpage, if it already is post's page, then do not navigate to it again
     web_adress_navigator(browser, post_link)
-        
+
     """Check if the Post is Valid/Exists"""
     try:
         post_page = browser.execute_script(
@@ -559,15 +510,14 @@ def check_link(browser, post_link, dont_like, ignore_if_contains, logger):
 
 def like_image(browser, username, blacklist, logger, logfolder):
     """Likes the browser opened image"""
-    like_xpath = "//a[@role='button']/span[text()='Like']/.."
-    unlike_xpath = "//a[@role='button']/span[text()='Unlike']"
-	
-    # fetch spans fast
-    spans = [x.text.lower() for x in browser.find_elements_by_xpath("//article//a[@role='button']/span")]
 
-    if 'like' in spans:
-        like_elem = browser.find_elements_by_xpath(like_xpath)
+    like_xpath = "//button/span[@aria-label='Like']"
+    unlike_xpath = "//button/span[@aria-label='Unlike']"
 
+    # find first for like element
+    like_elem = browser.find_elements_by_xpath(like_xpath)
+
+    if len(like_elem) == 1:
         # sleep real quick right before clicking the element
         sleep(2)
         click_element(browser, like_elem[0])
@@ -579,7 +529,7 @@ def like_image(browser, username, blacklist, logger, logfolder):
             if blacklist['enabled'] is True:
                 action = 'liked'
                 add_user_to_blacklist(
-                    browser, username, blacklist['campaign'], action, logger, logfolder
+                    username, blacklist['campaign'], action, logger, logfolder
                 )
             sleep(2)
             return True
@@ -661,7 +611,7 @@ def verify_liking(browser, max, min, logger):
                     logger.info("Failed to check likes' count\n")
                     raise
                     return True
-        
+
         if max is not None and likes_count > max:
             logger.info("Not liked this post! ~more likes exist off maximum limit at {}".format(likes_count))
             return False

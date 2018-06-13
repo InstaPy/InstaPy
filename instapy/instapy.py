@@ -38,18 +38,18 @@ from .time_util import set_sleep_percentage
 from .util import get_active_users
 from .util import validate_username
 from .util import web_adress_navigator
+from .util import interruption_handler
 from .util import highlight_print
+from .util import dump_record_activity
 from .unfollow_util import get_given_user_followers
 from .unfollow_util import get_given_user_following
 from .unfollow_util import unfollow
 from .unfollow_util import unfollow_user
 from .unfollow_util import follow_user
 from .unfollow_util import follow_given_user
-from .unfollow_util import load_follow_restriction
+from .unfollow_util import follow_restriction
 from .unfollow_util import dump_follow_restriction
 from .unfollow_util import set_automated_followed_pool
-from .feed_util import get_like_on_feed
-from .commenters_util import extract_post_info
 from .commenters_util import extract_information
 from .commenters_util import users_liked
 from .commenters_util import get_photo_urls_from_profile
@@ -59,6 +59,7 @@ from .relationship_tools import get_unfollowers
 from .relationship_tools import get_nonfollowers
 from .relationship_tools import get_fans
 from .relationship_tools import get_mutual_following
+from .database_engine import get_database
 
 
 
@@ -85,6 +86,7 @@ class InstaPy:
                  bypass_suspicious_attempt=False,
                  multi_logs=False):
 
+        self.ignore_user_validation = False
         if nogui:
             self.display = Display(visible=0, size=(800, 600))
             self.display.start()
@@ -100,6 +102,7 @@ class InstaPy:
 
         self.username = username or os.environ.get('INSTA_USER')
         self.password = password or os.environ.get('INSTA_PW')
+        Settings.profile["name"] = self.username
         self.nogui = nogui
         self.logfolder = Settings.log_location + os.path.sep
         if self.multi_logs == True:
@@ -129,12 +132,11 @@ class InstaPy:
         self.unfollowNumber = 0
         self.not_valid_users = 0
 
-        self.follow_restrict = load_follow_restriction(self.logfolder)
-
         self.follow_times = 1
         self.do_follow = False
         self.follow_percentage = 0
-        self.dont_include = []
+        self.dont_include = set()
+        self.white_list = set()
         self.blacklist = {'enabled': 'True', 'campaign': ''}
         self.automatedFollowedPool = {"all":[], "eligible":[]}
         self.do_like = False
@@ -155,6 +157,7 @@ class InstaPy:
         self.clarifai_img_tags = []
         self.clarifai_img_tags_skip = []
         self.clarifai_full_match = False
+        self.clarifai_logging_enabled = False;
 
         self.potency_ratio = 1.3466
         self.delimit_by_numbers = True
@@ -163,6 +166,14 @@ class InstaPy:
         self.max_following = 66834
         self.min_followers = 35
         self.min_following = 27
+
+        self.skip_user_logging_enabled = False
+        self.max_attempts_get_only_valid = 2
+        self.private_users = False
+        self.no_profile_pic = False
+        self.min_media = 0
+        self.max_media = -1
+        self.max_relationship_ratio = 1.78
 
         self.delimit_liking = False
         self.liking_approved = True
@@ -178,12 +189,14 @@ class InstaPy:
 
         self.bypass_suspicious_attempt = bypass_suspicious_attempt
 
-        self.simulation = True
+        self.simulation = {"enabled": True, "percentage": 100}
 
         self.aborting = False
 
         # Assign logger
         self.logger = self.get_instapy_logger(self.show_logs)
+
+        get_database(True)
 
         if self.selenium_local_session == True:
             self.set_selenium_local_session()
@@ -256,7 +269,6 @@ class InstaPy:
             #chrome_options.add_argument("--disable-infobars")
             chrome_options.add_argument("--mute-audio")
             chrome_options.add_argument('--dns-prefetch-disable')
-            chrome_options.add_argument('--no-sandbox')
             chrome_options.add_argument('--lang=en-US')
             chrome_options.add_argument('--disable-setuid-sandbox')
 
@@ -264,6 +276,7 @@ class InstaPy:
             # GUI-less browser. chromedriver 2.9 and above required
             if self.headless_browser:
                 chrome_options.add_argument('--headless')
+                chrome_options.add_argument('--no-sandbox')
                 # Replaces browser User Agent from "HeadlessChrome".
                 user_agent = "Chrome"
                 chrome_options.add_argument('user-agent={user_agent}'
@@ -468,19 +481,37 @@ class InstaPy:
         if self.aborting:
             return self
 
-        self.dont_include = friends or []
+        self.dont_include = set(friends) or set()
+        self.white_list = set(friends) or set()
 
+        return self
+
+    def set_skip_users(self,
+                       private_users=False,
+                       no_profile_pic=False,
+                       max_attempts=2,
+                       logging_enabled=False,
+                       min_media=0,
+                       max_media=-1):
+        if self.aborting:
+            return self
+        self.private_users = private_users
+        self.no_profile_pic = no_profile_pic
+        self.max_attempts_get_only_valid = max_attempts
+        self.skip_user_logging_enabled = logging_enabled
+        self.ignore_user_validation = True if private_users or no_profile_pic else False
+        self.min_media = min_media
+        self.max_media = max_media
         return self
 
     def set_switch_language(self, option=True):
         self.switch_language = option
         return self
 
-    def set_use_clarifai(self, enabled=False, api_key=None, full_match=False):
+    def set_use_clarifai(self, enabled=False, api_key=None, full_match=False, clarifai_logging_enabled=False):
         """
         Defines if the clarifai img api should be used
         Which 'project' will be used (only 5000 calls per month)
-
         Raises:
             InstaPyError if os is windows
         """
@@ -498,6 +529,8 @@ class InstaPy:
             self.clarifai_api_key = api_key
 
         self.clarifai_full_match = full_match
+
+        self.clarifai_logging_enabled = clarifai_logging_enabled
 
         return self
 
@@ -554,9 +587,7 @@ class InstaPy:
             self.clarifai_img_tags.append((tags, comment, comments))
             self.clarifai_img_tags_skip = tags_skip
 
-
         return self
-
 
     def follow_commenters(self, usernames, amount=10, daysold=365, max_pic=50, sleep_delay=600, interact=False):
         """ Follows users' commenters """
@@ -606,23 +637,22 @@ class InstaPy:
 
         return self
 
-
-    def follow_likers (self, usernames, photos_grab_amount=3, follow_likers_per_photo=3, randomize=True, sleep_delay=600, interact=False):
+    def follow_likers(self, usernames, photos_grab_amount=3, follow_likers_per_photo=3, randomize=True,
+                      sleep_delay=600, interact=False, likers_amount=25):
         """ Follows users' likers """
-
-        message = "Starting to follow likers.."
-        highlight_print(self.username, message, "feature", "info", self.logger)
+        self.logger.info("Starting to follow likers...")
 
         if not isinstance(usernames, list):
             usernames = [usernames]
 
-        if photos_grab_amount>12:
+        if photos_grab_amount > 12:
             self.logger.info("Sorry, you can only grab likers from first 12 photos for given username now.\n")
             photos_grab_amount = 12
 
         followed_all = 0
         followed_new = 0
-        relax_point = random.randint(7, 14)   # you can use some plain value `10` instead of this quitely randomized score
+        relax_point = random.randint(7,
+                                     14)  # you can use some plain value `10` instead of this quitely randomized score
 
         for username in usernames:
             photo_urls = get_photo_urls_from_profile(self.browser, username, photos_grab_amount, randomize)
@@ -631,31 +661,127 @@ class InstaPy:
                 photo_urls = [photo_urls]
 
             for photo_url in photo_urls:
-                likers = users_liked(self.browser, photo_url, follow_likers_per_photo)
-                # This way of iterating will prevent sleep interference between functions
-                random.shuffle(likers)
+                attempts = 1
+                grab_success = False
+                valid_likers = []
+                n_valid = 0
 
-                for liker in likers[:follow_likers_per_photo] :
-                    followed = self.follow_by_list(liker, self.follow_times, sleep_delay, interact)
-                    if followed > 0:
-                        followed_all += 1
-                        followed_new += 1
-                        self.logger.info('Total Follow: {}'.format(str(followed_all)))
-                        # Take a break after a good following
-                        if followed_new >= relax_point:
-                            delay_random = random.randint(ceil(sleep_delay*0.85), ceil(sleep_delay*1.14))
-                            self.logger.info('------=>  Followed {} new users ~sleeping about {}'.format(followed_new,
-                                                                        '{} seconds'.format(delay_random) if delay_random < 60 else
-                                                                        '{} minutes'.format(float("{0:.2f}".format(delay_random/60)))))
-                            sleep(delay_random)
-                            relax_point = random.randint(7, 14)
-                            followed_new=0
-                            pass
+                if self.max_attempts_get_only_valid < 1:
+                    print("max_attempts can't be less than 1. Using the minimun accettable value.\n")
+                    max_attempts = 1
+
+                elif self.max_attempts_get_only_valid > 3:
+                    print("Sorry, we can only retry 3 times. Using the maximum acceptable value.\n")
+                    max_attempts = 3
+                else:
+                    max_attempts = self.max_attempts_get_only_valid
+
+                previous_likers = []
+
+                while grab_success is False or attempts > max_attempts:
+                    likers = users_liked(self.browser, photo_url, likers_amount * attempts)
+                    if len(previous_likers) > 0:
+                        likers = [element for element in likers if element not in previous_likers]
+                    previous_likers.extend(likers)
+                    # This way of iterating will prevent sleep interference between functions
+                    random.shuffle(likers)
+                    validated_list = self.validate_likers_list(likers, follow_likers_per_photo - n_valid)
+                    valid_likers.extend(validated_list)
+
+                    # unique_likers=set(valid_likers)
+                    # valid_likers=list(unique_likers)
+                    if attempts >= max_attempts or grab_success or len(valid_likers) == follow_likers_per_photo:
+                        self.logger.info('--------> Finished to pick only valid users, picked {} users\n'
+                                         .format(len(valid_likers)))
+                        grab_success = True
+
+                        followed = self.follow_by_list(valid_likers, self.follow_times, sleep_delay, interact)
+
+                        if followed > 0:
+                            followed_all += followed
+                            followed_new += followed
+                            self.logger.info('Total Follow: {}'.format(str(followed_all)))
+                            # Take a break after a good following
+                            if followed_new >= relax_point and \
+                                    followed_all != (len(usernames) * photos_grab_amount) * follow_likers_per_photo:
+                                delay_random = random.randint(ceil(sleep_delay * 0.85), ceil(sleep_delay * 1.14))
+                                self.logger.info('------=>  Followed {} new users ~sleeping about {}'.format(
+                                    followed_new, '{} seconds'.format(delay_random) if delay_random < 60
+                                    else
+                                    '{} minutes'.format(float("{0:.2f}".format(delay_random / 60)))))
+                                sleep(delay_random)
+                                relax_point = random.randint(7,
+                                                             14)  # you can use some plain value `10`
+                                    # instead of this quitely randomized score
+                                followed_new = 0
+                                pass
+                    else:
+                        n_valid = len(valid_likers)
+                        if n_valid >= follow_likers_per_photo:
+                            grab_success = True
+                        if attempts == max_attempts:
+                            grab_success = True
+                            if n_valid == 0:
+                                self.logger.info(
+                                    '** -> Very bad luck, no valid users at all! after {} attempts\n'
+                                        .format(attempts))
+                            else:
+                                self.logger.info(
+                                    '** -> Grabbed {} users after {} attempts\n'
+                                        .format(n_valid, attempts))
+
+                        else:
+                            if n_valid == 0:
+                                self.logger.info('** -> Bad luck, no valid users at all! :/ '
+                                                 'this was the #{} attempt\n'.format(attempts))
+                            else:
+                                self.logger.info(
+                                    '** -> Grabbed {} users after {} attempts\n'
+                                        .format(n_valid, attempts))
+
+                        attempts += 1
 
         self.logger.info("Finished following likers!\n")
-
         return self
 
+    def validate_likers_list(self, likers, follow_likers_per_photo):
+        valid_likers = []
+        for liker in likers:
+            little_break = random.randint(2, 4)
+            self.logger.info('Take a little break of {} seconds before continue, to simulate user checking profile\n'
+                             .format(little_break))
+            sleep(little_break)
+            if len(valid_likers) == follow_likers_per_photo:
+                break
+            validation, details = validate_username(self.browser,
+                                                    liker,
+                                                    self.username,
+                                                    self.ignore_users,
+                                                    self.blacklist,
+                                                    self.private_users,
+                                                    self.no_profile_pic,
+                                                    self.potency_ratio,
+                                                    self.max_relationship_ratio,
+                                                    self.delimit_by_numbers,
+                                                    self.max_followers,
+                                                    self.max_following,
+                                                    self.min_followers,
+                                                    self.min_following,
+                                                    self.min_media,
+                                                    self.max_media,
+                                                    self.logger,
+                                                    self.skip_user_logging_enabled)
+            if validation is not True or liker == self.username:
+                self.logger.info(details)
+                continue
+            else:
+                if not follow_restriction("read", liker, self.follow_times, self.logger):
+                    valid_likers.append(liker)
+                    self.logger.info('** --> {} is a valid user, add to the list\n'.format(liker))
+                else:
+                    self.logger.info('---> {} has already been followed more than '
+                                     '{} times ~skipping user\n'.format(liker, str(self.follow_times)))
+        return valid_likers
 
     def follow_by_list(self, followlist, times=1, sleep_delay=600, interact=False):
         """Allows to follow by any scrapped list"""
@@ -665,102 +791,120 @@ class InstaPy:
         self.follow_times = times or 0
         if self.aborting:
             self.logger.info(">>> self aborting prevented")
-            #return self
-
+            # return self
+        not_valid_users = 0
         followed_all = 0
         followed_new = 0
-        not_valid_users = 0
-        relax_point = random.randint(7, 14)   # you can use some plain value `10` instead of this quitely randomized score
+        # not_valid_users = 0
+        relax_point = random.randint(7,
+                                     14)  # you can use some plain value `10` instead of this quitely randomized score
 
         for acc_to_follow in followlist:
-            # Verify if the user should be followed
-            validation, details = validate_username(self.browser,
-                                           acc_to_follow,
-                                           self.username,
-                                           self.ignore_users,
-                                           self.blacklist,
-                                           self.potency_ratio,
-                                           self.delimit_by_numbers,
-                                           self.max_followers,
-                                           self.max_following,
-                                           self.min_followers,
-                                           self.min_following,
-                                           self.logger)
-            if validation != True or acc_to_follow==self.username:
-                self.logger.info("--> Not a valid user: {}".format(details))
-                not_valid_users += 1
-                continue
+            if not self.ignore_user_validation:
+                if follow_restriction("read", acc_to_follow, self.follow_times, self.logger):
+                    continue
+                # Verify if the user should be followed
+                validation, details = validate_username(self.browser,
+                                                        acc_to_follow,
+                                                        self.username,
+                                                        self.ignore_users,
+                                                        self.blacklist,
+                                                        self.private_users,
+                                                        self.no_profile_pic,
+                                                        self.potency_ratio,
+                                                        self.max_relationship_ratio,
+                                                        self.delimit_by_numbers,
+                                                        self.max_followers,
+                                                        self.max_following,
+                                                        self.min_followers,
+                                                        self.min_following,
+                                                        self.min_media,
+                                                        self.max_media,
+                                                        self.logger,
+                                                        self.skip_user_logging_enabled)
+                if validation is not True or acc_to_follow == self.username:
+                    self.logger.info("--> Not a valid user: {}".format(details))
+                    not_valid_users += 1
+                    continue
 
             # Take a break after a good following
             if followed_new >= relax_point:
-                delay_random = random.randint(ceil(sleep_delay*0.85), ceil(sleep_delay*1.14))
-                self.logger.info('Followed {} new users  ~sleeping about {}'.format(followed_new,
-                                                            '{} seconds'.format(delay_random) if delay_random < 60 else
-                                                            '{} minutes'.format(float("{0:.2f}".format(delay_random/60)))))
+                delay_random = random.randint(ceil(sleep_delay * 0.85), ceil(sleep_delay * 1.14))
+                self.logger.info('Followed {} new users ~sleeping about {}'.format(followed_new,
+                                                                                   '{} seconds'.format(
+                                                                                       delay_random)
+                                                                                   if delay_random < 60
+                                                                                   else
+                                                                                   '{} minutes'.format(float(
+                                                                                       "{0:.2f}".format(
+                                                                                           delay_random / 60)))))
                 sleep(delay_random)
                 followed_new = 0
                 relax_point = random.randint(7, 14)
                 pass
 
-            if self.follow_restrict.get(acc_to_follow, 0) < self.follow_times:
+            if not follow_restriction("read", acc_to_follow, self.follow_times, self.logger):
                 followed = follow_given_user(self.browser,
-                                              self.username,
-                                              acc_to_follow,
-                                              self.follow_restrict,
-                                              self.blacklist,
-                                              self.logger,
-                                              self.logfolder)
+                                             self.username,
+                                             acc_to_follow,
+                                             self.blacklist,
+                                             self.logger,
+                                             self.logfolder)
+
                 sleep(random.randint(1, 3))
 
                 if followed:
                     self.followed += 1
                     followed_all += 1
                     followed_new += 1
-                    if len(followlist) > 1:   #print only for multiple follows, the others has own printers
+
+                    if len(followlist) > 1:  # print only for multiple follows, the others has own printers
                         self.logger.info('Total Follow: {}'.format(str(followed_all)))
 
                     # Check if interaction is expected
                     if interact and self.do_like:
                         do_interact = random.randint(0, 100) <= self.user_interact_percentage
                         # Do interactions if any
-                        if do_interact and self.user_interact_amount>0:
-                            original_do_follow = self.do_follow   # store the original value of `self.do_follow`
-                            self.do_follow = False   # disable following temporarily cos the user is already followed above
-                            self.interact_by_users(acc_to_follow,
-                                                    self.user_interact_amount,
-                                                     self.user_interact_random,
-                                                      self.user_interact_media)
-                            self.do_follow = original_do_follow   # revert back original `self.do_follow` value (either it was `False` or `True`)
-            else:
-                self.logger.info('---> {} has already been followed more than '
-                                 '{} times'.format(
-                                    acc_to_follow, str(self.follow_times)))
-                sleep(1)
+                        if do_interact and self.user_interact_amount > 0:
+                            interaction_user = [acc_to_follow]
+                            original_do_follow = self.do_follow  # store the original value of `self.do_follow`
+                            self.do_follow = False  # disable following temporarily cos the user is already followed above
+                            self.interact_by_users(interaction_user,
+                                                   self.user_interact_amount,
+                                                   self.user_interact_random,
+                                                   self.user_interact_media)
+                            # revert back original `self.do_follow` value (either it was `False` or `True`)
+                            self.do_follow = original_do_follow
+
+                    if followed_all < (len(followlist)-1):
+                        little_break = random.randint(15, 20)
+                        self.logger.info('Take a little break of {} seconds before following next user'
+                                         .format(little_break))
+                        sleep(little_break)
 
         self.not_valid_users += not_valid_users
 
         return followed_all
 
-
-    def set_relationship_bounds (self,
-                                  enabled=None,
-                                   potency_ratio=None,
-                                    delimit_by_numbers=None,
-                                     max_followers=None,
-                                      max_following=None,
-                                       min_followers=None,
-                                        min_following=None):
+    def set_relationship_bounds(self,
+                                enabled=None,
+                                potency_ratio=None,
+                                max_relationship_ratio=None,
+                                delimit_by_numbers=None,
+                                max_followers=None,
+                                max_following=None,
+                                min_followers=None,
+                                min_following=None):
         """Sets the potency ratio and limits to the provide an efficient activity between the targeted masses"""
-        self.potency_ratio = potency_ratio if enabled==True else None
-        self.delimit_by_numbers = delimit_by_numbers if enabled==True else None
+        self.max_relationship_ratio = max_relationship_ratio if enabled else None
+        self.potency_ratio = potency_ratio if enabled is True else None
+        self.delimit_by_numbers = delimit_by_numbers if enabled is True else None
 
         self.max_followers = max_followers
         self.min_followers = min_followers
 
         self.max_following = max_following
         self.min_following = min_following
-
-
 
     def set_delimit_liking(self,
                             enabled=None,
@@ -771,8 +915,6 @@ class InstaPy:
         self.max_likes = max
         self.min_likes = min
 
-
-
     def set_delimit_commenting(self,
                                 enabled=False,
                                  max=None,
@@ -782,7 +924,17 @@ class InstaPy:
         self.max_comments = max
         self.min_comments = min
 
+    def set_simulation(self, enabled=True, percentage=100):
+        """ Sets aside simulation parameters """
+        if enabled not in [True, False]:
+            self.logger.info("Invalid simulation parameter! Please use correct syntax with accepted values.")
 
+        elif enabled == False:
+            self.simulation["enabled"] = False
+
+        else:
+            percentage = 0 if percentage is None else percentage
+            self.simulation = {"enabled":True, "percentage":percentage}
 
     def like_by_locations(self,
                           locations=None,
@@ -842,13 +994,19 @@ class InstaPy:
                                                        self.username,
                                                        self.ignore_users,
                                                        self.blacklist,
+                                                       self.private_users,
+                                                       self.no_profile_pic,
                                                        self.potency_ratio,
+                                                       self.max_relationship_ratio,
                                                        self.delimit_by_numbers,
                                                        self.max_followers,
                                                        self.max_following,
                                                        self.min_followers,
                                                        self.min_following,
-                                                       self.logger)
+                                                       self.min_media,
+                                                       self.max_media,
+                                                       self.logger,
+                                                       self.skip_user_logging_enabled)
                         if validation != True:
                             self.logger.info("--> Not a valid user: {}".format(details))
                             not_valid_users += 1
@@ -880,7 +1038,8 @@ class InstaPy:
                                                     self.clarifai_img_tags,
                                                     self.clarifai_img_tags_skip,
                                                     self.logger,
-                                                    self.clarifai_full_match)
+                                                    self.clarifai_full_match,
+                                                    self.clarifai_logging_enabled)
                                     )
                                 except Exception as err:
                                     self.logger.error(
@@ -922,11 +1081,10 @@ class InstaPy:
                                 user_name not in self.dont_include and
                                 checked_img and
                                 following and
-                                self.follow_restrict.get(user_name, 0) <
-                                    self.follow_times):
+                                not follow_restriction("read", user_name,
+                                 self.follow_times, self.logger)):
 
                                 followed += follow_user(self.browser,
-                                                        self.follow_restrict,
                                                         self.username,
                                                         user_name,
                                                         self.blacklist,
@@ -945,13 +1103,13 @@ class InstaPy:
                 except NoSuchElementException as err:
                     self.logger.error('Invalid Page: {}'.format(err))
 
-        self.logger.info('Location: {}'.format(location.encode('utf-8')))
-        self.logger.info('Liked: {}'.format(liked_img))
-        self.logger.info('Already Liked: {}'.format(already_liked))
-        self.logger.info('Commented: {}'.format(commented))
-        self.logger.info('Followed: {}'.format(followed))
-        self.logger.info('Inappropriate: {}'.format(inap_img))
-        self.logger.info('Not valid users: {}\n'.format(not_valid_users))
+            self.logger.info('Location: {}'.format(location.encode('utf-8')))
+            self.logger.info('Liked: {}'.format(liked_img))
+            self.logger.info('Already Liked: {}'.format(already_liked))
+            self.logger.info('Commented: {}'.format(commented))
+            self.logger.info('Followed: {}'.format(followed))
+            self.logger.info('Inappropriate: {}'.format(inap_img))
+            self.logger.info('Not valid users: {}\n'.format(not_valid_users))
 
         self.followed += followed
         self.liked_img += liked_img
@@ -1016,13 +1174,19 @@ class InstaPy:
                                                        self.username,
                                                        self.ignore_users,
                                                        self.blacklist,
+                                                       self.private_users,
+                                                       self.no_profile_pic,
                                                        self.potency_ratio,
+                                                       self.max_relationship_ratio,
                                                        self.delimit_by_numbers,
                                                        self.max_followers,
                                                        self.max_following,
                                                        self.min_followers,
                                                        self.min_following,
-                                                       self.logger)
+                                                       self.min_media,
+                                                       self.max_media,
+                                                       self.logger,
+                                                       self.skip_user_logging_enabled)
                         if validation != True:
                             self.logger.info(details)
                             not_valid_users += 1
@@ -1052,7 +1216,8 @@ class InstaPy:
                                                     self.clarifai_img_tags,
                                                     self.clarifai_img_tags_skip,
                                                     self.logger,
-                                                    self.clarifai_full_match)
+                                                    self.clarifai_full_match,
+                                                    self.clarifai_logging_enabled)
                                     )
                                 except Exception as err:
                                     self.logger.error(
@@ -1093,11 +1258,10 @@ class InstaPy:
                                 user_name not in self.dont_include and
                                 checked_img and
                                 following and
-                                self.follow_restrict.get(user_name, 0) <
-                                    self.follow_times):
+                                not follow_restriction("read", user_name,
+                                 self.follow_times, self.logger)):
 
                                 followed += follow_user(self.browser,
-                                                        self.follow_restrict,
                                                         self.username,
                                                         user_name,
                                                         self.blacklist,
@@ -1132,10 +1296,11 @@ class InstaPy:
     def like_by_tags(self,
                      tags=None,
                      amount=50,
-                     media=None,
                      skip_top_posts=True,
                      use_smart_hashtags=False,
-                     interact=False):
+                     interact=False,
+                     randomize=False,
+                     media=None):
         """Likes (default) 50 images per given tag"""
         if self.aborting:
             return self
@@ -1165,9 +1330,10 @@ class InstaPy:
                 links = get_links_for_tag(self.browser,
                                           tag,
                                           amount,
-                                          self.logger,
+                                          skip_top_posts,
+                                          randomize,
                                           media,
-                                          skip_top_posts)
+                                          self.logger)
             except NoSuchElementException:
                 self.logger.info('Too few images, skipping this tag')
                 continue
@@ -1195,13 +1361,19 @@ class InstaPy:
                                                        self.username,
                                                        self.ignore_users,
                                                        self.blacklist,
+                                                       self.private_users,
+                                                       self.no_profile_pic,
                                                        self.potency_ratio,
+                                                       self.max_relationship_ratio,
                                                        self.delimit_by_numbers,
                                                        self.max_followers,
                                                        self.max_following,
                                                        self.min_followers,
                                                        self.min_following,
-                                                       self.logger)
+                                                       self.min_media,
+                                                       self.max_media,
+                                                       self.logger,
+                                                       self.skip_user_logging_enabled)
                         if validation != True:
                             self.logger.info(details)
                             not_valid_users += 1
@@ -1222,7 +1394,7 @@ class InstaPy:
                                 username = (self.browser.
                                     find_element_by_xpath(
                                         '//article/header/div[2]/'
-                                        'div[1]/div/a'))
+                                        'div/div[1]/a'))
 
                                 username = username.get_attribute("title")
                                 name = []
@@ -1253,7 +1425,8 @@ class InstaPy:
                                                     self.clarifai_img_tags,
                                                     self.clarifai_img_tags_skip,
                                                     self.logger,
-                                                    self.clarifai_full_match)
+                                                    self.clarifai_full_match,
+                                                    self.clarifai_logging_enabled)
                                     )
                                 except Exception as err:
                                     self.logger.error(
@@ -1295,11 +1468,10 @@ class InstaPy:
                                 user_name not in self.dont_include and
                                 checked_img and
                                 following and
-                                self.follow_restrict.get(user_name, 0) <
-                                    self.follow_times):
+                                not follow_restriction("read", user_name,
+                                 self.follow_times, self.logger)):
 
                                 followed += follow_user(self.browser,
-                                                        self.follow_restrict,
                                                         self.username,
                                                         user_name,
                                                         self.blacklist,
@@ -1360,13 +1532,19 @@ class InstaPy:
                                            self.username,
                                            self.ignore_users,
                                            self.blacklist,
+                                           self.private_users,
+                                           self.no_profile_pic,
                                            self.potency_ratio,
+                                           self.max_relationship_ratio,
                                            self.delimit_by_numbers,
                                            self.max_followers,
                                            self.max_following,
                                            self.min_followers,
                                            self.min_following,
-                                           self.logger)
+                                           self.min_media,
+                                           self.max_media,
+                                           self.logger,
+                                           self.skip_user_logging_enabled)
             if not validation:
                 self.logger.info("--> not a valid user: {}".format(details))
                 not_valid_users += 1
@@ -1387,9 +1565,9 @@ class InstaPy:
             if (self.do_follow and
                 username not in self.dont_include and
                 following and
-                    self.follow_restrict.get(username, 0) < self.follow_times):
+                not follow_restriction("read", username,
+                 self.follow_times, self.logger)):
                 followed += follow_user(self.browser,
-                                        self.follow_restrict,
                                         self.username,
                                         username,
                                         self.blacklist,
@@ -1451,7 +1629,8 @@ class InstaPy:
                                                     self.clarifai_img_tags,
                                                     self.clarifai_img_tags_skip,
                                                     self.logger,
-                                                    self.clarifai_full_match)
+                                                    self.clarifai_full_match,
+                                                    self.clarifai_logging_enabled)
                                     )
                                 except Exception as err:
                                     self.logger.error(
@@ -1548,13 +1727,19 @@ class InstaPy:
                                            self.username,
                                            self.ignore_users,
                                            self.blacklist,
+                                           self.private_users,
+                                           self.no_profile_pic,
                                            self.potency_ratio,
+                                           self.max_relationship_ratio,
                                            self.delimit_by_numbers,
                                            self.max_followers,
                                            self.max_following,
                                            self.min_followers,
                                            self.min_following,
-                                           self.logger)
+                                           self.min_media,
+                                           self.max_media,
+                                           self.logger,
+                                           self.skip_user_logging_enabled)
             if not validation:
                 self.logger.info("--> not a valid user: {}".format(details))
                 not_valid_users += 1
@@ -1588,7 +1773,7 @@ class InstaPy:
                                      "amount given: {}".format(liked_img))
                     break
 
-                self.logger.info('Post [{}/{}]'.format(liked_img + 1, amount))
+                self.logger.info('Post [{}/{}]'.format(liked_img + 1, len(links[:amount])))
                 self.logger.info(link)
 
                 try:
@@ -1605,12 +1790,11 @@ class InstaPy:
                         if (self.do_follow and
                             username not in self.dont_include and
                             following and
-                            self.follow_restrict.get(
-                                username, 0) < self.follow_times):
+                            not follow_restriction("read", username,
+                             self.follow_times, self.logger)):
 
                             followed += follow_user(
                                 self.browser,
-                                self.follow_restrict,
                                 self.username,
                                 username,
                                 self.blacklist,
@@ -1633,12 +1817,14 @@ class InstaPy:
                                                self.blacklist,
                                                self.logger,
                                                self.logfolder)
+                            if liked:
+
+                                total_liked_img += 1
+                                liked_img += 1
                         else:
                             liked = True
 
                         if liked:
-                            total_liked_img += 1
-                            liked_img += 1
                             checked_img = True
                             temp_comments = []
                             commenting = random.randint(
@@ -1652,7 +1838,8 @@ class InstaPy:
                                                     self.clarifai_img_tags,
                                                     self.clarifai_img_tags_skip,
                                                     self.logger,
-                                                    self.clarifai_full_match)
+                                                    self.clarifai_full_match,
+                                                    self.clarifai_logging_enabled)
                                     )
                                 except Exception as err:
                                     self.logger.error(
@@ -1773,7 +1960,6 @@ class InstaPy:
                                                                         amount,
                                                                         self.dont_include,
                                                                         randomize,
-                                                                        self.follow_restrict,
                                                                         self.blacklist,
                                                                         self.follow_times,
                                                                         self.simulation,
@@ -1806,13 +1992,20 @@ class InstaPy:
                                self.username,
                                self.ignore_users,
                                self.blacklist,
+                               self.private_users,
+                               self.no_profile_pic,
                                self.potency_ratio,
+                               self.max_relationship_ratio,
                                self.delimit_by_numbers,
                                self.max_followers,
                                self.max_following,
                                self.min_followers,
                                self.min_following,
-                               self.logger)
+                               self.min_media,
+                               self.max_media,
+                               self.logger,
+                               self.skip_user_logging_enabled)
+
                     if validation != True:
                         self.logger.info(details)
                         not_valid_users += 1
@@ -1893,7 +2086,6 @@ class InstaPy:
                                                                         amount,
                                                                         self.dont_include,
                                                                         randomize,
-                                                                        self.follow_restrict,
                                                                         self.blacklist,
                                                                         self.follow_times,
                                                                         self.simulation,
@@ -1926,13 +2118,20 @@ class InstaPy:
                                self.username,
                                self.ignore_users,
                                self.blacklist,
+                               self.private_users,
+                               self.no_profile_pic,
                                self.potency_ratio,
+                               self.max_relationship_ratio,
                                self.delimit_by_numbers,
                                self.max_followers,
                                self.max_following,
                                self.min_followers,
                                self.min_following,
-                               self.logger)
+                               self.min_media,
+                               self.max_media,
+                               self.logger,
+                               self.skip_user_logging_enabled)
+
                     if validation != True:
                         self.logger.info(details)
                         not_valid_users += 1
@@ -2011,7 +2210,6 @@ class InstaPy:
                                                                         amount,
                                                                         self.dont_include,
                                                                         randomize,
-                                                                        self.follow_restrict,
                                                                         self.blacklist,
                                                                         self.follow_times,
                                                                         self.simulation,
@@ -2046,13 +2244,20 @@ class InstaPy:
                                self.username,
                                self.ignore_users,
                                self.blacklist,
+                               self.private_users,
+                               self.no_profile_pic,
                                self.potency_ratio,
+                               self.max_relationship_ratio,
                                self.delimit_by_numbers,
                                self.max_followers,
                                self.max_following,
                                self.min_followers,
                                self.min_following,
-                               self.logger)
+                               self.min_media,
+                               self.max_media,
+                               self.logger,
+                               self.skip_user_logging_enabled)
+
                     if validation != True:
                         self.logger.info(details)
                         not_valid_users += 1
@@ -2129,13 +2334,12 @@ class InstaPy:
             self.logger.info("User '{}' [{}/{}]".format((user), index+1, len(usernames)))
 
             try:
-                person_list, simulated_list = get_given_user_followers(self.browser,
+                person_list, simulated_list = get_given_user_following(self.browser,
                                                                         self.username,
                                                                         user,
                                                                         amount,
                                                                         self.dont_include,
                                                                         randomize,
-                                                                        self.follow_restrict,
                                                                         self.blacklist,
                                                                         self.follow_times,
                                                                         self.simulation,
@@ -2170,13 +2374,19 @@ class InstaPy:
                                self.username,
                                self.ignore_users,
                                self.blacklist,
+                               self.private_users,
+                               self.no_profile_pic,
                                self.potency_ratio,
+                               self.max_relationship_ratio,
                                self.delimit_by_numbers,
                                self.max_followers,
                                self.max_following,
                                self.min_followers,
                                self.min_following,
-                               self.logger)
+                               self.min_media,
+                               self.max_media,
+                               self.logger,
+                               self.skip_user_logging_enabled)
                     if validation != True:
                         self.logger.info(details)
                         not_valid_users += 1
@@ -2266,6 +2476,7 @@ class InstaPy:
                                       self.automatedFollowedPool,
                                       self.relationship_data,
                                       self.dont_include,
+                                      self.white_list,
                                       sleep_delay,
                                       self.logger,
                                       self.logfolder)
@@ -2312,6 +2523,7 @@ class InstaPy:
         num_of_search = 0
         not_valid_users = 0
         history = []
+        link_not_found_loop_error = 0
 
         while liked_img < amount:
             try:
@@ -2320,6 +2532,16 @@ class InstaPy:
                                             amount,
                                             num_of_search,
                                             self.logger)
+
+                if len(links) > 0:
+                    link_not_found_loop_error = 0
+
+                if len(links) == 0:
+                    link_not_found_loop_error += 1
+                    if link_not_found_loop_error >= 10:
+                        self.logger.warning('Loop error, 0 links for for 10 times consecutively, exit loop')
+                        break
+
             except NoSuchElementException:
                 self.logger.warning('Too few images, aborting')
                 self.aborting = True
@@ -2366,13 +2588,20 @@ class InstaPy:
                                                                self.username,
                                                                self.ignore_users,
                                                                self.blacklist,
+                                                               self.private_users,
+                                                               self.no_profile_pic,
                                                                self.potency_ratio,
+                                                               self.max_relationship_ratio,
                                                                self.delimit_by_numbers,
                                                                self.max_followers,
                                                                self.max_following,
                                                                self.min_followers,
                                                                self.min_following,
-                                                               self.logger)
+                                                               self.min_media,
+                                                               self.max_media,
+                                                               self.logger,
+                                                               self.skip_user_logging_enabled)
+
                                 if validation != True:
                                     self.logger.info(details)
                                     not_valid_users += 1
@@ -2391,7 +2620,7 @@ class InstaPy:
                                     username = (self.browser.
                                                 find_element_by_xpath(
                                                     '//article/header/div[2]/'
-                                                    'div[1]/div/a'))
+                                                    'div/div[1]/a'))
 
                                     username = username.get_attribute("title")
                                     name = []
@@ -2419,13 +2648,13 @@ class InstaPy:
                                             (following or commenting)):
                                         try:
                                             checked_img, temp_comments = (
-                                                check_image(
-                                                    self.browser,
-                                                    self.clarifai_api_key,
-                                                    self.clarifai_img_tags,
-                                                    self.clarifai_img_tags_skip,
-                                                    self.logger,
-                                                    self.clarifai_full_match)
+                                                check_image(self.browser,
+                                                            self.clarifai_api_key,
+                                                            self.clarifai_img_tags,
+                                                            self.clarifai_img_tags_skip,
+                                                            self.logger,
+                                                            self.clarifai_full_match,
+                                                            self.clarifai_logging_enabled)
                                             )
                                         except Exception as err:
                                             self.logger.error(
@@ -2471,11 +2700,10 @@ class InstaPy:
                                         user_name not in self.dont_include and
                                         checked_img and
                                         following and
-                                        self.follow_restrict.get(
-                                            user_name, 0) < self.follow_times):
+                                        not follow_restriction("read", user_name,
+                                         self.follow_times, self.logger)):
                                         followed += follow_user(
                                             self.browser,
-                                            self.follow_restrict,
                                             self.username,
                                             user_name,
                                             self.blacklist,
@@ -2529,9 +2757,8 @@ class InstaPy:
                                         boundary,
                                         self.logger)
 
-        for user in active_users:
-            # include active user to not unfollow list
-            self.dont_include.append(user)
+        # include active user to not unfollow list
+        self.dont_include.update(active_users)
 
     def set_blacklist(self, enabled, campaign):
         """Enable/disable blacklist. If enabled, adds users to a blacklist after
@@ -2548,7 +2775,7 @@ class InstaPy:
                 reader = csv.DictReader(blacklist)
                 for row in reader:
                     if row['campaign'] == campaign:
-                        self.dont_include.append(row['username'])
+                        self.dont_include.add(row['username'])
         except:
             self.logger.info('Campaign {} first run'.format(campaign))
 
@@ -2570,7 +2797,6 @@ class InstaPy:
             return self
 
         #Get `followers` data
-        grabbed_followers = []
         grabbed_followers = get_followers(self.browser,
                                           username,
                                           amount,
@@ -2599,7 +2825,6 @@ class InstaPy:
             return self
 
         #Get `following` data
-        grabbed_following = []
         grabbed_following = get_following(self.browser,
                                           username,
                                           amount,
@@ -2693,7 +2918,9 @@ class InstaPy:
 
     def end(self):
         """Closes the current session"""
-        dump_follow_restriction(self.follow_restrict, self.logfolder)
+        with interruption_handler():
+            dump_follow_restriction(self.username, self.logger, self.logfolder)
+            dump_record_activity(self.username, self.logger, self.logfolder)
 
         try:
             self.browser.delete_all_cookies()
@@ -2716,9 +2943,10 @@ class InstaPy:
     def follow_by_tags(self,
                      tags=None,
                      amount=50,
-                     media=None,
                      skip_top_posts=True,
-                     use_smart_hashtags=False):
+                     use_smart_hashtags=False,
+                     randomize=False,
+                     media=None):
         if self.aborting:
             return self
 
@@ -2744,9 +2972,10 @@ class InstaPy:
                 links = get_links_for_tag(self.browser,
                                           tag,
                                           amount,
-                                          self.logger,
+                                          skip_top_posts,
+                                          randomize,
                                           media,
-                                          skip_top_posts)
+                                          self.logger)
             except NoSuchElementException:
                 self.logger.info('Too few images, skipping this tag')
                 continue
@@ -2771,13 +3000,19 @@ class InstaPy:
                                                        self.username,
                                                        self.ignore_users,
                                                        self.blacklist,
+                                                       self.private_users,
+                                                       self.no_profile_pic,
                                                        self.potency_ratio,
+                                                       self.max_relationship_ratio,
                                                        self.delimit_by_numbers,
                                                        self.max_followers,
                                                        self.max_following,
                                                        self.min_followers,
                                                        self.min_following,
-                                                       self.logger)
+                                                       self.min_media,
+                                                       self.max_media,
+                                                       self.logger,
+                                                       self.skip_user_logging_enabled)
                         if validation != True:
                             self.logger.info(details)
                             not_valid_users += 1
@@ -2787,7 +3022,6 @@ class InstaPy:
 
                         #try to follow
                         followed += follow_user(self.browser,
-                                                self.follow_restrict,
                                                 self.username,
                                                 user_name,
                                                 self.blacklist,
@@ -2818,6 +3052,8 @@ class InstaPy:
                            interact=False):
         """ Interact on posts at given URLs """
 
+        url = ''
+        disapproval_reason = None
         if self.aborting:
             return self
 
@@ -2839,7 +3075,7 @@ class InstaPy:
 
         for index, url in enumerate(urls):
             if "https://www.instagram.com/p/" not in url:
-                url = "https://www.instagram.com/p/"+url
+                url = "https://www.instagram.com/p/"+str(url)
 
             self.logger.info('URL [{}/{}]'.format(index + 1, len(urls)))
             self.logger.info('--> {}'.format(url.encode('utf-8')))
@@ -2863,13 +3099,20 @@ class InstaPy:
                                                    self.username,
                                                    self.ignore_users,
                                                    self.blacklist,
+                                                   self.private_users,
+                                                   self.no_profile_pic,
                                                    self.potency_ratio,
+                                                   self.max_relationship_ratio,
                                                    self.delimit_by_numbers,
                                                    self.max_followers,
                                                    self.max_following,
                                                    self.min_followers,
                                                    self.min_following,
-                                                   self.logger)
+                                                   self.min_media,
+                                                   self.max_media,
+                                                   self.logger,
+                                                   self.skip_user_logging_enabled)
+
                     if validation != True:
                         self.logger.info(details)
                         not_valid_users += 1
@@ -2899,13 +3142,14 @@ class InstaPy:
                                     check_image(self.browser,
                                                 self.clarifai_api_key,
                                                 self.clarifai_img_tags,
+                                                self.clarifai_img_tags_skip,
                                                 self.logger,
-                                                self.clarifai_full_match)
+                                                self.clarifai_full_match,
+                                                self.clarifai_logging_enabled)
                                 )
                             except Exception as err:
                                 self.logger.error(
                                     'Image check error: {}'.format(err))
-
 
                         if (self.do_comment and
                             user_name not in self.dont_include and
@@ -2941,11 +3185,10 @@ class InstaPy:
                             user_name not in self.dont_include and
                             checked_img and
                             following and
-                            self.follow_restrict.get(user_name, 0) <
-                                self.follow_times):
+                            not follow_restriction("read", user_name,
+                             self.follow_times, self.logger)):
 
                             followed += follow_user(self.browser,
-                                                    self.follow_restrict,
                                                     self.username,
                                                     user_name,
                                                     self.blacklist,

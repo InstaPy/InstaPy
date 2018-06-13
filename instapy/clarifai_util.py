@@ -41,5 +41,5 @@ def given_tags_in_result(search_tags, clarifai_tags, full_match=False):
 
 def get_imagelink(browser):
     """Gets the imagelink from the given webpage open in the browser"""
-    return browser.find_element_by_xpath('//img[@class = "_2di5p"]') \
+    return browser.find_element_by_xpath('//img[@class = "FFVAD"]') \
         .get_attribute('src')
