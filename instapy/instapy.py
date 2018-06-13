@@ -793,7 +793,6 @@ class InstaPy:
                                                skip_top_posts)
             except NoSuchElementException:
                 self.logger.warning('Too few images, skipping this location')
-                raise
                 continue
 
             for i, link in enumerate(links):
