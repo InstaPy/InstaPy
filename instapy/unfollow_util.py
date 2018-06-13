@@ -433,6 +433,7 @@ def follow_user(browser, follow_restrict, login, user_name, blacklist, logger, l
     """Follows the user of the currently opened image"""
     follow_xpath =  "//button[text()='Follow']"
     try:
+        sleep(2)
         follow_button = browser.find_element_by_xpath(follow_xpath)
 
         if follow_button.is_displayed():
