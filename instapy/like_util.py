@@ -319,6 +319,9 @@ def get_links_for_username(browser,
 
     #Check URL of the webpage, if it already is user's profile page, then do not navigate to it again
     web_adress_navigator(browser, user_link)
+	
+    body_elem = browser.find_element_by_tag_name('body')
+    abort = True
 
     try:
         is_private = body_elem.find_element_by_xpath(
@@ -333,10 +336,6 @@ def get_links_for_username(browser,
     if "Page Not Found" in browser.title:
         logger.error('Intagram error: The link you followed may be broken, or the page may have been removed...')
         return False
-
-    body_elem = browser.find_element_by_tag_name('body')
-
-    abort = True
 
     try:
         load_button = body_elem.find_element_by_xpath(
