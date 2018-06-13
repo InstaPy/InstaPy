@@ -518,9 +518,9 @@ def check_link(browser, post_link, dont_like, ignore_if_contains, logger):
     if image_text is None:
         image_text = "No description"
 
-    logger.info('Image from: {}'.format(user_name.encode('utf-8')))
-    logger.info('Link: {}'.format(post_link.encode('utf-8')))
-    logger.info('Description: {}'.format(image_text.encode('utf-8')))
+    #logger.info('Image from: {}'.format(user_name.encode('utf-8')))
+    #logger.info('Link: {}'.format(post_link.encode('utf-8')))
+    #logger.info('Description: {}'.format(image_text.encode('utf-8')))
 
     if any((word in image_text for word in ignore_if_contains)):
         return False, user_name, is_video, 'None', "Pass"
@@ -620,7 +620,7 @@ def get_tags(browser, url):
 
 
 def get_links(browser, page, logger, media, element):
-    logger.info("get_links: Getting links for tag %s", tag)
+    logger.info("get_links: Getting links for tag %s", page)
 
     # Get image links in scope from hashtag, location and other pages
     link_elems = element.find_elements_by_tag_name('a')
@@ -636,7 +636,7 @@ def get_links(browser, page, logger, media, element):
     except BaseException as e:
         logger.error("link_elems error {}".format(str(e)))
 
-    logger.info("get_links: Found %s links for tag %s" % (len(links), tag))
+    logger.info("get_links: Found %s links for tag %s" % (len(links), page))
     return links
 
 

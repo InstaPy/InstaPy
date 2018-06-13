@@ -2676,13 +2676,15 @@ class InstaPy:
         likeAmountPerformed = 0
 
         ####################### HACK TO SPLIT THE LIKE AMOUNT FOR EACH HASHTAG #####################
-        if len(operation['list']) >= 4:
-            likeAmountForEachTag = likeAmount // 4
-        else:
-            likeAmountForEachTag = likeAmount // len(operation)
+        divideAmountTo = 4
+        if len(operation['list']) < divideAmountTo:
+            divideAmountTo = len(operation)
+
+        likeAmountForEachTag = likeAmount // divideAmountTo
 
         ####################### END HACK TO CALCULATE LIKE AMOUNT FOR EACH HASHTAG #####################
 
+        self.logger.info("angie_like_posts_by_hashtag: Going to divide %s amount to %s hashtags" % (likeAmount, divideAmountTo))
         # run while we have hashtags and the amount of likes is not exceeded
         while len(operation['list']) > 0 and likeAmountPerformed < likeAmount and iteration < securityBreak:
             likeAmountForeachRandomized = randint(likeAmountForEachTag, likeAmountForEachTag + 20)

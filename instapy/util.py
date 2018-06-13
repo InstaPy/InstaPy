@@ -81,7 +81,7 @@ def validate_username(browser,
                        if not reverse_relationship
                         else float(following_count)/float(followers_count))
 
-        logger.info('User: {} >> followers: {}  |  following: {}  |  relationship ratio: {}'.format(username,
+        logger.info('validate_username: User: {} >> followers: {}  |  following: {}  |  relationship ratio: {}'.format(username,
         followers_count if followers_count else 'unknown',
         following_count if following_count else 'unknown',
         float("{0:.2f}".format(relationship_ratio)) if relationship_ratio else 'unknown'))
