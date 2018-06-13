@@ -157,8 +157,7 @@ def update_analytics(username,
             data = dict(data)
             data[action] += 1
     
-            sql = ("UPDATE analytics set ? = ?
-                   "WHERE username = ?")
+            sql = ("UPDATE analytics set ? = ? WHERE username = ?")
             cur.execute(sql, (action, data[action], username))
     
         conn.commit()
