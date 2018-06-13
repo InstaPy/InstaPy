@@ -365,7 +365,7 @@ def get_links_for_username(browser,
     sleep(2)
 
     # Get Links
-    main_elem = browser.find_element_by_tag_name('main')
+    main_elem = browser.find_element_by_tag_name('article')
     link_elems = main_elem.find_elements_by_tag_name('a')
     total_links = len(link_elems)
     # Check there is at least one link

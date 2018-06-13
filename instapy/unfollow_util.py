@@ -17,6 +17,7 @@ from selenium.common.exceptions import WebDriverException
 from selenium.common.exceptions import NoSuchElementException
 import random
 import os
+from selenium.common.exceptions import StaleElementReferenceException
 
 
 def set_automated_followed_pool(username, logger, logfolder, unfollow_after):
@@ -120,9 +121,13 @@ def unfollow(browser,
 
                     following = False
                     try:
-                        follow_button = browser.find_element_by_xpath(
-                            "//*[contains(text(), 'Follow')]")
-                        if (follow_button.text == 'Following'):
+                        try:
+                            follow_button = browser.find_element_by_xpath(
+                                "//*[contains(text(), 'Follow')]")
+                        except NoSuchElementException:
+                            follow_button = browser.find_element_by_xpath(
+                                '''//*[@id="react-root"]/section/main/article/header/section/div[1]/span/span[1]/button''')
+                        if follow_button.text == 'Following':
                             following = "Following"
                         else:
                             if follow_button.text in ['Follow', 'Follow Back']:
@@ -130,7 +135,7 @@ def unfollow(browser,
                             else:
                                 follow_button = browser.find_element_by_xpath(
                                     "//*[contains(text(), 'Requested')]")
-                                if (follow_button.text == "Requested"):
+                                if follow_button.text == "Requested":
                                     following = "Requested"
                     except:
                         logger.error(
@@ -173,6 +178,15 @@ def unfollow(browser,
 						# this user found in our list of unfollow but is not followed
                         if follow_button.text != 'Follow':
                             log_uncertain_unfollowed_pool(username, person, logger, logfolder)
+                        # check we are now logged in
+                        valid_connection = browser.execute_script(
+                            "return window._sharedData.""activity_counts")
+                        if not valid_connection:
+                            # if no valid connection
+                            msg = '--> user:{} have no valid_connection wait 3600'.format(person)
+                            logger.warning(msg)
+                            break
+
                         delete_line_from_file('{0}{1}_followedPool.csv'.format(logfolder, username),
                                               person + ",\n", logger)
                         # save any unfollowed person
@@ -183,6 +197,11 @@ def unfollow(browser,
                             ', now unfollowing: {}'
                             .format(str(unfollowNum), person.encode('utf-8')))
                         sleep(2)
+                else:
+                    # if the user in dont include (should not be) we shall remove him from the follow list
+                    delete_line_from_file('{0}{1}_followedPool.csv'.format(logfolder, username),
+                                          person + ",\n", logger)
+                    logger.warning('This person in dont include but better not be')
 
         except BaseException as e:
             logger.error("unfollow loop error {}".format(str(e)))
@@ -387,10 +406,10 @@ def unfollow(browser,
 
 def follow_user(browser, follow_restrict, login, user_name, blacklist, logger, logfolder):
     """Follows the user of the currently opened image"""
-
+    follow_xpath =  "//button[text()='Follow']"
     try:
-        follow_button = browser.find_element_by_xpath(
-                "//button[text()='Follow']")
+        sleep(2)
+        follow_button = browser.find_element_by_xpath(follow_xpath)
 
         if follow_button.is_displayed():
             click_element(browser, follow_button) # follow_button.click()
@@ -417,6 +436,14 @@ def follow_user(browser, follow_restrict, login, user_name, blacklist, logger, l
         return 1
     except NoSuchElementException:
         logger.info('--> Already following')
+        sleep(1)
+        return 0
+    except StaleElementReferenceException:
+        # https://stackoverflow.com/questions/16166261/selenium-webdriver-how-to-resolve-stale-element-reference-exception
+        # 1. An element that is found on a web page referenced as a WebElement in WebDriver then the DOM changes
+        # (probably due to JavaScript functions) that WebElement goes stale.
+        # 2. The element has been deleted entirely.
+        logger.error('--> element that is found on a web page referenced  while the DOM changes')
         sleep(1)
         return 0
 
@@ -550,10 +577,11 @@ def get_users_through_dialog(browser,
                 sc_rolled = 0
 
         # Will follow a little bit of users in order to simulate real interaction
-        if (simulator_counter > random.randint(5, 17) or
+        if ((simulator_counter > random.randint(5, 17) or
                 abort==True or
                     total_list >= amount or
-                        sc_rolled==random.randint(3, 5)):
+                        sc_rolled==random.randint(3, 5)) and
+	    			len(follow_buttons) > 0):
 
             quick_amount = 1 if not total_list >= amount else random.randint(1, 4)
 
@@ -586,7 +614,7 @@ def get_users_through_dialog(browser,
     person_list = person_list[:(real_amount-len(simulated_list))]
     for user in simulated_list:   #add simulated users to the `person_list` in random index
         if user not in person_list:
-            person_list.insert(random.randint(0, len(person_list)-1), user)
+            person_list.insert(random.randint(0, abs(len(person_list)-1)), user)
 
     return person_list, simulated_list
 
@@ -700,18 +728,31 @@ def get_given_user_followers(browser,
 
     # check how many people are following this user.
     try:
-        allfollowers = format_number(browser.find_element_by_xpath(
-            '//li[2]/a/span').text)
-
+        allfollowers = format_number(browser.find_element_by_xpath("//a[contains"
+                                "(@href,'followers')]/span").text)
     except NoSuchElementException:
-        # todo check if private account?
-        logger.error('Could not determine if {} has followers'.format(user_name))
-        return []
+        try:
+            allfollowers = browser.execute_script(
+                "return window._sharedData.entry_data."
+                "ProfilePage[0].graphql.user.edge_followed_by.count")
+        except WebDriverException:
+            try:
+                browser.execute_script("location.reload()")
+                allfollowers = browser.execute_script(
+                    "return window._sharedData.entry_data."
+                    "ProfilePage[0].graphql.user.edge_followed_by.count")
+            except WebDriverException:
+                try:
+                    allfollowers = format_number(browser.find_elements_by_xpath( 
+                        "//span[contains(@class,'g47SY')]")[1].text)
+                except NoSuchElementException:
+                    logger.error("Error occured during getting the followers count of '{}'\n".format(user_name))
+                    return [], []
 
     # skip early for no followers
     if not allfollowers:
         logger.info('{} has no followers'.format(user_name))
-        return []
+        return [], []
 
     elif allfollowers < amount:
         logger.warning('{} has less followers than given amount of {}'.format(
@@ -727,11 +768,11 @@ def get_given_user_followers(browser,
 
     except NoSuchElementException:
         logger.error('Could not find followers\' link for {}'.format(user_name))
-        return []
+        return [], []
 
     except BaseException as e:
         logger.error("`followers_link` error {}".format(str(e)))
-        return []
+        return [], []
 
     person_list, simulated_list = get_users_through_dialog(browser, login, user_name, amount,
                                                  allfollowers, randomize, dont_include,
@@ -761,17 +802,31 @@ def get_given_user_following(browser,
     #  check how many poeple are following this user.
     #  throw RuntimeWarning if we are 0 people following this user
     try:
-        allfollowing = format_number(
-            browser.find_element_by_xpath("//li[3]/a/span").text)
-
+        allfollowing = format_number(browser.find_element_by_xpath("//a[contains"
+                                "(@href,'following')]/span").text)
     except NoSuchElementException:
-        logger.error('Could not determine if {} has any following'.format(user_name))
-        return []
+        try:
+            allfollowing = browser.execute_script(
+                "return window._sharedData.entry_data."
+                "ProfilePage[0].graphql.user.edge_follow.count")
+        except WebDriverException:
+            try:
+                browser.execute_script("location.reload()")
+                allfollowing = browser.execute_script(
+                    "return window._sharedData.entry_data."
+                    "ProfilePage[0].graphql.user.edge_follow.count")
+            except WebDriverException:
+                try:
+                    allfollowing = format_number(browser.find_elements_by_xpath( 
+                        "//span[contains(@class,'g47SY')]")[2].text)
+                except NoSuchElementException:
+                    logger.error("\nError occured during getting the following count of '{}'\n".format(user_name))
+                    return [], []
 
     # skip early for no followers
     if not allfollowing:
         logger.info('{} has no any following'.format(user_name))
-        return []
+        return [], []
 
     elif allfollowing < amount:
         logger.warning('{} has less following than given amount of {}'.format(
@@ -786,11 +841,11 @@ def get_given_user_following(browser,
 
     except NoSuchElementException:
         logger.error('Could not find following\'s link for {}'.format(user_name))
-        return []
+        return [], []
 
     except BaseException as e:
         logger.error("`following_link` error {}".format(str(e)))
-        return []
+        return [], []
 
     person_list, simulated_list = get_users_through_dialog(browser, login, user_name, amount,
                                                  allfollowing, randomize, dont_include,
