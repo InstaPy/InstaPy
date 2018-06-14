@@ -99,7 +99,7 @@ class InstaPy:
             os.makedirs(self.logfolder)
 
         self.page_delay = page_delay
-        self.switch_language = True
+        self.switch_language = False
         self.use_firefox = use_firefox
         self.browser_profile_path = browser_profile_path
 
@@ -1710,6 +1710,14 @@ class InstaPy:
 
     def interact_user_followers(self, usernames, amount=10, randomize=False):
 
+        #initialize counts for summary logging
+        liked_img = self.liked_img
+        already_liked = self.already_liked
+        inap_img = self.inap_img
+        commented = self.commented
+        followed = self.followed
+        not_valid_users = self.not_valid_users
+
         if self.do_follow != True and self.do_like != True:
             self.logger.info("Please enable following or liking in settings in order to do interactions.")
             return self
@@ -1793,12 +1801,37 @@ class InstaPy:
         self.logger.info(
             "--> Interacted total of {} people\n".format(interacted_all))
 
+        #add summary logging to the console
+        liked_img_sum = self.liked_img - liked_img
+        already_liked_sum = self.already_liked - already_liked
+        inap_img_sum = self.inap_img - inap_img
+        commented_sum = self.commented - commented
+        followed_sum = self.followed - followed
+        not_valid_users_sum = self.not_valid_users - not_valid_users
+
+
+        self.logger.info('Liked: {}'.format(liked_img_sum))
+        self.logger.info('Already Liked: {}'.format(already_liked_sum))
+        self.logger.info('Commented: {}'.format(commented_sum))
+        self.logger.info('Followed: {}'.format(followed_sum))
+        self.logger.info('Inappropriate: {}'.format(inap_img_sum))
+        self.logger.info('Not valid users: {}\n'.format(not_valid_users_sum))
+
         self.not_valid_users += not_valid_users
         
         return self
 
 
     def interact_user_following(self, usernames, amount=10, randomize=False):
+
+        #initialize counts for summary logging
+        liked_img = self.liked_img
+        already_liked = self.already_liked
+        inap_img = self.inap_img
+        commented = self.commented
+        followed = self.followed
+        not_valid_users = self.not_valid_users
+
 
         if self.do_follow != True and self.do_like != True:
             self.logger.info("Please enable following or liking in settings in order to do interactions.")
@@ -1882,6 +1915,22 @@ class InstaPy:
 
         self.logger.info(
             "--> Interacted total of {} people\n".format(interacted_all))
+
+        #add summary logging to the console
+        liked_img_sum = self.liked_img - liked_img
+        already_liked_sum = self.already_liked - already_liked
+        inap_img_sum = self.inap_img - inap_img
+        commented_sum = self.commented - commented
+        followed_sum = self.followed - followed
+        not_valid_users_sum = self.not_valid_users - not_valid_users
+
+
+        self.logger.info('Liked: {}'.format(liked_img_sum))
+        self.logger.info('Already Liked: {}'.format(already_liked_sum))
+        self.logger.info('Commented: {}'.format(commented_sum))
+        self.logger.info('Followed: {}'.format(followed_sum))
+        self.logger.info('Inappropriate: {}'.format(inap_img_sum))
+        self.logger.info('Not valid users: {}\n'.format(not_valid_users_sum))
 
         self.not_valid_users += not_valid_users
 
