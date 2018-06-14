@@ -45,6 +45,7 @@ Table of Contents
   * [Interact with specific users](#interact-with-specific-users)
   * [Interact with users that someone else is following](#interact-with-users-that-someone-else-is-following)
   * [Interact with someone else's followers](#interact-with-someone-elses-followers)
+  * [Interact on images at given URLs]()
   * [Unfollowing](#unfollowing)
   * [Don't unfollow active users](#dont-unfollow-active-users)
   * [Interactions based on the number of followers and/or following a user has](#interactions-based-on-the-number-of-followers-andor-following-a-user-has)
@@ -62,6 +63,13 @@ Table of Contents
   * [Smart Hashtags](#smart-hashtags)
   * [Follow/Unfollow/exclude not working?](#followunfollowexclude-not-working)
   * [Bypass Suspicious Login Attempt](#bypass-suspicious-login-attempt)
+* [Relationship tools]()
+  * [Grab Followers of a user]()
+  * [Grab Following of a user]()
+  * [Pick Unfollowers of a user]()
+  * [Pick Nonfollowers of a user]()
+  * [Pick Fans of a user]()
+  * [Pick Mutual Following of a user]()
 * [Third Party InstaPy GUI for Windows](#third-party-instapy-gui-for-windows)
 * [Use a proxy](#use-a-proxy)
 * [Switching to Firefox](#switching-to-firefox)
@@ -357,35 +365,86 @@ session.set_do_comment(enabled=True, percentage=80)
 session.interact_user_followers(['natgeo'], amount=10, randomize=True)
 ```
 
+
 ### Unfollowing
 
+###### Unfollows the accounts you're following  
+_It will unfollow ~`10` accounts and sleep for ~`10` minutes and then will continue to unfollow..._
+
+##### There are `4` _Unfollow methods_ available to use:
+`|>` **customList**  `|>` **InstapyFollowed**  `|>` **nonFollowers**  `|>` **allFollowing**
+
+**1** - Unfollow **specific users** from a _CUSTOM_ list (_has `2` **track**s- `"all"` and `"nonfollowers"`_):  
+_when **track** is `"all"`, it will unfollow **all of the users** in a given list_;
 ```python
-# unfollows 10 of the accounts you're following -> instagram will only
-# unfollow 10 before you'll be 'blocked for 10 minutes' (if you enter a
-# higher number than 10 it will unfollow 10, then wait 10 minutes and will
-# continue then).
-# You can choose to only unfollow the user that Insta has followed by adding
-# onlyInstapyFollowed = True otherwise it will unfollow all users
-# You can choose unfollow method as FIFO (First-Input-First-Output) or
-# LIFO (Last-Input-First-Output). The default is FIFO method.
-# onlyInstapyMethod is using only when onlyInstapyFollowed = True
-# sleep_delay sets the time it will sleep every 10 profile unfollow, default
-# is 10min
-session.unfollow_users(amount=10, onlyInstapyFollowed = True, onlyInstapyMethod = 'FIFO', sleep_delay=60 )
-
-# You can only unfollow user that won't follow you back by adding
-# onlyNotFollowMe = True it still only support on profile following
-# you should disable onlyInstapyFollowed when use this
-session.unfollow_users(amount=10, onlyNotFollowMe=True, sleep_delay=60)
-
-# You can also unfollow users only after following them certain amount of time,
-# this will provide seamless unfollow activity without the notice of the targeted user
-# To use, just add `unfollow_after` argument with the desired time, e.g.
-session.unfollow_users(amount=10, onlyInstapyFollowed = True, onlyInstapyMethod = 'FIFO', sleep_delay=600, unfollow_after=48*60*60)
-# will unfollow users only after following them 48 hours (2 days), since `unfollow_after`s value
-# is seconds, you can simply give it `unfollow_after=100` to unfollow after 100 seconds,
-# but `1*60*60` (which is equal to 1 hour or 3600 seconds) style is a lot simpler to use 👍
+custom_list = ["user_1", "user_2", "user_49", "user332", "user50921", "user_n"]
+session.unfollow_users(amount=84, customList=(True, custom_list, "all"), style="RANDOM", unfollow_after=55*60*60, sleep_delay=600)
 ```
+_if **track** is `"nonfollowers"`, it will unfollow all of the users in a given list **WHO are not following you back**_;
+```python
+custom_list = ["user_1", "user_2", "user_49", "user332", "user50921", "user_n"]
+session.unfollow_users(amount=84, customList=(True, custom_list, "nonfollowers"), style="RANDOM", unfollow_after=55*60*60, sleep_delay=600)
+```
+* **PRO**: `customList` method can any kind of _iterable container_, such as `list`, `tuple` or `set`.
+
+**2** - Unfollow the users **WHO** was _followed by `InstaPy`_ (_has `2` **track**s- `"all"` and `"nonfollowers"`_):  
+_again, if you like to unfollow **all of the users** followed by InstaPy, use the **track**- `"all"`_;
+```python
+session.unfollow_users(amount=60, InstapyFollowed=(True, "all"), style="FIFO", unfollow_after=90*60*60, sleep_delay=501)
+```
+_but if you like you unfollow only the users followed by InstaPy **WHO do not follow you back**, use the **track**- `"nonfollowers"`_;
+```python
+session.unfollow_users(amount=60, InstapyFollowed=(True, "nonfollowers"), style="FIFO", unfollow_after=90*60*60, sleep_delay=501)
+```
+
+**3** - Unfollow the users **WHO** `do not` _follow you back_:
+```python
+session.unfollow_users(amount=126, nonFollowers=True, style="RANDOM", unfollow_after=42*60*60, sleep_delay=655)
+```
+
+**4** - `Just` unfollow, **regardless of** a user _follows you or not_:
+```python
+session.unfollow_users(amount=40, allFollowing=True, style="LIFO", unfollow_after=3*60*60, sleep_delay=450)
+```
+
+#### Parameters (_all of these parameters apply to all of the 4 methods available_):
+
+`style`  
+You can choose _unfollow style_ as `"FIFO"` (_First-Input-First-Output_) **OR** `"LIFO"` (_Last-Input-First-Output_) **OR** `"RANDOM"`.  
+* with `"FIFO"`, it will unfollow users _in the **exact** order they are loaded_ (_`"FIFO"` is the default style unless you **change** it_);  
+* with `"LIFO`" it will unfollow users _in the **reverse** order they were loaded_;  
+* with `"RANDOM"` it will unfollow users _in the **shuffled** order_;
+
+
+`unfollow_after`  
+By using this, you can unfollow users **only after** following them certain amount of time.  
+_it will help to provide **seamless** unfollow activity without the notice of the target user_   
+To use it, just add `unfollow_after` parameter with the _desired time interval_, _e.g._,
+```python
+session.unfollow_users(amount=94, InstapyFollowed=(True, "all"), style="RANDOM", unfollow_after=48*60*60, sleep_delay=600)
+```
+_will unfollow users **only after following them** `48` hours (`2` days)_.  
+* Since `unfollow_after`s value is in _seconds_, you can simply give it `unfollow_after=3600` to unfollow after `3600` seconds.  
+_Yeah, values kind of `1*60*60`- which is also equal to `1` hour or `3600` seconds, is much more easier to use_.  
+
+**Sure** if you like to not use it, give the value of `None`- `unfollow_after=None`.
+
+`sleep_delay`  
+Sleep delay _sets_ the time it will sleep **after** every ~`10` unfollows (_default delay is ~`10` minutes_).
+
+> **NOTE**: You should know that, _in one RUN_, `unfollow_users` feature can take only one method from all `4` above.  
+That's why, **it is best** to **disable** other `3` methods _while using a one_:
+```python
+session.unfollow_users(amount=200, customList=(True, ["user1", "user2", "user88", "user200"], "all"), InstapyFollowed=(False, "all"), nonFollowers=False, allFollowing=False, style="FIFO", unfollow_after=22*60*60, sleep_delay=600)
+```
+_here the unfollow method- **customList** is used_  
+**OR** just keep the method you want to use and remove other 3 methods from the feature
+```python
+session.unfollow_users(amount=200, allFollowing=True, style="FIFO", unfollow_after=22*60*60, sleep_delay=600)
+```
+_here the unfollow method- **alFollowing** is used_
+
+
 
 ### Don't unfollow active users
 
