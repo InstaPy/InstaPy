@@ -449,6 +449,7 @@ class InstaPy:
         self.do_follow = enabled
         self.follow_percentage = percentage
 
+        self.logger.info("set_do_follow: Going to follow %s percent of liked images", percentage)
         return self
 
     def set_do_like(self, enabled=False, percentage=0):
@@ -1265,10 +1266,6 @@ class InstaPy:
 
                         if liked:
 
-                            sleepSeconds = randint(15, 30)
-                            self.logger.info("like_by_tags: Going to sleep for %s seconds", sleepSeconds)
-                            sleep(sleepSeconds)
-
                             if liked:
                                 self.logger.info("like_by_tags: Link %s was liked. User %s" % (link, user_name))
 
@@ -1288,7 +1285,7 @@ class InstaPy:
                                 name.append(username)
 
                                 self.logger.info(
-                                    '--> User followed: {}'
+                                    'like_by_tags: --> User followed: {}'
                                     .format(name))
                                 self.like_by_users(
                                     name,
@@ -1356,6 +1353,7 @@ class InstaPy:
                                 self.follow_restrict.get(user_name, 0) <
                                     self.follow_times):
 
+                                self.logger.info("like_by_tags: Trying to follow user %s", user_name)
                                 followed += follow_user(self.browser,
                                                         self.follow_restrict,
                                                         self.username,
@@ -1363,16 +1361,21 @@ class InstaPy:
                                                         self.blacklist,
                                                         self.logger,
                                                         self.logfolder)
+
+                                insertBotAction(self.campaign['id_campaign'], self.campaign['id_user'],
+                                                None, None, user_name,
+                                                None, None, None,
+                                                link, 'follow_users_by_hashtag', tag, None)
+
+
+
                             else:
                                 #self.logger.info('--> Not following')
                                 sleep(1)
                         else:
                             already_liked += 1
                     else:
-                        self.logger.info('--> Image not liked: {}'.format(reason.encode('utf-8')))
-                        sleepSeconds = randint(15, 30)
-                        self.logger.info("like_by_tags: Going to sleep for %s seconds", sleepSeconds)
-                        sleep(sleepSeconds)
+                        self.logger.info('liked_by_tags: --> Image not liked: {}'.format(reason.encode('utf-8')))
                         inap_img += 1
                 except NoSuchElementException as err:
                     self.logger.error('Invalid Page: {}'.format(err))
@@ -1380,7 +1383,7 @@ class InstaPy:
         self.logger.info('Liked: {}'.format(liked_img))
         self.logger.info('Already Liked: {}'.format(already_liked))
         # self.logger.info('Commented: {}'.format(commented))
-        # self.logger.info('Followed: {}'.format(followed))
+        self.logger.info('Followed: {}'.format(followed))
         # self.logger.info('Inappropriate: {}'.format(inap_img))
         self.logger.info('Not valid users: {}\n'.format(not_valid_users))
 

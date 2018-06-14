@@ -18,7 +18,7 @@ from selenium.common.exceptions import NoSuchElementException
 import random
 import os
 from selenium.common.exceptions import StaleElementReferenceException
-
+from random import randint
 
 def set_automated_followed_pool(username, logger, logfolder, unfollow_after):
     automatedFollowedPool = []
@@ -405,6 +405,11 @@ def unfollow(browser,
 
 
 def follow_user(browser, follow_restrict, login, user_name, blacklist, logger, logfolder):
+
+    sleepSeconds = randint(30, 60)
+    logger.info("follow_user: Going to sleep for %s seconds before following", sleepSeconds)
+    sleep(sleepSeconds)
+
     """Follows the user of the currently opened image"""
     follow_xpath =  "//button[text()='Follow']"
     try:
@@ -423,7 +428,7 @@ def follow_user(browser, follow_restrict, login, user_name, blacklist, logger, l
             click_element(browser, follow_button) # follow_button.click()
             update_activity('follows')
 
-        logger.info('--> Now following')
+
         logtime = datetime.now().strftime('%Y-%m-%d %H:%M')
         log_followed_pool(login, user_name, logger, logfolder, logtime)
         follow_restrict[user_name] = follow_restrict.get(user_name, 0) + 1
@@ -433,6 +438,7 @@ def follow_user(browser, follow_restrict, login, user_name, blacklist, logger, l
                 browser, user_name, blacklist['campaign'], action, logger, logfolder
             )
         sleep(3)
+        logger.info('follow_user: Followed user %s', user_name)
         return 1
     except NoSuchElementException:
         logger.info('--> Already following')

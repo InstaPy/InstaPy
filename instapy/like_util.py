@@ -556,7 +556,7 @@ def check_link(browser, post_link, dont_like, ignore_if_contains, logger):
 
 def like_image(browser, username, blacklist, logger, logfolder):
 
-    sleepSeconds = random.randint(2,5)
+    sleepSeconds = random.randint(17,30)
     logger.info("like_image: Going to like image after sleeping %s seconds", sleepSeconds)
     time.sleep(sleepSeconds)
     """Likes the browser opened image"""
