@@ -168,29 +168,49 @@ def unfollow(browser,
                             ' maybe no longer exists...'
                                 .format(person.encode('utf-8')))
 
+                    unfollowed = False
                     if following:
                         # click the button
                         click_element(browser, follow_button) # follow_button.click()
                         sleep(4)
 
-                        # double check not following
-                        follow_button = browser.find_element_by_xpath(
-                            "//*[contains(text(), 'Follow')]")
-
+                        #
                         if follow_button.text in ['Follow','Follow Back']:
+                            unfollowed = True
+                        else:
+                            # check we did not get confirmation request
+                            try:
+                                logger.info('we might got confirmation request')
+                                sleep(2)
+                                confirm_unfollow_button = browser.find_element_by_xpath("/html/body/div[3]/div/div/div/div[3]/button[1]")
+                                click_element(browser, confirm_unfollow_button)
+                                unfollowed = True
+                            except NoSuchElementException:
+                                # not having confirmation
+                                # unfollowed = False
+                                pass
 
-                            unfollowNum += 1
-                            update_activity('unfollows')
 
+
+
+                        sleep(9)
+
+                        if unfollowed is True:
                             delete_line_from_file('{0}{1}_followedPool.csv'.format(logfolder, username), person +
                                               ",\n", logger)
+
+                            # save any unfollowed person
+                            log_record_all_unfollowed(username, person, logger, logfolder)
 
                             logger.info(
                                 '--> Ongoing Unfollow From InstaPy {},'
                                 ' now unfollowing: {}'
                                 .format(str(unfollowNum), person.encode('utf-8')))
 
-                            sleep(15)
+                            sleep(8)
+
+                            unfollowNum += 1
+                            update_activity('unfollows')
 
                             if hasSlept:
                                 hasSlept = False
