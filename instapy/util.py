@@ -138,7 +138,7 @@ def update_analytics(username,
         cur = conn.cursor()
         
         sqlFetch = ("SELECT * FROM analytics WHERE username = ?")
-        cur.execute(sqlFetch, username)
+        cur.execute(sqlFetch, [username])
         data = cur.fetchone()
         
         if data is None:
