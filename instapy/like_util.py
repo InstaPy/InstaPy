@@ -11,6 +11,7 @@ from selenium.common.exceptions import NoSuchElementException
 
 from .time_util import sleep
 from .util import update_activity
+from .util import update_analytics
 from .util import add_user_to_blacklist
 from .util import click_element
 from .util import web_adress_navigator
@@ -325,7 +326,7 @@ def get_links_for_username(browser,
 
     try:
         is_private = body_elem.find_element_by_xpath(
-            '//h2[@class="_kcrwx"]')
+            '//h2[@class="rkEop"]')
     except:
         logger.info('Interaction begin...')
     else:
@@ -557,7 +558,7 @@ def check_link(browser, post_link, dont_like, ignore_if_contains, logger):
     return False, user_name, is_video, 'None', "Success"
 
 
-def like_image(browser, username, blacklist, logger, logfolder):
+def like_image(browser, username, blacklist, logger, logfolder, source=None):
     """Likes the browser opened image"""
     like_xpath = "//a[@role='button']/span[text()='Like']/.."
     unlike_xpath = "//a[@role='button']/span[text()='Unlike']"
@@ -576,6 +577,7 @@ def like_image(browser, username, blacklist, logger, logfolder):
         if len(liked_elem) == 1:
             logger.info('--> Image Liked!')
             update_activity('likes')
+            update_analytics(username, source, 'likes')
             if blacklist['enabled'] is True:
                 action = 'liked'
                 add_user_to_blacklist(
