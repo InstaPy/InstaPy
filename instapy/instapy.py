@@ -1603,7 +1603,8 @@ class InstaPy:
                                                user_name,
                                                self.blacklist,
                                                self.logger,
-                                               self.logfolder)
+                                               self.logfolder,
+                                               source)
                         else:
                             liked = True
 
