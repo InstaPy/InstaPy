@@ -666,7 +666,7 @@ class InstaPy:
                                            self.min_following,
                                            self.logger)
             if validation != True or acc_to_follow==self.username:
-                self.logger.info("--> not a valid user: {}".format(details))
+                self.logger.info("--> Not a valid user: {}".format(details))
                 not_valid_users += 1
                 continue
 
@@ -830,7 +830,7 @@ class InstaPy:
                                                        self.min_following,
                                                        self.logger)
                         if validation != True:
-                            self.logger.info("--> not a valid user: {}".format(details))
+                            self.logger.info("--> Not a valid user: {}".format(details))
                             not_valid_users += 1
                             continue
                         else:
