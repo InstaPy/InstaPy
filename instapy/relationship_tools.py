@@ -746,13 +746,13 @@ def store_active_unfollowers(username, active_unfollowers, logger, logfolder):
         logger.info("Failed to store active Unfollowers data in a local file :Z\n{}\n".format(exc.encode("utf-8")))
 
 
-def store_nonfollowers(username, followers_size, following_size, non_followers, logger, logfolder):
+def store_nonfollowers(username, followers_size, following_size, nonfollowers, logger, logfolder):
     """ Store Nonfollowers data in a local storage at generated date """
     generation_date = datetime.today().strftime("%d-%m-%Y")
-    non_followers_size = len(non_followers)
-    file_directory = "{}/relationship_data/{}/non_followers/".format(logfolder, username)
+    nonfollowers_size = len(nonfollowers)
+    file_directory = "{}/relationship_data/{}/nonfollowers/".format(logfolder, username)
     file_name = "{}{}~[{}-{}]~{}".format(
-        file_directory, generation_date, followers_size, following_size, non_followers_size)
+        file_directory, generation_date, followers_size, following_size, nonfollowers_size)
     file_index = 0
     final_file = "{}.json".format(file_name)
 
@@ -764,9 +764,9 @@ def store_nonfollowers(username, followers_size, following_size, non_followers, 
             file_index += 1
             final_file = "{}({}).json".format(file_name, file_index)
 
-        with open(final_file, 'w') as non_followers_data:
+        with open(final_file, 'w') as nonfollowers_data:
             with interruption_handler():
-                json.dump(non_followers, non_followers_data)
+                json.dump(nonfollowers, nonfollowers_data)
         logger.info("Stored Nonfollowers data at {} local file\n".format(final_file))
 
     except Exception as exc:

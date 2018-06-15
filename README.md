@@ -780,7 +780,7 @@ Every time you grab `Followers` data in `"full"` range of **any** user, it is al
     
 `store_locally`:  
 Gives the _option_ to `save` the loaded `Followers` data in a **local storage**  
-The files will be saved _into_ your **logs folder**, such as `~/InstaPy/logs/YourOwnUsername/relationship_data/Popeye/followers/`.  
+The files will be saved _into_ your **logs folder**, `~/InstaPy/logs/YourOwnUsername/relationship_data/Popeye/followers/` directory.  
 Sample **filename** `14-06-2018~full~6874.json`:  
 + `14-06-2018` means the **time** of the data acquisition.
 + `"full"` means the **range** of the data acquisition;  
@@ -840,7 +840,7 @@ Every time you grab `Following` data in `"full"` range of **any** user, it is al
     
 `store_locally`:  
 Gives the _option_ to `save` the loaded `Following` data in a **local storage**  
-The files will be saved _into_ your **logs folder**, such as `~/InstaPy/logs/YourOwnUsername/relationship_data/lazy.smurf/following/`.  
+The files will be saved _into_ your **logs folder**, `~/InstaPy/logs/YourOwnUsername/relationship_data/lazy.smurf/following/` directory.  
 Sample **filename** `15-06-2018~full~2409.json`:  
 + `15-06-2018` means the **time** of the data acquisition.
 + `"full"` means the **range** of the data acquisition;  
@@ -946,6 +946,54 @@ sleep(200)
 session.unfollow_users(amount=len(active_unfollowers), customList=(True, active_unfollowers, "all"), style="RANDOM", unfollow_after=None, sleep_delay=600)
 ```
 
+
+
+### Pick Nonfollowers of a user
+###### Compares the `Followers` data against `Following` data of a user and returns the `Nonfollowers` data
+```python
+scoobyDoo_nonfollowers = session.pick_nonfollowers(username="ScoobyDoo", live_match=True, store_locally=True)
+#now, `scoobyDoo_nonfollowers` variable which is a list- holds the `Nonfollowers` data of "ScoobyDoo" at requested time
+```
+#### Parameters:  
+`username`:  
+A desired username to pick its nonfollowers  
+* It can be your `own` username **OR** a _username of some `non-private` account._
+
+`live_match`:  
+Defines the method of grabbing `Followers` and `Following` data to compare with each other to find **nonfollowers**
+> **Knowledge Base**:  
+Every time you grab `Followers` and/or `Following` data in `"full"` range of **any** user, it is also gonna be _stored in some corner_ of `InstaPy` **for that session**.
+
++ `live_match=False`:
+    + If the user **already do have** a `Followers` and/or `Following` data loaded _earlier_ in the **same** session, it will run a _smart_ `data-matching` _algorithm_.  
+    And **there**, it will **load only the new data** _from the server_ and then **return a compact result** of _current data_.  
+    The _algorithm_ **works like**: _load the usernames **until hits the** ones from the **previous query** at certain amount_.  
+    + **Also if** the `live_match` is `False` and the user has **no any** _sessional_ `Followers` and/or `Following` data, **then** it will load `live` data at _requested range_.
+    + As a **result**, `live_match=False` saves lots of `precious time` and `server requests`.  
++ `live_match=True`:  
+    + It will **always** load `live` data from the server at _requested range_.
+
+`store_locally`:  
+Gives the _option_ to `save` the loaded `Nonfollowers` data in a **local storage**  
+The files will be saved _into_ your **logs folder**, `~/InstaPy/logs/YourOwnUsername/relationship_data/ScoobyDoo/nonfollowers/` directory.  
+Sample **filename** `01-06-2018~(5886-3575)~2465.json`:  
++ `01-06-2018` means the **time** of the data acquisition.
++ `5886` means the **count** of the followers retrieved.
++ `3575` means the **count** of the following retrieved.
++ `2465` means the **count** of the nonfollowers picked.
++ `json` is the **filetype** and the data is stored as a `list` in it.
+
+
+There are **several** `use cases` of this tool for **various purposes**.  
++ You can get the nonfollowers of several users do analysis.  
+    + _e.g., in this example Scooby Do used it like this_:  
+    ```python
+    ##Scooby Doo always wonders a lot and this time he wonders if there are people Shaggy is following WHO do not follow him back...
+    shaggy_nonfollowers = session.pick_nonfollowers(username="Shaggy", live_match=True, store_locally=True)
+
+    #now Scooby Doo will tell his friend Shaggy about this, who knows, maybe Shaggy will unfollow them all or even add to block :D
+    ```  
+  
 
 
 ### Use a proxy
