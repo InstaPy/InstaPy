@@ -765,28 +765,28 @@ Defines the desired amount of usernames to grab from the given account
     * Grabs `3089` usernames **if exist**, _if not_, grabs **available** amount
 
 `live_match`:  
-Defines the method of grabbing data
+Defines the method of grabbing `Followers` data
 > **Knowledge Base**:  
 Every time you grab `Followers` data in `"full"` range of **any** user, it is also gonna be _stored in some corner_ of `InstaPy` **for that session**.
 
 + `live_match=False`:
     + If the user **already do have** a `Followers` data loaded _earlier_ in the **same** session, it will run a _smart_ `data-matching` _algorithm_.  
     And **there**, it will **load only the new data** _from the server_ and then **return a compact result** of _current data_.  
-    The _algorithm_ **works like**: _load the username **until hits the** ones from the **previous query** at certain amount_.  
+    The _algorithm_ **works like**: _load the usernames **until hits the** ones from the **previous query** at certain amount_.  
     + **Also if** the `live_match` is `False` and the user has **no any** _sessional_ `Followers` data, **then** it will load `live` data at _requested range_.
     + As a **result**, `live_match=False` saves lots of `precious time` and `server requests`.  
 + `live_match=True`:  
     + It will **always** load `live` data from the server at _requested range_.
     
 `store_locally`:  
-Gives the _option_ to `save` the loaded data in a **local storage**  
+Gives the _option_ to `save` the loaded `Followers` data in a **local storage**  
 The files will be saved _into_ your **logs folder**, such as `~/InstaPy/logs/YourOwnUsername/relationship_data/Popeye/followers/`.  
-+ Sample **filename** `14-06-2018~full~6874.json`:  
-    + `14-06-2018` means the **time** of the data acquisition.
-    + `"full"` means the **range** of the data acquisition;  
-    _If the data is requested at the range **else than** `"full"`, it will write **that** range_.
-    + `6874` means the **count** of the usernames retrieved.
-    + `json` is the **filetype** and the data is stored as a `list` in it.
+Sample **filename** `14-06-2018~full~6874.json`:  
++ `14-06-2018` means the **time** of the data acquisition.
++ `"full"` means the **range** of the data acquisition;  
+_If the data is requested at the range **else than** `"full"`, it will write **that** range_.
++ `6874` means the **count** of the usernames retrieved.
++ `json` is the **filetype** and the data is stored as a `list` in it.
 
 
 There are **several** `use cases` of this tool for **various purposes**.  
@@ -825,28 +825,28 @@ Defines the desired amount of usernames to grab from the given account
     * Grabs `3089` usernames **if exist**, _if not_, grabs **available** amount
 
 `live_match`:  
-Defines the method of grabbing data
+Defines the method of grabbing `Following` data
 > **Knowledge Base**:  
 Every time you grab `Following` data in `"full"` range of **any** user, it is also gonna be _stored in some corner_ of `InstaPy` **for that session**.
 
 + `live_match=False`:
-    + If the user **already do have** a `Folloing` data loaded _earlier_ in the **same** session, it will run a _smart_ `data-matching` _algorithm_.  
+    + If the user **already do have** a `Following` data loaded _earlier_ in the **same** session, it will run a _smart_ `data-matching` _algorithm_.  
     And **there**, it will **load only the new data** _from the server_ and then **return a compact result** of _current data_.  
-    The _algorithm_ **works like**: _load the username **until hits the** ones from the **previous query** at certain amount_.  
+    The _algorithm_ **works like**: _load the usernames **until hits the** ones from the **previous query** at certain amount_.  
     + **Also if** the `live_match` is `False` and the user has **no any** _sessional_ `Following` data, **then** it will load `live` data at _requested range_.
     + As a **result**, `live_match=False` saves lots of `precious time` and `server requests`.  
 + `live_match=True`:  
     + It will **always** load `live` data from the server at _requested range_.
     
 `store_locally`:  
-Gives the _option_ to `save` the loaded data in a **local storage**  
+Gives the _option_ to `save` the loaded `Following` data in a **local storage**  
 The files will be saved _into_ your **logs folder**, such as `~/InstaPy/logs/YourOwnUsername/relationship_data/lazy.smurf/following/`.  
-+ Sample **filename** `15-06-2018~full~2409.json`:  
-    + `15-06-2018` means the **time** of the data acquisition.
-    + `"full"` means the **range** of the data acquisition;  
-    _If the data is requested at the range **else than** `"full"`, it will write **that** range_.
-    + `2409` means the **count** of the usernames retrieved.
-    + `json` is the **filetype** and the data is stored as a `list` in it.
+Sample **filename** `15-06-2018~full~2409.json`:  
++ `15-06-2018` means the **time** of the data acquisition.
++ `"full"` means the **range** of the data acquisition;  
+_If the data is requested at the range **else than** `"full"`, it will write **that** range_.
++ `2409` means the **count** of the usernames retrieved.
++ `json` is the **filetype** and the data is stored as a `list` in it.
 
 
 There are **several** `use cases` of this tool for **various purposes**.  
@@ -866,6 +866,85 @@ lazySmurf_gargamel_following = [following for following in lazySmurf_following i
 
 #### `PRO`s:
 You can **use** this tool to take a **backup** of _your_ **or** _any other user's_ **current** following.
+
+
+
+### Pick Unfollowers of a user
+###### Compares the `followers` stored in a local storage against current followers and returns absent followers
+```python
+all_unfollowers, active_unfollowers = session.pick_unfollowers(username="Bernard_bear", compare_by="month", compare_track="first", live_match=True, store_locally=True, print_out=True)
+##now, `all_unfollowers` and `all_unfollowers` variables which are lists- hold the `Unfollowers` data of "Bernard_bear" at requested time
+#`all_unfollowers` holds all of the unfollowers WHILST `active_unfollowers` holds the unfollowers WHOM "Bernard_bear" is still following
+```
+#### Parameters:  
+`username`:  
+A desired username to pick its unfollowers  
+* It can be your `own` username **OR** a _username of some `non-private` account._
+
+`compare_by`:
+Defines the `compare point` to pick unfollowers
++ Available **value**s are:
+    + `"latest"` chooses the very latest record from the existing records in the local folder
+    + `"earliest"` chooses the very earliest record from the existing records in the local folder
+
+    The compare points below needs a **compare track** defined, too:
+    + `"day"` chooses from the existing records of today in the local folder
+    + `"month"` chooses from the existing records of this month in the local folder
+    + `"year"` chooses from the existing records of this year in the local folder
+
+`compare_track`:
+Defines the track to choose a file to compare for `"day"`, `"month"` and `"year"` compare points
++ Available **value**s are:
+    + `"first"` selects the first record from the given `day`, `month` or `year`
+    + `"median"` selects the median (_the one in the middle_) record from the given `day`, `month` or `year`
+    + `"last"` selects the last record from the given `day`, `month` or `year`
+    
+`live_match`:  
+Defines the method of grabbing **new** `Followers` data to compare with **existing** data
+> **Knowledge Base**:  
+Every time you grab `Followers` data in `"full"` range of **any** user, it is also gonna be _stored in some corner_ of `InstaPy` **for that session**.
+
++ `live_match=False`:
+    + If the user **already do have** a `Followers` data loaded _earlier_ in the **same** session, it will run a _smart_ `data-matching` _algorithm_.  
+    And **there**, it will **load only the new data** _from the server_ and then **return a compact result** of _current data_.  
+    The _algorithm_ **works like**: _load the usernames **until hits the** ones from the **previous query** at certain amount_.  
+    + **Also if** the `live_match` is `False` and the user has **no any** _sessional_ `Followers` data, **then** it will load `live` data at _requested range_.
+    + As a **result**, `live_match=False` saves lots of `precious time` and `server requests`.  
++ `live_match=True`:  
+    + It will **always** load `live` data from the server at _requested range_.
+    
+`store_locally`:  
+Gives the _option_ to `save` the loaded `Unfollowers` data in a **local storage**  
+There will be 2 files saved in their own directory:  
++ `all_unfollowers`:  
+    + Will store all of the unfollowers in there  
+    + Its files will be saved at **logs folder**, `~/InstaPy/logs/YourOwnUsername/relationship_data/Bernard_bear/unfollowers/all_unfollowers/` directory.    
++ `active_unfollowers`:    
+    + Will store only the unfollowers WHOM you are currently following.  
+    + Its files will be saved at **logs folder**, `~/InstaPy/logs/YourOwnUsername/relationship_data/Bernard_bear/unfollowers/active_unfollowers/` directory.    
+  
+Sample **filename** `03-06-2018~all~75.json`:  
++ `03-06-2018` means the **time** of the data acquisition.
++ `"all"` means that it is all of the unfollowers data;  
+_*`"active"` unfollowers files will have `"active"` written in there_.
++ `75` means the **count** of the unfollowers retrieved.
++ `json` is the **filetype** and the data is stored as a `list` in it.
+
+`print_out`:  
+Use this parameter if you would like the `see` those unfollowers **printed** into the **console output** _right after finding them_.    
+
+There are **several** `use cases` of this tool for **various purposes**.  
++ You can the get the unfollowers you have had from the **start of the** _year_, or from the **middle of the** _year_ or from the start of the **month**, etc.  
+And then, e.g. do some `useful` **analysis** with that _generated unfollowers data_.
++ _And_ you can also **find** the unfollowers to `block` them **all**.
++ Also, you can **unfollow back** those `active unfollowers` _right away_:
+```python
+#find all of the active unfollowers of Bernard bear
+all_unfollowers, active_unfollowers = session.pick_unfollowers(username="Bernard_bear", compare_by="earliest", compare_track="first", live_match=True, store_locally=True, print_out=True)
+sleep(200)
+#let's unfollow them immediately cos Bernard will be angry if heards about those unfollowers! :D
+session.unfollow_users(amount=len(active_unfollowers), customList=(True, active_unfollowers, "all"), style="RANDOM", unfollow_after=None, sleep_delay=600)
+```
 
 
 
