@@ -2715,9 +2715,9 @@ class InstaPy:
 
     def interact_by_URL(self,
                          urls=[],
-                           media=None,
-                            interact=False):
-        """ Interact on images at given URLs """
+                          randomize=False,
+                           interact=False):
+        """ Interact on posts at given URLs """
 
         if self.aborting:
             return self
@@ -2727,6 +2727,9 @@ class InstaPy:
 
         if not isinstance(urls, list):
             urls = [urls]
+
+        if randomize == True:
+            random.shuffle(urls)
 
         liked_img = 0
         already_liked = 0

@@ -45,7 +45,7 @@ Table of Contents
   * [Interact with specific users](#interact-with-specific-users)
   * [Interact with users that someone else is following](#interact-with-users-that-someone-else-is-following)
   * [Interact with someone else's followers](#interact-with-someone-elses-followers)
-  * [Interact on images at given URLs]()
+  * [Interact on posts at given URLs]()
   * [Unfollowing](#unfollowing)
   * [Don't unfollow active users](#dont-unfollow-active-users)
   * [Interactions based on the number of followers and/or following a user has](#interactions-based-on-the-number-of-followers-andor-following-a-user-has)
@@ -366,8 +366,43 @@ session.interact_user_followers(['natgeo'], amount=10, randomize=True)
 ```
 
 
-### Unfollowing
+### Interact on posts at given URLs
+###### Like, comment, follow on the post in the links provided, also can interact the owner of the post
 
+```python
+session.interact_by_URL(urls=["some/URL/1", "some/URL/2" "other/URL"], randomize=True, interact=True)
+```
+
+**To use**, _define_ all of the `interaction settings` and **start** the feature right away!
+```python
+#define interaction settings
+session.set_do_like(enabled=True, percentage=94)
+session.set_do_comment(enabled=True, percentage=24)
+session.set_comments(["Masterful shot", "Chilling!", "Unbelievably great..."])
+session.set_do_follow(enabled=True, percentage=44)
+session.set_user_interact(amount=6, randomize=True, percentage=72, media='Photo')
+
+#start the feature
+session.interact_by_URL(urls=["Fv0J4AJ3Y7r/?taken-at=628416252", "Vb0D4bJgY7r" "Dj0J4VJgY7r"], randomize=True, interact=True)
+```
+##### Parameters:
+`urls`:  
+Contains the _URLs_ of the **posts** _to be interacted_.  
+* You can provide _URLs_ in these formats:  
+**full:** `"https://www.IG.com/p/Aj0J4bJDY7r/?taken-at=128316221"`  
+just **post link:** `"https://www.IG.com/p/Aj0J4bJDY7r/"`  
+just post **handle:** `"Aj0J4bJDY7r/?taken-at=128316221"`  
+just post **ID:** `"Aj0J4bJDY7r"`  
+
+`randomize`:  
+Shuffles the **order** of the _URLs_ in the given list _before starts to interact_.  
+
+`interact`:  
+Use it if you like to also _interact the post owner_ **after** doing interactions on the **post itself**.  
+
+
+
+### Unfollowing
 ###### Unfollows the accounts you're following  
 _It will unfollow ~`10` accounts and sleep for ~`10` minutes and then will continue to unfollow..._
 
