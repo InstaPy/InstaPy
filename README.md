@@ -728,6 +728,8 @@ session.set_do_follow(enabled=True, percentage=10, times=2)
 ```
 but none of the profiles are being followed - or any such functionality is misbehaving - then one thing you should check is the position/order of such methods in your script. Essentially, all the ```set_*``` methods have to be before ```like_by_tags``` or ```like_by_locations``` or ```unfollow```. This is also implicit in all the exmples and quickstart.py
 
+
+
 ### Bypass Suspicious Login Attempt
 
 If you're having issues with the "we detected an unusual login attempt" message,
@@ -741,6 +743,131 @@ session = InstaPy(username=insta_username, password=insta_password, bypass_suspi
 email, and you will be prompted to enter the security code sent to your email.
 It will login to your account, now you can set bypass_suspicious_attempt to False
 ```bypass_suspicious_attempt=False``` and InstaPy will quickly login using cookies.
+
+
+
+### Grab Followers of a user  
+###### Gets and returns `followers` of the given user in desired amount, also can save locally  
+```python
+popeye_followers = session.grab_followers(username="Popeye", amount="full", live_match=True, store_locally=True)
+##now, `popeye_followers` variable which is a list- holds the `Followers` data of "Popeye" at requested time
+```  
+#### Parameters:  
+`username`:  
+A desired username to grab its followers  
+* It can be your `own` username **OR** a _username of some `non-private` account._
+
+`amount`:  
+Defines the desired amount of usernames to grab from the given account
+* `amount="full"`:
+    + Grabs followers **entirely**
+* `amount=3089`:
+    * Grabs `3089` usernames **if exist**, _if not_, grabs **available** amount
+
+`live_match`:  
+Defines the method of grabbing data
+> **Knowledge Base**:  
+Every time you grab `Followers` data in `"full"` range of **any** user, it is also gonna be _stored in some corner_ of `InstaPy` **for that session**.
+
++ `live_match=False`:
+    + If the user **already do have** a `Followers` data loaded _earlier_ in the **same** session, it will run a _smart_ `data-matching` _algorithm_.  
+    And **there**, it will **load only the new data** _from the server_ and then **return a compact result** of _current data_.  
+    The _algorithm_ **works like**: _load the username **until hits the** ones from the **previous query** at certain amount_.  
+    + **Also if** the `live_match` is `False` and the user has **no any** _sessional_ `Followers` data, **then** it will load `live` data at _requested range_.
+    + As a **result**, `live_match=False` saves lots of `precious time` and `server requests`.  
++ `live_match=True`:  
+    + It will **always** load `live` data from the server at _requested range_.
+    
+`store_locally`:  
+Gives the _option_ to `save` the loaded data in a **local storage**  
+The files will be saved _into_ your **logs folder**, such as `~/InstaPy/logs/YourOwnUsername/relationship_data/Popeye/followers/`.  
++ Sample **filename** `14-06-2018~full~6874.json`:  
+    + `14-06-2018` means the **time** of the data acquisition.
+    + `"full"` means the **range** of the data acquisition;  
+    _If the data is requested at the range **else than** `"full"`, it will write **that** range_.
+    + `6874` means the **count** of the usernames retrieved.
+    + `json` is the **filetype** and the data is stored as a `list` in it.
+
+
+There are **several** `use cases` of this tool for **various purposes**.  
+_E.g._, inside your **quickstart** script, you can **do** _something like this_:
+```python
+#get followers of "Popeye" and "Cinderella"
+popeye_followers = session.grab_followers(username="Popeye", amount="full", live_match=True, store_locally=True)
+sleep(600)
+cinderella_followers = session.grab_followers(username="Cinderella", amount="full", live_match=True, store_locally=True)
+
+#find the users following "Popeye" WHO also follow "Cinderella" :D
+popeye_cinderella_followers = [follower for follower in popeye_followers if follower in cinderella_followers]
+```
+
+#### `PRO`s:
+You can **use** this tool to take a **backup** of _your_ **or** _any other user's_ **current** followers.
+
+
+
+### Grab Following of a user  
+###### Gets and returns `following` of the given user in desired amount, also can save locally  
+```python
+lazySmurf_following = session.grab_following(username="lazy.smurf", amount="full", live_match=True, store_locally=True)
+##now, `lazySmurf_following` variable which is a list- holds the `Following` data of "lazy.smurf" at requested time
+```  
+#### Parameters:  
+`username`:  
+A desired username to grab its following  
+* It can be your `own` username **OR** a _username of some `non-private` account._
+
+`amount`:  
+Defines the desired amount of usernames to grab from the given account
+* `amount="full"`:
+    + Grabs following **entirely**
+* `amount=3089`:
+    * Grabs `3089` usernames **if exist**, _if not_, grabs **available** amount
+
+`live_match`:  
+Defines the method of grabbing data
+> **Knowledge Base**:  
+Every time you grab `Following` data in `"full"` range of **any** user, it is also gonna be _stored in some corner_ of `InstaPy` **for that session**.
+
++ `live_match=False`:
+    + If the user **already do have** a `Folloing` data loaded _earlier_ in the **same** session, it will run a _smart_ `data-matching` _algorithm_.  
+    And **there**, it will **load only the new data** _from the server_ and then **return a compact result** of _current data_.  
+    The _algorithm_ **works like**: _load the username **until hits the** ones from the **previous query** at certain amount_.  
+    + **Also if** the `live_match` is `False` and the user has **no any** _sessional_ `Following` data, **then** it will load `live` data at _requested range_.
+    + As a **result**, `live_match=False` saves lots of `precious time` and `server requests`.  
++ `live_match=True`:  
+    + It will **always** load `live` data from the server at _requested range_.
+    
+`store_locally`:  
+Gives the _option_ to `save` the loaded data in a **local storage**  
+The files will be saved _into_ your **logs folder**, such as `~/InstaPy/logs/YourOwnUsername/relationship_data/lazy.smurf/following/`.  
++ Sample **filename** `15-06-2018~full~2409.json`:  
+    + `15-06-2018` means the **time** of the data acquisition.
+    + `"full"` means the **range** of the data acquisition;  
+    _If the data is requested at the range **else than** `"full"`, it will write **that** range_.
+    + `2409` means the **count** of the usernames retrieved.
+    + `json` is the **filetype** and the data is stored as a `list` in it.
+
+
+There are **several** `use cases` of this tool for **various purposes**.  
+_E.g._, inside your **quickstart** script, you can **do** _something like this_:
+```python
+##as we know that all lazy Smurf care is to take some good rest, so by mistake, he can follow somebody WHOM Gargamel also follow!
+#so let's find it out to save Smurfs from troubles! :D
+
+#get following of "lazy.smurf" and "Gargamel"
+lazySmurf_following = session.grab_following(username="lazy.smurf", amount="full", live_match=True, store_locally=True)
+sleep(600)
+gargamel_following = session.grab_following(username="Gargamel", amount="full", live_match=True, store_locally=True)
+
+#find the users "lazy.smurf" is following WHOM "Gargamel" also follow :D
+lazySmurf_gargamel_following = [following for following in lazySmurf_following if following in gargamel_following]
+```
+
+#### `PRO`s:
+You can **use** this tool to take a **backup** of _your_ **or** _any other user's_ **current** following.
+
+
 
 ### Use a proxy
 
