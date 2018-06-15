@@ -1043,6 +1043,53 @@ There are **several** `use cases` of this tool for **various purposes**.
 
 
 
+### Pick Mutual Following of a user
+###### Returns `Mutual Following` data- all of the accounts who do follow the user WHOM user itself **also** do follow back
+```python
+Winnie_mutualFollowing = session.pick_mutual_following(username="WinnieThePooh", live_match=True, store_locally=True)
+#now, `Winnie_mutualFollowing` variable which is a list- holds the `Mutual Following` data of "WinnieThePooh" at requested time
+```
+#### Parameters:  
+`username`:  
+A desired username to pick its mutual following  
+* It can be your `own` username **OR** a _username of some `non-private` account._
+
+`live_match`:  
+Defines the method of grabbing `Followers` and `Following` data to compare with each other to find **mutual following**
+> **Knowledge Base**:  
+Every time you grab `Followers` and/or `Following` data in `"full"` range of **any** user, it is also gonna be _stored in some corner_ of `InstaPy` **for that session**.
+
++ `live_match=False`:
+    + If the user **already do have** a `Followers` and/or `Following` data loaded _earlier_ in the **same** session, it will run a _smart_ `data-matching` _algorithm_.  
+    And **there**, it will **load only the new data** _from the server_ and then **return a compact result** of _current data_.  
+    The _algorithm_ **works like**: _load the usernames **until hits the** ones from the **previous query** at certain amount_.  
+    + **Also if** the `live_match` is `False` and the user has **no any** _sessional_ `Followers` and/or `Following` data, **then** it will load `live` data at _requested range_.
+    + As a **result**, `live_match=False` saves lots of `precious time` and `server requests`.  
++ `live_match=True`:  
+    + It will **always** load `live` data from the server at _requested range_.
+
+`store_locally`:  
+Gives the _option_ to `save` the loaded `Mutual Following` data in a **local storage**  
+The files will be saved _into_ your **logs folder**, `~/InstaPy/logs/YourOwnUsername/relationship_data/WinnieThePooh/mutual_following/` directory.  
+Sample **filename** `11-06-2018~[3872-2571]~1120.json`:  
++ `11-06-2018` means the **time** of the data acquisition.
++ `3872` means the **count** of the followers retrieved.
++ `2571` means the **count** of the following retrieved.
++ `1120` means the **count** of the mutual following picked.
++ `json` is the **filetype** and the data is stored as a `list` in it.
+
+
+There are **several** `use cases` of this tool for **various purposes**.  
++ You can get the mutual following of several users and then do analysis.  
+    + _e.g., in this example Winnie The Pooh used it like this_:  
+    ```python
+    #Winnie The Pooh is a very friendly guy and almost everybody follows him back, but he wants to be sure about it :D
+    Winnie_mutual_following = session.pick_mutual_following(username="WinnieThePooh", live_match=True, store_locally=True)
+    ##now, he will write a message to his mutual followers to help him get a new honey pot :>
+    ```  
+
+
+
 ### Use a proxy
 
 You can use InstaPy behind a proxy by specifying server address and port
