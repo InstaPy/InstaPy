@@ -45,7 +45,7 @@ Table of Contents
   * [Interact with specific users](#interact-with-specific-users)
   * [Interact with users that someone else is following](#interact-with-users-that-someone-else-is-following)
   * [Interact with someone else's followers](#interact-with-someone-elses-followers)
-  * [Interact on posts at given URLs]()
+  * [Interact on posts at given URLs](#interact-on-posts-at-given-urls)
   * [Unfollowing](#unfollowing)
   * [Don't unfollow active users](#dont-unfollow-active-users)
   * [Interactions based on the number of followers and/or following a user has](#interactions-based-on-the-number-of-followers-andor-following-a-user-has)
@@ -63,13 +63,13 @@ Table of Contents
   * [Smart Hashtags](#smart-hashtags)
   * [Follow/Unfollow/exclude not working?](#followunfollowexclude-not-working)
   * [Bypass Suspicious Login Attempt](#bypass-suspicious-login-attempt)
-* [Relationship tools]()
-  * [Grab Followers of a user]()
-  * [Grab Following of a user]()
-  * [Pick Unfollowers of a user]()
-  * [Pick Nonfollowers of a user]()
-  * [Pick Fans of a user]()
-  * [Pick Mutual Following of a user]()
+* [Relationship tools](#relationship-tools)
+  * [Grab Followers of a user](#grab-followers-of-a-user)
+  * [Grab Following of a user](#grab-following-of-a-user)
+  * [Pick Unfollowers of a user](#pick-unfollowers-of-a-user)
+  * [Pick Nonfollowers of a user](#pick-nonfollowers-of-a-user)
+  * [Pick Fans of a user](#pick-fans-of-a-user)
+  * [Pick Mutual Following of a user](#pick-mutual-following-of-a-user)
 * [Third Party InstaPy GUI for Windows](#third-party-instapy-gui-for-windows)
 * [Use a proxy](#use-a-proxy)
 * [Switching to Firefox](#switching-to-firefox)
@@ -744,6 +744,9 @@ email, and you will be prompted to enter the security code sent to your email.
 It will login to your account, now you can set bypass_suspicious_attempt to False
 ```bypass_suspicious_attempt=False``` and InstaPy will quickly login using cookies.
 
+
+
+## Relationship tools
 
 
 ### Grab Followers of a user  
