@@ -510,7 +510,7 @@ def follow_user(browser, follow_restrict, login, user_name, blacklist, logger, l
         return 0
 
 
-def unfollow_user(browser, username, person, logger, logfolder):
+def unfollow_user(browser, username, person, relationship_data, logger, logfolder):
     """Unfollows the user of the currently opened image"""
 
     try:

@@ -1803,7 +1803,7 @@ class InstaPy:
                         not_valid_users += 1
                         simulated_unfollow += 1
                         self.logger.info("Simulated unfollow: {}  ~not valid user".format(simulated_unfollow))
-                        unfollow_user(self.browser, self.username, person, self.logger, self.logfolder)
+                        unfollow_user(self.browser, self.username, person, self.relationship_data, self.logger, self.logfolder)
                         continue
                 # Do interactions if any
                 do_interact = random.randint(0, 100) <= self.user_interact_percentage
@@ -1898,7 +1898,7 @@ class InstaPy:
                         not_valid_users += 1
                         simulated_unfollow += 1
                         self.logger.info("Simulated unfollow: {}  ~not valid user".format(simulated_unfollow))
-                        unfollow_user(self.browser, self.username, person, self.logger, self.logfolder)
+                        unfollow_user(self.browser, self.username, person, self.relationship_data, self.logger, self.logfolder)
                         continue
                 # Do interactions if any
                 do_interact = random.randint(0, 100) <= self.user_interact_percentage
@@ -1996,7 +1996,7 @@ class InstaPy:
                         not_valid_users += 1
                         simulated_unfollow += 1
                         self.logger.info("Simulated unfollow: {}  ~not valid user".format(simulated_unfollow))
-                        unfollow_user(self.browser, self.username, person, self.logger, self.logfolder)
+                        unfollow_user(self.browser, self.username, person, self.relationship_data, self.logger, self.logfolder)
                         continue
 
                 followed = self.follow_by_list(person, self.follow_times, sleep_delay, interact)
@@ -2099,7 +2099,7 @@ class InstaPy:
                         not_valid_users += 1
                         simulated_unfollow += 1
                         self.logger.info("Simulated unfollow: {}  ~not valid user".format(simulated_unfollow))
-                        unfollow_user(self.browser, self.username, person, self.logger, self.logfolder)
+                        unfollow_user(self.browser, self.username, person, self.relationship_data, self.logger, self.logfolder)
                         continue
 
                 followed = self.follow_by_list(person, self.follow_times, sleep_delay, interact)
@@ -2394,7 +2394,7 @@ class InstaPy:
                                     '--> Image not liked: {}'.format(reason.encode('utf-8')))
                                 inap_img += 1
                                 if reason == 'Inappropriate' and unfollow:
-                                    unfollow_user(self.browser, self.username, user_name, self.logger, self.logfolder)
+                                    unfollow_user(self.browser, self.username, user_name, self.relationship_data, self.logger, self.logfolder)
                         except NoSuchElementException as err:
                             self.logger.error('Invalid Page: {}'.format(err))
 
