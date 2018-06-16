@@ -1722,8 +1722,8 @@ class InstaPy:
 
         interacted_all = 0
         simulated_unfollow = 0
+        not_valid_users_initial = self.not_valid_users
         not_valid_users = 0
-        #initialize counts for summary logging
         liked_img = self.liked_img
         already_liked = self.already_liked
         commented = self.commented
@@ -1805,14 +1805,14 @@ class InstaPy:
         commented_sum = self.commented - commented
         followed_sum = self.followed - followed
         inap_img_sum = self.inap_img - inap_img
-
+        not_valid_users_sum = self.not_valid_users - not_valid_users_initial
 
         self.logger.info('Liked: {}'.format(liked_img_sum))
         self.logger.info('Already Liked: {}'.format(already_liked_sum))
         self.logger.info('Commented: {}'.format(commented_sum))
         self.logger.info('Followed: {}'.format(followed_sum))
         self.logger.info('Inappropriate: {}'.format(inap_img_sum))
-        self.logger.info('Not valid users: {}\n'.format(not_valid_users))
+        self.logger.info('Not valid users: {}\n'.format(not_valid_users_sum))
 
         self.not_valid_users += not_valid_users
         
@@ -1833,8 +1833,8 @@ class InstaPy:
 
         interacted_all = 0
         simulated_unfollow = 0
+        not_valid_users_initial = self.not_valid_users
         not_valid_users = 0
-        #initialize counts for summary logging
         liked_img = self.liked_img
         already_liked = self.already_liked
         commented = self.commented
@@ -1917,14 +1917,14 @@ class InstaPy:
         commented_sum = self.commented - commented
         followed_sum = self.followed - followed
         inap_img_sum = self.inap_img - inap_img
-        
+        not_valid_users_sum = self.not_valid_users - not_valid_users_initial
         
         self.logger.info('Liked: {}'.format(liked_img_sum))
         self.logger.info('Already Liked: {}'.format(already_liked_sum))
         self.logger.info('Commented: {}'.format(commented_sum))
         self.logger.info('Followed: {}'.format(followed_sum))
         self.logger.info('Inappropriate: {}'.format(inap_img_sum))
-        self.logger.info('Not valid users: {}\n'.format(not_valid_users))
+        self.logger.info('Not valid users: {}\n'.format(not_valid_users_sum))
 
         self.not_valid_users += not_valid_users
 
