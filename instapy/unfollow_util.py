@@ -166,7 +166,7 @@ def unfollow(browser,
             unfollow_list = automatedFollowedPool["eligible"]
 
         elif nonFollowers == True:
-            logger.info("Unfollowing the users who do not follow back\m")
+            logger.info("Unfollowing the users who do not follow back\n")
             """  Unfollow only the users who do not follow you back """
             unfollow_list = get_nonfollowers(browser,
                                               username,
