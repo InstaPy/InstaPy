@@ -1710,14 +1710,6 @@ class InstaPy:
 
     def interact_user_followers(self, usernames, amount=10, randomize=False):
 
-        #initialize counts for summary logging
-        liked_img = self.liked_img
-        already_liked = self.already_liked
-        inap_img = self.inap_img
-        commented = self.commented
-        followed = self.followed
-        not_valid_users = self.not_valid_users
-
         if self.do_follow != True and self.do_like != True:
             self.logger.info("Please enable following or liking in settings in order to do interactions.")
             return self
@@ -1731,6 +1723,13 @@ class InstaPy:
         interacted_all = 0
         simulated_unfollow = 0
         not_valid_users = 0
+        #initialize counts for summary logging
+        liked_img = self.liked_img
+        already_liked = self.already_liked
+        inap_img = self.inap_img
+        commented = self.commented
+        followed = self.followed
+        not_valid_users = self.not_valid_users
 
         for index, user in enumerate(usernames):
             self.logger.info("User '{}' [{}/{}]".format((user), index+1, len(usernames)))
@@ -1807,7 +1806,6 @@ class InstaPy:
         inap_img_sum = self.inap_img - inap_img
         commented_sum = self.commented - commented
         followed_sum = self.followed - followed
-        not_valid_users_sum = self.not_valid_users - not_valid_users
 
 
         self.logger.info('Liked: {}'.format(liked_img_sum))
@@ -1815,7 +1813,7 @@ class InstaPy:
         self.logger.info('Commented: {}'.format(commented_sum))
         self.logger.info('Followed: {}'.format(followed_sum))
         self.logger.info('Inappropriate: {}'.format(inap_img_sum))
-        self.logger.info('Not valid users: {}\n'.format(not_valid_users_sum))
+        self.logger.info('Not valid users: {}\n'.format(not_valid_users))
 
         self.not_valid_users += not_valid_users
         
@@ -1823,15 +1821,6 @@ class InstaPy:
 
 
     def interact_user_following(self, usernames, amount=10, randomize=False):
-
-        #initialize counts for summary logging
-        liked_img = self.liked_img
-        already_liked = self.already_liked
-        inap_img = self.inap_img
-        commented = self.commented
-        followed = self.followed
-        not_valid_users = self.not_valid_users
-
 
         if self.do_follow != True and self.do_like != True:
             self.logger.info("Please enable following or liking in settings in order to do interactions.")
@@ -1846,6 +1835,12 @@ class InstaPy:
         interacted_all = 0
         simulated_unfollow = 0
         not_valid_users = 0
+        #initialize counts for summary logging
+        liked_img = self.liked_img
+        already_liked = self.already_liked
+        inap_img = self.inap_img
+        commented = self.commented
+        followed = self.followed
 
         for index, user in enumerate(usernames):
             self.logger.info("User '{}' [{}/{}]".format((user), index+1, len(usernames)))
@@ -1930,7 +1925,7 @@ class InstaPy:
         self.logger.info('Commented: {}'.format(commented_sum))
         self.logger.info('Followed: {}'.format(followed_sum))
         self.logger.info('Inappropriate: {}'.format(inap_img_sum))
-        self.logger.info('Not valid users: {}\n'.format(not_valid_users_sum))
+        self.logger.info('Not valid users: {}\n'.format(not_valid_users))
 
         self.not_valid_users += not_valid_users
 
