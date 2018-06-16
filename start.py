@@ -8,6 +8,8 @@ from instapy import InstaPy
 from instapy.api_db import fetchOne
 from random import randint
 from instapy.bot_util import getBotOperations
+from instapy.bot_action_handler import getAmountDistribution, getLikeAmount, getFollowAmount
+import math
 
 stdout = sys.stdout
 sys.stdout = codecs.getwriter('utf8')(sys.stdout)
@@ -40,8 +42,17 @@ try:
                       proxy_port="80",
                       multi_logs=True)
 
+    calculatedAmount = getAmountDistribution(session, args.angie_campaign)
+
+    totalExpectedLikesAmount = int(getLikeAmount(session, args.angie_campaign, calculatedAmount))
+    totalExpectedFollowAmount = int(getFollowAmount(session, args.angie_campaign, calculatedAmount))
+
+    followPercentage= math.ceil(totalExpectedFollowAmount*100/totalExpectedLikesAmount)
+
+    session.logger.info("start: Follow percentage is %s from %s likes. Should perform ~%s follows" % (followPercentage, totalExpectedLikesAmount, totalExpectedFollowAmount))
+
     session.set_relationship_bounds(enabled=True, potency_ratio=0.01, max_followers=999999, max_following=99999, min_followers=100, min_following=50)
-    session.set_do_follow(enabled=True, percentage=30, times=1)
+    session.set_do_follow(enabled=True, percentage=followPercentage, times=1)
     session.logger.info("start: Instapy Started for account %s, using proxy: %s" % ( campaign['username'], campaign['ip']))
     session.canBotStart(args.angie_campaign)
 
