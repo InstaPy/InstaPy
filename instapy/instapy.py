@@ -2454,7 +2454,7 @@ class InstaPy:
             self.logger.info('Campaign {} first run'.format(campaign))
 
 
-    def grab_followers(self, username=None, amount=None, live_match=True, store_locally=True):
+    def grab_followers(self, username=None, amount=None, live_match=False, store_locally=True):
         """ Gets and returns `followers` information of given user in desired amount, also, saves locally """
 
         message = "Starting to get the `Followers` data.."
@@ -2483,7 +2483,7 @@ class InstaPy:
         return grabbed_followers
 
 
-    def grab_following(self, username=None, amount=None, live_match=True, store_locally=True):
+    def grab_following(self, username=None, amount=None, live_match=False, store_locally=True):
         """ Gets and returns `following` information of given user in desired amount, also, saves locally """
 
         message = "Starting to get the `Following` data.."
@@ -2512,7 +2512,7 @@ class InstaPy:
         return grabbed_following
 
 
-    def pick_unfollowers(self, username=None, compare_by="latest", compare_track="first", live_match=True, store_locally=True, print_out=True):
+    def pick_unfollowers(self, username=None, compare_by="latest", compare_track="first", live_match=False, store_locally=True, print_out=True):
         """ Compares the `followers` stored in a latest local copy against
         either lively generated data or previous local copy and returns absent followers """
 
@@ -2534,7 +2534,7 @@ class InstaPy:
         return all_unfollowers, active_unfollowers
 
 
-    def pick_nonfollowers(self, username=None, live_match=True, store_locally=True):
+    def pick_nonfollowers(self, username=None, live_match=False, store_locally=True):
         """ Returns Nonfollowers data of a given user """
 
         message = "Starting to pick Nonfollowers of {}..".format(username)
@@ -2554,7 +2554,7 @@ class InstaPy:
 
 
 
-    def pick_fans(self, username=None, live_match=True, store_locally=True):
+    def pick_fans(self, username=None, live_match=False, store_locally=True):
         """ Returns Fans data- all of the usernames who do follow
         the user WHOM user itself do not follow back"""
 
@@ -2573,7 +2573,7 @@ class InstaPy:
         return fans
 
 
-    def pick_mutual_following(self, username=None, live_match=True, store_locally=True):
+    def pick_mutual_following(self, username=None, live_match=False, store_locally=True):
         """ Returns Mutual Following data- all of the usernames who do follow
         the user WHOM user itself also do follow back"""
 
