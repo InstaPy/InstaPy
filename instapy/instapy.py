@@ -1729,7 +1729,6 @@ class InstaPy:
         inap_img = self.inap_img
         commented = self.commented
         followed = self.followed
-        not_valid_users = self.not_valid_users
 
         for index, user in enumerate(usernames):
             self.logger.info("User '{}' [{}/{}]".format((user), index+1, len(usernames)))
@@ -1916,10 +1915,7 @@ class InstaPy:
         already_liked_sum = self.already_liked - already_liked
         inap_img_sum = self.inap_img - inap_img
         commented_sum = self.commented - commented
-        followed_sum = self.followed - followed
-        not_valid_users_sum = self.not_valid_users - not_valid_users
-
-
+        
         self.logger.info('Liked: {}'.format(liked_img_sum))
         self.logger.info('Already Liked: {}'.format(already_liked_sum))
         self.logger.info('Commented: {}'.format(commented_sum))
