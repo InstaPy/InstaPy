@@ -791,9 +791,8 @@ class InstaPy:
                                                self.logger,
                                                media,
                                                skip_top_posts)
-            except NoSuchElementException as exc:
-                self.logger.warning("Error occured while getting images from location: {}  "
-                                    "~maybe too few images exist\n\t{}\n".format(location, exc.encode("utf-8")))
+            except NoSuchElementException:
+                self.logger.warning('Too few images, skipping this location')
                 continue
 
             for i, link in enumerate(links):
@@ -1727,9 +1726,9 @@ class InstaPy:
         #initialize counts for summary logging
         liked_img = self.liked_img
         already_liked = self.already_liked
-        inap_img = self.inap_img
         commented = self.commented
         followed = self.followed
+        inap_img = self.inap_img
 
         for index, user in enumerate(usernames):
             self.logger.info("User '{}' [{}/{}]".format((user), index+1, len(usernames)))
@@ -1803,9 +1802,9 @@ class InstaPy:
         #add summary logging to the console
         liked_img_sum = self.liked_img - liked_img
         already_liked_sum = self.already_liked - already_liked
-        inap_img_sum = self.inap_img - inap_img
         commented_sum = self.commented - commented
         followed_sum = self.followed - followed
+        inap_img_sum = self.inap_img - inap_img
 
 
         self.logger.info('Liked: {}'.format(liked_img_sum))
@@ -1838,9 +1837,10 @@ class InstaPy:
         #initialize counts for summary logging
         liked_img = self.liked_img
         already_liked = self.already_liked
-        inap_img = self.inap_img
         commented = self.commented
         followed = self.followed
+        inap_img = self.inap_img
+
 
         for index, user in enumerate(usernames):
             self.logger.info("User '{}' [{}/{}]".format((user), index+1, len(usernames)))
@@ -1914,8 +1914,10 @@ class InstaPy:
         #add summary logging to the console
         liked_img_sum = self.liked_img - liked_img
         already_liked_sum = self.already_liked - already_liked
-        inap_img_sum = self.inap_img - inap_img
         commented_sum = self.commented - commented
+        followed_sum = self.followed - followed
+        inap_img_sum = self.inap_img - inap_img
+        
         
         self.logger.info('Liked: {}'.format(liked_img_sum))
         self.logger.info('Already Liked: {}'.format(already_liked_sum))
