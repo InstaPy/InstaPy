@@ -792,8 +792,8 @@ class InstaPy:
                                                media,
                                                skip_top_posts)
             except NoSuchElementException as exc:
--                self.logger.warning("Error occured while getting images from location: {}  "
--                                    "~maybe too few images exist\n\t{}\n".format(location, exc.encode("utf-8")))
+                self.logger.warning("Error occured while getting images from location: {}  "
+                                    "~maybe too few images exist\n\t{}\n".format(location, exc.encode("utf-8")))
                 continue
 
             for i, link in enumerate(links):
@@ -1914,7 +1914,7 @@ class InstaPy:
 
 
         self.not_valid_users += not_valid_users
-        
+
         #add summary logging to the console
         liked_img_sum = self.liked_img - liked_img
         already_liked_sum = self.already_liked - already_liked
