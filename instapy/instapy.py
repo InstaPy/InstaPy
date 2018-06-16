@@ -791,8 +791,9 @@ class InstaPy:
                                                self.logger,
                                                media,
                                                skip_top_posts)
-            except NoSuchElementException:
-                self.logger.warning('Too few images, skipping this location')
+            except NoSuchElementException as exc:
+-                self.logger.warning("Error occured while getting images from location: {}  "
+-                                    "~maybe too few images exist\n\t{}\n".format(location, exc.encode("utf-8")))
                 continue
 
             for i, link in enumerate(links):
@@ -1799,6 +1800,8 @@ class InstaPy:
         self.logger.info(
             "--> Interacted total of {} people\n".format(interacted_all))
 
+        self.not_valid_users += not_valid_users
+
         #add summary logging to the console
         liked_img_sum = self.liked_img - liked_img
         already_liked_sum = self.already_liked - already_liked
@@ -1813,8 +1816,6 @@ class InstaPy:
         self.logger.info('Followed: {}'.format(followed_sum))
         self.logger.info('Inappropriate: {}'.format(inap_img_sum))
         self.logger.info('Not valid users: {}\n'.format(not_valid_users_sum))
-
-        self.not_valid_users += not_valid_users
         
         return self
 
@@ -1911,6 +1912,9 @@ class InstaPy:
         self.logger.info(
             "--> Interacted total of {} people\n".format(interacted_all))
 
+
+        self.not_valid_users += not_valid_users
+        
         #add summary logging to the console
         liked_img_sum = self.liked_img - liked_img
         already_liked_sum = self.already_liked - already_liked
@@ -1925,8 +1929,6 @@ class InstaPy:
         self.logger.info('Followed: {}'.format(followed_sum))
         self.logger.info('Inappropriate: {}'.format(inap_img_sum))
         self.logger.info('Not valid users: {}\n'.format(not_valid_users_sum))
-
-        self.not_valid_users += not_valid_users
 
         return self
 
