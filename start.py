@@ -35,7 +35,7 @@ try:
 
     session = InstaPy(username=campaign['username'],
                       password=campaign['password'],
-                      headless_browser=False,
+                      headless_browser=True,
                       bypass_suspicious_attempt=True,
                       proxy_address=campaign['ip'].replace("http://cata:lin@", ""),
                       campaign=campaign,
