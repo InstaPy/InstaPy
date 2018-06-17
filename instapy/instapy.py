@@ -1272,7 +1272,7 @@ class InstaPy:
                                 insertBotAction(self.campaign['id_campaign'], self.campaign['id_user'],
                                                 None, None, user_name,
                                                 None, None, None,
-                                                link, 'like_posts_by_hashtag', tag, None)
+                                                link, 'like_posts_by_hashtag', tag, self.id_log)
 
                             if interact:
                                 username = (self.browser.
@@ -1365,7 +1365,7 @@ class InstaPy:
                                 insertBotAction(self.campaign['id_campaign'], self.campaign['id_user'],
                                                 None, None, user_name,
                                                 None, None, None,
-                                                link, 'follow_users_by_hashtag', tag, None)
+                                                link, 'follow_users_by_hashtag', tag, self.id_log)
 
 
 
@@ -2690,7 +2690,7 @@ class InstaPy:
         self.logger.info("angie_like_posts_by_hashtag: Going to divide %s amount to %s hashtags" % (likeAmount, divideAmountTo))
         # run while we have hashtags and the amount of likes is not exceeded
         while len(operation['list']) > 0 and likeAmountPerformed < likeAmount and iteration < securityBreak:
-            likeAmountForeachRandomized = randint(likeAmountForEachTag, likeAmountForEachTag + 20)
+            likeAmountForeachRandomized = randint(likeAmountForEachTag, likeAmountForEachTag + 10)
 
             # extract a random hashtag from the list
             hashtagIndex = randint(0, len(operation['list']) - 1)
