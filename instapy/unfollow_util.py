@@ -201,7 +201,7 @@ def unfollow(browser,
 
             unfollow_list = [user for user in unfollow_list if user not in non_eligible]
             logger.info("Total {} users available to unfollow"
-                            "  ~not found in followedPool.csv {}  |  didn't pass `unfollow_after`: {}\n".format(
+                            "  ~not found in 'followedPool.csv': {}  |  didn't pass `unfollow_after`: {}\n".format(
                                 len(unfollow_list), len(not_found), len(non_eligible)))
 
         elif InstapyFollowed == True:
@@ -393,7 +393,7 @@ def unfollow(browser,
 
         user_info = [pair for pair in user_info if pair[1] not in non_eligible]
         logger.info("Total {} users available to unfollow"
-            "  ~not found in followedPool.csv {}  |  didn't pass `unfollow_after`: {}".format(
+            "  ~not found in 'followedPool.csv': {}  |  didn't pass `unfollow_after`: {}".format(
                 len(user_info), len(not_found), len(non_eligible)))
 
         if len(user_info) < 1:
