@@ -1344,7 +1344,7 @@ class InstaPy:
                                            self.min_followers,
                                            self.min_following,
                                            self.logger)
-            if validation is not True:
+            if not validation:
                 self.logger.info("--> not a valid user: {}".format(details))
                 not_valid_users += 1
                 continue
@@ -1530,7 +1530,7 @@ class InstaPy:
                                            self.min_followers,
                                            self.min_following,
                                            self.logger)
-            if validation is not True:
+            if not validation:
                 self.logger.info("--> not a valid user: {}".format(details))
                 not_valid_users += 1
                 continue
