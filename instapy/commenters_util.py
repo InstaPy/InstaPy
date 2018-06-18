@@ -82,6 +82,8 @@ def extract_information(browser, username, daysold, max_pic):
     
     try:
         num_of_posts = get_number_of_posts(browser)
+        num_of_posts = (min (num_of_posts,max_pic))
+        #we don't need to scroll more than is max number of posts we want to extract
     except:
         print ("\nError: Couldn't get user profile. Moving on..")
         return []
@@ -129,12 +131,13 @@ def extract_information(browser, username, daysold, max_pic):
                 #only do it if we have a lot to images to go
                 if (num_of_posts - len(links2) > 60) and (len(links2) > opened_overlay):
                     opened_overlay += 60
-                    one_pic_elem = browser.find_element_by_xpath("//section/main/article/div[1]/div/div[8]/div[3]/a/div")
+
                     print ("clicking on one photo..")
                     try:
                         one_pic_elem = browser.find_element_by_xpath("//section/main/article/div[1]/div/div[10]/div[3]/a/div")
                         browser.execute_script("arguments[0].click();", one_pic_elem)
                     except:
+                        print ("Error: cant click on the photo..")
                         pass
                     sleep(1.5)
                     #following 6 lines give like to opened picture, to use our time effectively and look less suspicious
@@ -170,6 +173,7 @@ def extract_information(browser, username, daysold, max_pic):
 
     except NoSuchElementException as err:
         print('\n- Something went terribly wrong\n - Stopping everything and moving on with what I have\n')
+        print (err)
   
     links4 = remove_duplicates_preserving_order(links3)
     post_infos = []

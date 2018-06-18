@@ -572,7 +572,7 @@ class InstaPy:
         relax_point = random.randint(7, 14)   # you can use some plain value `10` instead of this quitely randomized score
 
         for username in usernames:
-            self.logger.info("Following commenters of '{}' from pictures in last {} days...\nScrapping wall..".format(username, daysold))
+            self.logger.info("Following commenters of '{}' from {} pictures in last {} days...\nScrapping wall..".format(username, max_pic, daysold))
             commenters = extract_information(self.browser, username, daysold, max_pic)
 
             if len(commenters)>0:
