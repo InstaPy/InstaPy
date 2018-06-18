@@ -87,7 +87,7 @@ def extract_information(browser, username, daysold, max_pic):
     except:
         print ("\nError: Couldn't get user profile. Moving on..")
         return []
-        
+    
     #PROFILE SCROLLING AND HARVESTING LINKS
     try:
         body_elem = browser.find_element_by_tag_name('body')
