@@ -414,7 +414,7 @@ class InstaPy:
 
     def set_dont_like(self, tags=None):
         """Changes the possible restriction tags, if one of this
-         words is in the description, the image won't be liked"""
+         words is in the description, the image won't be liked but user still might be unfollowed"""
         if self.aborting:
             return self
 
@@ -687,7 +687,7 @@ class InstaPy:
                                            self.min_following,
                                            self.logger)
             if validation != True or acc_to_follow==self.username:
-                self.logger.info(details)
+                self.logger.info("--> Not a valid user: {}".format(details))
                 not_valid_users += 1
                 continue
 
@@ -850,7 +850,7 @@ class InstaPy:
                                                        self.min_following,
                                                        self.logger)
                         if validation != True:
-                            self.logger.info(details)
+                            self.logger.info("--> Not a valid user: {}".format(details))
                             not_valid_users += 1
                             continue
                         else:
@@ -1257,7 +1257,7 @@ class InstaPy:
                                     self.logger.error(
                                         'Image check error: {}'.format(err))
 
-
+                            # comments
                             if (self.do_comment and
                                 user_name not in self.dont_include and
                                 checked_img and
@@ -1288,6 +1288,7 @@ class InstaPy:
                                 self.logger.info('--> Not commented')
                                 sleep(1)
 
+                            # following
                             if (self.do_follow and
                                 user_name not in self.dont_include and
                                 checked_img and
@@ -1363,8 +1364,8 @@ class InstaPy:
                                            self.min_followers,
                                            self.min_following,
                                            self.logger)
-            if validation != True:
-                self.logger.info(details)
+            if not validation:
+                self.logger.info("--> not a valid user: {}".format(details))
                 not_valid_users += 1
                 continue
 
@@ -1550,8 +1551,8 @@ class InstaPy:
                                            self.min_followers,
                                            self.min_following,
                                            self.logger)
-            if validation != True:
-                self.logger.info(details)
+            if not validation:
+                self.logger.info("--> not a valid user: {}".format(details))
                 not_valid_users += 1
                 continue
 
@@ -1735,6 +1736,9 @@ class InstaPy:
 
     def interact_user_followers(self, usernames, amount=10, randomize=False):
 
+        if self.aborting:
+            return self
+
         if self.do_follow != True and self.do_like != True:
             self.logger.info("Please enable following or liking in settings in order to do interactions.")
             return self
@@ -1850,6 +1854,9 @@ class InstaPy:
 
 
     def interact_user_following(self, usernames, amount=10, randomize=False):
+
+        if self.aborting:
+            return self
 
         if self.do_follow != True and self.do_like != True:
             self.logger.info("Please enable following or liking in settings in order to do interactions.")
@@ -2420,7 +2427,7 @@ class InstaPy:
                                                 'Image check error:'
                                                 ' {}'.format(err))
 
-
+                                    # commenting
                                     if (self.do_comment and
                                         user_name not in self.dont_include and
                                             checked_img and
@@ -2454,6 +2461,7 @@ class InstaPy:
                                         self.logger.info('--> Not commented')
                                         sleep(1)
 
+                                    # following
                                     if (self.do_follow and
                                         user_name not in self.dont_include and
                                         checked_img and
