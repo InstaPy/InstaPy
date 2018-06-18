@@ -793,7 +793,7 @@ class InstaPy:
                                                skip_top_posts)
             except NoSuchElementException as exc:
                 self.logger.warning("Error occured while getting images from location: {}  "
-                                    "~maybe too few images exist\n\t{}\n".format(location, str(exc)))
+                                    "~maybe too few images exist\n\t{}\n".format(location, str(exc).encode("utf-8")))
                 continue
 
             for i, link in enumerate(links):
