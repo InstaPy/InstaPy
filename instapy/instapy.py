@@ -945,6 +945,7 @@ class InstaPy:
                 except NoSuchElementException as err:
                     self.logger.error('Invalid Page: {}'.format(err))
 
+        self.logger.info('Location: {}'.format(location.encode('utf-8')))
         self.logger.info('Liked: {}'.format(liked_img))
         self.logger.info('Already Liked: {}'.format(already_liked))
         self.logger.info('Commented: {}'.format(commented))
@@ -1115,6 +1116,7 @@ class InstaPy:
                 except NoSuchElementException as err:
                     self.logger.error('Invalid Page: {}'.format(err))
 
+        self.logger.info('Location: {}'.format(location.encode('utf-8')))
         self.logger.info('Liked: {}'.format(liked_img))
         self.logger.info('Already Liked: {}'.format(already_liked))
         self.logger.info('Commented: {}'.format(commented))
@@ -1315,6 +1317,7 @@ class InstaPy:
                 except NoSuchElementException as err:
                     self.logger.error('Invalid Page: {}'.format(err))
 
+        self.logger.info(Tag: {}'.format(tag.encode('utf-8')))
         self.logger.info('Liked: {}'.format(liked_img))
         self.logger.info('Already Liked: {}'.format(already_liked))
         self.logger.info('Commented: {}'.format(commented))
@@ -1501,6 +1504,7 @@ class InstaPy:
                 self.logger.info("--> Given amount not fullfilled, "
                                  "image pool reached its end\n")
 
+        self.logger.info('User: {}'.format(username.encode('utf-8')))
         self.logger.info('Liked: {}'.format(total_liked_img))
         self.logger.info('Already Liked: {}'.format(already_liked))
         self.logger.info('Commented: {}'.format(commented))
@@ -1698,6 +1702,7 @@ class InstaPy:
                 self.logger.info("--> Given amount not fullfilled, image pool "
                                  "reached its end\n")
 
+        self.logger.info('User: {}'.format(username.encode('utf-8')))
         self.logger.info('Liked: {}'.format(total_liked_img))
         self.logger.info('Already Liked: {}'.format(already_liked))
         self.logger.info('Commented: {}'.format(commented))
@@ -2974,6 +2979,7 @@ class InstaPy:
             except NoSuchElementException as err:
                 self.logger.error('Invalid Page: {}'.format(err))
 
+        self.logger.info('URL: {}'.format(url.encode('utf-8')))
         self.logger.info('Liked: {}'.format(liked_img))
         self.logger.info('Already Liked: {}'.format(already_liked))
         self.logger.info('Commented: {}'.format(commented))
