@@ -1,7 +1,9 @@
 import csv
+import json
 import datetime
 import os
 import re
+import random
 import sqlite3
 import time
 import signal
@@ -363,7 +365,7 @@ def delete_line_from_file(filepath, lineToDelete, logger):
             if not line.endswith(lineToDelete):
                 f.write(line)
             else:
-                logger.info("--> \"{}\" was removed from csv".format(line.split(',\n')[0]))
+                logger.info("--> Removed '{}' from followedPool.csv file".format(line.split(',\n')[0]))
         f.close()
 
         # File leftovers that should not exist, but if so remove it
@@ -547,7 +549,6 @@ def web_adress_navigator(browser, link):
         try:
             current_url = browser.execute_script("return window.location.href")
         except WebDriverException:
-            raise
             current_url = None
     
     if current_url is None or current_url != link:
@@ -558,11 +559,56 @@ def web_adress_navigator(browser, link):
 
 
 @contextmanager
-def interruption_handler(SIG_type=signal.SIGINT, handler=signal.SIG_IGN):
+def interruption_handler(SIG_type=signal.SIGINT, handler=signal.SIG_IGN, notify=None, logger=None):
     """ Handles external interrupt, usually initiated by the user like KeyboardInterrupt with CTRL+C """
+    if notify is not None and logger is not None:
+        logger.warning(notify)
+
     original_handler = signal.signal(SIG_type, handler)
     try:
         yield
     finally:
         signal.signal(SIG_type, original_handler)
+
+
+
+def highlight_print(username=None, message=None, priority=None, level=None, logger=None):
+    """ Print headers in a highlighted style """
+    #can add other highlighters at other priorities enriching this function
+
+    #find the number of chars needed off the length of the logger message
+    output_len = 28+len(username)+3+len(message)
+
+    if priority in ["initialization", "end"]:
+        #OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
+        #E.g.:          Session started!
+        #oooooooooooooooooooooooooooooooooooooooooooooooo
+        upper_char = "O"
+        lower_char = "o"
+
+    elif priority == "login":
+        #................................................
+        #E.g.:        Logged in successfully!
+        #''''''''''''''''''''''''''''''''''''''''''''''''
+        upper_char = "."
+        lower_char = "'"
+
+    elif priority == "feature":  #feature highlighter
+        #________________________________________________
+        #E.g.:    Starting to interact by users..
+        #""""""""""""""""""""""""""""""""""""""""""""""""
+        upper_char = "_"
+        lower_char = "\""
+
+    print("\n{}".format(upper_char*output_len))
+
+    if level == "info":
+        logger.info(message)
+    elif level == "warning":
+        logger.warning(message)
+    elif level == "critical":
+        logger.critical(message)
+
+    print("{}".format(lower_char*output_len))
+
 
