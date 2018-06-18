@@ -711,7 +711,7 @@ session.set_do_comment(True, percentage=10)
 session.set_comments(['Cool!', 'Awesome!', 'Nice!'])
 session.set_use_clarifai(enabled=True)
 session.clarifai_check_img_for(['nsfw'])
-session.clarifai_check_img_for(['food', 'lunch', 'dinner'], comment=True, comments=['Tasty!', 'Nice!', 'Yum!'])
+session.clarifai_check_img_for(['food', 'lunch', 'dinner'], ['brunch', 'breakfast'], comment=True, comments=['Tasty!', 'Nice!', 'Yum!'])
 
 session.end()
 ```
@@ -722,8 +722,11 @@ session.end()
 # tagging) if secret and proj_id are not set, it will get the environment
 # variables 'CLARIFAI_API_KEY'
 
-session.set_use_clarifai(enabled=True, api_key='xxx')
+session.set_use_clarifai(enabled=True, api_key='xxx', full_match=False, clarifai_logging_enabled=False)
 ```
+
+_If clarifai_logging_enabled is set to True, the url of the image is added in the log_
+
 ### Filtering inappropriate images
 
 ```python
@@ -736,11 +739,13 @@ session.clarifai_check_img_for(['nsfw'])
 
 ```python
 # checks the image for keywords food and lunch, if both are found,
-# comments with the given comments. If full_match is False (default), it only
-# requires a single tag to match Clarifai results.
+# comments with the given comments. If both brunch and breakfast are found not commenting.
+# If full_match is False (default), it only requires a single tag to match Clarifai results.
 
-session.clarifai_check_img_for(['food', 'lunch'], comment=True, comments=['Tasty!', 'Yum!'], full_match=True)
+session.clarifai_check_img_for(['food', 'lunch'], ['brunch', 'breakfast'], comment=True, comments=['Tasty!', 'Yum!'], full_match=True)
 ```
+
+session.clarifai_check_img_for(['tag1','tag2'], ['skip1', 'skip2'], comment=True, comments=['comment1', 'comment2'])
 
 ###### Check out [https://clarifai.com/demo](https://clarifai.com/demo) to see some of the available tags.</h6>
 

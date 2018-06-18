@@ -145,6 +145,7 @@ class InstaPy:
         self.clarifai_img_tags = []
         self.clarifai_img_tags_skip = []
         self.clarifai_full_match = False
+        self.clarifai_logging_enabled=False;
         
         self.potency_ratio = 1.3466
         self.delimit_by_numbers = True
@@ -456,7 +457,7 @@ class InstaPy:
         self.switch_language = option
         return self
 
-    def set_use_clarifai(self, enabled=False, api_key=None, full_match=False):
+    def set_use_clarifai(self, enabled=False, api_key=None, full_match=False, clarifai_logging_enabled=False):
         """
         Defines if the clarifai img api should be used
         Which 'project' will be used (only 5000 calls per month)
@@ -478,6 +479,8 @@ class InstaPy:
             self.clarifai_api_key = api_key
 
         self.clarifai_full_match = full_match
+
+        self.clarifai_logging_enabled = clarifai_logging_enabled
 
         return self
 
@@ -857,7 +860,8 @@ class InstaPy:
                                                     self.clarifai_img_tags,
                                                     self.clarifai_img_tags_skip,
                                                     self.logger,
-                                                    self.clarifai_full_match)
+                                                    self.clarifai_full_match,
+                                                    self.clarifai_logging_enabled)
                                     )
                                 except Exception as err:
                                     self.logger.error(
@@ -1028,7 +1032,8 @@ class InstaPy:
                                                     self.clarifai_img_tags,
                                                     self.clarifai_img_tags_skip,
                                                     self.logger,
-                                                    self.clarifai_full_match)
+                                                    self.clarifai_full_match,
+                                                    self.clarifai_logging_enabled)
                                     )
                                 except Exception as err:
                                     self.logger.error(
@@ -1228,7 +1233,8 @@ class InstaPy:
                                                     self.clarifai_img_tags,
                                                     self.clarifai_img_tags_skip,
                                                     self.logger,
-                                                    self.clarifai_full_match)
+                                                    self.clarifai_full_match,
+                                                    self.clarifai_logging_enabled)
                                     )
                                 except Exception as err:
                                     self.logger.error(
@@ -1424,7 +1430,8 @@ class InstaPy:
                                                     self.clarifai_img_tags,
                                                     self.clarifai_img_tags_skip,
                                                     self.logger,
-                                                    self.clarifai_full_match)
+                                                    self.clarifai_full_match,
+                                                    self.clarifai_logging_enabled)
                                     )
                                 except Exception as err:
                                     self.logger.error(
@@ -1623,7 +1630,8 @@ class InstaPy:
                                                     self.clarifai_img_tags,
                                                     self.clarifai_img_tags_skip,
                                                     self.logger,
-                                                    self.clarifai_full_match)
+                                                    self.clarifai_full_match,
+                                                    self.clarifai_logging_enabled)
                                     )
                                 except Exception as err:
                                     self.logger.error(
@@ -2361,7 +2369,8 @@ class InstaPy:
                                                     self.clarifai_img_tags,
                                                     self.clarifai_img_tags_skip,
                                                     self.logger,
-                                                    self.clarifai_full_match)
+                                                    self.clarifai_full_match,
+                                                    self.clarifai_logging_enabled)
                                             )
                                         except Exception as err:
                                             self.logger.error(
