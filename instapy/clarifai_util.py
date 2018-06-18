@@ -1,14 +1,16 @@
 """Module which handles the clarifai api and checks
 the image for invalid content"""
 from clarifai.rest import ClarifaiApp, Image as ClImage
+from selenium.common.exceptions import WebDriverException
+from selenium.common.exceptions import NoSuchElementException
 
 
-def check_image(browser, clarifai_api_key, img_tags, img_tags_skip_if_contain, logger, full_match=False, picture_url=None):
+def check_image(browser, clarifai_api_key, img_tags, img_tags_skip_if_contain, logger, full_match=False, logging=False, picture_url=None):
     """Uses the link to the image to check for invalid content in the image"""
     clarifai_api = ClarifaiApp(api_key=clarifai_api_key)
     # set req image to given one or get it from current page
     if picture_url is None:
-        img_link = get_imagelink(browser)
+        img_link = get_imagelink(browser,logger,logging)
     else:
         img_link = picture_url
     # Uses Clarifai's v2 API
@@ -39,7 +41,26 @@ def given_tags_in_result(search_tags, clarifai_tags, full_match=False):
         return any((tag in clarifai_tags for tag in search_tags))
 
 
-def get_imagelink(browser):
+def get_imagelink(browser, logger, logging):
     """Gets the imagelink from the given webpage open in the browser"""
-    return browser.find_element_by_xpath('//img[@class = "_2di5p"]') \
-        .get_attribute('src')
+    try:
+        #entry_data.PostPage[0].graphql.shortcode_media.display_url
+        url = browser.execute_script(
+            "return window._sharedData.""entry_data.PostPage[0]."
+            "graphql.shortcode_media.display_url")
+    except WebDriverException:   #handle the possible `entry_data` error
+        try:
+            browser.execute_script("location.reload()")
+            url = browser.execute_script(
+                "return window._sharedData.""entry_data.PostPage[0]."
+                "graphql.shortcode_media.display_url")
+        except WebDriverException:
+            #if graphql failed trying with xpath
+            try:
+                url = browser.find_element_by_xpath('//img[@class = "FFVAD"]') \
+                    .get_attribute('src')
+            except NoSuchElementException:
+                url = None
+    if logging:
+        logger.info('Url image for Clarifi: {}'.format(url))
+    return url
