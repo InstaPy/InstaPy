@@ -1317,7 +1317,7 @@ class InstaPy:
                 except NoSuchElementException as err:
                     self.logger.error('Invalid Page: {}'.format(err))
 
-        self.logger.info(Tag: {}'.format(tag.encode('utf-8')))
+        self.logger.info('Tag: {}'.format(tag.encode('utf-8')))
         self.logger.info('Liked: {}'.format(liked_img))
         self.logger.info('Already Liked: {}'.format(already_liked))
         self.logger.info('Commented: {}'.format(commented))
