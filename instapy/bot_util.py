@@ -10,6 +10,19 @@ from random import randint
 from api_db import *
 
 
+def isOperationEnabled(operationName, operations,logger):
+
+    logger.info("isOperationEnabled: Checking if operation %s is enabled", operationName)
+
+    for operation in operations:
+
+        if operationName in operation['configName']:
+            logger.info("isOperationEnabled: Operation %s is available", operationName)
+            return operation
+
+    logger.info("isOperationEnabled: Operation %s is not available", operationName)
+    return False
+
 def getBotOperations(id_campaign, logger):
 
     totalLikePercentage = 0

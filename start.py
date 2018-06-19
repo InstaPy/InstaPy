@@ -7,7 +7,7 @@ from time import sleep
 from instapy import InstaPy
 from instapy.api_db import fetchOne
 from random import randint
-from instapy.bot_util import getBotOperations
+from instapy.bot_util import getBotOperations, isOperationEnabled
 from instapy.bot_action_handler import getAmountDistribution, getLikeAmount, getFollowAmount
 import math
 
@@ -19,7 +19,6 @@ parser = argparse.ArgumentParser(add_help=True)
 parser.add_argument('-angie_campaign', type=str, help="angie_campaign")
 args = parser.parse_args()
 
-#args.angie_campaign = "1"
 
 if args.angie_campaign is None:
     exit("dispatcher: Error: Campaign id it is not specified !")
@@ -51,8 +50,13 @@ try:
 
     session.logger.info("start: Follow percentage is %s from %s likes. Should perform ~%s follows" % (followPercentage, totalExpectedLikesAmount, totalExpectedFollowAmount))
 
+    operations = getBotOperations(campaign['id_campaign'], session.logger)
+
     session.set_relationship_bounds(enabled=True, potency_ratio=0.01, max_followers=999999, max_following=99999, min_followers=100, min_following=50)
-    #session.set_do_follow(enabled=True, percentage=followPercentage, times=1)
+
+    if isOperationEnabled('follow_users_by_hashtag', operations, session.logger):
+        session.set_do_follow(enabled=True, percentage=followPercentage, times=1)
+
     session.logger.info("start: Instapy Started for account %s, using proxy: %s" % ( campaign['username'], campaign['ip']))
     session.canBotStart(args.angie_campaign)
 
@@ -61,13 +65,13 @@ try:
         exit("Could not  login")
 
     noOfLoops = randint(5,7)
-    #TODO: validate the amountForEachLoop, set a treshhold
-    likeAmount = randint(200,350)
-    session.logger.info("start: Bot started going to perform %s likes, %s follow/unfollow during %s loops" % (likeAmount, 0, noOfLoops))
-    operations = getBotOperations(campaign['id_campaign'], session.logger)
 
+    session.logger.info("start: Bot started going to perform %s likes, %s follow/unfollow during %s loops" % (totalExpectedLikesAmount, 0, noOfLoops))
+
+    
+    
     for loopNumber in range(0, noOfLoops):
-        amountForEachLoop = randint(likeAmount // noOfLoops - 20, likeAmount // noOfLoops + 30)
+        amountForEachLoop = randint(totalExpectedLikesAmount // noOfLoops - 20, totalExpectedLikesAmount // noOfLoops + 30)
         session.logger.info(
             "start: Starting loop number %s, likeAmount: %s, followAmount:%s" % (loopNumber, amountForEachLoop, 0))
         session.executeAngieActions(operations, likeAmount=amountForEachLoop, followAmount=0)
