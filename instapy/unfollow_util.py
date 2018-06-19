@@ -492,7 +492,7 @@ def follow_user(browser, follow_restrict, login, user_name, blacklist, logger, l
         if blacklist['enabled'] is True:
             action = 'followed'
             add_user_to_blacklist(
-                browser, user_name, blacklist['campaign'], action, logger, logfolder
+                user_name, blacklist['campaign'], action, logger, logfolder
             )
         sleep(3)
         return 1
@@ -566,7 +566,7 @@ def follow_given_user(browser,
         if blacklist['enabled'] is True:
             action = 'followed'
             add_user_to_blacklist(
-                browser, acc_to_follow, blacklist['campaign'], action, logger, logfolder
+                acc_to_follow, blacklist['campaign'], action, logger, logfolder
             )
 
         sleep(3)
@@ -759,7 +759,7 @@ def follow_through_dialog(browser,
                 if blacklist['enabled'] is True:
                     action = 'followed'
                     add_user_to_blacklist(
-                        browser, person, blacklist['campaign'], action, logger, logfolder
+                        person, blacklist['campaign'], action, logger, logfolder
                     )
 
                 sleep(3)

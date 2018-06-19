@@ -170,7 +170,7 @@ def update_activity(action=None):
         conn.commit()
 
 
-def add_user_to_blacklist(browser, username, campaign, action, logger, logfolder):
+def add_user_to_blacklist(username, campaign, action, logger, logfolder):
 
     file_exists = os.path.isfile('{}blacklist.csv'.format(logfolder))
     fieldnames = ['date', 'username', 'campaign', 'action']
