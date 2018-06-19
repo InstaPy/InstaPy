@@ -2529,9 +2529,8 @@ class InstaPy:
                                         boundary,
                                         self.logger)
 
-        for user in active_users:
-            # include active user to not unfollow list
-            self.dont_include.add(user)
+        # include active user to not unfollow list
+        self.dont_include.update(active_users)
 
     def set_blacklist(self, enabled, campaign):
         """Enable/disable blacklist. If enabled, adds users to a blacklist after
@@ -2548,7 +2547,7 @@ class InstaPy:
                 reader = csv.DictReader(blacklist)
                 for row in reader:
                     if row['campaign'] == campaign:
-                        self.dont_include.append(row['username'])
+                        self.dont_include.add(row['username'])
         except:
             self.logger.info('Campaign {} first run'.format(campaign))
 
