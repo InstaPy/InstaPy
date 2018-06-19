@@ -52,7 +52,7 @@ try:
     session.logger.info("start: Follow percentage is %s from %s likes. Should perform ~%s follows" % (followPercentage, totalExpectedLikesAmount, totalExpectedFollowAmount))
 
     session.set_relationship_bounds(enabled=True, potency_ratio=0.01, max_followers=999999, max_following=99999, min_followers=100, min_following=50)
-    session.set_do_follow(enabled=True, percentage=followPercentage, times=1)
+    #session.set_do_follow(enabled=True, percentage=followPercentage, times=1)
     session.logger.info("start: Instapy Started for account %s, using proxy: %s" % ( campaign['username'], campaign['ip']))
     session.canBotStart(args.angie_campaign)
 
