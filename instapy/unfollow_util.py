@@ -310,7 +310,7 @@ def unfollow(browser,
                             break
                     else:
                         # this user found in our list of unfollow but is not followed
-                        if follow_button.text != 'Follow':
+                        if follow_button.text not in ['Follow', 'Follow Back']:
                             log_uncertain_unfollowed_pool(username, person, logger, logfolder)
                         # check we are now logged in
                         valid_connection = browser.execute_script(
@@ -475,7 +475,6 @@ def follow_user(browser, follow_restrict, login, user_name, blacklist, logger, l
 
         if follow_button.is_displayed():
             click_element(browser, follow_button) # follow_button.click()
-            update_activity('follows')
         else:
             browser.execute_script(
                 "arguments[0].style.visibility = 'visible'; "
@@ -483,7 +482,7 @@ def follow_user(browser, follow_restrict, login, user_name, blacklist, logger, l
                 "arguments[0].style.width = '10px'; "
                 "arguments[0].style.opacity = 1", follow_button)
             click_element(browser, follow_button) # follow_button.click()
-            update_activity('follows')
+        update_activity('follows')
 
         logger.info('--> Now following')
         logtime = datetime.now().strftime('%Y-%m-%d %H:%M')
