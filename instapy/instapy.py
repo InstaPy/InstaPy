@@ -134,7 +134,7 @@ class InstaPy:
         self.follow_times = 1
         self.do_follow = False
         self.follow_percentage = 0
-        self.dont_include = []
+        self.dont_include = {}
         self.blacklist = {'enabled': 'True', 'campaign': ''}
         self.automatedFollowedPool = {"all":[], "eligible":[]}
         self.do_like = False
@@ -468,7 +468,7 @@ class InstaPy:
         if self.aborting:
             return self
 
-        self.dont_include = friends or []
+        self.dont_include = set(friends) or {}
 
         return self
 
@@ -2529,9 +2529,8 @@ class InstaPy:
                                         boundary,
                                         self.logger)
 
-        for user in active_users:
-            # include active user to not unfollow list
-            self.dont_include.append(user)
+        # include active user to not unfollow list
+        self.dont_include.update(active_users)
 
     def set_blacklist(self, enabled, campaign):
         """Enable/disable blacklist. If enabled, adds users to a blacklist after
@@ -2548,7 +2547,7 @@ class InstaPy:
                 reader = csv.DictReader(blacklist)
                 for row in reader:
                     if row['campaign'] == campaign:
-                        self.dont_include.append(row['username'])
+                        self.dont_include.add(row['username'])
         except:
             self.logger.info('Campaign {} first run'.format(campaign))
 
