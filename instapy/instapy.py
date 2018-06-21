@@ -1635,12 +1635,14 @@ class InstaPy:
                                                self.blacklist,
                                                self.logger,
                                                self.logfolder)
+                            if liked:
+
+                                total_liked_img += 1
+                                liked_img += 1
                         else:
                             liked = True
 
                         if liked:
-                            total_liked_img += 1
-                            liked_img += 1
                             checked_img = True
                             temp_comments = []
                             commenting = random.randint(
