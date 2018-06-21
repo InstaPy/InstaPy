@@ -468,7 +468,7 @@ class InstaPy:
         if self.aborting:
             return self
 
-        self.dont_include = set(friends) or {}
+        self.dont_include = set(friends) or set()
 
         return self
 
