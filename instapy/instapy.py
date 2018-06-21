@@ -134,7 +134,8 @@ class InstaPy:
         self.follow_times = 1
         self.do_follow = False
         self.follow_percentage = 0
-        self.dont_include = {}
+        self.dont_include = set()
+        self.white_list = set()
         self.blacklist = {'enabled': 'True', 'campaign': ''}
         self.automatedFollowedPool = {"all":[], "eligible":[]}
         self.do_like = False
@@ -469,6 +470,7 @@ class InstaPy:
             return self
 
         self.dont_include = set(friends) or set()
+        self.white_list = set(friends) or set()
 
         return self
 
@@ -2266,6 +2268,7 @@ class InstaPy:
                                       self.automatedFollowedPool,
                                       self.relationship_data,
                                       self.dont_include,
+                                      self.white_list,
                                       sleep_delay,
                                       self.logger,
                                       self.logfolder)

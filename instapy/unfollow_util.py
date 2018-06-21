@@ -100,6 +100,7 @@ def unfollow(browser,
              automatedFollowedPool,
              relationship_data,
              dont_include,
+             white_list,
              sleep_delay,
              logger,
              logfolder):
@@ -337,6 +338,11 @@ def unfollow(browser,
                         print('')
                         sleep(2)
                 else:
+                    # if the user in dont include (should not be) we shall remove him from the follow list
+					# if he is a white list user (set at init and not during run time)
+                    if person in white_list:
+                        delete_line_from_file('{0}{1}_followedPool.csv'.format(logfolder, username),
+                                              person + ",\n", logger)
                     logger.info("Not unfollowing '{}'!  ~user is in the whitelist\n".format(person))
                     continue
 
