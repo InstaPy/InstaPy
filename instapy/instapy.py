@@ -134,7 +134,8 @@ class InstaPy:
         self.follow_times = 1
         self.do_follow = False
         self.follow_percentage = 0
-        self.dont_include = {}
+        self.dont_include = set()
+        self.white_list = set()
         self.blacklist = {'enabled': 'True', 'campaign': ''}
         self.automatedFollowedPool = {"all":[], "eligible":[]}
         self.do_like = False
@@ -468,7 +469,8 @@ class InstaPy:
         if self.aborting:
             return self
 
-        self.dont_include = set(friends) or {}
+        self.dont_include = set(friends) or set()
+        self.white_list = set(friends) or set()
 
         return self
 
@@ -1633,12 +1635,14 @@ class InstaPy:
                                                self.blacklist,
                                                self.logger,
                                                self.logfolder)
+                            if liked:
+
+                                total_liked_img += 1
+                                liked_img += 1
                         else:
                             liked = True
 
                         if liked:
-                            total_liked_img += 1
-                            liked_img += 1
                             checked_img = True
                             temp_comments = []
                             commenting = random.randint(
@@ -2266,6 +2270,7 @@ class InstaPy:
                                       self.automatedFollowedPool,
                                       self.relationship_data,
                                       self.dont_include,
+                                      self.white_list,
                                       sleep_delay,
                                       self.logger,
                                       self.logfolder)
