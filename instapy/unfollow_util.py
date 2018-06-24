@@ -30,10 +30,10 @@ from .relationship_tools import get_nonfollowers
 
 
 
-def set_automated_followed_pool(username, unfollow_after, logger, logfolder):
+def set_automated_followed_pool(username, unfollow_after, logger, logfolder, pool='followedPool'):
     automatedFollowedPool = {"all":[], "eligible":[]}
     try:
-        with open('{0}{1}_followedPool.csv'.format(logfolder, username), 'r+') as followedPoolFile:
+        with open('{0}{1}_{2}.csv'.format(logfolder, username, pool), 'r+') as followedPoolFile:
             reader = csv.reader(followedPoolFile)
             for row in reader:
                 if unfollow_after is not None:
@@ -41,8 +41,8 @@ def set_automated_followed_pool(username, unfollow_after, logger, logfolder):
                         ftime = datetime.strptime(row[0].split(' ~ ')[0], '%Y-%m-%d %H:%M')
                         ftimestamp = (ftime - datetime(1970, 1, 1)).total_seconds()
                         realtimestamp = (datetime.now() - datetime(1970, 1, 1)).total_seconds()
+                        fword = row[0].split(' ~ ')[1]
                         if realtimestamp - ftimestamp > unfollow_after:
-                            fword = row[0].split(' ~ ')[1]
                             automatedFollowedPool["eligible"].append(fword)
                         automatedFollowedPool["all"].append(fword)
                     except ValueError:
