@@ -580,7 +580,7 @@ def check_link(browser, post_link, dont_like, required_tag, ignore_if_contains, 
                           (re.split(r'\W+', required_tags_regex))[3] if required_tags_regex.startswith('#[\\d\\w]+') else     # ']word'
                            (re.split(r'\W+', required_tags_regex))[1])                                                      # '#word'
                 has_required_tag = True
-        if !has_required_tag:
+        if  not has_required_tag:
             req_unit = 'Does not contain at least one required tag!'
             return True, user_name, is_video, req_unit, "Missing Req Tags"
 
