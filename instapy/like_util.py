@@ -579,7 +579,7 @@ def like_image(browser, username, blacklist, logger, logfolder):
             if blacklist['enabled'] is True:
                 action = 'liked'
                 add_user_to_blacklist(
-                    browser, username, blacklist['campaign'], action, logger, logfolder
+                    username, blacklist['campaign'], action, logger, logfolder
                 )
             sleep(2)
             return True
