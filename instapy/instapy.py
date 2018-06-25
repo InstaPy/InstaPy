@@ -143,6 +143,7 @@ class InstaPy:
         self.smart_hashtags = []
 
         self.dont_like = ['sex', 'nsfw']
+        self.required_tag = []
         self.ignore_if_contains = []
         self.ignore_users = []
 
@@ -425,6 +426,22 @@ class InstaPy:
             self.aborting = True
 
         self.dont_like = tags or []
+
+        return self
+
+    def set_required_tag(self, tags=None):
+        """Changes the possible restriction tags, if the image does not contain
+         one or more of these tags, the image won't be liked but user 
+         still might be unfollowed. Useful when paired with geo-locoation features"""
+        if self.aborting:
+            return self
+
+        if not isinstance(tags, list):
+            self.logger.warning('Unable to use your set_required_tag '
+                                'configuration!')
+            self.aborting = True
+
+        self.required_tag = tags or []
 
         return self
 
@@ -830,6 +847,7 @@ class InstaPy:
                         check_link(self.browser,
                                    link,
                                    self.dont_like,
+                                   self.required_tag,
                                    self.ignore_if_contains,
                                    self.logger)
                     )
@@ -1007,6 +1025,7 @@ class InstaPy:
                         check_link(self.browser,
                                    link,
                                    self.dont_like,
+                                   self.required_tag,
                                    self.ignore_if_contains,
                                    self.logger)
                     )
@@ -1183,6 +1202,7 @@ class InstaPy:
                         check_link(self.browser,
                                    link,
                                    self.dont_like,
+                                   self.required_tag,
                                    self.ignore_if_contains,
                                    self.logger)
                     )
@@ -1423,6 +1443,7 @@ class InstaPy:
                         check_link(self.browser,
                                    link,
                                    self.dont_like,
+                                   self.required_tag,
                                    self.ignore_if_contains,
                                    self.logger)
                     )
@@ -1598,6 +1619,7 @@ class InstaPy:
                         check_link(self.browser,
                                    link,
                                    self.dont_like,
+                                   self.required_tag,
                                    self.ignore_if_contains,
                                    self.logger)
                     )
@@ -2357,6 +2379,7 @@ class InstaPy:
                                 check_link(self.browser,
                                            link,
                                            self.dont_like,
+                                           self.required_tag,
                                            self.ignore_if_contains,
                                            self.logger)
                             )
@@ -2764,6 +2787,7 @@ class InstaPy:
                         check_link(self.browser,
                                    link,
                                    self.dont_like,
+                                   self.required_tag,
                                    self.ignore_if_contains,
                                    self.logger)
                     )
@@ -2853,6 +2877,7 @@ class InstaPy:
                     check_link(self.browser,
                                url,
                                self.dont_like,
+                               self.required_tag,
                                self.ignore_if_contains,
                                self.logger)
                 )
