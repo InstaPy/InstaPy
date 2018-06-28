@@ -1609,7 +1609,7 @@ class InstaPy:
                               amount=10,
                               randomize=False,
                               interact=False,
-                              sleep_delay=600):
+                              sleep_delay=random.randint(400, 700)):
 
         userFollowed = []
         if not isinstance(usernames, list):
@@ -1659,7 +1659,7 @@ class InstaPy:
                               amount=10,
                               randomize=False,
                               interact=False,
-                              sleep_delay=600):
+                              sleep_delay=random.randint(400, 700)):
         userFollowed = []
         if not isinstance(usernames, list):
             usernames = [usernames]
@@ -1708,7 +1708,7 @@ class InstaPy:
                        amount=10,
                        onlyInstapyFollowed=False,
                        onlyInstapyMethod='FIFO',
-                       sleep_delay=600,
+                       sleep_delay=random.randint(400, 700),
                        onlyNotFollowMe=False,
                        unfollow_after=None):
         """Unfollows (default) 10 users from your following list"""
