@@ -17,8 +17,10 @@ from selenium.common.exceptions import WebDriverException
 from selenium.common.exceptions import NoSuchElementException
 import random
 import os
+from random import randint
 from selenium.common.exceptions import StaleElementReferenceException
 from random import randint
+import time
 
 def set_automated_followed_pool(username, logger, logfolder, unfollow_after):
     automatedFollowedPool = []
@@ -854,3 +856,52 @@ def load_follow_restriction(logfolder):
     with open(filename) as followResFile:
         return json.load(followResFile)
 
+def custom_unfollow(browser, username, logger):
+
+    sleepSeconds = randint(30,55)
+    logger.info("custom_unfollow: Going to sleep %s seconds before starting...", sleepSeconds)
+    time.sleep(sleepSeconds)
+
+    user_link = 'https://www.instagram.com/{}/'.format(username)
+
+    # Check URL of the webpage, if it already is the one to be navigated, then do not navigate to it again
+    web_adress_navigator(browser, user_link)
+
+    following = False
+    try:
+        try:
+            follow_button = browser.find_element_by_xpath(
+                "//*[contains(text(), 'Follow')]")
+        except NoSuchElementException:
+            follow_button = browser.find_element_by_xpath(
+                '''//*[@id="react-root"]/section/main/article/header/section/div[1]/span/span[1]/button''')
+        if follow_button.text == 'Following':
+            following = "Following"
+        else:
+            if follow_button.text in ['Follow', 'Follow Back']:
+                following = False
+            else:
+                follow_button = browser.find_element_by_xpath(
+                    "//*[contains(text(), 'Requested')]")
+                if follow_button.text == "Requested":
+                    following = "Requested"
+    except:
+        logger.error("Unfollow error, user: %s might be blocked or deleted" % username)
+        return False
+
+    if following:
+        # click the button
+        click_element(browser, follow_button)  # follow_button.click()
+        sleep(4)
+
+        # double check not following
+        follow_button = browser.find_element_by_xpath(
+            "//*[contains(text(), 'Follow')]")
+
+        if follow_button.text in ['Follow', 'Follow Back']:
+            logger.info("custom_unfollow: Unfollowed user: %s", username)
+            return True
+        else:
+            logger.error("Unfollow error, user: %s might be blocked or deleted" %  username)
+
+    return False

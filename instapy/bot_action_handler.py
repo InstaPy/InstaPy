@@ -4,6 +4,7 @@ import datetime
 import json
 from random import randint
 import calendar
+import bot_util
 
 
 #todo cleanup the code
@@ -263,6 +264,17 @@ def getLikesPerformed(self, dateParam):
   
   return likesPerformed['no_op']
 
+
+def getActionAmountForEachLoop(noActions, noLoops):
+
+    if noActions < 1:
+        return 0
+
+    actionsPerLoop = noActions // noLoops
+
+    randomizedActionPerLoop = randint(bot_util.randomizeValue(actionsPerLoop,10,"down"), bot_util.randomizeValue(actionsPerLoop,10,"up"))
+
+    return randomizedActionPerLoop
 
 def getFollowPerformed(self,dateParam):
     

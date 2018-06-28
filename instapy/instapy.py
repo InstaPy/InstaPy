@@ -52,11 +52,12 @@ from .commenters_util import extract_post_info
 from .commenters_util import extract_information
 from .commenters_util import users_liked
 from .commenters_util import get_photo_urls_from_profile
+import engagements
 
 import signal
 import traceback
 from random import randint
-from api_db import insertBotAction
+from api_db import *
 import time
 import atexit
 
@@ -350,7 +351,7 @@ class InstaPy:
             try:
                 element = self.browser.find_element_by_tag_name("pre")
             except NoSuchElementException as err:
-                self.logger.crtical("check_internet_connection: Could not detect ip using api.ipify.org")
+                self.logger.error("check_internet_connection: Could not detect ip using api.ipify.org")
                 return False
 
             if element.text != self.proxy_address:
@@ -2631,79 +2632,14 @@ class InstaPy:
         self.logger.info("atexitHandler: Going to execute")
         self.end()
 
+
     def executeAngieActions(self, operations, likeAmount, followAmount):
         self.logger.info("executeAngieLoop: Starting angie... Going to execute %s likes, %s follow/unfollow" % (
             likeAmount, followAmount))
 
-        # TODO: create a function that calculates the number of likes/follow per each operation
-        # Currently the entire like amount is used by like_by_hashtag
+        newOperations = engagements.getOperationsInNewFormat(operations)
 
-        likeAmountPerformed = 0
+        for operation in newOperations:
+            engagements.perform_engagement(self, operation, likeAmount=likeAmount, followAmount = followAmount, engagement_by=operation['name'])
 
-        for operation in operations:
 
-            if 'like_posts_by_hashtag' == operation['configName']:
-                self.logger.info("executeAngieActions: Going to execute action like_posts_by_hashtag")
-                hashtagLikesPerformed = self.angie_like_posts_by_hashtag(operation, likeAmount=likeAmount)
-                likeAmountPerformed += hashtagLikesPerformed
-                self.logger.info(
-                    "executeAngieActions: like_posts_by_hashtag: Done executing this operation. Total likes performed for this operation %s. Total overall performed: %s" % (
-                        hashtagLikesPerformed, likeAmountPerformed))
-            if 'like_own_followers' == operation['configName']:
-                self.logger.info("executeAngieActions: Operation '%s' is not implemented", operation['configName'])
-
-            if 'like_timeline' == operation['configName']:
-                self.logger.info("executeAngieActions: Operation '%s' is not implemented", operation['configName'])
-
-            if 'like_other_users_followers' == operation['configName']:
-                self.logger.info("executeAngieActions: Operation '%s' is not implemented", operation['configName'])
-
-            if 'like_posts_by_location' == operation['configName']:
-                self.logger.info("executeAngieActions: Operation '%s' is not implemented", operation['configName'])
-
-            if 'follow_users_by_hashtag' == operation['configName']:
-                self.logger.info("executeAngieActions: Operation '%s' is not implemented", operation['configName'])
-
-            if 'follow_users_by_location' == operation['configName']:
-                self.logger.info("executeAngieActions: Operation '%s' is not implemented", operation['configName'])
-
-            if 'follow_other_users_followers_disabled' == operation['configName']:
-                self.logger.info("executeAngieActions: Operation '%s' is not implemented", operation['configName'])
-
-            if 'unfollow' == operation['configName']:
-                self.logger.info("executeAngieActions: Operation '%s' is not implemented", operation['configName'])
-
-    def angie_like_posts_by_hashtag(self, operation, likeAmount):
-        securityBreak = 10
-        iteration = 0
-        likeAmountPerformed = 0
-
-        ####################### HACK TO SPLIT THE LIKE AMOUNT FOR EACH HASHTAG #####################
-        divideAmountTo = 4
-        if len(operation['list']) < divideAmountTo:
-            divideAmountTo = len(operation)
-
-        likeAmountForEachTag = likeAmount // divideAmountTo
-
-        ####################### END HACK TO CALCULATE LIKE AMOUNT FOR EACH HASHTAG #####################
-
-        self.logger.info("angie_like_posts_by_hashtag: Going to divide %s amount to %s hashtags" % (likeAmount, divideAmountTo))
-        # run while we have hashtags and the amount of likes is not exceeded
-        while len(operation['list']) > 0 and likeAmountPerformed < likeAmount and iteration < securityBreak:
-            likeAmountForeachRandomized = randint(likeAmountForEachTag, likeAmountForEachTag + 10)
-
-            # extract a random hashtag from the list
-            hashtagIndex = randint(0, len(operation['list']) - 1)
-            hashtagObject = operation['list'][hashtagIndex]
-
-            self.logger.info("angie_like_posts_by_hashtag: Going to perform %s amount of likes for hashtag %s" % (
-                likeAmountForeachRandomized, hashtagObject['hashtag']))
-            likeAmountPerformed = likeAmountPerformed + self.like_by_tags([hashtagObject['hashtag']],
-                                                                          amount=likeAmountForeachRandomized)
-            self.logger.info(
-                "angie_like_posts_by_hashtag: Done with hashtag %s. Like performed so far %s, expected: %s" % (
-                    hashtagObject['hashtag'], likeAmountPerformed, likeAmount))
-            iteration = iteration + 1
-            del operation['list'][hashtagIndex]
-
-        return likeAmountPerformed

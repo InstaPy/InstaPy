@@ -126,6 +126,9 @@ def validate_username(browser,
 
 
 def update_activity(action=None):
+    #this is not usefull
+    return False
+
     """Record every Instagram server call (page load, content load, likes,
     comments, follows, unfollow)."""
 
