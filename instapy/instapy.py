@@ -2317,6 +2317,7 @@ class InstaPy:
         num_of_search = 0
         not_valid_users = 0
         history = []
+        link_not_found_loop_error = 0
 
         while liked_img < amount:
             try:
@@ -2325,6 +2326,16 @@ class InstaPy:
                                             amount,
                                             num_of_search,
                                             self.logger)
+                
+                if len(links) > 0:
+                    link_not_found_loop_error = 0
+                    
+                if len(links) == 0:
+                    link_not_found_loop_error += 1
+                    if link_not_found_loop_error >= 10:
+                        self.logger.warning('Loop error, 0 links for for 10 times consecutively, exit loop')
+                        break
+                        
             except NoSuchElementException:
                 self.logger.warning('Too few images, aborting')
                 self.aborting = True
