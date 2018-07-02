@@ -83,40 +83,18 @@ def getBotOperations(id_campaign, logger):
     totalFollowOperations = 0
 
     operations = select(
-        "SELECT configName,id_config, percentageAmount FROM campaign_config where id_campaign=%s and enabled=1",
+        "SELECT configName, id_config, enabled, like_post, follow_user, percentageAmount FROM campaign_config where id_campaign=%s and enabled=1",
         id_campaign)
     for operation in operations:
 
-        if 'like_other_users_followers' in operation['configName'] or 'follow_other_users_followers' in operation[
-            'configName']:
-            users = select("select * from instagram_users where id_config=%s and enabled=1",
-                           operation['id_config'])
-            operation['list'] = users
+        if 'engagement_by_hashtag' in operation['configName']:
+            tags = select("select * from instagram_hashtags where id_config=%s and enabled=1", operation['id_config'])
+            operation['list'] = tags
 
-        if 'like_posts_by_hashtag' in operation['configName'] or 'follow_users_by_hashtag' in operation['configName']:
-            hashtags = select("select * from instagram_hashtags where id_config=%s and enabled=1",
-                              operation['id_config'])
-            operation['list'] = hashtags
-
-        if 'like_posts_by_location' in operation['configName'] or 'follow_users_by_location' in operation['configName']:
-            locations = select("select * from instagram_locations where id_config=%s and enabled=1",
-                               operation['id_config'])
+        if 'engagement_by_location' in operation['configName']:
+            locations = select("select * from instagram_locations where id_config=%s and enabled=1", operation['id_config'])
             operation['list'] = locations
 
-        if 'like' in operation['configName']:
-            totalLikePercentage += operation['percentageAmount']
-            totalLikeOperations += 1
-
-        elif 'follow' in operation['configName']:
-            totalFollowPercentage += operation['percentageAmount']
-
-            if operation['configName'] != "unfollow":
-                totalFollowOperations += 1
-
-        parameters = select("select * from campaign_config_parameters where id_config=%s",
-                            operation['id_config'])
-
-        operation['parameters'] = parameters
 
     # apply percentage
     # if totalLikePercentage<100 and totalLikePercentage>0:

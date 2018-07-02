@@ -60,6 +60,7 @@ from random import randint
 from api_db import *
 import time
 import atexit
+import copy
 
 class InstaPyError(Exception):
     """General error for InstaPy exceptions"""
@@ -2637,9 +2638,14 @@ class InstaPy:
         self.logger.info("executeAngieLoop: Starting angie... Going to execute %s likes, %s follow/unfollow" % (
             likeAmount, followAmount))
 
-        newOperations = engagements.getOperationsInNewFormat(operations)
+        #todo: the operation variable is passed by referrence
+        for operation in operations:
+            self.logger.info("executeAngieActions: Going to perform operation: %s", operation['configName'])
+            if 'list' not in operation or len(operation['list'])==0:
+                self.logger.info("executeAngieActions: No items to process for operation %s", operation['configName'])
+                continue
 
-        for operation in newOperations:
-            engagements.perform_engagement(self, operation, likeAmount=likeAmount, followAmount = followAmount, engagement_by=operation['name'])
+            opCopy = operation.copy();
+            engagements.perform_engagement(self, opCopy, likeAmount=likeAmount, followAmount = followAmount)
 
 

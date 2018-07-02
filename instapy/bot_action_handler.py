@@ -225,14 +225,7 @@ def getAmountDistribution(self, id_campaign):
 
 def getLikeAmount(self,id_campaign, calculatedAmount):
   likesAmount=calculatedAmount['like_amount']
-  
-  hasLikesOperation= fetchOne("select count(*) as rows from campaign_config where id_campaign=%s and configName like %s and enabled=1",id_campaign, "like_"+"%")
-  if hasLikesOperation['rows']==0:
-    self.logger.info("getLikeAmount: Campaign id: %s did not set any like operations !. Going to perform 0 likes." % (id_campaign))
-    return 0
-  
-  self.logger.info("getLikeAmount: Campaign id %s wants to perform %s amount of likes" % (id_campaign,likesAmount))
-      
+
   return likesAmount
 
   
@@ -241,17 +234,7 @@ def getLikeAmount(self,id_campaign, calculatedAmount):
 # if the user has selected only the unfollow operation, the total follow/unfollow amount should be devided by 2
 def getFollowAmount(self,id_campaign, calculatedAmount):
   followAmount=calculatedAmount['follow_amount']
-  
-  hasFollowOperation = fetchOne(
-        "select count(*) as rows from campaign_config where id_campaign=%s and (configName like %s or configName=%s) and enabled=1", id_campaign,
-        "follow_" + "%","unfollow")
-  
-  if hasFollowOperation['rows']==0:
-    self.logger.info("getFollowAmount: Campaign id: %s did not set any follow/unfollow operations ! Going to perform 0 follow/unfollow !", id_campaign)
-    return 0
-  
-  self.logger.info("getFollowAmount: Campaign id %s wants to perform %s amount of follow/unfollow" % (id_campaign,followAmount))
-    
+
   return followAmount
 
 def getLikesPerformed(self, dateParam):

@@ -13,7 +13,7 @@ from .util import validate_username
 from .util import web_adress_navigator
 
 
-def perform_engagement(self, operation, likeAmount, followAmount, engagement_by):
+def perform_engagement(self, operation, likeAmount, followAmount):
     self.logger.info("perform_engagement: STARTED operation. Going to perform %s likes, %s follow/unfollow," % (
     likeAmount, followAmount))
 
@@ -32,14 +32,13 @@ def perform_engagement(self, operation, likeAmount, followAmount, engagement_by)
         followAmountForeachRandomized = randint(followAmountForEachTag,
                                                 bot_util.randomizeValue(followAmountForEachTag, 10, "up"))
 
-        engagementValue = getItemToProcess(operation, engagement_by)
+        engagementValue = getItemToProcess(operation, operation['configName'])
 
         self.logger.info("perform_engagement: Going to perform %s amount of likes and %s of follow/unfollow for hashtag %s" % (likeAmountForeachRandomized, followAmountForeachRandomized, engagementValue))
 
         numberOfPostsToExtract = likeAmountForeachRandomized if likeAmountForeachRandomized >= followAmountForeachRandomized else followAmountForeachRandomized
 
-        links = get_links(self=self, numberOfPostsToExtract=numberOfPostsToExtract, engagementBy=engagement_by,
-                          engagementByValue=engagementValue)
+        links = get_links(self=self, numberOfPostsToExtract=numberOfPostsToExtract, engagementBy=operation['configName'],engagementByValue=engagementValue)
 
         if len(links)==0:
             self.logger.info('perform_engagement: Too few images, skipping this tag:  %s', engagementValue)
@@ -49,7 +48,7 @@ def perform_engagement(self, operation, likeAmount, followAmount, engagement_by)
                         likeAmountToPerform=likeAmountForeachRandomized,
                         followAmountToPerform=followAmountForeachRandomized,
                         numberOfPostsToExtract=numberOfPostsToExtract,
-                        engagement_by=engagement_by)
+                        operation=operation)
 
         likePerformed = likePerformed + result['likePerformed']
         followPerformed = followPerformed + result['followPerformed']
@@ -78,8 +77,7 @@ def shouldContinueLooping(self, operation, likePerformed, followPerformed, likeA
     return True
 
 
-def engage(self, links, engagementValue, likeAmountToPerform, followAmountToPerform, numberOfPostsToExtract,
-           engagement_by):
+def engage(self, links, engagementValue, likeAmountToPerform, followAmountToPerform, numberOfPostsToExtract, operation):
     result = {"likePerformed": 0, "followPerformed": 0}
 
     self.logger.info("engagement_by_tags: Received %s link, going to iterate through them", len(links))
@@ -111,10 +109,11 @@ def engage(self, links, engagementValue, likeAmountToPerform, followAmountToPerf
                         insertBotAction(self.campaign['id_campaign'], self.campaign['id_user'],
                                         None, None, linkValidationDetails['user_name'],
                                         None, None, None,
-                                        link, engagement_by, 'like_'+engagement_by, self.id_log)
+                                        link, 'like_'+operation['configName'], engagementValue, self.id_log)
+
 
                 if followAmountToPerform > 0:
-                    status = performFollowUnfollow(self, numberOfPostsToExtract, followAmountToPerform, link, engagementValue, linkValidationDetails['user_name'], engagement_by)
+                    status = performFollowUnfollow(self, numberOfPostsToExtract, followAmountToPerform, link, engagementValue, linkValidationDetails['user_name'], operation)
                     result['followPerformed'] += 1
 
         except NoSuchElementException as err:
@@ -124,7 +123,7 @@ def engage(self, links, engagementValue, likeAmountToPerform, followAmountToPerf
     return result
 
 
-def performFollowUnfollow(self, numberOfPostsToInteract, followAmount, link, tag, user_name, engagement_by):
+def performFollowUnfollow(self, numberOfPostsToInteract, followAmount, link, tag, user_name, operation):
     probabilityPercentage = followAmount * 100 // numberOfPostsToInteract
 
     calculatedProbability = randint(1, 100)
@@ -135,13 +134,14 @@ def performFollowUnfollow(self, numberOfPostsToInteract, followAmount, link, tag
 
     if calculatedProbability < probabilityPercentage:
         calculatedFollowUnfollowProbability = randint(1, 100)
-        if calculatedFollowUnfollowProbability <= 50:
+        #if calculatedFollowUnfollowProbability <= 50:
+        if calculatedFollowUnfollowProbability <0:
             self.logger.info("performFollowUnfollow: calculatedFollowUnfollowProbability: %s, going to follow...",
                              calculatedFollowUnfollowProbability)
 
             # follow
             # todo: operation follow_users_by_hashtag is deprecated
-            if isOperationEnabled("follow_users_by_hashtag", self.campaign['id_campaign'], self.logger):
+            if operation['follow_user'] == 1:
                 # try to folllow
                 self.logger.info("performFollowUnfollow: Trying to follow user %s", user_name)
 
@@ -159,7 +159,7 @@ def performFollowUnfollow(self, numberOfPostsToInteract, followAmount, link, tag
                     insertBotAction(self.campaign['id_campaign'], self.campaign['id_user'],
                                     None, None, user_name,
                                     None, None, None,
-                                    link, 'follow_'+engagement_by, tag, self.id_log)
+                                    link, 'follow_'+operation['configName'], tag, self.id_log)
 
             else:
                 self.logger.info(
@@ -194,43 +194,6 @@ def performFollowUnfollow(self, numberOfPostsToInteract, followAmount, link, tag
                 else:
                     self.logger.info("performFollowUnfollow: No user found in database to unfollow...")
     return True
-
-
-# TODO: the data model should be changed acoording to this structure !
-def getOperationsInNewFormat(operations):
-    newOperations = []
-    locationEngagementAdded = False
-    tagEngagementAdded = False
-
-    for operation in operations:
-        if 'like_posts_by_hashtag' == operation['configName'] or 'follow_users_by_hashtag' == operation['configName']:
-            newOperation = getOperationByName(operations, 'like_posts_by_hashtag')
-            if newOperation == False:
-                newOperation = getOperationByName(operations, 'follow_users_by_hashtag')
-
-            if tagEngagementAdded == False:
-                newOperation['name'] = 'engagement_by_hashtag'
-                newOperation['list'] = operation['list']
-                newOperations.append(newOperation)
-                tagEngagementAdded = True
-
-        if 'like_posts_by_location' == operation['configName'] or 'follow_users_by_location' == operation['configName']:
-            newOperation = getOperationByName(operations, 'like_posts_by_location')
-            if newOperation == False:
-                newOperation = getOperationByName(operations, 'follow_users_by_location')
-
-            if locationEngagementAdded == False:
-                newOperation['name'] = 'engagement_by_location'
-                newOperation['list'] = operation['list']
-                newOperations.append(newOperation)
-                locationEngagementAdded = True
-
-        if 'unfollow' == operation['configName']:
-            newOperation = {}
-            newOperation['name'] = 'unfollow'
-            newOperations.append(newOperation)
-
-    return newOperations
 
 
 def canInteractWithLink(self, link):
