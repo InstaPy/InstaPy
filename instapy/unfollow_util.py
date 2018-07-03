@@ -283,7 +283,7 @@ def unfollow(browser,
                         try:
                             browser.find_element_by_xpath("//button[contains(text(), 'Unfollow')]").click()
                             sleep(1)
-                        except Exception,e:
+                        except Exception:
                             pass
 
                         # double check not following
@@ -449,7 +449,7 @@ def unfollow(browser,
                     try:
                         browser.find_element_by_xpath("//button[contains(text(), 'Unfollow')]").click()
                         sleep(1)
-                    except Exception,e:
+                    except Exception:
                         pass
 
                     update_activity('unfollows')
