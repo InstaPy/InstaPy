@@ -559,11 +559,11 @@ def check_link(browser, post_link, dont_like, ignore_if_contains, logger):
 
 def like_image(browser, username, blacklist, logger, logfolder):
     """Likes the browser opened image"""
-    like_xpath = "//a[@role='button']/span[text()='Like']/.."
-    unlike_xpath = "//a[@role='button']/span[text()='Unlike']"
+    like_xpath = "//article//button[contains(@class, 'Heart')]/span[text()='Like']/.."
+    unlike_xpath = "//article//button[contains(@class, 'Heart')]/span[text()='Unlike']/.."
 	
     # fetch spans fast
-    spans = [x.text.lower() for x in browser.find_elements_by_xpath("//article//a[@role='button']/span")]
+    spans = [x.text.lower() for x in browser.find_elements_by_xpath("//article//button[contains(@class, 'Heart')]/span")]
 
     if 'like' in spans:
         like_elem = browser.find_elements_by_xpath(like_xpath)
