@@ -278,8 +278,10 @@ def unfollow(browser,
                     if following:
                         # click the button
                         click_element(browser, follow_button) # follow_button.click()
-                        sleep(4)
-
+                        sleep(1)
+                        unfollow_dialog(browser) #Check if there is unfollow dialog and click unfollow
+                        sleep(3)
+			
                         # double check not following
                         follow_button = browser.find_element_by_xpath(
                             "//*[contains(text(), 'Follow')]")
@@ -942,6 +944,15 @@ def get_given_user_following(browser,
 
     return person_list, simulated_list
 
+
+def unfollow_dialog(browser):
+    try:
+        unfollow_button = browser.find_element_by_xpath(
+            "//button[text()='Unfollow']")
+        if unfollow_button.is_displayed():
+            click_element(browser, unfollow_button) # unfollow_button.click()
+    except:
+        return
 
 def dump_follow_restriction(followRes, logfolder):
     """Dumps the given dictionary to a file using the json format"""
