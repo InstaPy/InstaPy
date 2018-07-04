@@ -257,7 +257,6 @@ class InstaPy:
             #chrome_options.add_argument("--disable-infobars")
             chrome_options.add_argument("--mute-audio")
             chrome_options.add_argument('--dns-prefetch-disable')
-            #chrome_options.add_argument('--no-sandbox')
             chrome_options.add_argument('--lang=en-US')
             chrome_options.add_argument('--disable-setuid-sandbox')
 
@@ -265,6 +264,7 @@ class InstaPy:
             # GUI-less browser. chromedriver 2.9 and above required
             if self.headless_browser:
                 chrome_options.add_argument('--headless')
+                chrome_options.add_argument('--no-sandbox')
                 # Replaces browser User Agent from "HeadlessChrome".
                 user_agent = "Chrome"
                 chrome_options.add_argument('user-agent={user_agent}'
