@@ -143,6 +143,7 @@ class InstaPy:
         self.smart_hashtags = []
 
         self.dont_like = ['sex', 'nsfw']
+        self.required_tag = []
         self.ignore_if_contains = []
         self.ignore_users = []
 
@@ -425,6 +426,27 @@ class InstaPy:
             self.aborting = True
 
         self.dont_like = tags or []
+
+        return self
+
+    def set_required_tag(self, tags=None, use_smart_hashtags=False):
+        """Changes the possible restriction tags, if the image does not contain
+         one or more of these tags, the image won't be liked but user 
+         still might be unfollowed. Useful when paired with geo-locoation features"""
+        if self.aborting:
+            return self
+            
+        if use_smart_hashtags is True and self.smart_hashtags is not []:
+            print('Using smart hashtags')
+            tags = self.smart_hashtags
+        else:
+            self.required_tag = tags or []
+            
+        if not isinstance(tags, list):
+            self.logger.warning('Unable to use your set_required_tag '
+                                'configuration!')
+            self.aborting = True
+
 
         return self
 
@@ -830,6 +852,7 @@ class InstaPy:
                         check_link(self.browser,
                                    link,
                                    self.dont_like,
+                                   self.required_tag,
                                    self.ignore_if_contains,
                                    self.logger)
                     )
@@ -1007,6 +1030,7 @@ class InstaPy:
                         check_link(self.browser,
                                    link,
                                    self.dont_like,
+                                   self.required_tag,
                                    self.ignore_if_contains,
                                    self.logger)
                     )
@@ -1183,6 +1207,7 @@ class InstaPy:
                         check_link(self.browser,
                                    link,
                                    self.dont_like,
+                                   self.required_tag,
                                    self.ignore_if_contains,
                                    self.logger)
                     )
@@ -1423,6 +1448,7 @@ class InstaPy:
                         check_link(self.browser,
                                    link,
                                    self.dont_like,
+                                   self.required_tag,
                                    self.ignore_if_contains,
                                    self.logger)
                     )
@@ -1598,6 +1624,7 @@ class InstaPy:
                         check_link(self.browser,
                                    link,
                                    self.dont_like,
+                                   self.required_tag,
                                    self.ignore_if_contains,
                                    self.logger)
                     )
@@ -2368,6 +2395,7 @@ class InstaPy:
                                 check_link(self.browser,
                                            link,
                                            self.dont_like,
+                                           self.required_tag,
                                            self.ignore_if_contains,
                                            self.logger)
                             )
@@ -2775,6 +2803,7 @@ class InstaPy:
                         check_link(self.browser,
                                    link,
                                    self.dont_like,
+                                   self.required_tag,
                                    self.ignore_if_contains,
                                    self.logger)
                     )
@@ -2864,6 +2893,7 @@ class InstaPy:
                     check_link(self.browser,
                                url,
                                self.dont_like,
+                               self.required_tag,
                                self.ignore_if_contains,
                                self.logger)
                 )

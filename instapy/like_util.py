@@ -431,13 +431,14 @@ def get_links_for_username(browser,
     return links[:amount]
 
 
-def check_link(browser, post_link, dont_like, ignore_if_contains, logger):
+def check_link(browser, post_link, dont_like, required_tag, ignore_if_contains, logger):
     """
     Check the given link if it is appropriate
 
     :param browser: The selenium webdriver instance
     :param link:
     :param dont_like: hashtags of inappropriate phrases
+    :param required_tag: hastags that post *must* contain (useful for Geolocation)
     :param ignore_if_contains:
 
     :param logger: the logger instance
@@ -541,6 +542,19 @@ def check_link(browser, post_link, dont_like, ignore_if_contains, logger):
             dont_like_regex.append(
                 "#[\d\w]*" + dont_likes + "[\d\w]*([^\d\w]|$)")
 
+    required_tag_regex = []
+    
+    for req_tags in required_tag:
+        if req_tags.startswith("#"):
+            required_tag_regex.append(req_tags + "([^\d\w]|$)")
+        elif req_tags.startswith("["):
+            required_tag_regex.append("#" + req_tags[1:] + "[\d\w]+([^\d\w]|$)")
+        elif req_tags.startswith("]"):
+            required_tag_regex.append("#[\d\w]+" + req_tags[1:] + "([^\d\w]|$)")
+        else:
+            required_tag_regex.append(
+                "#[\d\w]*" + req_tags + "[\d\w]*([^\d\w]|$)")
+
     for dont_likes_regex in dont_like_regex:
         quash = re.search(dont_likes_regex, image_text, re.IGNORECASE)
         if quash:
@@ -553,6 +567,22 @@ def check_link(browser, post_link, dont_like, ignore_if_contains, logger):
                 quashed if iffy == quashed else
                 '" in "'.join([str(iffy), str(quashed)]))
             return True, user_name, is_video, inapp_unit, "Undesired word"
+        
+    if len(required_tag) > 0:
+        has_required_tag = False
+        
+        for required_tags_regex in required_tag_regex:
+            quash = re.search(required_tags_regex, image_text, re.IGNORECASE)
+            if quash:
+                quashed = (((quash.group(0)).split('#')[1]).split(' ')[0]).split('\n')[0].encode('utf-8')   # dismiss possible space and newlines
+                iffy = ((re.split(r'\W+', required_tags_regex))[3] if required_tags_regex.endswith('*([^\\d\\w]|$)') else   # 'word' without format
+                         (re.split(r'\W+', required_tags_regex))[1] if required_tags_regex.endswith('+([^\\d\\w]|$)') else   # '[word'
+                          (re.split(r'\W+', required_tags_regex))[3] if required_tags_regex.startswith('#[\\d\\w]+') else     # ']word'
+                           (re.split(r'\W+', required_tags_regex))[1])                                                      # '#word'
+                has_required_tag = True
+        if  not has_required_tag:
+            req_unit = 'Does not contain at least one required tag!'
+            return True, user_name, is_video, req_unit, "Missing Req Tags"
 
     return False, user_name, is_video, 'None', "Success"
 
