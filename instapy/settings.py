@@ -9,6 +9,7 @@ class Settings:
     database_location = os.path.join(BASE_DIR, 'db', 'instapy.db')
     chromedriver_location = os.path.join(BASE_DIR, 'assets', 'chromedriver')
     chromedriver_min_version = 2.36
+    chromedriver_no_sandbox = True
     # Set a logger cache outside the InstaPy object to avoid re-instantiation issues
     loggers = {}
     logger = None
