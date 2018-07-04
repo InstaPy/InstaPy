@@ -265,6 +265,7 @@ class InstaPy:
             # GUI-less browser. chromedriver 2.9 and above required
             if self.headless_browser:
                 chrome_options.add_argument('--headless')
+                chrome_options.add_argument('--blink-settings=imagesEnabled=false')
                 # Replaces browser User Agent from "HeadlessChrome".
                 user_agent = "Chrome"
                 chrome_options.add_argument('user-agent={user_agent}'
@@ -288,7 +289,8 @@ class InstaPy:
                 chrome_options.add_argument('user-data-dir={}'.format(self.browser_profile_path))
 
             chrome_prefs = {
-                'intl.accept_languages': 'en-US'
+                'intl.accept_languages': 'en-US',
+                "profile.managed_default_content_settings.images":2
             }
             chrome_options.add_experimental_option('prefs', chrome_prefs)
             try:
