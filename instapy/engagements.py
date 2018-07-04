@@ -187,7 +187,7 @@ def performFollowUnfollow(self, numberOfPostsToInteract, followAmount, link, tag
                     status = custom_unfollow(self.browser, recordToUnfollow['username'], self.logger)
                     lastBotAction = insertBotAction(self.campaign['id_campaign'], self.campaign['id_user'],
                                                     None, None, recordToUnfollow['username'],
-                                                    None, None, None, None, 'unfollow_'+engagement_by, None,
+                                                    None, None, None, None, 'unfollow_'+operation['configName'], None,
                                                     self.id_log)
 
                     insert("update bot_action set bot_operation_reverted=%s where id=%s", lastBotAction, recordToUnfollow['id'])

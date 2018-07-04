@@ -2,9 +2,9 @@ import os
 
 
 #BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-#BASE_DIR="/home/instapy-log/"
+BASE_DIR="/home/instapy-log/"
 
-BASE_DIR="/Users/cbardas/instapy-log/"
+#BASE_DIR="/Users/cbardas/instapy-log/"
 
 
 class Settings:
