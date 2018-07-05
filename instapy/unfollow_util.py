@@ -280,6 +280,12 @@ def unfollow(browser,
                         click_element(browser, follow_button) # follow_button.click()
                         sleep(4)
 
+                        try:
+                            browser.find_element_by_xpath("//button[contains(text(), 'Unfollow')]").click()
+                            sleep(4)
+                        except Exception:
+                            pass
+
                         # double check not following
                         follow_button = browser.find_element_by_xpath(
                             "//*[contains(text(), 'Follow')]")
@@ -438,8 +444,15 @@ def unfollow(browser,
                 if person not in dont_include:
                     unfollowNum += 1
                     click_element(browser, button) # button.click()
-                    update_activity('unfollows')
+                    sleep(4)
 
+                    try:
+                        browser.find_element_by_xpath("//button[contains(text(), 'Unfollow')]").click()
+                        sleep(4)
+                    except Exception:
+                        pass
+
+                    update_activity('unfollows')
 
                     if person in relationship_data[username]["all_following"]:
                         relationship_data[username]["all_following"].remove(person)
