@@ -87,7 +87,7 @@ def get_following_status(browser, person, logger):
             ' maybe no longer exists...'
                 .format(person.encode('utf-8')))
 
-    return following
+    return following, follow_button
 
 def unfollow(browser,
              username,
@@ -250,24 +250,8 @@ def unfollow(browser,
                     browser.get('https://www.instagram.com/' + person)
                     sleep(2)
 
-                    following = False
                     try:
-                        try:
-                            follow_button = browser.find_element_by_xpath(
-                                "//*[contains(text(), 'Follow')]")
-                        except NoSuchElementException:
-                            follow_button = browser.find_element_by_xpath(
-                                '''//*[@id="react-root"]/section/main/article/header/section/div[1]/span/span[1]/button''')
-                        if follow_button.text == 'Following':
-                            following = "Following"
-                        else:
-                            if follow_button.text in ['Follow', 'Follow Back']:
-                                following = False
-                            else:
-                                follow_button = browser.find_element_by_xpath(
-                                    "//*[contains(text(), 'Requested')]")
-                                if follow_button.text == "Requested":
-                                    following = "Requested"
+                        following, follow_button = get_following_status(browser, person, logger)
                     except:
                         logger.error(
                             '--> Unfollow error with {},'
@@ -328,8 +312,7 @@ def unfollow(browser,
                             logger.warning(msg)
                             break
 
-                        delete_line_from_file('{0}{1}_followedPool.csv'.format(logfolder, username),
-                                              person + ",\n", logger)
+
                         # save any unfollowed person
                         log_record_all_unfollowed(username, person, logger, logfolder)
 
