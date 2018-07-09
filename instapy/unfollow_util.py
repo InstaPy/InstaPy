@@ -87,6 +87,9 @@ def get_following_status(browser, person, logger):
             ' maybe no longer exists...'
                 .format(person.encode('utf-8')))
 
+        delete_line_from_file('{0}{1}_followedPool.csv'.format(logfolder, username),
+                                              person + ",\n", logger)
+
     return following
 
 def unfollow(browser,
