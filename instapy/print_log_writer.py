@@ -2,6 +2,7 @@
 from datetime import datetime
 from selenium.common.exceptions import WebDriverException
 from .time_util import sleep
+from .util import interruption_handler
 
 
 def log_follower_num(browser, username, logfolder):
