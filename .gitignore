@@ -107,3 +107,5 @@ logs/
 # pytest
 .pytest_cache/
 tests/logs
+db/instapy.db
+test.py
