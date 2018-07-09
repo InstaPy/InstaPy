@@ -289,9 +289,8 @@ def unfollow(browser,
 
                         try:
                             browser.find_element_by_xpath("//button[contains(text(), 'Unfollow')]").click()
-                            sleep(5)
-                        except Exception,e:
-                            logger.error("Unfollow loop error:  {}\n".format(str(e)))
+                            sleep(4)
+                        except Exception:
                             pass
 
                         # double check not following
@@ -452,12 +451,12 @@ def unfollow(browser,
                 if person not in dont_include:
                     unfollowNum += 1
                     click_element(browser, button) # button.click()
-                    sleep(1)
+                    sleep(4)
 
                     try:
                         browser.find_element_by_xpath("//button[contains(text(), 'Unfollow')]").click()
-                        sleep(1)
-                    except Exception,e:
+                        sleep(4)
+                    except Exception:
                         pass
 
                     update_activity('unfollows')
