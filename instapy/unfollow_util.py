@@ -302,7 +302,7 @@ def unfollow(browser,
                             break
                     else:
                         # this user found in our list of unfollow but is not followed
-                        if follow_button.text not in ['Follow', 'Follow Back']:
+                        if follow_button is None or follow_button.text not in ['Follow', 'Follow Back']:
                             log_uncertain_unfollowed_pool(username, person, logger, logfolder)
                         # check we are now logged in
                         valid_connection = browser.execute_script(
