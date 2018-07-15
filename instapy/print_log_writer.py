@@ -2,6 +2,7 @@
 from datetime import datetime
 from selenium.common.exceptions import WebDriverException
 from .time_util import sleep
+from .util import interruption_handler
 
 
 def log_follower_num(browser, username, logfolder):
@@ -61,7 +62,8 @@ def log_followed_pool(login, followed, logger, logfolder, logtime):
     a seperate file"""
     try:
         with open('{0}{1}_followedPool.csv'.format(logfolder, login), 'a+') as followPool:
-            followPool.write('{} ~ {},\n'.format(logtime, followed))
+            with interruption_handler():
+                followPool.write('{} ~ {},\n'.format(logtime, followed))
     except BaseException as e:
         logger.error("log_followed_pool error {}".format(str(e)))
 
@@ -74,7 +76,8 @@ def log_uncertain_unfollowed_pool(login, unfollowed, logger, logfolder):
     a seperate file"""
     try:
         with open('{0}{1}_uncertain_unfollowedPool.csv'.format(logfolder, login), 'a+') as followPool:
-            followPool.write('{},\n'.format(unfollowed))
+            with interruption_handler():
+                followPool.write('{},\n'.format(unfollowed))
     except BaseException as e:
         logger.error("log_uncertain_unfollowed_pool error {}".format(str(e)))
 
@@ -84,7 +87,8 @@ def log_record_all_unfollowed(login, unfollowed, logger, logfolder):
     a seperate file"""
     try:
         with open('{0}{1}_record_all_unfollowed.csv'.format(logfolder, login), 'a+') as followPool:
-            followPool.write('{},\n'.format(unfollowed))
+            with interruption_handler():
+                followPool.write('{},\n'.format(unfollowed))
     except BaseException as e:
         logger.error("log_record_all_unfollowed_pool error {}".format(str(e)))
 
@@ -93,6 +97,7 @@ def log_record_all_followed(login, followed, logger, logfolder):
     """logs all followed ever to a pool that will never be erase"""
     try:
         with open('{0}{1}_record_all_followed.csv'.format(logfolder, login), 'a+') as followPool:
-            followPool.write('{},\n'.format(followed))
+            with interruption_handler():
+                followPool.write('{},\n'.format(followed))
     except BaseException as e:
         logger.error("log_record_all_followed_pool error {}".format(str(e)))

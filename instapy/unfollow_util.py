@@ -68,6 +68,7 @@ def set_automated_followed_pool(username, unfollow_after, logger, logfolder, poo
 def get_following_status(browser, person, logger):
 
     following = False
+    follow_button = None
     try:
         follow_button = browser.find_element_by_xpath(
             "//*[contains(text(), 'Follow')]")
@@ -87,7 +88,7 @@ def get_following_status(browser, person, logger):
             ' maybe no longer exists...'
                 .format(person.encode('utf-8')))
 
-    return following
+    return following, follow_button
 
 def unfollow(browser,
              username,
@@ -250,24 +251,8 @@ def unfollow(browser,
                     browser.get('https://www.instagram.com/' + person)
                     sleep(2)
 
-                    following = False
                     try:
-                        try:
-                            follow_button = browser.find_element_by_xpath(
-                                "//*[contains(text(), 'Follow')]")
-                        except NoSuchElementException:
-                            follow_button = browser.find_element_by_xpath(
-                                '''//*[@id="react-root"]/section/main/article/header/section/div[1]/span/span[1]/button''')
-                        if follow_button.text == 'Following':
-                            following = "Following"
-                        else:
-                            if follow_button.text in ['Follow', 'Follow Back']:
-                                following = False
-                            else:
-                                follow_button = browser.find_element_by_xpath(
-                                    "//*[contains(text(), 'Requested')]")
-                                if follow_button.text == "Requested":
-                                    following = "Requested"
+                        following, follow_button = get_following_status(browser, person, logger)
                     except:
                         logger.error(
                             '--> Unfollow error with {},'
@@ -317,7 +302,7 @@ def unfollow(browser,
                             break
                     else:
                         # this user found in our list of unfollow but is not followed
-                        if follow_button.text not in ['Follow', 'Follow Back']:
+                        if follow_button is None or follow_button.text not in ['Follow', 'Follow Back']:
                             log_uncertain_unfollowed_pool(username, person, logger, logfolder)
                         # check we are now logged in
                         valid_connection = browser.execute_script(
@@ -328,8 +313,7 @@ def unfollow(browser,
                             logger.warning(msg)
                             break
 
-                        delete_line_from_file('{0}{1}_followedPool.csv'.format(logfolder, username),
-                                              person + ",\n", logger)
+
                         # save any unfollowed person
                         log_record_all_unfollowed(username, person, logger, logfolder)
 
@@ -345,11 +329,14 @@ def unfollow(browser,
                         sleep(2)
                 else:
                     # if the user in dont include (should not be) we shall remove him from the follow list
-					# if he is a white list user (set at init and not during run time)
+                    # if he is a white list user (set at init and not during run time)
                     if person in white_list:
                         delete_line_from_file('{0}{1}_followedPool.csv'.format(logfolder, username),
                                               person + ",\n", logger)
-                    logger.info("Not unfollowing '{}'!  ~user is in the whitelist\n".format(person))
+                        list_type = 'whitelist'
+                    else:
+                        list_type = 'dont_include'
+                    logger.info("Not unfollowing '{}'!  ~user is in the list {}\n".format(person, list_type))
                     continue
 
         except BaseException as e:
