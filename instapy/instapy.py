@@ -786,7 +786,7 @@ class InstaPy:
 
 
 
-    def set_simulation(enabled=True, percentage=100):
+    def set_simulation(self, enabled=True, percentage=100):
         """ Sets aside simulation parameters """
         if (enabled not in [True, False] or
                 percentage not in range(0, 101)):
@@ -797,7 +797,7 @@ class InstaPy:
 
         else:
             percentage = 100 if (percentage is None or percentage>100) else percentage
-            self.simulation = {"ebabled":True, "percentage":percentage}
+            self.simulation = {"enabled":True, "percentage":percentage}
 
 
 
