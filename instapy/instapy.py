@@ -2135,7 +2135,7 @@ class InstaPy:
             self.logger.info("User '{}' [{}/{}]".format((user), index+1, len(usernames)))
 
             try:
-                person_list, simulated_list = get_given_user_followers(self.browser,
+                person_list, simulated_list = get_given_user_following(self.browser,
                                                                         self.username,
                                                                         user,
                                                                         amount,
