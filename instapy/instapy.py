@@ -179,7 +179,7 @@ class InstaPy:
 
         self.bypass_suspicious_attempt = bypass_suspicious_attempt
 
-        self.simulation = True
+        self.simulation = {"enabled": True, "percentage": 100}
 
         self.aborting = False
 
@@ -783,6 +783,21 @@ class InstaPy:
         self.delimit_commenting = True if enabled==True else False
         self.max_comments = max
         self.min_comments = min
+
+
+
+    def set_simulation(enabled=True, percentage=100):
+        """ Sets aside simulation parameters """
+        if (enabled not in [True, False] or
+                percentage not in range(0, 101)):
+            self.logger.info("Invalid simulation parameter! Please use correct syntax with accepted values.")
+        
+        elif enabled == False:
+            self.simulation["enabled"] = False
+
+        else:
+            percentage = 100 if (percentage is None or percentage>100) else percentage
+            self.simulation = {"ebabled":True, "percentage":percentage}
 
 
 
