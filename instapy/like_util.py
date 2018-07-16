@@ -14,6 +14,7 @@ from .util import update_activity
 from .util import add_user_to_blacklist
 from .util import click_element
 from .util import web_adress_navigator
+from .util import get_number_of_posts
 
 
 def get_links_from_feed(browser, amount, num_of_search, logger):
@@ -337,98 +338,40 @@ def get_links_for_username(browser,
         logger.error('Intagram error: The link you followed may be broken, or the page may have been removed...')
         return False
 
-    try:
-        load_button = body_elem.find_element_by_xpath(
-            '//a[contains(@class, "_1cr2e _epyes")]')
-    except:
-        try:
-            # scroll down to load posts
-            for i in range(int(ceil(amount/12))):
-                browser.execute_script(
-                    "window.scrollTo(0, document.body.scrollHeight);")
-                sleep(2)
-        except:
-            logger.warning(
-                'Load button not found, working with current images!')
-        else:
-            abort = False
-            body_elem.send_keys(Keys.END)
-            sleep(2)
-            # update server calls
-            update_activity()
-    else:
-        abort = False
-        body_elem.send_keys(Keys.END)
-        sleep(2)
-        click_element(browser, load_button) # load_button.click()
-        # update server calls
-        update_activity()
-
-    body_elem.send_keys(Keys.HOME)
-    sleep(2)
-
-    # Get Links
-    main_elem = browser.find_element_by_tag_name('article')
-    link_elems = main_elem.find_elements_by_tag_name('a')
-    total_links = len(link_elems)
-    # Check there is at least one link
-    if total_links == 0:
-        return False
+    #Get links
     links = []
-    filtered_links = 0
-    try:
-        if link_elems:
-            links = [link_elem.get_attribute('href') for link_elem in link_elems
-                     if link_elem and link_elem.text in media]
-            filtered_links = len(links)
+    main_elem = browser.find_element_by_tag_name('article')
+    posts_count = get_number_of_posts(browser)
+    attempt = 0
 
-    except BaseException as e:
-        logger.error("link_elems error {}".format(str(e)))
+    if posts_count is not None and amount > posts_count:
+        logger.info("You have requested to get {} posts from {}'s profile page BUT"
+                    "there only {} posts available :D".format(amount, username, posts_count))
+        amount = posts_count
 
-    if randomize:
-        # Expanding the pooulation for better random distribution
-        amount = amount * 5
+    while len(links) < amount:
+        initial_links = links
+        browser.execute_script(
+            "window.scrollTo(0, document.body.scrollHeight);")
+        # update server calls after a scroll request
+        update_activity()
+        sleep(0.66)
 
-    while (filtered_links < amount) and not abort:
-        amount_left = amount - filtered_links
+        links.extend(get_links(browser, username, logger, media, main_elem))
+        links = list(set(links))
 
-        # Average items of the right media per page loaded (total links checked for not zero)
-        new_per_page = ceil(12 * filtered_links / total_links)
-
-        if new_per_page == 0:
-            # Avoid division by zero
-            new_per_page = 1. / 12.
-        # Number of page load needed
-        new_needed = int(ceil(amount_left / new_per_page))
-
-        if new_needed > 12:
-            # Don't go bananas trying to get all of instagram!
-            new_needed = 12
-
-        for i in range(new_needed):  # add images x * 12
-            # Keep the latest window active while loading more posts
-            before_load = total_links
-            body_elem.send_keys(Keys.END)
-            # update server calls
-            update_activity()
-            sleep(1)
-            body_elem.send_keys(Keys.HOME)
-            sleep(1)
-            link_elems = main_elem.find_elements_by_tag_name('a')
-            total_links = len(link_elems)
-            abort = (before_load == total_links)
-            if abort:
+        if len(links) == len(initial_links):
+            if attempt >= 7:
+                logger.info("There are possibly less posts than {} in {}'s profile page!".format(amount, username))
                 break
+            else:
+                attempt += 1
 
-        links = [link_elem.get_attribute('href') for link_elem in link_elems
-                 if link_elem.text in media]
-        filtered_links = len(links)
-
-    if randomize:
-        # Shuffle the population index
-        links = random.sample(links, filtered_links)
+    if randomize == True:
+        random.shuffle(links)
 
     return links[:amount]
+
 
 
 def check_link(browser, post_link, dont_like, ignore_if_contains, logger):
