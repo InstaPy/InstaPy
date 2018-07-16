@@ -1134,10 +1134,11 @@ class InstaPy:
     def like_by_tags(self,
                      tags=None,
                      amount=50,
-                     media=None,
                      skip_top_posts=True,
                      use_smart_hashtags=False,
-                     interact=False):
+                     interact=False,
+                     randomize=False,
+                     media=None):
         """Likes (default) 50 images per given tag"""
         if self.aborting:
             return self
@@ -1167,9 +1168,10 @@ class InstaPy:
                 links = get_links_for_tag(self.browser,
                                           tag,
                                           amount,
-                                          self.logger,
+                                          skip_top_posts,
+                                          randomize,
                                           media,
-                                          skip_top_posts)
+                                          self.logger)
             except NoSuchElementException:
                 self.logger.info('Too few images, skipping this tag')
                 continue
@@ -2731,9 +2733,10 @@ class InstaPy:
     def follow_by_tags(self,
                      tags=None,
                      amount=50,
-                     media=None,
                      skip_top_posts=True,
-                     use_smart_hashtags=False):
+                     use_smart_hashtags=False,
+                     randomize=False,
+                     media=None):
         if self.aborting:
             return self
 
@@ -2759,9 +2762,10 @@ class InstaPy:
                 links = get_links_for_tag(self.browser,
                                           tag,
                                           amount,
-                                          self.logger,
+                                          skip_top_posts,
+                                          randomize,
                                           media,
-                                          skip_top_posts)
+                                          self.logger)
             except NoSuchElementException:
                 self.logger.info('Too few images, skipping this tag')
                 continue

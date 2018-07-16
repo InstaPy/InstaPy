@@ -172,9 +172,10 @@ def get_links_for_location(browser,
 def get_links_for_tag(browser,
                       tag,
                       amount,
-                      logger,
-                      media=None,
-                      skip_top_posts=True):
+                      skip_top_posts,
+                      randomize,
+                      media,
+                      logger):
     """Fetches the number of links specified
     by amount and returns a list of links"""
 
@@ -291,7 +292,10 @@ def get_links_for_tag(browser,
         raise
     
     sleep(4)
-    
+
+    if randomize == True:
+        random.shuffle(links)
+
     return links[:amount]
 
 
