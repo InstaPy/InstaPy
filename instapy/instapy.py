@@ -179,7 +179,7 @@ class InstaPy:
 
         self.bypass_suspicious_attempt = bypass_suspicious_attempt
 
-        self.simulation = True
+        self.simulation = {"enabled": True, "percentage": 100}
 
         self.aborting = False
 
@@ -786,6 +786,21 @@ class InstaPy:
 
 
 
+    def set_simulation(self, enabled=True, percentage=100):
+        """ Sets aside simulation parameters """
+        if (enabled not in [True, False] or
+                percentage not in range(0, 101)):
+            self.logger.info("Invalid simulation parameter! Please use correct syntax with accepted values.")
+        
+        elif enabled == False:
+            self.simulation["enabled"] = False
+
+        else:
+            percentage = 100 if (percentage is None or percentage>100) else percentage
+            self.simulation = {"enabled":True, "percentage":percentage}
+
+
+
     def like_by_locations(self,
                           locations=None,
                           amount=50,
@@ -1134,10 +1149,11 @@ class InstaPy:
     def like_by_tags(self,
                      tags=None,
                      amount=50,
-                     media=None,
                      skip_top_posts=True,
                      use_smart_hashtags=False,
-                     interact=False):
+                     interact=False,
+                     randomize=False,
+                     media=None):
         """Likes (default) 50 images per given tag"""
         if self.aborting:
             return self
@@ -1167,9 +1183,10 @@ class InstaPy:
                 links = get_links_for_tag(self.browser,
                                           tag,
                                           amount,
-                                          self.logger,
+                                          skip_top_posts,
+                                          randomize,
                                           media,
-                                          skip_top_posts)
+                                          self.logger)
             except NoSuchElementException:
                 self.logger.info('Too few images, skipping this tag')
                 continue
@@ -1590,7 +1607,7 @@ class InstaPy:
                                      "amount given: {}".format(liked_img))
                     break
 
-                self.logger.info('Post [{}/{}]'.format(liked_img + 1, amount))
+                self.logger.info('Post [{}/{}]'.format(liked_img + 1, len(links[:amount])))
                 self.logger.info(link)
 
                 try:
@@ -2133,7 +2150,7 @@ class InstaPy:
             self.logger.info("User '{}' [{}/{}]".format((user), index+1, len(usernames)))
 
             try:
-                person_list, simulated_list = get_given_user_followers(self.browser,
+                person_list, simulated_list = get_given_user_following(self.browser,
                                                                         self.username,
                                                                         user,
                                                                         amount,
@@ -2731,9 +2748,10 @@ class InstaPy:
     def follow_by_tags(self,
                      tags=None,
                      amount=50,
-                     media=None,
                      skip_top_posts=True,
-                     use_smart_hashtags=False):
+                     use_smart_hashtags=False,
+                     randomize=False,
+                     media=None):
         if self.aborting:
             return self
 
@@ -2759,9 +2777,10 @@ class InstaPy:
                 links = get_links_for_tag(self.browser,
                                           tag,
                                           amount,
-                                          self.logger,
+                                          skip_top_posts,
+                                          randomize,
                                           media,
-                                          skip_top_posts)
+                                          self.logger)
             except NoSuchElementException:
                 self.logger.info('Too few images, skipping this tag')
                 continue
