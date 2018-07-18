@@ -791,7 +791,7 @@ class InstaPy:
         if (enabled not in [True, False] or
                 percentage not in range(0, 101)):
             self.logger.info("Invalid simulation parameter! Please use correct syntax with accepted values.")
-        
+
         elif enabled == False:
             self.simulation["enabled"] = False
 
@@ -2343,16 +2343,16 @@ class InstaPy:
                                             amount,
                                             num_of_search,
                                             self.logger)
-                
+
                 if len(links) > 0:
                     link_not_found_loop_error = 0
-                    
+
                 if len(links) == 0:
                     link_not_found_loop_error += 1
                     if link_not_found_loop_error >= 10:
                         self.logger.warning('Loop error, 0 links for for 10 times consecutively, exit loop')
                         break
-                        
+
             except NoSuchElementException:
                 self.logger.warning('Too few images, aborting')
                 self.aborting = True
@@ -2758,6 +2758,9 @@ class InstaPy:
         inap_img = 0
         followed = 0
         not_valid_users = 0
+        relax_point = random.randint(7, 14)   # you can use some plain value `10` instead but I assume that a random number will be better to avoid detection
+        followed_new = 0
+        sleep_delay = 120 # 2min of delay between two batch of following.
 
         # if smart hashtag is enabled
         if use_smart_hashtags is True and self.smart_hashtags is not []:
@@ -2827,6 +2830,16 @@ class InstaPy:
                                                 self.blacklist,
                                                 self.logger,
                                                 self.logfolder)
+
+                        if followed > 0:
+                            followed_new += 1
+                            # Take a break after a good following
+                            if followed_new >= relax_point:
+                                delay_random = random.randint(ceil(sleep_delay*0.85), ceil(sleep_delay*1.14))
+                                sleep(delay_random)
+                                relax_point = random.randint(7, 14)
+                                followed_new=0
+
                     else:
                         self.logger.info(
                             '--> User not followed: {}'.format(reason))
