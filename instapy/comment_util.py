@@ -67,7 +67,7 @@ def comment_image(browser, username, comments, blacklist, logger, logfolder):
             logger.warning('--> Warning: Comment Action Likely Failed:'
                            ' Comment Element not found')
     except InvalidElementStateException:
-        logger.info('--> Warning: Comment Action Likely Failed: Probably InvalidElementStateException')
+        logger.warning('--> Warning: Comment Action Likely Failed: Probably InvalidElementStateException')
 
     logger.info("--> Commented: {}".format(rand_comment.encode('utf-8')))
     sleep(2)

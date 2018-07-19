@@ -15,6 +15,7 @@ from .util import add_user_to_blacklist
 from .util import click_element
 from .util import web_adress_navigator
 from .util import get_number_of_posts
+from .util import remove_duplicated_from_list_keep_order
 
 
 def get_links_from_feed(browser, amount, num_of_search, logger):
@@ -355,14 +356,13 @@ def get_links_for_username(browser,
 
     while len(links) < amount:
         initial_links = links
-        browser.execute_script(
-            "window.scrollTo(0, document.body.scrollHeight);")
+        body_elem.send_keys(Keys.HOME)
         # update server calls after a scroll request
         update_activity()
         sleep(0.66)
 
         links.extend(get_links(browser, username, logger, media, main_elem))
-        links = list(set(links))
+        links = remove_duplicated_from_list_keep_order(links)
 
         if len(links) == len(initial_links):
             if attempt >= 7:

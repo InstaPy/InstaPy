@@ -8,6 +8,7 @@ from selenium.webdriver.common.keys import Keys
 from .util import get_number_of_posts
 from .util import click_element
 from .util import update_activity
+from .util import web_adress_navigator
 from .util import username_url_to_username
 import random
 
@@ -78,7 +79,7 @@ def extract_post_info(browser):
 def extract_information(browser, username, daysold, max_pic):
   
     """Get all the information for the given username"""
-    browser.get('https://www.instagram.com/' + username)
+    web_adress_navigator(browser,'https://www.instagram.com/' + username)
     
     try:
         num_of_posts = get_number_of_posts(browser)
@@ -191,7 +192,7 @@ def extract_information(browser, username, daysold, max_pic):
         print ("\nScrapping link: ", link)
         
         try:
-            browser.get(link)  
+            web_adress_navigator(browser,link)
             user_commented_list, pic_date_time = extract_post_info(browser)     
             user_commented_total_list = user_commented_total_list + user_commented_list
 
@@ -234,7 +235,7 @@ def extract_information(browser, username, daysold, max_pic):
 def users_liked (browser, photo_url, amount=100):
     photo_likers = []
     try:
-        browser.get(photo_url)  
+        web_adress_navigator(browser,photo_url)
         photo_likers = likers_from_photo(browser, amount)   
         sleep(2)  
     except NoSuchElementException:
@@ -321,7 +322,7 @@ def get_photo_urls_from_profile (browser, username, links_to_return_amount=1, ra
     #input can be both username or user profile url
     username = username_url_to_username(username)
     print ("\nGetting likers from user: ", username,"\n")
-    browser.get('https://www.instagram.com/' + username +'/')
+    web_adress_navigator(browser,'https://www.instagram.com/' + username +'/')
     sleep(1)
     
     photos_a_elems = browser.find_elements_by_xpath("//div/a")
