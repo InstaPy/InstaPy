@@ -616,11 +616,11 @@ def get_users_through_dialog(browser,
         # get follow buttons. This approach will find the follow buttons and
         # ignore the Unfollow/Requested buttons.
         buttons = dialog.find_elements_by_xpath(
-            "//div/div/span/button[text()='Follow']")
+            "//ul/div/li/div/div/button[text()='Follow']")
 
     elif channel == "Unfollow":
         buttons = dialog.find_elements_by_xpath(
-            "//div/div/span/button[text()='Following']")
+            "//ul/div/li/div/div/button[text() = 'Following']")
 
     abort = False
     person_list = []
@@ -639,11 +639,11 @@ def get_users_through_dialog(browser,
 
         if channel == "Follow":
             buttons = dialog.find_elements_by_xpath(
-                "//div/div/span/button[text()='Follow']")
+                "//ul/div/li/div/div/button[text()='Follow']")
 
         elif channel == "Unfollow":
             buttons = dialog.find_elements_by_xpath(
-                "//div/div/span/button[text()='Following']")
+                "//ul/div/li/div/div/button[text() = 'Following']")
 
         total_list = len(buttons)
         abort = (before_scroll == total_list)
