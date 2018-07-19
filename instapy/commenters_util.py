@@ -279,7 +279,7 @@ def likers_from_photo(browser, amount=20):
                 "arguments[0].scrollTop = arguments[0].scrollHeight", dialog)
         sleep(1)
         follow_buttons = dialog.find_elements_by_xpath(
-            "//div/div/span/button[text()='Follow']")
+            "//div/div/button[text()='Follow']")
         while (len(follow_buttons) != previous_len) and (len(follow_buttons)<amount):
             if previous_len+10 >= amount:
                 print ("Scrolling finished")
@@ -290,12 +290,12 @@ def likers_from_photo(browser, amount=20):
                 "arguments[0].scrollTop = arguments[0].scrollHeight", dialog)
             sleep(1)
             follow_buttons = dialog.find_elements_by_xpath(
-            "//div/div/span/button[text()='Follow']")
+            "//div/div/button[text()='Follow']")
             print ("Scrolling down... ",previous_len,"->", len(follow_buttons) ," / ",amount) 
 
         person_list = []
         for person in follow_buttons:
-            username_url = person.find_element_by_xpath("../../../*").find_element_by_tag_name("a").get_attribute('href')
+            username_url = person.find_element_by_xpath("../../*").find_element_by_tag_name("a").get_attribute('href')
             username = username_url_to_username(username_url)
             person_list.append(username)
         
