@@ -345,6 +345,10 @@ def get_links_for_username(browser,
     #Get links
     links = []
     main_elem = browser.find_element_by_tag_name('article')
+
+    links.extend(get_links(browser, username, logger, media, main_elem))
+    links = list(set(links))
+    
     posts_count = get_number_of_posts(browser)
     attempt = 0
 
