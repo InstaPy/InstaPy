@@ -361,7 +361,7 @@ def get_links_for_username(browser,
         update_activity()
         sleep(0.66)
 
-        links.extend(get_links(browser, username, logger, media, main_elem))
+        links = links + get_links(browser, username, logger, media, main_elem)
         links = remove_duplicated_from_list_keep_order(links)
 
         if len(links) == len(initial_links):
