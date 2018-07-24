@@ -360,8 +360,9 @@ def unfollow(browser,
         get_users_through_dialog(browser, None, username, amount,
                                      allfollowing, False, None,
                                       None, None, None,
-                                       False, "Unfollow", logger, logfolder)
-
+                                       {"enabled":False, "percentage":0},
+                                     "Unfollow", logger, logfolder)
+        
         # find dialog box
         dialog = browser.find_element_by_xpath(
             "//div[text()='Following']/following-sibling::div")
