@@ -92,7 +92,7 @@ def get_links_for_location(browser,
         main_elem = browser.find_element_by_xpath('//main/article/div[1]')
         top_posts = []
     sleep(2)
-    
+
     try:
         possible_posts = browser.execute_script(
             "return window._sharedData.entry_data."
@@ -231,7 +231,7 @@ def get_links_for_tag(browser,
 
     logger.info("desired amount: {}  |  top posts [{}]: {}  |  possible posts: {}".format(amount,
                                       ('enabled' if not skip_top_posts else 'disabled'), len(top_posts), possible_posts))
-    
+
     if possible_posts is not None:
         possible_posts = possible_posts if not skip_top_posts else possible_posts-len(top_posts)
         amount = possible_posts if amount > possible_posts else amount
@@ -291,7 +291,7 @@ def get_links_for_tag(browser,
                 nap = 1.5
     except:
         raise
-    
+
     sleep(4)
 
     if randomize == True:
@@ -398,7 +398,7 @@ def check_link(browser, post_link, dont_like, ignore_if_contains, logger):
 
     #Check URL of the webpage, if it already is post's page, then do not navigate to it again
     web_adress_navigator(browser, post_link)
-        
+
     """Check if the Post is Valid/Exists"""
     try:
         post_page = browser.execute_script(
@@ -507,15 +507,13 @@ def check_link(browser, post_link, dont_like, ignore_if_contains, logger):
 def like_image(browser, username, blacklist, logger, logfolder):
     """Likes the browser opened image"""
 
-    like_xpath = "//button/span[text()='Like']/.."
-    unlike_xpath = "//button/span[text()='Unlike']"
-	
-    # fetch spans fast
-    spans = [x.text.lower() for x in browser.find_elements_by_xpath("//article//button/span")]
+    like_xpath = "//button/span[@aria-label='Like']"
+    unlike_xpath = "//button/span[@aria-label='Unlike']"
 
-    if 'like' in spans:
-        like_elem = browser.find_elements_by_xpath(like_xpath)
+    # find first for like element
+    like_elem = browser.find_elements_by_xpath(like_xpath)
 
+    if len(like_elem) == 1:
         # sleep real quick right before clicking the element
         sleep(2)
         click_element(browser, like_elem[0])
@@ -609,7 +607,7 @@ def verify_liking(browser, max, min, logger):
                     logger.info("Failed to check likes' count\n")
                     raise
                     return True
-        
+
         if max is not None and likes_count > max:
             logger.info("Not liked this post! ~more likes exist off maximum limit at {}".format(likes_count))
             return False
