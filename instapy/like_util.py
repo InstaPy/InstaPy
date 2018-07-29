@@ -1,3 +1,4 @@
+import time
 import re
 import random
 
@@ -351,7 +352,7 @@ def get_links_for_username(browser,
 
     if posts_count is not None and amount > posts_count:
         logger.info("You have requested to get {} posts from {}'s profile page BUT"
-                    "there only {} posts available :D".format(amount, username, posts_count))
+                    " there only {} posts available :D".format(amount, username, posts_count))
         amount = posts_count
 
     while len(links) < amount:
@@ -361,8 +362,9 @@ def get_links_for_username(browser,
         update_activity()
         sleep(0.66)
 
+        # using `extend`  or `+=` results reference stay alive which affects previous assignment (can use `copy()` for it)
         links = links + get_links(browser, username, logger, media, main_elem)
-        links = remove_duplicated_from_list_keep_order(links)
+        links = sorted(set(links), key=links.index)
 
         if len(links) == len(initial_links):
             if attempt >= 7:
@@ -370,6 +372,8 @@ def get_links_for_username(browser,
                 break
             else:
                 attempt += 1
+        else:
+            attempt = 0
 
     if randomize == True:
         random.shuffle(links)
