@@ -962,13 +962,13 @@ class InstaPy:
                 except NoSuchElementException as err:
                     self.logger.error('Invalid Page: {}'.format(err))
 
-        self.logger.info('Location: {}'.format(location.encode('utf-8')))
-        self.logger.info('Liked: {}'.format(liked_img))
-        self.logger.info('Already Liked: {}'.format(already_liked))
-        self.logger.info('Commented: {}'.format(commented))
-        self.logger.info('Followed: {}'.format(followed))
-        self.logger.info('Inappropriate: {}'.format(inap_img))
-        self.logger.info('Not valid users: {}\n'.format(not_valid_users))
+            self.logger.info('Location: {}'.format(location.encode('utf-8')))
+            self.logger.info('Liked: {}'.format(liked_img))
+            self.logger.info('Already Liked: {}'.format(already_liked))
+            self.logger.info('Commented: {}'.format(commented))
+            self.logger.info('Followed: {}'.format(followed))
+            self.logger.info('Inappropriate: {}'.format(inap_img))
+            self.logger.info('Not valid users: {}\n'.format(not_valid_users))
 
         self.followed += followed
         self.liked_img += liked_img
