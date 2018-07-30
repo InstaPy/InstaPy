@@ -38,14 +38,16 @@ from .time_util import set_sleep_percentage
 from .util import get_active_users
 from .util import validate_username
 from .util import web_adress_navigator
+from .util import interruption_handler
 from .util import highlight_print
+from .util import dump_record_activity
 from .unfollow_util import get_given_user_followers
 from .unfollow_util import get_given_user_following
 from .unfollow_util import unfollow
 from .unfollow_util import unfollow_user
 from .unfollow_util import follow_user
 from .unfollow_util import follow_given_user
-from .unfollow_util import load_follow_restriction
+from .unfollow_util import follow_restriction
 from .unfollow_util import dump_follow_restriction
 from .unfollow_util import set_automated_followed_pool
 from .feed_util import get_like_on_feed
@@ -59,6 +61,7 @@ from .relationship_tools import get_unfollowers
 from .relationship_tools import get_nonfollowers
 from .relationship_tools import get_fans
 from .relationship_tools import get_mutual_following
+from .database_engine import get_db
 
 
 
@@ -100,6 +103,7 @@ class InstaPy:
 
         self.username = username or os.environ.get('INSTA_USER')
         self.password = password or os.environ.get('INSTA_PW')
+        Settings.profile["name"] = self.username
         self.nogui = nogui
         self.logfolder = Settings.log_location + os.path.sep
         if self.multi_logs == True:
@@ -128,8 +132,6 @@ class InstaPy:
         self.followed_by = 0
         self.unfollowNumber = 0
         self.not_valid_users = 0
-
-        self.follow_restrict = load_follow_restriction(self.logfolder)
 
         self.follow_times = 1
         self.do_follow = False
@@ -185,6 +187,9 @@ class InstaPy:
 
         # Assign logger
         self.logger = self.get_instapy_logger(self.show_logs)
+
+        # Get ready DB for use
+        get_db(True)
 
         if self.selenium_local_session == True:
             self.set_selenium_local_session()
@@ -675,6 +680,8 @@ class InstaPy:
         relax_point = random.randint(7, 14)   # you can use some plain value `10` instead of this quitely randomized score
 
         for acc_to_follow in followlist:
+            if follow_restriction("read", acc_to_follow, self.follow_times, self.logger):
+                continue
             # Verify if the user should be followed
             validation, details = validate_username(self.browser,
                                            acc_to_follow,
@@ -704,11 +711,10 @@ class InstaPy:
                 relax_point = random.randint(7, 14)
                 pass
 
-            if self.follow_restrict.get(acc_to_follow, 0) < self.follow_times:
+            if not follow_restriction("read", acc_to_follow, self.follow_times, self.logger):
                 followed = follow_given_user(self.browser,
                                               self.username,
                                               acc_to_follow,
-                                              self.follow_restrict,
                                               self.blacklist,
                                               self.logger,
                                               self.logfolder)
@@ -733,10 +739,6 @@ class InstaPy:
                                                      self.user_interact_random,
                                                       self.user_interact_media)
                             self.do_follow = original_do_follow   # revert back original `self.do_follow` value (either it was `False` or `True`)
-            else:
-                self.logger.info('---> {} has already been followed more than '
-                                 '{} times'.format(
-                                    acc_to_follow, str(self.follow_times)))
                 sleep(1)
 
         self.not_valid_users += not_valid_users
@@ -788,15 +790,14 @@ class InstaPy:
 
     def set_simulation(self, enabled=True, percentage=100):
         """ Sets aside simulation parameters """
-        if (enabled not in [True, False] or
-                percentage not in range(0, 101)):
+        if enabled not in [True, False]:
             self.logger.info("Invalid simulation parameter! Please use correct syntax with accepted values.")
-        
+
         elif enabled == False:
             self.simulation["enabled"] = False
 
         else:
-            percentage = 100 if (percentage is None or percentage>100) else percentage
+            percentage = 0 if percentage is None else percentage
             self.simulation = {"enabled":True, "percentage":percentage}
 
 
@@ -939,11 +940,10 @@ class InstaPy:
                                 user_name not in self.dont_include and
                                 checked_img and
                                 following and
-                                self.follow_restrict.get(user_name, 0) <
-                                    self.follow_times):
+                                not follow_restriction("read", user_name,
+                                 self.follow_times, self.logger)):
 
                                 followed += follow_user(self.browser,
-                                                        self.follow_restrict,
                                                         self.username,
                                                         user_name,
                                                         self.blacklist,
@@ -1110,11 +1110,10 @@ class InstaPy:
                                 user_name not in self.dont_include and
                                 checked_img and
                                 following and
-                                self.follow_restrict.get(user_name, 0) <
-                                    self.follow_times):
+                                not follow_restriction("read", user_name,
+                                 self.follow_times, self.logger)):
 
                                 followed += follow_user(self.browser,
-                                                        self.follow_restrict,
                                                         self.username,
                                                         user_name,
                                                         self.blacklist,
@@ -1314,11 +1313,10 @@ class InstaPy:
                                 user_name not in self.dont_include and
                                 checked_img and
                                 following and
-                                self.follow_restrict.get(user_name, 0) <
-                                    self.follow_times):
+                                not follow_restriction("read", user_name,
+                                 self.follow_times, self.logger)):
 
                                 followed += follow_user(self.browser,
-                                                        self.follow_restrict,
                                                         self.username,
                                                         user_name,
                                                         self.blacklist,
@@ -1406,9 +1404,9 @@ class InstaPy:
             if (self.do_follow and
                 username not in self.dont_include and
                 following and
-                    self.follow_restrict.get(username, 0) < self.follow_times):
+                not follow_restriction("read", username,
+                 self.follow_times, self.logger)):
                 followed += follow_user(self.browser,
-                                        self.follow_restrict,
                                         self.username,
                                         username,
                                         self.blacklist,
@@ -1624,12 +1622,11 @@ class InstaPy:
                         if (self.do_follow and
                             username not in self.dont_include and
                             following and
-                            self.follow_restrict.get(
-                                username, 0) < self.follow_times):
+                            not follow_restriction("read", username,
+                             self.follow_times, self.logger)):
 
                             followed += follow_user(
                                 self.browser,
-                                self.follow_restrict,
                                 self.username,
                                 username,
                                 self.blacklist,
@@ -1794,7 +1791,6 @@ class InstaPy:
                                                                         amount,
                                                                         self.dont_include,
                                                                         randomize,
-                                                                        self.follow_restrict,
                                                                         self.blacklist,
                                                                         self.follow_times,
                                                                         self.simulation,
@@ -1914,7 +1910,6 @@ class InstaPy:
                                                                         amount,
                                                                         self.dont_include,
                                                                         randomize,
-                                                                        self.follow_restrict,
                                                                         self.blacklist,
                                                                         self.follow_times,
                                                                         self.simulation,
@@ -2032,7 +2027,6 @@ class InstaPy:
                                                                         amount,
                                                                         self.dont_include,
                                                                         randomize,
-                                                                        self.follow_restrict,
                                                                         self.blacklist,
                                                                         self.follow_times,
                                                                         self.simulation,
@@ -2156,7 +2150,6 @@ class InstaPy:
                                                                         amount,
                                                                         self.dont_include,
                                                                         randomize,
-                                                                        self.follow_restrict,
                                                                         self.blacklist,
                                                                         self.follow_times,
                                                                         self.simulation,
@@ -2343,16 +2336,16 @@ class InstaPy:
                                             amount,
                                             num_of_search,
                                             self.logger)
-                
+
                 if len(links) > 0:
                     link_not_found_loop_error = 0
-                    
+
                 if len(links) == 0:
                     link_not_found_loop_error += 1
                     if link_not_found_loop_error >= 10:
                         self.logger.warning('Loop error, 0 links for for 10 times consecutively, exit loop')
                         break
-                        
+
             except NoSuchElementException:
                 self.logger.warning('Too few images, aborting')
                 self.aborting = True
@@ -2504,11 +2497,10 @@ class InstaPy:
                                         user_name not in self.dont_include and
                                         checked_img and
                                         following and
-                                        self.follow_restrict.get(
-                                            user_name, 0) < self.follow_times):
+                                        not follow_restriction("read", user_name,
+                                         self.follow_times, self.logger)):
                                         followed += follow_user(
                                             self.browser,
-                                            self.follow_restrict,
                                             self.username,
                                             user_name,
                                             self.blacklist,
@@ -2602,7 +2594,6 @@ class InstaPy:
             return self
 
         #Get `followers` data
-        grabbed_followers = []
         grabbed_followers = get_followers(self.browser,
                                           username,
                                           amount,
@@ -2631,7 +2622,6 @@ class InstaPy:
             return self
 
         #Get `following` data
-        grabbed_following = []
         grabbed_following = get_following(self.browser,
                                           username,
                                           amount,
@@ -2725,7 +2715,9 @@ class InstaPy:
 
     def end(self):
         """Closes the current session"""
-        dump_follow_restriction(self.follow_restrict, self.logfolder)
+        with interruption_handler():
+            dump_follow_restriction(self.username, self.logger, self.logfolder)
+            dump_record_activity(self.username, self.logger, self.logfolder)
 
         try:
             self.browser.delete_all_cookies()
@@ -2821,7 +2813,6 @@ class InstaPy:
 
                         #try to follow
                         followed += follow_user(self.browser,
-                                                self.follow_restrict,
                                                 self.username,
                                                 user_name,
                                                 self.blacklist,
@@ -2975,11 +2966,10 @@ class InstaPy:
                             user_name not in self.dont_include and
                             checked_img and
                             following and
-                            self.follow_restrict.get(user_name, 0) <
-                                self.follow_times):
+                            not follow_restriction("read", user_name,
+                             self.follow_times, self.logger)):
 
                             followed += follow_user(self.browser,
-                                                    self.follow_restrict,
                                                     self.username,
                                                     user_name,
                                                     self.blacklist,
@@ -3029,3 +3019,6 @@ class InstaPy:
         self.not_valid_users += not_valid_users
 
         return self
+
+
+
