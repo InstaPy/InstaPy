@@ -1,9 +1,10 @@
 """Module which handles the follow features like unfollowing and following"""
-import random
+import time
 import os
+import random
 import json
 import csv
-import time
+import sqlite3
 from datetime import datetime, timedelta
 from math import ceil
 
@@ -27,6 +28,7 @@ from .print_log_writer import log_record_all_unfollowed
 from .relationship_tools import get_followers
 from .relationship_tools import get_following
 from .relationship_tools import get_nonfollowers
+from .database_engine import get_db
 
 
 
@@ -358,11 +360,10 @@ def unfollow(browser,
 
         #scroll down the page to get sufficient amount of usernames
         get_users_through_dialog(browser, None, username, amount,
-                                     allfollowing, False, None,
-                                      None, None, None,
-                                       {"enabled":False, "percentage":0},
+                                     allfollowing, False, None, None,
+                                     None, {"enabled":False, "percentage":0},
                                      "Unfollow", logger, logfolder)
-        
+
         # find dialog box
         dialog = browser.find_element_by_xpath(
             "//div[text()='Following']/following-sibling::div")
@@ -473,7 +474,7 @@ def unfollow(browser,
     return unfollowNum
 
 
-def follow_user(browser, follow_restrict, login, user_name, blacklist, logger, logfolder):
+def follow_user(browser, login, user_name, blacklist, logger, logfolder):
     """Follows the user of the currently opened image"""
     follow_xpath =  "//button[text()='Follow']"
     try:
@@ -494,7 +495,7 @@ def follow_user(browser, follow_restrict, login, user_name, blacklist, logger, l
         logger.info('--> Now following')
         logtime = datetime.now().strftime('%Y-%m-%d %H:%M')
         log_followed_pool(login, user_name, logger, logfolder, logtime)
-        follow_restrict[user_name] = follow_restrict.get(user_name, 0) + 1
+        follow_restriction("write", user_name, None, logger)
         if blacklist['enabled'] is True:
             action = 'followed'
             add_user_to_blacklist(
@@ -546,7 +547,6 @@ def unfollow_user(browser, username, person, relationship_data, logger, logfolde
 def follow_given_user(browser,
                       login,
                       acc_to_follow,
-                      follow_restrict,
                       blacklist,
                       logger,
                       logfolder):
@@ -560,14 +560,15 @@ def follow_given_user(browser,
 
     try:
         sleep(10)
-        follow_button = browser.find_element_by_xpath("//*[text()='Follow']")
+        follow_button = browser.find_element_by_xpath(
+                    "//*[text()='Follow' or text()='Follow Back']")
+
         click_element(browser, follow_button) # unfollow_button.send_keys("\n")
         update_activity('follows')
         logger.info('---> Now following: {}'.format(acc_to_follow))
         logtime = datetime.now().strftime('%Y-%m-%d %H:%M')
         log_followed_pool(login, acc_to_follow, logger, logfolder, logtime)
-        follow_restrict[acc_to_follow] = follow_restrict.get(
-            acc_to_follow, 0) + 1
+        follow_restriction("write", acc_to_follow, None, logger)
 
         if blacklist['enabled'] is True:
             action = 'followed'
@@ -590,7 +591,6 @@ def get_users_through_dialog(browser,
                           users_count,
                           randomize,
                           dont_include,
-                          follow_restrict,
                           blacklist,
                           follow_times,
                           simulation,
@@ -661,7 +661,7 @@ def get_users_through_dialog(browser,
 
         # Will follow a little bit of users in order to simulate real interaction
         if (simulation["enabled"] == True and
-                random.randint(0, 100) <= simulation["percentage"] and
+                simulation["percentage"] >= random.randint(1, 100) and
                    (simulator_counter > random.randint(5, 17) or
                         abort == True or
                             total_list >= amount or
@@ -683,7 +683,6 @@ def get_users_through_dialog(browser,
                                                          quick_button,
                                                          quick_amount,
                                                          dont_include,
-                                                         follow_restrict,
                                                          blacklist,
                                                          follow_times,
                                                          logger,
@@ -730,7 +729,6 @@ def follow_through_dialog(browser,
                           buttons,
                           amount,
                           dont_include,
-                          follow_restrict,
                           blacklist,
                           follow_times,
                           logger,
@@ -747,7 +745,7 @@ def follow_through_dialog(browser,
         for person, button in zip(person_list, buttons):
 
             if (person not in dont_include and
-                follow_restrict.get(person, 0) < follow_times):
+                not follow_restriction("read", person, follow_times, logger)):
 
                 # Register this session's followed user for further interaction
                 person_followed.append(person)
@@ -759,7 +757,7 @@ def follow_through_dialog(browser,
 
                 update_activity('follows')
 
-                follow_restrict[person] = follow_restrict.get(person, 0) + 1
+                follow_restriction("write", person, None, logger)
 
                 logger.info('--> Followed {}'.format(person.encode('utf-8')))
 
@@ -786,7 +784,6 @@ def get_given_user_followers(browser,
                                 amount,
                                 dont_include,
                                 randomize,
-                                follow_restrict,
                                 blacklist,
                                 follow_times,
                                 simulation,
@@ -800,7 +797,6 @@ def get_given_user_followers(browser,
     :param user_name: given username of account to follow
     :param amount: the number of followers to follow
     :param dont_include: ignore these usernames
-    :param follow_restrict:
     :param random: randomly select from users' followers
     :param blacklist:
     :param follow_times:
@@ -830,8 +826,13 @@ def get_given_user_followers(browser,
                     "ProfilePage[0].graphql.user.edge_followed_by.count")
             except WebDriverException:
                 try:
-                    allfollowers = format_number(browser.find_elements_by_xpath(
-                        "//span[contains(@class,'g47SY')]")[1].text)
+                    topCount_elements = browser.find_elements_by_xpath(
+                        "//span[contains(@class,'g47SY')]")
+                    if topCount_elements:
+                        allfollowers = format_number(topCount_elements[1].text)
+                    else:
+                        logger.info("Failed to get followers count of '{}'  ~empty list".format(user_name))
+                        allfollowers = None
                 except NoSuchElementException:
                     logger.error("Error occured during getting the followers count of '{}'\n".format(user_name))
                     return [], []
@@ -864,8 +865,8 @@ def get_given_user_followers(browser,
     channel = "Follow"
     person_list, simulated_list = get_users_through_dialog(browser, login, user_name, amount,
                                                  allfollowers, randomize, dont_include,
-                                                  follow_restrict, blacklist, follow_times,
-                                                   simulation, channel, logger, logfolder)
+                                                  blacklist, follow_times, simulation,
+                                                   channel, logger, logfolder)
 
     return person_list, simulated_list
 
@@ -876,7 +877,6 @@ def get_given_user_following(browser,
                                 amount,
                                 dont_include,
                                 randomize,
-                                follow_restrict,
                                 blacklist,
                                 follow_times,
                                 simulation,
@@ -906,8 +906,13 @@ def get_given_user_following(browser,
                     "ProfilePage[0].graphql.user.edge_follow.count")
             except WebDriverException:
                 try:
-                    allfollowing = format_number(browser.find_elements_by_xpath(
-                        "//span[contains(@class,'g47SY')]")[2].text)
+                    topCount_elements = browser.find_elements_by_xpath(
+                        "//span[contains(@class,'g47SY')]")
+                    if topCount_elements:
+                        allfollowing = format_number(topCount_elements[2].text)
+                    else:
+                        logger.info("Failed to get following count of '{}'  ~empty list".format(user_name))
+                        allfollowing = None
                 except NoSuchElementException:
                     logger.error("\nError occured during getting the following count of '{}'\n".format(user_name))
                     return [], []
@@ -939,29 +944,105 @@ def get_given_user_following(browser,
     channel = "Follow"
     person_list, simulated_list = get_users_through_dialog(browser, login, user_name, amount,
                                                  allfollowing, randomize, dont_include,
-                                                  follow_restrict, blacklist, follow_times,
-                                                   simulation, channel, logger, logfolder)
+                                                  blacklist, follow_times, simulation,
+                                                   channel, logger, logfolder)
 
     return person_list, simulated_list
 
 
-def dump_follow_restriction(followRes, logfolder):
-    """Dumps the given dictionary to a file using the json format"""
-    filename = '{}followRestriction.json'.format(logfolder)
 
-    with open(filename, 'w') as followResFile:
-        json.dump(followRes, followResFile)
+def dump_follow_restriction(profile_name, logger, logfolder):
+    """ Dump follow restriction data to a local human-readable JSON """
+
+    try:
+        # get a DB and start a connection
+        db, id = get_db()
+        conn = sqlite3.connect(db)
+
+        with conn:
+            conn.row_factory = sqlite3.Row
+            cur = conn.cursor()
+
+            cur.execute("SELECT * FROM followRestriction WHERE profile_id=:var", {"var":id})
+            data = cur.fetchall()
+
+        if data:
+            # get the existing data
+            filename = "{}followRestriction.json".format(logfolder)
+            if os.path.isfile(filename):
+                with open(filename) as followResFile:
+                    current_data = json.load(followResFile)
+            else:
+                current_data = {}
+
+            # pack the new data
+            follow_data = dict(user_data[1:3] for user_data in data or [])
+            current_data[profile_name] = follow_data
+
+            # dump the fresh follow data to a local human readable JSON
+            with open(filename, 'w') as followResFile:
+                json.dump(current_data, followResFile)
+
+    except Exception as exc:
+        logger.error("Pow! Error occured while dumping follow restriction data to a local JSON:\n\t{}".format(str(exc).encode("utf-8")))
+
+    finally:
+        if conn:
+            # close the open connection
+            conn.close()
 
 
-def load_follow_restriction(logfolder):
-    """Loads the saved """
-    filename = '{}followRestriction.json'.format(logfolder)
 
-    if not os.path.isfile(filename):
-        data = {}
-        with open(filename,'w+') as followResFile:
-            json.dump(data, followResFile)
-            followResFile.close()
+def follow_restriction(operation, username, limit, logger):
+    """ Keep track of the followed users and help avoid excessive follow of the same user """
 
-    with open(filename) as followResFile:
-        return json.load(followResFile)
+    try:
+        # get a DB and start a connection
+        db, id = get_db()
+        conn = sqlite3.connect(db)
+
+        with conn:
+            conn.row_factory = sqlite3.Row
+            cur = conn.cursor()
+
+            cur.execute("SELECT * FROM followRestriction WHERE profile_id=:id_var AND username=:name_var", {"id_var":id, "name_var":username})
+            data = cur.fetchone()
+            follow_data = dict(data) if data else None
+
+            if operation == "write":
+                if follow_data is None:
+                    # write a new record
+                    cur.execute("INSERT INTO followRestriction (profile_id, username, times) VALUES (?, ?, ?)",
+                                            (id, username, 1))
+                else:
+                    # update the existing record
+                    follow_data["times"] += 1
+                    sql = ("UPDATE followRestriction set times = ? WHERE profile_id=? AND username = ?")
+                    cur.execute(sql, (follow_data["times"], id, username))
+
+                # commit the latest changes
+                conn.commit()
+
+            elif operation == "read":
+                if follow_data is None:
+                    return False
+
+                elif follow_data["times"] < limit:
+                    return False
+
+                else:
+                    exceed_msg = "" if follow_data["times"] == limit else "more than "
+                    logger.info("---> {} has already been followed {}{} times"
+                                .format(username, exceed_msg, str(limit)))
+                    return True
+
+    except Exception as exc:
+        logger.error("Dap! Error occured with follow Restriction:\n\t{}".format(str(exc).encode("utf-8")))
+
+    finally:
+        if conn:
+             #close the open connection
+            conn.close()
+
+
+

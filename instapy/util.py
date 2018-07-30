@@ -15,6 +15,8 @@ from selenium.common.exceptions import WebDriverException
 from .settings import Settings
 from .time_util import sleep
 from .time_util import sleep_actual
+from .database_engine import get_db
+
 
 
 def validate_username(browser,
@@ -58,15 +60,15 @@ def validate_username(browser,
     if username == own_username:
         return False, \
                 "---> Username '{}' is yours!  ~skipping user\n".format(own_username)
-        
+
     if username in ignore_users:
         return False, \
                 "---> {} is in ignore_users list  ~skipping user\n".format(username)
-                
+
     if username in blacklist:
         return False, \
                 "---> {} is in blacklist  ~skipping user\n".format(username)
-    
+
     """Checks the potential of target user by relationship status in order to delimit actions within the desired boundary"""
     if potency_ratio or delimit_by_numbers and (max_followers or max_following or min_followers or min_following):
 
@@ -129,22 +131,26 @@ def validate_username(browser,
     return True, "Valid user"
 
 
-def update_activity(action=None):
-    """Record every Instagram server call (page load, content load, likes,
-    comments, follows, unfollow)."""
 
-    conn = sqlite3.connect(Settings.database_location)
+def update_activity(action=None):
+    """ Record every Instagram server call (page load, content load, likes,
+        comments, follows, unfollow). """
+
+    # get a DB and start a connection
+    db, id = get_db()
+    conn = sqlite3.connect(db)
+
     with conn:
         conn.row_factory = sqlite3.Row
         cur = conn.cursor()
         # collect today data
-        cur.execute("SELECT * FROM statistics WHERE created == date('now')")
+        cur.execute("SELECT * FROM recordActivity WHERE profile_id=:var AND created == date('now')", {"var":id})
         data = cur.fetchone()
 
         if data is None:
             # create a new record for the new day
-            cur.execute("INSERT INTO statistics VALUES "
-                        "(0, 0, 0, 0, 1, date('now'))")
+            cur.execute("INSERT INTO recordActivity VALUES "
+                        "(?, 0, 0, 0, 0, 1, date('now'))", (id,))
         else:
             # sqlite3.Row' object does not support item assignment -> so,
             # convert it into a new dict
@@ -161,13 +167,15 @@ def update_activity(action=None):
             elif action == 'unfollows':
                 data['unfollows'] += 1
 
-            sql = ("UPDATE statistics set likes = ?, comments = ?, "
+            sql = ("UPDATE recordActivity set likes = ?, comments = ?, "
                    "follows = ?, unfollows = ?, server_calls = ? "
-                   "WHERE created = date('now')")
+                   "WHERE profile_id=? AND created = date('now')")
             cur.execute(sql, (data['likes'], data['comments'], data['follows'],
-                              data['unfollows'], data['server_calls']))
-        # commit
+                              data['unfollows'], data['server_calls'], id))
+
+        # commit the latest changes
         conn.commit()
+
 
 
 def add_user_to_blacklist(username, campaign, action, logger, logfolder):
@@ -194,11 +202,12 @@ def add_user_to_blacklist(username, campaign, action, logger, logfolder):
                 .format(username, campaign, action))
 
 
+
 def get_active_users(browser, username, posts, boundary, logger):
     """Returns a list with usernames who liked the latest n posts"""
 
     user_link = 'https://www.instagram.com/{}/'.format(username)
-    
+
     #Check URL of the webpage, if it already is user's profile page, then do not navigate to it again
     web_adress_navigator(browser, user_link)
 
@@ -351,6 +360,7 @@ def get_active_users(browser, username, posts, boundary, logger):
     return active_users
 
 
+
 def delete_line_from_file(filepath, lineToDelete, logger):
     try:
         file_path_old = filepath+".old"
@@ -393,6 +403,7 @@ def delete_line_from_file(filepath, lineToDelete, logger):
         logger.error("delete_line_from_file error {}".format(str(e)))
 
 
+
 def scroll_bottom(browser, element, range_int):
     # put a limit to the scrolling
     if range_int > 50:
@@ -407,17 +418,20 @@ def scroll_bottom(browser, element, range_int):
 
     return
 
-# There are three (maybe more) different ways to "click" an element/button.
-# 1. element.click()
-# 2. element.send_keys("\n")
-# 3. browser.execute_script("document.getElementsByClassName('" + element.get_attribute("class") + "')[0].click()")
 
-# I'm guessing all three have their advantages/disadvantages
-# Before committing over this code, you MUST justify your change
-# and potentially adding an 'if' statement that applies to your
-# specific case. See the following issue for more details
-# https://github.com/timgrossmann/InstaPy/issues/1232
+
 def click_element(browser, element, tryNum=0):
+    # There are three (maybe more) different ways to "click" an element/button.
+    # 1. element.click()
+    # 2. element.send_keys("\n")
+    # 3. browser.execute_script("document.getElementsByClassName('" + element.get_attribute("class") + "')[0].click()")
+
+    # I'm guessing all three have their advantages/disadvantages
+    # Before committing over this code, you MUST justify your change
+    # and potentially adding an 'if' statement that applies to your
+    # specific case. See the following issue for more details
+    # https://github.com/timgrossmann/InstaPy/issues/1232
+
     # explaination of the following recursive function:
     #   we will attempt to click the element given, if an error is thrown
     #   we know something is wrong (element not in view, element doesn't
@@ -457,6 +471,7 @@ def click_element(browser, element, tryNum=0):
         click_element(browser, element, tryNum)
 
 
+
 def format_number(number):
     """
     Format number. Remove the unused comma. Replace the concatenation with relevant zeros. Remove the dot.
@@ -471,18 +486,23 @@ def format_number(number):
     formatted_num = formatted_num.replace('.', '')
     return int(formatted_num)
 
+
+
 def username_url_to_username(username_url):
     a = username_url.replace ("https://www.instagram.com/","")
     username = a.split ('/')
     return username[0]
-                                           
+
+
+
 def get_number_of_posts(browser):
     """Get the number of posts from the profile screen"""
     num_of_posts_txt = browser.find_element_by_xpath("//section/main/div/header/section/ul/li[1]/span/span").text
     num_of_posts_txt = num_of_posts_txt.replace(" ", "")
     num_of_posts_txt = num_of_posts_txt.replace(",", "")
-    num_of_posts = int(num_of_posts_txt)   
+    num_of_posts = int(num_of_posts_txt)
     return num_of_posts
+
 
 
 def get_relationship_counts(browser, username, logger):
@@ -509,8 +529,13 @@ def get_relationship_counts(browser, username, logger):
                     "ProfilePage[0].graphql.user.edge_followed_by.count")
             except WebDriverException:
                 try:
-                    followers_count = format_number((browser.find_elements_by_xpath(
-                        "//span[contains(@class,'g47SY')]")[1].text))
+                    topCount_elements = browser.find_elements_by_xpath(
+                        "//span[contains(@class,'g47SY')]")
+                    if topCount_elements:
+                        followers_count = format_number(topCount_elements[1].text)
+                    else:
+                        logger.info("Failed to get followers count of '{}'  ~empty list".format(username))
+                        followers_count = None
                 except NoSuchElementException:
                     logger.error("Error occured during getting the followers count of '{}'\n".format(username))
                     followers_count = None
@@ -531,13 +556,19 @@ def get_relationship_counts(browser, username, logger):
                     "ProfilePage[0].graphql.user.edge_follow.count")
             except WebDriverException:
                 try:
-                    following_count = format_number(browser.find_elements_by_xpath(
-                        "//span[contains(@class,'g47SY')]")[2].text)
+                    topCount_elements = browser.find_elements_by_xpath(
+                        "//span[contains(@class,'g47SY')]")
+                    if topCount_elements:
+                        following_count = format_number(topCount_elements[2].text)
+                    else:
+                        logger.info("Failed to get following count of '{}'  ~empty list".format(username))
+                        following_count = None
                 except NoSuchElementException:
                     logger.error("\nError occured during getting the following count of '{}'\n".format(username))
                     following_count = None
-    
+
     return followers_count, following_count
+
 
 
 def web_adress_navigator(browser, link):
@@ -550,12 +581,13 @@ def web_adress_navigator(browser, link):
             current_url = browser.execute_script("return window.location.href")
         except WebDriverException:
             current_url = None
-    
+
     if current_url is None or current_url != link:
         browser.get(link)
         # update server calls
         update_activity()
         sleep(2)
+
 
 
 @contextmanager
@@ -612,7 +644,61 @@ def highlight_print(username=None, message=None, priority=None, level=None, logg
     print("{}".format(lower_char*output_len))
 
 
+
 def remove_duplicated_from_list_keep_order(_list):
     seen = set()
     seen_add = seen.add
     return [x for x in _list if not (x in seen or seen_add(x))]
+
+
+
+def dump_record_activity(profile_name, logger, logfolder):
+    """ Dump the record activity data to a local human-readable JSON """
+
+    try:
+        # get a DB and start a connection
+        db, id = get_db()
+        conn = sqlite3.connect(db)
+
+        with conn:
+            conn.row_factory = sqlite3.Row
+            cur = conn.cursor()
+
+            cur.execute("SELECT * FROM recordActivity WHERE profile_id=:var", {"var":id})
+            data = cur.fetchall()
+
+        if data:
+            data = dict(data)
+            record_data = {}
+
+            # get the existing data
+            filename = "{}recordActivity.json".format(logfolder)
+            if os.path.isfile(filename):
+                with open(filename) as recordActFile:
+                    current_data = json.load(recordActFile)
+            else:
+                current_data = {}
+
+            # pack the new data
+            for day in data:
+                record_data[day["created"]] = {"likes":day["likes"],
+                                                 "comments":day["comments"],
+                                                  "follows":day["follows"],
+                                                   "unfollows":day["unfollows"],
+                                                    "server_calls":day["server_calls"]}
+            current_data[profile_name] = record_data
+
+            # dump the fresh record data to a local human readable JSON
+            with open(filename, 'w') as recordActFile:
+                json.dump(current_data, recordActFile)
+
+    except Exception as exc:
+        logger.error("Pow! Error occured while dumping record activity data to a local JSON:\n\t{}".format(str(exc).encode("utf-8")))
+
+    finally:
+        if conn:
+            # close the open connection
+            conn.close()
+
+
+
