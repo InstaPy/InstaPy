@@ -1240,7 +1240,7 @@ class InstaPy:
                                 username = (self.browser.
                                     find_element_by_xpath(
                                         '//article/header/div[2]/'
-                                        'div[1]/div/a'))
+                                        'div/div[1]/a'))
 
                                 username = username.get_attribute("title")
                                 name = []
@@ -2417,7 +2417,7 @@ class InstaPy:
                                     username = (self.browser.
                                                 find_element_by_xpath(
                                                     '//article/header/div[2]/'
-                                                    'div[1]/div/a'))
+                                                    'div/div[1]/a'))
 
                                     username = username.get_attribute("title")
                                     name = []
