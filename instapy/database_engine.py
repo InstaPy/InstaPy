@@ -1,4 +1,3 @@
-import time
 import os
 import sqlite3
 
