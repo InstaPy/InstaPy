@@ -13,4 +13,4 @@ class Settings:
     loggers = {}
     logger = None
     # Set current profile credentials for DB operations
-    profile = {"id":None, "name":None}   
+    profile = {"id":None, "name":None}
