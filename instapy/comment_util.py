@@ -100,7 +100,6 @@ def verify_commenting(browser, max, min, logger):
                 "PostPage[0].graphql.shortcode_media.edge_media_to_comment.count")
         except:
             logger.info("Failed to check comments' count for verification...\n")
-            raise
             return True, 'Verification failure'
 
         if max is not None and comments_count > max:
