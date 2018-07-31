@@ -89,7 +89,6 @@ def verify_commenting(browser, max, min, logger):
                     "PostPage[0].graphql.shortcode_media.comments_disabled")            
             except:
                 logger.info("Failed to check comments' status for verification...\n")
-                raise
                 return True, 'Verification failure'
 
         if comments_disabled == True:
