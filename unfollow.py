@@ -1,0 +1,64 @@
+import os
+import time
+from tempfile import gettempdir
+
+from selenium.common.exceptions import NoSuchElementException
+
+from instapy import InstaPy, Settings
+
+insta_username = 'meinerttt'
+insta_password = 'pdSA1201'
+dont_include = ['camilladuncker', 'karolinekschmidt', 'dennisvelasquez_', 'braae85', 'thomsenrasmus', 'pnorthcott', 'kristina_dalstrup', 'kvistlone', 'sarahretboell', 'janhilding', 'dorthe1977', 'inaamramlose', 'fynshave', 'mrkallehave', 'rikkerosenvinge', 'hannewis', 'ursulahasselbalch', 'christvete', 'stafford2956', 'cillebechmoller', 'ibrainsstreaming', 'bisgaardvin', 'eliasson_rasmus', 'louisegaarden', 'kristinaholstjuul', 'pia.r.boedker', 'pernilleherold', 'lisbethraekby', 'thomasbergholt', 'ibrains', 'heidi_bergholt_madsen', 'annekatrinejo', 'christianlpedersen', 'camillapandekage', 'sabinejjaatog', 'troelsboeche', 'finnkock', 'royalfrederik', 'mierytterhedegaard', 'gitte_ks', 'allanbjorn75', 'liselotte1405', 'pshoeg', 'h.h.ultra66', 'jhandberg', 'q_courage', 'mlbirkehoj', 'niels_buus', 'klaus.bodker', 'tuxen1', 'lykkeburmoelle', 'ceciliealletorp', 'romtotten', 'kathrinekschmidt', 'foghaps', 'larsfeldthaus', 'donna_anne_chadwick', 'rebildporten', 'anna_moeller97', 'kristinaextremerunning', 'runnersdk_mark', 'carowozniacki', 'lineguldhammer', 'trailrunningsilkeborg', 'stinatroest', 'kilianjornet', '9000running', 'marathonsportdk', 'simongrimstrup', 'salomon_danmark', 'monikabenserud', 'jon.bertelsen', 'runnersdk.dk', 'mjenneke93', 'salomonrunning', 'triatland_rebild', 'gingerrunner', 'aalborg_kommune', 'aalborgrunners', 'aarhus_motion', 'kimberleydt', 'vesterbytri', 'julsoeultra', 'rebildkommune', 'sisstiss', 'trail_heart', 'dgnrun', 'strava', 'saraslott', 'trailrunningdenmark', 'juliecarl.dk', 'atletikdk', 'ultracup']
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+Settings.log_location = os.path.join(BASE_DIR, 'myLogs')
+Settings.database_location = os.path.join(BASE_DIR, 'myLogs', insta_username+'.db')
+
+# set headless_browser=True if you want to run InstaPy on a server
+
+# set these in instapy/settings.py if you're locating the
+# library in the /usr/lib/pythonX.X/ directory:
+#   Settings.database_location = '/path/to/instapy.db'
+#   Settings.chromedriver_location = '/path/to/chromedriver'
+
+session = InstaPy(username=insta_username,
+                  password=insta_password,
+                  headless_browser=False,
+                  multi_logs=True)
+
+try:
+    session.login()
+
+    # settings
+    session.set_relationship_bounds(enabled=True,
+                                    potency_ratio=-1.0,
+                                    delimit_by_numbers=True,
+                                    max_followers=4590,
+                                    max_following=5555,
+                                    min_followers=40,
+                                    min_following=50)
+    session.set_do_comment(False, percentage=10)
+    session.set_do_like(True, percentage=51)
+    session.set_dont_include(dont_include)
+
+    session.unfollow_users(amount=100, InstapyFollowed=(True, "nonfollowers"), style="RANDOM", unfollow_after=2 * 24 * 60 * 60,
+                           sleep_delay=501)
+
+    # actions
+    #session.like_by_tags(['løb'], amount=1)
+
+except Exception as exc:
+    # if changes to IG layout, upload the file to help us locate the change
+    if isinstance(exc, NoSuchElementException):
+        file_path = os.path.join(gettempdir(), '{}.html'.format(time.strftime('%Y%m%d-%H%M%S')))
+        with open(file_path, 'wb') as fp:
+            fp.write(session.browser.page_source.encode('utf8'))
+        print('{0}\nIf raising an issue, please also upload the file located at:\n{1}\n{0}'.format(
+            '*' * 70, file_path))
+    # full stacktrace when raising Github issue
+    raise
+
+finally:
+    # end the bot session
+    session.end()
