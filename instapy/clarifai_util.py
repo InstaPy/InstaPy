@@ -6,6 +6,8 @@ from clarifai.rest import ClarifaiApp, Image as ClImage
 def check_image(browser, clarifai_api_key, img_tags, img_tags_skip_if_contain, logger, full_match=False, picture_url=None):
     """Uses the link to the image to check for invalid content in the image"""
     clarifai_api = ClarifaiApp(api_key=clarifai_api_key)
+    if proxy is not None:
+        clarifai_api.api.session.proxies = {'https': proxy}
     # set req image to given one or get it from current page
     if picture_url is None:
         img_link = get_imagelink(browser)

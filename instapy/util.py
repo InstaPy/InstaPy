@@ -202,7 +202,6 @@ def add_user_to_blacklist(username, campaign, action, logger, logfolder):
                 .format(username, campaign, action))
 
 
-
 def get_active_users(browser, username, posts, boundary, logger):
     """Returns a list with usernames who liked the latest n posts"""
 
@@ -471,7 +470,6 @@ def click_element(browser, element, tryNum=0):
         click_element(browser, element, tryNum)
 
 
-
 def format_number(number):
     """
     Format number. Remove the unused comma. Replace the concatenation with relevant zeros. Remove the dot.
@@ -487,14 +485,12 @@ def format_number(number):
     return int(formatted_num)
 
 
-
 def username_url_to_username(username_url):
     a = username_url.replace ("https://www.instagram.com/","")
     username = a.split ('/')
     return username[0]
-
-
-
+                                         
+										   
 def get_number_of_posts(browser):
     """Get the number of posts from the profile screen"""
     num_of_posts_txt = browser.find_element_by_xpath("//section/main/div/header/section/ul/li[1]/span/span").text
@@ -502,7 +498,6 @@ def get_number_of_posts(browser):
     num_of_posts_txt = num_of_posts_txt.replace(",", "")
     num_of_posts = int(num_of_posts_txt)
     return num_of_posts
-
 
 
 def get_relationship_counts(browser, username, logger):
@@ -568,7 +563,6 @@ def get_relationship_counts(browser, username, logger):
                     following_count = None
 
     return followers_count, following_count
-
 
 
 def web_adress_navigator(browser, link):
@@ -644,6 +638,36 @@ def highlight_print(username=None, message=None, priority=None, level=None, logg
     print("{}".format(lower_char*output_len))
 
 
+def is_page_available(browser, logger):
+    if "Page Not Found" in browser.title or "Content Unavailable" in browser.title:
+        logger.warning('Intagram error: The link you followed may be broken, or the page may have been removed...')
+        return False
+    return True
+
+
+def is_private_profile(browser, logger, following=True):
+    is_private = browser.execute_script(
+        "return window._sharedData.entry_data."
+        "ProfilePage[0].graphql.user.is_private")
+    # double check with xpath that should work only when we not follwoing a user
+    if is_private is True and not following:
+        body_elem = browser.find_element_by_tag_name('body')
+        is_private = body_elem.find_element_by_xpath(
+            '//h2[@class="_kcrwx"]')
+        if is_private is not True:
+            logger.error('graphql and xpath elemnt not match !')
+
+    return is_private
+
+
+def notifications_dialog(browser):
+    try:
+        notifications_button = browser.find_element_by_xpath(
+            "//button[text()='Turn On']")
+        if notifications_button.is_displayed():
+            click_element(browser, notifications_button) # unfollow_button.click()
+    except:
+        return
 
 def remove_duplicated_from_list_keep_order(_list):
     seen = set()

@@ -8,7 +8,7 @@ import os
 from platform import python_version
 from datetime import datetime
 import random
-
+import collections
 import selenium
 from pyvirtualdisplay import Display
 from selenium import webdriver
@@ -146,7 +146,7 @@ class InstaPy:
 
         self.dont_like = ['sex', 'nsfw']
         self.ignore_if_contains = []
-        self.ignore_users = []
+        self.ignore_users = set()
 
         self.user_interact_amount = 0
         self.user_interact_media = None
@@ -178,11 +178,12 @@ class InstaPy:
         self.min_comments = 0
 
         self.relationship_data = {username:{"all_following":[], "all_followers":[]}}
+        self.parameters = collections.defaultdict(dict)
 
         self.bypass_suspicious_attempt = bypass_suspicious_attempt
 
         self.simulation = {"enabled": True, "percentage": 100}
-
+        self.debug = debug
         self.aborting = False
 
         # Assign logger
@@ -455,7 +456,7 @@ class InstaPy:
         if self.aborting:
             return self
 
-        self.ignore_users = users or []
+        self.ignore_users = set(users) or {}
 
         return self
 
@@ -568,6 +569,9 @@ class InstaPy:
     def follow_commenters(self, usernames, amount=10, daysold=365, max_pic=50, sleep_delay=600, interact=False):
         """ Follows users' commenters """
 
+        if self.aborting:
+            return self
+
         message = "Starting to follow commenters.."
         highlight_print(self.username, message, "feature", "info", self.logger)
 
@@ -616,6 +620,8 @@ class InstaPy:
 
     def follow_likers (self, usernames, photos_grab_amount=3, follow_likers_per_photo=3, randomize=True, sleep_delay=600, interact=False):
         """ Follows users' likers """
+        if self.aborting:
+            return self
 
         message = "Starting to follow likers.."
         highlight_print(self.username, message, "feature", "info", self.logger)
@@ -663,9 +669,47 @@ class InstaPy:
 
         return self
 
+    def interact_likers(self, usernames, photos_grab_amount=3, follow_likers_per_photo=3, randomize=True, sleep_delay=600, interact=False):
+        """ Follows users' likers """
+
+        if self.aborting:
+            return self
+
+        message = "Starting to interact likers.."
+        highlight_print(self.username, message, "feature", "info", self.logger)
+
+        if not isinstance(usernames, list):
+            usernames = [usernames]
+
+        if photos_grab_amount>12:
+            self.logger.info("Sorry, you can only grab likers from first 12 photos for given username now.\n")
+            photos_grab_amount = 12
+
+        for username in usernames:
+            photo_urls = get_photo_urls_from_profile(self.browser, username, photos_grab_amount, randomize)
+            sleep(1)
+            if not isinstance(photo_urls, list):
+                photo_urls = [photo_urls]
+
+            for photo_url in photo_urls:
+                likers = users_liked(self.browser, photo_url, follow_likers_per_photo)
+                # This way of iterating will prevent sleep interference between functions
+                random.shuffle(likers)
+                self.interact_by_users(likers[:follow_likers_per_photo],
+                                        amount=self.user_interact_amount,
+                                         randomize=self.user_interact_random,
+                                          media=self.user_interact_media)
+
+        self.logger.info("Finished interact likers!\n")
+
+        return self
 
     def follow_by_list(self, followlist, times=1, sleep_delay=600, interact=False):
         """Allows to follow by any scrapped list"""
+
+        if self.aborting:
+            return self
+
         if not isinstance(followlist, list):
             followlist = [followlist]
 
@@ -1070,11 +1114,11 @@ class InstaPy:
                                                     self.clarifai_img_tags_skip,
                                                     self.logger,
                                                     self.clarifai_full_match)
+                                                    proxy=self.clarifai_proxy)
                                     )
                                 except Exception as err:
                                     self.logger.error(
                                         'Image check error: {}'.format(err))
-
 
                             if (self.do_comment and
                                 user_name not in self.dont_include and
@@ -1469,6 +1513,7 @@ class InstaPy:
                                                     self.clarifai_img_tags_skip,
                                                     self.logger,
                                                     self.clarifai_full_match)
+                                                    proxy=self.clarifai_proxy)
                                     )
                                 except Exception as err:
                                     self.logger.error(
@@ -1554,6 +1599,7 @@ class InstaPy:
         commented = 0
         followed = 0
         not_valid_users = 0
+        username = ''
 
         for index, username in enumerate(usernames):
             self.logger.info(
@@ -1850,6 +1896,9 @@ class InstaPy:
                                             self.user_interact_amount,
                                              self.user_interact_random,
                                               self.user_interact_media)
+                    if self.aborting:
+                        return self
+
                     sleep(1)
 
         self.logger.info(
@@ -1970,6 +2019,8 @@ class InstaPy:
                                              self.user_interact_random,
                                               self.user_interact_media)
                     sleep(1)
+                    if self.aborting:
+                        return self
 
         self.logger.info(
             "--> Interacted total of {} people\n".format(interacted_all))
@@ -2303,6 +2354,10 @@ class InstaPy:
 
     def like_by_feed(self, **kwargs):
         """Like the users feed"""
+
+        if self.aborting:
+            return self
+
         for i in self.like_by_feed_generator(**kwargs):
             pass
         return self
@@ -2336,16 +2391,16 @@ class InstaPy:
                                             amount,
                                             num_of_search,
                                             self.logger)
-
+                
                 if len(links) > 0:
                     link_not_found_loop_error = 0
-
+                    
                 if len(links) == 0:
                     link_not_found_loop_error += 1
                     if link_not_found_loop_error >= 10:
                         self.logger.warning('Loop error, 0 links for for 10 times consecutively, exit loop')
                         break
-
+                        
             except NoSuchElementException:
                 self.logger.warning('Too few images, aborting')
                 self.aborting = True

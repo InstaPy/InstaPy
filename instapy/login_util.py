@@ -112,8 +112,9 @@ def login_user(browser,
 
     # include time.sleep(1) to prevent getting stuck on google.com
     time.sleep(1)
-    
-    browser.get('https://www.instagram.com')
+    web_adress_navigator(browser, 'https://www.instagram.com')
+    # check for notification dialog and press Turn On so it will not disrupt feed reading
+    notifications_dialog(browser)
 
     # Cookie has been loaded, user should be logged in. Ensurue this is true
     login_elem = browser.find_elements_by_xpath(
