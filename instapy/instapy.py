@@ -86,7 +86,8 @@ class InstaPy:
                  proxy_chrome_extension=None,
                  proxy_port=0,
                  bypass_suspicious_attempt=False,
-                 multi_logs=False):
+                 multi_logs=False,
+                 clarifai_proxy=None):
 
         if nogui:
             self.display = Display(visible=0, size=(800, 600))
@@ -158,6 +159,9 @@ class InstaPy:
         self.clarifai_img_tags = []
         self.clarifai_img_tags_skip = []
         self.clarifai_full_match = False
+        if clarifai_proxy is not None:
+            clarifai_proxy = 'https://' + clarifai_proxy
+        self.clarifai_proxy = clarifai_proxy
 
         self.potency_ratio = 1.3466
         self.delimit_by_numbers = True
