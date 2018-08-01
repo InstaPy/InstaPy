@@ -976,7 +976,7 @@ def dump_follow_restriction(profile_name, logger, logfolder):
                 current_data = {}
 
             # pack the new data
-            follow_data = dict(user_data[1:3] for user_data in data or [])
+            follow_data = {user_data[1]: user_data[2] for user_data in data or []}
             current_data[profile_name] = follow_data
 
             # dump the fresh follow data to a local human readable JSON
