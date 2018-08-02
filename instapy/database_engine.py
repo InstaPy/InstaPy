@@ -11,7 +11,7 @@ def get_db(make=False):
     logger = Settings.logger
     credentials = Settings.profile
     # get existing profile credentials
-    id, name = credentials.values()
+    id, name = credentials["id"], credentials["name"]
     # make sure the address points to a database file
     if not address.endswith(".db"):
         slash = "\\" if "\\" in address else "/"
