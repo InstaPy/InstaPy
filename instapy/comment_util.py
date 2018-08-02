@@ -87,9 +87,9 @@ def verify_commenting(browser, max, min, logger):
                 comments_disabled = browser.execute_script(
                     "return window._sharedData.entry_data."
                     "PostPage[0].graphql.shortcode_media.comments_disabled")            
-            except:
-                logger.info("Failed to check comments' status for verification...\n")
-                raise
+            except Exception as e:
+                logger.info("Failed to check comments' status for verification!\n\t{}".format(str(e).encode("utf-8"))) 
+                return True, 'Verification failure'
 
         if comments_disabled == True:
             disapproval_reason = "Not commenting ~comments are disabled for this post"
@@ -98,9 +98,9 @@ def verify_commenting(browser, max, min, logger):
             comments_count = browser.execute_script(
                 "return window._sharedData.entry_data."
                 "PostPage[0].graphql.shortcode_media.edge_media_to_comment.count")
-        except:
-            logger.info("Failed to check comments' count for verification...\n")
-            raise
+        except Exception as e:
+            logger.info("Failed to check comments' count for verification!\n\t{}".format(str(e).encode("utf-8"))) 
+            return True, 'Verification failure'
 
         if max is not None and comments_count > max:
             disapproval_reason = "Not commented on this post! ~more comments exist off maximum limit at {}".format(comments_count)
