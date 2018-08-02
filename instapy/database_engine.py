@@ -2,7 +2,7 @@ import os
 import sqlite3
 
 from .settings import Settings
-
+from .time_util import sleep
 
 
 def get_db(make=False):
@@ -79,6 +79,7 @@ def get_db(make=False):
 
 
 def get_profile(name, address, logger):
+    sleep(1)
     """ Get a profile for users and return its id """
     try:
         conn = sqlite3.connect(address)
