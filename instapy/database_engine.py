@@ -1,9 +1,8 @@
-import time
 import os
 import sqlite3
 
 from .settings import Settings
-
+from .time_util import sleep
 
 
 def get_db(make=False):
@@ -13,9 +12,16 @@ def get_db(make=False):
     credentials = Settings.profile
     # get existing profile credentials
     id, name = credentials.values()
-    # make sure the location points to a database file
+    # make sure the address points to a database file
     if not address.endswith(".db"):
-        address += "instapy.db" if address.endswith(("\\", "/")) else "/instapy.db"
+        slash = "\\" if "\\" in address else "/"
+        address = address if address.endswith(slash) else address+slash
+        address += "instapy.db"
+        Settings.database_location = address
+    # make the given path if not exists
+    db_dir = os.path.dirname(address)
+    if not os.path.exists(db_dir):
+        os.makedirs(db_dir)
 
     make = True if not os.path.isfile(address) else make
 
@@ -24,7 +30,7 @@ def get_db(make=False):
             conn = sqlite3.connect(address)
             with conn:
                 conn.row_factory = sqlite3.Row
-                cur = conn.cursor()        
+                cur = conn.cursor()
 
                 #get 'profiles' table ready
                 cur.execute("""
@@ -73,6 +79,7 @@ def get_db(make=False):
 
 
 def get_profile(name, address, logger):
+    sleep(2)
     """ Get a profile for users and return its id """
     try:
         conn = sqlite3.connect(address)

@@ -668,7 +668,6 @@ def dump_record_activity(profile_name, logger, logfolder):
             data = cur.fetchall()
 
         if data:
-            data = dict(data)
             record_data = {}
 
             # get the existing data
@@ -681,11 +680,11 @@ def dump_record_activity(profile_name, logger, logfolder):
 
             # pack the new data
             for day in data:
-                record_data[day["created"]] = {"likes":day["likes"],
-                                                 "comments":day["comments"],
-                                                  "follows":day["follows"],
-                                                   "unfollows":day["unfollows"],
-                                                    "server_calls":day["server_calls"]}
+                record_data[day[-1]] = {"likes":day[1],
+                                         "comments":day[2],
+                                          "follows":day[3],
+                                           "unfollows":day[4],
+                                            "server_calls":day[5]}
             current_data[profile_name] = record_data
 
             # dump the fresh record data to a local human readable JSON
