@@ -25,6 +25,7 @@ def log_follower_num(browser, username, logfolder):
             followed_by = None
 
     with open('{}followerNum.txt'.format(logfolder), 'a') as numFile:
+        numFile.write(username + ' ')
         numFile.write(
             '{:%Y-%m-%d %H:%M} {}\n'.format(datetime.now(), followed_by or 0))
 
@@ -51,6 +52,7 @@ def log_following_num(browser, username, logfolder):
             following_num = None
 
     with open('{}followingNum.txt'.format(logfolder), 'a') as numFile:
+        numFile.write(username + ' ')
         numFile.write(
             '{:%Y-%m-%d %H:%M} {}\n'.format(datetime.now(), following_num or 0))
 
