@@ -2,8 +2,7 @@ import os
 import sqlite3
 
 from .settings import Settings
-from .settings import Settings
-
+from .time_util import sleep
 
 
 def get_db(make=False):
