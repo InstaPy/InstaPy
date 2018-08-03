@@ -11,9 +11,10 @@ from selenium.common.exceptions import WebDriverException
 from selenium.common.exceptions import NoSuchElementException
 
 from .time_util import sleep
-from .util import update_activity
 from .util import add_user_to_blacklist
 from .util import click_element
+from .util import is_private_profile
+from .util import update_activity
 from .util import web_adress_navigator
 from .util import get_number_of_posts
 from .util import remove_duplicated_from_list_keep_order
@@ -331,8 +332,7 @@ def get_links_for_username(browser,
     abort = True
 
     try:
-        is_private = body_elem.find_element_by_xpath(
-            '//h2[@class="_kcrwx"]')
+        is_private = is_private_profile(browser, logger)
     except:
         logger.info('Interaction begin...')
     else:
