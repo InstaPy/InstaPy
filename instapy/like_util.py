@@ -10,9 +10,10 @@ from selenium.common.exceptions import WebDriverException
 from selenium.common.exceptions import NoSuchElementException
 
 from .time_util import sleep
-from .util import update_activity
 from .util import add_user_to_blacklist
 from .util import click_element
+from .util import is_private_profile
+from .util import update_activity
 from .util import web_adress_navigator
 
 
@@ -324,7 +325,7 @@ def get_links_for_username(browser,
     abort = True
 
     try:
-	is_private = browser.execute_script("return window._sharedData.entry_data.ProfilePage[0].graphql.user.is_private")
+        is_private = is_private_profile(browser, logger)
     except:
         logger.info('Interaction begin...')
     else:

@@ -17,6 +17,20 @@ from .time_util import sleep
 from .time_util import sleep_actual
 
 
+def is_private_profile(browser, logger, following=True):
+    is_private = None
+    is_private = browser.execute_script(
+        "return window._sharedData.entry_data."
+        "ProfilePage[0].graphql.user.is_private")
+    # double check with xpath that should work only when we not follwoing a user
+    if is_private is True and not following:
+        logger.info("Is private account you're not following.")
+        body_elem = browser.find_element_by_tag_name('body')
+        is_private = body_elem.find_element_by_xpath(
+            '//h2[@class="_kcrwx"]')
+
+    return is_private
+
 def validate_username(browser,
                       username_or_link,
                       own_username,
