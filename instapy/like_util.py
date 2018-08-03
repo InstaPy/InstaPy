@@ -324,7 +324,8 @@ def get_links_for_username(browser,
     abort = True
 
     try:
-	is_private = browser.execute_script("return window._sharedData.entry_data.ProfilePage[0].graphql.user.is_private")
+	is_private = browser.execute_script(
+		"return window._sharedData.entry_data.ProfilePage[0].graphql.user.is_private")
     except:
         logger.info('Interaction begin...')
     else:
