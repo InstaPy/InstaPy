@@ -14,3 +14,8 @@ class Settings:
     logger = None
     # Set current profile credentials for DB operations
     profile = {"id":None, "name":None}
+
+    @staticmethod
+    def update_settings_with_profile(profile):
+        Settings.profile["id"] = profile["id"]
+        Settings.profile["name"] = profile["name"]
