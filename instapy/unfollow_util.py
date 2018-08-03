@@ -28,7 +28,7 @@ from .print_log_writer import log_record_all_unfollowed
 from .relationship_tools import get_followers
 from .relationship_tools import get_following
 from .relationship_tools import get_nonfollowers
-from .database_engine import get_db
+from .database_engine import get_database
 
 
 
@@ -956,7 +956,7 @@ def dump_follow_restriction(profile_name, logger, logfolder):
 
     try:
         # get a DB and start a connection
-        db, id = get_db()
+        db, id = get_database()
         conn = sqlite3.connect(db)
 
         with conn:
@@ -998,7 +998,7 @@ def follow_restriction(operation, username, limit, logger):
 
     try:
         # get a DB and start a connection
-        db, id = get_db()
+        db, id = get_database()
         conn = sqlite3.connect(db)
 
         with conn:

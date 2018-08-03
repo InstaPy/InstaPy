@@ -2,103 +2,106 @@ import os
 import sqlite3
 
 from .settings import Settings
-from .time_util import sleep
 
-
-def get_db(make=False):
-    """ Get a database and required tables at request """
-    address = Settings.database_location
-    logger = Settings.logger
-    credentials = Settings.profile
-    # get existing profile credentials
-    id, name = credentials["id"], credentials["name"]
-    # make sure the address points to a database file
-    if not address.endswith(".db"):
-        slash = "\\" if "\\" in address else "/"
-        address = address if address.endswith(slash) else address+slash
-        address += "instapy.db"
-        Settings.database_location = address
-    # make the given path if not exists
-    db_dir = os.path.dirname(address)
-    if not os.path.exists(db_dir):
-        os.makedirs(db_dir)
-
-    make = True if not os.path.isfile(address) else make
-
-    if make == True:
-        try:
-            conn = sqlite3.connect(address)
-            with conn:
-                conn.row_factory = sqlite3.Row
-                cur = conn.cursor()
-
-                #get 'profiles' table ready
-                cur.execute("""
-                CREATE TABLE IF NOT EXISTS `profiles` (
+SELECT_FROM_PROFILE_WHERE_NAME = "SELECT * FROM profiles WHERE name = :name"
+INSERT_INTO_PROFILE = "INSERT INTO profiles (name) VALUES (?)"
+SQL_CREATE_PROFILE_TABLE = """CREATE TABLE IF NOT EXISTS `profiles` (
                   `id` INTEGER PRIMARY KEY AUTOINCREMENT,
-                  `name` TEXT NOT NULL
-                );
-                            """)
-
-                # get 'recordActivity`' table ready
-                cur.execute("""
-                CREATE TABLE IF NOT EXISTS `recordActivity` (
+                  `name` TEXT NOT NULL);"""
+SQL_CREATE_RECORD_ACTIVITY_TABLE = """CREATE TABLE IF NOT EXISTS `recordActivity` (
                   `profile_id` INTEGER REFERENCES `profiles` (id),
                   `likes` SMALLINT UNSIGNED NOT NULL,
                   `comments` SMALLINT UNSIGNED NOT NULL,
                   `follows` SMALLINT UNSIGNED NOT NULL,
                   `unfollows` SMALLINT UNSIGNED NOT NULL,
                   `server_calls` INT UNSIGNED NOT NULL,
-                  `created` DATETIME NOT NULL
-                  );
-                            """)
-
-                # get 'followRestriction' table ready
-                cur.execute("""CREATE TABLE IF NOT EXISTS `followRestriction` (
+                  `created` DATETIME NOT NULL);"""
+SQL_CREATE_FOLLOW_RESTRICTION_TABLE = """CREATE TABLE IF NOT EXISTS `followRestriction` (
                   `profile_id` INTEGER REFERENCES `profiles` (id),
                   `username` TEXT NOT NULL,
-                  `times` TINYINT UNSIGNED NOT NULL
-                  );
-                            """)
+                  `times` TINYINT UNSIGNED NOT NULL);"""
 
-                # commit the latest changes
-                conn.commit()
+
+def get_database():
+    _id = Settings.profile["id"]
+    address = Settings.database_location
+    return address, _id
+
+
+def initialize_database():
+    logger = Settings.logger
+    name = Settings.profile['name']
+    address = validate_database_file_address()
+    create_database_directories(address)
+    create_database(address, logger, name)
+    update_profile_settings(name, address, logger)
+
+
+def create_database(address, logger, name):
+    if not os.path.isfile(address):
+        try:
+            connection = sqlite3.connect(address)
+            with connection:
+                connection.row_factory = sqlite3.Row
+                cursor = connection.cursor()
+
+                create_profiles_table(cursor)
+                create_record_activity_table(cursor)
+                create_follow_restriction_table(cursor)
+
+                connection.commit()
 
         except Exception as exc:
-            logger.warning("Wah! Error occured while getting a DB for '{}':\n\t{}".format(name, str(exc).encode("utf-8")))
+            logger.warning(
+                "Wah! Error occured while getting a DB for '{}':\n\t{}".format(name, str(exc).encode("utf-8")))
 
         finally:
-            if conn:
+            if connection:
                 # close the open connection
-                conn.close()
-
-    id = get_profile(name, address, logger) if (id is None or make==True) else id
-
-    return address, id
+                connection.close()
 
 
+def create_follow_restriction_table(cursor):
+    cursor.execute(SQL_CREATE_FOLLOW_RESTRICTION_TABLE)
 
-def get_profile(name, address, logger):
-    sleep(2)
-    """ Get a profile for users and return its id """
+
+def create_record_activity_table(cursor):
+    cursor.execute(SQL_CREATE_RECORD_ACTIVITY_TABLE)
+
+
+def create_profiles_table(cursor):
+    cursor.execute(SQL_CREATE_PROFILE_TABLE)
+
+
+def create_database_directories(address):
+    db_dir = os.path.dirname(address)
+    if not os.path.exists(db_dir):
+        os.makedirs(db_dir)
+
+
+def validate_database_file_address():
+    address = Settings.database_location
+    if not address.endswith(".db"):
+        slash = "\\" if "\\" in address else "/"
+        address = address if address.endswith(slash) else address + slash
+        address += "instapy.db"
+        Settings.database_location = address
+    return address
+
+
+def update_profile_settings(name, address, logger):
     try:
         conn = sqlite3.connect(address)
         with conn:
             conn.row_factory = sqlite3.Row
-            cur = conn.cursor()
+            cursor = conn.cursor()
 
-            # open a profile if not exists
-            cur.execute("SELECT * FROM profiles WHERE name=:var", {"var":name})
-            profile = cur.fetchone()
+            profile = select_profile_by_username(cursor, name)
 
             if profile is None:
-                cur.execute("INSERT INTO profiles (name) VALUES (?)", (name,))
-                # commit the latest changes
-                conn.commit()
+                profile = insert_profile(conn, cursor, name)
 
-                # reselect the table after adding data to get the proper `id`
-                cur.execute("SELECT * FROM profiles WHERE name=:var", {"var":name})
-                profile = cur.fetchone()
+            Settings.update_settings_with_profile(dict(profile))
 
     except Exception as exc:
         logger.warning("Heeh! Error occured while getting a DB profile for '{}':\n\t{}".format(name, str(exc).encode("utf-8")))
@@ -108,13 +111,20 @@ def get_profile(name, address, logger):
             # close the open connection
             conn.close()
 
-    profile = dict(profile)
-    id = profile["id"]
 
-    # assign the id to its child in `Settings` class
-    Settings.profile["id"] = id
+def insert_profile(conn, cursor, name):
+    cursor.execute(INSERT_INTO_PROFILE, (name,))
+    # commit the latest changes
+    conn.commit()
+    # reselect the table after adding data to get the proper `id`
+    profile = select_profile_by_username(cursor, name)
+    return profile
 
-    return id
+
+def select_profile_by_username(cursor, name):
+    cursor.execute(SELECT_FROM_PROFILE_WHERE_NAME, {"name": name})
+    profile = cursor.fetchone()
+    return profile
 
 
 

@@ -50,8 +50,6 @@ from .unfollow_util import follow_given_user
 from .unfollow_util import follow_restriction
 from .unfollow_util import dump_follow_restriction
 from .unfollow_util import set_automated_followed_pool
-from .feed_util import get_like_on_feed
-from .commenters_util import extract_post_info
 from .commenters_util import extract_information
 from .commenters_util import users_liked
 from .commenters_util import get_photo_urls_from_profile
@@ -61,7 +59,7 @@ from .relationship_tools import get_unfollowers
 from .relationship_tools import get_nonfollowers
 from .relationship_tools import get_fans
 from .relationship_tools import get_mutual_following
-from .database_engine import get_db
+from .database_engine import initialize_database
 
 
 
@@ -188,8 +186,7 @@ class InstaPy:
         # Assign logger
         self.logger = self.get_instapy_logger(self.show_logs)
 
-        # Get ready DB for use
-        get_db(True)
+        initialize_database()
 
         if self.selenium_local_session == True:
             self.set_selenium_local_session()

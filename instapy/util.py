@@ -3,7 +3,6 @@ import json
 import datetime
 import os
 import re
-import random
 import sqlite3
 import time
 import signal
@@ -12,10 +11,9 @@ from contextlib import contextmanager
 from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import WebDriverException
 
-from .settings import Settings
 from .time_util import sleep
 from .time_util import sleep_actual
-from .database_engine import get_db
+from .database_engine import get_database
 
 
 
@@ -137,7 +135,7 @@ def update_activity(action=None):
         comments, follows, unfollow). """
 
     # get a DB and start a connection
-    db, id = get_db()
+    db, id = get_database()
     conn = sqlite3.connect(db)
 
     with conn:
@@ -657,7 +655,7 @@ def dump_record_activity(profile_name, logger, logfolder):
 
     try:
         # get a DB and start a connection
-        db, id = get_db()
+        db, id = get_database()
         conn = sqlite3.connect(db)
 
         with conn:
