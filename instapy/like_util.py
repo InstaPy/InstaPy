@@ -382,14 +382,14 @@ def get_links_for_username(browser,
 
 
 
-def check_link(browser, post_link, dont_like, mandatory_like, ignore_if_contains, logger):
+def check_link(browser, post_link, dont_like, mandatory_words, ignore_if_contains, logger):
     """
     Check the given link if it is appropriate
 
     :param browser: The selenium webdriver instance
     :param link:
     :param dont_like: hashtags of inappropriate phrases
-    :param mandatory_like: hashtags of appropriate phrases
+    :param mandatory_words: words of appropriate phrases
     :param ignore_if_contains:
 
     :param logger: the logger instance
@@ -476,9 +476,9 @@ def check_link(browser, post_link, dont_like, mandatory_like, ignore_if_contains
     logger.info('Link: {}'.format(post_link.encode('utf-8')))
     logger.info('Description: {}'.format(image_text.encode('utf-8')))
 
-    if mandatory_like :
-        if all((word in image_text for word in mandatory_like)) == False :
-            return True, user_name, is_video, 'Not mandatory likes', "Not mandatory likes"
+    if mandatory_words :
+        if not all((word in image_text for word in mandatory_words)) :
+            return True, user_name, is_video, 'Mandatory words not fulfilled', "Not mandatory likes"
 
     if any((word in image_text for word in ignore_if_contains)):
         return False, user_name, is_video, 'None', "Pass"

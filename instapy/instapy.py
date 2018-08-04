@@ -145,7 +145,7 @@ class InstaPy:
         self.smart_hashtags = []
 
         self.dont_like = ['sex', 'nsfw']
-        self.mandatory_like = []
+        self.mandatory_words = []
         self.ignore_if_contains = []
         self.ignore_users = []
 
@@ -434,18 +434,18 @@ class InstaPy:
 
         return self
 
-    def set_mandatory_like(self, tags=None):
+    def set_mandatory_words(self, tags=None):
         """Changes the possible restriction tags, if all of this
          hashtags is in the description, the image will be liked"""
         if self.aborting:
             return self
 
         if not isinstance(tags, list):
-            self.logger.warning('Unable to use your set_mandatory_like '
+            self.logger.warning('Unable to use your set_mandatory_words '
                                 'configuration!')
             self.aborting = True
 
-        self.mandatory_like = tags or []
+        self.mandatory_words = tags or []
 
         return self
 
@@ -862,7 +862,7 @@ class InstaPy:
                         check_link(self.browser,
                                    link,
                                    self.dont_like,
-                                   self.mandatory_like,
+                                   self.mandatory_words,
                                    self.ignore_if_contains,
                                    self.logger)
                     )
@@ -1039,7 +1039,7 @@ class InstaPy:
                         check_link(self.browser,
                                    link,
                                    self.dont_like,
-                                   self.mandatory_like,
+                                   self.mandatory_words,
                                    self.ignore_if_contains,
                                    self.logger)
                     )
@@ -1217,7 +1217,7 @@ class InstaPy:
                         check_link(self.browser,
                                    link,
                                    self.dont_like,
-                                   self.mandatory_like,
+                                   self.mandatory_words,
                                    self.ignore_if_contains,
                                    self.logger)
                     )
@@ -1457,7 +1457,7 @@ class InstaPy:
                         check_link(self.browser,
                                    link,
                                    self.dont_like,
-                                   self.mandatory_like,
+                                   self.mandatory_words,
                                    self.ignore_if_contains,
                                    self.logger)
                     )
@@ -1633,7 +1633,7 @@ class InstaPy:
                         check_link(self.browser,
                                    link,
                                    self.dont_like,
-                                   self.mandatory_like,
+                                   self.mandatory_words,
                                    self.ignore_if_contains,
                                    self.logger)
                     )
@@ -2399,7 +2399,7 @@ class InstaPy:
                                 check_link(self.browser,
                                            link,
                                            self.dont_like,
-                                           self.mandatory_like,
+                                           self.mandatory_words,
                                            self.ignore_if_contains,
                                            self.logger)
                             )
@@ -2808,7 +2808,7 @@ class InstaPy:
                         check_link(self.browser,
                                    link,
                                    self.dont_like,
-                                   self.mandatory_like,
+                                   self.mandatory_words,
                                    self.ignore_if_contains,
                                    self.logger)
                     )
@@ -2897,7 +2897,7 @@ class InstaPy:
                     check_link(self.browser,
                                url,
                                self.dont_like,
-                               self.mandatory_like,
+                               self.mandatory_words,
                                self.ignore_if_contains,
                                self.logger)
                 )
