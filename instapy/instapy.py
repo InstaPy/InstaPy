@@ -59,8 +59,7 @@ from .relationship_tools import get_unfollowers
 from .relationship_tools import get_nonfollowers
 from .relationship_tools import get_fans
 from .relationship_tools import get_mutual_following
-from .database_engine import initialize_database
-
+from .database_engine import initialize_database, set_up_profile
 
 
 class InstaPyError(Exception):
@@ -187,6 +186,7 @@ class InstaPy:
         self.logger = self.get_instapy_logger(self.show_logs)
 
         initialize_database()
+        set_up_profile()
 
         if self.selenium_local_session == True:
             self.set_selenium_local_session()

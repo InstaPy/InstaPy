@@ -161,7 +161,9 @@ def update_activity(action=None):
 
         if data is None:
             # create a new record for the new day
-            cur.execute("INSERT INTO recordActivity VALUES "
+            cur.execute("INSERT INTO recordActivity "
+                        "(profile_id, likes, comments, follows, unfollows, server_calls, created) "
+                        "VALUES "
                         "(?, 0, 0, 0, 0, 1, date('now'))", (id,))
         else:
             # sqlite3.Row' object does not support item assignment -> so,

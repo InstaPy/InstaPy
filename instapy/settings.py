@@ -17,5 +17,5 @@ class Settings:
 
     @staticmethod
     def update_settings_with_profile(profile):
-        Settings.profile["id"] = profile["id"]
-        Settings.profile["name"] = profile["name"]
+        Settings.profile["id"] = profile.id
+        Settings.profile["name"] = profile.name
