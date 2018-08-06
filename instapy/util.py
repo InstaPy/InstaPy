@@ -82,6 +82,53 @@ def have_profile_pic(browser, username, logger, logging_enabled):
     if logging_enabled:
         logger.info("Profile pic: {}".format(url))
     return default_image not in url
+
+def validate_username(browser,
+                      username_or_link,
+                      own_username,
+                      ignore_users,
+                      blacklist,
+                      skip_private,
+                      skip_no_profile_pic,
+                      potency_ratio,
+                      max_relationship_ratio,
+                      delimit_by_numbers,
+                      max_followers,
+                      max_following,
+                      min_followers,
+                      min_following,
+                      min_media,
+                      max_media,
+                      logger,
+                      logging_enabled):
+    """Check if we can interact with the user"""
+
+    # Some features may not povide `username` and in those cases we will get it from post's page.
+    if '/' in username_or_link:
+        link = username_or_link  # if there is a `/` in `username_or_link`, then it is a `link`
+
+        # Check URL of the webpage, if it already is user's profile page, then do not navigate to it again
+        web_adress_navigator(browser, link)
+
+        try:
+            username = browser.execute_script(
+                "return window._sharedData.entry_data."
+                "PostPage[0].graphql.shortcode_media.owner.username")
+        except WebDriverException:
+            try:
+                browser.execute_script("location.relaod()")
+                username = browser.execute_script(
+                    "return window._sharedData.entry_data."
+                    "PostPage[0].graphql.shortcode_media.owner.username")
+            except WebDriverException:
+                logger.error("Username validation failed! ~cannot get the post owner's username")
+                return False, \
+                   "---> Sorry, this page isn't available! ~link is broken, or page is removed\n"
+    else:
+        username = username_or_link  # if there is no `/` in `username_or_link`, then it is a `username`
+
+    if username == own_username:
+        return False, \
                "---> Username '{}' is yours!  ~skipping user\n".format(own_username)
 
     if username in ignore_users:
@@ -203,7 +250,6 @@ def have_profile_pic(browser, username, logger, logging_enabled):
 
     # if everything ok
     return True, "Valid user"
-
 
 
 def update_activity(action=None):
