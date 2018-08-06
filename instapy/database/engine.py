@@ -6,7 +6,7 @@ class Database:
     class __Database:
         def __init__(self, address):
             self.__address = address
-            self.engine = create_engine("sqlite:///%s" % address, echo=False)
+            self.engine = create_engine("sqlite:///%s" % address, echo=False)  # change to True to debug
 
         def __str__(self):
             return repr(self) + self.__address

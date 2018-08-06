@@ -1,9 +1,8 @@
-from sqlalchemy.orm import sessionmaker, scoped_session
+import os
 
-from instapy.database.dao.profile_dao import ProfileDAO
-from instapy.database.engine.database import Database
-from instapy.database.model.base import Base
-from instapy.database.model.profile import Profile
+from instapy.database.dao import ProfileDAO
+from instapy.database.engine import Database
+from instapy.database.model import Profile, Base
 from .settings import Settings
 
 
@@ -14,8 +13,10 @@ def get_database():
 
 
 def initialize_database():
-    Database(Settings.database_location)
-    Base.metadata.create_all(Database.instance.engine)
+    address = Settings.database_location
+    create_database_directories(address)
+    Database(address)
+    Base.metadata.create_all(bind=Database.instance.engine)
 
 
 def set_up_profile():
@@ -26,3 +27,8 @@ def set_up_profile():
 
     Settings.update_settings_with_profile(profile)
 
+
+def create_database_directories(address):
+    db_dir = os.path.dirname(address)
+    if not os.path.exists(db_dir):
+        os.makedirs(db_dir)

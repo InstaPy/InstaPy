@@ -3,7 +3,6 @@ import json
 import datetime
 import os
 import re
-import sqlite3
 import time
 import signal
 from contextlib import contextmanager
@@ -11,14 +10,15 @@ from contextlib import contextmanager
 from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import WebDriverException
 
+from instapy import Settings
+from instapy.database.dao import RecordActivityDAO
+from instapy.database.engine import Database
+from instapy.database.model import RecordActivity
 from .time_util import sleep
 from .time_util import sleep_actual
-from .database_engine import get_database
-
 
 
 def is_private_profile(browser, logger, following=True):
-    is_private = None
     is_private = browser.execute_script(
         "return window._sharedData.entry_data."
         "ProfilePage[0].graphql.user.is_private")
@@ -30,6 +30,7 @@ def is_private_profile(browser, logger, following=True):
             '//h2[@class="_kcrwx"]')
 
     return is_private
+
 
 def validate_username(browser,
                       username_or_link,
@@ -143,53 +144,26 @@ def validate_username(browser,
     return True, "Valid user"
 
 
-
 def update_activity(action=None):
-    """ Record every Instagram server call (page load, content load, likes,
-        comments, follows, unfollow). """
 
-    # get a DB and start a connection
-    db, id = get_database()
-    conn = sqlite3.connect(db)
+    profile_id = Settings.profile['id']
+    dao = RecordActivityDAO(Database.instance)
+    record_activity = dao.get_by_profile_id_and_created_today(profile_id)
 
-    with conn:
-        conn.row_factory = sqlite3.Row
-        cur = conn.cursor()
-        # collect today data
-        cur.execute("SELECT * FROM recordActivity WHERE profile_id=:var AND created == date('now')", {"var":id})
-        data = cur.fetchone()
+    if record_activity is None:
+        record_activity = RecordActivity(profile_id)
 
-        if data is None:
-            # create a new record for the new day
-            cur.execute("INSERT INTO recordActivity "
-                        "(profile_id, likes, comments, follows, unfollows, server_calls, created) "
-                        "VALUES "
-                        "(?, 0, 0, 0, 0, 1, date('now'))", (id,))
-        else:
-            # sqlite3.Row' object does not support item assignment -> so,
-            # convert it into a new dict
-            data = dict(data)
-            # update
-            data['server_calls'] += 1
+    record_activity.server_calls += 1
+    if action == 'likes':
+        record_activity.likes += 1
+    elif action == 'comments':
+        record_activity.comments += 1
+    elif action == 'follows':
+        record_activity.follows += 1
+    elif action == 'unfollows':
+        record_activity.unfollows += 1
 
-            if action == 'likes':
-                data['likes'] += 1
-            elif action == 'comments':
-                data['comments'] += 1
-            elif action == 'follows':
-                data['follows'] += 1
-            elif action == 'unfollows':
-                data['unfollows'] += 1
-
-            sql = ("UPDATE recordActivity set likes = ?, comments = ?, "
-                   "follows = ?, unfollows = ?, server_calls = ? "
-                   "WHERE profile_id=? AND created = date('now')")
-            cur.execute(sql, (data['likes'], data['comments'], data['follows'],
-                              data['unfollows'], data['server_calls'], id))
-
-        # commit the latest changes
-        conn.commit()
-
+    dao.update(record_activity)
 
 
 def add_user_to_blacklist(username, campaign, action, logger, logfolder):
@@ -658,60 +632,50 @@ def highlight_print(username=None, message=None, priority=None, level=None, logg
     print("{}".format(lower_char*output_len))
 
 
-
 def remove_duplicated_from_list_keep_order(_list):
     seen = set()
     seen_add = seen.add
     return [x for x in _list if not (x in seen or seen_add(x))]
 
 
-
 def dump_record_activity(profile_name, logger, logfolder):
-    """ Dump the record activity data to a local human-readable JSON """
-
+    profile_id = Settings.profile['id']
+    dao = RecordActivityDAO(Database.instance)
     try:
-        # get a DB and start a connection
-        db, id = get_database()
-        conn = sqlite3.connect(db)
-
-        with conn:
-            conn.row_factory = sqlite3.Row
-            cur = conn.cursor()
-
-            cur.execute("SELECT * FROM recordActivity WHERE profile_id=:var", {"var":id})
-            data = cur.fetchall()
-
+        data = dao.get_by_profile_id(profile_id)
         if data:
             record_data = {}
-
-            # get the existing data
-            filename = "{}recordActivity.json".format(logfolder)
-            if os.path.isfile(filename):
-                with open(filename) as recordActFile:
-                    current_data = json.load(recordActFile)
-            else:
-                current_data = {}
-
-            # pack the new data
-            for day in data:
-                record_data[day[-1]] = {"likes":day[1],
-                                         "comments":day[2],
-                                          "follows":day[3],
-                                           "unfollows":day[4],
-                                            "server_calls":day[5]}
-            current_data[profile_name] = record_data
-
-            # dump the fresh record data to a local human readable JSON
-            with open(filename, 'w') as recordActFile:
-                json.dump(current_data, recordActFile)
+            current_data, filename = get_existing_data(logfolder)
+            pack_new_data(current_data, data, profile_name, record_data)
+            dump_fresh_record_data_to_json(current_data, filename)
 
     except Exception as exc:
         logger.error("Pow! Error occured while dumping record activity data to a local JSON:\n\t{}".format(str(exc).encode("utf-8")))
 
-    finally:
-        if conn:
-            # close the open connection
-            conn.close()
+
+def get_existing_data(log_folder):
+    filename = "{}recordActivity.json".format(log_folder)
+    if os.path.isfile(filename):
+        with open(filename) as recordActFile:
+            current_data = json.load(recordActFile)
+    else:
+        current_data = {}
+    return current_data, filename
+
+
+def pack_new_data(current_data, data, profile_name, record_data):
+    for day in data:
+        record_data[day[-1]] = {"likes": day.likes,
+                                "comments": day.comments,
+                                "follows": day.follows,
+                                "unfollows": day.unfollows,
+                                "server_calls": day.server_calls}
+    current_data[profile_name] = record_data
+
+
+def dump_fresh_record_data_to_json(current_data, filename):
+    with open(filename, 'w') as recordActFile:
+        json.dump(current_data, recordActFile)
 
 
 

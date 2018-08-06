@@ -1,5 +1,5 @@
-from instapy.database.dao.profile_dao import ProfileDAO
-from instapy.database.engine.database import Database
+from instapy.database.dao import ProfileDAO
+from instapy.database.engine import Database
 from instapy.database_engine import initialize_database, set_up_profile
 
 from instapy import Settings
