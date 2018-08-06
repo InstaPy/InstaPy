@@ -84,7 +84,8 @@ Table of Contents
   * [Windows Task Scheduler](#windows-task-scheduler)
   * [cron](#cron)
   * [Schedule](#schedule)
-* [Extra Informations](#extra-informations)
+* [Extra Information](#extra-information)  
+  * [Simulation](#simulation)
 
 ## Getting started
 
@@ -258,6 +259,9 @@ session.follow_user_followers(['friend1', 'friend2', 'friend3'], amount=10, rand
 
 session.follow_user_followers(['friend1', 'friend2', 'friend3'], amount=10, randomize=False, sleep_delay=60)
 ```
+> **Note**: [simulation](#simulation) takes place while running this feature.
+
+
 
 ### Follow users that someone else is following
 
@@ -274,6 +278,9 @@ session.follow_user_following(['friend1', 'friend2', 'friend3'], amount=10, rand
 
 session.follow_user_following(['friend1', 'friend2', 'friend3'], amount=10, randomize=False, sleep_delay=60)
 ```
+> **Note**: [simulation](#simulation) takes place while running this feature.
+
+
 
 ### Follow someone else's followers/following
 
@@ -287,6 +294,8 @@ session.set_user_interact(amount=5, randomize=True, percentage=50, media='Photo'
 session.follow_user_followers(['friend1', 'friend2', 'friend3'], amount=10, randomize=False, interact=True)
 ```
 
+
+
 ### Follow by Tags
 
 ```python
@@ -294,6 +303,8 @@ session.follow_user_followers(['friend1', 'friend2', 'friend3'], amount=10, rand
 
 session.follow_by_tags(['tag1', 'tag2'], amount=10)
 ```
+
+
 
 ### Follow the likers of photos of users
 
@@ -316,6 +327,8 @@ session.set_user_interact(amount=2,
                    media='Photo')
 session.follow_likers (['user1' , 'user2'], photos_grab_amount = 2, follow_likers_per_photo = 3, randomize=True, sleep_delay=600, interact=True)
 ```
+
+
 
 ### Follow the commenters of photos of users
 
@@ -340,6 +353,7 @@ session.follow_commenters(['user1', 'user2', 'user3'], amount=100, daysold=365, 
 ```
 
 ### Interact with specific users
+
 ```python
 # Interact with specific users
 # set_do_like, set_do_comment, set_do_follow are applicable
@@ -352,6 +366,7 @@ session.interact_by_users(['user1', 'user2', 'user3'], amount=5, randomize=True,
 ```
 
 ### Interact with users that someone else is following
+
 ```python
 # Interact with the people that a given user is following
 # set_do_comment, set_do_follow and set_do_like are applicable
@@ -363,8 +378,12 @@ session.set_comments(["Cool", "Super!"])
 session.set_do_comment(enabled=True, percentage=80)
 session.interact_user_following(['natgeo'], amount=10, randomize=True)
 ```
+> **Note**: [simulation](#simulation) takes place while running this feature.
+
+
 
 ### Interact with someone else's followers
+
 ```python
 # Interact with the people that a given user is following
 # set_do_comment, set_do_follow and set_do_like are applicable
@@ -376,6 +395,8 @@ session.set_comments(["Cool", "Super!"])
 session.set_do_comment(enabled=True, percentage=80)
 session.interact_user_followers(['natgeo'], amount=10, randomize=True)
 ```
+> **Note**: [simulation](#simulation) takes place while running this feature.
+
 
 
 ### Interact on posts at given URLs
@@ -1211,7 +1232,7 @@ session = InstaPy(username='test', password='test', nogui=True)
 
 ## Running on a Headless Browser
 
-**Note:** Chrome only! Must user chromedriver v2.9+
+**Note:** Chrome only! Must use chromedriver v2.9+
 
 Use `headless_browser` parameter to run the bot via the CLI. Works great if running the scripts locally, or to deploy on a server. No GUI, less CPU intensive. [Example](http://g.recordit.co/BhEgXANLhJ.gif)
 
@@ -1380,14 +1401,32 @@ while True:
     time.sleep(1)
 ```
 
-## Extra Informations
 
-#### How not to be banned ?
+
+## Extra Information
+
+
+#### How not to be banned?
 Built-in delays prevent your account from getting banned. (Just make sure you don't like 1000s of post/day)
+
 
 ### Chrome Browser
 
 64-bit system is a requirement for current versions of chrome browser.
+
+
+### Simulation  
+##### During indirect data retrieval, **simulation** happens to provide a _genuine_ activity flow triggered by a wise algorithm.  
+To **turn off** simulation or to **decrease** its occurrence frequency, use `set_simulation` setting:  
+```python
+#use the value of `False` to permanently turn it off
+session.set_simulation(enabled=False)
+
+#use a desired occurrence percentage
+session.set_simulation(enabled=True, percentage=66)
+```
+
+
 
 ---
 ###### Have Fun & Feel Free to report any issues

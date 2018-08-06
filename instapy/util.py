@@ -15,7 +15,6 @@ from .time_util import sleep
 from .time_util import sleep_actual
 from .database_engine import get_database
 
-
 def is_private_profile(browser, logger, following=True, username=None):
     if username is not None:
         profile_page = 'https://www.instagram.com/{}/'.format(username)
@@ -83,54 +82,6 @@ def have_profile_pic(browser, username, logger, logging_enabled):
     if logging_enabled:
         logger.info("Profile pic: {}".format(url))
     return default_image not in url
-
-
-def validate_username(browser,
-                      username_or_link,
-                      own_username,
-                      ignore_users,
-                      blacklist,
-                      skip_private,
-                      skip_no_profile_pic,
-                      potency_ratio,
-                      max_relationship_ratio,
-                      delimit_by_numbers,
-                      max_followers,
-                      max_following,
-                      min_followers,
-                      min_following,
-                      min_media,
-                      max_media,
-                      logger,
-                      logging_enabled):
-    """Check if we can interact with the user"""
-
-    # Some features may not povide `username` and in those cases we will get it from post's page.
-    if '/' in username_or_link:
-        link = username_or_link  # if there is a `/` in `username_or_link`, then it is a `link`
-
-        # Check URL of the webpage, if it already is user's profile page, then do not navigate to it again
-        web_adress_navigator(browser, link)
-
-        try:
-            username = browser.execute_script(
-                "return window._sharedData.entry_data."
-                "PostPage[0].graphql.shortcode_media.owner.username")
-        except WebDriverException:
-            try:
-                browser.execute_script("location.relaod()")
-                username = browser.execute_script(
-                    "return window._sharedData.entry_data."
-                    "PostPage[0].graphql.shortcode_media.owner.username")
-            except WebDriverException:
-                logger.error("Username validation failed! ~cannot get the post owner's username")
-                return False, \
-                    "---> Sorry, this page isn't available! ~link is broken, or page is removed\n"
-    else:
-        username = username_or_link  # if there is no `/` in `username_or_link`, then it is a `username`
-
-    if username == own_username:
-        return False, \
                "---> Username '{}' is yours!  ~skipping user\n".format(own_username)
 
     if username in ignore_users:
@@ -179,7 +130,6 @@ def validate_username(browser,
      within the desired boundary"""
     if potency_ratio or max_relationship_ratio or delimit_by_numbers and \
             (max_followers or max_following or min_followers or min_following):
-
         relationship_ratio = None
         reverse_relationship = False
 
@@ -255,6 +205,7 @@ def validate_username(browser,
     return True, "Valid user"
 
 
+
 def update_activity(action=None):
     """ Record every Instagram server call (page load, content load, likes,
         comments, follows, unfollow). """
@@ -299,7 +250,6 @@ def update_activity(action=None):
         # commit the latest changes
         conn.commit()
 
-
 def add_user_to_blacklist(username, campaign, action, logger, logfolder):
 
     file_exists = os.path.isfile('{}blacklist.csv'.format(logfolder))
@@ -322,6 +272,7 @@ def add_user_to_blacklist(username, campaign, action, logger, logfolder):
 
     logger.info('--> {} added to blacklist for {} campaign (action: {})'
                 .format(username, campaign, action))
+
 
 
 def get_active_users(browser, username, posts, boundary, logger):
@@ -481,6 +432,7 @@ def get_active_users(browser, username, posts, boundary, logger):
     return active_users
 
 
+
 def delete_line_from_file(filepath, lineToDelete, logger):
     try:
         file_path_old = filepath+".old"
@@ -523,6 +475,7 @@ def delete_line_from_file(filepath, lineToDelete, logger):
         logger.error("delete_line_from_file error {}".format(str(e)))
 
 
+
 def scroll_bottom(browser, element, range_int):
     # put a limit to the scrolling
     if range_int > 50:
@@ -536,7 +489,6 @@ def scroll_bottom(browser, element, range_int):
         sleep(1)
 
     return
-
 
 def click_element(browser, element, tryNum=0):
     # There are three (maybe more) different ways to "click" an element/button.
@@ -589,6 +541,7 @@ def click_element(browser, element, tryNum=0):
         click_element(browser, element, tryNum)
 
 
+
 def format_number(number):
     """
     Format number. Remove the unused comma. Replace the concatenation with relevant zeros. Remove the dot.
@@ -603,12 +556,10 @@ def format_number(number):
     formatted_num = formatted_num.replace('.', '')
     return int(formatted_num)
 
-
 def username_url_to_username(username_url):
     a = username_url.replace ("https://www.instagram.com/","")
     username = a.split ('/')
     return username[0]
-
 
 def get_number_of_posts(browser):
     """Get the number of posts from the profile screen"""
@@ -617,7 +568,6 @@ def get_number_of_posts(browser):
     num_of_posts_txt = num_of_posts_txt.replace(",", "")
     num_of_posts = int(num_of_posts_txt)
     return num_of_posts
-
 
 def get_relationship_counts(browser, username, logger):
     """ Gets the followers & following counts of a given user """
@@ -684,6 +634,7 @@ def get_relationship_counts(browser, username, logger):
     return followers_count, following_count
 
 
+
 def web_adress_navigator(browser, link):
     """Checks and compares current URL of web page and the URL to be navigated and if it is different, it does navigate"""
 
@@ -700,6 +651,7 @@ def web_adress_navigator(browser, link):
         # update server calls
         update_activity()
         sleep(2)
+
 
 
 @contextmanager
@@ -754,12 +706,10 @@ def highlight_print(username=None, message=None, priority=None, level=None, logg
 
     print("{}".format(lower_char*output_len))
 
-
 def remove_duplicated_from_list_keep_order(_list):
     seen = set()
     seen_add = seen.add
     return [x for x in _list if not (x in seen or seen_add(x))]
-
 
 def dump_record_activity(profile_name, logger, logfolder):
     """ Dump the record activity data to a local human-readable JSON """
