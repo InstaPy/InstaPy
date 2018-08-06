@@ -115,7 +115,7 @@ def get_profile(name, address, logger):
             profile = select_profile_by_username(cursor, name)
 
             if profile is None:
-                profile = insert_profile(conn, cursor, name)
+                add_profile(conn, cursor, name)
                 # reselect the table after adding data to get the proper `id`
                 profile = select_profile_by_username(cursor, name)
 
@@ -137,14 +137,10 @@ def get_profile(name, address, logger):
 
 
 
-def insert_profile(conn, cursor, name):
+def add_profile(conn, cursor, name):
     cursor.execute(INSERT_INTO_PROFILE, (name,))
     # commit the latest changes
     conn.commit()
-    # reselect the table after adding data to get the proper `id`
-    profile = select_profile_by_username(cursor, name)
-
-    return profile
 
 
 
