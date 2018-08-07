@@ -13,6 +13,6 @@ class TestCheckLink:
             [{'media': {'is_video': False, 'owner': {'username': 'john'}, 'caption': '#f\xf6o'}}],
             '']
         inappropriate, user_name, is_video, reason = check_link(
-            browser, MagicMock(), ['#f'], MagicMock(), MagicMock(), MagicMock(),
+            browser, MagicMock(), ['#f'], [], MagicMock(), MagicMock(), MagicMock(),
             None, None, MagicMock())
         assert inappropriate is True
