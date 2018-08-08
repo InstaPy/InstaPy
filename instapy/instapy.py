@@ -196,7 +196,7 @@ class InstaPy:
         # Assign logger
         self.logger = self.get_instapy_logger(self.show_logs)
 
-        initialize_database(True)
+        initialize_database()
 
         if self.selenium_local_session == True:
             self.set_selenium_local_session()
