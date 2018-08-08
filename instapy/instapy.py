@@ -69,6 +69,7 @@ class InstaPyError(Exception):
 
 class InstaPy:
     """Class to be instantiated to use the script"""
+
     def __init__(self,
                  username=None,
                  password=None,
