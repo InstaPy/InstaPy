@@ -5,7 +5,6 @@ from .settings import Settings
 
 
 
-
 SELECT_FROM_PROFILE_WHERE_NAME = "SELECT * FROM profiles WHERE name = :name"
 
 INSERT_INTO_PROFILE = "INSERT INTO profiles (name) VALUES (?)"
@@ -72,14 +71,14 @@ def create_database(address, logger, name):
 
 
 
-def create_tables(cursor, table):
-    if "profiles" in table:
+def create_tables(cursor, tables):
+    if "profiles" in tables:
         cursor.execute(SQL_CREATE_PROFILE_TABLE)
 
-    if "recordActivity" in table:
+    if "recordActivity" in tables:
         cursor.execute(SQL_CREATE_RECORD_ACTIVITY_TABLE)
 
-    if "followRestriction" in table:
+    if "followRestriction" in tables:
         cursor.execute(SQL_CREATE_FOLLOW_RESTRICTION_TABLE)
 
 
