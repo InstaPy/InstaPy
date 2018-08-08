@@ -59,7 +59,7 @@ from .relationship_tools import get_unfollowers
 from .relationship_tools import get_nonfollowers
 from .relationship_tools import get_fans
 from .relationship_tools import get_mutual_following
-from .database_engine import get_database
+from .database_engine import initialize_database
 
 
 
@@ -196,7 +196,7 @@ class InstaPy:
         # Assign logger
         self.logger = self.get_instapy_logger(self.show_logs)
 
-        get_database(True)
+        initialize_database(True)
 
         if self.selenium_local_session == True:
             self.set_selenium_local_session()
