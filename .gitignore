@@ -107,3 +107,8 @@ logs/
 # pytest
 .pytest_cache/
 tests/logs
+unfollow.py
+meinerttt.py
+master.py
+follow.py
+myLogs/ 
