@@ -15,7 +15,8 @@ from .time_util import sleep
 from .time_util import sleep_actual
 from .database_engine import get_database
 
-def is_private_profile(browser, logger, following=True, username=None):
+
+def is_private_profile(browser, username=None):
     if username is not None:
         profile_page = 'https://www.instagram.com/{}/'.format(username)
         web_adress_navigator(browser, profile_page)
@@ -31,17 +32,6 @@ def is_private_profile(browser, logger, following=True, username=None):
                 "ProfilePage[0].graphql.user.is_private")
         except WebDriverException:
             is_private = None
-
-    # double check with xpath that should work only when we not following a user
-    if is_private is True and not following:
-        try:
-            logger.info("Is private account you're not following.")
-            body_elem = browser.find_element_by_tag_name('body')
-            is_private = body_elem.find_element_by_xpath(
-                '//h2[@class="_kcrwx"]')
-        except NoSuchElementException:
-            logger.info("Failed to double check with xpath if is a private profile")
-
     return is_private
 
 
@@ -59,7 +49,12 @@ def media_count(browser, username):
                 "return window._sharedData.entry_data."
                 "ProfilePage[0].graphql.user.edge_owner_to_timeline_media.count")
         except WebDriverException:
-            media_c = None
+            try:
+                body_elem = browser.find_element_by_tag_name('body')
+                media_c = format_number(body_elem.find_element_by_xpath(
+                    '//span[@class="g47SY "]').text)
+            except NoSuchElementException:
+                media_c = None
     return media_c
 
 
@@ -78,10 +73,16 @@ def have_profile_pic(browser, username, logger, logging_enabled):
                 "return window._sharedData.entry_data."
                 "ProfilePage[0].graphql.user.profile_pic_url")
         except WebDriverException:
-            url = ""
+            try:
+                body_elem = browser.find_element_by_tag_name('body')
+                url = body_elem.find_element_by_xpath('//img[@class = "_6q-tv"]') \
+                    .get_attribute('src')
+            except NoSuchElementException:
+                url = ""
     if logging_enabled:
         logger.info("Profile pic: {}".format(url))
     return default_image not in url
+
 
 def validate_username(browser,
                       username_or_link,
@@ -90,8 +91,8 @@ def validate_username(browser,
                       blacklist,
                       skip_private,
                       skip_no_profile_pic,
-                      potency_ratio,
-                      max_relationship_ratio,
+                      min_potency_ratio,
+                      max_potency_ratio,
                       delimit_by_numbers,
                       max_followers,
                       max_following,
@@ -139,7 +140,7 @@ def validate_username(browser,
         return False, \
                "---> User {} is in blacklist  ~skipping user\n".format(username)
 
-    is_private = is_private_profile(browser, logger, following=True, username=username)
+    is_private = is_private_profile(browser, username=username)
 
     if skip_private:
         if is_private:
@@ -175,7 +176,7 @@ def validate_username(browser,
 
     """Checks the potential of target user by relationship status in order to delimit actions
      within the desired boundary"""
-    if potency_ratio or max_relationship_ratio or delimit_by_numbers and \
+    if min_potency_ratio or max_potency_ratio or delimit_by_numbers and \
             (max_followers or max_following or min_followers or min_following):
         relationship_ratio = None
         reverse_relationship = False
@@ -183,8 +184,8 @@ def validate_username(browser,
         # Get followers & following counts
         followers_count, following_count = get_relationship_counts(browser, username, logger)
 
-        if potency_ratio and potency_ratio < 0:
-            potency_ratio *= -1
+        if min_potency_ratio and min_potency_ratio < 0:
+            min_potency_ratio *= -1
             reverse_relationship = True
 
         if followers_count and following_count:
@@ -192,11 +193,11 @@ def validate_username(browser,
                                   if not reverse_relationship
                                   else float(following_count) / float(followers_count))
 
-            if relationship_ratio > max_relationship_ratio:
+            if max_potency_ratio and relationship_ratio > max_potency_ratio:
                 return False, \
                        "---> User {}'s relationship ratio {} exceeds maximum limit of {}  ~skipping user\n".format(
                            username, float("{0:.2f}".format(relationship_ratio)),
-                           float("{0:.2f}".format(max_relationship_ratio)))
+                           float("{0:.2f}".format(max_potency_ratio)))
 
         # not sure about this. Could be also that failed to get data from profile.
         if not media_c and not followers_count and not following_count and not relationship_ratio:
@@ -204,8 +205,8 @@ def validate_username(browser,
                    "---> User {} seems not existing anymore\n".format(username)
 
         if followers_count or following_count:
-            if potency_ratio and not delimit_by_numbers:
-                if relationship_ratio and relationship_ratio < potency_ratio:
+            if min_potency_ratio and not delimit_by_numbers:
+                if relationship_ratio and relationship_ratio < min_potency_ratio:
                     return False, \
                            "---> User {} is not a {} with the relationship ratio of {}  ~skipping user\n".format(
                                username, "potential user" if not reverse_relationship else "massive follower",
@@ -234,8 +235,8 @@ def validate_username(browser,
                             return False, \
                                    "---> User {}'s following count is less than minimum limit  ~skipping user\n"\
                                    .format(username)
-                if potency_ratio:
-                    if relationship_ratio and relationship_ratio < potency_ratio:
+                if min_potency_ratio:
+                    if relationship_ratio and relationship_ratio < min_potency_ratio:
                         return False, \
                                "---> User {} is not a {} with the relationship ratio of {}  ~skipping user\n".format(
                                    username, "potential user" if not reverse_relationship else "massive follower",

@@ -332,7 +332,7 @@ def get_links_for_username(browser,
     abort = True
 
     try:
-        is_private = is_private_profile(browser, logger)
+        is_private = is_private_profile(browser)
     except:
         logger.info('Interaction begin...')
     else:

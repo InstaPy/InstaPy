@@ -159,7 +159,7 @@ class InstaPy:
         self.clarifai_full_match = False
         self.clarifai_logging_enabled = False;
 
-        self.potency_ratio = 1.3466
+        self.min_potency_ratio = 1.3466
         self.delimit_by_numbers = True
 
         self.max_followers = 90000
@@ -173,7 +173,7 @@ class InstaPy:
         self.no_profile_pic = False
         self.min_media = 0
         self.max_media = -1
-        self.max_relationship_ratio = 1.78
+        self.max_potency_ratio = 1.78
 
         self.delimit_liking = False
         self.liking_approved = True
@@ -760,8 +760,8 @@ class InstaPy:
                                                     self.blacklist,
                                                     self.private_users,
                                                     self.no_profile_pic,
-                                                    self.potency_ratio,
-                                                    self.max_relationship_ratio,
+                                                    self.min_potency_ratio,
+                                                    self.max_potency_ratio,
                                                     self.delimit_by_numbers,
                                                     self.max_followers,
                                                     self.max_following,
@@ -772,7 +772,8 @@ class InstaPy:
                                                     self.logger,
                                                     self.skip_user_logging_enabled)
             if validation is not True or liker == self.username:
-                self.logger.info(details)
+                if self.skip_user_logging_enabled:
+                    self.logger.info(details)
                 continue
             else:
                 if not follow_restriction("read", liker, self.follow_times, self.logger):
@@ -811,8 +812,8 @@ class InstaPy:
                                                         self.blacklist,
                                                         self.private_users,
                                                         self.no_profile_pic,
-                                                        self.potency_ratio,
-                                                        self.max_relationship_ratio,
+                                                        self.min_potency_ratio,
+                                                        self.max_potency_ratio,
                                                         self.delimit_by_numbers,
                                                         self.max_followers,
                                                         self.max_following,
@@ -823,7 +824,8 @@ class InstaPy:
                                                         self.logger,
                                                         self.skip_user_logging_enabled)
                 if validation is not True or acc_to_follow == self.username:
-                    self.logger.info("--> Not a valid user: {}".format(details))
+                    if self.skip_user_logging_enabled:
+                        self.logger.info("--> Not a valid user: {}".format(details))
                     not_valid_users += 1
                     continue
 
@@ -888,16 +890,23 @@ class InstaPy:
 
     def set_relationship_bounds(self,
                                 enabled=None,
-                                potency_ratio=None,
-                                max_relationship_ratio=None,
+                                potency_ratio=(None, None),
                                 delimit_by_numbers=None,
                                 max_followers=None,
                                 max_following=None,
                                 min_followers=None,
                                 min_following=None):
         """Sets the potency ratio and limits to the provide an efficient activity between the targeted masses"""
-        self.max_relationship_ratio = max_relationship_ratio if enabled else None
-        self.potency_ratio = potency_ratio if enabled is True else None
+        if enabled:
+            self.min_potency_ratio, self.max_potency_ratio = potency_ratio
+            if self.min_potency_ratio is not None and self.max_potency_ratio is not None:
+                if self.min_potency_ratio > 0 > self.max_potency_ratio:
+                    self.logger.error('Potency ratio parameters must have the same sign')
+                    return self
+                if self.min_potency_ratio < 0 < self.max_potency_ratio:
+                    self.logger.error('Potency ratio parameters must have the same sign')
+                    return self
+
         self.delimit_by_numbers = delimit_by_numbers if enabled is True else None
 
         self.max_followers = max_followers
@@ -996,8 +1005,8 @@ class InstaPy:
                                                        self.blacklist,
                                                        self.private_users,
                                                        self.no_profile_pic,
-                                                       self.potency_ratio,
-                                                       self.max_relationship_ratio,
+                                                       self.min_potency_ratio,
+                                                       self.max_potency_ratio,
                                                        self.delimit_by_numbers,
                                                        self.max_followers,
                                                        self.max_following,
@@ -1008,7 +1017,8 @@ class InstaPy:
                                                        self.logger,
                                                        self.skip_user_logging_enabled)
                         if validation != True:
-                            self.logger.info("--> Not a valid user: {}".format(details))
+                            if self.skip_user_logging_enabled:
+                                self.logger.info("--> Not a valid user: {}".format(details))
                             not_valid_users += 1
                             continue
                         else:
@@ -1176,8 +1186,8 @@ class InstaPy:
                                                        self.blacklist,
                                                        self.private_users,
                                                        self.no_profile_pic,
-                                                       self.potency_ratio,
-                                                       self.max_relationship_ratio,
+                                                       self.min_potency_ratio,
+                                                       self.max_potency_ratio,
                                                        self.delimit_by_numbers,
                                                        self.max_followers,
                                                        self.max_following,
@@ -1188,7 +1198,8 @@ class InstaPy:
                                                        self.logger,
                                                        self.skip_user_logging_enabled)
                         if validation != True:
-                            self.logger.info(details)
+                            if self.skip_user_logging_enabled:
+                                self.logger.info(details)
                             not_valid_users += 1
                             continue
                         else:
@@ -1363,8 +1374,8 @@ class InstaPy:
                                                        self.blacklist,
                                                        self.private_users,
                                                        self.no_profile_pic,
-                                                       self.potency_ratio,
-                                                       self.max_relationship_ratio,
+                                                       self.min_potency_ratio,
+                                                       self.max_potency_ratio,
                                                        self.delimit_by_numbers,
                                                        self.max_followers,
                                                        self.max_following,
@@ -1375,7 +1386,8 @@ class InstaPy:
                                                        self.logger,
                                                        self.skip_user_logging_enabled)
                         if validation != True:
-                            self.logger.info(details)
+                            if self.skip_user_logging_enabled:
+                                self.logger.info(details)
                             not_valid_users += 1
                             continue
                         else:
@@ -1534,8 +1546,8 @@ class InstaPy:
                                            self.blacklist,
                                            self.private_users,
                                            self.no_profile_pic,
-                                           self.potency_ratio,
-                                           self.max_relationship_ratio,
+                                           self.min_potency_ratio,
+                                           self.max_potency_ratio,
                                            self.delimit_by_numbers,
                                            self.max_followers,
                                            self.max_following,
@@ -1546,7 +1558,8 @@ class InstaPy:
                                            self.logger,
                                            self.skip_user_logging_enabled)
             if not validation:
-                self.logger.info("--> not a valid user: {}".format(details))
+                if self.skip_user_logging_enabled:
+                    self.logger.info("--> not a valid user: {}".format(details))
                 not_valid_users += 1
                 continue
 
@@ -1729,8 +1742,8 @@ class InstaPy:
                                            self.blacklist,
                                            self.private_users,
                                            self.no_profile_pic,
-                                           self.potency_ratio,
-                                           self.max_relationship_ratio,
+                                           self.min_potency_ratio,
+                                           self.max_potency_ratio,
                                            self.delimit_by_numbers,
                                            self.max_followers,
                                            self.max_following,
@@ -1741,7 +1754,8 @@ class InstaPy:
                                            self.logger,
                                            self.skip_user_logging_enabled)
             if not validation:
-                self.logger.info("--> not a valid user: {}".format(details))
+                if self.skip_user_logging_enabled:
+                    self.logger.info("--> not a valid user: {}".format(details))
                 not_valid_users += 1
                 continue
 
@@ -1994,8 +2008,8 @@ class InstaPy:
                                self.blacklist,
                                self.private_users,
                                self.no_profile_pic,
-                               self.potency_ratio,
-                               self.max_relationship_ratio,
+                               self.min_potency_ratio,
+                               self.max_potency_ratio,
                                self.delimit_by_numbers,
                                self.max_followers,
                                self.max_following,
@@ -2007,10 +2021,12 @@ class InstaPy:
                                self.skip_user_logging_enabled)
 
                     if validation != True:
-                        self.logger.info(details)
+                        if self.skip_user_logging_enabled:
+                            self.logger.info(details)
                         not_valid_users += 1
                         simulated_unfollow += 1
-                        self.logger.info("Simulated unfollow: {}  ~not valid user".format(simulated_unfollow))
+                        if self.skip_user_logging_enabled:
+                            self.logger.info("Simulated unfollow: {}  ~not valid user".format(simulated_unfollow))
                         unfollow_user(self.browser, self.username, person, self.relationship_data, self.logger, self.logfolder)
                         continue
                 # Do interactions if any
@@ -2120,8 +2136,8 @@ class InstaPy:
                                self.blacklist,
                                self.private_users,
                                self.no_profile_pic,
-                               self.potency_ratio,
-                               self.max_relationship_ratio,
+                               self.min_potency_ratio,
+                               self.max_potency_ratio,
                                self.delimit_by_numbers,
                                self.max_followers,
                                self.max_following,
@@ -2133,10 +2149,12 @@ class InstaPy:
                                self.skip_user_logging_enabled)
 
                     if validation != True:
-                        self.logger.info(details)
+                        if self.skip_user_logging_enabled:
+                            self.logger.info(details)
                         not_valid_users += 1
                         simulated_unfollow += 1
-                        self.logger.info("Simulated unfollow: {}  ~not valid user".format(simulated_unfollow))
+                        if self.skip_user_logging_enabled:
+                            self.logger.info("Simulated unfollow: {}  ~not valid user".format(simulated_unfollow))
                         unfollow_user(self.browser, self.username, person, self.relationship_data, self.logger, self.logfolder)
                         continue
                 # Do interactions if any
@@ -2246,8 +2264,8 @@ class InstaPy:
                                self.blacklist,
                                self.private_users,
                                self.no_profile_pic,
-                               self.potency_ratio,
-                               self.max_relationship_ratio,
+                               self.min_potency_ratio,
+                               self.max_potency_ratio,
                                self.delimit_by_numbers,
                                self.max_followers,
                                self.max_following,
@@ -2259,10 +2277,12 @@ class InstaPy:
                                self.skip_user_logging_enabled)
 
                     if validation != True:
-                        self.logger.info(details)
+                        if self.skip_user_logging_enabled:
+                            self.logger.info(details)
                         not_valid_users += 1
                         simulated_unfollow += 1
-                        self.logger.info("Simulated unfollow: {}  ~not valid user".format(simulated_unfollow))
+                        if self.skip_user_logging_enabled:
+                            self.logger.info("Simulated unfollow: {}  ~not valid user".format(simulated_unfollow))
                         unfollow_user(self.browser, self.username, person, self.relationship_data, self.logger, self.logfolder)
                         continue
 
@@ -2376,8 +2396,8 @@ class InstaPy:
                                self.blacklist,
                                self.private_users,
                                self.no_profile_pic,
-                               self.potency_ratio,
-                               self.max_relationship_ratio,
+                               self.min_potency_ratio,
+                               self.max_potency_ratio,
                                self.delimit_by_numbers,
                                self.max_followers,
                                self.max_following,
@@ -2388,10 +2408,12 @@ class InstaPy:
                                self.logger,
                                self.skip_user_logging_enabled)
                     if validation != True:
-                        self.logger.info(details)
+                        if self.skip_user_logging_enabled:
+                            self.logger.info(details)
                         not_valid_users += 1
                         simulated_unfollow += 1
-                        self.logger.info("Simulated unfollow: {}  ~not valid user".format(simulated_unfollow))
+                        if self.skip_user_logging_enabled:
+                            self.logger.info("Simulated unfollow: {}  ~not valid user".format(simulated_unfollow))
                         unfollow_user(self.browser, self.username, person, self.relationship_data, self.logger, self.logfolder)
                         continue
 
@@ -2590,8 +2612,8 @@ class InstaPy:
                                                                self.blacklist,
                                                                self.private_users,
                                                                self.no_profile_pic,
-                                                               self.potency_ratio,
-                                                               self.max_relationship_ratio,
+                                                               self.min_potency_ratio,
+                                                               self.max_potency_ratio,
                                                                self.delimit_by_numbers,
                                                                self.max_followers,
                                                                self.max_following,
@@ -2603,7 +2625,8 @@ class InstaPy:
                                                                self.skip_user_logging_enabled)
 
                                 if validation != True:
-                                    self.logger.info(details)
+                                    if self.skip_user_logging_enabled:
+                                        self.logger.info(details)
                                     not_valid_users += 1
                                     continue
                                 else:
@@ -3002,8 +3025,8 @@ class InstaPy:
                                                        self.blacklist,
                                                        self.private_users,
                                                        self.no_profile_pic,
-                                                       self.potency_ratio,
-                                                       self.max_relationship_ratio,
+                                                       self.min_potency_ratio,
+                                                       self.max_potency_ratio,
                                                        self.delimit_by_numbers,
                                                        self.max_followers,
                                                        self.max_following,
@@ -3014,7 +3037,8 @@ class InstaPy:
                                                        self.logger,
                                                        self.skip_user_logging_enabled)
                         if validation != True:
-                            self.logger.info(details)
+                            if self.skip_user_logging_enabled:
+                                self.logger.info(details)
                             not_valid_users += 1
                             continue
                         else:
@@ -3101,8 +3125,8 @@ class InstaPy:
                                                    self.blacklist,
                                                    self.private_users,
                                                    self.no_profile_pic,
-                                                   self.potency_ratio,
-                                                   self.max_relationship_ratio,
+                                                   self.min_potency_ratio,
+                                                   self.max_potency_ratio,
                                                    self.delimit_by_numbers,
                                                    self.max_followers,
                                                    self.max_following,
@@ -3114,7 +3138,8 @@ class InstaPy:
                                                    self.skip_user_logging_enabled)
 
                     if validation != True:
-                        self.logger.info(details)
+                        if self.skip_user_logging_enabled:
+                            self.logger.info(details)
                         not_valid_users += 1
                         continue
                     else:
