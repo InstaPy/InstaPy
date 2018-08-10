@@ -129,6 +129,7 @@ class InstaPy:
         self.commented = 0
         self.followed_by = 0
         self.unfollowNumber = 0
+        self.unfollow_list = []
         self.not_valid_users = 0
 
         self.follow_times = 1
@@ -2266,7 +2267,7 @@ class InstaPy:
                                                                  self.logfolder)
 
         try:
-            unfollowNumber = unfollow(self.browser,
+            unfollowNumber, unfollow_list = unfollow(self.browser,
                                       self.username,
                                       amount,
                                       customList,
@@ -2281,6 +2282,7 @@ class InstaPy:
                                       sleep_delay,
                                       self.logger,
                                       self.logfolder)
+            self.unfollow_list = unfollow_list
             self.logger.info(
                 "--> Total people unfollowed : {}\n".format(unfollowNumber))
             self.unfollowNumber += unfollowNumber
