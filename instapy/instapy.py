@@ -1253,24 +1253,22 @@ class InstaPy:
                         if liked:
 
                             if interact:
-                                username = (self.browser.
-                                    find_element_by_xpath(
-                                        '//article/header/div[2]/'
-                                        'div/div[1]/a'))
-
-                                username = username.get_attribute("title")
-                                name = []
-                                name.append(username)
+                                                
+                                self.set_user_interact(
+                                                  amount=10,
+                                                  percentage=100,
+                                                  randomize=False,
+                                                  media=None)
 
                                 self.logger.info(
-                                    '--> User followed: {}'
-                                    .format(name))
+                                    '--> Liking {}\'s content'
+                                    .format(user_name))
                                 self.like_by_users(
-                                    name,
+                                    [user_name],
                                     self.user_interact_amount,
                                     self.user_interact_random,
                                     self.user_interact_media)
-
+                                
                             liked_img += 1
                             checked_img = True
                             temp_comments = []
