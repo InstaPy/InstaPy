@@ -466,7 +466,7 @@ def unfollow(browser,
                     continue
 
         except Exception as exc:
-            logger.error("Unfollow loop error:\n\n{}\n\n".format(exc.encode('utf-8')))
+            logger.error("Unfollow loop error:\n\n{}\n\n".format(str(exc).encode('utf-8')))
 
     else:
         logger.info("Please select a proper unfollow method!  ~leaving unfollow activity\n")
