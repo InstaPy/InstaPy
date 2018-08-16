@@ -81,3 +81,15 @@ Pi2.2 sudo dpkg -i firefox_49.0+build4-0ubuntu0.14.04.1_armhf.deb
 32. tar -xvzf geckodriver-v*
 33. chmod +x geckodriver
 34. sudo cp geckodriver /usr/local/bin/
+
+
+
+# Installation with raspbian stretch lite (v4.14)
+
+1. `sudo apt-get update && sudo apt-get upgrade`
+2. `sudo apt-get install chromium-browser python-pip git`
+3. `git clone https://github.com/timgrossmann/InstaPy.git instapy`
+4. in the instapy folder: `pip install .`
+5. in the assets folder: `wget https://github.com/electron/electron/releases/download/v3.0.0-beta.5/chromedriver-v3.0.0-beta.5-linux-armv7l.zip`
+6. also in the assets folder: `unzip chromedriver-v3.0.0-beta.5-linux-armv7l.zip`
+7. 🎉
