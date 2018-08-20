@@ -1129,7 +1129,7 @@ There are **several** `use cases` of this tool for **various purposes**.
 You can use InstaPy behind a proxy by specifying server address and port
 
 ```python
-session = InstaPy(username=insta_username, password=insta_password, proxy_address='8.8.8.8', proxy_port='8080')
+session = InstaPy(username=insta_username, password=insta_password, proxy_address='8.8.8.8', proxy_port=8080)
 ```
 
 To use proxy with authentication you should firstly generate proxy chrome extension (works only with Chrome and headless_browser=False).
