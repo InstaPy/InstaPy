@@ -241,7 +241,7 @@ class InstaPy:
             # this setting can improve pageload & save bandwidth
             firefox_profile.set_preference('permissions.default.image', 2)
 
-            if self.proxy_address and len(self.proxy_port) > 0:
+            if self.proxy_address and int(self.proxy_port) > 0:
                 firefox_profile.set_preference('network.proxy.type', 1)
                 firefox_profile.set_preference('network.proxy.http',
                                                self.proxy_address)
