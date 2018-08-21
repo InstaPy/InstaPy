@@ -261,7 +261,7 @@ def unfollow(browser,
                         browser.get('https://www.instagram.com/' + person)
                         following, follow_button = get_following_status(browser, person, logger)
                     except:
-                        logger.warning(
+                        logger.error(
                             '--> Unfollow error with {},'
                             ' maybe username has changed...'
                                 .format(person.encode('utf-8')))
