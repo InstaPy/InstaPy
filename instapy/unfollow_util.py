@@ -33,7 +33,7 @@ from .database_engine import get_database
 
 
 def set_automated_followed_pool(username, unfollow_after, logger, logfolder, pool='followedPool'):
-    automatedFollowedPool = {"all":[], "eligible":[]}
+    automatedFollowedPool = {"all":[], "allid":[], "eligible":[],"eligibleid":[]}
     try:
         with open('{0}{1}_{2}.csv'.format(logfolder, username, pool), 'r+') as followedPoolFile:
             reader = csv.reader(followedPoolFile)
@@ -44,9 +44,12 @@ def set_automated_followed_pool(username, unfollow_after, logger, logfolder, poo
                         ftimestamp = (ftime - datetime(1970, 1, 1)).total_seconds()
                         realtimestamp = (datetime.now() - datetime(1970, 1, 1)).total_seconds()
                         fword = row[0].split(' ~ ')[1]
+                        fuid = row[0].split(' ~ ')[2]
                         if realtimestamp - ftimestamp > unfollow_after:
                             automatedFollowedPool["eligible"].append(fword)
+                            automatedFollowedPool["eligibleid"].append(fuid)
                         automatedFollowedPool["all"].append(fword)
+                        automatedFollowedPool["allid"].append(fuid)
                     except ValueError:
                         fword = row[0]
                         automatedFollowedPool["all"].append(fword)
@@ -54,6 +57,7 @@ def set_automated_followed_pool(username, unfollow_after, logger, logfolder, poo
                 else:
                     try:
                         fword = row[0].split(' ~ ')[1]
+                        fuid = row[0].split(' ~ ')[2]
                     except IndexError:
                         fword = row[0]
                     automatedFollowedPool["all"].append(fword)
@@ -168,6 +172,7 @@ def unfollow(browser,
         elif InstapyFollowed == True:
             logger.info("Unfollowing the users followed by InstaPy\n")
             unfollow_list = automatedFollowedPool["eligible"]
+            unfollowid_list = automatedFollowedPool["eligibleid"]
 
         elif nonFollowers == True:
             logger.info("Unfollowing the users who do not follow back\n")
@@ -256,11 +261,21 @@ def unfollow(browser,
                     try:
                         following, follow_button = get_following_status(browser, person, logger)
                     except:
-                        logger.error(
+                        logger.warning(
                             '--> Unfollow error with {},'
-                            ' maybe no longer exists...'
+                            ' maybe username has changed...'
                                 .format(person.encode('utf-8')))
-                        continue
+                        try:
+                            browser.get('https://www.instagram.com/web/friendships/{}/follow/'.format(person.userid))
+                            sleep(2)
+                            following, follow_button = get_following_status(browser, person, logger)
+                        except:
+                            logger.error(
+                                '--> Unfollow error with {},'
+                                ' maybe no longer exists...'
+                                    .format(person.encode('utf-8')))
+                            continue
+
 
                     if following:
                         # click the button
@@ -491,10 +506,11 @@ def follow_user(browser, login, user_name, blacklist, logger, logfolder):
                 "arguments[0].style.opacity = 1", follow_button)
             click_element(browser, follow_button) # follow_button.click()
         update_activity('follows')
+        userid = browser.execute_script("return window._sharedData.entry_data.ProfilePage[0].graphql.user.id")
 
         logger.info('--> Now following')
         logtime = datetime.now().strftime('%Y-%m-%d %H:%M')
-        log_followed_pool(login, user_name, logger, logfolder, logtime)
+        log_followed_pool(login, user_name, logger, logfolder, logtime, userid)
         follow_restriction("write", user_name, None, logger)
         if blacklist['enabled'] is True:
             action = 'followed'
@@ -567,7 +583,8 @@ def follow_given_user(browser,
         update_activity('follows')
         logger.info('---> Now following: {}'.format(acc_to_follow))
         logtime = datetime.now().strftime('%Y-%m-%d %H:%M')
-        log_followed_pool(login, acc_to_follow, logger, logfolder, logtime)
+        userid = browser.execute_script("return window._sharedData.entry_data.ProfilePage[0].graphql.user.id")
+        log_followed_pool(login, acc_to_follow, logger, logfolder, logtime, userid)
         follow_restriction("write", acc_to_follow, None, logger)
 
         if blacklist['enabled'] is True:
@@ -752,8 +769,14 @@ def follow_through_dialog(browser,
 
                 click_element(browser, button)
                 sleep(1)
+
+                browser.get('https://www.instagram.com/' + username)
+                userid = browser.execute_script("return window._sharedData.entry_data.ProfilePage[0].graphql.user.id")
+                
                 logtime = datetime.now().strftime('%Y-%m-%d %H:%M')
-                log_followed_pool(login, person, logger, logfolder, logtime)
+                log_followed_pool(login, person, logger, logfolder, logtime, userid)
+
+                browser.execute_script("window.history.go(-1)")
 
                 update_activity('follows')
 

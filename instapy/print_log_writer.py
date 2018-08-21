@@ -57,13 +57,13 @@ def log_following_num(browser, username, logfolder):
     return following_num
 
 
-def log_followed_pool(login, followed, logger, logfolder, logtime):
+def log_followed_pool(login, followed, logger, logfolder, logtime, userid):
     """Prints and logs the followed to
     a seperate file"""
     try:
         with open('{0}{1}_followedPool.csv'.format(logfolder, login), 'a+') as followPool:
             with interruption_handler():
-                followPool.write('{} ~ {},\n'.format(logtime, followed))
+                followPool.write('{} ~ {} ~ {},\n'.format(logtime, followed,userid))
     except BaseException as e:
         logger.error("log_followed_pool error {}".format(str(e)))
 
