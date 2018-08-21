@@ -91,7 +91,7 @@ def get_following_status(browser, person, logger):
     except:
         logger.error(
             '--> Unfollow error with {},'
-            ' maybe no longer exists...'
+            ' maybe no longer exists....'
                 .format(person.encode('utf-8')))
 
     return following, follow_button
@@ -236,6 +236,7 @@ def unfollow(browser,
         try:
             sleep_counter = 0
             sleep_after = random.randint(8, 12)
+            index = 0
 
             for person in unfollow_list:
                 if unfollowNum >= amount:
@@ -255,27 +256,25 @@ def unfollow(browser,
                     pass
 
                 if person not in dont_include:
-                    browser.get('https://www.instagram.com/' + person)
                     sleep(2)
-
                     try:
+                        browser.get('https://www.instagram.com/' + person)
                         following, follow_button = get_following_status(browser, person, logger)
                     except:
                         logger.warning(
                             '--> Unfollow error with {},'
                             ' maybe username has changed...'
                                 .format(person.encode('utf-8')))
-                        try:
-                            browser.get('https://www.instagram.com/web/friendships/{}/follow/'.format(person.userid))
-                            sleep(2)
-                            following, follow_button = get_following_status(browser, person, logger)
-                        except:
-                            logger.error(
-                                '--> Unfollow error with {},'
-                                ' maybe no longer exists...'
-                                    .format(person.encode('utf-8')))
-                            continue
-
+                        pass
+                    try:
+                        browser.get('https://www.instagram.com/web/friendships/{}/follow/'.format(unfollowid_list[index]))
+                        following, follow_button = get_following_status(browser, person, logger)
+                    except:
+                        logger.error(
+                            '--> Unfollow error with {},'
+                            ' maybe no longer exists...'
+                                .format(person.encode('utf-8')))
+                        continue
 
                     if following:
                         # click the button
@@ -354,8 +353,8 @@ def unfollow(browser,
                     else:
                         list_type = 'dont_include'
                     logger.info("Not unfollowing '{}'!  ~user is in the list {}\n".format(person, list_type))
+                    index += 1
                     continue
-
         except BaseException as e:
             logger.error("Unfollow loop error:  {}\n".format(str(e)))
 
@@ -506,7 +505,7 @@ def follow_user(browser, login, user_name, blacklist, logger, logfolder):
                 "arguments[0].style.opacity = 1", follow_button)
             click_element(browser, follow_button) # follow_button.click()
         update_activity('follows')
-        userid = browser.execute_script("return window._sharedData.entry_data.ProfilePage[0].graphql.user.id")
+        userid = browser.execute_script("return window._sharedData.entry_data.PostPage[0].graphql.shortcode_media.owner.id")
 
         logger.info('--> Now following')
         logtime = datetime.now().strftime('%Y-%m-%d %H:%M')
@@ -584,6 +583,7 @@ def follow_given_user(browser,
         logger.info('---> Now following: {}'.format(acc_to_follow))
         logtime = datetime.now().strftime('%Y-%m-%d %H:%M')
         userid = browser.execute_script("return window._sharedData.entry_data.ProfilePage[0].graphql.user.id")
+        #userid = browser.execute_script("return window._sharedData.entry_data.PostPage[0].graphql.shortcode_media.owner.id")
         log_followed_pool(login, acc_to_follow, logger, logfolder, logtime, userid)
         follow_restriction("write", acc_to_follow, None, logger)
 
