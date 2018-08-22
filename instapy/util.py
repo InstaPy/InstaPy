@@ -384,7 +384,7 @@ def delete_line_from_file(filepath, lineToDelete, logger):
 
         f = open(file_path_Temp, "w")
         for line in lines:
-            if not line.endswith(lineToDelete):
+            if (line.find(lineToDelete) < 0):
                 f.write(line)
             else:
                 logger.info("\tRemoved '{}' from followedPool.csv file".format(line.split(',\n')[0]))

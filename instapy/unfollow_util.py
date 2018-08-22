@@ -316,8 +316,7 @@ def unfollow(browser,
                                 ' now unfollowing: {}'
                                 .format(str(unfollowNum), amount, person.encode('utf-8')))
 
-                            delete_line_from_file('{0}{1}_followedPool.csv'.format(logfolder, username), person +
-                                              ",\n", logger)
+                            delete_line_from_file('{0}{1}_followedPool.csv'.format(logfolder, username), person, logger)
 
                             print('')
                             sleep(15)
@@ -349,7 +348,7 @@ def unfollow(browser,
                             .format(str(unfollowNum), person.encode('utf-8')))
 
                         delete_line_from_file('{0}{1}_followedPool.csv'.format(logfolder, username),
-                                              person + ",\n", logger)
+                                              person, logger)
 
                         print('')
                         sleep(2)
@@ -358,7 +357,7 @@ def unfollow(browser,
                     # if he is a white list user (set at init and not during run time)
                     if person in white_list:
                         delete_line_from_file('{0}{1}_followedPool.csv'.format(logfolder, username),
-                                              person + ",\n", logger)
+                                              person, logger)
                         list_type = 'whitelist'
                     else:
                         list_type = 'dont_include'
@@ -474,8 +473,7 @@ def unfollow(browser,
                         '--> Ongoing Unfollow {}/{}, now unfollowing: {}'
                         .format(str(unfollowNum), amount, person.encode('utf-8')))
 
-                    delete_line_from_file('{0}{1}_followedPool.csv'.format(logfolder, username), person +
-                                      ",\n", logger)
+                    delete_line_from_file('{0}{1}_followedPool.csv'.format(logfolder, username), person, logger)
 
                     print('')
                     sleep(15)
@@ -557,8 +555,7 @@ def unfollow_user(browser, username, person, relationship_data, logger, logfolde
         click_element(browser, unfollow_button) # unfollow_button.send_keys("\n")
         logger.warning("--> Unfollowed '{}' due to Inappropriate Content".format(person))
 
-        delete_line_from_file('{0}{1}_followedPool.csv'.format(logfolder, username), person +
-                          ",\n", logger)
+        delete_line_from_file('{0}{1}_followedPool.csv'.format(logfolder, username), person, logger)
 
         if person in relationship_data[username]["all_following"]:
             relationship_data[username]["all_following"].remove(person)
