@@ -1167,8 +1167,8 @@ class InstaPy:
                      use_smart_hashtags=False,
                      interact=False,
                      randomize=False,
-                     media=None):
-                     sleep_delay=60
+                     media=None,
+                     sleep_delay=60):
         """Likes (default) 50 images per given tag"""
         if self.aborting:
             return self
