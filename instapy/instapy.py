@@ -1202,6 +1202,7 @@ class InstaPy:
                                           skip_top_posts,
                                           randomize,
                                           media,
+                                          sleep_delay=60):
                                           self.logger)
             except NoSuchElementException:
                 self.logger.info('Too few images, skipping this tag')
