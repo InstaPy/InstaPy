@@ -1195,14 +1195,12 @@ class InstaPy:
             self.logger.info('--> {}'.format(tag.encode('utf-8')))
 
             try:
-                sleep(sleep_delay)
                 links = get_links_for_tag(self.browser,
                                           tag,
                                           amount,
                                           skip_top_posts,
                                           randomize,
                                           media,
-                                          sleep,
                                           self.logger)
             except NoSuchElementException:
                 self.logger.info('Too few images, skipping this tag')
@@ -2788,14 +2786,12 @@ class InstaPy:
             self.logger.info('--> {}'.format(tag.encode('utf-8')))
 
             try:
-                sleep(sleep_delay)
                 links = get_links_for_tag(self.browser,
                                           tag,
                                           amount,
                                           skip_top_posts,
                                           randomize,
                                           media,
-                                          sleep,
                                           self.logger)
             except NoSuchElementException:
                 self.logger.info('Too few images, skipping this tag')
