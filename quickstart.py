@@ -1,5 +1,7 @@
 import os
 import time
+import random
+
 from tempfile import gettempdir
 
 from selenium.common.exceptions import NoSuchElementException
@@ -38,7 +40,9 @@ try:
     session.set_dont_like(['pizza', 'girl'])
 
     # actions
-    session.like_by_tags(['natgeo'], amount=1)
+    session.like_by_tags(
+                ['sunset', 'photography', 'camping', 'hiking', 'offroad'],
+                amount=1, sleep_delay=(random.randrange(60,240,3))) #This will randomize the likes between 60 seconds and 240 seconds
 
 except Exception as exc:
     # if changes to IG layout, upload the file to help us locate the change

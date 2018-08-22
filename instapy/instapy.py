@@ -1168,6 +1168,7 @@ class InstaPy:
                      interact=False,
                      randomize=False,
                      media=None):
+                     sleep_delay=60
         """Likes (default) 50 images per given tag"""
         if self.aborting:
             return self
@@ -1194,6 +1195,7 @@ class InstaPy:
             self.logger.info('--> {}'.format(tag.encode('utf-8')))
 
             try:
+                sleep(sleep_delay)
                 links = get_links_for_tag(self.browser,
                                           tag,
                                           amount,
@@ -2785,6 +2787,7 @@ class InstaPy:
             self.logger.info('--> {}'.format(tag.encode('utf-8')))
 
             try:
+                sleep(sleep_delay)
                 links = get_links_for_tag(self.browser,
                                           tag,
                                           amount,
