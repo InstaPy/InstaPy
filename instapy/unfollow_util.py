@@ -770,7 +770,7 @@ def follow_through_dialog(browser,
                 click_element(browser, button)
                 sleep(1)
 
-                browser.get('https://www.instagram.com/' + username)
+                browser.get('https://www.instagram.com/' + person)
                 userid = browser.execute_script("return window._sharedData.entry_data.ProfilePage[0].graphql.user.id")
                 
                 logtime = datetime.now().strftime('%Y-%m-%d %H:%M')
