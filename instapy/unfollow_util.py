@@ -495,6 +495,7 @@ def follow_user(browser, login, user_name, blacklist, logger, logfolder):
         logger.info('--> Now following')
         logtime = datetime.now().strftime('%Y-%m-%d %H:%M')
         log_followed_pool(login, user_name, logger, logfolder, logtime)
+        sleep(4)
         are_we_following, follow_button = get_following_status(browser, user_name, logger)
         if not are_we_following or random.randint(1, 5) == 1:
             browser.execute_script("location.reload()")
@@ -514,7 +515,6 @@ def follow_user(browser, login, user_name, blacklist, logger, logfolder):
             add_user_to_blacklist(
                 user_name, blacklist['campaign'], action, logger, logfolder
             )
-        sleep(3)
         return 1
     except NoSuchElementException:
         logger.info('--> Already following')
