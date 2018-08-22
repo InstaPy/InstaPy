@@ -495,6 +495,19 @@ def follow_user(browser, login, user_name, blacklist, logger, logfolder):
         logger.info('--> Now following')
         logtime = datetime.now().strftime('%Y-%m-%d %H:%M')
         log_followed_pool(login, user_name, logger, logfolder, logtime)
+        are_we_following, follow_button = get_following_status(browser, user_name, logger)
+        if not are_we_following or random.randint(1, 5) == 1:
+            browser.execute_script("location.reload()")
+            sleep(2)
+            are_we_following, follow_button = get_following_status(browser, user_name, logger)
+            if not are_we_following:
+                #  if not following after we tried send msg
+                msg = '--> person was not able to get Follow! maybe blocked ?'
+                logger.warning(msg)
+                #send_telegram_msg(msg, logfolder, type=3)
+                sleep(600)
+            else:
+                logger.warning('checked after reload we do follow !')
         follow_restriction("write", user_name, None, logger)
         if blacklist['enabled'] is True:
             action = 'followed'
