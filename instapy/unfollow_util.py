@@ -38,26 +38,35 @@ def set_automated_followed_pool(username, unfollow_after, logger, logfolder, poo
         with open('{0}{1}_{2}.csv'.format(logfolder, username, pool), 'r+') as followedPoolFile:
             reader = csv.reader(followedPoolFile)
             for row in reader:
+                row_segement = row[0].split(' ~ ')
                 if unfollow_after is not None:
                     try:
-                        ftime = datetime.strptime(row[0].split(' ~ ')[0], '%Y-%m-%d %H:%M')
+                        ftime = datetime.strptime(row_segement[0], '%Y-%m-%d %H:%M')
                         ftimestamp = (ftime - datetime(1970, 1, 1)).total_seconds()
                         realtimestamp = (datetime.now() - datetime(1970, 1, 1)).total_seconds()
-                        fword = row[0].split(' ~ ')[1]
-                        fuid = row[0].split(' ~ ')[2]
+                        fword = row_segement[1]
                         if realtimestamp - ftimestamp > unfollow_after:
                             automatedFollowedPool["eligible"].append(fword)
-                            automatedFollowedPool["eligibleid"].append(fuid)
                         automatedFollowedPool["all"].append(fword)
-                        automatedFollowedPool["allid"].append(fuid)
+                        if len(row_segement) > 2:
+                            fuid = row_segement[2]
+                            if realtimestamp - ftimestamp > unfollow_after:
+                                automatedFollowedPool["eligibleid"].append(fuid)
+                            automatedFollowedPool["allid"].append(fuid)
                     except ValueError:
-                        fword = row[0]
+                        fword = row_segement[1]
                         automatedFollowedPool["all"].append(fword)
                         automatedFollowedPool["eligible"].append(fword)
+                        if len(row_segement) > 2:
+                            fuid = row_segement[2]
+                            automatedFollowedPool["allid"].append(fuid)
+                            automatedFollowedPool["eligibleid"].append(fuid)
                 else:
                     try:
-                        fword = row[0].split(' ~ ')[1]
-                        fuid = row[0].split(' ~ ')[2]
+                        fword = row_segement[1]
+                        if len(row_segement) > 2:
+                            fuid = row_segement[2]
+                            automatedFollowedPool["eligibleid"].append(fuid)
                     except IndexError:
                         fword = row[0]
                     automatedFollowedPool["all"].append(fword)
@@ -93,6 +102,7 @@ def get_following_status(browser, person, logger):
             '--> Unfollow error with {},'
             ' maybe no longer exists....'
                 .format(person.encode('utf-8')))
+        raise Exception
 
     return following, follow_button
 
@@ -263,18 +273,18 @@ def unfollow(browser,
                     except:
                         logger.error(
                             '--> Unfollow error with {},'
-                            ' maybe username has changed...'
+                            ' maybe username has changed or he/she blocked you...'
                                 .format(person.encode('utf-8')))
+                        try:
+                            browser.get('https://www.instagram.com/web/friendships/{}/follow/'.format(unfollowid_list[index]))
+                            following, follow_button = get_following_status(browser, person, logger)
+                        except:
+                            logger.error(
+                                '--> Unfollow error with {},'
+                                ' maybe no longer exists...'
+                                    .format(person.encode('utf-8')))
+                            continue
                         pass
-                    try:
-                        browser.get('https://www.instagram.com/web/friendships/{}/follow/'.format(unfollowid_list[index]))
-                        following, follow_button = get_following_status(browser, person, logger)
-                    except:
-                        logger.error(
-                            '--> Unfollow error with {},'
-                            ' maybe no longer exists...'
-                                .format(person.encode('utf-8')))
-                        continue
 
                     if following:
                         # click the button
