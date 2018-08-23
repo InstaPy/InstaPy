@@ -513,7 +513,17 @@ def follow_user(browser, login, user_name, blacklist, logger, logfolder):
                 "arguments[0].style.opacity = 1", follow_button)
             click_element(browser, follow_button) # follow_button.click()
         update_activity('follows')
-        userid = browser.execute_script("return window._sharedData.entry_data.PostPage[0].graphql.shortcode_media.owner.id")
+        try:
+            userid = browser.execute_script(
+                "return window._sharedData.entry_data.PostPage[0].graphql.shortcode_media.owner.id")
+        except WebDriverException:
+            try:
+                browser.execute_script("location.reload()")
+                userid = browser.execute_script(
+                    "return window._sharedData.entry_data.PostPage[0].graphql.shortcode_media.owner.id")
+            except WebDriverException:
+                userid = browser.execute_script(
+                    "return window._sharedData.entry_data.ProfilePage[0].graphql.user.id")
 
         logger.info('--> Now following')
         logtime = datetime.now().strftime('%Y-%m-%d %H:%M')
@@ -590,7 +600,7 @@ def follow_given_user(browser,
         logger.info('---> Now following: {}'.format(acc_to_follow))
         logtime = datetime.now().strftime('%Y-%m-%d %H:%M')
         userid = browser.execute_script("return window._sharedData.entry_data.ProfilePage[0].graphql.user.id")
-        #userid = browser.execute_script("return window._sharedData.entry_data.PostPage[0].graphql.shortcode_media.owner.id")
+
         log_followed_pool(login, acc_to_follow, logger, logfolder, logtime, userid)
         follow_restriction("write", acc_to_follow, None, logger)
 
