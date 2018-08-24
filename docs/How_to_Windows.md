@@ -45,13 +45,7 @@
 - Win7 and Win10 PATH: C:\\Users\\YOUR_USER_NAME\\AppData\\Local\\Programs\\Python\\Python36\\ and C:\\Users\\YOUR_USER_NAME\\AppData\\Local\\Programs\\Python\\Python36\\Scripts\\
 - Restart PC (recommended).
 
-
-#### 3. Simple setup:
-- Download (or clone - open in GitHub Desktop BUTTON) the repository.
-- Go to the scripts folder.
-- Right click on "windows.ps1" and select "Run as administrator".
-
-#### 3.x Advanced setup:
+#### 3.x Setup:
 
 ##### 3.1 Install Selenium
 - Go to C:\\Program Files (x86)\\Python36-32\\Scripts
