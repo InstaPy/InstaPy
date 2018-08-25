@@ -85,7 +85,8 @@ class InstaPy:
                  proxy_port=0,
                  bypass_suspicious_attempt=False,
                  multi_logs=False,
-                 clarifai_proxy=None):
+                 clarifai_proxy=None,
+                 debug=False):
 
         if nogui:
             self.display = Display(visible=0, size=(800, 600))
