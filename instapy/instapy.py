@@ -1133,8 +1133,8 @@ class InstaPy:
                                                     self.clarifai_img_tags,
                                                     self.clarifai_img_tags_skip,
                                                     self.logger,
-                                                    self.clarifai_full_match)
-                                                    proxy=self.clarifai_proxy)
+                                                    self.clarifai_full_match,
+                                                    self.clarifai_proxy)
                                     )
                                 except Exception as err:
                                     self.logger.error(

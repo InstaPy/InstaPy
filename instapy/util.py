@@ -745,6 +745,3 @@ def dump_record_activity(profile_name, logger, logfolder):
         if conn:
             # close the open connection
             conn.close()
-
-
-
