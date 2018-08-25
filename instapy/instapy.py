@@ -8,7 +8,7 @@ import os
 from platform import python_version
 from datetime import datetime
 import random
-import collections
+from collections import defaultdict
 import selenium
 from pyvirtualdisplay import Display
 from selenium import webdriver
@@ -160,7 +160,8 @@ class InstaPy:
         self.clarifai_img_tags_skip = []
         self.clarifai_full_match = False
         if clarifai_proxy is not None:
-            clarifai_proxy = 'https://' + clarifai_proxy
+            if not clarifai_proxy.startswith('https'):
+                clarifai_proxy = 'https://{}'.format(clarifai_proxy)
         self.clarifai_proxy = clarifai_proxy
 
         self.potency_ratio = 1.3466
@@ -182,7 +183,7 @@ class InstaPy:
         self.min_comments = 0
 
         self.relationship_data = {username:{"all_following":[], "all_followers":[]}}
-        self.parameters = collections.defaultdict(dict)
+        self.parameters = defaultdict(dict)
 
         self.bypass_suspicious_attempt = bypass_suspicious_attempt
 
