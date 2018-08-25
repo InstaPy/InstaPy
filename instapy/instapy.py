@@ -961,7 +961,8 @@ class InstaPy:
                                                     self.clarifai_img_tags,
                                                     self.clarifai_img_tags_skip,
                                                     self.logger,
-                                                    self.clarifai_full_match)
+                                                    self.clarifai_full_match,
+                                                    proxy=self.clarifai_proxy)
                                     )
                                 except Exception as err:
                                     self.logger.error(
@@ -1134,7 +1135,7 @@ class InstaPy:
                                                     self.clarifai_img_tags_skip,
                                                     self.logger,
                                                     self.clarifai_full_match,
-                                                    self.clarifai_proxy)
+                                                    proxy=self.clarifai_proxy)
                                     )
                                 except Exception as err:
                                     self.logger.error(
@@ -1336,7 +1337,8 @@ class InstaPy:
                                                     self.clarifai_img_tags,
                                                     self.clarifai_img_tags_skip,
                                                     self.logger,
-                                                    self.clarifai_full_match)
+                                                    self.clarifai_full_match,
+                                                    proxy=self.clarifai_proxy)
                                     )
                                 except Exception as err:
                                     self.logger.error(
@@ -1534,7 +1536,7 @@ class InstaPy:
                                                     self.clarifai_img_tags,
                                                     self.clarifai_img_tags_skip,
                                                     self.logger,
-                                                    self.clarifai_full_match)
+                                                    self.clarifai_full_match,
                                                     proxy=self.clarifai_proxy)
                                     )
                                 except Exception as err:
@@ -1739,7 +1741,8 @@ class InstaPy:
                                                     self.clarifai_img_tags,
                                                     self.clarifai_img_tags_skip,
                                                     self.logger,
-                                                    self.clarifai_full_match)
+                                                    self.clarifai_full_match,
+                                                    proxy=self.clarifai_proxy)
                                     )
                                 except Exception as err:
                                     self.logger.error(
@@ -2530,7 +2533,8 @@ class InstaPy:
                                                     self.clarifai_img_tags,
                                                     self.clarifai_img_tags_skip,
                                                     self.logger,
-                                                    self.clarifai_full_match)
+                                                    self.clarifai_full_match,
+                                                    proxy=self.clarifai_proxy)
                                             )
                                         except Exception as err:
                                             self.logger.error(
@@ -3006,7 +3010,8 @@ class InstaPy:
                                                 self.clarifai_api_key,
                                                 self.clarifai_img_tags,
                                                 self.logger,
-                                                self.clarifai_full_match)
+                                                self.clarifai_full_match,
+                                                proxy=self.clarifai_proxy)
                                 )
                             except Exception as err:
                                 self.logger.error(
