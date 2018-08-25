@@ -6,7 +6,9 @@ from selenium.common.exceptions import WebDriverException
 from .util import update_activity
 import pickle
 import time
-
+import random
+from .util import web_adress_navigator
+from .util import notifications_dialog
 
 def bypass_suspicious_login(browser):
     """Bypass suspicious loggin attempt verification. This should be only enabled

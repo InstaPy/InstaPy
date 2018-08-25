@@ -216,7 +216,7 @@ def add_user_to_blacklist(username, campaign, action, logger, logfolder):
                     'action': action
             })
     except Exception as err:
-        logger.error('blacklist dictWrite error {} source:{}'.format(err,source))
+        logger.error('blacklist dictWrite error {}'.format(err))
 
     logger.info('--> {} added to blacklist for {} campaign (action: {})'
                 .format(username, campaign, action))
