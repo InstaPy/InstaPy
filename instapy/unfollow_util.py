@@ -497,7 +497,7 @@ def follow_user(browser, login, user_name, blacklist, logger, logfolder):
         log_followed_pool(login, user_name, logger, logfolder, logtime)
         sleep(4)
         are_we_following, follow_button = get_following_status(browser, user_name, logger)
-        if (not are_we_following and follow_button is not None) or random.randint(1, 5) == 1:
+        if not are_we_following or random.randint(1, 5) == 1:
             browser.execute_script("location.reload()")
             sleep(2)
             are_we_following, follow_button = get_following_status(browser, user_name, logger)
