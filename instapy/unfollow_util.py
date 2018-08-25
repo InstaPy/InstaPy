@@ -389,7 +389,7 @@ def unfollow(browser,
 
         # find dialog box
         dialog = browser.find_element_by_xpath(
-            "//div[text()='Following']/following-sibling::div")
+            "//div[text()='Following']/../../following-sibling::div")
         sleep(3)
 
         # get persons, unfollow buttons, and length of followed pool
@@ -645,7 +645,7 @@ def get_users_through_dialog(browser,
 
     # find dialog box
     dialog = browser.find_element_by_xpath(
-      "//div[text()='Followers' or text()='Following']/following-sibling::div")
+      "//div[text()='Followers' or text()='Following']/../../following-sibling::div")
 
     if channel == "Follow":
         # get follow buttons. This approach will find the follow buttons and
