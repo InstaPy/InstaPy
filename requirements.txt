@@ -3,3 +3,4 @@ clarifai
 pyvirtualdisplay
 emoji
 GitPython
+plyer

@@ -1,14 +1,17 @@
 # -*- coding: utf-8 -*-
 """Module which handles the commenting features"""
 from random import choice
+import emoji
+
 from .time_util import sleep
 from .util import update_activity
 from .util import add_user_to_blacklist
-from .util import format_number
+from .quota_supervisor import quota_supervisor
+
 from selenium.common.exceptions import WebDriverException
 from selenium.common.exceptions import InvalidElementStateException
-from selenium.common.exceptions import NoSuchElementException
-import emoji
+
+
 
 
 def get_comment_input(browser):
@@ -20,7 +23,8 @@ def get_comment_input(browser):
     return comment_input
 
 
-def open_comment_section(browser):
+
+def open_comment_section(browser, logger):
     missing_comment_elem_warning = (
         '--> Warning: Comment Button Not Found:'
         ' May cause issues with browser windows of smaller widths')
@@ -31,18 +35,22 @@ def open_comment_section(browser):
             browser.execute_script(
                 "arguments[0].click();", comment_elem[0])
         except WebDriverException:
-            print(missing_comment_elem_warning)
+            logger.warning(missing_comment_elem_warning)
     else:
-        print(missing_comment_elem_warning)
+        logger.warning(missing_comment_elem_warning)
 
 
 def comment_image(browser, username, comments, blacklist, logger, logfolder):
     """Checks if it should comment on the image"""
+    # check action availability
+    if quota_supervisor('comments') == 'jump':
+        return False, "jumped"
+
     rand_comment = (choice(comments).format(username))
     rand_comment = emoji.demojize(rand_comment)
     rand_comment = emoji.emojize(rand_comment, use_aliases=True)
 
-    open_comment_section(browser)
+    open_comment_section(browser, logger)
     comment_input = get_comment_input(browser)
 
     try:
@@ -66,13 +74,16 @@ def comment_image(browser, username, comments, blacklist, logger, logfolder):
         else:
             logger.warning('--> Warning: Comment Action Likely Failed:'
                            ' Comment Element not found')
+            return False, "commenting disabled"
+
     except InvalidElementStateException:
         logger.warning('--> Warning: Comment Action Likely Failed: Probably InvalidElementStateException')
+        return False, "invalid element state"
 
     logger.info("--> Commented: {}".format(rand_comment.encode('utf-8')))
     sleep(2)
 
-    return 1
+    return True, "success"
 
 
 def verify_commenting(browser, max, min, logger):

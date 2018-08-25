@@ -1,11 +1,16 @@
 """Module only used for the login part of the script"""
-from .time_util import sleep
+import time
+import pickle
 from selenium.webdriver.common.action_chains import ActionChains
+
+from .time_util import sleep
+from .util import update_activity
+from .util import web_address_navigator
+
 from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import WebDriverException
-from .util import update_activity
-import pickle
-import time
+
+
 
 
 def bypass_suspicious_login(browser):
@@ -48,7 +53,7 @@ def bypass_suspicious_login(browser):
                 return False
 
     send_security_code_button = browser.find_element_by_xpath(
-        ("//button[text()='Send Security Code']"))
+        "//button[text()='Send Security Code']")
     (ActionChains(browser)
      .move_to_element(send_security_code_button)
      .click()
@@ -95,14 +100,14 @@ def login_user(browser,
     assert username, 'Username not provided'
     assert password, 'Password not provided'
 
-    browser.get('https://www.instagram.com')
-    # update server calls
-    update_activity()
+    ig_homepage = "https://www.instagram.com"
+    web_address_navigator(browser, ig_homepage)
     cookie_loaded = False
 
     # try to load cookie from username
     try:
-        browser.get('https://www.google.com')
+        googledotcom = "https://www.google.com"
+        web_address_navigator(browser, googledotcom)
         for cookie in pickle.load(open('{0}{1}_cookie.pkl'
                                        .format(logfolder,username), 'rb')):
             browser.add_cookie(cookie)
@@ -113,7 +118,7 @@ def login_user(browser,
     # include time.sleep(1) to prevent getting stuck on google.com
     time.sleep(1)
     
-    browser.get('https://www.instagram.com')
+    web_address_navigator(browser, ig_homepage)
 
     # Cookie has been loaded, user should be logged in. Ensurue this is true
     login_elem = browser.find_elements_by_xpath(

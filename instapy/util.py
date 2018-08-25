@@ -1,19 +1,26 @@
-import csv
-import json
-import datetime
-import os
-import re
-import sqlite3
+""" Common utilities """
 import time
+import datetime
+import re
 import signal
+import os
+from platform import system
+from subprocess import call
+import csv
+import sqlite3
+import json
 from contextlib import contextmanager
-
-from selenium.common.exceptions import NoSuchElementException
-from selenium.common.exceptions import WebDriverException
 
 from .time_util import sleep
 from .time_util import sleep_actual
 from .database_engine import get_database
+from .quota_supervisor import quota_supervisor
+from .settings import Settings
+
+from selenium.common.exceptions import NoSuchElementException
+from selenium.common.exceptions import WebDriverException
+from selenium.common.exceptions import TimeoutException
+
 
 
 
@@ -30,6 +37,8 @@ def is_private_profile(browser, logger, following=True):
             '//h2[@class="_kcrwx"]')
 
     return is_private
+
+
 
 def validate_username(browser,
                       username_or_link,
@@ -49,8 +58,8 @@ def validate_username(browser,
     if '/' in username_or_link:
         link = username_or_link   # if there is a `/` in `username_or_link`, then it is a `link`
 
-        #Check URL of the webpage, if it already is user's profile page, then do not navigate to it again
-        web_adress_navigator(browser, link)
+        # check URL of the webpage, if it already is user's profile page, then do not navigate to it again
+        web_address_navigator(browser, link)
 
         try:
             username = browser.execute_script(
@@ -144,9 +153,11 @@ def validate_username(browser,
 
 
 
-def update_activity(action=None):
+def update_activity(action="server_calls"):
     """ Record every Instagram server call (page load, content load, likes,
         comments, follows, unfollow). """
+    # check action availability
+    quota_supervisor("server_calls")
 
     # get a DB and start a connection
     db, id = get_database()
@@ -156,32 +167,36 @@ def update_activity(action=None):
         conn.row_factory = sqlite3.Row
         cur = conn.cursor()
         # collect today data
-        cur.execute("SELECT * FROM recordActivity WHERE profile_id=:var AND created == date('now')", {"var":id})
+        cur.execute("SELECT * FROM recordActivity WHERE profile_id=:var AND "
+                    "STRFTIME('%Y-%m-%d %H', created) == STRFTIME('%Y-%m-%d %H', 'now', 'localtime')",
+                        {"var":id})
         data = cur.fetchone()
 
         if data is None:
             # create a new record for the new day
             cur.execute("INSERT INTO recordActivity VALUES "
-                        "(?, 0, 0, 0, 0, 1, date('now'))", (id,))
+                        "(?, 0, 0, 0, 0, 1, STRFTIME('%Y-%m-%d %H:%M:%S', 'now', 'localtime'))", (id,))
+
         else:
             # sqlite3.Row' object does not support item assignment -> so,
             # convert it into a new dict
             data = dict(data)
-            # update
-            data['server_calls'] += 1
 
-            if action == 'likes':
-                data['likes'] += 1
-            elif action == 'comments':
-                data['comments'] += 1
-            elif action == 'follows':
-                data['follows'] += 1
-            elif action == 'unfollows':
-                data['unfollows'] += 1
+            # update
+            data[action] += 1
+            quota_supervisor(action, update=True)
+
+            if action != "server_calls":
+                # always update server calls
+                data["server_calls"] += 1
+                quota_supervisor("server_calls", update=True)
 
             sql = ("UPDATE recordActivity set likes = ?, comments = ?, "
-                   "follows = ?, unfollows = ?, server_calls = ? "
-                   "WHERE profile_id=? AND created = date('now')")
+                   "follows = ?, unfollows = ?, server_calls = ?, "
+                   "created = STRFTIME('%Y-%m-%d %H:%M:%S', 'now', 'localtime') "
+                   "WHERE  profile_id=? AND STRFTIME('%Y-%m-%d %H', created) == "
+                   "STRFTIME('%Y-%m-%d %H', 'now', 'localtime')")
+
             cur.execute(sql, (data['likes'], data['comments'], data['follows'],
                               data['unfollows'], data['server_calls'], id))
 
@@ -220,8 +235,8 @@ def get_active_users(browser, username, posts, boundary, logger):
 
     user_link = 'https://www.instagram.com/{}/'.format(username)
 
-    #Check URL of the webpage, if it already is user's profile page, then do not navigate to it again
-    web_adress_navigator(browser, user_link)
+    # check URL of the webpage, if it already is user's profile page, then do not navigate to it again
+    web_address_navigator(browser, user_link)
 
     try:
         total_posts = browser.execute_script(
@@ -229,7 +244,7 @@ def get_active_users(browser, username, posts, boundary, logger):
             "ProfilePage[0].graphql.user.edge_owner_to_timeline_media.count")
     except WebDriverException:
         try:
-            total_posts = format_number(browser.find_elements_by_xpath(
+            total_posts = (browser.find_elements_by_xpath(
                 "//span[contains(@class,'g47SY')]")[0].text)
             if total_posts: #prevent an empty string scenario
                 total_posts = format_number(total_posts)
@@ -244,8 +259,9 @@ def get_active_users(browser, username, posts, boundary, logger):
     posts = posts if total_posts is None else total_posts if posts > total_posts else posts
 
     # click latest post
-    browser.find_elements_by_xpath(
-        "//div[contains(@class, '_9AhH0')]")[0].click()
+    latest_post = browser.find_elements_by_xpath(
+                        "//div[contains(@class, '_9AhH0')]")[0]
+    click_element(browser, latest_post)
 
     active_users = []
     sc_rolled = 0
@@ -374,6 +390,11 @@ def get_active_users(browser, username, posts, boundary, logger):
 
 
 def delete_line_from_file(filepath, lineToDelete, logger):
+    """ Remove user's record from the followed pool file after unfollowing """
+    if not os.path.isfile(filepath):
+        #in case of there is no any followed pool file yet
+        return 0
+
     try:
         file_path_old = filepath+".old"
         file_path_Temp = filepath+".temp"
@@ -384,7 +405,7 @@ def delete_line_from_file(filepath, lineToDelete, logger):
 
         f = open(file_path_Temp, "w")
         for line in lines:
-            if (line.find(lineToDelete) < 0):
+            if line.find(lineToDelete) < 0:
                 f.write(line)
             else:
                 logger.info("\tRemoved '{}' from followedPool.csv file".format(line.split(',\n')[0]))
@@ -412,7 +433,7 @@ def delete_line_from_file(filepath, lineToDelete, logger):
         os.remove(file_path_old)
 
     except BaseException as e:
-        logger.error("delete_line_from_file error {}".format(str(e)))
+        logger.error("delete_line_from_file error {}\n{}".format(str(e).encode("utf-8")))
 
 
 
@@ -522,8 +543,8 @@ def get_relationship_counts(browser, username, logger):
 
     user_link = "https://www.instagram.com/{}/".format(username)
 
-    #Check URL of the webpage, if it already is user's profile page, then do not navigate to it again
-    web_adress_navigator(browser, user_link)
+    # check URL of the webpage, if it already is user's profile page, then do not navigate to it again
+    web_address_navigator(browser, user_link)
 
     try:
         followers_count = format_number(browser.find_element_by_xpath("//a[contains"
@@ -583,8 +604,9 @@ def get_relationship_counts(browser, username, logger):
 
 
 
-def web_adress_navigator(browser, link):
+def web_address_navigator(browser, link):
     """Checks and compares current URL of web page and the URL to be navigated and if it is different, it does navigate"""
+    total_timeouts = 0
 
     try:
         current_url = browser.current_url
@@ -595,10 +617,22 @@ def web_adress_navigator(browser, link):
             current_url = None
 
     if current_url is None or current_url != link:
-        browser.get(link)
-        # update server calls
-        update_activity()
-        sleep(2)
+        # handle famous timeout exceptions during `GET` method
+        while True:
+            try:
+                browser.get(link)
+                # update server calls
+                update_activity()
+                sleep(2)
+                break
+
+            except TimeoutException as exc:
+                if total_timeouts >= 7:
+                    raise TimeoutException("Retried {} times to GET '{}' webpage "
+                       "but failed out of a timeout!\n\t{}".format(total_timeouts,
+                             str(link).encode("utf-8"), str(exc).encode("utf-8")))
+                total_timeouts += 1
+                sleep(2)
 
 
 
@@ -609,8 +643,10 @@ def interruption_handler(SIG_type=signal.SIGINT, handler=signal.SIG_IGN, notify=
         logger.warning(notify)
 
     original_handler = signal.signal(SIG_type, handler)
+
     try:
         yield
+
     finally:
         signal.signal(SIG_type, original_handler)
 
@@ -657,10 +693,24 @@ def highlight_print(username=None, message=None, priority=None, level=None, logg
 
 
 
-def remove_duplicated_from_list_keep_order(_list):
-    seen = set()
-    seen_add = seen.add
-    return [x for x in _list if not (x in seen or seen_add(x))]
+def remove_duplicates(container, keep_order, logger):
+    """ Remove duplicates from all kinds of data types easily """
+    # add support for data types as needed in future
+    # currently only 'list' data type is supported
+    if type(container) == list:
+        if keep_order == True:
+            result = sorted(set(container), key=container.index)
+
+        else:
+            result = set(container)
+
+    else:
+        logger.warning("The given data type- '{}' is not supported "
+                       "in `remove_duplicates` function, yet!"
+                           .format(type(container)))
+        result = container
+
+    return result
 
 
 
@@ -677,27 +727,34 @@ def dump_record_activity(profile_name, logger, logfolder):
             cur = conn.cursor()
 
             cur.execute("SELECT * FROM recordActivity WHERE profile_id=:var", {"var":id})
-            data = cur.fetchall()
+            user_data = cur.fetchall()
 
-        if data:
-            record_data = {}
+        if user_data:
+            ordered_user_data = {}
+            current_data = {}
 
             # get the existing data
             filename = "{}recordActivity.json".format(logfolder)
             if os.path.isfile(filename):
                 with open(filename) as recordActFile:
                     current_data = json.load(recordActFile)
-            else:
-                current_data = {}
 
-            # pack the new data
-            for day in data:
-                record_data[day[-1]] = {"likes":day[1],
-                                         "comments":day[2],
-                                          "follows":day[3],
-                                           "unfollows":day[4],
-                                            "server_calls":day[5]}
-            current_data[profile_name] = record_data
+            # re-order live user data in the required structure
+            for hourly_data in user_data:
+                day = hourly_data[-1][:10]
+                hour = hourly_data[-1][-8:-6]
+
+                if day not in ordered_user_data.keys():
+                    ordered_user_data.update({day: {}})
+
+                ordered_user_data[day].update({hour: {"likes":hourly_data[1],
+                                                      "comments":hourly_data[2],
+                                                      "follows":hourly_data[3],
+                                                      "unfollows":hourly_data[4],
+                                                       "server_calls":hourly_data[5]}})
+
+            # update user data with live data whilst preserving all other data (keys)
+            current_data.update({profile_name:ordered_user_data})
 
             # dump the fresh record data to a local human readable JSON
             with open(filename, 'w') as recordActFile:
@@ -710,6 +767,132 @@ def dump_record_activity(profile_name, logger, logfolder):
         if conn:
             # close the open connection
             conn.close()
+
+
+
+def ping_server(host, logger):
+    """
+    Return True if host (str) responds to a ping request.
+    Remember that a host may not respond to a ping (ICMP) request even if the host name is valid.
+    """
+    logger.info("Pinging '{}' to check the connectivity...".format(str(host)))
+
+    # ping command count option as function of OS
+    param = "-n" if system().lower()=="windows" else "-c"
+    # building the command. Ex: "ping -c 1 google.com"
+    command = ' '.join(["ping", param, '1', str(host)])
+    need_sh = False if  system().lower()=="windows" else True
+
+    # pinging
+    conn = call(command, shell=need_sh) == 0
+
+    if conn == False:
+        logger.critical("There is no connection to the '{}' server!".format(host))
+        return False
+
+    return True
+
+
+
+def emergency_exit(browser, username, logger):
+    """ Raise emergency if the is no connection to server OR if user is not logged in """
+    using_proxy = True if Settings.connection_type == "proxy" else False
+    # ping the server only if connected directly rather than through a proxy
+    if not using_proxy:
+        server_address = "instagram.com"
+        connection_state = ping_server(server_address, logger)
+        if connection_state == False:
+            return True, "not connected"
+
+    # check if the user is logged in
+    auth_method = "activity counts"
+    login_state = check_authorization(browser, username, auth_method, logger)
+    if login_state == False:
+        return True, "not logged in"
+
+    return False, "no emergency"
+
+
+
+def load_user_id(username, person, logger, logfolder):
+    """ Load the user ID at reqeust from local records """
+    pool_name = "{0}{1}_followedPool.csv".format(logfolder, username)
+    user_id = None
+
+    try:
+        with open(pool_name, 'r+') as followedPoolFile:
+            reader = csv.reader(followedPoolFile)
+
+            for row in reader:
+                entries = row[0].split(' ~ ')
+                if len(entries) < 3:
+                    # old entry which does not contain an ID
+                    pass
+
+                user_name = entries[1]
+                if user_name == person:
+                    user_id = entries[2]
+                    break
+
+        followedPoolFile.close()
+
+    except BaseException as exc:
+        logger.exception("Failed to load the user ID of '{}'!\n{}".format(person, str(exc).encode("utf-8")))
+
+    return user_id
+
+
+
+def check_authorization(browser, username, method, logger):
+    """ Check if user is NOW logged in """
+    logger.info("Checking if '{}' is logged in...".format(username))
+
+    # different methods can be added in future
+    if method=="activity counts":
+
+        profile_link = 'https://www.instagram.com/{}/'.format(username)
+        web_address_navigator(browser, profile_link)
+
+        # if user is not logged in, `activity_counts` will be `None`- JS `null`
+        try:
+            activity_counts = browser.execute_script(
+                "return window._sharedData.activity_counts")
+
+        except WebDriverException:
+            try:
+                browser.execute_script("location.reload()")
+                activity_counts = browser.execute_script(
+                                    "return window._sharedData.activity_counts")
+
+            except WebDriverException:
+                activity_counts = None
+
+        if activity_counts is None:
+            logger.critical("--> '{}' is not logged in!\n".format(username))
+            return False
+
+    return True
+
+
+
+def get_username(browser, logger):
+    """ Get the username of a user from the loaded profile page """
+    try:
+        username = browser.execute_script("return window._sharedData.entry_data."
+                                                "ProfilePage[0].graphql.user.username")
+    except WebDriverException:
+        try:
+            browser.execute_script("location.reload()")            
+            username = browser.execute_script("return window._sharedData.entry_data."
+                                                    "ProfilePage[0].graphql.user.username")
+        except WebDriverException:
+            current_url = browser.current_url
+            logger.info("Failed to get the username from '{}' page".format(current_url))
+            username = None
+
+    # in future add XPATH ways of getting username
+
+    return username
 
 
 
