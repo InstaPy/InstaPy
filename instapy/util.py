@@ -3,7 +3,6 @@ import json
 import datetime
 import os
 import re
-import random
 import sqlite3
 import time
 import signal
@@ -12,12 +11,33 @@ from contextlib import contextmanager
 from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import WebDriverException
 
-from .settings import Settings
 from .time_util import sleep
 from .time_util import sleep_actual
-from .database_engine import get_db
+from .database_engine import get_database
 
 
+
+def is_private_profile(browser, logger, following=True):
+    try:
+        is_private = browser.execute_script(
+            "return window._sharedData.entry_data."
+            "ProfilePage[0].graphql.user.is_private")
+    except WebDriverException:
+        try:
+            is_private = browser.execute_script(
+                "return window._sharedData.entry_data."
+                "ProfilePage[0].graphql.user.is_private")
+        except WebDriverException:
+            return None
+
+    # double check with xpath that should work only when we not follwoing a user
+    if is_private is True and not following:
+        logger.info("Is private account you're not following.")
+        body_elem = browser.find_element_by_tag_name('body')
+        is_private = body_elem.find_element_by_xpath(
+            '//h2[@class="_kcrwx"]')
+
+    return is_private
 
 def validate_username(browser,
                       username_or_link,
@@ -137,7 +157,7 @@ def update_activity(action=None):
         comments, follows, unfollow). """
 
     # get a DB and start a connection
-    db, id = get_db()
+    db, id = get_database()
     conn = sqlite3.connect(db)
 
     with conn:
@@ -185,7 +205,7 @@ def add_user_to_blacklist(username, campaign, action, logger, logfolder):
     today = datetime.date.today().strftime('%m/%d/%y')
 
     try:
-        with open('{}blacklist.csv'.format(logfolder), 'a+') as blacklist:
+        with open('{}blacklist.csv'.format(logfolder), 'a+', encoding="utf-8") as blacklist:
             writer = csv.DictWriter(blacklist, fieldnames=fieldnames)
             if not file_exists:
                 writer.writeheader()
@@ -196,7 +216,7 @@ def add_user_to_blacklist(username, campaign, action, logger, logfolder):
                     'action': action
             })
     except Exception as err:
-        logger.error(err)
+        logger.error('blacklist dictWrite error {} source:{}'.format(err,source))
 
     logger.info('--> {} added to blacklist for {} campaign (action: {})'
                 .format(username, campaign, action))
@@ -231,8 +251,11 @@ def get_active_users(browser, username, posts, boundary, logger):
     posts = posts if total_posts is None else total_posts if posts > total_posts else posts
 
     # click latest post
-    browser.find_elements_by_xpath(
-        "//div[contains(@class, '_9AhH0')]")[0].click()
+    try:
+        browser.find_elements_by_xpath(
+            "//div[contains(@class, '_9AhH0')]")[0].click()
+    except:
+        return []
 
     active_users = []
     sc_rolled = 0
@@ -371,7 +394,7 @@ def delete_line_from_file(filepath, lineToDelete, logger):
 
         f = open(file_path_Temp, "w")
         for line in lines:
-            if not line.endswith(lineToDelete):
+            if (line.find(lineToDelete) < 0):
                 f.write(line)
             else:
                 logger.info("\tRemoved '{}' from followedPool.csv file".format(line.split(',\n')[0]))
@@ -490,7 +513,7 @@ def username_url_to_username(username_url):
     username = a.split ('/')
     return username[0]
                                          
-										   
+
 def get_number_of_posts(browser):
     """Get the number of posts from the profile screen"""
     num_of_posts_txt = browser.find_element_by_xpath("//section/main/div/header/section/ul/li[1]/span/span").text
@@ -509,14 +532,14 @@ def get_relationship_counts(browser, username, logger):
     web_adress_navigator(browser, user_link)
 
     try:
-        followers_count = format_number(browser.find_element_by_xpath("//a[contains"
-                                "(@href,'followers')]/span").text)
-    except NoSuchElementException:
+        followers_count = browser.execute_script(
+            "return window._sharedData.entry_data."
+            "ProfilePage[0].graphql.user.edge_followed_by.count")
+    except WebDriverException:
         try:
-            followers_count = browser.execute_script(
-                "return window._sharedData.entry_data."
-                "ProfilePage[0].graphql.user.edge_followed_by.count")
-        except WebDriverException:
+            followers_count = format_number(browser.find_element_by_xpath("//a[contains"
+                                                                          "(@href,'followers')]/span").text)
+        except NoSuchElementException:
             try:
                 browser.execute_script("location.reload()")
                 followers_count = browser.execute_script(
@@ -536,14 +559,14 @@ def get_relationship_counts(browser, username, logger):
                     followers_count = None
 
     try:
-        following_count = format_number(browser.find_element_by_xpath("//a[contains"
-                                "(@href,'following')]/span").text)
-    except NoSuchElementException:
+        following_count = browser.execute_script(
+            "return window._sharedData.entry_data."
+            "ProfilePage[0].graphql.user.edge_follow.count")
+    except WebDriverException:
         try:
-            following_count = browser.execute_script(
-                "return window._sharedData.entry_data."
-                "ProfilePage[0].graphql.user.edge_follow.count")
-        except WebDriverException:
+            following_count = format_number(browser.find_element_by_xpath("//a[contains"
+                                                                          "(@href,'following')]/span").text)
+        except NoSuchElementException:
             try:
                 browser.execute_script("location.reload()")
                 following_count = browser.execute_script(
@@ -681,7 +704,7 @@ def dump_record_activity(profile_name, logger, logfolder):
 
     try:
         # get a DB and start a connection
-        db, id = get_db()
+        db, id = get_database()
         conn = sqlite3.connect(db)
 
         with conn:

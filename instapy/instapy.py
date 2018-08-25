@@ -50,8 +50,6 @@ from .unfollow_util import follow_given_user
 from .unfollow_util import follow_restriction
 from .unfollow_util import dump_follow_restriction
 from .unfollow_util import set_automated_followed_pool
-from .feed_util import get_like_on_feed
-from .commenters_util import extract_post_info
 from .commenters_util import extract_information
 from .commenters_util import users_liked
 from .commenters_util import get_photo_urls_from_profile
@@ -61,7 +59,7 @@ from .relationship_tools import get_unfollowers
 from .relationship_tools import get_nonfollowers
 from .relationship_tools import get_fans
 from .relationship_tools import get_mutual_following
-from .database_engine import get_db
+from .database_engine import get_database
 
 
 
@@ -146,6 +144,7 @@ class InstaPy:
         self.smart_hashtags = []
 
         self.dont_like = ['sex', 'nsfw']
+        self.mandatory_words = []
         self.ignore_if_contains = []
         self.ignore_users = set()
 
@@ -194,8 +193,7 @@ class InstaPy:
         # Assign logger
         self.logger = self.get_instapy_logger(self.show_logs)
 
-        # Get ready DB for use
-        get_db(True)
+        get_database(make=True)
 
         if self.selenium_local_session == True:
             self.set_selenium_local_session()
@@ -436,6 +434,21 @@ class InstaPy:
             self.aborting = True
 
         self.dont_like = tags or []
+
+        return self
+
+    def set_mandatory_words(self, tags=None):
+        """Changes the possible restriction tags, if all of this
+         hashtags is in the description, the image will be liked"""
+        if self.aborting:
+            return self
+
+        if not isinstance(tags, list):
+            self.logger.warning('Unable to use your set_mandatory_words '
+                                'configuration!')
+            self.aborting = True
+
+        self.mandatory_words = tags or []
 
         return self
 
@@ -895,6 +908,7 @@ class InstaPy:
                         check_link(self.browser,
                                    link,
                                    self.dont_like,
+                                   self.mandatory_words,
                                    self.ignore_if_contains,
                                    self.logger)
                     )
@@ -1071,6 +1085,7 @@ class InstaPy:
                         check_link(self.browser,
                                    link,
                                    self.dont_like,
+                                   self.mandatory_words,
                                    self.ignore_if_contains,
                                    self.logger)
                     )
@@ -1248,6 +1263,7 @@ class InstaPy:
                         check_link(self.browser,
                                    link,
                                    self.dont_like,
+                                   self.mandatory_words,
                                    self.ignore_if_contains,
                                    self.logger)
                     )
@@ -1487,6 +1503,7 @@ class InstaPy:
                         check_link(self.browser,
                                    link,
                                    self.dont_like,
+                                   self.mandatory_words,
                                    self.ignore_if_contains,
                                    self.logger)
                     )
@@ -1664,6 +1681,7 @@ class InstaPy:
                         check_link(self.browser,
                                    link,
                                    self.dont_like,
+                                   self.mandatory_words,
                                    self.ignore_if_contains,
                                    self.logger)
                     )
@@ -2438,6 +2456,7 @@ class InstaPy:
                                 check_link(self.browser,
                                            link,
                                            self.dont_like,
+                                           self.mandatory_words,
                                            self.ignore_if_contains,
                                            self.logger)
                             )
@@ -2846,6 +2865,7 @@ class InstaPy:
                         check_link(self.browser,
                                    link,
                                    self.dont_like,
+                                   self.mandatory_words,
                                    self.ignore_if_contains,
                                    self.logger)
                     )
@@ -2934,6 +2954,7 @@ class InstaPy:
                     check_link(self.browser,
                                url,
                                self.dont_like,
+                               self.mandatory_words,
                                self.ignore_if_contains,
                                self.logger)
                 )
@@ -3079,6 +3100,3 @@ class InstaPy:
         self.not_valid_users += not_valid_users
 
         return self
-
-
-

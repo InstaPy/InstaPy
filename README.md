@@ -55,6 +55,7 @@ Table of Contents
   * [Like by Locations](#like-by-locations)
   * [Like by Tags](#like-by-tags)
   * [Like by Feeds](#like-by-feeds)
+  * [Mandatory Words](#mandatory-words)
   * [Restricting Likes](#restricting-likes)
   * [Ignoring Users](#ignoring-users)
   * [Ignoring Restrictions](#ignoring-restrictions)
@@ -70,7 +71,6 @@ Table of Contents
   * [Pick Nonfollowers of a user](#pick-nonfollowers-of-a-user)
   * [Pick Fans of a user](#pick-fans-of-a-user)
   * [Pick Mutual Following of a user](#pick-mutual-following-of-a-user)
-* [Third Party InstaPy GUI for Windows](#third-party-instapy-gui-for-windows)
 * [Use a proxy](#use-a-proxy)
 * [Switching to Firefox](#switching-to-firefox)
 * [Emoji Support](#emoji-support)
@@ -168,13 +168,11 @@ Execute it:
 $ python quickstart.py
 ```
 
-### Or use one of our GUIs
+### Or use our GUI
 
 **[1. Official Cross Platform GUI](https://github.com/ahmadudin/electron-instaPy-GUI)**
 
 [<img src="https://raw.githubusercontent.com/ahmadudin/ahmadudin.github.io/master/assets/images/screencapture1.PNG" width="400" />](https://github.com/ahmadudin/electron-instaPy-GUI)
-
-[2. Third Party InstaPy GUI for Windows](https://github.com/Nemixalone/GUI-tool-for-InstaPy-script)
 
 [3. Session scheduling with Telegram](https://github.com/Tkd-Alex/Telegram-InstaPy-Scheduling)
 
@@ -701,6 +699,15 @@ session.set_smart_hashtags(['cycling', 'roadbike'], limit=3, sort='top', log_tag
 session.like_by_tags(amount=10, use_smart_hashtags=True)
 ```
 
+### Mandatory Words
+
+```python
+session.set_mandatory_words(['#food', '#instafood'])
+```
+
+`.set_mandatory_words` searches the description and owner comments for words and
+will like the image if **all** of those words are in there
+
 ### Restricting Likes
 
 ```python
@@ -801,7 +808,7 @@ Every time you grab `Followers` data in `"full"` range of **any** user, it is al
     + As a **result**, `live_match=False` saves lots of `precious time` and `server requests`.  
 + `live_match=True`:  
     + It will **always** load `live` data from the server at _requested range_.
-    
+
 `store_locally`:  
 Gives the _option_ to `save` the loaded `Followers` data in a **local storage**  
 The files will be saved _into_ your **logs folder**, `~/InstaPy/logs/YourOwnUsername/relationship_data/Popeye/followers/` directory.  
@@ -861,7 +868,7 @@ Every time you grab `Following` data in `"full"` range of **any** user, it is al
     + As a **result**, `live_match=False` saves lots of `precious time` and `server requests`.  
 + `live_match=True`:  
     + It will **always** load `live` data from the server at _requested range_.
-    
+
 `store_locally`:  
 Gives the _option_ to `save` the loaded `Following` data in a **local storage**  
 The files will be saved _into_ your **logs folder**, `~/InstaPy/logs/YourOwnUsername/relationship_data/lazy.smurf/following/` directory.  
@@ -922,7 +929,7 @@ Defines the track to choose a file to compare for `"day"`, `"month"` and `"year"
     + `"first"` selects the first record from the given `day`, `month` or `year`
     + `"median"` selects the median (_the one in the middle_) record from the given `day`, `month` or `year`
     + `"last"` selects the last record from the given `day`, `month` or `year`
-    
+
 `live_match`:  
 Defines the method of grabbing **new** `Followers` data to compare with **existing** data
 > **Knowledge Base**:  
@@ -936,7 +943,7 @@ Every time you grab `Followers` data in `"full"` range of **any** user, it is al
     + As a **result**, `live_match=False` saves lots of `precious time` and `server requests`.  
 + `live_match=True`:  
     + It will **always** load `live` data from the server at _requested range_.
-    
+
 `store_locally`:  
 Gives the _option_ to `save` the loaded `Unfollowers` data in a **local storage**  
 There will be 2 files saved in their own directory:  
@@ -946,7 +953,7 @@ There will be 2 files saved in their own directory:
 + `active_unfollowers`:    
     + Will store only the unfollowers WHOM you are currently following.  
     + Its files will be saved at **logs folder**, `~/InstaPy/logs/YourOwnUsername/relationship_data/Bernard_bear/unfollowers/active_unfollowers/` directory.    
-  
+
 Sample **filename** `03-06-2018~all~75.json`:  
 + `03-06-2018` means the **time** of the data acquisition.
 + `"all"` means that it is all of the unfollowers data;  
@@ -1017,7 +1024,7 @@ There are **several** `use cases` of this tool for **various purposes**.
 
     #now Scooby Doo will tell his friend Shaggy about this, who knows, maybe Shaggy will unfollow them all or even add to block :D
     ```  
-  
+
 
 
 ### Pick Fans of a user

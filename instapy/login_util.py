@@ -145,7 +145,7 @@ def login_user(browser,
     # Enter username and password and logs the user in
     # Sometimes the element name isn't 'Username' and 'Password'
     # (valid for placeholder too)
-    sleep(1) 
+    sleep(2) 
     input_username = browser.find_elements_by_xpath(
         "//input[@name='username']")
 

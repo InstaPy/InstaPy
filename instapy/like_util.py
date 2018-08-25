@@ -11,12 +11,15 @@ from selenium.common.exceptions import WebDriverException
 from selenium.common.exceptions import NoSuchElementException
 
 from .time_util import sleep
-from .util import update_activity
 from .util import add_user_to_blacklist
 from .util import click_element
+from .util import is_private_profile
+from .util import update_activity
 from .util import web_adress_navigator
 from .util import get_number_of_posts
+from .util import is_private_profile
 from .util import remove_duplicated_from_list_keep_order
+from .unfollow_util import get_following_status
 
 
 def get_links_from_feed(browser, amount, num_of_search, logger):
@@ -330,16 +333,17 @@ def get_links_for_username(browser,
     body_elem = browser.find_element_by_tag_name('body')
     abort = True
 
+
+    if "Page Not Found" in browser.title:
+        logger.error('Intagram error: The link you followed may be broken, or the page may have been removed...')
+        return False
+
     # if private user, we can get links only if we following
     following, follow_button = get_following_status(browser, username, logger)
     if following == 'Following':
         following = True
     is_private = is_private_profile(browser, logger, following)
-    if is_private and not following:
-        return False
-
-    if "Page Not Found" in browser.title:
-        logger.error('Intagram error: The link you followed may be broken, or the page may have been removed...')
+    if (is_private is None) or (is_private is True and not following):
         return False
 
     #Get links
@@ -355,6 +359,8 @@ def get_links_for_username(browser,
 
     while len(links) < amount:
         initial_links = links
+        browser.execute_script(
+            "window.scrollTo(0, document.body.scrollHeight);")
         body_elem.send_keys(Keys.HOME)
         # update server calls after a scroll request
         update_activity()
@@ -380,13 +386,14 @@ def get_links_for_username(browser,
 
 
 
-def check_link(browser, post_link, dont_like, ignore_if_contains, logger):
+def check_link(browser, post_link, dont_like, mandatory_words, ignore_if_contains, logger):
     """
     Check the given link if it is appropriate
 
     :param browser: The selenium webdriver instance
     :param link:
     :param dont_like: hashtags of inappropriate phrases
+    :param mandatory_words: words of appropriate phrases
     :param ignore_if_contains:
 
     :param logger: the logger instance
@@ -473,6 +480,9 @@ def check_link(browser, post_link, dont_like, ignore_if_contains, logger):
     logger.info('Link: {}'.format(post_link.encode('utf-8')))
     logger.info('Description: {}'.format(image_text.encode('utf-8')))
 
+    if mandatory_words :
+        if not all((word in image_text for word in mandatory_words)) :
+            return True, user_name, is_video, 'Mandatory words not fulfilled', "Not mandatory likes"
 
     if any((word in image_text for word in ignore_if_contains)):
         return False, user_name, is_video, 'None', "Pass"

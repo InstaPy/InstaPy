@@ -40,7 +40,7 @@ def extract_post_info(browser):
             while (" comments" in comments[1].text):
                 more_comments += 1
                 print ("loading more comments.")
-                load_more_comments_element = browser.find_element_by_xpath("//div/ul/li[2]/a")
+                load_more_comments_element = browser.find_element_by_xpath("//div/ul/li[2]/button")
                 browser.execute_script("arguments[0].click();", load_more_comments_element)
                 sleep(1)
                 #comment_list = post.find_element_by_tag_name('ul')
@@ -54,7 +54,7 @@ def extract_post_info(browser):
                 while (" comments" in comments[0].text):
                     more_comments += 1
                     print ("loading more comments.")
-                    load_more_comments_element = browser.find_element_by_xpath("//div/ul/li[1]/a")
+                    load_more_comments_element = browser.find_element_by_xpath("//div/ul/li[1]/button")
                     browser.execute_script("arguments[0].click();", load_more_comments_element)
                     sleep(1)
                     #comment_list = post.find_element_by_tag_name('ul')
