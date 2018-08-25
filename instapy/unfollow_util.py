@@ -75,7 +75,10 @@ def set_automated_followed_pool(username, unfollow_after, logger, logfolder, poo
         followedPoolFile.close()
 
     except BaseException as e:
-        logger.error("set_automated_followed_pool error {}".format(str(e)))
+        msg = "set_automated_followed_pool error {}".format(str(e))
+        logger.error(msg)
+        # send error in telegram
+        #send_telegram_msg(msg, logfolder, type=2)
 
     return automatedFollowedPool
 
@@ -99,8 +102,8 @@ def get_following_status(browser, person, logger):
                     following = "Requested"
     except:
         logger.error(
-            '--> Unfollow error with {},'
-            ' maybe no longer exists....'
+            '--> error get_following_status with {},'
+            ' maybe no longer exists...'
                 .format(person.encode('utf-8')))
         raise Exception
 
@@ -525,7 +528,7 @@ def follow_user(browser, login, user_name, blacklist, logger, logfolder):
                 userid = browser.execute_script(
                     "return window._sharedData.entry_data.ProfilePage[0].graphql.user.id")
 
-        logger.info('--> Now following')
+        logger.info('---------------------------------> Now following')
         logtime = datetime.now().strftime('%Y-%m-%d %H:%M')
         log_followed_pool(login, user_name, logger, logfolder, logtime, userid)
         follow_restriction("write", user_name, None, logger)
@@ -818,6 +821,14 @@ def follow_through_dialog(browser,
 
     return person_followed
 
+def unfollow_dialog(browser):
+    try:
+        unfollow_button = browser.find_element_by_xpath(
+            "//button[text()='Unfollow']")
+        if unfollow_button.is_displayed():
+            click_element(browser, unfollow_button) # unfollow_button.click()
+    except:
+        return
 
 def get_given_user_followers(browser,
                                 login,
