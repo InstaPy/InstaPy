@@ -357,8 +357,6 @@ def get_links_for_username(browser,
 
     while len(links) < amount:
         initial_links = links
-        browser.execute_script(
-            "window.scrollTo(0, document.body.scrollHeight);")
         body_elem.send_keys(Keys.HOME)
         # update server calls after a scroll request
         update_activity()
