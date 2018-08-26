@@ -420,6 +420,9 @@ def scroll_bottom(browser, element, range_int):
     # put a limit to the scrolling
     if range_int > 50:
         range_int = 50
+        
+    size = browser.get_window_size()
+    browser.set_window_size(size['width'],size['height'] - 1)
 
     for i in range(int(range_int / 2)):
         browser.execute_script(
@@ -427,6 +430,8 @@ def scroll_bottom(browser, element, range_int):
         # update server calls
         update_activity()
         sleep(1)
+        
+    browser.set_window_size(size['width'], size['height'] + 1)
 
     return
 
