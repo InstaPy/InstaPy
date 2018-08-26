@@ -882,7 +882,7 @@ def get_username(browser, logger):
                                                 "ProfilePage[0].graphql.user.username")
     except WebDriverException:
         try:
-            browser.execute_script("location.reload()")            
+            browser.execute_script("location.reload()")
             username = browser.execute_script("return window._sharedData.entry_data."
                                                     "ProfilePage[0].graphql.user.username")
         except WebDriverException:
