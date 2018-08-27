@@ -741,6 +741,7 @@ def dump_record_activity(profile_name, logger, logfolder):
 
             # re-order live user data in the required structure
             for hourly_data in user_data:
+                hourly_data = tuple(hourly_data)
                 day = hourly_data[-1][:10]
                 hour = hourly_data[-1][-8:-6]
 
