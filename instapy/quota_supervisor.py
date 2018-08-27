@@ -331,6 +331,7 @@ def load_records():
 
         # iterate over hourly rows and re-order data in the required structure
         for hourly_data in daily_data:
+            hourly_data = tuple(hourly_data)
             hour = hourly_data[-1][-8:-6]
 
             ordered_data[today].update({hour: {"likes": hourly_data[1],
