@@ -724,7 +724,6 @@ def get_users_through_dialog(browser,
                                                          logfolder)
                     simulated_list.extend(quick_follow)
                     # declare the dialog box once again after the DOM change
-                    dialog_address = "//div[text()='Followers' or text()='Following']/../../following-sibling::div"
                     dialog = browser.find_element_by_xpath(dialog_address)
 
             simulator_counter = 0
