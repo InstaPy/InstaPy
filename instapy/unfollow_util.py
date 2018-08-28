@@ -19,6 +19,8 @@ from .util import get_relationship_counts
 from .util import emergency_exit
 from .util import load_user_id
 from .util import get_username
+from .util import find_user_id
+from .util import new_tab
 from .print_log_writer import log_followed_pool
 from .print_log_writer import log_uncertain_unfollowed_pool
 from .print_log_writer import log_record_all_unfollowed
@@ -1173,37 +1175,24 @@ def get_buttons_from_dialog(dialog, channel):
 
 def get_user_id(browser, track, username, logger):
     """ Go to user's profile page to grab the user ID """
+    user_link = "https://www.instagram.com/{}/".format(username)
+
     if track == "dialog":
         # navigate to the profile page relatively by clicking to preserve page DOM refs
-        dialog_address = ("//div[text()='Followers' or text()='Following']"
-                              "/../../following-sibling::div")
-        dialog = browser.find_element_by_xpath(dialog_address)
-        user_link_in_dialog = dialog.find_element_by_xpath(
-                                        "//a[contains(@href,'{}')]"
-                                            .format(username))
-        click_element(browser, user_link_in_dialog)
-        sleep(2)
+        with new_tab(browser):
+            web_address_navigator(browser, user_link)
+            user_id = find_user_id(browser, username, logger)
 
     else:
         # navigate to the profile page directly through a GET method
-        user_link = "https://www.instagram.com/{}/".format(username)
         web_address_navigator(browser, user_link)
+        user_id = find_user_id(browser, username, logger)
 
-    try:
-        user_id = browser.execute_script(
-            "return window._sharedData.entry_data.PostPage[0].graphql.shortcode_media.owner.id")
-    except WebDriverException:
-        try:
-            browser.execute_script("location.reload()")
-            user_id = browser.execute_script(
-                "return window._sharedData.entry_data.PostPage[0].graphql.shortcode_media.owner.id")
-        except WebDriverException:
-            user_id = browser.execute_script(
-                "return window._sharedData.entry_data.ProfilePage[0].graphql.user.id")
 
-    if track in ["post", "dialog"]:
-        # return back to post page or dialog box
+    if track in ["post"]:
+        # return back to the post page
         browser.execute_script("window.history.go(-1)")
+        sleep(2)
 
     return user_id
 

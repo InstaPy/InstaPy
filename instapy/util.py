@@ -897,3 +897,38 @@ def get_username(browser, logger):
 
 
 
+def find_user_id(browser, username, logger):
+    try:
+        user_id = browser.execute_script(
+            "return window._sharedData.entry_data.PostPage[0].graphql.shortcode_media.owner.id")
+    except WebDriverException:
+        try:
+            browser.execute_script("location.reload()")
+            user_id = browser.execute_script(
+                "return window._sharedData.entry_data.PostPage[0].graphql.shortcode_media.owner.id")
+        except WebDriverException:
+            user_id = browser.execute_script(
+                "return window._sharedData.entry_data.ProfilePage[0].graphql.user.id")
+
+    return user_id
+
+
+
+@contextmanager
+def new_tab(browser):
+    """ USE once a host tab must remain untouched and yet needs extra data- get from guest tab """
+    try:
+        # add a guest tab
+        browser.execute_script("window.open()")
+        #switch to the guest tab
+        browser.switch_to.window(browser.window_handles[1])
+        yield
+
+    finally:
+        # close the guest tab
+        browser.close()
+        # remove to the host tab
+        browser.switch_to.window(browser.window_handles[0])
+
+
+
