@@ -64,8 +64,7 @@ setup(
                  "Topic :: Utilities",
                  "Natural Language :: English"],
     install_requires=dependencies,
-    extras_require={},
-    tests_require=["pytest"],
+    extras_require={"test":["pytest", "tox"]},
     include_package_data=True,
     python_requires=">=2.7",
     platforms=["win32", "linux", "linux2", "darwin"]
