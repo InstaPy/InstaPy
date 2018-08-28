@@ -229,7 +229,7 @@ def get_active_users(browser, username, posts, boundary, logger):
             "ProfilePage[0].graphql.user.edge_owner_to_timeline_media.count")
     except WebDriverException:
         try:
-            total_posts = format_number(browser.find_elements_by_xpath(
+            total_posts = (browser.find_elements_by_xpath(
                 "//span[contains(@class,'g47SY')]")[0].text)
             if total_posts: #prevent an empty string scenario
                 total_posts = format_number(total_posts)
@@ -384,7 +384,7 @@ def delete_line_from_file(filepath, lineToDelete, logger):
 
         f = open(file_path_Temp, "w")
         for line in lines:
-            if not line.endswith(lineToDelete):
+            if (line.find(lineToDelete) < 0):
                 f.write(line)
             else:
                 logger.info("\tRemoved '{}' from followedPool.csv file".format(line.split(',\n')[0]))
@@ -710,6 +710,3 @@ def dump_record_activity(profile_name, logger, logfolder):
         if conn:
             # close the open connection
             conn.close()
-
-
-
