@@ -898,6 +898,7 @@ def get_username(browser, logger):
 
 
 def find_user_id(browser, username, logger):
+    """  Find the user ID from the loaded page """
     try:
         user_id = browser.execute_script(
             "return window._sharedData.entry_data.PostPage[0].graphql.shortcode_media.owner.id")

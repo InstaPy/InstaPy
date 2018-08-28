@@ -1174,7 +1174,7 @@ def get_buttons_from_dialog(dialog, channel):
 
 
 def get_user_id(browser, track, username, logger):
-    """ Go to user's profile page to grab the user ID """
+    """ Get user's ID either from a profile page or post page """
     user_link = "https://www.instagram.com/{}/".format(username)
 
     if track == "dialog":
