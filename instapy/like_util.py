@@ -483,7 +483,7 @@ def check_link(browser, post_link, dont_like, mandatory_words, ignore_if_contain
             return True, user_name, is_video, 'Mandatory words not fulfilled', "Not mandatory likes"
 
     if any((word in image_text for word in ignore_if_contains)):
-        return False, user_name, is_video, 'None', "Pass"
+        return True, user_name, is_video, 'None', "Pass"
 
     dont_like_regex = []
 
