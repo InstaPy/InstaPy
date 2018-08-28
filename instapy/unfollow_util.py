@@ -846,7 +846,6 @@ def get_given_user_followers(browser,
                                 logfolder):
     """
     For the given username, follow their followers.
-
     :param browser: webdriver instance
     :param login:
     :param user_name: given username of account to follow
@@ -1098,6 +1097,4 @@ def follow_restriction(operation, username, limit, logger):
         if conn:
              #close the open connection
             conn.close()
-
-
 
