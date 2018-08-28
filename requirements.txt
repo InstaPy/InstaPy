@@ -7,4 +7,4 @@ pyvirtualdisplay>=0.2.1
 GitPython>=2.1.11
 emoji>=0.5.0
 clarifai>=2.2.3
-https://github.com/kivy/plyer/zipball/master   # plyer>=1.3.1.dev0
+plyer>=1.3.0

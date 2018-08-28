@@ -8,18 +8,14 @@ from setuptools import setup
 __version__ = '0.0.1'
 __author__ = 'Tim Grossmann'
 
+description = 'Instagram Like, Comment and Follow Automation Script'
+here = os.path.abspath(os.path.dirname(__file__))
+
+# load requirements
 with open("requirements.txt") as f:
     dependencies = f.read().splitlines()
 
-try:
-    with io.open(os.path.join(here, "changelog.md"), encoding="utf-8") as cl_file:
-        changes_made = '\n' + cl_file.read()
-except FileNotFoundError:
-    changes_made = ""
-
-description = 'Instagram Like, Comment and Follow Automation Script'
-
-here = os.path.abspath(os.path.dirname(__file__))
+# load README
 with io.open(os.path.join(here, "README.md"), encoding="utf-8") as doc_file:
     documentation = '\n' + doc_file.read()
 
@@ -30,7 +26,6 @@ setup(
     version=__version__,
     description=description,
     long_description=documentation,
-    changelog=changes_made,
     author=__author__,
     author_email='contact.timgrossmann@gmail.com',
     maintainer="InstaPy Community at Github",
