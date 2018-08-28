@@ -1178,7 +1178,7 @@ def get_user_id(browser, track, username, logger):
     user_link = "https://www.instagram.com/{}/".format(username)
 
     if track == "dialog":
-        # navigate to the profile page relatively by clicking to preserve page DOM refs
+        # navigate to the profile page directly in a newly opened tab
         with new_tab(browser):
             web_address_navigator(browser, user_link)
             user_id = find_user_id(browser, username, logger)

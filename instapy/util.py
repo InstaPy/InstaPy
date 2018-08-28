@@ -920,14 +920,14 @@ def new_tab(browser):
     try:
         # add a guest tab
         browser.execute_script("window.open()")
-        #switch to the guest tab
+        # switch to the guest tab
         browser.switch_to.window(browser.window_handles[1])
         yield
 
     finally:
         # close the guest tab
         browser.close()
-        # remove to the host tab
+        # return to the host tab
         browser.switch_to.window(browser.window_handles[0])
 
 
