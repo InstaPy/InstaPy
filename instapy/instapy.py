@@ -135,6 +135,7 @@ class InstaPy:
         self.already_followed = 0
         self.unfollowed = 0
         self.followed_by = 0
+        self.following_num = 0
         self.inap_img = 0
         self.not_valid_users = 0
         self.already_Visited = 0
@@ -3307,6 +3308,9 @@ class InstaPy:
             with open('{}followed.txt'.format(self.logfolder), 'w') as followFile:
                 followFile.write(str(self.followed))
 
+            # output live stats before leaving
+            self.live_report()
+
             message = "Session ended!"
             highlight_print(self.username, message, "end", "info", self.logger)
             print("\n\n")
@@ -3721,6 +3725,29 @@ class InstaPy:
         finally:
             # remove the guest just after using it
             self.internal_usage.pop(feature)
+
+
+
+    def live_report(self):
+        """ Report live sessional statistics """
+        self.logger.info("Sessional Live Report:\n"
+                         "\t|> LIKED {} images  |  ALREADY LIKED: {}\n"
+                         "\t|> COMMENTED on {} images\n"
+                         "\t|> FOLLOWED {} users  |  ALREADY FOLLOWED: {}\n"
+                         "\t|> UNFOLLOWED {} users\n"
+                         "\t|> INAPPROPRIATE images: {}\n"
+                         "\t|> NOT VALID users: {}\n"
+                         "currently FOLLOWING {} users & has got {} FOLLOWERS\n"
+                            .format(self.liked_img,
+                                    self.already_liked,
+                                    self.commented,
+                                    self.followed,
+                                    self.already_followed,
+                                    self.unfollowed,
+                                    self.inap_img,
+                                    self.not_valid_users,
+                                    self.following_num,
+                                    self.followed_by))
 
 
 
