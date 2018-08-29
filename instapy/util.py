@@ -10,6 +10,9 @@ import csv
 import sqlite3
 import json
 from contextlib import contextmanager
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as ec
+from selenium.webdriver.common.by import By
 
 from .time_util import sleep
 from .time_util import sleep_actual
@@ -930,6 +933,40 @@ def new_tab(browser):
         browser.close()
         # return to the host tab
         browser.switch_to.window(browser.window_handles[0])
+
+
+
+def explicit_wait(browser, track, ec_params, logger):
+    """
+    Explicitly wait until expected condition validates
+
+    :param browser: webdriver instance
+    :param track: short name of the expected condition
+    :param ec_params: expected condition specific parameters
+    :param logger: the logger instance
+    """
+    # list of available tracks:
+    # <https://seleniumhq.github.io/selenium/docs/api/py/webdriver_support/
+    # selenium.webdriver.support.expected_conditions.html>
+
+    if track == "VOEL":
+        ec_name = "visibility of element located"
+        elem_address, find_method = ec_params
+        find_by = (By.XPATH if find_method == "XPath" else
+                   By.CSS_SELECTOR if find_method == "CSS" else
+                   By.CLASS_NAME)
+        locator = (find_by, elem_address)
+        condition = ec.visibility_of_element_located(locator)
+
+    # generic wait block
+    try:
+        wait = WebDriverWait(browser, 66)
+        element = wait.until(condition)
+
+    except TimeoutException as exc:
+        logger.info("Timed out with failure while explicitly waiting until {}!\n\t{}"
+                        .format(ec_name, str(exc).encode("utf-8")))
+        pass
 
 
 

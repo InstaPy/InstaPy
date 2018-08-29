@@ -21,6 +21,7 @@ from .util import load_user_id
 from .util import get_username
 from .util import find_user_id
 from .util import new_tab
+from .util import explicit_wait
 from .print_log_writer import log_followed_pool
 from .print_log_writer import log_uncertain_unfollowed_pool
 from .print_log_writer import log_record_all_unfollowed
@@ -661,6 +662,7 @@ def get_users_through_dialog(browser,
                     print('')
                     simulated_list.extend(quick_follow)
                     # declare the dialog box once again after the DOM change
+                    explicit_wait(browser, "VOEL", (dialog_address, "XPath"), logger)
                     dialog = browser.find_element_by_xpath(dialog_address)
 
             simulator_counter = 0
