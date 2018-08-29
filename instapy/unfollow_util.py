@@ -32,6 +32,7 @@ from .quota_supervisor import quota_supervisor
 from selenium.common.exceptions import WebDriverException
 from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import StaleElementReferenceException
+from selenium.common.exceptions import ElementNotVisibleException
 
 
 
@@ -105,7 +106,7 @@ def get_following_status(browser, person, logger):
             "//*[contains(text(), 'Follow')]")
 
         if follow_button.text == 'Following':
-            following = "Following"
+            following = True
 
         else:
             if follow_button.text in ['Follow', 'Follow Back']:
@@ -1126,11 +1127,27 @@ def unfollow_user(browser, track, username, person, person_id, button, relations
 
 def confirm_unfollow(browser):
     """ Deal with the confirmation dialog boxes during an unfollow """
-    try:
-        browser.find_element_by_xpath("//button[contains(text(), 'Unfollow')]").click()
-        sleep(4)
-    except Exception:
-        pass
+    attempt = 0
+
+    while attempt<3:
+        try:
+            button_xp = "//button[text()='Unfollow']"   # "//button[contains(text(), 'Unfollow')]"
+            unfollow_button = browser.find_element_by_xpath(button_xp)
+            attempt += 1
+
+            if unfollow_button.is_displayed():
+                click_element(browser, unfollow_button)
+                sleep(2)
+                break
+
+        except (ElementNotVisibleException, NoSuchElementException) as exc:
+            # prob confirm dialog didn't pop up
+            if isinstance(exc, ElementNotVisibleException):
+                break
+
+            elif isinstance(exc, NoSuchElementException):
+                sleep(1)
+                pass
 
 
 
