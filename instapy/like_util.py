@@ -74,10 +74,8 @@ def get_links_for_location(browser,
         # Make it an array to use it in the following part
         media = [media]
 
-    browser.get('https://www.instagram.com/explore/locations/{}'.format(location))
-    # update server calls
-    update_activity()
-    sleep(2)
+    location_link = "https://www.instagram.com/explore/locations/{}".format(location)
+    web_address_navigator(browser, location_link)
 
     top_elements = browser.find_element_by_xpath('//main/article/div[1]')
     top_posts = top_elements.find_elements_by_tag_name('a')
@@ -195,10 +193,9 @@ def get_links_for_tag(browser,
         media = [media]
 
     tag = (tag[1:] if tag[:1] == '#' else tag)
-    browser.get(u'https://www.instagram.com/explore/tags/{}'.format(tag))
-    # update server calls
-    update_activity()
-    sleep(2)
+
+    tag_link = "https://www.instagram.com/explore/tags/{}".format(tag)
+    web_address_navigator(browser, tag_link)
 
     top_elements = browser.find_element_by_xpath('//main/article/div[1]')
     top_posts = top_elements.find_elements_by_tag_name('a')

@@ -642,6 +642,7 @@ def get_users_through_dialog(browser,
 
             for i in range(0, quick_amount):
                 quick_index = random.randint(0, len(buttons)-1)
+                buttons = get_buttons_from_dialog(dialog, channel)
                 quick_button = buttons[quick_index]
                 quick_username = dialog_username_extractor(quick_button)
 
@@ -662,7 +663,7 @@ def get_users_through_dialog(browser,
                     print('')
                     simulated_list.extend(quick_follow)
                     # declare the dialog box once again after the DOM change
-                    explicit_wait(browser, "VOEL", (dialog_address, "XPath"), logger)
+                    explicit_wait(browser, "VOEL", [dialog_address, "XPath"], logger)
                     dialog = browser.find_element_by_xpath(dialog_address)
 
             simulator_counter = 0
@@ -1200,18 +1201,10 @@ def get_user_id(browser, track, username, logger):
         # navigate to the profile page directly in a newly opened tab
         with new_tab(browser):
             web_address_navigator(browser, user_link)
-            user_id = find_user_id(browser, username, logger)
+            user_id = find_user_id(browser, track, username, logger)
 
     else:
-        # navigate to the profile page directly through a GET method
-        web_address_navigator(browser, user_link)
-        user_id = find_user_id(browser, username, logger)
-
-
-    if track in ["post"]:
-        # return back to the post page
-        browser.execute_script("window.history.go(-1)")
-        sleep(2)
+        user_id = find_user_id(browser, track, username, logger)
 
     return user_id
 

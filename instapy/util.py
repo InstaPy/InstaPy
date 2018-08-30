@@ -609,18 +609,23 @@ def get_relationship_counts(browser, username, logger):
 
 def web_address_navigator(browser, link):
     """Checks and compares current URL of web page and the URL to be navigated and if it is different, it does navigate"""
+    current_url = get_current_url(browser)
     total_timeouts = 0
+    page_type = None   # file or directory
 
-    try:
-        current_url = browser.current_url
-    except WebDriverException:
-        try:
-            current_url = browser.execute_script("return window.location.href")
-        except WebDriverException:
-            current_url = None
+    # remove slashes at the end to compare efficiently
+    if current_url is not None and current_url.endswith('/'):
+        current_url = current_url[:-1]
+        page_type = "dir"   # slash at the end is a directory
 
-    if current_url is None or current_url != link:
-        # handle famous timeout exceptions during `GET` method
+    if link.endswith('/'):
+        link = link[:-1]
+
+    new_navigation = (current_url != link)
+
+    if current_url is None or new_navigation:
+        link = link+'/' if page_type=="dir" else link   # directory links navigate faster
+
         while True:
             try:
                 browser.get(link)
@@ -890,8 +895,8 @@ def get_username(browser, logger):
             username = browser.execute_script("return window._sharedData.entry_data."
                                                     "ProfilePage[0].graphql.user.username")
         except WebDriverException:
-            current_url = browser.current_url
-            logger.info("Failed to get the username from '{}' page".format(current_url))
+            current_url = get_current_url(browser)
+            logger.info("Failed to get the username from '{}' page".format(current_url or "user"))
             username = None
 
     # in future add XPATH ways of getting username
@@ -900,19 +905,43 @@ def get_username(browser, logger):
 
 
 
-def find_user_id(browser, username, logger):
+def find_user_id(browser, track, username, logger):
     """  Find the user ID from the loaded page """
+    if track in ["dialog", "profile"]:
+        query = "return window._sharedData.entry_data.ProfilePage[0].graphql.user.id"
+
+    elif track == "post":
+        query = "return window._sharedData.entry_data.PostPage[0].graphql.shortcode_media.owner.id"
+        meta_XP = "//meta[@property='instapp:owner_user_id']"
+
+    failure_message = "Failed to get the user ID of '{}' from {} page!".format(username, track)
+
     try:
-        user_id = browser.execute_script(
-            "return window._sharedData.entry_data.PostPage[0].graphql.shortcode_media.owner.id")
+        user_id = browser.execute_script(query)
+
     except WebDriverException:
         try:
             browser.execute_script("location.reload()")
-            user_id = browser.execute_script(
-                "return window._sharedData.entry_data.PostPage[0].graphql.shortcode_media.owner.id")
+            user_id = browser.execute_script(query)
+
         except WebDriverException:
-            user_id = browser.execute_script(
-                "return window._sharedData.entry_data.ProfilePage[0].graphql.user.id")
+            if track == "post":
+                try:
+                    user_id = browser.find_element_by_xpath(meta_XP).get_attribute("content")
+                    if user_id:
+                        user_id = format_number(user_id)
+
+                    else:
+                        logger.error("{}\t~empty string".format(failure_message))
+                        user_id = None
+
+                except NoSuchElementException:
+                    logger.error(failure_message)
+                    user_id = None
+
+            else:
+                logger.error(failure_message)
+                user_id = None
 
     return user_id
 
@@ -924,15 +953,19 @@ def new_tab(browser):
     try:
         # add a guest tab
         browser.execute_script("window.open()")
+        sleep(1)
         # switch to the guest tab
         browser.switch_to.window(browser.window_handles[1])
+        sleep(2)
         yield
 
     finally:
         # close the guest tab
         browser.close()
+        sleep(1)
         # return to the host tab
         browser.switch_to.window(browser.window_handles[0])
+        sleep(2)
 
 
 
@@ -942,7 +975,7 @@ def explicit_wait(browser, track, ec_params, logger):
 
     :param browser: webdriver instance
     :param track: short name of the expected condition
-    :param ec_params: expected condition specific parameters
+    :param ec_params: expected condition specific parameters - [param1, param2]
     :param logger: the logger instance
     """
     # list of available tracks:
@@ -967,6 +1000,22 @@ def explicit_wait(browser, track, ec_params, logger):
         logger.info("Timed out with failure while explicitly waiting until {}!\n\t{}"
                         .format(ec_name, str(exc).encode("utf-8")))
         pass
+
+
+
+def get_current_url(browser):
+    """ Get URL of the loaded webpage """
+    try:
+        current_url = browser.execute_script("return window.location.href")
+
+    except WebDriverException:
+        try:
+            current_url = browser.current_url
+
+        except WebDriverException:
+            current_url = None
+
+    return current_url
 
 
 
