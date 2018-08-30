@@ -67,6 +67,7 @@ def get_followers(browser,
     sc_rolled = 0
     grab_notifier = False
     local_read_failure = False
+    passed_time = "time loop"
 
     try:
         has_next_data = True
@@ -271,6 +272,7 @@ def get_following(browser,
     sc_rolled = 0
     grab_notifier = False
     local_read_failure = False
+    passed_time = "time loop"
 
     try:
         has_next_data = True

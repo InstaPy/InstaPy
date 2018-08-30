@@ -641,8 +641,8 @@ def get_users_through_dialog(browser,
             quick_amount = 1 if not total_list >= amount else random.randint(1, 4)
 
             for i in range(0, quick_amount):
-                quick_index = random.randint(0, len(buttons)-1)
                 buttons = get_buttons_from_dialog(dialog, channel)
+                quick_index = random.randint(0, len(buttons)-1)
                 quick_button = buttons[quick_index]
                 quick_username = dialog_username_extractor(quick_button)
 
