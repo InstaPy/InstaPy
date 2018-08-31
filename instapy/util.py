@@ -18,10 +18,18 @@ from .database_engine import get_database
 
 
 def is_private_profile(browser, logger, following=True):
-    is_private = None
-    is_private = browser.execute_script(
-        "return window._sharedData.entry_data."
-        "ProfilePage[0].graphql.user.is_private")
+    try:
+        is_private = browser.execute_script(
+            "return window._sharedData.entry_data."
+            "ProfilePage[0].graphql.user.is_private")
+    except WebDriverException:
+        try:
+            is_private = browser.execute_script(
+                "return window._sharedData.entry_data."
+                "ProfilePage[0].graphql.user.is_private")
+        except WebDriverException:
+            return None
+
     # double check with xpath that should work only when we not follwoing a user
     if is_private is True and not following:
         logger.info("Is private account you're not following.")
@@ -197,7 +205,7 @@ def add_user_to_blacklist(username, campaign, action, logger, logfolder):
     today = datetime.date.today().strftime('%m/%d/%y')
 
     try:
-        with open('{}blacklist.csv'.format(logfolder), 'a+') as blacklist:
+        with open('{}blacklist.csv'.format(logfolder), 'a+', encoding="utf-8") as blacklist:
             writer = csv.DictWriter(blacklist, fieldnames=fieldnames)
             if not file_exists:
                 writer.writeheader()
@@ -208,7 +216,7 @@ def add_user_to_blacklist(username, campaign, action, logger, logfolder):
                     'action': action
             })
     except Exception as err:
-        logger.error(err)
+        logger.error('blacklist dictWrite error {} source:{}'.format(err,source))
 
     logger.info('--> {} added to blacklist for {} campaign (action: {})'
                 .format(username, campaign, action))
@@ -244,8 +252,11 @@ def get_active_users(browser, username, posts, boundary, logger):
     posts = posts if total_posts is None else total_posts if posts > total_posts else posts
 
     # click latest post
-    browser.find_elements_by_xpath(
-        "//div[contains(@class, '_9AhH0')]")[0].click()
+    try:
+        browser.find_elements_by_xpath(
+            "//div[contains(@class, '_9AhH0')]")[0].click()
+    except:
+        return []
 
     active_users = []
     sc_rolled = 0
@@ -483,7 +494,6 @@ def click_element(browser, element, tryNum=0):
         click_element(browser, element, tryNum)
 
 
-
 def format_number(number):
     """
     Format number. Remove the unused comma. Replace the concatenation with relevant zeros. Remove the dot.
@@ -499,13 +509,11 @@ def format_number(number):
     return int(formatted_num)
 
 
-
 def username_url_to_username(username_url):
     a = username_url.replace ("https://www.instagram.com/","")
     username = a.split ('/')
     return username[0]
-
-
+                                         
 
 def get_number_of_posts(browser):
     """Get the number of posts from the profile screen"""
@@ -514,7 +522,6 @@ def get_number_of_posts(browser):
     num_of_posts_txt = num_of_posts_txt.replace(",", "")
     num_of_posts = int(num_of_posts_txt)
     return num_of_posts
-
 
 
 def get_relationship_counts(browser, username, logger):
@@ -526,14 +533,14 @@ def get_relationship_counts(browser, username, logger):
     web_adress_navigator(browser, user_link)
 
     try:
-        followers_count = format_number(browser.find_element_by_xpath("//a[contains"
-                                "(@href,'followers')]/span").text)
-    except NoSuchElementException:
+        followers_count = browser.execute_script(
+            "return window._sharedData.entry_data."
+            "ProfilePage[0].graphql.user.edge_followed_by.count")
+    except WebDriverException:
         try:
-            followers_count = browser.execute_script(
-                "return window._sharedData.entry_data."
-                "ProfilePage[0].graphql.user.edge_followed_by.count")
-        except WebDriverException:
+            followers_count = format_number(browser.find_element_by_xpath("//a[contains"
+                                                                          "(@href,'followers')]/span").text)
+        except NoSuchElementException:
             try:
                 browser.execute_script("location.reload()")
                 followers_count = browser.execute_script(
@@ -553,14 +560,14 @@ def get_relationship_counts(browser, username, logger):
                     followers_count = None
 
     try:
-        following_count = format_number(browser.find_element_by_xpath("//a[contains"
-                                "(@href,'following')]/span").text)
-    except NoSuchElementException:
+        following_count = browser.execute_script(
+            "return window._sharedData.entry_data."
+            "ProfilePage[0].graphql.user.edge_follow.count")
+    except WebDriverException:
         try:
-            following_count = browser.execute_script(
-                "return window._sharedData.entry_data."
-                "ProfilePage[0].graphql.user.edge_follow.count")
-        except WebDriverException:
+            following_count = format_number(browser.find_element_by_xpath("//a[contains"
+                                                                          "(@href,'following')]/span").text)
+        except NoSuchElementException:
             try:
                 browser.execute_script("location.reload()")
                 following_count = browser.execute_script(
