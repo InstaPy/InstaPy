@@ -17,7 +17,9 @@ from .util import is_private_profile
 from .util import update_activity
 from .util import web_adress_navigator
 from .util import get_number_of_posts
+from .util import is_private_profile
 from .util import remove_duplicated_from_list_keep_order
+from .unfollow_util import get_following_status
 
 
 def get_links_from_feed(browser, amount, num_of_search, logger):
@@ -73,7 +75,7 @@ def get_links_for_location(browser,
         # Make it an array to use it in the following part
         media = [media]
 
-    browser.get('https://www.instagram.com/explore/locations/{}'.format(location))
+    web_adress_navigator(browser, 'https://www.instagram.com/explore/locations/' + location)
     # update server calls
     update_activity()
     sleep(2)
@@ -149,7 +151,7 @@ def get_links_for_location(browser,
                 if try_again > 2:  # you can try again as much as you want by changing this number
                     if put_sleep < 1 and filtered_links <= 21:
                         logger.info("Cor! Did you send too many requests? ~ let's rest some")
-                        sleep(600)
+                        sleep(400)
                         put_sleep += 1
                         browser.execute_script("location.reload()")
                         try_again = 0
@@ -193,7 +195,7 @@ def get_links_for_tag(browser,
         media = [media]
 
     tag = (tag[1:] if tag[:1] == '#' else tag)
-    browser.get(u'https://www.instagram.com/explore/tags/{}'.format(tag))
+    web_adress_navigator(browser, u'https://www.instagram.com/explore/tags/{}'.format(tag))
     # update server calls
     update_activity()
     sleep(2)
@@ -331,17 +333,17 @@ def get_links_for_username(browser,
     body_elem = browser.find_element_by_tag_name('body')
     abort = True
 
-    try:
-        is_private = is_private_profile(browser, logger)
-    except:
-        logger.info('Interaction begin...')
-    else:
-        if is_private:
-            logger.warning('This user is private...')
-            return False
 
     if "Page Not Found" in browser.title:
         logger.error('Intagram error: The link you followed may be broken, or the page may have been removed...')
+        return False
+
+    # if private user, we can get links only if we following
+    following, follow_button = get_following_status(browser, username, logger)
+    if following == 'Following':
+        following = True
+    is_private = is_private_profile(browser, logger, following)
+    if (is_private is None) or (is_private is True and not following):
         return False
 
     #Get links

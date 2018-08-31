@@ -29,6 +29,7 @@ from .relationship_tools import get_followers
 from .relationship_tools import get_following
 from .relationship_tools import get_nonfollowers
 from .database_engine import get_database
+from .util import is_page_available
 
 
 
@@ -75,7 +76,10 @@ def set_automated_followed_pool(username, unfollow_after, logger, logfolder, poo
         followedPoolFile.close()
 
     except BaseException as e:
-        logger.error("set_automated_followed_pool error {}".format(str(e)))
+        msg = "set_automated_followed_pool error {}".format(str(e))
+        logger.error(msg)
+        # send error in telegram
+        #send_telegram_msg(msg, logfolder, type=2)
 
     return automatedFollowedPool
 
@@ -99,12 +103,13 @@ def get_following_status(browser, person, logger):
                     following = "Requested"
     except:
         logger.error(
-            '--> Unfollow error with {},'
-            ' maybe no longer exists....'
+            '--> error get_following_status with {},'
+            ' maybe no longer exists...'
                 .format(person.encode('utf-8')))
         raise Exception
 
     return following, follow_button
+
 
 def unfollow(browser,
              username,
@@ -268,7 +273,7 @@ def unfollow(browser,
                 if person not in dont_include:
                     sleep(2)
                     try:
-                        browser.get('https://www.instagram.com/' + person)
+                        web_adress_navigator(browser, 'https://www.instagram.com/' + person)
                         following, follow_button = get_following_status(browser, person, logger)
                     except:
                         logger.error(
@@ -525,7 +530,7 @@ def follow_user(browser, login, user_name, blacklist, logger, logfolder):
                 userid = browser.execute_script(
                     "return window._sharedData.entry_data.ProfilePage[0].graphql.user.id")
 
-        logger.info('--> Now following')
+        logger.info('---------------------------------> Now following')
         logtime = datetime.now().strftime('%Y-%m-%d %H:%M')
         log_followed_pool(login, user_name, logger, logfolder, logtime, userid)
         follow_restriction("write", user_name, None, logger)
@@ -553,15 +558,9 @@ def follow_user(browser, login, user_name, blacklist, logger, logfolder):
 def unfollow_user(browser, username, person, relationship_data, logger, logfolder):
     """Unfollows the user of the currently opened image"""
 
-    try:
-        unfollow_button = browser.find_element_by_xpath(
-            "//*[text()='Following' or text()='Requested']")
-            #"//*[contains(text(), 'Following')]")  # or Requested
-    except NoSuchElementException:
-        logger.error("Could not locate \"Following\" or \"Requested\" button in order to unfollow '{}'!".format(person))
-        return 0
+    following, unfollow_button = get_following_status(browser, person, logger)
 
-    if unfollow_button.text in ['Following', 'Requested']:
+    if following:
         click_element(browser, unfollow_button) # unfollow_button.send_keys("\n")
         logger.warning("--> Unfollowed '{}' due to Inappropriate Content".format(person))
 
@@ -574,6 +573,8 @@ def unfollow_user(browser, username, person, relationship_data, logger, logfolde
         sleep(3)
 
         return 1
+    else:
+        logger.error("Could not locate \"Following\" or \"Requested\" button in order to unfollow '{}'!".format(person))
 
 
 def follow_given_user(browser,
@@ -832,6 +833,14 @@ def follow_through_dialog(browser,
 
     return person_followed
 
+def unfollow_dialog(browser):
+    try:
+        unfollow_button = browser.find_element_by_xpath(
+            "//button[text()='Unfollow']")
+        if unfollow_button.is_displayed():
+            click_element(browser, unfollow_button) # unfollow_button.click()
+    except:
+        return
 
 def get_given_user_followers(browser,
                                 login,
@@ -861,8 +870,11 @@ def get_given_user_followers(browser,
     """
     user_name = user_name.strip()
 
-    browser.get('https://www.instagram.com/{}/'.format(user_name))
+    web_adress_navigator(browser,'https://www.instagram.com/{}/'.format(user_name))
     update_activity()
+
+    if not is_page_available(browser, logger):
+        return [], []
 
     # check how many people are following this user.
     try:
@@ -888,7 +900,7 @@ def get_given_user_followers(browser,
                     else:
                         logger.info("Failed to get followers count of '{}'  ~empty list".format(user_name))
                         allfollowers = None
-                except NoSuchElementException:
+                except (NoSuchElementException, IndexError):
                     logger.error("Error occured during getting the followers count of '{}'\n".format(user_name))
                     return [], []
 
@@ -943,6 +955,9 @@ def get_given_user_following(browser,
     # update server calls
     update_activity()
 
+    if not is_page_available(browser, logger):
+        return [], []
+
     #  check how many poeple are following this user.
     #  throw RuntimeWarning if we are 0 people following this user
     try:
@@ -968,7 +983,7 @@ def get_given_user_following(browser,
                     else:
                         logger.info("Failed to get following count of '{}'  ~empty list".format(user_name))
                         allfollowing = None
-                except NoSuchElementException:
+                except (NoSuchElementException, IndexError):
                     logger.error("\nError occured during getting the following count of '{}'\n".format(user_name))
                     return [], []
 
