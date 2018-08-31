@@ -16,132 +16,241 @@ from .time_util import sleep_actual
 from .database_engine import get_database
 
 
-
-def is_private_profile(browser, logger, following=True):
-    is_private = None
-    is_private = browser.execute_script(
-        "return window._sharedData.entry_data."
-        "ProfilePage[0].graphql.user.is_private")
-    # double check with xpath that should work only when we not follwoing a user
-    if is_private is True and not following:
-        logger.info("Is private account you're not following.")
-        body_elem = browser.find_element_by_tag_name('body')
-        is_private = body_elem.find_element_by_xpath(
-            '//h2[@class="_kcrwx"]')
-
+def is_private_profile(browser, username=None):
+    if username is not None:
+        profile_page = 'https://www.instagram.com/{}/'.format(username)
+        web_adress_navigator(browser, profile_page)
+    try:
+        is_private = browser.execute_script(
+            "return window._sharedData.entry_data."
+            "ProfilePage[0].graphql.user.is_private")
+    except WebDriverException:   # handle the possible `entry_data` error
+        try:
+            browser.execute_script("location.reload()")
+            is_private = browser.execute_script(
+                "return window._sharedData.entry_data."
+                "ProfilePage[0].graphql.user.is_private")
+        except WebDriverException:
+            is_private = None
     return is_private
+
+
+def media_count(browser, username):
+    link = 'https://www.instagram.com/{}/'.format(username)
+    web_adress_navigator(browser, link)
+    try:
+        media_c = browser.execute_script(
+            "return window._sharedData.entry_data."
+            "ProfilePage[0].graphql.user.edge_owner_to_timeline_media.count")
+    except WebDriverException:   # handle the possible `entry_data` error
+        try:
+            browser.execute_script("location.reload()")
+            media_c = browser.execute_script(
+                "return window._sharedData.entry_data."
+                "ProfilePage[0].graphql.user.edge_owner_to_timeline_media.count")
+        except WebDriverException:
+            try:
+                body_elem = browser.find_element_by_tag_name('body')
+                media_c = format_number(body_elem.find_element_by_xpath(
+                    '//span[@class="g47SY "]').text)
+            except NoSuchElementException:
+                media_c = None
+    return media_c
+
+
+def have_profile_pic(browser, username, logger, logging_enabled):
+    link = 'https://www.instagram.com/{}/'.format(username)
+    default_image = "11906329_960233084022564_1448528159_a.jpg"
+    web_adress_navigator(browser, link)
+    try:
+        url = browser.execute_script(
+            "return window._sharedData.entry_data."
+            "ProfilePage[0].graphql.user.profile_pic_url")
+    except WebDriverException:   # handle the possible `entry_data` error
+        try:
+            browser.execute_script("location.reload()")
+            url = browser.execute_script(
+                "return window._sharedData.entry_data."
+                "ProfilePage[0].graphql.user.profile_pic_url")
+        except WebDriverException:
+            try:
+                body_elem = browser.find_element_by_tag_name('body')
+                url = body_elem.find_element_by_xpath('//img[@class = "_6q-tv"]') \
+                    .get_attribute('src')
+            except NoSuchElementException:
+                url = ""
+    if logging_enabled:
+        logger.info("Profile pic: {}".format(url))
+    return default_image not in url
+
 
 def validate_username(browser,
                       username_or_link,
                       own_username,
                       ignore_users,
                       blacklist,
-                      potency_ratio,
+                      skip_private,
+                      skip_no_profile_pic,
+                      min_potency_ratio,
+                      max_potency_ratio,
                       delimit_by_numbers,
                       max_followers,
                       max_following,
                       min_followers,
                       min_following,
-                      logger):
+                      min_media,
+                      max_media,
+                      logger,
+                      logging_enabled):
     """Check if we can interact with the user"""
 
     # Some features may not povide `username` and in those cases we will get it from post's page.
     if '/' in username_or_link:
-        link = username_or_link   # if there is a `/` in `username_or_link`, then it is a `link`
+        link = username_or_link  # if there is a `/` in `username_or_link`, then it is a `link`
 
-        #Check URL of the webpage, if it already is user's profile page, then do not navigate to it again
+        # Check URL of the webpage, if it already is user's profile page, then do not navigate to it again
         web_adress_navigator(browser, link)
 
         try:
             username = browser.execute_script(
-                    "return window._sharedData.entry_data."
-                    "PostPage[0].graphql.shortcode_media.owner.username")
+                "return window._sharedData.entry_data."
+                "PostPage[0].graphql.shortcode_media.owner.username")
         except WebDriverException:
             try:
                 browser.execute_script("location.relaod()")
                 username = browser.execute_script(
-                        "return window._sharedData.entry_data."
-                        "PostPage[0].graphql.shortcode_media.owner.username")
+                    "return window._sharedData.entry_data."
+                    "PostPage[0].graphql.shortcode_media.owner.username")
             except WebDriverException:
                 logger.error("Username validation failed! ~cannot get the post owner's username")
                 return False, \
-                        "---> Sorry, this page isn't available! ~link is broken, or page is removed\n"
+                   "---> Sorry, this page isn't available! ~link is broken, or page is removed\n"
     else:
-        username = username_or_link   # if there is no `/` in `username_or_link`, then it is a `username`
+        username = username_or_link  # if there is no `/` in `username_or_link`, then it is a `username`
 
     if username == own_username:
         return False, \
-                "---> Username '{}' is yours!  ~skipping user\n".format(own_username)
+               "---> Username '{}' is yours!  ~skipping user\n".format(own_username)
 
     if username in ignore_users:
         return False, \
-                "---> {} is in ignore_users list  ~skipping user\n".format(username)
+               "---> User {} is in ignore_users list  ~skipping user\n".format(username)
 
     if username in blacklist:
         return False, \
-                "---> {} is in blacklist  ~skipping user\n".format(username)
+               "---> User {} is in blacklist  ~skipping user\n".format(username)
 
-    """Checks the potential of target user by relationship status in order to delimit actions within the desired boundary"""
-    if potency_ratio or delimit_by_numbers and (max_followers or max_following or min_followers or min_following):
+    is_private = is_private_profile(browser, username=username)
 
+    if skip_private:
+        if is_private:
+            return False, \
+                   "---> User {} is private ~skipping user\n".format(username)
+
+    media_c = media_count(browser, username)
+
+    if media_c:
+        if min_media != 0 and max_media != 0:
+            if max_media == -1:
+                if media_c < min_media:
+                    return False, \
+                           "---> User {} have {} posts, min_media is {} max_media is {} ~skipping user\n".format(
+                               username,
+                               media_c,
+                               min_media,
+                               "No limit")
+            else:
+                if media_c > max_media or media_c < min_media:
+                    return False, \
+                           "---> User {} have {} posts, min_media is {} max_media is {} ~skipping user\n".format(
+                               username,
+                               media_c,
+                               min_media,
+                               max_media)
+
+    if skip_no_profile_pic:
+        user_have_profile_pic = have_profile_pic(browser, username, logger, logging_enabled)
+        if not user_have_profile_pic:
+            return False, \
+                   "---> User {} don't have a profile pic ~skipping user\n".format(username)
+
+    """Checks the potential of target user by relationship status in order to delimit actions
+     within the desired boundary"""
+    if min_potency_ratio or max_potency_ratio or delimit_by_numbers and \
+            (max_followers or max_following or min_followers or min_following):
         relationship_ratio = None
         reverse_relationship = False
 
         # Get followers & following counts
         followers_count, following_count = get_relationship_counts(browser, username, logger)
 
-        if potency_ratio and potency_ratio < 0:
-            potency_ratio *= -1
+        if min_potency_ratio and min_potency_ratio < 0:
+            min_potency_ratio *= -1
             reverse_relationship = True
 
         if followers_count and following_count:
-            relationship_ratio = (float(followers_count)/float(following_count)
-                       if not reverse_relationship
-                        else float(following_count)/float(followers_count))
+            relationship_ratio = (float(followers_count) / float(following_count)
+                                  if not reverse_relationship
+                                  else float(following_count) / float(followers_count))
 
-        logger.info('User: {} >> followers: {}  |  following: {}  |  relationship ratio: {}'.format(username,
-        followers_count if followers_count else 'unknown',
-        following_count if following_count else 'unknown',
-        float("{0:.2f}".format(relationship_ratio)) if relationship_ratio else 'unknown'))
+            if max_potency_ratio and relationship_ratio > max_potency_ratio:
+                return False, \
+                       "---> User {}'s relationship ratio {} exceeds maximum limit of {}  ~skipping user\n".format(
+                           username, float("{0:.2f}".format(relationship_ratio)),
+                           float("{0:.2f}".format(max_potency_ratio)))
 
-        if followers_count  or following_count:
-            if potency_ratio and not delimit_by_numbers:
-                if relationship_ratio and relationship_ratio < potency_ratio:
-                        return False, \
-                            "{} is not a {} with the relationship ratio of {}  ~skipping user\n".format(
-                            username, "potential user" if not reverse_relationship else "massive follower",
-                            float("{0:.2f}".format(relationship_ratio)))
+        # not sure about this. Could be also that failed to get data from profile.
+        if not media_c and not followers_count and not following_count and not relationship_ratio:
+            return False, \
+                   "---> User {} seems not existing anymore\n".format(username)
+
+        if followers_count or following_count:
+            if min_potency_ratio and not delimit_by_numbers:
+                if relationship_ratio and relationship_ratio < min_potency_ratio:
+                    return False, \
+                           "---> User {} is not a {} with the relationship ratio of {}  ~skipping user\n".format(
+                               username, "potential user" if not reverse_relationship else "massive follower",
+                               float("{0:.2f}".format(relationship_ratio)))
 
             elif delimit_by_numbers:
                 if followers_count:
                     if max_followers:
                         if followers_count > max_followers:
                             return False, \
-                                "User {}'s followers count exceeds maximum limit  ~skipping user\n".format(username)
+                                   "---> User {}'s followers count exceeds maximum limit  ~skipping user\n"\
+                                   .format(username)
                     if min_followers:
                         if followers_count < min_followers:
                             return False, \
-                                "User {}'s followers count is less than minimum limit  ~skipping user\n".format(username)
+                                   "---> User {}'s followers count is less than minimum limit  ~skipping user\n"\
+                                   .format(username)
                 if following_count:
                     if max_following:
                         if following_count > max_following:
                             return False, \
-                                "User {}'s following count exceeds maximum limit  ~skipping user\n".format(username)
+                                   "---> User {}'s following count exceeds maximum limit  ~skipping user\n"\
+                                   .format(username)
                     if min_following:
                         if following_count < min_following:
                             return False, \
-                                "User {}'s following count is less than minimum limit  ~skipping user\n".format(username)
-                if potency_ratio:
-                    if relationship_ratio and relationship_ratio < potency_ratio:
+                                   "---> User {}'s following count is less than minimum limit  ~skipping user\n"\
+                                   .format(username)
+                if min_potency_ratio:
+                    if relationship_ratio and relationship_ratio < min_potency_ratio:
                         return False, \
-                            "{} is not a {} with the relationship ratio of {}  ~skipping user\n".format(
-                            username, "potential user" if not reverse_relationship else "massive follower",
-                            float("{0:.2f}".format(relationship_ratio)))
+                               "---> User {} is not a {} with the relationship ratio of {}  ~skipping user\n".format(
+                                   username, "potential user" if not reverse_relationship else "massive follower",
+                                   float("{0:.2f}".format(relationship_ratio)))
 
+        logger.info('User: {} >> media: {}  |  followers: {}  |  following: {}  |  relationship ratio: {}'.format(
+            username,
+            media_c if media_c else 'unknown',
+            followers_count if followers_count else 'unknown',
+            following_count if following_count else 'unknown',
+            float("{0:.2f}".format(relationship_ratio)) if relationship_ratio else 'unknown'))
 
     # if everything ok
     return True, "Valid user"
-
 
 
 def update_activity(action=None):
@@ -187,8 +296,6 @@ def update_activity(action=None):
 
         # commit the latest changes
         conn.commit()
-
-
 
 def add_user_to_blacklist(username, campaign, action, logger, logfolder):
 
@@ -430,8 +537,6 @@ def scroll_bottom(browser, element, range_int):
 
     return
 
-
-
 def click_element(browser, element, tryNum=0):
     # There are three (maybe more) different ways to "click" an element/button.
     # 1. element.click()
@@ -498,14 +603,10 @@ def format_number(number):
     formatted_num = formatted_num.replace('.', '')
     return int(formatted_num)
 
-
-
 def username_url_to_username(username_url):
     a = username_url.replace ("https://www.instagram.com/","")
     username = a.split ('/')
     return username[0]
-
-
 
 def get_number_of_posts(browser):
     """Get the number of posts from the profile screen"""
@@ -514,8 +615,6 @@ def get_number_of_posts(browser):
     num_of_posts_txt = num_of_posts_txt.replace(",", "")
     num_of_posts = int(num_of_posts_txt)
     return num_of_posts
-
-
 
 def get_relationship_counts(browser, username, logger):
     """ Gets the followers & following counts of a given user """
@@ -615,7 +714,6 @@ def interruption_handler(SIG_type=signal.SIGINT, handler=signal.SIG_IGN, notify=
         signal.signal(SIG_type, original_handler)
 
 
-
 def highlight_print(username=None, message=None, priority=None, level=None, logger=None):
     """ Print headers in a highlighted style """
     #can add other highlighters at other priorities enriching this function
@@ -655,14 +753,10 @@ def highlight_print(username=None, message=None, priority=None, level=None, logg
 
     print("{}".format(lower_char*output_len))
 
-
-
 def remove_duplicated_from_list_keep_order(_list):
     seen = set()
     seen_add = seen.add
     return [x for x in _list if not (x in seen or seen_add(x))]
-
-
 
 def dump_record_activity(profile_name, logger, logfolder):
     """ Dump the record activity data to a local human-readable JSON """

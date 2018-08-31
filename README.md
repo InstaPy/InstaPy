@@ -206,6 +206,18 @@ session.set_comments(['Nice shot! @{}'], media='Photo')
 session.set_do_follow(enabled=True, percentage=10, times=2)
 ```
 
+### Skip users based on posts number, private profile, profile picture
+```python
+session.set_skip_users(skip_private=True, skip_no_profile_pic=True, min_media=10, max_media=100)
+```
+_If skip_private is set to True private users are skipped, otherwise will be requested._
+
+_If skip_no_profile_pic is set to True users without a profile picture are skipped, otherwise will be requested._
+
+_If user posts are not in the range of min_media and max_media user is skipped. 
+If min_media and max_media are both set to 0, no restriction are applied.
+If max_media is set to -1 no restriction are applied on the maximum posts._
+ 
 ### Following by a list
 
 
