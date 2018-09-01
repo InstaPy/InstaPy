@@ -647,8 +647,8 @@ def get_users_through_dialog(browser,
     sc_rolled = 0
 
     # find dialog box
-    dialog = browser.find_element_by_xpath(
-      "//div[text()='Followers' or text()='Following']/../../following-sibling::div")
+    dialog_address = "//div[text()='Followers' or text()='Following']/../../following-sibling::div"
+    dialog = browser.find_element_by_xpath(dialog_address)
 
     if channel == "Follow":
         # get follow buttons. This approach will find the follow buttons and
@@ -726,8 +726,17 @@ def get_users_through_dialog(browser,
                                                          logger,
                                                          logfolder)
                     simulated_list.extend(quick_follow)
+                    # declare the dialog box once again after the DOM change
+                    dialog = browser.find_element_by_xpath(dialog_address)
 
             simulator_counter = 0
+
+    if channel == "Follow":
+        buttons = dialog.find_elements_by_xpath(
+            "//button[text()='Follow']")
+    elif channel == "Unfollow":
+        buttons = dialog.find_elements_by_xpath(
+            "//button[text() = 'Following']")
 
     person_list = dialog_username_extractor(buttons)
     if randomize:
@@ -791,7 +800,12 @@ def follow_through_dialog(browser,
                 click_element(browser, button)
                 sleep(1)
 
-                browser.get('https://www.instagram.com/' + person)
+                dialog_address = "//div[text()='Followers' or text()='Following']/../../following-sibling::div"
+                dialog = browser.find_element_by_xpath(dialog_address)
+                user_link_in_dialog = dialog.find_element_by_xpath(
+                                "//a[contains(@href,'{}')]".format(person))
+                click_element(browser, user_link_in_dialog)
+                sleep(2)
                 userid = browser.execute_script("return window._sharedData.entry_data.ProfilePage[0].graphql.user.id")
                 
                 logtime = datetime.now().strftime('%Y-%m-%d %H:%M')

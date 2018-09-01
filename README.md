@@ -371,7 +371,7 @@ session.interact_user_following(['natgeo'], amount=10, randomize=True)
 ### Interact with someone else's followers
 
 ```python
-# Interact with the people that a given user is following
+# Interact with the people that a given user is followed by
 # set_do_comment, set_do_follow and set_do_like are applicable
 
 session.set_user_interact(amount=5, randomize=True, percentage=50, media='Photo')
@@ -862,7 +862,7 @@ Every time you grab `Following` data in `"full"` range of **any** user, it is al
 
 + `live_match=False`:
     + If the user **already do have** a `Following` data loaded _earlier_ in the **same** session, it will run a _smart_ `data-matching` _algorithm_.  
-    And **there**, it will **load only the new data** _from the server_ and then **return a compact result** of _current data_.  
+    And **there**, it will **load only the new data** _from the server_ and then **return a compact result** of _current data_.
     The _algorithm_ **works like**: _load the usernames **until hits the** ones from the **previous query** at certain amount_.  
     + **Also if** the `live_match` is `False` and the user has **no any** _sessional_ `Following` data, **then** it will load `live` data at _requested range_.
     + As a **result**, `live_match=False` saves lots of `precious time` and `server requests`.  
