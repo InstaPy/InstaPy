@@ -75,7 +75,10 @@ def set_automated_followed_pool(username, unfollow_after, logger, logfolder, poo
         followedPoolFile.close()
 
     except BaseException as e:
-        logger.error("set_automated_followed_pool error {}".format(str(e)))
+        msg = "set_automated_followed_pool error {}".format(str(e))
+        logger.error(msg)
+        # send error in telegram
+        #send_telegram_msg(msg, logfolder, type=2)
 
     return automatedFollowedPool
 
@@ -99,8 +102,8 @@ def get_following_status(browser, person, logger):
                     following = "Requested"
     except:
         logger.error(
-            '--> Unfollow error with {},'
-            ' maybe no longer exists....'
+            '--> error get_following_status with {},'
+            ' maybe no longer exists...'
                 .format(person.encode('utf-8')))
         raise Exception
 
@@ -525,16 +528,29 @@ def follow_user(browser, login, user_name, blacklist, logger, logfolder):
                 userid = browser.execute_script(
                     "return window._sharedData.entry_data.ProfilePage[0].graphql.user.id")
 
-        logger.info('--> Now following')
+        logger.info('---------------------------------> Now following')
         logtime = datetime.now().strftime('%Y-%m-%d %H:%M')
         log_followed_pool(login, user_name, logger, logfolder, logtime, userid)
+        sleep(4)
+        are_we_following, follow_button = get_following_status(browser, user_name, logger)
+        if not are_we_following or random.randint(1, 5) == 1:
+            browser.execute_script("location.reload()")
+            sleep(2)
+            are_we_following, follow_button = get_following_status(browser, user_name, logger)
+            if not are_we_following:
+                #  if not following after we tried send msg
+                msg = '--> person was not able to get Follow! maybe blocked ?'
+                logger.warning(msg)
+                #send_telegram_msg(msg, logfolder, type=3)
+                sleep(600)
+            else:
+                logger.warning('checked after reload we do follow !')
         follow_restriction("write", user_name, None, logger)
         if blacklist['enabled'] is True:
             action = 'followed'
             add_user_to_blacklist(
                 user_name, blacklist['campaign'], action, logger, logfolder
             )
-        sleep(3)
         return 1
     except NoSuchElementException:
         logger.info('--> Already following')
@@ -832,6 +848,14 @@ def follow_through_dialog(browser,
 
     return person_followed
 
+def unfollow_dialog(browser):
+    try:
+        unfollow_button = browser.find_element_by_xpath(
+            "//button[text()='Unfollow']")
+        if unfollow_button.is_displayed():
+            click_element(browser, unfollow_button) # unfollow_button.click()
+    except:
+        return
 
 def get_given_user_followers(browser,
                                 login,
