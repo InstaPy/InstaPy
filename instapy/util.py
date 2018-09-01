@@ -18,6 +18,7 @@ from .database_engine import get_database
 
 
 def is_private_profile(browser, logger, following=True):
+    is_private = None
     try:
         is_private = browser.execute_script(
             "return window._sharedData.entry_data."
