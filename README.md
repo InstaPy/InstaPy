@@ -830,6 +830,33 @@ _such as_,
 
 `notify_me`: sends **toast notifications** (_directly to your OS_) _about_ the **important states of** _supervisor_- **sleep**, **wake up** and **exit** messages.
 
+#### Mini-Examples:
++ Claudio has written **a new 😊 quickstart** script where it **mostly** _put likes and comments_. He wants the program to **comment safely** cos he is _afraid of exceeding_ **hourly** & **daily** comment limits,
+```python
+session.set_quota_supervisor(enabled=True, peak_comments=(21, 240))
+```
+>_That's it! When it reaches the comments peak, it will just jump all of the comments and will again continue to put comments when is available [in the next  hour/day]_.
+
++ Alicia has a **24**/**7** 🕦 working **quickstart** script and **would like to** keep _server calls_ in control to AVOID **excessive amount of requests** to the _server_ in **hourly** basis, also,
+    + **wants** the program to **sleep after** reaching **hourly** _server calls_ peak: **adds** `"server_calls_h"` into `sleep_after` parameter
+    + **wants** the program to **wake up** _a little bit later_ than real sleep time [once reaches the peaks]: **uses** `sleepyhead=True` parameter
+```python
+session.set_quota_supervisor(enabled=True, peak_server_calls=(490, None) sleep_after=["server_calls_h"], sleepyhead=True)
+```
+>_It will sleep after **hourly** server calls reaches its peak given - `490` and **never allow** one more extra request to the server out of the peak and **wake up** when **new hour** comes in WHILST **daily** server calls **will not be** supervised at all- as Alicia wishes_.
+
++ Sam has a _casual_ 🦆 **quickstart** script full of _follow_/_unfollow_ features and he wants to **do it safely**, also,
+    + is **gonna** run on local computer and **wants** to receive **toast notifications** 😋 on _supervising states_: **uses** `notify_me` parameter
+    + **wants** QS to _randomize_ his `pre-defined` peak values [at close range] each new _hour_/_day_: **uses** `stochastic_flow=True` parameter
+    + **wants** the program to sleep after reaching **hourly** _follow_ peaks and **daily** _unfollow_ peaks: **adds** `"follows_h"` and `"unfollows_d"`into `sleep_after` parameter
+```python
+session.set_quota_supervisor(enabled=True, peak_follows=(56, 660), peak_unfollows=(49, 550) sleep_after=["follows_h", "unfollows_d"], stochastic_flow=True, notify_me=True)
+```
+
+---
+>**Big Hint**: _Find your NEED_ 🤔 _and supervise it!_  
++ _EITHER_ **fully** configure QS to supervise **all** of the _actions_ all time  
++ _OR_ **just** supervise the desired _action_(_s_) in desired _interval_(_s_) [**hourly** and/or **daily**] per your need
 
 
 
