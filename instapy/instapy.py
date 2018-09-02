@@ -88,7 +88,7 @@ class InstaPy:
                  headless_browser=False,
                  proxy_address=None,
                  proxy_chrome_extension=None,
-                 proxy_port=0,
+                 proxy_port=None,
                  bypass_suspicious_attempt=False,
                  multi_logs=False):
 
@@ -260,7 +260,7 @@ class InstaPy:
             # this setting can improve pageload & save bandwidth
             firefox_profile.set_preference('permissions.default.image', 2)
 
-            if self.proxy_address and self.proxy_port > 0:
+            if self.proxy_address and self.proxy_port:
                 firefox_profile.set_preference('network.proxy.type', 1)
                 firefox_profile.set_preference('network.proxy.http',
                                                self.proxy_address)
@@ -293,7 +293,7 @@ class InstaPy:
                                             .format(user_agent=user_agent))
             capabilities = DesiredCapabilities.CHROME
             # Proxy for chrome
-            if self.proxy_address and self.proxy_port > 0:
+            if self.proxy_address and self.proxy_port:
                 prox = Proxy()
                 proxy = ":".join([self.proxy_address, self.proxy_port])
                 prox.proxy_type = ProxyType.MANUAL

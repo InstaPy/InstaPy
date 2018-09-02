@@ -90,7 +90,7 @@ def set_automated_followed_pool(username, unfollow_after, logger, logfolder):
         followedPoolFile.close()
 
     except BaseException as exc:
-        logger.error("Error occured while generating a user list from the followed pool!\n{}"
+        logger.error("Error occured while generating a user list from the followed pool!\n\t{}"
                         .format(str(exc).encode("utf-8")))
 
     return automatedFollowedPool
@@ -123,7 +123,7 @@ def get_following_status(browser, person, logger):
     except NoSuchElementException:
         logger.error("--> Unfollow issue with '{}'!"
                       "\t~unable to detect the following status"
-                          .format(person.encode('utf-8')))
+                          .format(person.encode("utf-8")))
 
     return following, follow_button
 
@@ -518,6 +518,36 @@ def follow_user(browser, track, login, user_name, button, blacklist, logger, log
                                             follow_button)
 
                 click_element(browser, follow_button)
+
+                # verify the last follow
+                following, follow_button = get_following_status(browser,
+                                                                 user_name,
+                                                                  logger)
+                if not following:
+                    browser.execute_script("location.reload()")
+                    sleep(2)
+                    following, follow_button = get_following_status(browser,
+                                                                     user_name,
+                                                                      logger)
+                    if following is None:
+                        sirens_wailing, emergency_state = emergency_exit(browser,
+                                                                          user_name,
+                                                                           logger)
+                        if sirens_wailing == True:
+                            logger.warning("There is a serious issue: '{}'!\n".format(emergency_state))
+                            return False, emergency_state
+
+                        else:
+                            logger.error("Unexpected failure happened after last follow!\n")
+                            return False "unexpected failure"
+
+                    if following == False:
+                        logger.warning("Last follow is not verified!\t~smells of a shadow ban\n")
+                        sleep(600)
+                        return False, "shadow ban"
+
+                    else:
+                        logger.info("Last follow is verified after reloading the page!\n")
 
         except NoSuchElementException:
             logger.info("--> '{}' is already followed".format(user_name))
@@ -1057,7 +1087,7 @@ def unfollow_user(browser, track, username, person, person_id, button, relations
             # check out if the loop has to be broken immidiately
             sirens_wailing, emergency_state = emergency_exit(browser, username, logger)
             if sirens_wailing == True:
-                return False, emergency_state   # break here
+                return False, emergency_state
 
             else:   # there is no any serious issue- loop should continue
                 logger.warning("Maybe '{}' has changed the username!\t~verifying through the user ID"
