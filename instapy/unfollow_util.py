@@ -538,7 +538,7 @@ def follow_user(browser, track, login, user_name, button, blacklist, logger, log
 
                         else:
                             logger.error("Unexpected failure happened after last follow!\n")
-                            return False "unexpected failure"
+                            return False, "unexpected failure"
 
                     if following == False:
                         logger.warning("Last follow is not verified!\t~smells of a shadow ban\n")
