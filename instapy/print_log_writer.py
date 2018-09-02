@@ -3,6 +3,7 @@ from datetime import datetime
 
 from .time_util import sleep
 from .util import interruption_handler
+from .util import web_address_navigator
 
 from selenium.common.exceptions import WebDriverException
 
@@ -12,7 +13,8 @@ from selenium.common.exceptions import WebDriverException
 def log_follower_num(browser, username, logfolder):
     """Prints and logs the current number of followers to
     a seperate file"""
-    browser.get('https://www.instagram.com/' + username)
+    user_link = "https://www.instagram.com/{}".format(username)
+    web_address_navigator(browser, user_link)
 
     try:
         followed_by = browser.execute_script(
@@ -38,7 +40,8 @@ def log_follower_num(browser, username, logfolder):
 def log_following_num(browser, username, logfolder):
     """Prints and logs the current number of followers to
     a seperate file"""
-    browser.get('https://www.instagram.com/' + username)
+    user_link = "https://www.instagram.com/{}".format(username)
+    web_address_navigator(browser, user_link)
 
     try:
         following_num = browser.execute_script(
