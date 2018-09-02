@@ -277,17 +277,9 @@ def toast_notification(notify, alert, job, interval):
                 timeout=delay,
                 ticker="To switch supervising methods, please review quickstart script")
 
-        except Exception as exc:
-            # I couldn't guess exact exceptions to catch, it would be great to find it out
-            # errors will be related to 'plyer' module's OS support or icons)
-            logger.exception("Quota Supervisor: toast notifications currently isn't supported on your platform!"
-                         "\t~you shouldn't use `notify_me` parameter :L\n"
-                         "\t{}".format(str(exc).encode("utf-8")))
+        except (TypeError, NotImplementedError):
             # turn off toast notification for the rest of the session
             configuration.update(nofity=False)
-            # helpful advice
-            logger.info("\t~consider installing the latest version of 'plyer' module by running\n"
-                            "`pip install -I https://github.com/kivy/plyer/zipball/master`\n")
 
 
 
