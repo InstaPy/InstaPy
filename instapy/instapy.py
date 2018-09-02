@@ -364,6 +364,7 @@ class InstaPy:
         if not login_user(self.browser,
                           self.username,
                           self.password,
+                          self.logger,
                           self.logfolder,
                           self.switch_language,
                           self.bypass_suspicious_attempt):

@@ -6,6 +6,8 @@ from selenium.webdriver.common.action_chains import ActionChains
 from .time_util import sleep
 from .util import update_activity
 from .util import web_address_navigator
+from .util import explicit_wait
+from .util import click_element
 
 from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import WebDriverException
@@ -93,6 +95,7 @@ def bypass_suspicious_login(browser):
 def login_user(browser,
                username,
                password,
+               logger,
                logfolder,
                switch_language=True,
                bypass_suspicious_attempt=False):
@@ -149,25 +152,39 @@ def login_user(browser,
     # Enter username and password and logs the user in
     # Sometimes the element name isn't 'Username' and 'Password'
     # (valid for placeholder too)
-    sleep(2) 
-    input_username = browser.find_elements_by_xpath(
-        "//input[@name='username']")
 
-    ActionChains(browser).move_to_element(input_username[0]). \
+    # wait until it navigates to the login page
+    login_page_title = "Login"
+    explicit_wait(browser, "TC", login_page_title, logger)
+
+    # wait until the 'username' input element is located and visible
+    input_username_XP = "//input[@name='username']"
+    explicit_wait(browser, "VOEL", [input_username_XP, "XPath"], logger)
+
+    input_username = browser.find_element_by_xpath(input_username_XP)
+
+    ActionChains(browser).move_to_element(input_username). \
         click().send_keys(username).perform()
     sleep(1)
+
+    #  password
     input_password = browser.find_elements_by_xpath(
         "//input[@name='password']")
+
     if not isinstance(password, str):
         password = str(password)
+
     ActionChains(browser).move_to_element(input_password[0]). \
         click().send_keys(password).perform()
 
     login_button = browser.find_element_by_xpath(
         "//form/span/button[text()='Log in']")
     ActionChains(browser).move_to_element(login_button).click().perform()
+
     # update server calls
     update_activity()
+
+    dismiss_get_app_offer(browser, logger)
 
     if bypass_suspicious_attempt is True:
         bypass_suspicious_login(browser)
@@ -183,3 +200,20 @@ def login_user(browser,
         return True
     else:
         return False
+
+
+
+def dismiss_get_app_offer(browser, logger):
+    """ Dismiss 'Get the Instagram App' page after a fresh login """
+    offer_elem = "//*[contains(text(), 'Get App')]"
+    dismiss_elem = "//*[contains(text(), 'Not Now')]"
+
+    # wait a bit and see if the 'Get App' offer rises up
+    offer_loaded = explicit_wait(browser, "VOEL", [offer_elem, "XPath"], logger, 5)
+
+    if offer_loaded:
+        dismiss_elem = browser.find_element_by_xpath(dismiss_elem)
+        click_element(browser, dismiss_elem)
+
+
+
