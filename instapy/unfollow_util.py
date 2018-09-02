@@ -20,7 +20,6 @@ from .util import emergency_exit
 from .util import load_user_id
 from .util import get_username
 from .util import find_user_id
-from .util import new_tab
 from .util import explicit_wait
 from .print_log_writer import log_followed_pool
 from .print_log_writer import log_uncertain_unfollowed_pool
@@ -43,7 +42,7 @@ def set_automated_followed_pool(username, unfollow_after, logger, logfolder):
     pool_name = "{0}{1}_followedPool.csv".format(logfolder, username)
     automatedFollowedPool = {"all": {}, "eligible": {}}
     time_stamp = None
-    user_id = False   # `False` rather than `None` is *intentional
+    user_id = "undefined"   # 'undefined' rather than None is *intentional
 
     try:
         with open(pool_name, 'r+') as followedPoolFile:
@@ -671,7 +670,6 @@ def get_users_through_dialog(browser,
             quick_amount = 1 if not total_list >= amount else random.randint(1, 4)
 
             for i in range(0, quick_amount):
-                buttons = get_buttons_from_dialog(dialog, channel)
                 quick_index = random.randint(0, len(buttons)-1)
                 quick_button = buttons[quick_index]
                 quick_username = dialog_username_extractor(quick_button)
@@ -692,14 +690,9 @@ def get_users_through_dialog(browser,
                                                          logfolder)
                     print('')
                     simulated_list.extend(quick_follow)
-                    # declare the dialog box once again after the DOM change
-                    explicit_wait(browser, "VOEL", [dialog_address, "XPath"], logger)
-                    dialog = browser.find_element_by_xpath(dialog_address)
 
             simulator_counter = 0
 
-    # get buttons for last time
-    buttons = get_buttons_from_dialog(dialog, channel)
     person_list = dialog_username_extractor(buttons)
 
     if randomize:
@@ -1096,7 +1089,7 @@ def unfollow_user(browser, track, username, person, person_id, button, relations
                 if person_id is None:
                     person_id = load_user_id(username, person, logger, logfolder)
 
-                if person_id:
+                if person_id and person_id not in [None, "unknown", "undefined"] :
                     user_link_by_id = ("https://www.instagram.com/web/friendships/{}/follow/"
                                             .format(person_id))
                     web_address_navigator(browser, user_link_by_id)
@@ -1225,15 +1218,9 @@ def get_buttons_from_dialog(dialog, channel):
 
 def get_user_id(browser, track, username, logger):
     """ Get user's ID either from a profile page or post page """
-    user_link = "https://www.instagram.com/{}/".format(username)
+    user_id = "unknown"
 
-    if track == "dialog":
-        # navigate to the profile page directly in a newly opened tab
-        with new_tab(browser):
-            web_address_navigator(browser, user_link)
-            user_id = find_user_id(browser, track, username, logger)
-
-    else:
+    if track != "dialog":   # currently do not get the user ID for follows from 'dialog' 
         user_id = find_user_id(browser, track, username, logger)
 
     return user_id
