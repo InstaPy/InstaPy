@@ -630,10 +630,10 @@ def web_address_navigator(browser, link):
     # remove slashes at the end to compare efficiently
     if current_url is not None and current_url.endswith('/'):
         current_url = current_url[:-1]
-        page_type = "dir"   # slash at the end is a directory
 
     if link.endswith('/'):
         link = link[:-1]
+        page_type = "dir"   # slash at the end is a directory
 
     new_navigation = (current_url != link)
 
@@ -840,7 +840,7 @@ def emergency_exit(browser, username, logger):
 def load_user_id(username, person, logger, logfolder):
     """ Load the user ID at reqeust from local records """
     pool_name = "{0}{1}_followedPool.csv".format(logfolder, username)
-    user_id = None
+    user_id = "undefined"
 
     try:
         with open(pool_name, 'r+') as followedPoolFile:
@@ -975,7 +975,7 @@ def new_tab(browser):
 
     finally:
         # close the guest tab
-        browser.close()
+        browser.execute_script("window.close()")
         sleep(1)
         # return to the host tab
         browser.switch_to.window(browser.window_handles[0])
@@ -983,7 +983,7 @@ def new_tab(browser):
 
 
 
-def explicit_wait(browser, track, ec_params, logger):
+def explicit_wait(browser, track, ec_params, logger, timeout=66):
     """
     Explicitly wait until expected condition validates
 
@@ -996,24 +996,38 @@ def explicit_wait(browser, track, ec_params, logger):
     # <https://seleniumhq.github.io/selenium/docs/api/py/webdriver_support/
     # selenium.webdriver.support.expected_conditions.html>
 
+    if not isinstance(ec_params, list):
+        ec_params = [ec_params]
+
+
+    # find condition according to the tracks
     if track == "VOEL":
-        ec_name = "visibility of element located"
         elem_address, find_method = ec_params
+        ec_name = "visibility of element located"
+
         find_by = (By.XPATH if find_method == "XPath" else
                    By.CSS_SELECTOR if find_method == "CSS" else
                    By.CLASS_NAME)
         locator = (find_by, elem_address)
         condition = ec.visibility_of_element_located(locator)
 
+    elif track == "TC":
+        expect_in_title = ec_params[0]
+        ec_name = "title contains '{}' string".format(expect_in_title)
+
+        condition = ec.title_contains(expect_in_title)
+
     # generic wait block
     try:
-        wait = WebDriverWait(browser, 66)
-        element = wait.until(condition)
+        wait = WebDriverWait(browser, timeout)
+        result = wait.until(condition)
 
-    except TimeoutException as exc:
-        logger.info("Timed out with failure while explicitly waiting until {}!\n\t{}"
-                        .format(ec_name, str(exc).encode("utf-8")))
-        pass
+    except TimeoutException:
+        logger.info("Timed out with failure while explicitly waiting until {}!\n"
+                        .format(ec_name))
+        return False
+
+    return result
 
 
 
