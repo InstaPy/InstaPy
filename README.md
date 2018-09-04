@@ -848,7 +848,7 @@ session.set_quota_supervisor(enabled=True, peak_server_calls=(490, None) sleep_a
 + Sam has a _casual_ 🦆 **quickstart** script full of _follow_/_unfollow_ features and he wants to **do it safely**, also,
     + is **gonna** run on local computer and **wants** to receive **toast notifications** 😋 on _supervising states_: **uses** `notify_me` parameter
     + **wants** QS to _randomize_ his `pre-defined` peak values [at close range] each new _hour_/_day_: **uses** `stochastic_flow=True` parameter
-    + **wants** the program to sleep after reaching **hourly** _follow_ peaks and **daily** _unfollow_ peaks: **adds** `"follows_h"` and `"unfollows_d"`into `sleep_after` parameter
+    + **wants** the program to sleep after reaching **hourly** _follow_ peak and **daily** _unfollow_ peak: **adds** `"follows_h"` and `"unfollows_d"`into `sleep_after` parameter
 ```python
 session.set_quota_supervisor(enabled=True, peak_follows=(56, 660), peak_unfollows=(49, 550) sleep_after=["follows_h", "unfollows_d"], stochastic_flow=True, notify_me=True)
 ```
