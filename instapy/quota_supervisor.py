@@ -277,7 +277,11 @@ def toast_notification(notify, alert, job, interval):
                 timeout=delay,
                 ticker="To switch supervising methods, please review quickstart script")
 
-        except (TypeError, NotImplementedError):
+        except:
+            # TypeError: out of 'plyer' bug in python 2
+            # NotImplementedError: when 'plyer' is not supported
+            # DBusException: dbus-display issue on linux boxes
+
             # turn off toast notification for the rest of the session
             configuration.update(nofity=False)
 
