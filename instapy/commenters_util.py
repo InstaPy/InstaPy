@@ -300,7 +300,7 @@ def likers_from_photo(browser, amount=20):
 
         person_list = []
         for person in follow_buttons:
-            username_url = person.find_element_by_xpath("../../../*").find_element_by_tag_name("a").get_attribute('href')
+            username_url = person.find_element_by_xpath("../../*").find_element_by_tag_name("a").get_attribute('href')
             username = username_url_to_username(username_url)
             person_list.append(username)
         
