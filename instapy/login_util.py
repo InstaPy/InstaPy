@@ -1,11 +1,18 @@
 """Module only used for the login part of the script"""
-from .time_util import sleep
+import time
+import pickle
 from selenium.webdriver.common.action_chains import ActionChains
+
+from .time_util import sleep
+from .util import update_activity
+from .util import web_address_navigator
+from .util import explicit_wait
+from .util import click_element
+
 from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import WebDriverException
-from .util import update_activity
-import pickle
-import time
+
+
 
 
 def bypass_suspicious_login(browser):
@@ -48,7 +55,7 @@ def bypass_suspicious_login(browser):
                 return False
 
     send_security_code_button = browser.find_element_by_xpath(
-        ("//button[text()='Send Security Code']"))
+        "//button[text()='Send Security Code']")
     (ActionChains(browser)
      .move_to_element(send_security_code_button)
      .click()
@@ -88,6 +95,7 @@ def bypass_suspicious_login(browser):
 def login_user(browser,
                username,
                password,
+               logger,
                logfolder,
                switch_language=True,
                bypass_suspicious_attempt=False):
@@ -95,14 +103,14 @@ def login_user(browser,
     assert username, 'Username not provided'
     assert password, 'Password not provided'
 
-    browser.get('https://www.instagram.com')
-    # update server calls
-    update_activity()
+    ig_homepage = "https://www.instagram.com"
+    web_address_navigator(browser, ig_homepage)
     cookie_loaded = False
 
     # try to load cookie from username
     try:
-        browser.get('https://www.google.com')
+        googledotcom = "https://www.google.com"
+        web_address_navigator(browser, googledotcom)
         for cookie in pickle.load(open('{0}{1}_cookie.pkl'
                                        .format(logfolder,username), 'rb')):
             browser.add_cookie(cookie)
@@ -113,7 +121,7 @@ def login_user(browser,
     # include time.sleep(1) to prevent getting stuck on google.com
     time.sleep(1)
     
-    browser.get('https://www.instagram.com')
+    web_address_navigator(browser, ig_homepage)
 
     # Cookie has been loaded, user should be logged in. Ensurue this is true
     login_elem = browser.find_elements_by_xpath(
@@ -144,25 +152,39 @@ def login_user(browser,
     # Enter username and password and logs the user in
     # Sometimes the element name isn't 'Username' and 'Password'
     # (valid for placeholder too)
-    sleep(2) 
-    input_username = browser.find_elements_by_xpath(
-        "//input[@name='username']")
 
-    ActionChains(browser).move_to_element(input_username[0]). \
+    # wait until it navigates to the login page
+    login_page_title = "Login"
+    explicit_wait(browser, "TC", login_page_title, logger)
+
+    # wait until the 'username' input element is located and visible
+    input_username_XP = "//input[@name='username']"
+    explicit_wait(browser, "VOEL", [input_username_XP, "XPath"], logger)
+
+    input_username = browser.find_element_by_xpath(input_username_XP)
+
+    ActionChains(browser).move_to_element(input_username). \
         click().send_keys(username).perform()
     sleep(1)
+
+    #  password
     input_password = browser.find_elements_by_xpath(
         "//input[@name='password']")
+
     if not isinstance(password, str):
         password = str(password)
+
     ActionChains(browser).move_to_element(input_password[0]). \
         click().send_keys(password).perform()
 
     login_button = browser.find_element_by_xpath(
         "//form/span/button[text()='Log in']")
     ActionChains(browser).move_to_element(login_button).click().perform()
+
     # update server calls
     update_activity()
+
+    dismiss_get_app_offer(browser, logger)
 
     if bypass_suspicious_attempt is True:
         bypass_suspicious_login(browser)
@@ -178,3 +200,20 @@ def login_user(browser,
         return True
     else:
         return False
+
+
+
+def dismiss_get_app_offer(browser, logger):
+    """ Dismiss 'Get the Instagram App' page after a fresh login """
+    offer_elem = "//*[contains(text(), 'Get App')]"
+    dismiss_elem = "//*[contains(text(), 'Not Now')]"
+
+    # wait a bit and see if the 'Get App' offer rises up
+    offer_loaded = explicit_wait(browser, "VOEL", [offer_elem, "XPath"], logger, 5)
+
+    if offer_loaded:
+        dismiss_elem = browser.find_element_by_xpath(dismiss_elem)
+        click_element(browser, dismiss_elem)
+
+
+

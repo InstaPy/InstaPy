@@ -1,23 +1,23 @@
-import time
-import re
+""" Module that handles the like features """
 import random
-
-"""Module that handles the like features"""
-from .util import format_number
-from math import ceil
+import re
 from re import findall
 from selenium.webdriver.common.keys import Keys
-from selenium.common.exceptions import WebDriverException
-from selenium.common.exceptions import NoSuchElementException
 
 from .time_util import sleep
+from .util import format_number
 from .util import add_user_to_blacklist
 from .util import click_element
 from .util import is_private_profile
 from .util import update_activity
-from .util import web_adress_navigator
+from .util import web_address_navigator
 from .util import get_number_of_posts
-from .util import remove_duplicated_from_list_keep_order
+from .quota_supervisor import quota_supervisor
+
+from selenium.common.exceptions import WebDriverException
+from selenium.common.exceptions import NoSuchElementException
+
+
 
 
 def get_links_from_feed(browser, amount, num_of_search, logger):
@@ -26,7 +26,7 @@ def get_links_from_feed(browser, amount, num_of_search, logger):
     feeds_link = 'https://www.instagram.com/'
 
     #Check URL of the webpage, if it already is in Feeds page, then do not navigate to it again
-    web_adress_navigator(browser, feeds_link)
+    web_address_navigator(browser, feeds_link)
 
     for i in range(num_of_search + 1):
         browser.execute_script(
@@ -54,6 +54,7 @@ def get_links_from_feed(browser, amount, num_of_search, logger):
     return links
 
 
+
 def get_links_for_location(browser,
                            location,
                            amount,
@@ -73,10 +74,8 @@ def get_links_for_location(browser,
         # Make it an array to use it in the following part
         media = [media]
 
-    browser.get('https://www.instagram.com/explore/locations/{}'.format(location))
-    # update server calls
-    update_activity()
-    sleep(2)
+    location_link = "https://www.instagram.com/explore/locations/{}".format(location)
+    web_address_navigator(browser, location_link)
 
     top_elements = browser.find_element_by_xpath('//main/article/div[1]')
     top_posts = top_elements.find_elements_by_tag_name('a')
@@ -172,6 +171,7 @@ def get_links_for_location(browser,
     return links[:amount]
 
 
+
 def get_links_for_tag(browser,
                       tag,
                       amount,
@@ -193,10 +193,9 @@ def get_links_for_tag(browser,
         media = [media]
 
     tag = (tag[1:] if tag[:1] == '#' else tag)
-    browser.get(u'https://www.instagram.com/explore/tags/{}'.format(tag))
-    # update server calls
-    update_activity()
-    sleep(2)
+
+    tag_link = "https://www.instagram.com/explore/tags/{}".format(tag)
+    web_address_navigator(browser, tag_link)
 
     top_elements = browser.find_element_by_xpath('//main/article/div[1]')
     top_posts = top_elements.find_elements_by_tag_name('a')
@@ -326,7 +325,7 @@ def get_links_for_username(browser,
     user_link = "https://www.instagram.com/{}/".format(username)
 
     #Check URL of the webpage, if it already is user's profile page, then do not navigate to it again
-    web_adress_navigator(browser, user_link)
+    web_address_navigator(browser, user_link)
 
     body_elem = browser.find_element_by_tag_name('body')
     abort = True
@@ -359,7 +358,6 @@ def get_links_for_username(browser,
         initial_links = links
         browser.execute_script(
             "window.scrollTo(0, document.body.scrollHeight);")
-        body_elem.send_keys(Keys.HOME)
         # update server calls after a scroll request
         update_activity()
         sleep(0.66)
@@ -389,11 +387,10 @@ def check_link(browser, post_link, dont_like, mandatory_words, ignore_if_contain
     Check the given link if it is appropriate
 
     :param browser: The selenium webdriver instance
-    :param link:
+    :param post_link:
     :param dont_like: hashtags of inappropriate phrases
     :param mandatory_words: words of appropriate phrases
     :param ignore_if_contains:
-
     :param logger: the logger instance
     :return: tuple of
         boolean: True if inappropriate,
@@ -404,7 +401,7 @@ def check_link(browser, post_link, dont_like, mandatory_words, ignore_if_contain
     """
 
     #Check URL of the webpage, if it already is post's page, then do not navigate to it again
-    web_adress_navigator(browser, post_link)
+    web_address_navigator(browser, post_link)
 
     """Check if the Post is Valid/Exists"""
     try:
@@ -514,8 +511,12 @@ def check_link(browser, post_link, dont_like, mandatory_words, ignore_if_contain
     return False, user_name, is_video, 'None', "Success"
 
 
+
 def like_image(browser, username, blacklist, logger, logfolder):
     """Likes the browser opened image"""
+    # check action availability
+    if quota_supervisor("likes") == "jump":
+        return False, "jumped"
 
     like_xpath = "//button/span[@aria-label='Like']"
     unlike_xpath = "//button/span[@aria-label='Unlike']"
@@ -529,35 +530,40 @@ def like_image(browser, username, blacklist, logger, logfolder):
         click_element(browser, like_elem[0])
         # check now we have unlike instead of like
         liked_elem = browser.find_elements_by_xpath(unlike_xpath)
+
         if len(liked_elem) == 1:
             logger.info('--> Image Liked!')
             update_activity('likes')
+
             if blacklist['enabled'] is True:
                 action = 'liked'
                 add_user_to_blacklist(
-                    username, blacklist['campaign'], action, logger, logfolder
-                )
+                    username, blacklist['campaign'], action, logger, logfolder)
             sleep(2)
-            return True
+            return True, "success"
+
         else:
             # if like not seceded wait for 2 min
             logger.info('--> Image was not able to get Liked! maybe blocked ?')
             sleep(120)
+
     else:
         liked_elem = browser.find_elements_by_xpath(unlike_xpath)
         if len(liked_elem) == 1:
-            logger.info('--> Image already liked! ')
-            return False
+            logger.info('--> Image already liked!')
+            return False, "already liked"
 
     logger.info('--> Invalid Like Element!')
-    return False
+
+    return False, "invalid element"
+
 
 
 def get_tags(browser, url):
     """Gets all the tags of the given description in the url"""
 
     #Check URL of the webpage, if it already is the one to be navigated, then do not navigate to it again
-    web_adress_navigator(browser, url)
+    web_address_navigator(browser, url)
 
     graphql = browser.execute_script(
         "return ('graphql' in window._sharedData.entry_data.PostPage[0])")
@@ -572,6 +578,7 @@ def get_tags(browser, url):
 
     tags = findall(r'#\w*', image_text)
     return tags
+
 
 
 def get_links(browser, page, logger, media, element):
@@ -615,7 +622,6 @@ def verify_liking(browser, max, min, logger):
                         return True
                 except NoSuchElementException:
                     logger.info("Failed to check likes' count\n")
-                    raise
                     return True
 
         if max is not None and likes_count > max:
@@ -626,3 +632,6 @@ def verify_liking(browser, max, min, logger):
             return False
 
         return True
+
+
+

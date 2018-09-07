@@ -1,16 +1,22 @@
 """Methods to extract the data for the given usernames profile"""
 #code created by modification of original code copied from https://github.com/timgrossmann/instagram-profilecrawl/blob/master/util/extractor.py
 from time import sleep
-from re import findall
 from datetime import datetime, timedelta
-from selenium.common.exceptions import NoSuchElementException
-from selenium.webdriver.common.keys import Keys 
+import random
+import collections
+from operator import itemgetter, attrgetter
+from selenium.webdriver.common.keys import Keys
+
 from .util import get_number_of_posts
 from .util import click_element
 from .util import update_activity
-from .util import web_adress_navigator
+from .util import web_address_navigator
 from .util import username_url_to_username
-import random
+
+from selenium.common.exceptions import NoSuchElementException
+
+
+
 
 def check_exists_by_xpath(browser, xpath):
     try:
@@ -79,7 +85,7 @@ def extract_post_info(browser):
 def extract_information(browser, username, daysold, max_pic):
   
     """Get all the information for the given username"""
-    web_adress_navigator(browser,'https://www.instagram.com/' + username)
+    web_address_navigator(browser,'https://www.instagram.com/' + username)
     
     try:
         num_of_posts = get_number_of_posts(browser)
@@ -192,7 +198,7 @@ def extract_information(browser, username, daysold, max_pic):
         print ("\nScrapping link: ", link)
         
         try:
-            web_adress_navigator(browser,link)
+            web_address_navigator(browser,link)
             user_commented_list, pic_date_time = extract_post_info(browser)     
             user_commented_total_list = user_commented_total_list + user_commented_list
 
@@ -212,8 +218,6 @@ def extract_information(browser, username, daysold, max_pic):
   
     #PREPARE THE USER LIST TO EXPORT
     #sorts the list by frequencies, so users who comment the most are at the top
-    import collections
-    from operator import itemgetter, attrgetter
     counter=collections.Counter(user_commented_total_list)
     com = sorted(counter.most_common(), key=itemgetter(1,0), reverse=True)
     com = map(lambda x: [x[0]] * x[1], com)
@@ -235,7 +239,7 @@ def extract_information(browser, username, daysold, max_pic):
 def users_liked (browser, photo_url, amount=100):
     photo_likers = []
     try:
-        web_adress_navigator(browser,photo_url)
+        web_address_navigator(browser,photo_url)
         photo_likers = likers_from_photo(browser, amount)   
         sleep(2)  
     except NoSuchElementException:
@@ -309,9 +313,9 @@ def likers_from_photo(browser, amount=20):
         except:
             pass
                
-        print ("\nGot ",len(person_list)," likers shuffled randomly, who you can follow:\n", person_list, "\n")      
-        return person_list    
-        sleep(2)
+        print ("\nGot ",len(person_list)," likers shuffled randomly, who you can follow:\n", person_list, "\n")
+        return person_list
+
     except Exception as e:
         print ("Some problem")
         print (e)
@@ -322,7 +326,7 @@ def get_photo_urls_from_profile (browser, username, links_to_return_amount=1, ra
     #input can be both username or user profile url
     username = username_url_to_username(username)
     print ("\nGetting likers from user: ", username,"\n")
-    web_adress_navigator(browser,'https://www.instagram.com/' + username +'/')
+    web_address_navigator(browser,'https://www.instagram.com/' + username +'/')
     sleep(1)
     
     photos_a_elems = browser.find_elements_by_xpath("//div/a")
@@ -334,7 +338,7 @@ def get_photo_urls_from_profile (browser, username, links_to_return_amount=1, ra
         if ("/p/" in photo_url):
             links.append(photo_url)
 
-    if (randomize == True):
+    if randomize == True:
         print ("shuffling links")
         random.shuffle(links)   
     print ("Got ", len(links), ", returning ", min(links_to_return_amount, len(links)), " links: ", links[:links_to_return_amount])      
@@ -343,3 +347,6 @@ def get_photo_urls_from_profile (browser, username, links_to_return_amount=1, ra
     #except:
     print ("Error: Couldnt get pictures links.")
     return []
+
+
+

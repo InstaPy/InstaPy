@@ -7,7 +7,7 @@ import random
 import json
 
 from .time_util import sleep
-from .util import web_adress_navigator
+from .util import web_address_navigator
 from .util import get_relationship_counts
 from .util import interruption_handler
 
@@ -30,7 +30,7 @@ def get_followers(browser,
     logger.info("Retrieving {} `Followers` data of {} {}".format(tense, username, grab_info))
 
     user_link = "https://www.instagram.com/{}/".format(username)
-    web_adress_navigator(browser, user_link)
+    web_address_navigator(browser, user_link)
 
     # Get followers count
     followers_count, following_count = get_relationship_counts(browser, username, logger)
@@ -67,6 +67,7 @@ def get_followers(browser,
     sc_rolled = 0
     grab_notifier = False
     local_read_failure = False
+    passed_time = "time loop"
 
     try:
         has_next_data = True
@@ -234,7 +235,7 @@ def get_following(browser,
     logger.info("Retrieving {} `Following` data of {} {}".format(tense, username, grab_info))
 
     user_link = "https://www.instagram.com/{}/".format(username)
-    web_adress_navigator(browser, user_link)
+    web_address_navigator(browser, user_link)
 
     # Get following count
     followers_count, following_count = get_relationship_counts(browser, username, logger)
@@ -271,6 +272,7 @@ def get_following(browser,
     sc_rolled = 0
     grab_notifier = False
     local_read_failure = False
+    passed_time = "time loop"
 
     try:
         has_next_data = True

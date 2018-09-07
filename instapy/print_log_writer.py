@@ -1,14 +1,20 @@
 """Module only used to log the number of followers to a file"""
 from datetime import datetime
-from selenium.common.exceptions import WebDriverException
+
 from .time_util import sleep
 from .util import interruption_handler
+from .util import web_address_navigator
+
+from selenium.common.exceptions import WebDriverException
+
+
 
 
 def log_follower_num(browser, username, logfolder):
     """Prints and logs the current number of followers to
     a seperate file"""
-    browser.get('https://www.instagram.com/' + username)
+    user_link = "https://www.instagram.com/{}".format(username)
+    web_address_navigator(browser, user_link)
 
     try:
         followed_by = browser.execute_script(
@@ -34,7 +40,8 @@ def log_follower_num(browser, username, logfolder):
 def log_following_num(browser, username, logfolder):
     """Prints and logs the current number of followers to
     a seperate file"""
-    browser.get('https://www.instagram.com/' + username)
+    user_link = "https://www.instagram.com/{}".format(username)
+    web_address_navigator(browser, user_link)
 
     try:
         following_num = browser.execute_script(
@@ -57,13 +64,14 @@ def log_following_num(browser, username, logfolder):
     return following_num
 
 
-def log_followed_pool(login, followed, logger, logfolder, logtime, userid):
+def log_followed_pool(login, followed, logger, logfolder, logtime, user_id):
     """Prints and logs the followed to
     a seperate file"""
     try:
         with open('{0}{1}_followedPool.csv'.format(logfolder, login), 'a+') as followPool:
             with interruption_handler():
-                followPool.write('{} ~ {} ~ {},\n'.format(logtime, followed,userid))
+                followPool.write('{} ~ {} ~ {},\n'.format(logtime, followed, user_id))
+
     except BaseException as e:
         logger.error("log_followed_pool error {}".format(str(e)))
 
