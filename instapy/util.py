@@ -255,15 +255,19 @@ def get_active_users(browser, username, posts, boundary, logger):
         total_posts = browser.execute_script(
             "return window._sharedData.entry_data."
             "ProfilePage[0].graphql.user.edge_owner_to_timeline_media.count")
+
     except WebDriverException:
         try:
-            total_posts = (browser.find_elements_by_xpath(
-                "//span[contains(@class,'g47SY')]")[0].text)
-            if total_posts: #prevent an empty string scenario
-                total_posts = format_number(total_posts)
+            topCount_elements = browser.find_elements_by_xpath(
+                "//span[contains(@class,'g47SY')]")
+
+            if topCount_elements: #prevent an empty string scenario
+                total_posts = format_number(topCount_elements[0].text)
+
             else:
                 logger.info("Failed to get posts count on your profile!  ~empty string")
                 total_posts = None
+
         except NoSuchElementException:
             logger.info("Failed to get posts count on your profile!")
             total_posts = None
@@ -567,6 +571,7 @@ def get_relationship_counts(browser, username, logger):
         followers_count = browser.execute_script(
             "return window._sharedData.entry_data."
             "ProfilePage[0].graphql.user.edge_followed_by.count")
+
     except WebDriverException:
         try:
             followers_count = format_number(browser.find_element_by_xpath("//a[contains"
@@ -577,15 +582,19 @@ def get_relationship_counts(browser, username, logger):
                 followers_count = browser.execute_script(
                     "return window._sharedData.entry_data."
                     "ProfilePage[0].graphql.user.edge_followed_by.count")
+
             except WebDriverException:
                 try:
                     topCount_elements = browser.find_elements_by_xpath(
                         "//span[contains(@class,'g47SY')]")
+
                     if topCount_elements:
                         followers_count = format_number(topCount_elements[1].text)
+
                     else:
                         logger.info("Failed to get followers count of '{}'  ~empty list".format(username))
                         followers_count = None
+
                 except NoSuchElementException:
                     logger.error("Error occured during getting the followers count of '{}'\n".format(username))
                     followers_count = None
@@ -594,25 +603,31 @@ def get_relationship_counts(browser, username, logger):
         following_count = browser.execute_script(
             "return window._sharedData.entry_data."
             "ProfilePage[0].graphql.user.edge_follow.count")
+
     except WebDriverException:
         try:
             following_count = format_number(browser.find_element_by_xpath("//a[contains"
                                                                           "(@href,'following')]/span").text)
+
         except NoSuchElementException:
             try:
                 browser.execute_script("location.reload()")
                 following_count = browser.execute_script(
                     "return window._sharedData.entry_data."
                     "ProfilePage[0].graphql.user.edge_follow.count")
+
             except WebDriverException:
                 try:
                     topCount_elements = browser.find_elements_by_xpath(
                         "//span[contains(@class,'g47SY')]")
+
                     if topCount_elements:
                         following_count = format_number(topCount_elements[2].text)
+
                     else:
                         logger.info("Failed to get following count of '{}'  ~empty list".format(username))
                         following_count = None
+
                 except NoSuchElementException:
                     logger.error("\nError occured during getting the following count of '{}'\n".format(username))
                     following_count = None
