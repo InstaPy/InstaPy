@@ -519,6 +519,9 @@ def follow_user(browser, track, login, user_name, button, blacklist, logger, log
 
                 click_element(browser, follow_button)
 
+            # wait a bit for the follow click succeed
+            sleep(2)
+
             # verify the last follow
             following, follow_button = get_following_status(browser,
                                                              user_name,
