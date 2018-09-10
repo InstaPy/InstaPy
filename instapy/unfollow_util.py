@@ -506,6 +506,7 @@ def follow_user(browser, track, login, user_name, button, blacklist, logger, log
             follow_xpath = "//button[text()='Follow' or text()='Follow Back']"
             follow_button = browser.find_element_by_xpath(follow_xpath)
 
+            # click to follow
             if follow_button.is_displayed():
                 click_element(browser, follow_button)
 
@@ -518,35 +519,35 @@ def follow_user(browser, track, login, user_name, button, blacklist, logger, log
 
                 click_element(browser, follow_button)
 
-                # verify the last follow
+            # verify the last follow
+            following, follow_button = get_following_status(browser,
+                                                             user_name,
+                                                              logger)
+            if not following:
+                browser.execute_script("location.reload()")
+                sleep(2)
                 following, follow_button = get_following_status(browser,
                                                                  user_name,
                                                                   logger)
-                if not following:
-                    browser.execute_script("location.reload()")
-                    sleep(2)
-                    following, follow_button = get_following_status(browser,
-                                                                     user_name,
-                                                                      logger)
-                    if following is None:
-                        sirens_wailing, emergency_state = emergency_exit(browser,
-                                                                          user_name,
-                                                                           logger)
-                        if sirens_wailing == True:
-                            logger.warning("There is a serious issue: '{}'!\n".format(emergency_state))
-                            return False, emergency_state
-
-                        else:
-                            logger.error("Unexpected failure happened after last follow!\n")
-                            return False, "unexpected failure"
-
-                    if following == False:
-                        logger.warning("Last follow is not verified!\t~smells of a shadow ban\n")
-                        sleep(600)
-                        return False, "shadow ban"
+                if following is None:
+                    sirens_wailing, emergency_state = emergency_exit(browser,
+                                                                      user_name,
+                                                                       logger)
+                    if sirens_wailing == True:
+                        logger.warning("There is a serious issue: '{}'!\n".format(emergency_state))
+                        return False, emergency_state
 
                     else:
-                        logger.info("Last follow is verified after reloading the page!\n")
+                        logger.error("Unexpected failure happened after last follow!\n")
+                        return False, "unexpected failure"
+
+                if following == False:
+                    logger.warning("Last follow is not verified!\t~smells of a shadow ban\n")
+                    sleep(600)
+                    return False, "shadow ban"
+
+                else:
+                    logger.info("Last follow is verified after reloading the page!\n")
 
         except NoSuchElementException:
             logger.info("--> '{}' is already followed".format(user_name))
