@@ -1122,14 +1122,30 @@ def unfollow_user(browser, track, username, person, person_id, button, relations
             click_element(browser, follow_button)
             sleep(4)
             confirm_unfollow(browser)
-            # double check the following state
-            follow_button = browser.find_element_by_xpath(
-                                "//*[contains(text(), 'Follow')]")
-            # if the button still has not changed it can be a temporary block
-            if follow_button.text not in ['Follow', 'Follow Back']:
-                logger.warning("--> Unfollow error!\t~username '{}' might be blocked from unfollowing\n"
-                                   .format(username))
-                return False, "shadow ban"
+            # wait until it properly unfollows
+            follow_element = "//button[text()='Follow' or text()='Follow Back']"
+            button_change = explicit_wait(browser, "VOEL", [follow_element, "XPath"], logger)
+
+            if not button_change:
+                browser.execute_script("location.reload()")
+                sleep(2)
+
+                # double check the following state
+                follow_button = browser.find_element_by_xpath(
+                    "//*[contains(text(), 'Follow')]")
+
+                if follow_button.text not in ["Follow", "Follow Back"]:
+                    click_element(browser, follow_button)
+                    sleep(4)
+                    confirm_unfollow(browser)
+                    # wait until it properly unfollows
+                    button_change = explicit_wait(browser, "VOEL", [follow_element, "XPath"], logger)
+
+                    if not button_change:
+                        # if the button still has not changed it can be a temporary block
+                        logger.warning("--> Unfollow error!\t~username '{}' might be blocked from unfollowing\n"
+                                           .format(username))
+                        return False, "shadow ban"
 
 
         elif following == False:
