@@ -1177,9 +1177,9 @@ def confirm_unfollow(browser):
 
     while attempt<3:
         try:
+            attempt += 1
             button_xp = "//button[text()='Unfollow']"   # "//button[contains(text(), 'Unfollow')]"
             unfollow_button = browser.find_element_by_xpath(button_xp)
-            attempt += 1
 
             if unfollow_button.is_displayed():
                 click_element(browser, unfollow_button)
