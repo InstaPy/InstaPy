@@ -160,6 +160,7 @@ class InstaPy:
         self.user_interact_media = None
         self.user_interact_percentage = 0
         self.user_interact_random = False
+        self.dont_follow_inap_post = True
 
         self.use_clarifai = False
         self.clarifai_api_key = None
@@ -1902,6 +1903,35 @@ class InstaPy:
                     not_valid_users += 1
                     continue
 
+            # decision making
+            # static conditions
+            not_dont_include = username not in self.dont_include
+            follow_restrected = follow_restriction("read", username,
+                                                    self.follow_times, self.logger)
+            counter = 0
+            while True:
+                following = (random.randint(0, 100) <= self.follow_percentage and
+                             self.do_follow and
+                             not_dont_include and
+                             not follow_restrected)
+                commenting = (random.randint(0, 100) <= self.comment_percentage and
+                              self.do_comment and
+                              not_dont_include)
+                liking = (random.randint(0, 100) <= self.like_percentage)
+
+                counter += 1
+
+                # if we have only one image to like/comment
+                if commenting and not liking and amount == 1:
+                    continue
+                if following or commenting or liking:
+                    self.logger('username actions: following={} commenting={} liking={}'.format(following, commenting, liking))
+                    break
+                # if for some reason we have no actions on this user
+                if counter > 5:
+                    self.logger('username={} could not get interacted'.format(username))
+                    break
+
             try:
                 links = get_links_for_username(self.browser,
                                                username,
@@ -1947,35 +1977,12 @@ class InstaPy:
                                    self.logger))
 
                     if not inappropriate:
-                        following = (random.randint(0, 100) <= self.follow_percentage)
-                        liking = (random.randint(0, 100) <= self.like_percentage)
-                        commenting = (random.randint(0, 100) <= self.comment_percentage)
-
-                        # follow
-                        if (self.do_follow and
-                            username not in self.dont_include and
-                            following and
-                            not follow_restriction("read", username,
-                             self.follow_times, self.logger)):
-
-                            follow_state, msg = follow_user(
-                                                    self.browser,
-                                                    "post",
-                                                    self.username,
-                                                    username,
-                                                    None,
-                                                    self.blacklist,
-                                                    self.logger,
-                                                    self.logfolder)
-                            if follow_state == True:
-                                followed += 1
-
-                            elif msg == "already followed":
-                                already_followed += 1
-
-                        else:
-                            self.logger.info('--> Not following')
-                            sleep(1)
+                        # after first image we roll again
+                        if i > 0:
+                            liking = (random.randint(0, 100) <= self.like_percentage)
+                            commenting = (random.randint(0, 100) <= self.comment_percentage and
+                                            self.do_comment and
+                                                not_dont_include)
 
                         # like
                         if self.do_like and liking and self.delimit_liking:
@@ -2011,10 +2018,7 @@ class InstaPy:
                                         self.logger.error(
                                             'Image check error: {}'.format(err))
 
-                                if (self.do_comment and
-                                     user_name not in self.dont_include and
-                                      checked_img and
-                                       commenting):
+                                if commenting and checked_img:
 
                                     if self.delimit_commenting:
                                         (self.commenting_approved,
@@ -2066,6 +2070,28 @@ class InstaPy:
 
                 except NoSuchElementException as err:
                     self.logger.info('Invalid Page: {}'.format(err))
+
+            # follow
+            if following and not (self.dont_follow_inap_post and inap_img > 0):
+
+                follow_state, msg = follow_user(
+                    self.browser,
+                    "post",
+                    self.username,
+                    username,
+                    None,
+                    self.blacklist,
+                    self.logger,
+                    self.logfolder)
+                if follow_state == True:
+                    followed += 1
+
+                elif msg == "already followed":
+                    already_followed += 1
+
+            else:
+                self.logger.info('--> Not following')
+                sleep(1)
 
             if liked_img < amount:
                 self.logger.info('-------------')
