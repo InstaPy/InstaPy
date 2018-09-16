@@ -28,8 +28,7 @@ def open_comment_section(browser, logger):
     missing_comment_elem_warning = (
         '--> Warning: Comment Button Not Found:'
         ' May cause issues with browser windows of smaller widths')
-    comment_elem = browser.find_elements_by_xpath(
-        "//button/span[@aria-label='Comment']")
+    comment_elem = Keys.RETURN
     if len(comment_elem) > 0:
         try:
             browser.execute_script(
