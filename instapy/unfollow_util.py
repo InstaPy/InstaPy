@@ -98,31 +98,27 @@ def set_automated_followed_pool(username, unfollow_after, logger, logfolder):
 
 def get_following_status(browser, person, logger):
     """ Verify if you are following the user in the loaded page """
-    following = None
-    follow_button = None
+    follow_button_XP = ("//button[text()='Following' or \
+                                  text()='Requested' or \
+                                  text()='Follow' or \
+                                  text()='Follow Back']")
 
-    try:
-        follow_button = browser.find_element_by_xpath(
-            "//*[contains(text(), 'Follow')]")
+    # wait until the follow button is located and visible, then get it
+    follow_button = explicit_wait(browser, "VOEL", [follow_button_XP, "XPath"], logger)
 
-        if follow_button.text == 'Following':
-            following = True
+    if not follow_button:
+        browser.execute_script("location.reload()")
+        follow_button = explicit_wait(browser, "VOEL", [follow_button_XP, "XPath"], logger)
 
-        else:
-            if follow_button.text in ['Follow', 'Follow Back']:
-                following = False
+        if not follow_button:
+            logger.error("--> Unable to detect the following status of '{}'!"
+                                  .format(person.encode("utf-8")))
+            return None, None
 
-            else:
-                follow_button = browser.find_element_by_xpath(
-                    "//*[contains(text(), 'Requested')]")
-
-                if follow_button.text == "Requested":
-                    following = "Requested"
-
-    except NoSuchElementException:
-        logger.error("--> Unfollow issue with '{}'!"
-                      "\t~unable to detect the following status"
-                          .format(person.encode("utf-8")))
+    # get follow state
+    state = follow_button.text
+    following = (False if state in ['Follow', 'Follow Back'] else
+                 True if state=="Following" else "Requested")
 
     return following, follow_button
 
@@ -348,6 +344,7 @@ def unfollow(browser,
                     continue
         except BaseException as e:
             logger.error("Unfollow loop error:  {}\n".format(str(e)))
+
 
     elif allFollowing == True:
         logger.info("Unfollowing the users you are following")
