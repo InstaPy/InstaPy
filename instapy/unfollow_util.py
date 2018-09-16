@@ -288,7 +288,7 @@ def unfollow(browser,
                     logger.warning("--> Unfollow quotient reached its peak!\t~leaving Unfollow-Users activity\n")
                     break
 
-                if sleep_counter >= sleep_after:
+                if sleep_counter >= sleep_after and sleep_delay not in [0, None]:
                     delay_random = random.randint(ceil(sleep_delay*0.85), ceil(sleep_delay*1.14))
                     logger.info("Unfollowed {} new users  ~sleeping about {}\n".format(sleep_counter,
                                     '{} seconds'.format(delay_random) if delay_random < 60 else
@@ -430,7 +430,8 @@ def unfollow(browser,
 
                 if (unfollowNum != 0 and
                         hasSlept is False and
-                            unfollowNum % 10 == 0):
+                            unfollowNum % 10 == 0 and
+                                sleep_delay not in [0, None]):
                     logger.info("sleeping for about {} min\n"
                                 .format(int(sleep_delay/60)))
                     sleep(sleep_delay)
