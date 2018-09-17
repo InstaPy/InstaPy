@@ -89,7 +89,7 @@ class InstaPy:
                  proxy_address=None,
                  proxy_chrome_extension=None,
                  proxy_port=None,
-                 disable_image_load=True,
+                 disable_image_load=False,
                  bypass_suspicious_attempt=False,
                  multi_logs=False):
 
