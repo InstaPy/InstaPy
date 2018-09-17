@@ -174,8 +174,6 @@ $ python quickstart.py
 
 [1. Official Cross Platform GUI](https://github.com/ahmadudin/electron-instaPy-GUI)
 
-[<img src="https://raw.githubusercontent.com/ahmadudin/ahmadudin.github.io/master/assets/images/screencapture1.PNG" width="400" />](https://github.com/ahmadudin/electron-instaPy-GUI)
-
 [2. Session scheduling with Telegram](https://github.com/Tkd-Alex/Telegram-InstaPy-Scheduling)
 
 [3. InstaPy-Light, a light version of InstaPy](https://github.com/converge/InstaPy-Light)
