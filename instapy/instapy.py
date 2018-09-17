@@ -89,6 +89,7 @@ class InstaPy:
                  proxy_address=None,
                  proxy_chrome_extension=None,
                  proxy_port=None,
+                 disable_image_load=True
                  bypass_suspicious_attempt=False,
                  multi_logs=False):
 
@@ -105,6 +106,7 @@ class InstaPy:
         self.selenium_local_session = selenium_local_session
         self.show_logs = show_logs
         self.bypass_suspicious_attempt = bypass_suspicious_attempt
+        self.disable_image_load = disable_image_load
 
         self.username = username or os.environ.get('INSTA_USER')
         self.password = password or os.environ.get('INSTA_PW')
@@ -256,9 +258,10 @@ class InstaPy:
             else:
                 firefox_profile = webdriver.FirefoxProfile()
 
-            # permissions.default.image = 2: Disable images load,
-            # this setting can improve pageload & save bandwidth
-            firefox_profile.set_preference('permissions.default.image', 2)
+            if self.disable_image_load:
+                # permissions.default.image = 2: Disable images load,
+                # this setting can improve pageload & save bandwidth
+                firefox_profile.set_preference('permissions.default.image', 2)
 
             if self.proxy_address and self.proxy_port:
                 firefox_profile.set_preference('network.proxy.type', 1)
@@ -287,6 +290,10 @@ class InstaPy:
             if self.headless_browser:
                 chrome_options.add_argument('--headless')
                 chrome_options.add_argument('--no-sandbox')
+                
+                if self.disable_image_load:
+                    chrome_options.add_argument('--blink-settings=imagesEnabled=false')
+                
                 # Replaces browser User Agent from "HeadlessChrome".
                 user_agent = "Chrome"
                 chrome_options.add_argument('user-agent={user_agent}'
@@ -312,6 +319,10 @@ class InstaPy:
             chrome_prefs = {
                 'intl.accept_languages': 'en-US'
             }
+            
+            if self.disable_image_load:
+                chrome_prefs['profile.managed_default_content_settings.images'] = 2
+            
             chrome_options.add_experimental_option('prefs', chrome_prefs)
             try:
                 self.browser = webdriver.Chrome(chromedriver_location,
