@@ -1518,7 +1518,11 @@ If you want to save some bandwidth, you can simply disable the image/video loadi
 
 To do this simply pass the `disable_image_load=True` parameter in the InstaPy constructor like so:
 ```python
-
+session = InstaPy(username=insta_username,
+                  password=insta_password,
+                  headless_browser=False,
+		  disable_image_loading=True,
+                  multi_logs=True)
 ```
 
 
