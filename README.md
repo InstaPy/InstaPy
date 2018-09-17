@@ -87,6 +87,7 @@ Table of Contents
   * [Schedule](#schedule)
 * [Extra Information](#extra-information)  
   * [Simulation](#simulation)
+  * [Disable Image Loading](#disable-image-loading)
 
 ## Getting started
 
@@ -1509,6 +1510,16 @@ session.set_simulation(enabled=False)
 session.set_simulation(enabled=True, percentage=66)
 ```
 
+
+### Disable Image Loading
+If you want to save some bandwidth, you can simply disable the image/video loading. This will lead to, if you watch InstaPy running, not downloading and displaying any more images and videos.
+
+> Note: This can save a tremendous amount of data. This is turned off by default (`False`).
+
+To do this simply pass the `disable_image_load=True` parameter in the InstaPy constructor like so:
+```python
+
+```
 
 
 ---
