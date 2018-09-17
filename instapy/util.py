@@ -426,19 +426,10 @@ def delete_line_from_file(filepath, lineToDelete, logger):
 
         f = open(file_path_Temp, "w")
         for line in lines:
-            # have to do this line 401 - 411 due to legacy support; 
-            lineSegement = line.split(" ~ ")
-            lineSegementSize = len(lineSegement)
-            if lineSegementSize == 1:
-                if not lineSegement[0].endswith(lineToDelete):
-                    f.write(line)
-                else:
-                    logger.info("\tRemoved '{}' from followedPool.csv file".format(line.split(',\n')[0]))
-            elif lineSegementSize > 1:
-                if not lineSegement[1].endswith(lineToDelete):
-                    f.write(line)
-                else:
-                    logger.info("\tRemoved '{}' from followedPool.csv file".format(line.split(',\n')[0]))
+            if (line.find(lineToDelete) < 0):
+                f.write(line)
+            else:
+                logger.info("\tRemoved '{}' from followedPool.csv file".format(line.split(',\n')[0]))
         f.close()
 
         # File leftovers that should not exist, but if so remove it
