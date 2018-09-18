@@ -481,7 +481,6 @@ def check_link(browser, post_link, dont_like, mandatory_words, ignore_if_contain
 
     image_text_lower = [x.lower() for x in image_text]
     ignore_if_contains_lower = [x.lower() for x in ignore_if_contains]
-    ignore_if_contains_lower = map(lambda x: x.lower(), ignore_if_contains)
     if any((word in image_text_lower for word in ignore_if_contains_lower)):
         return False, user_name, is_video, 'None', "Pass"
 
