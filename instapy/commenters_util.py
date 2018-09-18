@@ -198,7 +198,7 @@ def extract_information(browser, username, daysold, max_pic):
         print ("\nScrapping link: ", link)
         
         try:
-            web_address_navigator(browser,link)
+            web_address_navigator(browser, link)
             user_commented_list, pic_date_time = extract_post_info(browser)     
             user_commented_total_list = user_commented_total_list + user_commented_list
 

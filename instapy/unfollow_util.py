@@ -98,31 +98,27 @@ def set_automated_followed_pool(username, unfollow_after, logger, logfolder):
 
 def get_following_status(browser, person, logger):
     """ Verify if you are following the user in the loaded page """
-    following = None
-    follow_button = None
+    follow_button_XP = ("//button[text()='Following' or \
+                                  text()='Requested' or \
+                                  text()='Follow' or \
+                                  text()='Follow Back']")
 
-    try:
-        follow_button = browser.find_element_by_xpath(
-            "//*[contains(text(), 'Follow')]")
+    # wait until the follow button is located and visible, then get it
+    follow_button = explicit_wait(browser, "VOEL", [follow_button_XP, "XPath"], logger)
 
-        if follow_button.text == 'Following':
-            following = True
+    if not follow_button:
+        browser.execute_script("location.reload()")
+        follow_button = explicit_wait(browser, "VOEL", [follow_button_XP, "XPath"], logger)
 
-        else:
-            if follow_button.text in ['Follow', 'Follow Back']:
-                following = False
+        if not follow_button:
+            logger.error("--> Unable to detect the following status of '{}'!"
+                                  .format(person.encode("utf-8")))
+            return None, None
 
-            else:
-                follow_button = browser.find_element_by_xpath(
-                    "//*[contains(text(), 'Requested')]")
-
-                if follow_button.text == "Requested":
-                    following = "Requested"
-
-    except NoSuchElementException:
-        logger.error("--> Unfollow issue with '{}'!"
-                      "\t~unable to detect the following status"
-                          .format(person.encode("utf-8")))
+    # get follow state
+    state = follow_button.text
+    following = (False if state in ['Follow', 'Follow Back'] else
+                 True if state=="Following" else "Requested")
 
     return following, follow_button
 
@@ -292,7 +288,7 @@ def unfollow(browser,
                     logger.warning("--> Unfollow quotient reached its peak!\t~leaving Unfollow-Users activity\n")
                     break
 
-                if sleep_counter >= sleep_after:
+                if sleep_counter >= sleep_after and sleep_delay not in [0, None]:
                     delay_random = random.randint(ceil(sleep_delay*0.85), ceil(sleep_delay*1.14))
                     logger.info("Unfollowed {} new users  ~sleeping about {}\n".format(sleep_counter,
                                     '{} seconds'.format(delay_random) if delay_random < 60 else
@@ -348,6 +344,7 @@ def unfollow(browser,
                     continue
         except BaseException as e:
             logger.error("Unfollow loop error:  {}\n".format(str(e)))
+
 
     elif allFollowing == True:
         logger.info("Unfollowing the users you are following")
@@ -433,7 +430,8 @@ def unfollow(browser,
 
                 if (unfollowNum != 0 and
                         hasSlept is False and
-                            unfollowNum % 10 == 0):
+                            unfollowNum % 10 == 0 and
+                                sleep_delay not in [0, None]):
                     logger.info("sleeping for about {} min\n"
                                 .format(int(sleep_delay/60)))
                     sleep(sleep_delay)
@@ -1122,14 +1120,30 @@ def unfollow_user(browser, track, username, person, person_id, button, relations
             click_element(browser, follow_button)
             sleep(4)
             confirm_unfollow(browser)
-            # double check the following state
-            follow_button = browser.find_element_by_xpath(
-                                "//*[contains(text(), 'Follow')]")
-            # if the button still has not changed it can be a temporary block
-            if follow_button.text not in ['Follow', 'Follow Back']:
-                logger.warning("--> Unfollow error!\t~username '{}' might be blocked from unfollowing\n"
-                                   .format(username))
-                return False, "shadow ban"
+            # wait until it properly unfollows
+            follow_element = "//button[text()='Follow' or text()='Follow Back']"
+            button_change = explicit_wait(browser, "VOEL", [follow_element, "XPath"], logger)
+
+            if not button_change:
+                browser.execute_script("location.reload()")
+                sleep(2)
+
+                # double check the following state
+                follow_button = browser.find_element_by_xpath(
+                    "//*[contains(text(), 'Follow')]")
+
+                if follow_button.text not in ["Follow", "Follow Back"]:
+                    click_element(browser, follow_button)
+                    sleep(4)
+                    confirm_unfollow(browser)
+                    # wait until it properly unfollows
+                    button_change = explicit_wait(browser, "VOEL", [follow_element, "XPath"], logger)
+
+                    if not button_change:
+                        # if the button still has not changed it can be a temporary block
+                        logger.warning("--> Unfollow error!\t~username '{}' might be blocked from unfollowing\n"
+                                           .format(username))
+                        return False, "shadow ban"
 
 
         elif following == False:
@@ -1161,9 +1175,9 @@ def confirm_unfollow(browser):
 
     while attempt<3:
         try:
+            attempt += 1
             button_xp = "//button[text()='Unfollow']"   # "//button[contains(text(), 'Unfollow')]"
             unfollow_button = browser.find_element_by_xpath(button_xp)
-            attempt += 1
 
             if unfollow_button.is_displayed():
                 click_element(browser, unfollow_button)
