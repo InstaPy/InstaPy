@@ -1906,14 +1906,14 @@ class InstaPy:
             # decision making
             # static conditions
             not_dont_include = username not in self.dont_include
-            follow_restrected = follow_restriction("read", username,
+            follow_restricted = follow_restriction("read", username,
                                                     self.follow_times, self.logger)
             counter = 0
             while True:
                 following = (random.randint(0, 100) <= self.follow_percentage and
                              self.do_follow and
                              not_dont_include and
-                             not follow_restrected)
+                             not follow_restricted)
                 commenting = (random.randint(0, 100) <= self.comment_percentage and
                               self.do_comment and
                               not_dont_include)
