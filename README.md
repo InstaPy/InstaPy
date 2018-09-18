@@ -87,6 +87,7 @@ Table of Contents
   * [Schedule](#schedule)
 * [Extra Information](#extra-information)  
   * [Simulation](#simulation)
+  * [Disable Image Loading](#disable-image-loading)
 
 ## Getting started
 
@@ -172,8 +173,6 @@ $ python quickstart.py
 ### Or use our GUI
 
 [1. Official Cross Platform GUI](https://github.com/ahmadudin/electron-instaPy-GUI)
-
-[<img src="https://raw.githubusercontent.com/ahmadudin/ahmadudin.github.io/master/assets/images/screencapture1.PNG" width="400" />](https://github.com/ahmadudin/electron-instaPy-GUI)
 
 [2. Session scheduling with Telegram](https://github.com/Tkd-Alex/Telegram-InstaPy-Scheduling)
 
@@ -1509,6 +1508,20 @@ session.set_simulation(enabled=False)
 session.set_simulation(enabled=True, percentage=66)
 ```
 
+
+### Disable Image Loading
+If you want to save some bandwidth, you can simply disable the image/video loading. This will lead to, if you watch InstaPy running, not downloading and displaying any more images and videos.
+
+> Note: This can save a tremendous amount of data. This is turned off by default (`False`).
+
+To do this simply pass the `disable_image_load=True` parameter in the InstaPy constructor like so:
+```python
+session = InstaPy(username=insta_username,
+                  password=insta_password,
+                  headless_browser=False,
+		  disable_image_loading=True,
+                  multi_logs=True)
+```
 
 
 ---
