@@ -302,7 +302,7 @@ class InstaPy:
             # Proxy for chrome
             if self.proxy_address and self.proxy_port:
                 prox = Proxy()
-                proxy = ":".join([self.proxy_address, self.proxy_port])
+                proxy = ":".join([self.proxy_address, str(self.proxy_port)])
                 prox.proxy_type = ProxyType.MANUAL
                 prox.http_proxy = proxy
                 prox.socks_proxy = proxy
