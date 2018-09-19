@@ -185,6 +185,7 @@ def validate_username(browser,
 
     # check user has at least N posts
     minimum_post_num = parameters['min_posts']
+    
     try:
         post_num = browser.execute_script(
             "return window._sharedData.entry_data."
@@ -200,7 +201,7 @@ def validate_username(browser,
             post_num = minimum_post_num+1
             logger.error(
                 'Intagram error: can not fetch user posts number')
-
+    logger.info('User: {} >> num of posts: {}'.format(username, post_num))
     if post_num < minimum_post_num:
         return False, ('---> {}, number of posts does not reach '
                 'minimum'.format(username)), return_values_dist
