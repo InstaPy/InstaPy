@@ -405,7 +405,7 @@ class InstaPy:
         if self.aborting:
             return self
 
-        self.parameters['interact_business'] = inputs['interact_business']  # default: will skip 2/10 business profiles
+        self.parameters['interact_business'] = interact_business  # default: will skip 2/10 business profiles
 
         self.skip_private_users = skip_private
 
@@ -1758,7 +1758,6 @@ class InstaPy:
                                         username,
                                         None,
                                         self.blacklist,
-                                        is_private,
                                         self.logger,
                                         self.logfolder)
                 if follow_state == True:
