@@ -1985,23 +1985,23 @@ class InstaPy:
                                  self.do_follow and
                                  not_dont_include and
                                  not follow_restricted)
-                commenting = (random.randint(0, 100) <= self.comment_percentage and
-                              self.do_comment and
-                              not_dont_include)
-                liking = (random.randint(0, 100) <= self.like_percentage)
+               commenting = (random.randint(0, 100) <= self.comment_percentage and
+                             self.do_comment and
+                             not_dont_include)
+               liking = (random.randint(0, 100) <= self.like_percentage)
 
-                counter += 1
+               counter += 1
 
-                # if we have only one image to like and comment and we only want to comment without like
-                if commenting and not liking and amount == 1:
-                    continue
-                if following or commenting or liking:
-                    self.logger.info('username actions: following={} commenting={} liking={}'.format(following, commenting, liking))
-                    break
-                # if for some reason we have no actions on this user
-                if counter > 5:
-                    self.logger.info('username={} could not get interacted'.format(username))
-                    break
+               # if we have only one image to like and comment and we only want to comment without like
+               if commenting and not liking and amount == 1:
+                   continue
+               if following or commenting or liking:
+                    self.logger('username actions: following={} commenting={} liking={}'.format(following, commenting, liking))
+                   break
+               # if for some reason we have no actions on this user
+               if counter > 5:
+                    self.logger('username={} could not get interacted'.format(username))
+                   break
 
             try:
                 links = get_links_for_username(self.browser,
