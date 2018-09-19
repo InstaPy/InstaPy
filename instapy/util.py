@@ -1112,3 +1112,8 @@ def get_current_url(browser):
 
 
 
+def is_page_available(browser, logger):
+    if "Page Not Found" in browser.title or "Content Unavailable" in browser.title:
+        logger.warning('Intagram error: The link you followed may be broken, or the page may have been removed...')
+        return False
+    return True
