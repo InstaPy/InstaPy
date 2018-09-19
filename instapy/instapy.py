@@ -2945,8 +2945,8 @@ class InstaPy:
                                 amount=50,
                                  randomize=False,
                                   unfollow=False,
-                                   interact=False):
-                                    followFeed=False
+                                   interact=False,
+                                    followFeed=False,
                                      validate_feed_users=False):
         """Like the users feed"""
 
