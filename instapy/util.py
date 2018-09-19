@@ -9,6 +9,7 @@ from subprocess import call
 import csv
 import sqlite3
 import json
+import random
 from contextlib import contextmanager
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as ec
@@ -64,8 +65,11 @@ def validate_username(browser,
                       max_following,
                       min_followers,
                       min_following,
+                      skip_private,
+                      parameters,
                       logger):
     """Check if we can interact with the user"""
+    return_values_dist = dict()
 
     # Some features may not povide `username` and in those cases we will get it from post's page.
     if '/' in username_or_link:
@@ -87,21 +91,35 @@ def validate_username(browser,
             except WebDriverException:
                 logger.error("Username validation failed! ~cannot get the post owner's username")
                 return False, \
-                        "---> Sorry, this page isn't available! ~link is broken, or page is removed\n"
+                        "---> Sorry, this page isn't available! ~link is broken, or page is removed\n", return_values_dist
     else:
         username = username_or_link   # if there is no `/` in `username_or_link`, then it is a `username`
 
     if username == own_username:
         return False, \
-                "---> Username '{}' is yours!  ~skipping user\n".format(own_username)
+                "---> Username '{}' is yours!  ~skipping user\n".format(own_username), return_values_dist
 
     if username in ignore_users:
         return False, \
-                "---> {} is in ignore_users list  ~skipping user\n".format(username)
+                "---> {} is in ignore_users list  ~skipping user\n".format(username), return_values_dist
 
     if username in blacklist:
         return False, \
-                "---> {} is in blacklist  ~skipping user\n".format(username)
+                "---> {} is in blacklist  ~skipping user\n".format(username), return_values_dist
+
+    # check if user is private
+    is_private = browser.execute_script(
+        "return window._sharedData.entry_data."
+        "ProfilePage[0].graphql.user.is_private")
+
+    return_values_dist['is_private'] = is_private
+
+    if is_private:
+        logger.info('{} is private'.format(username))
+        # if we set to ignore the privacy of the user or the user is private
+        if skip_private is True:
+            # we skip private since we don't want to follow this user/ or any other reason
+            return False, 'private', return_values_dist
 
     """Checks the potential of target user by relationship status in order to delimit actions within the desired boundary"""
     if potency_ratio or delimit_by_numbers and (max_followers or max_following or min_followers or min_following):
@@ -132,37 +150,71 @@ def validate_username(browser,
                         return False, \
                             "{} is not a {} with the relationship ratio of {}  ~skipping user\n".format(
                             username, "potential user" if not reverse_relationship else "massive follower",
-                            float("{0:.2f}".format(relationship_ratio)))
+                            float("{0:.2f}".format(relationship_ratio))), \
+                               return_values_dist
 
             elif delimit_by_numbers:
                 if followers_count:
                     if max_followers:
                         if followers_count > max_followers:
                             return False, \
-                                "User {}'s followers count exceeds maximum limit  ~skipping user\n".format(username)
+                                "User {}'s followers count exceeds maximum limit  ~skipping user\n".format(username), \
+                                   return_values_dist
                     if min_followers:
                         if followers_count < min_followers:
                             return False, \
-                                "User {}'s followers count is less than minimum limit  ~skipping user\n".format(username)
+                                "User {}'s followers count is less than minimum limit  ~skipping user\n".format(username), \
+                                   return_values_dist
                 if following_count:
                     if max_following:
                         if following_count > max_following:
                             return False, \
-                                "User {}'s following count exceeds maximum limit  ~skipping user\n".format(username)
+                                "User {}'s following count exceeds maximum limit  ~skipping user\n".format(username), \
+                                   return_values_dist
                     if min_following:
                         if following_count < min_following:
                             return False, \
-                                "User {}'s following count is less than minimum limit  ~skipping user\n".format(username)
+                                "User {}'s following count is less than minimum limit  ~skipping user\n".format(username), \
+                                   return_values_dist
                 if potency_ratio:
                     if relationship_ratio and relationship_ratio < potency_ratio:
                         return False, \
                             "{} is not a {} with the relationship ratio of {}  ~skipping user\n".format(
                             username, "potential user" if not reverse_relationship else "massive follower",
-                            float("{0:.2f}".format(relationship_ratio)))
+                            float("{0:.2f}".format(relationship_ratio))), return_values_dist
 
+    # check user has at least N posts
+    minimum_post_num = parameters['min_posts']
+    try:
+        post_num = browser.execute_script(
+            "return window._sharedData.entry_data."
+            "ProfilePage[0].graphql.user.edge_owner_to_timeline_media.count")
+    except WebDriverException:
+        try:
+            browser.execute_script("location.reload()")
+            sleep(1)
+            post_num = browser.execute_script(
+                "return window._sharedData.entry_data."
+                "ProfilePage[0].graphql.user.edge_owner_to_timeline_media.count")
+        except WebDriverException:
+            post_num = minimum_post_num+1
+            logger.error(
+                'Intagram error: can not fetch user posts number')
 
+    if post_num < minimum_post_num:
+        return False, ('---> {}, number of posts does not reach '
+                'minimum'.format(username)), return_values_dist
+
+    """ skip business profiles """
+    skip_business = True if parameters['interact_business'] < random.randint(0, 100) else False
+    if skip_business:
+        is_business_account = browser.execute_script(
+            "return window._sharedData.entry_data."
+            "ProfilePage[0].graphql.user.is_business_account")
+        if is_business_account is not None and is_business_account is True:
+            return False, 'detected business account', return_values_dist
     # if everything ok
-    return True, "Valid user"
+    return True, "Valid user", return_values_dist
 
 
 
