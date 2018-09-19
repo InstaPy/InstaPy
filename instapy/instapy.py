@@ -190,7 +190,7 @@ class InstaPy:
         self.max_comments = 35
         self.min_comments = 0
         
-        self.parameters = collections.defaultdict(dict)
+        self.parameters = defaultdict(dict)
         self.parameters['interact_business'] = 80  # will skip 2/10 business users
         self.skip_private_users = False
         
@@ -3151,7 +3151,6 @@ class InstaPy:
                                                                 user_name,
                                                                 None,
                                                                 self.blacklist,
-                                                                False,  # is_private,
                                                                 self.logger,
                                                                 self.logfolder)
                                         if follow_state == True:
