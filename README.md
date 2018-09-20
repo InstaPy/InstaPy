@@ -114,6 +114,13 @@ or
 ```
 4. Download ```chromedriver``` for your system [from here](https://sites.google.com/a/chromium.org/chromedriver/downloads). Extract the .zip file and put it in ```/assets``` folder.
 
+If you need multiple os versions of chromedriver just rename it like:
+```bash
+chromedriver_linux
+chromedriver_osx
+chromedriver_windows
+```
+
 ### Preferred Installation:
 
 The best way to install InstaPy is to create a virtualenv, install InstaPy there and run it from a separate file:
