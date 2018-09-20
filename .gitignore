@@ -107,3 +107,6 @@ logs/
 # pytest
 .pytest_cache/
 tests/logs
+
+# mypy cache
+.mypy_cache
