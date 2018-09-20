@@ -33,12 +33,16 @@ def is_private_profile(browser, logger, following=True):
         is_private = browser.execute_script(
             "return window._sharedData.entry_data."
             "ProfilePage[0].graphql.user.is_private")
+
     except WebDriverException:
         try:
             browser.execute_script("location.reload()")
+            update_activity()
+
             is_private = browser.execute_script(
                 "return window._sharedData.entry_data."
                 "ProfilePage[0].graphql.user.is_private")
+
         except WebDriverException:
             return None
 
@@ -78,12 +82,16 @@ def validate_username(browser,
             username = browser.execute_script(
                     "return window._sharedData.entry_data."
                     "PostPage[0].graphql.shortcode_media.owner.username")
+
         except WebDriverException:
             try:
                 browser.execute_script("location.relaod()")
+                update_activity()
+
                 username = browser.execute_script(
                         "return window._sharedData.entry_data."
                         "PostPage[0].graphql.shortcode_media.owner.username")
+
             except WebDriverException:
                 logger.error("Username validation failed! ~cannot get the post owner's username")
                 return False, \
@@ -316,13 +324,13 @@ def get_active_users(browser, username, posts, boundary, logger):
                     logger.info("Failed to get likers count on your post {}".format(count))
                     likers_count = None
 
-            browser.find_element_by_xpath(
-                "//a[contains(@class, 'zV_Nj')]").click()
+            likes_button = browser.find_element_by_xpath(
+                                       "//a[contains(@class, 'zV_Nj')]")
+            click_element(browser, likes_button)
             sleep_actual(5)
 
-
             dialog = browser.find_element_by_xpath(
-                "//div[text()='Likes']/following-sibling::div")
+                                 "//div[text()='Likes']/following-sibling::div")
 
             scroll_it = True
             try_again = 0
@@ -337,17 +345,22 @@ def get_active_users(browser, username, posts, boundary, logger):
                         return false;}
                     ''', dialog)
 
+                if scroll_it == True:
+                    update_activity()
+
                 if sc_rolled > 91 or too_many_requests > 1:  # old value 100
                     logger.info("Too Many Requests sent! ~will sleep some :>")
                     sleep_actual(600)
                     sc_rolled = 0
                     too_many_requests = 0 if too_many_requests >= 1 else too_many_requests
+
                 else:
                     sleep_actual(1.2)  # old value 5.6
                     sc_rolled += 1
 
                 tmp_list = browser.find_elements_by_xpath(
                     "//a[contains(@class, 'FPmhX')]")
+
                 if boundary is not None:
                     if len(tmp_list) >= boundary:
                         break
@@ -355,12 +368,14 @@ def get_active_users(browser, username, posts, boundary, logger):
                 if (scroll_it == False and
                       likers_count and
                         likers_count - 1 > len(tmp_list)):
+
                     if ((boundary is not None and likers_count - 1 > boundary) or
                                 boundary is None):
+
                         if try_again <= 1:  # you can increase the amount of tries here
-                            logger.info(
-                                "Cor! ~failed to get the desired amount of usernames, trying again!  |  post:{}  |  attempt: {}".format(
-                                    posts, try_again + 1))
+                            logger.info("Cor! ~failed to get the desired amount of usernames, "
+                                            "trying again!  |  post:{}  |  attempt: {}".format(
+                                                                                posts, try_again + 1))
                             try_again += 1
                             too_many_requests += 1
                             scroll_it = True
@@ -369,14 +384,18 @@ def get_active_users(browser, username, posts, boundary, logger):
 
             tmp_list = browser.find_elements_by_xpath(
                 "//a[contains(@class, 'FPmhX')]")
-            logger.info("Post {}  |  Likers: found {}, catched {}".format(count, likers_count, len(tmp_list)))
+
+            logger.info("Post {}  |  Likers: found {}, catched {}".format(
+                                            count, likers_count, len(tmp_list)))
 
         except NoSuchElementException:
             try:
                 tmp_list = browser.find_elements_by_xpath(
                     "//div[contains(@class, '_1xe_U')]/a")
+
                 if len(tmp_list) > 0:
                     logger.info("Post {}  |  Likers: found {}, catched {}".format(count, len(tmp_list), len(tmp_list)))
+
             except NoSuchElementException:
                 logger.error('There is some error searching active users')
 
@@ -385,26 +404,31 @@ def get_active_users(browser, username, posts, boundary, logger):
                 active_users.append(user.text)
 
         sleep_actual(1)
+
         # if not reached posts(parameter) value, continue
         if count +1 != posts +1 and count != 0:
             try:
                 # click next button
-                browser.find_element_by_xpath(
-                    "//a[contains(@class, 'HBoOv')]"
-                    "[text()='Next']").click()
+                next_button = browser.find_element_by_xpath(
+                                    "//a[contains(@class, 'HBoOv')]"
+                                        "[text()='Next']")
+                click_element(browser, next_button)
+
             except:
                 logger.error('Unable to go to next profile post')
 
     real_time = time.time()
     diff_in_minutes = int((real_time - start_time) / 60)
     diff_in_seconds = int((real_time - start_time) % 60)
+
     # delete duplicated users
     active_users = list(set(active_users))
-    logger.info(
-        "Gathered total of {} unique active followers from the latest {} posts in {} minutes and {} seconds".format(len(active_users),
-                                                                                                     posts,
-                                                                                                     diff_in_minutes,
-                                                                                                     diff_in_seconds))
+
+    logger.info("Gathered total of {} unique active followers from the latest {}"
+                "posts in {} minutes and {} seconds".format(len(active_users),
+                                                             posts,
+                                                              diff_in_minutes,
+                                                              diff_in_seconds))
 
     return active_users
 
@@ -494,6 +518,10 @@ def click_element(browser, element, tryNum=0):
     try:
         # use Selenium's built in click function
         element.click()
+
+        # update server calls after a successful click by selenium
+        update_activity()
+
     except:
         # click attempt failed
         # try something funky and try again
@@ -501,18 +529,26 @@ def click_element(browser, element, tryNum=0):
         if tryNum == 0:
             # try scrolling the element into view
             browser.execute_script("document.getElementsByClassName('" +  element.get_attribute("class") + "')[0].scrollIntoView({ inline: 'center' });")
+
         elif tryNum == 1:
             # well, that didn't work, try scrolling to the top and then clicking again
             browser.execute_script("window.scrollTo(0,0);")
+
         elif tryNum == 2:
             # that didn't work either, try scrolling to the bottom and then clicking again
             browser.execute_script("window.scrollTo(0,document.body.scrollHeight);")
+
         else:
             # try `execute_script` as a last resort
             # print("attempting last ditch effort for click, `execute_script`")
             browser.execute_script("document.getElementsByClassName('" +  element.get_attribute("class") + "')[0].click()")
-            return # end condition for the recursive function
+            # update server calls after last click attempt by JS
+            update_activity()
+            # end condition for the recursive function
+            return
 
+        # update server calls after the scroll(s) in 0, 1 and 2 attempts
+        update_activity()
 
         # sleep for 1 second to allow window to adjust (may or may not be needed)
         sleep_actual(1)
@@ -577,6 +613,8 @@ def get_relationship_counts(browser, username, logger):
         except NoSuchElementException:
             try:
                 browser.execute_script("location.reload()")
+                update_activity()
+
                 followers_count = browser.execute_script(
                     "return window._sharedData.entry_data."
                     "ProfilePage[0].graphql.user.edge_followed_by.count")
@@ -610,6 +648,8 @@ def get_relationship_counts(browser, username, logger):
         except NoSuchElementException:
             try:
                 browser.execute_script("location.reload()")
+                update_activity()
+
                 following_count = browser.execute_script(
                     "return window._sharedData.entry_data."
                     "ProfilePage[0].graphql.user.edge_follow.count")
@@ -897,6 +937,8 @@ def check_authorization(browser, username, method, logger):
         except WebDriverException:
             try:
                 browser.execute_script("location.reload()")
+                update_activity()
+
                 activity_counts = browser.execute_script(
                                     "return window._sharedData.activity_counts")
 
@@ -919,6 +961,8 @@ def get_username(browser, logger):
     except WebDriverException:
         try:
             browser.execute_script("location.reload()")
+            update_activity()
+
             username = browser.execute_script("return window._sharedData.entry_data."
                                                     "ProfilePage[0].graphql.user.username")
         except WebDriverException:
@@ -949,6 +993,8 @@ def find_user_id(browser, track, username, logger):
     except WebDriverException:
         try:
             browser.execute_script("location.reload()")
+            update_activity()
+
             user_id = browser.execute_script(query)
 
         except WebDriverException:

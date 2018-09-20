@@ -6,6 +6,7 @@ import emoji
 from .time_util import sleep
 from .util import update_activity
 from .util import add_user_to_blacklist
+from .util import click_element
 from .quota_supervisor import quota_supervisor
 
 from selenium.common.exceptions import WebDriverException
@@ -17,27 +18,33 @@ from selenium.common.exceptions import InvalidElementStateException
 def get_comment_input(browser):
     comment_input = browser.find_elements_by_xpath(
         '//textarea[@placeholder = "Add a comment…"]')
+
     if len(comment_input) <= 0:
         comment_input = browser.find_elements_by_xpath(
             '//input[@placeholder = "Add a comment…"]')
+
     return comment_input
 
 
 
 def open_comment_section(browser, logger):
     missing_comment_elem_warning = (
-        '--> Warning: Comment Button Not Found:'
-        ' May cause issues with browser windows of smaller widths')
+        "--> Comment Button Not Found!"
+            "\t~may cause issues with browser windows of smaller widths")
+
     comment_elem = browser.find_elements_by_xpath(
-        "//button/span[@aria-label='Comment']")
+                            "//button/span[@aria-label='Comment']")
+
     if len(comment_elem) > 0:
         try:
-            browser.execute_script(
-                "arguments[0].click();", comment_elem[0])
+            click_element(browser, comment_elem[0])
+
         except WebDriverException:
             logger.warning(missing_comment_elem_warning)
+
     else:
         logger.warning(missing_comment_elem_warning)
+
 
 
 def comment_image(browser, username, comments, blacklist, logger, logfolder):
@@ -57,27 +64,31 @@ def comment_image(browser, username, comments, blacklist, logger, logfolder):
         if len(comment_input) > 0:
             comment_input[0].clear()
             comment_input = get_comment_input(browser)
+            comment_to_be_sent = rand_comment+' '   # an extra space is added here to forces the input box to update the reactJS core
 
             browser.execute_script(
-                "arguments[0].value = arguments[1];", comment_input[0], rand_comment+' ')
-            # An extra space is added here and then deleted.
-            # This forces the input box to update the reactJS core
-            comment_input[0].send_keys("\b")
+                "arguments[0].value = arguments[1];", comment_input[0], comment_to_be_sent)
+
+            comment_input[0].send_keys('\b')   # this also will remove that extra space added above COS '\b' is a backspace char in ASCII
             comment_input = get_comment_input(browser)
             comment_input[0].submit()
             update_activity('comments')
+
             if blacklist['enabled'] is True:
                 action = 'commented'
-                add_user_to_blacklist(
-                    username, blacklist['campaign'], action, logger, logfolder
-                )
+                add_user_to_blacklist(username,
+                                       blacklist['campaign'],
+                                        action,
+                                         logger,
+                                         logfolder)
         else:
-            logger.warning('--> Warning: Comment Action Likely Failed:'
-                           ' Comment Element not found')
+            logger.warning("--> Comment Action Likely Failed!"
+                                "\t~comment Element was not found")
             return False, "commenting disabled"
 
     except InvalidElementStateException:
-        logger.warning('--> Warning: Comment Action Likely Failed: Probably InvalidElementStateException')
+        logger.warning("--> Comment Action Likely Failed!"
+                            "\t~encountered `InvalidElementStateException` :/")
         return False, "invalid element state"
 
     logger.info("--> Commented: {}".format(rand_comment.encode('utf-8')))
@@ -86,18 +97,23 @@ def comment_image(browser, username, comments, blacklist, logger, logfolder):
     return True, "success"
 
 
+
 def verify_commenting(browser, max, min, logger):
         """ Get the amount of existing existing comments and compare it against max & min values defined by user """
         try:
             comments_disabled = browser.execute_script(
                 "return window._sharedData.entry_data."
                 "PostPage[0].graphql.shortcode_media.comments_disabled")
+
         except WebDriverException:
             try:
                 browser.execute_script("location.reload()")
+                update_activity()
+
                 comments_disabled = browser.execute_script(
                     "return window._sharedData.entry_data."
                     "PostPage[0].graphql.shortcode_media.comments_disabled")            
+
             except Exception as e:
                 logger.info("Failed to check comments' status for verification!\n\t{}".format(str(e).encode("utf-8"))) 
                 return True, 'Verification failure'
@@ -105,10 +121,12 @@ def verify_commenting(browser, max, min, logger):
         if comments_disabled == True:
             disapproval_reason = "Not commenting ~comments are disabled for this post"
             return False, disapproval_reason
+
         try:
             comments_count = browser.execute_script(
                 "return window._sharedData.entry_data."
                 "PostPage[0].graphql.shortcode_media.edge_media_to_comment.count")
+
         except Exception as e:
             logger.info("Failed to check comments' count for verification!\n\t{}".format(str(e).encode("utf-8"))) 
             return True, 'Verification failure'

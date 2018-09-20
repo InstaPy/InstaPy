@@ -1,5 +1,6 @@
+""" Module that handles the like features """
+from .util import update_activity
 
-"""Module that handles the like features"""
 from selenium.common.exceptions import NoSuchElementException
 
 
@@ -27,6 +28,7 @@ def get_like_on_feed(browser, amount):
         abort = False
         try:
             like_buttons = browser.find_elements_by_class_name(LIKE_TAG_CLASS)
+
         except NoSuchElementException:
             print('Unale to find the like buttons, Aborting')
             abort = True
@@ -36,11 +38,17 @@ def get_like_on_feed(browser, amount):
 
         for button in like_buttons:
             likes_performed += 1
+
             if not (likes_performed <= amount):
                 print('Performed the required number of likes')
                 break
             yield button
 
         print('---> Total Likes uptil now ->', likes_performed)
+
         browser.execute_script(
             "window.scrollTo(0, document.body.scrollHeight);")
+        update_activity()
+
+
+
