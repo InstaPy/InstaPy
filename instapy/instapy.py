@@ -1995,11 +1995,11 @@ class InstaPy:
                if commenting and not liking and amount == 1:
                    continue
                if following or commenting or liking:
-                    self.logger('username actions: following={} commenting={} liking={}'.format(following, commenting, liking))
+                   self.logger('username actions: following={} commenting={} liking={}'.format(following, commenting, liking))
                    break
                # if for some reason we have no actions on this user
                if counter > 5:
-                    self.logger('username={} could not get interacted'.format(username))
+                   self.logger('username={} could not get interacted'.format(username))
                    break
 
             try:
