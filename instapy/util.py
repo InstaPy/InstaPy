@@ -426,10 +426,14 @@ def delete_line_from_file(filepath, lineToDelete, logger):
 
         f = open(file_path_Temp, "w")
         for line in lines:
-            if (line.find(lineToDelete) < 0):
-                f.write(line)
+            username_first_char_index = line.find(lineToDelete)
+            if ((username_first_char_index > -1) and
+                (line[username_first_char_index+len(lineToDelete)] in [',', '\n', ' ']) and
+                 (username_first_char_index != 0 and line[username_first_char_index-1] == ' ')):
+                logger.info("\tRemoved '{}' from {} file".format(line.split(',\n')[0], filepath))
             else:
-                logger.info("\tRemoved '{}' from followedPool.csv file".format(line.split(',\n')[0]))
+                f.write(line)
+
         f.close()
 
         # File leftovers that should not exist, but if so remove it
