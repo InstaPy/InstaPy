@@ -1519,7 +1519,7 @@ To do this simply pass the `disable_image_load=True` parameter in the InstaPy co
 session = InstaPy(username=insta_username,
                   password=insta_password,
                   headless_browser=False,
-		  disable_image_loading=True,
+		  disable_image_load=True,
                   multi_logs=True)
 ```
 
