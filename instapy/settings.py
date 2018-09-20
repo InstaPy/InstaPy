@@ -1,8 +1,7 @@
 """ Global variables """
 import os
 from sys import platform as p_os
-from chromedriver_py import binary_path
-
+import platform
 
 
 
@@ -15,10 +14,19 @@ class Settings:
     """ Globally accessible settings throughout whole project """
     log_location = os.path.join(BASE_DIR, 'logs')
     database_location = os.path.join(BASE_DIR, 'db', 'instapy.db')
-    specific_chromedriver = "chromedriver_{}".format(OS_ENV)
+    assets_location = os.path.join(BASE_DIR, "assets")
+
+    # chromedriver file
+    specific_chromedriver = "chromedriver"
+    if platform.system() == "Windows":
+        specific_chromedriver += ".exe"
+
     chromedriver_location = os.path.join(BASE_DIR, "assets", specific_chromedriver)
+    # fallback, could be deleted
     if not os.path.exists(chromedriver_location):
-        chromedriver_location = binary_path 
+        chromedriver_location = "chromedriver"
+
+    chromedriver_desired_version = "latest"
 
     chromedriver_min_version = 2.36
     # set a logger cache outside the InstaPy object to avoid re-instantiation issues

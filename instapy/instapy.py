@@ -32,6 +32,7 @@ from .like_util import like_image
 from .like_util import get_links_for_username
 from .login_util import login_user
 from .settings import Settings
+from .chromedriver_util import driver_update
 from .print_log_writer import log_follower_num
 from .print_log_writer import log_following_num
 from .time_util import sleep
@@ -91,7 +92,9 @@ class InstaPy:
                  proxy_port=None,
                  disable_image_load=False,
                  bypass_suspicious_attempt=False,
-                 multi_logs=False):
+                 multi_logs=False,
+                 driver_version="latest",
+                 update_driver=True):
 
         if nogui:
             self.display = Display(visible=0, size=(800, 600))
@@ -212,6 +215,10 @@ class InstaPy:
 
         if self.selenium_local_session == True:
             self.set_selenium_local_session()
+
+        Settings.chromedriver_desired_version = str(driver_version)
+        if update_driver:
+            driver_update()
 
 
     def get_instapy_logger(self, show_logs):
