@@ -22,9 +22,6 @@ class Settings:
         specific_chromedriver += ".exe"
 
     chromedriver_location = os.path.join(BASE_DIR, "assets", specific_chromedriver)
-    # fallback, could be deleted
-    if not os.path.exists(chromedriver_location):
-        chromedriver_location = "chromedriver"
 
     chromedriver_desired_version = "latest"
 
