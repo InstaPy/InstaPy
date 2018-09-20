@@ -88,6 +88,7 @@ Table of Contents
 * [Extra Information](#extra-information)  
   * [Simulation](#simulation)
   * [Disable Image Loading](#disable-image-loading)
+  * [Using Multiple Chromedrivers](#using-multiple-chromedrivers)
 
 ## Getting started
 
@@ -1523,6 +1524,13 @@ session = InstaPy(username=insta_username,
                   multi_logs=True)
 ```
 
+### Using Multiple Chromedrivers
+If you need multiple os versions of chromedriver just rename it like:
+```bash
+chromedriver_linux
+chromedriver_osx
+chromedriver_windows
+```
 
 ---
 ###### Have Fun & Feel Free to report any issues
