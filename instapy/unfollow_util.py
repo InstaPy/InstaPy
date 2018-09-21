@@ -327,7 +327,7 @@ def unfollow(browser,
                         # will break the loop after certain consecutive jumps
                         jumps["consequent"]["unfollows"] += 1
 
-                    elif msg in ["shadow ban", "not connected", "not logged in"]:
+                    elif msg in ["temporary block", "not connected", "not logged in"]:
                         # break the loop in extreme conditions to prevent misbehaviours
                         logger.warning("There is a serious issue: '{}'!\t~leaving Unfollow-Users activity".format(msg))
                         break
@@ -466,7 +466,7 @@ def unfollow(browser,
                         # will break the loop after certain consecutive jumps
                         jumps["consequent"]["unfollows"] += 1
 
-                    elif msg in ["shadow ban", "not connected", "not logged in"]:
+                    elif msg in ["temporary block", "not connected", "not logged in"]:
                         # break the loop in extreme conditions to prevent misbehaviours
                         logger.warning("There is a serious issue: '{}'!\t~leaving Unfollow-Users activity".format(msg))
                         break
@@ -549,9 +549,9 @@ def follow_user(browser, track, login, user_name, button, blacklist, logger, log
                         return False, "unexpected failure"
 
                 if following == False:
-                    logger.warning("Last follow is not verified!\t~smells of a shadow ban\n")
+                    logger.warning("Last follow is not verified!\t~smells of a temporary block\n")
                     sleep(600)
-                    return False, "shadow ban"
+                    return False, "temporary block"
 
                 else:
                     logger.info("Last follow is verified after reloading the page!\n")
@@ -1164,8 +1164,7 @@ def unfollow_user(browser, track, username, person, person_id, button, relations
                         # if the button still has not changed it can be a temporary block
                         logger.warning("--> Unfollow error!\t~username '{}' might be blocked from unfollowing\n"
                                            .format(username))
-                        return False, "shadow ban"
-
+                        return False, "temporary block"
 
         elif following == False:
             logger.info("--> Couldn't unfollow '{}'!\t~maybe unfollowed before"
