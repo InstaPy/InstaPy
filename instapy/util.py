@@ -954,21 +954,30 @@ def check_authorization(browser, username, method, logger):
 
 
 
-def get_username(browser, logger):
+def get_username(browser, track, logger):
     """ Get the username of a user from the loaded profile page """
+    if track == "profile":
+        query = "return window._sharedData.entry_data. \
+                    ProfilePage[0].graphql.user.username"
+
+    elif track == "post":
+        query = "return window._sharedData.entry_data. \
+                    PostPage[0].graphql.shortcode_media.owner.username"
+
     try:
-        username = browser.execute_script("return window._sharedData.entry_data."
-                                                "ProfilePage[0].graphql.user.username")
+        username = browser.execute_script(query)
+
     except WebDriverException:
         try:
             browser.execute_script("location.reload()")
             update_activity()
 
-            username = browser.execute_script("return window._sharedData.entry_data."
-                                                    "ProfilePage[0].graphql.user.username")
+            username = browser.execute_script(query)
+
         except WebDriverException:
             current_url = get_current_url(browser)
-            logger.info("Failed to get the username from '{}' page".format(current_url or "user"))
+            logger.info("Failed to get the username from '{}' page".format(current_url or
+                                                        "user" if track == "profile" else "post"))
             username = None
 
     # in future add XPATH ways of getting username
