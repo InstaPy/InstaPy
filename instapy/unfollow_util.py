@@ -1136,7 +1136,6 @@ def unfollow_user(browser, track, username, person, person_id, button, relations
                     post_unfollow_cleanup("uncertain", username, person, relationship_data, logger, logfolder)
                     return False, "user inaccessible"
 
-
         if following in [True, "Requested"]:
             click_element(browser, follow_button)
             sleep(4)
@@ -1168,7 +1167,7 @@ def unfollow_user(browser, track, username, person, person_id, button, relations
                         return False, "temporary block"
 
         elif following == False:
-            logger.info("--> Couldn't unfollow '{}'!\t~maybe unfollowed before"
+            logger.info("--> Couldn't unfollow '{}'!\t~maybe was unfollowed before"
                                 .format(person.encode('utf-8')))
             post_unfollow_cleanup("uncertain", username, person, relationship_data, logger, logfolder)
             return False, "uncertain"
@@ -1180,8 +1179,7 @@ def unfollow_user(browser, track, username, person, person_id, button, relations
         confirm_unfollow(browser)
 
 
-    ## general tasks after a successful unfollow
-
+    # general tasks after a successful unfollow
     logger.info("--> Unfollowed '{}'!".format(person))
     update_activity('unfollows')
     post_unfollow_cleanup("successful", username, person, relationship_data, logger, logfolder)
