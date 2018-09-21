@@ -521,8 +521,9 @@ def follow_user(browser, track, login, user_name, button, blacklist, logger, log
 
                 click_element(browser, follow_button)
 
-            # wait a bit for the follow click succeed
-            sleep(2)
+            # wait until the follow action succeed
+            post_follow_element = "//button[text()='Following' or text()='Requested']"
+            button_change = explicit_wait(browser, "VOEL", [post_follow_element, "XPath"], logger, 9, False)
 
             # verify the last follow
             following, follow_button = get_following_status(browser,
@@ -1141,8 +1142,8 @@ def unfollow_user(browser, track, username, person, person_id, button, relations
             sleep(4)
             confirm_unfollow(browser)
             # wait until it properly unfollows
-            follow_element = "//button[text()='Follow' or text()='Follow Back']"
-            button_change = explicit_wait(browser, "VOEL", [follow_element, "XPath"], logger)
+            post_unfollow_element = "//button[text()='Follow' or text()='Follow Back']"
+            button_change = explicit_wait(browser, "VOEL", [post_unfollow_element, "XPath"], logger)
 
             if not button_change:
                 browser.execute_script("location.reload()")
@@ -1158,7 +1159,7 @@ def unfollow_user(browser, track, username, person, person_id, button, relations
                     sleep(4)
                     confirm_unfollow(browser)
                     # wait until it properly unfollows
-                    button_change = explicit_wait(browser, "VOEL", [follow_element, "XPath"], logger)
+                    button_change = explicit_wait(browser, "VOEL", [post_unfollow_element, "XPath"], logger)
 
                     if not button_change:
                         # if the button still has not changed it can be a temporary block
