@@ -271,7 +271,7 @@ def dismiss_get_app_offer(browser, logger):
     dismiss_elem = "//*[contains(text(), 'Not Now')]"
 
     # wait a bit and see if the 'Get App' offer rises up
-    offer_loaded = explicit_wait(browser, "VOEL", [offer_elem, "XPath"], logger, 5)
+    offer_loaded = explicit_wait(browser, "VOEL", [offer_elem, "XPath"], logger, 5, False)
 
     if offer_loaded:
         dismiss_elem = browser.find_element_by_xpath(dismiss_elem)
