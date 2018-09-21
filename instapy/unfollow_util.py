@@ -96,21 +96,25 @@ def set_automated_followed_pool(username, unfollow_after, logger, logfolder):
 
 
 
-def get_following_status(browser, person, logger):
+def get_following_status(browser, track, person, logger):
     """ Verify if you are following the user in the loaded page """
+    if track == "profile":
+        user_link = "https://www.instagram.com/{}/".format(person)
+        web_address_navigator(browser, user_link)
+
     follow_button_XP = ("//button[text()='Following' or \
                                   text()='Requested' or \
                                   text()='Follow' or \
                                   text()='Follow Back']")
 
     # wait until the follow button is located and visible, then get it
-    follow_button = explicit_wait(browser, "VOEL", [follow_button_XP, "XPath"], logger)
+    follow_button = explicit_wait(browser, "VOEL", [follow_button_XP, "XPath"], logger, 7, False)
 
     if not follow_button:
         browser.execute_script("location.reload()")
         update_activity()
 
-        follow_button = explicit_wait(browser, "VOEL", [follow_button_XP, "XPath"], logger)
+        follow_button = explicit_wait(browser, "VOEL", [follow_button_XP, "XPath"], logger, 14, False)
 
         if not follow_button:
             logger.error("--> Unable to detect the following status of '{}'!"
