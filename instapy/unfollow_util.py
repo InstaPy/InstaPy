@@ -1102,42 +1102,33 @@ def unfollow_user(browser, track, username, person, person_id, button, relations
             web_address_navigator(browser, user_link)
 
         # find out following status
-        following, follow_button = get_following_status(browser, person, logger)
+        following, follow_button = get_following_status(browser, track, person, logger)
 
         if following is None:
-            # check out if the loop has to be broken immidiately
-            sirens_wailing, emergency_state = emergency_exit(browser, username, logger)
-            if sirens_wailing == True:
-                return False, emergency_state
+            # check if the page is available
+            valid_page = is_page_available(browser, logger)
+            if valid_page:
+                # check out if the loop has to be broken immidiately
+                sirens_wailing, emergency_state = emergency_exit(browser, username, logger)
+                if sirens_wailing == True:
+                    return False, emergency_state
 
-            else:   # there is no any serious issue- loop should continue
+            if not valid_page or sirens_wailing == False:
                 logger.warning("Maybe '{}' has changed the username!\t~verifying through the user ID"
                                     .format(person.encode('utf-8')))
-                # try to find the user by ID
-                if person_id is None:
-                    person_id = load_user_id(username, person, logger, logfolder)
-
-                if person_id and person_id not in [None, "unknown", "undefined"] :
-                    user_link_by_id = ("https://www.instagram.com/web/friendships/{}/follow/"
-                                            .format(person_id))
-                    web_address_navigator(browser, user_link_by_id)
+                person_new = verify_username_by_id(browser, username, person, person_id, logger, logfolder)
+                if person_new:
                     # re-check the following status
-                    following, follow_button = get_following_status(browser, person, logger)
-
+                    following, follow_button = get_following_status(browser, track, person_new, logger)
                     if following is None:
                         logger.warning("--> Couldn't access the profile page of '{}'!"
                                        "\t~user has either closed the profile or blocked you"
-                                            .format(person.encode('utf-8')))
+                                            .format(person_new.encode('utf-8')))
                         post_unfollow_cleanup("uncertain", username, person, relationship_data, logger, logfolder)
                         return False, "user unavailable"
 
-                    else:
-                        person_new = get_username(browser, logger)
-                        logger.info("User '{}' has changed username and now is called '{}' :S"
-                                        .format(person, person_new))
                 else:
-                    logger.info("--> Couldn't unfollow '{0}'!\t~the user ID of '{0}' "
-                                "doesn't exist in local records".format(person))
+                    logger.warning("--> Couldn't unfollow '{0}'!")
                     post_unfollow_cleanup("uncertain", username, person, relationship_data, logger, logfolder)
                     return False, "user inaccessible"
 
