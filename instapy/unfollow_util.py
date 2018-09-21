@@ -21,6 +21,7 @@ from .util import load_user_id
 from .util import get_username
 from .util import find_user_id
 from .util import explicit_wait
+from .util import is_page_available
 from .print_log_writer import log_followed_pool
 from .print_log_writer import log_uncertain_unfollowed_pool
 from .print_log_writer import log_record_all_unfollowed
@@ -530,26 +531,26 @@ def follow_user(browser, track, login, user_name, button, blacklist, logger, log
             button_change = explicit_wait(browser, "VOEL", [post_follow_element, "XPath"], logger, 9, False)
 
             # verify the last follow
-            following, follow_button = get_following_status(browser,
-                                                             user_name,
-                                                              logger)
-            if not following:
+            if not button_change:
                 browser.execute_script("location.reload()")
                 update_activity()
                 sleep(2)
 
                 following, follow_button = get_following_status(browser,
-                                                                 user_name,
-                                                                  logger)
+                                                                 track,
+                                                                  user_name,
+                                                                   logger)
                 if following is None:
-                    sirens_wailing, emergency_state = emergency_exit(browser,
-                                                                      user_name,
-                                                                       logger)
-                    if sirens_wailing == True:
-                        logger.warning("There is a serious issue: '{}'!\n".format(emergency_state))
-                        return False, emergency_state
+                    valid_page = is_page_available(browser, logger)
+                    if valid_page:
+                        sirens_wailing, emergency_state = emergency_exit(browser,
+                                                                          user_name,
+                                                                           logger)
+                        if sirens_wailing == True:
+                            logger.warning("There is a serious issue: '{}'!\n".format(emergency_state))
+                            return False, emergency_state
 
-                    else:
+                    if not valid_page or sirens_wailing == False:
                         logger.error("Unexpected failure happened after last follow!\n")
                         return False, "unexpected failure"
 
