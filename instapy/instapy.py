@@ -32,7 +32,7 @@ from .like_util import like_image
 from .like_util import get_links_for_username
 from .login_util import login_user
 from .settings import Settings
-from .chromedriver_util import driver_update
+from .webdriver_util import driver_update
 from .print_log_writer import log_follower_num
 from .print_log_writer import log_following_num
 from .time_util import sleep
