@@ -1062,7 +1062,7 @@ def new_tab(browser):
 
 
 
-def explicit_wait(browser, track, ec_params, logger, timeout=66):
+def explicit_wait(browser, track, ec_params, logger, timeout=35, notify=True):
     """
     Explicitly wait until expected condition validates
 
@@ -1096,14 +1096,20 @@ def explicit_wait(browser, track, ec_params, logger, timeout=66):
 
         condition = ec.title_contains(expect_in_title)
 
+    elif track == "PFL":
+        ec_name = "page fully loaded"
+        condition = (lambda browser: browser.execute_script("return document.readyState")
+                                                in ["complete" or "loaded"])
+
     # generic wait block
     try:
         wait = WebDriverWait(browser, timeout)
         result = wait.until(condition)
 
     except TimeoutException:
-        logger.info("Timed out with failure while explicitly waiting until {}!\n"
-                        .format(ec_name))
+        if notify == True:
+            logger.info("Timed out with failure while explicitly waiting until {}!\n"
+                            .format(ec_name))
         return False
 
     return result
