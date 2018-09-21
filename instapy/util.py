@@ -861,9 +861,19 @@ def ping_server(host, logger):
     need_sh = False if  system().lower()=="windows" else True
 
     # pinging
-    conn = call(command, shell=need_sh) == 0
+    ping_attempts = 2
+    connectivity = None
 
-    if conn == False:
+    while connectivity != True and ping_attempts > 0:
+        connectivity = call(command, shell=need_sh) == 0
+
+        if connectivity == False:
+            logger.warning("Pinging the server again!\t~total attempts left: {}"
+                                .format(ping_attempts))
+            ping_attempts -= 1
+            sleep(5)
+
+    if connectivity == False:
         logger.critical("There is no connection to the '{}' server!".format(host))
         return False
 
