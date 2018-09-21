@@ -10,6 +10,7 @@ import csv
 import sqlite3
 import json
 from contextlib import contextmanager
+import requests
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as ec
 from selenium.webdriver.common.by import By
@@ -1106,3 +1107,67 @@ def get_current_url(browser):
 
 
 
+def get_username_from_id(browser, user_id, logger):
+    """ Convert user ID to username """
+    # method using graphql 'Account media' endpoint
+    logger.info("Trying to find the username from the given user ID by loading a post")
+
+    query_hash = "42323d64886122307be10013ad2dcc44"   # earlier- "472f257a40c653c64c666ce877d59d2b"
+    graphql_query_URL = "https://www.instagram.com/graphql/query/?query_hash={}".format(query_hash)
+    variables = {"id":str(user_id), "first":1}
+    post_url = u"{}&variables={}".format(graphql_query_URL, str(json.dumps(variables)))
+
+    web_address_navigator(browser, post_url)
+    pre = browser.find_element_by_tag_name("pre").text
+    user_data = json.loads(pre)["data"]["user"]
+
+    if user_data:
+        user_data = user_data["edge_owner_to_timeline_media"]
+
+        if user_data["edges"]:
+            post_code = user_data["edges"][0]["node"]["shortcode"]
+            post_page = "https://www.instagram.com/p/{}".format(post_code)
+
+            web_address_navigator(browser, post_page)
+            username = get_username(browser, "post", logger)
+            if username:
+                return username
+
+        else:
+            if user_data["count"] == 0:
+                logger.info("Profile with ID {}: no pics found".format(user_id))
+
+            else:
+                logger.info("Can't load pics of a private profile to find username (ID: {})".format(user_id))
+
+    else:
+        logger.info("No profile found, the user may have blocked you (ID: {})".format(user_id))
+        return None
+
+
+    # method using private API
+    logger.info("Trying to find the username from the given user ID by a quick API call")
+
+    req = requests.get(u"https://i.instagram.com/api/v1/users/{}/info/"
+                            .format(user_id))
+    if req:
+        data = json.loads(req.text)
+        if data["user"]:
+            username = data["user"]["username"]
+            return username
+
+
+    # method using graphql 'Follow' endpoint
+    logger.info("Trying to find the username from the given user ID "
+                   "by using the GraphQL Follow endpoint")
+
+    user_link_by_id = ("https://www.instagram.com/web/friendships/{}/follow/"
+                            .format(user_id))
+
+    web_address_navigator(browser, user_link_by_id)
+    username = get_username(browser, "profile", logger)
+
+    return username
+
+
+ 
