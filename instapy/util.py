@@ -903,7 +903,21 @@ def check_authorization(browser, username, method, logger):
             except WebDriverException:
                 activity_counts = None
 
-        if activity_counts is None:
+        # if user is not logged in, `activity_counts_new` will be `None`- JS `null`
+        try:
+            activity_counts_new = browser.execute_script(
+                "return window._sharedData.config.viewer")
+
+        except WebDriverException:
+            try:
+                browser.execute_script("location.reload()")
+                activity_counts_new = browser.execute_script(
+                    "return window._sharedData.config.viewer")
+
+            except WebDriverException:
+                activity_counts_new = None
+
+        if activity_counts is None and activity_counts_new is None:
             logger.critical("--> '{}' is not logged in!\n".format(username))
             return False
 
