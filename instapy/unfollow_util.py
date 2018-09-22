@@ -1129,7 +1129,7 @@ def unfollow_user(browser, track, username, person, person_id, button, relations
                         return False, "user unavailable"
 
                 else:
-                    logger.warning("--> Couldn't unfollow '{0}'!")
+                    logger.warning("--> Couldn't unfollow '{}'!".format(person))
                     post_unfollow_cleanup("uncertain", username, person, relationship_data, logger, logfolder)
                     return False, "user inaccessible"
 
@@ -1139,7 +1139,7 @@ def unfollow_user(browser, track, username, person, person_id, button, relations
             confirm_unfollow(browser)
             # wait until it properly unfollows
             post_unfollow_element = "//button[text()='Follow' or text()='Follow Back']"
-            button_change = explicit_wait(browser, "VOEL", [post_unfollow_element, "XPath"], logger)
+            button_change = explicit_wait(browser, "VOEL", [post_unfollow_element, "XPath"], logger, 7, False)
 
             if not button_change:
                 browser.execute_script("location.reload()")
@@ -1155,7 +1155,7 @@ def unfollow_user(browser, track, username, person, person_id, button, relations
                     sleep(4)
                     confirm_unfollow(browser)
                     # wait until it properly unfollows
-                    button_change = explicit_wait(browser, "VOEL", [post_unfollow_element, "XPath"], logger)
+                    button_change = explicit_wait(browser, "VOEL", [post_unfollow_element, "XPath"], logger, 9, False)
 
                     if not button_change:
                         # if the button still has not changed it can be a temporary block
