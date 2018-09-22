@@ -107,7 +107,8 @@ def get_following_status(browser, track, person, logger):
     follow_button_XP = ("//button[text()='Following' or \
                                   text()='Requested' or \
                                   text()='Follow' or \
-                                  text()='Follow Back']")
+                                  text()='Follow Back' or \
+                                  text()='Unblock']")
 
     # wait until the follow button is located and visible, then get it
     follow_button = explicit_wait(browser, "VOEL", [follow_button_XP, "XPath"], logger, 7, False)
@@ -126,7 +127,8 @@ def get_following_status(browser, track, person, logger):
     # get follow state
     state = follow_button.text
     following = (False if state in ['Follow', 'Follow Back'] else
-                 True if state=="Following" else "Requested")
+                 True if state == "Following" else "Requested" if
+                 state == "Requested" else "Blocked")
 
     return following, follow_button
 
@@ -560,7 +562,7 @@ def follow_user(browser, track, login, user_name, button, blacklist, logger, log
                     sleep(600)
                     return False, "temporary block"
 
-                else:
+                elif following in [True, "Requested"]:
                     logger.info("Last follow is verified after reloading the page!\n")
 
         except NoSuchElementException:
@@ -1168,6 +1170,12 @@ def unfollow_user(browser, track, username, person, person_id, button, relations
                                 .format(person.encode('utf-8')))
             post_unfollow_cleanup("uncertain", username, person, relationship_data, logger, logfolder)
             return False, "uncertain"
+
+        elif following == "Blocked":
+            logger.info("--> Couldn't unfollow '{}'!\t~user is in block"
+                                .format(person.encode('utf-8')))
+            post_unfollow_cleanup("uncertain", username, person, relationship_data, logger, logfolder)
+            return False, "user in block"
 
 
     elif track == "dialog":
