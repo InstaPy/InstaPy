@@ -82,7 +82,7 @@ def update_webdriver(version):
     os.remove(path)
 
     # write version file
-    with open(VERSION_FILE, "wb") as vFile:
+    with open(VERSION_FILE, "w") as vFile:
         vFile.write('.'.join(version))
 
 
