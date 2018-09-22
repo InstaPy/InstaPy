@@ -18,7 +18,11 @@ def driver_update(desired_version=[]):
     if not current_version:
         if os.path.exists(VERSION_FILE):
             with open(VERSION_FILE) as f:
-                current_version = f.read().strip().split('.')
+                file_content = f.read()
+                if file_content:
+                    current_version = file_content.strip().split('.')
+                else:
+                    current_version = [0, 0]
         else:
             current_version = [0, 0]
 
