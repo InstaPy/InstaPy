@@ -1219,7 +1219,12 @@ def is_page_available(browser, logger):
 
     expected_keywords = ["Page Not Found", "Content Unavailable"]
     if any(keyword in page_title for keyword in expected_keywords):
-        logger.warning("Intagram Error: the link may be broken, or the page may have been removed...")
+        if "Page Not Found" in page_title:
+            logger.warning("The page isn't available!\t~the link may be broken, or the page may have been removed...")
+
+        elif "Content Unavailable" in page_title:
+            logger.warning("The page isn't available!\t~the user may have blocked you...")
+
         return False
 
     return True
