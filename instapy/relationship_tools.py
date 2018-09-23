@@ -22,7 +22,7 @@ def get_followers(browser,
                          logfolder):
     """ Get entire list of followers using graphql queries. """
     if username not in relationship_data:
-        relationship_data[username] = {"all_following":[], "all_followers":[]}
+        relationship_data.update({username: {"all_following":[], "all_followers":[]}})
 
     grab_info = "at \"full\" range" if grab=="full" else "at the range of {}".format(grab)
     tense = "live" if (live_match == True or not relationship_data[username]["all_followers"]) else "fresh"
@@ -203,7 +203,7 @@ def get_followers(browser,
             logger.info("The `Followers` data is identical with the data in previous query  ~not storing the file again")
 
         if grab=="full":
-            relationship_data[username]["all_followers"] = all_followers
+            relationship_data[username].update({"all_followers": all_followers})
 
     sleep_t = sc_rolled*6
     sleep_t = sleep_t if sleep_t < 600 else random.randint(585, 655)
@@ -229,7 +229,7 @@ def get_following(browser,
                          logfolder):
     """ Get entire list of following using graphql queries. """
     if username not in relationship_data:
-        relationship_data[username] = {"all_following":[], "all_followers":[]}
+        relationship_data.update({username: {"all_following":[], "all_followers":[]}})
 
     grab_info = "at \"full\" range" if grab=="full" else "at the range of {}".format(grab)
     tense = "live" if (live_match == True or not relationship_data[username]["all_following"]) else "fresh"
@@ -405,7 +405,7 @@ def get_following(browser,
             logger.info("The `Following` data is identical with the data in previous query  ~not storing the file again")
 
         if grab=="full":
-            relationship_data[username]["all_following"] = all_following
+            relationship_data[username].update({"all_following": all_following})
 
     sleep_t = sc_rolled*6
     sleep_t = sleep_t if sleep_t < 600 else random.randint(585, 655)
