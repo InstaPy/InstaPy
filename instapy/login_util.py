@@ -23,8 +23,15 @@ def bypass_suspicious_login(browser):
     # close sign up Instagram modal if available
     try:
         close_button = browser.find_element_by_xpath("[text()='Close']")
-        ActionChains(
-            browser).move_to_element(close_button).click().perform()
+
+        (ActionChains(browser)
+            .move_to_element(close_button)
+            .click()
+            .perform())
+
+        # update server calls
+        update_activity()
+
     except NoSuchElementException:
         pass
 
@@ -32,8 +39,15 @@ def bypass_suspicious_login(browser):
         # click on "This was me" button if challenge page was called
         this_was_me_button = browser.find_element_by_xpath(
             "//button[@name='choice'][text()='This Was Me']")
-        ActionChains(
-            browser).move_to_element(this_was_me_button).click().perform()
+
+        (ActionChains(browser)
+            .move_to_element(this_was_me_button)
+            .click()
+            .perform())
+
+        # update server calls
+        update_activity()
+
     except NoSuchElementException:
         # no verification needed
         pass
@@ -41,25 +55,32 @@ def bypass_suspicious_login(browser):
     try:
         user_email = browser.find_element_by_xpath(
             "//label[@for='choice_1']").text
+
     except NoSuchElementException:
         try:
             user_email = browser.find_element_by_xpath(
                 "//label[@class='_q0nt5']").text
+
         except:
             try:
                 user_email = browser.find_element_by_xpath(
                     "//label[@class='_q0nt5 _a7z3k']").text
+
             except:
                 print("Unable to locate email or phone button, maybe "
-                      "bypass_suspicious_login=True isn't needed anymore.")
+                        "bypass_suspicious_login=True isn't needed anymore.")
                 return False
 
     send_security_code_button = browser.find_element_by_xpath(
         "//button[text()='Send Security Code']")
+
     (ActionChains(browser)
-     .move_to_element(send_security_code_button)
-     .click()
-     .perform())
+        .move_to_element(send_security_code_button)
+        .click()
+        .perform())
+
+    # update server calls
+    update_activity()
 
     print('Instagram detected an unusual login attempt')
     print('A security code was sent to your {}'.format(user_email))
@@ -67,16 +88,27 @@ def bypass_suspicious_login(browser):
 
     security_code_field = browser.find_element_by_xpath((
         "//input[@id='security_code']"))
-    (ActionChains(browser)
-     .move_to_element(security_code_field)
-     .click().send_keys(security_code).perform())
-
-    submit_security_code_button = browser.find_element_by_xpath((
-        "//button[text()='Submit']"))
 
     (ActionChains(browser)
-     .move_to_element(submit_security_code_button)
-     .click().perform())
+        .move_to_element(security_code_field)
+        .click()
+        .send_keys(security_code)
+        .perform())
+
+    # update server calls for both 'click' and 'send_keys' actions
+    for i in range(2):
+        update_activity()
+
+    submit_security_code_button = browser.find_element_by_xpath(
+                                            "//button[text()='Submit']")
+
+    (ActionChains(browser)
+        .move_to_element(submit_security_code_button)
+        .click()
+        .perform())
+
+    # update server calls
+    update_activity()
 
     try:
         sleep(5)
@@ -84,12 +116,15 @@ def bypass_suspicious_login(browser):
         wrong_login = browser.find_element_by_xpath((
             "//p[text()='Please check the code we sent you and try "
             "again.']"))
+
         if wrong_login is not None:
             print(('Wrong security code! Please check the code Instagram'
                    'sent you and try again.'))
+
     except NoSuchElementException:
         # correct security code
         pass
+
 
 
 def login_user(browser,
@@ -140,14 +175,22 @@ def login_user(browser,
     # having the site on a different language
     # Might cause problems if the OS language is english
     if switch_language:
-        browser.find_element_by_xpath(
-          "//select[@class='hztqj']/option[text()='English']").click()
+        language_element_ENG = browser.find_element_by_xpath(
+          "//select[@class='hztqj']/option[text()='English']")
+        click_element(browser, language_element_ENG)
 
     # Check if the first div is 'Create an Account' or 'Log In'
     login_elem = browser.find_element_by_xpath(
         "//article/div/div/p/a[text()='Log in']")
+
     if login_elem is not None:
-        ActionChains(browser).move_to_element(login_elem).click().perform()
+        (ActionChains(browser)
+            .move_to_element(login_elem)
+            .click()
+            .perform())
+
+        # update server calls
+        update_activity()
 
     # Enter username and password and logs the user in
     # Sometimes the element name isn't 'Username' and 'Password'
@@ -163,8 +206,16 @@ def login_user(browser,
 
     input_username = browser.find_element_by_xpath(input_username_XP)
 
-    ActionChains(browser).move_to_element(input_username). \
-        click().send_keys(username).perform()
+    (ActionChains(browser)
+        .move_to_element(input_username)
+        .click()
+        .send_keys(username)
+        .perform())
+
+    # update server calls for both 'click' and 'send_keys' actions
+    for i in range(2):
+        update_activity()
+
     sleep(1)
 
     #  password
@@ -174,12 +225,23 @@ def login_user(browser,
     if not isinstance(password, str):
         password = str(password)
 
-    ActionChains(browser).move_to_element(input_password[0]). \
-        click().send_keys(password).perform()
+    (ActionChains(browser)
+        .move_to_element(input_password[0])
+        .click()
+        .send_keys(password)
+        .perform())
+
+    # update server calls for both 'click' and 'send_keys' actions
+    for i in range(2):
+        update_activity()
 
     login_button = browser.find_element_by_xpath(
         "//form/span/button[text()='Log in']")
-    ActionChains(browser).move_to_element(login_button).click().perform()
+
+    (ActionChains(browser)
+        .move_to_element(login_button)
+        .click()
+        .perform())
 
     # update server calls
     update_activity()
