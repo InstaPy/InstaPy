@@ -278,7 +278,7 @@ def toast_notification(notify, alert, job, interval):
                 ticker="To switch supervising methods, please review quickstart script")
 
         except:
-            # TypeError: out of 'plyer' bug in python 2
+            # TypeError: out of 'plyer' bug in python 2 - INNER EXCEPTION
             # NotImplementedError: when 'plyer' is not supported
             # DBusException: dbus-display issue on linux boxes
 
