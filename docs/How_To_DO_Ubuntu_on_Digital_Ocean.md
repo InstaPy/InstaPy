@@ -2,8 +2,7 @@
 > Use https://m.do.co/c/be9ec19b28c1 to get 10$ free to start your InstaPy journey :wink:
 
 - #### Make sure to use the 1GB RAM version (or better)
-
-- #### Make sure to set ```nogui=True``` in your InstaPy file
+- #### Set ```headless=True``` in your InstaPy file
 - #### Note that current Chrome browser and chromedriver needed for the install only support 64-bit architecture. 
 
 ### General dependencies
