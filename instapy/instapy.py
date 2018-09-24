@@ -3734,7 +3734,7 @@ class InstaPy:
                                "original_peaks":orig_peaks}
 
             if (platform.startswith("win32") and
-                    not python_version().startswith('3')):
+                    python_version().startswith(('2', '3.7'))):
                 notify_me = False   # remove this block for python 2 once plyer>1.3.0 is released to PyPI
 
             # update QS configuration with the fresh settings
