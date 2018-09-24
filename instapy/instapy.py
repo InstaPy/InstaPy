@@ -85,7 +85,7 @@ class InstaPy:
                  browser_profile_path=None,
                  page_delay=25,
                  show_logs=True,
-                 headless_browser=False,
+                 headless_browser=True,
                  proxy_address=None,
                  proxy_chrome_extension=None,
                  proxy_port=None,
