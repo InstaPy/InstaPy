@@ -60,6 +60,7 @@ from .relationship_tools import get_nonfollowers
 from .relationship_tools import get_fans
 from .relationship_tools import get_mutual_following
 from .database_engine import get_database
+from collections import defaultdict
 
 # import exceptions
 from selenium.common.exceptions import NoSuchElementException, WebDriverException
@@ -151,12 +152,13 @@ class InstaPy:
         self.automatedFollowedPool = {"all":[], "eligible":[]}
         self.do_like = False
         self.like_percentage = 0
+        self.like_by_must_like = True  # temporery solution for like_by_X function to do actions without likes
         self.smart_hashtags = []
 
         self.dont_like = ['sex', 'nsfw']
         self.mandatory_words = []
         self.ignore_if_contains = []
-        self.ignore_users = []
+        self.ignore_users = set()
 
         self.user_interact_amount = 0
         self.user_interact_media = None
@@ -187,7 +189,11 @@ class InstaPy:
         self.commenting_approved = True
         self.max_comments = 35
         self.min_comments = 0
-
+        
+        self.parameters = defaultdict(dict)
+        self.parameters['interact_business'] = 80  # will skip 2/10 business users
+        self.skip_private_users = False
+        
         self.relationship_data = {username:{"all_following":[], "all_followers":[]}}
 
         self.simulation = {"enabled": True, "percentage": 100}
@@ -394,6 +400,17 @@ class InstaPy:
 
         return self
 
+    def set_custom_settings(self, interact_business=80, skip_private=True):
+        """Defines which language should not be liked"""
+        if self.aborting:
+            return self
+
+        self.parameters['interact_business'] = interact_business  # default: will skip 2/10 business profiles
+
+        self.skip_private_users = skip_private
+
+        return self
+		
     def set_sleep_reduce(self, percentage):
         set_sleep_percentage(percentage)
 
@@ -429,7 +446,7 @@ class InstaPy:
 
         return self
 
-    def set_do_follow(self, enabled=False, percentage=0, times=1):
+    def set_do_follow(self, enabled=False, percentage=0, follow_private_percentage=0, times=1):
         """Defines if the user of the liked image should be followed"""
         if self.aborting:
             return self
@@ -437,6 +454,7 @@ class InstaPy:
         self.follow_times = times
         self.do_follow = enabled
         self.follow_percentage = percentage
+        self.follow_private_percentage = follow_private_percentage  # will only count when interacting
 
         return self
 
@@ -501,7 +519,7 @@ class InstaPy:
         if self.aborting:
             return self
 
-        self.ignore_users = users or []
+        self.ignore_users = set(users) or {}
 
         return self
 
@@ -614,6 +632,9 @@ class InstaPy:
     def follow_commenters(self, usernames, amount=10, daysold=365, max_pic=50, sleep_delay=600, interact=False):
         """ Follows users' commenters """
 
+        if self.aborting:
+            return self
+
         message = "Starting to follow commenters.."
         highlight_print(self.username, message, "feature", "info", self.logger)
 
@@ -705,6 +726,8 @@ class InstaPy:
 
     def follow_likers (self, usernames, photos_grab_amount=3, follow_likers_per_photo=3, randomize=True, sleep_delay=600, interact=False):
         """ Follows users' likers """
+        if self.aborting:
+            return self
 
         message = "Starting to follow likers.."
         highlight_print(self.username, message, "feature", "info", self.logger)
@@ -801,6 +824,10 @@ class InstaPy:
 
     def follow_by_list(self, followlist, times=1, sleep_delay=600, interact=False):
         """Allows to follow by any scrapped list"""
+
+        if self.aborting:
+            return self
+
         if not isinstance(followlist, list):
             followlist = [followlist]
 
@@ -844,7 +871,7 @@ class InstaPy:
 
             if not users_validated:
                 # Verify if the user should be followed
-                validation, details = validate_username(self.browser,
+                validation, details, return_values_dist = validate_username(self.browser,
                                                acc_to_follow,
                                                self.username,
                                                self.ignore_users,
@@ -855,6 +882,8 @@ class InstaPy:
                                                self.max_following,
                                                self.min_followers,
                                                self.min_following,
+                                               self.skip_private_users,
+                                               self.parameters,
                                                self.logger)
                 if validation != True or acc_to_follow == self.username:
                     self.logger.info("--> Not a valid user: {}\n".format(details))
@@ -951,7 +980,10 @@ class InstaPy:
                                      max_followers=None,
                                       max_following=None,
                                        min_followers=None,
-                                        min_following=None):
+                                        min_following=None,
+                                         min_posts=3,
+                                          max_posts=100
+                                         ):
         """Sets the potency ratio and limits to the provide an efficient activity between the targeted masses"""
         self.potency_ratio = potency_ratio if enabled==True else None
         self.delimit_by_numbers = delimit_by_numbers if enabled==True else None
@@ -961,6 +993,9 @@ class InstaPy:
 
         self.max_following = max_following
         self.min_following = min_following
+
+        self.parameters['min_posts'] = min_posts
+        self.parameters['max_posts'] = max_posts
 
 
 
@@ -1065,18 +1100,20 @@ class InstaPy:
 
                     if not inappropriate and self.liking_approved:
                         #validate user
-                        validation, details = validate_username(self.browser,
-                                                       user_name,
-                                                       self.username,
-                                                       self.ignore_users,
-                                                       self.blacklist,
-                                                       self.potency_ratio,
-                                                       self.delimit_by_numbers,
-                                                       self.max_followers,
-                                                       self.max_following,
-                                                       self.min_followers,
-                                                       self.min_following,
-                                                       self.logger)
+                        validation, details, return_values_dist = validate_username(self.browser,
+                                                        user_name,
+                                                        self.username,
+                                                        self.ignore_users,
+                                                        self.blacklist,
+                                                        self.potency_ratio,
+                                                        self.delimit_by_numbers,
+                                                        self.max_followers,
+                                                        self.max_following,
+                                                        self.min_followers,
+                                                        self.min_following,
+                                                        False,  # can't be private in locations
+                                                        self.parameters,
+                                                        self.logger)
                         if validation != True:
                             self.logger.info("--> Not a valid user: {}".format(details))
                             not_valid_users += 1
@@ -1084,12 +1121,16 @@ class InstaPy:
                         else:
                             web_address_navigator(self.browser, link)
 
-                        #try to like
-                        like_state, msg = like_image(self.browser,
-                                           user_name,
-                                           self.blacklist,
-                                           self.logger,
-                                           self.logfolder)
+                        # try to like
+                        liking = random.randint(0, 100) <= self.like_percentage
+                        like_state = True  # assume like if not try to like, so we can do other actions
+                        
+                        if (self.do_like and liking) or self.like_by_must_like:
+                            like_state, msg = like_image(self.browser,
+                                               user_name,
+                                               self.blacklist,
+                                               self.logger,
+                                               self.logfolder)
 
                         if like_state == True:
                             liked_img += 1
@@ -1268,18 +1309,20 @@ class InstaPy:
                                    self.logger))
                     if not inappropriate:
                         #validate user
-                        validation, details = validate_username(self.browser,
-                                                       user_name,
-                                                       self.username,
-                                                       self.ignore_users,
-                                                       self.blacklist,
-                                                       self.potency_ratio,
-                                                       self.delimit_by_numbers,
-                                                       self.max_followers,
-                                                       self.max_following,
-                                                       self.min_followers,
-                                                       self.min_following,
-                                                       self.logger)
+                        validation, details, return_values_dist = validate_username(self.browser,
+                                                               user_name,
+                                                               self.username,
+                                                               self.ignore_users,
+                                                               self.blacklist,
+                                                               self.potency_ratio,
+                                                               self.delimit_by_numbers,
+                                                               self.max_followers,
+                                                               self.max_following,
+                                                               self.min_followers,
+                                                               self.min_following,
+                                                               self.skip_private_users,
+                                                               self.parameters,
+                                                               self.logger)
                         if validation != True:
                             self.logger.info(details)
                             not_valid_users += 1
@@ -1478,18 +1521,20 @@ class InstaPy:
 
                     if not inappropriate and self.liking_approved:
                         #validate user
-                        validation, details = validate_username(self.browser,
-                                                       user_name,
-                                                       self.username,
-                                                       self.ignore_users,
-                                                       self.blacklist,
-                                                       self.potency_ratio,
-                                                       self.delimit_by_numbers,
-                                                       self.max_followers,
-                                                       self.max_following,
-                                                       self.min_followers,
-                                                       self.min_following,
-                                                       self.logger)
+                        validation, details, return_values_dist = validate_username(self.browser,
+                                                               user_name,
+                                                               self.username,
+                                                               self.ignore_users,
+                                                               self.blacklist,
+                                                               self.potency_ratio,
+                                                               self.delimit_by_numbers,
+                                                               self.max_followers,
+                                                               self.max_following,
+                                                               self.min_followers,
+                                                               self.min_following,
+                                                               self.skip_private_users,
+                                                               self.parameters,
+                                                              self.logger)
                         if validation != True:
                             self.logger.info(details)
                             not_valid_users += 1
@@ -1497,12 +1542,16 @@ class InstaPy:
                         else:
                             web_address_navigator(self.browser, link)
 
-                        #try to like
-                        like_state, msg = like_image(self.browser,
-                                           user_name,
-                                           self.blacklist,
-                                           self.logger,
-                                           self.logfolder)
+                        # try to like
+                        liked = True  # assume like if not try to like, so we can do other actions
+                        liking = random.randint(0, 100) <= self.like_percentage
+
+                        if (self.do_like and liking) or self.like_by_must_like:
+                            like_state, msg = like_image(self.browser,
+                                               user_name,
+                                               self.blacklist,
+                                               self.logger,
+                                               self.logfolder)
 
                         if like_state == True:
                             liked_img += 1
@@ -1664,7 +1713,7 @@ class InstaPy:
 
             following = random.randint(0, 100) <= self.follow_percentage
 
-            validation, details = validate_username(self.browser,
+            validation, details, return_values_dist = validate_username(self.browser,
                                            username,
                                            self.username,
                                            self.ignore_users,
@@ -1675,6 +1724,8 @@ class InstaPy:
                                            self.max_following,
                                            self.min_followers,
                                            self.min_following,
+                                           self.skip_private_users,
+                                           self.parameters,
                                            self.logger)
             if not validation:
                 self.logger.info("--> not a valid user: {}".format(details))
@@ -1896,19 +1947,25 @@ class InstaPy:
                 'Username [{}/{}]'.format(index + 1, len(usernames)))
             self.logger.info('--> {}'.format(username.encode('utf-8')))
 
+            # private users to skip before validation, if not going to follow
+            following = (random.randint(0, 100) < self.follow_private_percentage)
+            skip_private = self.skip_private_users or not following
+
             if not users_validated:
-                validation, details = validate_username(self.browser,
-                                               username,
-                                               self.username,
-                                               self.ignore_users,
-                                               self.blacklist,
-                                               self.potency_ratio,
-                                               self.delimit_by_numbers,
-                                               self.max_followers,
-                                               self.max_following,
-                                               self.min_followers,
-                                               self.min_following,
-                                               self.logger)
+                validation, details, return_values_dist = validate_username(self.browser,
+                                                        username,
+                                                        self.username,
+                                                        self.ignore_users,
+                                                        self.blacklist,
+                                                        self.potency_ratio,
+                                                        self.delimit_by_numbers,
+                                                        self.max_followers,
+                                                        self.max_following,
+                                                        self.min_followers,
+                                                        self.min_following,
+                                                        skip_private,
+                                                        self.parameters,
+                                                        self.logger)
                 if not validation:
                     self.logger.info("--> not a valid user: {}".format(details))
                     not_valid_users += 1
@@ -1921,27 +1978,29 @@ class InstaPy:
                                                     self.follow_times, self.logger)
             counter = 0
             while True:
-                following = (random.randint(0, 100) <= self.follow_percentage and
-                             self.do_follow and
-                             not_dont_include and
-                             not follow_restricted)
-                commenting = (random.randint(0, 100) <= self.comment_percentage and
-                              self.do_comment and
-                              not_dont_include)
-                liking = (random.randint(0, 100) <= self.like_percentage)
+               if not return_values_dist['is_private']:
+                    # reset the following chance only in case not private
+                    following = (random.randint(0, 100) <= self.follow_percentage and
+                                 self.do_follow and
+                                 not_dont_include and
+                                 not follow_restricted)
+               commenting = (random.randint(0, 100) <= self.comment_percentage and
+                             self.do_comment and
+                             not_dont_include)
+               liking = (random.randint(0, 100) <= self.like_percentage)
 
-                counter += 1
+               counter += 1
 
-                # if we have only one image to like/comment
-                if commenting and not liking and amount == 1:
-                    continue
-                if following or commenting or liking:
-                    self.logger.info('username actions: following={} commenting={} liking={}'.format(following, commenting, liking))
-                    break
-                # if for some reason we have no actions on this user
-                if counter > 5:
-                    self.logger.info('username={} could not get interacted'.format(username))
-                    break
+               # if we have only one image to like and comment and we only want to comment without like
+               if commenting and not liking and amount == 1:
+                   continue
+               if following or commenting or liking:
+                   self.logger('username actions: following={} commenting={} liking={}'.format(following, commenting, liking))
+                   break
+               # if for some reason we have no actions on this user
+               if counter > 5:
+                   self.logger('username={} could not get interacted'.format(username))
+                   break
 
             try:
                 links = get_links_for_username(self.browser,
@@ -1955,7 +2014,7 @@ class InstaPy:
                 continue
 
             if links is False:
-                continue
+                links = []  # private account
 
             # Reset like counter for every username
             liked_img = 0
@@ -2076,7 +2135,7 @@ class InstaPy:
 
                     else:
                         self.logger.info(
-                            '--> Image not liked: {}'.format(reason.encode('utf-8')))
+                            '--> Image not liked: {} = {}'.format(reason.encode('utf-8'), scope.encode('utf-8')))
                         inap_img += 1
 
                 except NoSuchElementException as err:
@@ -2230,7 +2289,7 @@ class InstaPy:
 
                 self.logger.info("User '{}' [{}/{}]".format((person), index+1, len(person_list)))
 
-                validation, details = validate_username(self.browser,
+                validation, details, return_values_dist = validate_username(self.browser,
                                                          person,
                                                          self.username,
                                                           self.ignore_users,
@@ -2241,7 +2300,9 @@ class InstaPy:
                                                             self.max_following,
                                                             self.min_followers,
                                                             self.min_following,
-                                                             self.logger)
+                                                            self.skip_private_users,
+                                                            self.parameters,
+                                                            self.logger)
                 if validation != True:
                     self.logger.info(details)
                     not_valid_users += 1
@@ -2284,6 +2345,8 @@ class InstaPy:
                                                 self.user_interact_amount,
                                                  self.user_interact_random,
                                                   self.user_interact_media)
+                    if self.aborting:
+                        return self
                     sleep(1)
 
         # final words
@@ -2383,7 +2446,7 @@ class InstaPy:
 
                 self.logger.info("User '{}' [{}/{}]".format((person), index+1, len(person_list)))
 
-                validation, details = validate_username(self.browser,
+                validation, details, return_values_dist = validate_username(self.browser,
                                                          person,
                                                          self.username,
                                                           self.ignore_users,
@@ -2394,6 +2457,8 @@ class InstaPy:
                                                             self.max_following,
                                                             self.min_followers,
                                                             self.min_following,
+                                                            self.skip_private_users,
+                                                            self.parameters,
                                                              self.logger)
                 if validation != True:
                     self.logger.info(details)
@@ -2437,6 +2502,8 @@ class InstaPy:
                                                 self.user_interact_amount,
                                                  self.user_interact_random,
                                                   self.user_interact_media)
+                    if self.aborting:
+                        return self
                     sleep(1)
 
         # final words
@@ -2539,18 +2606,20 @@ class InstaPy:
 
                 self.logger.info("Ongoing Follow [{}/{}]: now following '{}'...".format(index+1, len(person_list), person))
 
-                validation, details = validate_username(self.browser,
-                                                         person,
-                                                         self.username,
-                                                          self.ignore_users,
-                                                          self.blacklist,
-                                                           self.potency_ratio,
-                                                           self.delimit_by_numbers,
-                                                            self.max_followers,
-                                                            self.max_following,
-                                                            self.min_followers,
-                                                            self.min_following,
-                                                             self.logger)
+                validation, details, return_values_dist = validate_username(self.browser,
+                                                                     person,
+                                                                     self.username,
+                                                                      self.ignore_users,
+                                                                      self.blacklist,
+                                                                       self.potency_ratio,
+                                                                       self.delimit_by_numbers,
+                                                                        self.max_followers,
+                                                                        self.max_following,
+                                                                        self.min_followers,
+                                                                        self.min_following,
+                                                                        self.skip_private_users,
+                                                                        self.parameters,
+                                                                        self.logger)
                 if validation != True:
                     self.logger.info(details)
                     not_valid_users += 1
@@ -2704,18 +2773,20 @@ class InstaPy:
 
                 self.logger.info("Ongoing Follow [{}/{}]: now following '{}'...".format(index+1, len(person_list), person))
 
-                validation, details = validate_username(self.browser,
-                                                         person,
-                                                         self.username,
-                                                          self.ignore_users,
-                                                          self.blacklist,
-                                                           self.potency_ratio,
-                                                           self.delimit_by_numbers,
-                                                            self.max_followers,
-                                                            self.max_following,
-                                                            self.min_followers,
-                                                            self.min_following,
-                                                             self.logger)
+                validation, details, return_values_dist = validate_username(self.browser,
+                                                                            person,
+                                                                            self.username,
+                                                                            self.ignore_users,
+                                                                            [], # blacklist
+                                                                            self.potency_ratio,
+                                                                            self.delimit_by_numbers,
+                                                                            self.max_followers,
+                                                                            self.max_following,
+                                                                            self.min_followers,
+                                                                            self.min_following,
+                                                                            self.skip_private_users,
+                                                                            self.parameters,
+                                                                            self.logger)
                 if validation != True:
                     self.logger.info(details)
                     not_valid_users += 1
@@ -2858,6 +2929,10 @@ class InstaPy:
 
     def like_by_feed(self, **kwargs):
         """Like the users feed"""
+
+        if self.aborting:
+            return self
+
         for i in self.like_by_feed_generator(**kwargs):
             pass
 
@@ -2869,7 +2944,9 @@ class InstaPy:
                                 amount=50,
                                  randomize=False,
                                   unfollow=False,
-                                   interact=False):
+                                   interact=False,
+                                    followFeed=False,
+                                     validate_feed_users=False):
         """Like the users feed"""
 
         if self.aborting:
@@ -2957,20 +3034,22 @@ class InstaPy:
                             if not inappropriate and self.delimit_liking:
                                 self.liking_approved = verify_liking(self.browser, self.max_likes, self.min_likes, self.logger)
 
-                            if not inappropriate and self.liking_approved:
+                            if not inappropriate and self.liking_approved and validate_feed_users:
                                 #validate user
-                                validation, details = validate_username(self.browser,
-                                                               user_name,
-                                                               self.username,
-                                                               self.ignore_users,
-                                                               self.blacklist,
-                                                               self.potency_ratio,
-                                                               self.delimit_by_numbers,
-                                                               self.max_followers,
-                                                               self.max_following,
-                                                               self.min_followers,
-                                                               self.min_following,
-                                                               self.logger)
+                                validation, details, return_values_dist = validate_username(self.browser,
+                                                                                   user_name,
+                                                                                   self.username,
+                                                                                   self.ignore_users,
+                                                                                   self.blacklist,
+                                                                                   self.potency_ratio,
+                                                                                   self.delimit_by_numbers,
+                                                                                   self.max_followers,
+                                                                                   self.max_following,
+                                                                                   self.min_followers,
+                                                                                   self.min_following,
+                                                                                   self.skip_private_users,
+                                                                                   self.parameters,
+                                                                                   self.logger)
                                 if validation != True:
                                     self.logger.info(details)
                                     not_valid_users += 1
@@ -3061,7 +3140,7 @@ class InstaPy:
                                     if (self.do_follow and
                                         user_name not in self.dont_include and
                                         checked_img and
-                                        following and
+                                        following and followFeed and
                                         not follow_restriction("read", user_name,
                                          self.follow_times, self.logger)):
                                         follow_state, msg = follow_user(
@@ -3145,6 +3224,9 @@ class InstaPy:
     def set_dont_unfollow_active_users(self, enabled=False, posts=4, boundary=500):
         """Prevents unfollow followers who have liked one of
         your latest X posts"""
+
+        if self.aborting:
+            return
 
         # do nothing
         if not enabled:
@@ -3421,18 +3503,20 @@ class InstaPy:
 
                     if not inappropriate:
                         #validate user
-                        validation, details = validate_username(self.browser,
-                                                       user_name,
-                                                       self.username,
-                                                       self.ignore_users,
-                                                       self.blacklist,
-                                                       self.potency_ratio,
-                                                       self.delimit_by_numbers,
-                                                       self.max_followers,
-                                                       self.max_following,
-                                                       self.min_followers,
-                                                       self.min_following,
-                                                       self.logger)
+                        validation, details, return_values_dist = validate_username(self.browser,
+                                                                               user_name,
+                                                                               self.username,
+                                                                               self.ignore_users,
+                                                                               self.blacklist,
+                                                                               self.potency_ratio,
+                                                                               self.delimit_by_numbers,
+                                                                               self.max_followers,
+                                                                               self.max_following,
+                                                                               self.min_followers,
+                                                                               self.min_following,
+                                                                               False,  # can't be private in tags
+                                                                               self.parameters,
+                                                                               self.logger)
                         if validation != True:
                             self.logger.info(details)
                             not_valid_users += 1
@@ -3531,18 +3615,20 @@ class InstaPy:
 
                 if not inappropriate and self.liking_approved:
                     #validate user
-                    validation, details = validate_username(self.browser,
-                                                   user_name,
-                                                   self.username,
-                                                   self.ignore_users,
-                                                   self.blacklist,
-                                                   self.potency_ratio,
-                                                   self.delimit_by_numbers,
-                                                   self.max_followers,
-                                                   self.max_following,
-                                                   self.min_followers,
-                                                   self.min_following,
-                                                   self.logger)
+                    validation, details, return_values_dist = validate_username(self.browser,
+                                                                       user_name,
+                                                                       self.username,
+                                                                       self.ignore_users,
+                                                                       self.blacklist,
+                                                                       self.potency_ratio,
+                                                                       self.delimit_by_numbers,
+                                                                       self.max_followers,
+                                                                       self.max_following,
+                                                                       self.min_followers,
+                                                                       self.min_following,
+                                                                        self.skip_private_users,
+                                                                        self.parameters,
+                                                                        self.logger)
                     if validation != True:
                         self.logger.info(details)
                         not_valid_users += 1
