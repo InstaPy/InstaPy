@@ -985,7 +985,9 @@ class InstaPy:
         self.delimit_commenting = True if enabled==True else False
         self.max_comments = max
         self.min_comments = min
-        self.comments_mandatory_words = [] # comment only when the image description contain at least one of those words
+
+        # comment only when the image description contain at least one of those words
+        self.comments_mandatory_words = comments_mandatory_words
 
 
     def set_simulation(self, enabled=True, percentage=100):
