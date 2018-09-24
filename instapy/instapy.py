@@ -3735,7 +3735,7 @@ class InstaPy:
 
             if (platform.startswith("win32") and
                     python_version().startswith(('2', '3.7'))):
-                notify_me = False   # remove this block for python 2 once plyer>1.3.0 is released to PyPI
+                notify_me = False   # remove this block once plyer>1.3.0 is released to PyPI
 
             # update QS configuration with the fresh settings
             configuration.update({"state":enabled,
