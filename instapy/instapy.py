@@ -219,9 +219,9 @@ class InstaPy:
         Settings.chromedriver_desired_version = str(driver_version)
         if update_driver:
             try:
-                driver_update()
+                driver_update(driver_version, self.logger)
             except:
-                print("Error updating webdriver")
+                self.logger.error("Error updating webdriver")
 
 
     def get_instapy_logger(self, show_logs):
