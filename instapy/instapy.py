@@ -96,6 +96,7 @@ class InstaPy:
                  driver_version="latest",
                  update_driver=True):
 
+
         if nogui:
             self.display = Display(visible=0, size=(800, 600))
             self.display.start()
@@ -214,9 +215,6 @@ class InstaPy:
 
         get_database(make=True)
 
-        if self.selenium_local_session == True:
-            self.set_selenium_local_session()
-
         Settings.chromedriver_desired_version = str(driver_version)
         if update_driver:
             try:
@@ -224,6 +222,8 @@ class InstaPy:
             except:
                 self.logger.error("Error updating webdriver")
 
+        if self.selenium_local_session == True:
+            self.set_selenium_local_session()
 
     def get_instapy_logger(self, show_logs):
         """
