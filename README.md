@@ -89,6 +89,7 @@ Table of Contents
   * [Simulation](#simulation)
   * [Disable Image Loading](#disable-image-loading)
   * [Using Multiple Chromedrivers](#using-multiple-chromedrivers)
+  * [Changing DB or Chromedriver locations](#changing-db-or-chromedriver-locations)
 
 ## Getting started
 
@@ -1530,6 +1531,14 @@ If you need multiple os versions of chromedriver just rename it like:
 chromedriver_linux
 chromedriver_osx
 chromedriver_windows
+```
+
+### Changing DB or Chromedriver locations
+If you want to change the location/path of either the DB or the chromedriver, simply head into the `instapy/settings.py` file and change the following lines. 
+Set these in instapy/settings.py if you're locating the library in the /usr/lib/pythonX.X/ directory.
+```
+#   Settings.database_location = '/path/to/instapy.db'
+#   Settings.chromedriver_location = '/path/to/chromedriver'
 ```
 
 ---
