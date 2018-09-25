@@ -4,6 +4,7 @@ import time
 from math import ceil
 import random
 import re
+from sys import platform
 from platform import python_version
 import os
 import csv
@@ -3731,6 +3732,10 @@ class InstaPy:
             stochasticity = {"enabled":stochastic_flow,
                               "latesttime":latesttime,
                                "original_peaks":orig_peaks}
+
+            if (platform.startswith("win32") and
+                    python_version().startswith(('2', '3.7'))):
+                notify_me = False   # remove this block once plyer>1.3.0 is released to PyPI
 
             # update QS configuration with the fresh settings
             configuration.update({"state":enabled,

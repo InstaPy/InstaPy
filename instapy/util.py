@@ -10,6 +10,7 @@ import csv
 import sqlite3
 import json
 from contextlib import contextmanager
+import requests
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as ec
 from selenium.webdriver.common.by import By
@@ -860,9 +861,19 @@ def ping_server(host, logger):
     need_sh = False if  system().lower()=="windows" else True
 
     # pinging
-    conn = call(command, shell=need_sh) == 0
+    ping_attempts = 2
+    connectivity = None
 
-    if conn == False:
+    while connectivity != True and ping_attempts > 0:
+        connectivity = call(command, shell=need_sh) == 0
+
+        if connectivity == False:
+            logger.warning("Pinging the server again!\t~total attempts left: {}"
+                                .format(ping_attempts))
+            ping_attempts -= 1
+            sleep(5)
+
+    if connectivity == False:
         logger.critical("There is no connection to the '{}' server!".format(host))
         return False
 
@@ -967,21 +978,30 @@ def check_authorization(browser, username, method, logger):
 
 
 
-def get_username(browser, logger):
+def get_username(browser, track, logger):
     """ Get the username of a user from the loaded profile page """
+    if track == "profile":
+        query = "return window._sharedData.entry_data. \
+                    ProfilePage[0].graphql.user.username"
+
+    elif track == "post":
+        query = "return window._sharedData.entry_data. \
+                    PostPage[0].graphql.shortcode_media.owner.username"
+
     try:
-        username = browser.execute_script("return window._sharedData.entry_data."
-                                                "ProfilePage[0].graphql.user.username")
+        username = browser.execute_script(query)
+
     except WebDriverException:
         try:
             browser.execute_script("location.reload()")
             update_activity()
 
-            username = browser.execute_script("return window._sharedData.entry_data."
-                                                    "ProfilePage[0].graphql.user.username")
+            username = browser.execute_script(query)
+
         except WebDriverException:
             current_url = get_current_url(browser)
-            logger.info("Failed to get the username from '{}' page".format(current_url or "user"))
+            logger.info("Failed to get the username from '{}' page".format(current_url or
+                                                        "user" if track == "profile" else "post"))
             username = None
 
     # in future add XPATH ways of getting username
@@ -1056,7 +1076,7 @@ def new_tab(browser):
 
 
 
-def explicit_wait(browser, track, ec_params, logger, timeout=66):
+def explicit_wait(browser, track, ec_params, logger, timeout=35, notify=True):
     """
     Explicitly wait until expected condition validates
 
@@ -1090,14 +1110,20 @@ def explicit_wait(browser, track, ec_params, logger, timeout=66):
 
         condition = ec.title_contains(expect_in_title)
 
+    elif track == "PFL":
+        ec_name = "page fully loaded"
+        condition = (lambda browser: browser.execute_script("return document.readyState")
+                                                in ["complete" or "loaded"])
+
     # generic wait block
     try:
         wait = WebDriverWait(browser, timeout)
         result = wait.until(condition)
 
     except TimeoutException:
-        logger.info("Timed out with failure while explicitly waiting until {}!\n"
-                        .format(ec_name))
+        if notify == True:
+            logger.info("Timed out with failure while explicitly waiting until {}!\n"
+                            .format(ec_name))
         return False
 
     return result
@@ -1117,6 +1143,105 @@ def get_current_url(browser):
             current_url = None
 
     return current_url
+
+
+
+def get_username_from_id(browser, user_id, logger):
+    """ Convert user ID to username """
+    # method using graphql 'Account media' endpoint
+    logger.info("Trying to find the username from the given user ID by loading a post")
+
+    query_hash = "42323d64886122307be10013ad2dcc44"   # earlier- "472f257a40c653c64c666ce877d59d2b"
+    graphql_query_URL = "https://www.instagram.com/graphql/query/?query_hash={}".format(query_hash)
+    variables = {"id":str(user_id), "first":1}
+    post_url = u"{}&variables={}".format(graphql_query_URL, str(json.dumps(variables)))
+
+    web_address_navigator(browser, post_url)
+    pre = browser.find_element_by_tag_name("pre").text
+    user_data = json.loads(pre)["data"]["user"]
+
+    if user_data:
+        user_data = user_data["edge_owner_to_timeline_media"]
+
+        if user_data["edges"]:
+            post_code = user_data["edges"][0]["node"]["shortcode"]
+            post_page = "https://www.instagram.com/p/{}".format(post_code)
+
+            web_address_navigator(browser, post_page)
+            username = get_username(browser, "post", logger)
+            if username:
+                return username
+
+        else:
+            if user_data["count"] == 0:
+                logger.info("Profile with ID {}: no pics found".format(user_id))
+
+            else:
+                logger.info("Can't load pics of a private profile to find username (ID: {})".format(user_id))
+
+    else:
+        logger.info("No profile found, the user may have blocked you (ID: {})".format(user_id))
+        return None
+
+
+    # method using private API
+    logger.info("Trying to find the username from the given user ID by a quick API call")
+
+    req = requests.get(u"https://i.instagram.com/api/v1/users/{}/info/"
+                            .format(user_id))
+    if req:
+        data = json.loads(req.text)
+        if data["user"]:
+            username = data["user"]["username"]
+            return username
+
+
+    # method using graphql 'Follow' endpoint
+    logger.info("Trying to find the username from the given user ID "
+                   "by using the GraphQL Follow endpoint")
+
+    user_link_by_id = ("https://www.instagram.com/web/friendships/{}/follow/"
+                            .format(user_id))
+
+    web_address_navigator(browser, user_link_by_id)
+    username = get_username(browser, "profile", logger)
+
+    return username
+
+
+ 
+def is_page_available(browser, logger): 
+    """ Check if the page is available and valid """
+    # wait for the current page fully load
+    explicit_wait(browser, "PFL", [], logger, 10)
+
+    try:
+        page_title = browser.title
+
+    except WebDriverException:
+        try:
+            page_title = browser.execute_script("return document.title")
+
+        except WebDriverException:
+            try:
+                page_title = browser.execute_script(
+                    "return document.getElementsByTagName('title')[0].text")
+
+            except WebDriverException:
+                logger.info("Unable to find the title of the page :(")
+                return True
+
+    expected_keywords = ["Page Not Found", "Content Unavailable"]
+    if any(keyword in page_title for keyword in expected_keywords):
+        if "Page Not Found" in page_title:
+            logger.warning("The page isn't available!\t~the link may be broken, or the page may have been removed...")
+
+        elif "Content Unavailable" in page_title:
+            logger.warning("The page isn't available!\t~the user may have blocked you...")
+
+        return False
+
+    return True
 
 
 
