@@ -14,6 +14,7 @@ class Settings:
     """ Globally accessible settings throughout whole project """
     log_location = os.path.join(BASE_DIR, 'logs')
     database_location = os.path.join(BASE_DIR, 'db', 'instapy.db')
+
     assets_location = os.path.join(BASE_DIR, "assets")
 
     # chromedriver file
@@ -26,13 +27,17 @@ class Settings:
     chromedriver_desired_version = "latest"
 
     chromedriver_min_version = 2.36
+
     # set a logger cache outside the InstaPy object to avoid re-instantiation issues
     loggers = {}
     logger = None
+
     # set current profile credentials for DB operations
     profile = {"id":None, "name":None}
+
     # hold live Quota Supervisor configuration for global usage
     QS_config = {}
+
     # specify either connected locally or through a proxy
     connection_type = None
 

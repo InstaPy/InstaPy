@@ -4,6 +4,7 @@ from datetime import datetime
 from .time_util import sleep
 from .util import interruption_handler
 from .util import web_address_navigator
+from .util import update_activity
 
 from selenium.common.exceptions import WebDriverException
 
@@ -20,13 +21,17 @@ def log_follower_num(browser, username, logfolder):
         followed_by = browser.execute_script(
             "return window._sharedData.""entry_data.ProfilePage[0]."
             "graphql.user.edge_followed_by.count")
+
     except WebDriverException:   #handle the possible `entry_data` error
         try:
             browser.execute_script("location.reload()")
+            update_activity()
+
             sleep(1)
             followed_by = browser.execute_script(
                 "return window._sharedData.""entry_data.ProfilePage[0]."
                 "graphql.user.edge_followed_by.count")
+
         except WebDriverException:
             followed_by = None
 
@@ -47,13 +52,17 @@ def log_following_num(browser, username, logfolder):
         following_num = browser.execute_script(
             "return window._sharedData.""entry_data.ProfilePage[0]."
             "graphql.user.edge_follow.count")
+
     except WebDriverException:
         try:
             browser.execute_script("location.reload()")
+            update_activity()
+
             sleep(10)
             following_num = browser.execute_script(
                 "return window._sharedData.""entry_data.ProfilePage[0]."
                 "graphql.user.edge_follow.count")
+
         except WebDriverException:
             following_num = None
 

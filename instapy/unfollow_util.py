@@ -108,6 +108,8 @@ def get_following_status(browser, person, logger):
 
     if not follow_button:
         browser.execute_script("location.reload()")
+        update_activity()
+
         follow_button = explicit_wait(browser, "VOEL", [follow_button_XP, "XPath"], logger)
 
         if not follow_button:
@@ -514,6 +516,8 @@ def follow_user(browser, track, login, user_name, button, blacklist, logger, log
                                        "arguments[0].style.width = '10px'; "
                                        "arguments[0].style.opacity = 1",
                                             follow_button)
+                # update server calls
+                update_activity()
 
                 click_element(browser, follow_button)
 
@@ -526,7 +530,9 @@ def follow_user(browser, track, login, user_name, button, blacklist, logger, log
                                                               logger)
             if not following:
                 browser.execute_script("location.reload()")
+                update_activity()
                 sleep(2)
+
                 following, follow_button = get_following_status(browser,
                                                                  user_name,
                                                                   logger)
@@ -828,26 +834,33 @@ def get_given_user_followers(browser,
     try:
         allfollowers = format_number(browser.find_element_by_xpath("//a[contains"
                                 "(@href,'followers')]/span").text)
+
     except NoSuchElementException:
         try:
             allfollowers = browser.execute_script(
                 "return window._sharedData.entry_data."
                 "ProfilePage[0].graphql.user.edge_followed_by.count")
+
         except WebDriverException:
             try:
                 browser.execute_script("location.reload()")
+                update_activity()
+
                 allfollowers = browser.execute_script(
                     "return window._sharedData.entry_data."
                     "ProfilePage[0].graphql.user.edge_followed_by.count")
+
             except WebDriverException:
                 try:
                     topCount_elements = browser.find_elements_by_xpath(
                         "//span[contains(@class,'g47SY')]")
+
                     if topCount_elements:
                         allfollowers = format_number(topCount_elements[1].text)
                     else:
                         logger.info("Failed to get followers count of '{}'  ~empty list".format(user_name))
                         allfollowers = None
+
                 except NoSuchElementException:
                     logger.error("Error occured during getting the followers count of '{}'\n".format(user_name))
                     return [], []
@@ -909,26 +922,33 @@ def get_given_user_following(browser,
     try:
         allfollowing = format_number(browser.find_element_by_xpath("//a[contains"
                                 "(@href,'following')]/span").text)
+
     except NoSuchElementException:
         try:
             allfollowing = browser.execute_script(
                 "return window._sharedData.entry_data."
                 "ProfilePage[0].graphql.user.edge_follow.count")
+
         except WebDriverException:
             try:
                 browser.execute_script("location.reload()")
+                update_activity()
+
                 allfollowing = browser.execute_script(
                     "return window._sharedData.entry_data."
                     "ProfilePage[0].graphql.user.edge_follow.count")
+
             except WebDriverException:
                 try:
                     topCount_elements = browser.find_elements_by_xpath(
                         "//span[contains(@class,'g47SY')]")
+
                     if topCount_elements:
                         allfollowing = format_number(topCount_elements[2].text)
                     else:
                         logger.info("Failed to get following count of '{}'  ~empty list".format(user_name))
                         allfollowing = None
+
                 except NoSuchElementException:
                     logger.error("\nError occured during getting the following count of '{}'\n".format(user_name))
                     return [], []
@@ -1126,6 +1146,7 @@ def unfollow_user(browser, track, username, person, person_id, button, relations
 
             if not button_change:
                 browser.execute_script("location.reload()")
+                update_activity()
                 sleep(2)
 
                 # double check the following state

@@ -88,6 +88,7 @@ Table of Contents
 * [Extra Information](#extra-information)  
   * [Simulation](#simulation)
   * [Disable Image Loading](#disable-image-loading)
+  * [Using Multiple Chromedrivers](#using-multiple-chromedrivers)
 
 ## Getting started
 
@@ -1518,10 +1519,17 @@ To do this simply pass the `disable_image_load=True` parameter in the InstaPy co
 session = InstaPy(username=insta_username,
                   password=insta_password,
                   headless_browser=False,
-		  disable_image_loading=True,
+		  disable_image_load=True,
                   multi_logs=True)
 ```
 
+### Using Multiple Chromedrivers
+If you need multiple os versions of chromedriver just rename it like:
+```bash
+chromedriver_linux
+chromedriver_osx
+chromedriver_windows
+```
 
 ---
 ###### Have Fun & Feel Free to report any issues
