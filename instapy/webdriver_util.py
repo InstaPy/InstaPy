@@ -22,32 +22,35 @@ def driver_update(desired_version="", logger=None):
                 if file_content:
                     current_version = file_content.strip().split('.')
                 else:
-                    current_version = [0, 0]
+                    current_version = ["0", "0"]
         else:
-            current_version = [0, 0]
+            current_version = ["0", "0"]
 
     logger.info("Current Webdriver Version: " + ".".join(current_version))
 
+    update = False
+
     if not DESIRED_VERSION:
         new_version = get_latest_version(logger)
+        # update logic
+        length = len(new_version)
+        if len(current_version) < length:
+            length = len(current_version)
+
+        for i in range(length):
+            new = int(new_version[i])
+            old = int(current_version[i])
+
+            if new > old:
+                update = True
+                break
     else:
         new_version = DESIRED_VERSION
+        # always updates if current version is not desired version
+        if not current_version == new_version:
+            update = True
 
     logger.info("Desired Webdriver Version: " + ".".join(new_version))
-
-    # update logic
-    length = len(new_version)
-    if len(current_version) < length:
-        length = len(current_version)
-
-    update = False
-    for i in range(length):
-        new = int(new_version[i])
-        old = int(current_version[i])
-
-        if new > old:
-            update = True
-            break
 
     if update:
         update_webdriver(new_version, logger)
