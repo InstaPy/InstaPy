@@ -188,6 +188,7 @@ class InstaPy:
         self.commenting_approved = True
         self.max_comments = 35
         self.min_comments = 0
+        self.comments_mandatory_words = []
 
         self.relationship_data = {username:{"all_following":[], "all_followers":[]}}
 
@@ -979,12 +980,15 @@ class InstaPy:
     def set_delimit_commenting(self,
                                 enabled=False,
                                  max=None,
-                                  min=None):
+                                  min=None,
+                                    comments_mandatory_words=[]):
 
         self.delimit_commenting = True if enabled==True else False
         self.max_comments = max
         self.min_comments = min
 
+        # comment only when the image description contain at least one of those words
+        self.comments_mandatory_words = comments_mandatory_words
 
 
     def set_simulation(self, enabled=True, percentage=100):
@@ -1130,6 +1134,7 @@ class InstaPy:
                                      disapproval_reason) = verify_commenting(self.browser,
                                                                              self.max_comments,
                                                                              self.min_comments,
+                                                                             self.comments_mandatory_words,
                                                                               self.logger)
                                 if self.commenting_approved:
                                     if temp_comments:
@@ -1325,6 +1330,7 @@ class InstaPy:
                                   disapproval_reason) = verify_commenting(self.browser,
                                                                            self.max_comments,
                                                                            self.min_comments,
+                                                                           self.comments_mandatory_words,
                                                                             self.logger)
                             if self.commenting_approved:
                                 if temp_comments:
@@ -1543,7 +1549,8 @@ class InstaPy:
                                      disapproval_reason) = verify_commenting(self.browser,
                                                                              self.max_comments,
                                                                              self.min_comments,
-                                                                              self.logger)
+                                                                             self.comments_mandatory_words,
+                                                                             self.logger)
                                 if self.commenting_approved:
                                     if temp_comments:
                                         # Use clarifai related comments only!
@@ -2038,6 +2045,7 @@ class InstaPy:
                                                                      self.browser,
                                                                       self.max_comments,
                                                                       self.min_comments,
+                                                                      self.comments_mandatory_words,
                                                                        self.logger)
                                     if self.commenting_approved:
                                         if temp_comments:
@@ -3026,6 +3034,7 @@ class InstaPy:
                                              disapproval_reason) = verify_commenting(self.browser,
                                                                                      self.max_comments,
                                                                                      self.min_comments,
+                                                                                     self.comments_mandatory_words,
                                                                                       self.logger)
 
                                         if self.commenting_approved:
@@ -3595,6 +3604,7 @@ class InstaPy:
                                  disapproval_reason) = verify_commenting(self.browser,
                                                                          self.max_comments,
                                                                          self.min_comments,
+                                                                         self.comments_mandatory_words,
                                                                           self.logger)
                             if self.commenting_approved:
                                 if temp_comments:
