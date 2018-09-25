@@ -24,8 +24,6 @@ class Settings:
 
     chromedriver_location = os.path.join(BASE_DIR, "assets", specific_chromedriver)
 
-    chromedriver_desired_version = "latest"
-
     chromedriver_min_version = 2.36
 
     # set a logger cache outside the InstaPy object to avoid re-instantiation issues
