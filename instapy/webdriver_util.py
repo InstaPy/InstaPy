@@ -8,12 +8,12 @@ DOWNLOAD_DIR = Settings.assets_location
 VERSION_FILE = os.path.join(Settings.assets_location, 'version.txt')
 
 
-def driver_update(desired_version=[]):
+def driver_update(desired_version="", logger=None):
     current_version = []
     DESIRED_VERSION = []
 
     if not desired_version == "latest":
-        DESIRED_VERSION = desired_version
+        DESIRED_VERSION = str(desired_version).split('.')
 
     if not current_version:
         if os.path.exists(VERSION_FILE):
@@ -26,10 +26,14 @@ def driver_update(desired_version=[]):
         else:
             current_version = [0, 0]
 
+    logger.info("Current Webdriver Version: " + ".".join(current_version))
+
     if not DESIRED_VERSION:
-        new_version = get_latest_version()
+        new_version = get_latest_version(logger)
     else:
         new_version = DESIRED_VERSION
+
+    logger.info("Desired Webdriver Version: " + ".".join(new_version))
 
     # update logic
     length = len(new_version)
@@ -46,10 +50,11 @@ def driver_update(desired_version=[]):
             break
 
     if update:
-        update_webdriver(new_version)
+        update_webdriver(new_version, logger)
 
 
-def update_webdriver(version):
+def update_webdriver(version, logger):
+    logger.info("Updating Driver...")
     CHROME_DL_URL = 'https://chromedriver.storage.googleapis.com'
 
     # chromedriver versions for downloading only
@@ -69,6 +74,7 @@ def update_webdriver(version):
         pf = vLINUX
 
     url = CHROME_DL_URL + '/' + '.'.join(version) + '/' + pf
+    logger.info("Start downloading: " + url)
 
     # downloads the files
     file = urllib.request.urlopen(url)
@@ -77,20 +83,25 @@ def update_webdriver(version):
     with open(path, 'wb') as output:
         output.write(file.read())
 
+    logger.info("Finished downloading file to: " + path)
+
     # unzip file
     import zipfile
     with zipfile.ZipFile(path, "r") as zip_ref:
         zip_ref.extractall(DOWNLOAD_DIR)
 
+    logger.info("Unzipped File.")
+
     # delete zip file
     os.remove(path)
+    logger.info("Deleted Zip archive.")
 
     # write version file
     with open(VERSION_FILE, "w") as vFile:
         vFile.write('.'.join(version))
 
 
-def get_latest_version():
+def get_latest_version(logger):
     CHROME_URL = 'http://chromedriver.chromium.org/downloads'
 
     import requests
@@ -105,5 +116,6 @@ def get_latest_version():
         id='sites-canvas-main-content').table.tbody.tr.td.div.find_all('h2')[1].b.a
 
     new_version = latest.text.split(' ')[1].split('.')
+    logger.info("Lates Version available is: " + ".".join(new_version))
 
     return new_version
