@@ -72,6 +72,7 @@ Table of Contents
   * [Pick Nonfollowers of a user](#pick-nonfollowers-of-a-user)
   * [Pick Fans of a user](#pick-fans-of-a-user)
   * [Pick Mutual Following of a user](#pick-mutual-following-of-a-user)
+* [Webdriver Utilities](#webdriver-utilities)
 * [Use a proxy](#use-a-proxy)
 * [Switching to Firefox](#switching-to-firefox)
 * [Emoji Support](#emoji-support)
@@ -1206,7 +1207,23 @@ There are **several** `use cases` of this tool for **various purposes**.
     ##now, he will write a message to his mutual followers to help him get a new honey pot :>
     ```  
 
+### Webdriver Utilities
 
+InstaPy is searching for new Chromedriver version everytime you start it.  
+Disabling auto update:
+```python
+session = InstaPy(username=insta_username,
+                  password=insta_password,
+                  driver_update=False)
+```
+
+It is also possible to force a specific Chromedriver Version.  
+It will be downloaded automatically. Version has to be formatted as a __string__.
+```python
+session = InstaPy(username=insta_username,
+                  password=insta_password,
+                  driver_version="2.40")
+```
 
 ### Use a proxy
 
