@@ -92,7 +92,7 @@ class InstaPy:
                  proxy_port=None,
                  disable_image_load=False,
                  bypass_suspicious_attempt=False,
-                 multi_logs=False):
+                 multi_logs=True):
 
         if nogui:
             self.display = Display(visible=0, size=(800, 600))
