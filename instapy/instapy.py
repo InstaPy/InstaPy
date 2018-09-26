@@ -228,6 +228,10 @@ class InstaPy:
                     self.logger.error("No Webdriver found! Bot is not able to run.")
                     raise Exception("No Webdriver found.")
 
+        if not os.path.exists(Settings.specific_chromedriver) and not update_driver:
+            self.logger.error("Update Driver turned off and no driver available. Turn update_driver back on or download manually.")
+            raise Exception("No Webdriver found.")
+
         if self.selenium_local_session == True:
             self.set_selenium_local_session()
 
