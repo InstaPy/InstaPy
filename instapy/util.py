@@ -420,27 +420,24 @@ def delete_line_from_file(filepath, userToDelete, logger):
         file_path_old = filepath+".old"
         file_path_Temp = filepath+".temp"
 
-        f = open(filepath, "r")
-        lines = f.readlines()
-        f.close()
+        with open(filepath, "r") as f:
+            lines = f.readlines()
 
-        f = open(file_path_Temp, "w")
-        for line in lines:
-            entries = line.split(" ~ ")
-            sz = len(entries)
-            if sz == 1:
-                user = entries[0][:-2]
-            elif sz == 2:
-                user = entries[1][:-2]
-            else:
-                user = entries[1]
+        with open(file_path_Temp, "w") as f:
+            for line in lines:
+                entries = line.split(" ~ ")
+                sz = len(entries)
+                if sz == 1:
+                    user = entries[0][:-2]
+                elif sz == 2:
+                    user = entries[1][:-2]
+                else:
+                    user = entries[1]
 
-            if user == userToDelete:
-                logger.info("\tRemoved '{}' from {} file".format(line.split(',\n')[0], filepath))
-            else:
-                f.write(line)
-
-        f.close()
+                if user == userToDelete:
+                    logger.info("\tRemoved '{}' from {} file".format(line.split(',\n')[0], filepath))
+                else:
+                    f.write(line)
 
         # File leftovers that should not exist, but if so remove it
         while os.path.isfile(file_path_old):
