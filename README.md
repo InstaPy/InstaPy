@@ -1214,7 +1214,7 @@ Disabling auto update:
 ```python
 session = InstaPy(username=insta_username,
                   password=insta_password,
-                  driver_update=False)
+                  update_driver=False)
 ```
 
 It is also possible to force a specific Chromedriver Version.  
