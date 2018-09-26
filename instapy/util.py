@@ -435,7 +435,7 @@ def get_active_users(browser, username, posts, boundary, logger):
 
 
 
-def delete_line_from_file(filepath, lineToDelete, logger):
+def delete_line_from_file(filepath, userToDelete, logger):
     """ Remove user's record from the followed pool file after unfollowing """
     if not os.path.isfile(filepath):
         #in case of there is no any followed pool file yet
@@ -445,17 +445,24 @@ def delete_line_from_file(filepath, lineToDelete, logger):
         file_path_old = filepath+".old"
         file_path_Temp = filepath+".temp"
 
-        f = open(filepath, "r")
-        lines = f.readlines()
-        f.close()
+        with open(filepath, "r") as f:
+            lines = f.readlines()
 
-        f = open(file_path_Temp, "w")
-        for line in lines:
-            if (line.find(lineToDelete) < 0):
-                f.write(line)
-            else:
-                logger.info("\tRemoved '{}' from followedPool.csv file".format(line.split(',\n')[0]))
-        f.close()
+        with open(file_path_Temp, "w") as f:
+            for line in lines:
+                entries = line.split(" ~ ")
+                sz = len(entries)
+                if sz == 1:
+                    user = entries[0][:-2]
+                elif sz == 2:
+                    user = entries[1][:-2]
+                else:
+                    user = entries[1]
+
+                if user == userToDelete:
+                    logger.info("\tRemoved '{}' from {} file".format(line.split(',\n')[0], filepath))
+                else:
+                    f.write(line)
 
         # File leftovers that should not exist, but if so remove it
         while os.path.isfile(file_path_old):
