@@ -1,7 +1,10 @@
 import os
-from .settings import Settings
+import zipfile
 import platform
 import urllib
+import requests
+from bs4 import BeautifulSoup as bs
+from .settings import Settings
 
 # constants
 DOWNLOAD_DIR = Settings.assets_location
@@ -10,15 +13,16 @@ VERSION_FILE = os.path.join(Settings.assets_location, 'version.txt')
 
 def driver_update(desired_version="", logger=None):
     current_version = []
-    DESIRED_VERSION = []
+    latest = True
 
     if not desired_version == "latest":
-        DESIRED_VERSION = str(desired_version).split('.')
+        desired_version = str(desired_version).split('.')
+        latest = False
 
     if not current_version:
         if os.path.exists(VERSION_FILE):
-            with open(VERSION_FILE) as f:
-                file_content = f.read()
+            with open(VERSION_FILE) as file:
+                file_content = file.read()
                 if file_content:
                     current_version = file_content.strip().split('.')
                 else:
@@ -26,12 +30,16 @@ def driver_update(desired_version="", logger=None):
         else:
             current_version = ["0", "0"]
 
-    logger.info("Current Webdriver Version: " + ".".join(current_version))
+    if current_version == ["0", "0"]:
+        logger.info("No versioned webdriver found.")
+    else:
+        logger.info("Current webdriver version: " + ".".join(current_version))
 
     update = False
 
-    if not DESIRED_VERSION:
-        new_version = get_latest_version(logger)
+    if latest:
+        new_version = get_latest_chromedriver_version(logger)
+
         # update logic
         length = len(new_version)
         if len(current_version) < length:
@@ -45,19 +53,19 @@ def driver_update(desired_version="", logger=None):
                 update = True
                 break
     else:
-        new_version = DESIRED_VERSION
+        new_version = desired_version
         # always updates if current version is not desired version
         if not current_version == new_version:
             update = True
 
-    logger.info("Desired Webdriver Version: " + ".".join(new_version))
+    logger.info("Desired webdriver version: " + ".".join(new_version))
 
     if update:
-        update_webdriver(new_version, logger)
+        download_chromedriver(new_version, logger)
 
 
-def update_webdriver(version, logger):
-    logger.info("Updating Driver...")
+def download_chromedriver(version, logger):
+    logger.info("Updating driver...")
     CHROME_DL_URL = 'https://chromedriver.storage.googleapis.com'
 
     # chromedriver versions for downloading only
@@ -77,6 +85,7 @@ def update_webdriver(version, logger):
         pf = vLINUX
 
     url = CHROME_DL_URL + '/' + '.'.join(version) + '/' + pf
+
     logger.info("Start downloading: " + url)
 
     # downloads the files
@@ -86,29 +95,27 @@ def update_webdriver(version, logger):
     with open(path, 'wb') as output:
         output.write(file.read())
 
-    logger.info("Finished downloading file to: " + path)
+    logger.info("Finished downloading file: " + path)
 
     # unzip file
-    import zipfile
     with zipfile.ZipFile(path, "r") as zip_ref:
         zip_ref.extractall(DOWNLOAD_DIR)
 
-    logger.info("Unzipped File.")
+    logger.info("Unzipped webdriver.")
 
     # delete zip file
     os.remove(path)
-    logger.info("Deleted Zip archive.")
+    logger.info("Deleted zip archive.")
 
     # write version file
     with open(VERSION_FILE, "w") as vFile:
         vFile.write('.'.join(version))
 
+    logger.info("Finished updating webdriver.")
 
-def get_latest_version(logger):
+
+def get_latest_chromedriver_version(logger):
     CHROME_URL = 'http://chromedriver.chromium.org/downloads'
-
-    import requests
-    from bs4 import BeautifulSoup as bs
 
     page = requests.get(CHROME_URL)
     html = page.content
@@ -119,6 +126,6 @@ def get_latest_version(logger):
         id='sites-canvas-main-content').table.tbody.tr.td.div.find_all('h2')[1].b.a
 
     new_version = latest.text.split(' ')[1].split('.')
-    logger.info("Lates Version available is: " + ".".join(new_version))
+    logger.info("Latest version available is: " + ".".join(new_version))
 
     return new_version
