@@ -216,11 +216,17 @@ class InstaPy:
         get_database(make=True)
 
         Settings.chromedriver_desired_version = str(driver_version)
-        if update_driver:
+
+        if update_driver and not use_firefox:
             try:
                 driver_update(driver_version, self.logger)
             except:
-                self.logger.error("Error updating webdriver")
+                self.logger.warning("Failed updating webdriver.")
+                if os.path.exists(Settings.specific_chromedriver):
+                    self.logger.warning("Using local webdriver found in assets folder instead.")
+                else:
+                    self.logger.error("No Webdriver found! Bot is not able to run.")
+                    raise Exception("No Webdriver found.")
 
         if self.selenium_local_session == True:
             self.set_selenium_local_session()
