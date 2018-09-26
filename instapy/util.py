@@ -410,7 +410,7 @@ def get_active_users(browser, username, posts, boundary, logger):
 
 
 
-def delete_line_from_file(filepath, lineToDelete, logger):
+def delete_line_from_file(filepath, userToDelete, logger):
     """ Remove user's record from the followed pool file after unfollowing """
     if not os.path.isfile(filepath):
         #in case of there is no any followed pool file yet
@@ -426,10 +426,16 @@ def delete_line_from_file(filepath, lineToDelete, logger):
 
         f = open(file_path_Temp, "w")
         for line in lines:
-            username_first_char_index = line.find(lineToDelete)
-            if ((username_first_char_index > -1) and
-                (line[username_first_char_index+len(lineToDelete)] in [',', '\n', ' ']) and
-                 (username_first_char_index != 0 and line[username_first_char_index-1] == ' ')):
+            entries = line.split(" ~ ")
+            sz = len(entries)
+            if sz == 1:
+                user = entries[0][:-2]
+            elif sz == 2:
+                user = entries[1][:-2]
+            else:
+                user = entries[1]
+
+            if user == userToDelete:
                 logger.info("\tRemoved '{}' from {} file".format(line.split(',\n')[0], filepath))
             else:
                 f.write(line)
