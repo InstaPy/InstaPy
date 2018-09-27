@@ -236,7 +236,7 @@ def login_user(browser,
         update_activity()
 
     login_button = browser.find_element_by_xpath(
-        "//form/span/button[text()='Log in']")
+        "//button[text()='Log in']")
 
     (ActionChains(browser)
         .move_to_element(login_button)
