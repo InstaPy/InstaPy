@@ -87,6 +87,7 @@ Table of Contents
   * [cron](#cron)
   * [Schedule](#schedule)
 * [Extra Information](#extra-information)  
+  * [Using one of the templates](#using-one-of-the-templates)
   * [Simulation](#simulation)
   * [Disable Image Loading](#disable-image-loading)
   * [Using Multiple Chromedrivers](#using-multiple-chromedrivers)
@@ -1504,9 +1505,18 @@ while True:
 
 ## Extra Information
 
+### Using one of the templates
 
-#### How not to be banned?
-Built-in delays prevent your account from getting banned. (Just make sure you don't like 1000s of post/day)
+If you're interested in what other users setup looks like, feel free to check out the `quickstart_templates` folder which includes several working setups with different features.
+
+In order to use them, just copy the desired file and put it next to the `quickstart.py` file in the, what is called root, directory.
+
+Finally simply adjust the username and any tags or firend lists before executing it.
+That's it.
+
+### How not to be banned?
+- Built-in delays prevent your account from getting banned. (Just make sure you don't like 1000s of post/day)
+- Use the Quota Supervisor feature to set some fixed limits for the bot for maximum safety.
 
 
 ### Chrome Browser
