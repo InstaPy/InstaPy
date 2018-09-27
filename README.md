@@ -88,6 +88,7 @@ Table of Contents
   * [Schedule](#schedule)
 * [Extra Information](#extra-information)  
   * [Using one of the templates](#using-one-of-the-templates)
+  * [How not to be banned](#how-not-to-be-banned)
   * [Simulation](#simulation)
   * [Disable Image Loading](#disable-image-loading)
   * [Using Multiple Chromedrivers](#using-multiple-chromedrivers)
@@ -1514,7 +1515,7 @@ In order to use them, just copy the desired file and put it next to the `quickst
 Finally simply adjust the username and any tags or firend lists before executing it.
 That's it.
 
-### How not to be banned?
+### How not to be banned
 - Built-in delays prevent your account from getting banned. (Just make sure you don't like 1000s of post/day)
 - Use the Quota Supervisor feature to set some fixed limits for the bot for maximum safety.
 
