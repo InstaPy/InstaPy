@@ -1552,8 +1552,8 @@ chromedriver_windows
 If you want to change the location/path of either the DB or the chromedriver, simply head into the `instapy/settings.py` file and change the following lines. 
 Set these in instapy/settings.py if you're locating the library in the /usr/lib/pythonX.X/ directory.
 ```
-#   Settings.database_location = '/path/to/instapy.db'
-#   Settings.chromedriver_location = '/path/to/chromedriver'
+Settings.database_location = '/path/to/instapy.db'
+Settings.chromedriver_location = '/path/to/chromedriver'
 ```
 
 ---
