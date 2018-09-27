@@ -4,6 +4,7 @@ import datetime
 import re
 import signal
 import os
+from sys import exit as clean_exit
 from platform import system
 from subprocess import call
 import csv
@@ -14,6 +15,7 @@ import requests
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as ec
 from selenium.webdriver.common.by import By
+from tempfile import gettempdir
 
 from .time_util import sleep
 from .time_util import sleep_actual
@@ -1249,6 +1251,36 @@ def is_page_available(browser, logger):
         return False
 
     return True
+
+
+
+@contextmanager
+def smart_run(session):
+    
+    try:
+        session.login()
+        yield
+
+    except (Exception, KeyboardInterrupt) as exc:
+        if isinstance(exc, NoSuchElementException):
+            # the problem is with a change in IG page layout
+            log_file = "{}.html".format(time.strftime("%Y%m%d-%H%M%S"))
+            file_path = os.path.join(gettempdir(), log_file)
+            with open(file_path, "wb") as fp:
+                fp.write(session.browser.page_source.encode("utf-8"))
+            print("{0}\nIf raising an issue, "
+                  "please also upload the file located at:\n{1}\n{0}"
+                    .format('*' * 70, file_path))
+
+        # provide full stacktrace (else than external interrupt)
+        if isinstance(exc, KeyboardInterrupt):
+            clean_exit("You have exited successfully.")
+
+        else:
+            raise
+
+    finally:
+        session.end()
 
 
 
