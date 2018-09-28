@@ -31,6 +31,10 @@ _NOTE: If you add an empty file named ssh to the boot directory, ssh will be ena
 1. nano instapy/settings.py
 1. change "chromedriver_min_version = 2.36" to "chromedriver_min_version = 2.33" & save file
 
+> The combination of the versions of chromium-browser and chromdriver is important. This combination is currently working 
+> * Chromium 65.0.3325.181 Built on Raspbian , running on Raspbian 9.4
+> * ChromeDriver 2.36 (a81166ad79e68fbfe7cf5ba243192d6412e26b37) 
+
 ## For Firefox
 > Remove any versions of Firefox as it will conflict with the correct one installed below:
 
