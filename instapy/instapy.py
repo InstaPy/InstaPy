@@ -1871,7 +1871,9 @@ class InstaPy:
                           usernames,
                           amount=10,
                           randomize=False,
-                          media=None):
+                          media=None,
+                          taggedImages=False,
+                          validate=True):
         """Likes some amounts of images for each usernames"""
         if self.aborting:
             return self
@@ -1917,7 +1919,7 @@ class InstaPy:
                                                self.min_followers,
                                                self.min_following,
                                                self.logger)
-                if not validation:
+                if not validation and validate:
                     self.logger.info("--> not a valid user: {}".format(details))
                     not_valid_users += 1
                     continue
@@ -1957,7 +1959,8 @@ class InstaPy:
                                                amount,
                                                self.logger,
                                                randomize,
-                                               media)
+                                               media,
+                                               taggedImages)
             except NoSuchElementException:
                 self.logger.error('Element not found, skipping this username')
                 continue
