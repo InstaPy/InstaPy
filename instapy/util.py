@@ -181,9 +181,7 @@ def validate_username(browser,
                                    username, "potential user" if not reverse_relationship else "massive follower",
                                    float("{0:.2f}".format(relationship_ratio)))
 
-    # Since we are already in user page check number of posts using apinsta.herokuapp
-    #https://www.instagram.com/web/search/topsearch/?context=user&count=0&query=gabrielecalarota
-    web_address_navigator(browser, "https://www.instagram.com/"+username+"/")
+    web_address_navigator(browser, "https://www.instagram.com/" + username + "/")
     if min_posts or max_posts:
         # If you are interested in relationship number of posts boundaries
         try:
@@ -194,7 +192,7 @@ def validate_username(browser,
         if max_posts:
             if number_of_posts > max_posts:
                 return False, "Number of posts ({}) of {} exceeds the max limit given {}\n".format(number_of_posts,
-                                                                                                 username, max_posts)
+                                                                                                   username, max_posts)
         if min_posts:
             if number_of_posts < min_posts:
                 return False, "Number of posts ({}) of {} is not enough for the minimum limit given {}\n".format(
@@ -251,11 +249,10 @@ def validate_username(browser,
     return True, "Valid user"
 
 
-def getUserData(query, browser, basequery="return window._sharedData.entry_data.PostPage[0]."):
+def getUserData(query, browser, basequery="return window._sharedData.entry_data.ProfilePage[0]."):
     try:
         data = browser.execute_script(
-            "return window._sharedData.entry_data."
-            "PostPage[0]." + query)
+            basequery + query)
         return data
     except WebDriverException:
         browser.execute_script("location.reload()")
