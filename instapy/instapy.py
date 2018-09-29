@@ -2180,7 +2180,7 @@ class InstaPy:
                 'Username [{}/{}]'.format(index + 1, len(usernames)))
             self.logger.info('--> {}'.format(username.encode('utf-8')))
 
-            if not users_validated and not interact_with_self:
+            if not users_validated and not (interact_with_self and username == self.username):
                 validation, details = validate_username(self.browser,
                                                username,
                                                self.username,
@@ -2234,7 +2234,7 @@ class InstaPy:
                                                self.logger,
                                                randomize,
                                                media,
-                                               taggedImages=False)
+                                               taggedImages=True)
             except NoSuchElementException:
                 self.logger.error('Element not found, skipping this username')
                 continue
