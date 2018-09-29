@@ -27,7 +27,7 @@ from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import WebDriverException
 from selenium.common.exceptions import TimeoutException
 
-default_profile_pic_instagram = "https://instagram.fhen1-1.fna.fbcdn.net/vp/a8539c22ed9fec8e1c43b538b1ebfd1d/5C5A1A7A/t51.2885-19/11906329_960233084022564_1448528159_a.jpg"
+default_profile_pic_instagram = "https://instagram.fbts2-1.fna.fbcdn.net/vp/a8539c22ed9fec8e1c43b538b1ebfd1d/5C5A1A7A/t51.2885-19/11906329_960233084022564_1448528159_a.jpg"
 
 
 def is_private_profile(browser, logger, following=True):
