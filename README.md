@@ -569,7 +569,9 @@ session.set_relationship_bounds (enabled=True, potency_ratio=-1.44, delimit_by_n
 ### Skipping user for number of posts boundaries, private account, no profile picture, business account
 
 #### This is used to check number of posts of a user and skip if they aren't in the boundaries provided
-```session.set_relationship_bounds(min_posts=10,
+
+```python
+session.set_relationship_bounds(min_posts=10,
                                  max_posts=1000)
 ```
 Users that have more than 1000 posts or less than 10 will be discarded
@@ -577,14 +579,16 @@ Users that have more than 1000 posts or less than 10 will be discarded
 **N.B.:** It is up to the user to check that `min_posts <= max_posts`
 
 You can also set only one parameter at a time:
-```session.set_relationship_bounds(max_posts=1000)```
+```python
+session.set_relationship_bounds(max_posts=1000)```
 
 Will skip only users that have more than 1000 posts in their feed
 
 #### This is used to skip users with certain condition
 ##### Skip private account
 **This is done by default**
-```set_skip_users(skip_private=True,
+```python
+session.set_skip_users(skip_private=True,
                        skip_no_profile_pic=False,
                        skip_business=False,
                        skip_business_categories=[],
@@ -594,21 +598,24 @@ Will skip users that have private account, even if are followed by running accou
 
 ##### Skip users that don't have profile picture
 
-```set_skip_users(skip_private=True,
+```python
+session.set_skip_users(skip_private=True,
                        skip_no_profile_pic=True)
 ```
 Will skip users that haven't uploaded yet a profile picture
 
 ##### Skip users that have business account
 
-```set_skip_users(skip_private=True,
+```python
+session.set_skip_users(skip_private=True,
                        skip_no_profile_pic=True,
 		       skip_business=True)
 ```
 This will skip all users that have business account activated.
 
 ###### Skip only users that have certain business account
-```set_skip_users(skip_private=True,
+```python
+session.set_skip_users(skip_private=True,
                        skip_no_profile_pic=True,
 		       skip_business=True,
 		       skip_business_categories=['Creators & Celebrities'])
@@ -616,7 +623,8 @@ This will skip all users that have business account activated.
 This will skip all business accounts that have category in given list
 **N.B.** In _skip_business_categories_ you can add more than one category
 ###### Skip all business accounts, except from list given
-```set_skip_users(skip_private=True,
+```python
+session.set_skip_users(skip_private=True,
                        skip_no_profile_pic=True,
 		       skip_business=True,
 		       dont_skip_business_categories=['Creators & Celebrities'])
