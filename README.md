@@ -580,7 +580,8 @@ Users that have more than 1000 posts or less than 10 will be discarded
 
 You can also set only one parameter at a time:
 ```python
-session.set_relationship_bounds(max_posts=1000)```
+session.set_relationship_bounds(max_posts=1000)
+```
 
 Will skip only users that have more than 1000 posts in their feed
 
