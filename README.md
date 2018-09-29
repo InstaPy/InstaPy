@@ -576,7 +576,7 @@ session.set_relationship_bounds(min_posts=10,
 ```
 Users that have more than 1000 posts or less than 10 will be discarded
 
-**N.B.:** It is up to the user to check that `min_posts <= max_posts`
+**N.B.:** It is up to the user to check that `min_posts < max_posts`
 
 You can also set only one parameter at a time:
 ```python
