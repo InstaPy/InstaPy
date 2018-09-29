@@ -28,6 +28,7 @@ from selenium.common.exceptions import WebDriverException
 from selenium.common.exceptions import TimeoutException
 
 
+default_profile_pic_instagram = "https://instagram.fhen1-1.fna.fbcdn.net/vp/a8539c22ed9fec8e1c43b538b1ebfd1d/5C5A1A7A/t51.2885-19/11906329_960233084022564_1448528159_a.jpg"
 
 
 def is_private_profile(browser, logger, following=True):
@@ -73,6 +74,11 @@ def validate_username(browser,
                       min_following,
                       min_posts,
                       max_posts,
+                      skip_private,
+                      skip_no_profile_pic,
+                      skip_business,
+                      skip_business_categories,
+                      dont_skip_business_categories,
                       logger):
     """Check if we can interact with the user"""
 
@@ -183,11 +189,38 @@ def validate_username(browser,
         number_of_posts = json.loads(pre)['graphql']['user']['edge_owner_to_timeline_media']['count']
         if max_posts:
             if number_of_posts > max_posts:
-                return False
+                return False, "Number of posts ({}) of {} exceeds the max limit given {}".format(number_of_posts,username,max_posts)
         if min_posts:
             if number_of_posts < min_posts:
-                return False
+                return False, "Number of posts ({}) of {} is not enough for the minimum limit given {}".format(number_of_posts,username,min_posts)
 
+    """Skip users"""
+    #Skip private
+    if skip_private:
+        if json.loads(pre)['graphql']['user']['is_private']:
+            return False, "{} is private account, by default skip".format(username)
+
+    #Skip no profile pic
+    if skip_no_profile_pic:
+        if json.loads(pre)['graphql']['user']['profile_pic_url'] == default_profile_pic_instagram:
+            return False, "{} has default instagram profile picture".format(username)
+
+
+    #Skip business
+    if skip_business:
+        #If is business account skip under conditions
+        if json.loads(pre)['graphql']['user']['is_business_account']:
+            category = json.loads(pre)['graphql']['user']['business_category_name']
+            if len(skip_business_categories) == 0:
+                #skip if not in dont_include
+                if category not in dont_skip_business_categories:
+                    if len(dont_skip_business_categories) == 0:
+                        return False, "{} has business account".format(username)
+                    else:
+                        return False, "{} has business account as a {} which is in the skip_business_categories list given".format(username, category)
+            else:
+                if category in skip_business_categories:
+                    return False, "{} has business account as a {} which is in the skip_business_categories list given".format(username, category)
 
 
 

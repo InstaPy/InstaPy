@@ -188,6 +188,11 @@ class InstaPy:
         self.comments_mandatory_words = []
         self.max_posts = None
         self.min_posts = None
+        self.skip_business_categories = []
+        self.dont_skip_business_categories = []
+        self.skip_business = False
+        self.skip_no_profile_pic = False
+        self.skip_private = True
 
         self.relationship_data = {username: {"all_following": [], "all_followers": []}}
 
@@ -867,6 +872,11 @@ class InstaPy:
                                                         self.min_following,
                                                         self.min_posts,
                                                         self.max_posts,
+                                                        self.skip_private,
+                                                        self.skip_no_profile_pic,
+                                                        self.skip_business,
+                                                        self.skip_business_categories,
+                                                        self.dont_skip_business_categories,
                                                         self.logger)
                 if validation != True or acc_to_follow == self.username:
                     self.logger.info("--> Not a valid user: {}\n".format(details))
@@ -980,6 +990,27 @@ class InstaPy:
         self.min_posts = min_posts
         self.max_posts = max_posts
 
+    def set_skip_users(self,
+                       skip_private=True,
+                       skip_no_profile_pic=False,
+                       skip_business=False,
+                       skip_business_categories=[],
+                       dont_skip_business_categories=[]):
+
+        self.skip_business = skip_business
+        self.skip_private = skip_private
+        self.skip_no_profile_pic = skip_no_profile_pic
+        if skip_business:
+            self.skip_business_categories = skip_business_categories
+            if len(skip_business_categories) == 0:
+                self.dont_skip_business_categories = dont_skip_business_categories
+            else:
+                if len(dont_skip_business_categories) != 0:
+                    self.logger.warning("Both skip_business_categories and dont_skip_business categories provided in skip_business feature," +
+                                        "will skip only the categories listed in skip_business_categories parameter")
+                    #dont_skip_business_categories = [] Setted by default in init
+
+
     def set_delimit_liking(self,
                            enabled=None,
                            max=None,
@@ -1092,6 +1123,11 @@ class InstaPy:
                                                                 self.min_following,
                                                                 self.min_posts,
                                                                 self.max_posts,
+                                                                self.skip_private,
+                                                                self.skip_no_profile_pic,
+                                                                self.skip_business,
+                                                                self.skip_business_categories,
+                                                                self.dont_skip_business_categories,
                                                                 self.logger)
                         if validation != True:
                             self.logger.info("--> Not a valid user: {}".format(details))
@@ -1299,6 +1335,11 @@ class InstaPy:
                                                                 self.min_following,
                                                                 self.min_posts,
                                                                 self.max_posts,
+                                                                self.skip_private,
+                                                                self.skip_no_profile_pic,
+                                                                self.skip_business,
+                                                                self.skip_business_categories,
+                                                                self.dont_skip_business_categories,
                                                                 self.logger)
                         if validation != True:
                             self.logger.info(details)
@@ -1511,6 +1552,11 @@ class InstaPy:
                                                                 self.min_following,
                                                                 self.min_posts,
                                                                 self.max_posts,
+                                                                self.skip_private,
+                                                                self.skip_no_profile_pic,
+                                                                self.skip_business,
+                                                                self.skip_business_categories,
+                                                                self.dont_skip_business_categories,
                                                                 self.logger)
                         if validation != True:
                             self.logger.info(details)
@@ -1700,6 +1746,11 @@ class InstaPy:
                                                     self.min_following,
                                                     self.min_posts,
                                                     self.max_posts,
+                                                    self.skip_private,
+                                                    self.skip_no_profile_pic,
+                                                    self.skip_business,
+                                                    self.skip_business_categories,
+                                                    self.dont_skip_business_categories,
                                                     self.logger)
             if not validation:
                 self.logger.info("--> not a valid user: {}".format(details))
@@ -1933,6 +1984,11 @@ class InstaPy:
                                                         self.min_following,
                                                         self.min_posts,
                                                         self.max_posts,
+                                                        self.skip_private,
+                                                        self.skip_no_profile_pic,
+                                                        self.skip_business,
+                                                        self.skip_business_categories,
+                                                        self.dont_skip_business_categories,
                                                         self.logger)
                 if not validation:
                     self.logger.info("--> not a valid user: {}".format(details))
@@ -2270,6 +2326,11 @@ class InstaPy:
                                                         self.min_following,
                                                         self.min_posts,
                                                         self.max_posts,
+                                                        self.skip_private,
+                                                        self.skip_no_profile_pic,
+                                                        self.skip_business,
+                                                        self.skip_business_categories,
+                                                        self.dont_skip_business_categories,
                                                         self.logger)
                 if validation != True:
                     self.logger.info(details)
@@ -2427,6 +2488,11 @@ class InstaPy:
                                                         self.min_following,
                                                         self.min_posts,
                                                         self.max_posts,
+                                                        self.skip_private,
+                                                        self.skip_no_profile_pic,
+                                                        self.skip_business,
+                                                        self.skip_business_categories,
+                                                        self.dont_skip_business_categories,
                                                         self.logger)
                 if validation != True:
                     self.logger.info(details)
@@ -2587,6 +2653,11 @@ class InstaPy:
                                                         self.min_following,
                                                         self.min_posts,
                                                         self.max_posts,
+                                                        self.skip_private,
+                                                        self.skip_no_profile_pic,
+                                                        self.skip_business,
+                                                        self.skip_business_categories,
+                                                        self.dont_skip_business_categories,
                                                         self.logger)
                 if validation != True:
                     self.logger.info(details)
@@ -2758,6 +2829,11 @@ class InstaPy:
                                                         self.min_following,
                                                         self.min_posts,
                                                         self.max_posts,
+                                                        self.skip_private,
+                                                        self.skip_no_profile_pic,
+                                                        self.skip_business,
+                                                        self.skip_business_categories,
+                                                        self.dont_skip_business_categories,
                                                         self.logger)
                 if validation != True:
                     self.logger.info(details)
@@ -3013,6 +3089,11 @@ class InstaPy:
                                                                         self.min_following,
                                                                         self.min_posts,
                                                                         self.max_posts,
+                                                                        self.skip_private,
+                                                                        self.skip_no_profile_pic,
+                                                                        self.skip_business,
+                                                                        self.skip_business_categories,
+                                                                        self.dont_skip_business_categories,
                                                                         self.logger)
                                 if validation != True:
                                     self.logger.info(details)
@@ -3470,6 +3551,11 @@ class InstaPy:
                                                                 self.min_following,
                                                                 self.min_posts,
                                                                 self.max_posts,
+                                                                self.skip_private,
+                                                                self.skip_no_profile_pic,
+                                                                self.skip_business,
+                                                                self.skip_business_categories,
+                                                                self.dont_skip_business_categories,
                                                                 self.logger)
                         if validation != True:
                             self.logger.info(details)
@@ -3580,6 +3666,11 @@ class InstaPy:
                                                             self.min_following,
                                                             self.min_posts,
                                                             self.max_posts,
+                                                            self.skip_private,
+                                                            self.skip_no_profile_pic,
+                                                            self.skip_business,
+                                                            self.skip_business_categories,
+                                                            self.dont_skip_business_categories,
                                                             self.logger)
                     if validation != True:
                         self.logger.info(details)
