@@ -71,6 +71,8 @@ def validate_username(browser,
                       max_following,
                       min_followers,
                       min_following,
+                      min_posts,
+                      max_posts,
                       logger):
     """Check if we can interact with the user"""
 
@@ -170,6 +172,23 @@ def validate_username(browser,
                             "{} is not a {} with the relationship ratio of {}  ~skipping user\n".format(
                             username, "potential user" if not reverse_relationship else "massive follower",
                             float("{0:.2f}".format(relationship_ratio)))
+
+    #Since we are already in user page check number of posts using apinsta.herokuapp
+    if min_posts or max_posts:
+        #If you are interested in relationship number of posts boundaries
+        browser.get(
+            'http://apinsta.herokuapp.com/u/' + username)
+        pre = browser.find_element_by_tag_name("pre").text
+        browser.execute_script("window.history.go(-1)")
+        number_of_posts = json.loads(pre)['graphql']['user']['edge_owner_to_timeline_media']['count']
+        if max_posts:
+            if number_of_posts > max_posts:
+                return False
+        if min_posts:
+            if number_of_posts < min_posts:
+                return False
+
+
 
 
     # if everything ok
