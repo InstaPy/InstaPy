@@ -211,7 +211,7 @@ def validate_username(browser,
     # Skip no profile pic
     if skip_no_profile_pic:
         try:
-            profile_pic = getUserData("profile_pic_url", browser)
+            profile_pic = getUserData("graphql.user.profile_pic_url", browser)
         except WebDriverException:
             logger.error("~cannot get the post profile pic url")
             return False, "---> Sorry, couldn't get if user profile pic url\n"
