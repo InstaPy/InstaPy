@@ -180,13 +180,14 @@ def validate_username(browser,
                             float("{0:.2f}".format(relationship_ratio)))
 
     #Since we are already in user page check number of posts using apinsta.herokuapp
+
+    browser.get('http://apinsta.herokuapp.com/u/' + username)
+    pre = browser.find_element_by_tag_name("pre").text
+    browser.execute_script("window.history.go(-1)")
+    user_data = json.loads(pre)['graphql']['user']
     if min_posts or max_posts:
-        #If you are interested in relationship number of posts boundaries
-        browser.get(
-            'http://apinsta.herokuapp.com/u/' + username)
-        pre = browser.find_element_by_tag_name("pre").text
-        browser.execute_script("window.history.go(-1)")
-        number_of_posts = json.loads(pre)['graphql']['user']['edge_owner_to_timeline_media']['count']
+        # If you are interested in relationship number of posts boundaries
+        number_of_posts = user_data['edge_owner_to_timeline_media']['count']
         if max_posts:
             if number_of_posts > max_posts:
                 return False, "Number of posts ({}) of {} exceeds the max limit given {}".format(number_of_posts,username,max_posts)
@@ -197,20 +198,20 @@ def validate_username(browser,
     """Skip users"""
     #Skip private
     if skip_private:
-        if json.loads(pre)['graphql']['user']['is_private']:
+        if user_data['is_private']:
             return False, "{} is private account, by default skip".format(username)
 
     #Skip no profile pic
     if skip_no_profile_pic:
-        if json.loads(pre)['graphql']['user']['profile_pic_url'] == default_profile_pic_instagram:
+        if user_data['profile_pic_url'] == default_profile_pic_instagram:
             return False, "{} has default instagram profile picture".format(username)
 
 
     #Skip business
     if skip_business:
         #If is business account skip under conditions
-        if json.loads(pre)['graphql']['user']['is_business_account']:
-            category = json.loads(pre)['graphql']['user']['business_category_name']
+        if user_data['is_business_account']:
+            category = user_data['business_category_name']
             if len(skip_business_categories) == 0:
                 #skip if not in dont_include
                 if category not in dont_skip_business_categories:
