@@ -29,7 +29,9 @@ from selenium.common.exceptions import TimeoutException
 
 default_profile_pic_instagram = ["https://instagram.flas1-2.fna.fbcdn.net/vp/a8539c22ed9fec8e1c43b538b1ebfd1d/5C5A1A7A/t51.2885-19/11906329_960233084022564_1448528159_a.jpg",
                                  "https://scontent-yyz1-1.cdninstagram.com/vp/a8539c22ed9fec8e1c43b538b1ebfd1d/5C5A1A7A/t51.2885-19/11906329_960233084022564_1448528159_a.jpg",
-                                 "https://instagram.fbts2-1.fna.fbcdn.net/vp/a8539c22ed9fec8e1c43b538b1ebfd1d/5C5A1A7A/t51.2885-19/11906329_960233084022564_1448528159_a.jpg"]
+                                 "https://instagram.faep12-1.fna.fbcdn.net/vp/a8539c22ed9fec8e1c43b538b1ebfd1d/5C5A1A7A/t51.2885-19/11906329_960233084022564_1448528159_a.jpg",
+                                 "https://instagram.fbts2-1.fna.fbcdn.net/vp/a8539c22ed9fec8e1c43b538b1ebfd1d/5C5A1A7A/t51.2885-19/11906329_960233084022564_1448528159_a.jpg",
+                                 "https://scontent-mia3-1.cdninstagram.com/vp/a8539c22ed9fec8e1c43b538b1ebfd1d/5C5A1A7A/t51.2885-19/11906329_960233084022564_1448528159_a.jpg"]
 
 
 def is_private_profile(browser, logger, following=True):
@@ -218,7 +220,7 @@ def validate_username(browser,
             logger.error("~cannot get the post profile pic url")
             return False, "---> Sorry, couldn't get if user profile pic url\n"
         print(profile_pic)
-        if profile_pic in default_profile_pic_instagram:
+        if profile_pic in default_profile_pic_instagram or str(profile_pic).find("11906329_960233084022564_1448528159_a.jpg") > 0:
             return False, "{} has default instagram profile picture\n".format(username)
 
     # Skip business
