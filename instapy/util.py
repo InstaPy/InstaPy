@@ -219,7 +219,6 @@ def validate_username(browser,
         except WebDriverException:
             logger.error("~cannot get the post profile pic url")
             return False, "---> Sorry, couldn't get if user profile pic url\n"
-        print(profile_pic)
         if profile_pic in default_profile_pic_instagram or str(profile_pic).find("11906329_960233084022564_1448528159_a.jpg") > 0:
             return False, "{} has default instagram profile picture\n".format(username)
 
