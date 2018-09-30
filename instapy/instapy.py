@@ -91,7 +91,6 @@ class InstaPy:
                  bypass_suspicious_attempt=False,
                  multi_logs=True):
 
-
         if nogui:
             self.display = Display(visible=0, size=(800, 600))
             self.display.start()
@@ -863,28 +862,7 @@ class InstaPy:
 
             if not users_validated:
                 # Verify if the user should be followed
-                validation, details = validate_username(self.browser,
-                                                        acc_to_follow,
-                                                        self.username,
-                                                        self.ignore_users,
-                                                        self.blacklist,
-                                                        self.potency_ratio,
-                                                        self.delimit_by_numbers,
-                                                        self.max_followers,
-                                                        self.max_following,
-                                                        self.min_followers,
-                                                        self.min_following,
-                                                        self.min_posts,
-                                                        self.max_posts,
-                                                        self.skip_private,
-                                                        self.skip_private_percentage,
-                                                        self.skip_no_profile_pic,
-                                                        self.skip_no_profile_pic_percentage,
-                                                        self.skip_business,
-                                                        self.skip_business_percentage,
-                                                        self.skip_business_categories,
-                                                        self.dont_skip_business_categories,
-                                                        self.logger)
+                validation, details = self.validate_user_call(acc_to_follow)
                 if validation != True or acc_to_follow == self.username:
                     self.logger.info("--> Not a valid user: {}\n".format(details))
                     not_valid_users += 1
@@ -997,6 +975,32 @@ class InstaPy:
         self.min_posts = min_posts
         self.max_posts = max_posts
 
+    def validate_user_call(self, user_name):
+        """Call the validate_username() function"""
+        validation, details = validate_username(self.browser,
+                                                user_name,
+                                                self.username,
+                                                self.ignore_users,
+                                                self.blacklist,
+                                                self.potency_ratio,
+                                                self.delimit_by_numbers,
+                                                self.max_followers,
+                                                self.max_following,
+                                                self.min_followers,
+                                                self.min_following,
+                                                self.min_posts,
+                                                self.max_posts,
+                                                self.skip_private,
+                                                self.skip_private_percentage,
+                                                self.skip_no_profile_pic,
+                                                self.skip_no_profile_pic_percentage,
+                                                self.skip_business,
+                                                self.skip_business_percentage,
+                                                self.skip_business_categories,
+                                                self.dont_skip_business_categories,
+                                                self.logger)
+        return validation, details
+
     def set_skip_users(self,
                        skip_private=True,
                        private_percentage=100,
@@ -1019,10 +1023,10 @@ class InstaPy:
                 self.dont_skip_business_categories = dont_skip_business_categories
             else:
                 if len(dont_skip_business_categories) != 0:
-                    self.logger.warning("Both skip_business_categories and dont_skip_business categories provided in skip_business feature," +
-                                        "will skip only the categories listed in skip_business_categories parameter")
-                    #dont_skip_business_categories = [] Setted by default in init
-
+                    self.logger.warning(
+                        "Both skip_business_categories and dont_skip_business categories provided in skip_business feature," +
+                        "will skip only the categories listed in skip_business_categories parameter")
+                    # dont_skip_business_categories = [] Setted by default in init
 
     def set_delimit_liking(self,
                            enabled=None,
@@ -1123,28 +1127,7 @@ class InstaPy:
 
                     if not inappropriate and self.liking_approved:
                         # validate user
-                        validation, details = validate_username(self.browser,
-                                                                user_name,
-                                                                self.username,
-                                                                self.ignore_users,
-                                                                self.blacklist,
-                                                                self.potency_ratio,
-                                                                self.delimit_by_numbers,
-                                                                self.max_followers,
-                                                                self.max_following,
-                                                                self.min_followers,
-                                                                self.min_following,
-                                                                self.min_posts,
-                                                                self.max_posts,
-                                                                self.skip_private,
-                                                                self.skip_private_percentage,
-                                                                self.skip_no_profile_pic,
-                                                                self.skip_no_profile_pic_percentage,
-                                                                self.skip_business,
-                                                                self.skip_business_percentage,
-                                                                self.skip_business_categories,
-                                                                self.dont_skip_business_categories,
-                                                                self.logger)
+
                         if validation != True:
                             self.logger.info("--> Not a valid user: {}".format(details))
                             not_valid_users += 1
@@ -1338,28 +1321,7 @@ class InstaPy:
                                    self.logger))
                     if not inappropriate:
                         # validate user
-                        validation, details = validate_username(self.browser,
-                                                                user_name,
-                                                                self.username,
-                                                                self.ignore_users,
-                                                                self.blacklist,
-                                                                self.potency_ratio,
-                                                                self.delimit_by_numbers,
-                                                                self.max_followers,
-                                                                self.max_following,
-                                                                self.min_followers,
-                                                                self.min_following,
-                                                                self.min_posts,
-                                                                self.max_posts,
-                                                                self.skip_private,
-                                                                self.skip_private_percentage,
-                                                                self.skip_no_profile_pic,
-                                                                self.skip_no_profile_pic_percentage,
-                                                                self.skip_business,
-                                                                self.skip_business_percentage,
-                                                                self.skip_business_categories,
-                                                                self.dont_skip_business_categories,
-                                                                self.logger)
+                        validation, details = self.validate_user_call(user_name)
                         if validation != True:
                             self.logger.info(details)
                             not_valid_users += 1
@@ -1558,28 +1520,7 @@ class InstaPy:
 
                     if not inappropriate and self.liking_approved:
                         # validate user
-                        validation, details = validate_username(self.browser,
-                                                                user_name,
-                                                                self.username,
-                                                                self.ignore_users,
-                                                                self.blacklist,
-                                                                self.potency_ratio,
-                                                                self.delimit_by_numbers,
-                                                                self.max_followers,
-                                                                self.max_following,
-                                                                self.min_followers,
-                                                                self.min_following,
-                                                                self.min_posts,
-                                                                self.max_posts,
-                                                                self.skip_private,
-                                                                self.skip_private_percentage,
-                                                                self.skip_no_profile_pic,
-                                                                self.skip_no_profile_pic_percentage,
-                                                                self.skip_business,
-                                                                self.skip_business_percentage,
-                                                                self.skip_business_categories,
-                                                                self.dont_skip_business_categories,
-                                                                self.logger)
+                        validation, details = self.validate_user_call(user_name)
                         if validation != True:
                             self.logger.info(details)
                             not_valid_users += 1
@@ -1755,28 +1696,7 @@ class InstaPy:
 
             following = random.randint(0, 100) <= self.follow_percentage
 
-            validation, details = validate_username(self.browser,
-                                                    username,
-                                                    self.username,
-                                                    self.ignore_users,
-                                                    self.blacklist,
-                                                    self.potency_ratio,
-                                                    self.delimit_by_numbers,
-                                                    self.max_followers,
-                                                    self.max_following,
-                                                    self.min_followers,
-                                                    self.min_following,
-                                                    self.min_posts,
-                                                    self.max_posts,
-                                                    self.skip_private,
-                                                    self.skip_private_percentage,
-                                                    self.skip_no_profile_pic,
-                                                    self.skip_no_profile_pic_percentage,
-                                                    self.skip_business,
-                                                    self.skip_business_percentage,
-                                                    self.skip_business_categories,
-                                                    self.dont_skip_business_categories,
-                                                    self.logger)
+            validation, details = self.validate_user_call(username)
             if not validation:
                 self.logger.info("--> not a valid user: {}".format(details))
                 not_valid_users += 1
@@ -1996,28 +1916,7 @@ class InstaPy:
             self.logger.info('--> {}'.format(username.encode('utf-8')))
 
             if not users_validated:
-                validation, details = validate_username(self.browser,
-                                                        username,
-                                                        self.username,
-                                                        self.ignore_users,
-                                                        self.blacklist,
-                                                        self.potency_ratio,
-                                                        self.delimit_by_numbers,
-                                                        self.max_followers,
-                                                        self.max_following,
-                                                        self.min_followers,
-                                                        self.min_following,
-                                                        self.min_posts,
-                                                        self.max_posts,
-                                                        self.skip_private,
-                                                        self.skip_private_percentage,
-                                                        self.skip_no_profile_pic,
-                                                        self.skip_no_profile_pic_percentage,
-                                                        self.skip_business,
-                                                        self.skip_business_percentage,
-                                                        self.skip_business_categories,
-                                                        self.dont_skip_business_categories,
-                                                        self.logger)
+                validation, details = self.validate_user_call(username)
                 if not validation:
                     self.logger.info("--> not a valid user: {}".format(details))
                     not_valid_users += 1
@@ -2341,28 +2240,7 @@ class InstaPy:
 
                 self.logger.info("User '{}' [{}/{}]".format((person), index + 1, len(person_list)))
 
-                validation, details = validate_username(self.browser,
-                                                        person,
-                                                        self.username,
-                                                        self.ignore_users,
-                                                        self.blacklist,
-                                                        self.potency_ratio,
-                                                        self.delimit_by_numbers,
-                                                        self.max_followers,
-                                                        self.max_following,
-                                                        self.min_followers,
-                                                        self.min_following,
-                                                        self.min_posts,
-                                                        self.max_posts,
-                                                        self.skip_private,
-                                                        self.skip_private_percentage,
-                                                        self.skip_no_profile_pic,
-                                                        self.skip_no_profile_pic_percentage,
-                                                        self.skip_business,
-                                                        self.skip_business_percentage,
-                                                        self.skip_business_categories,
-                                                        self.dont_skip_business_categories,
-                                                        self.logger)
+                validation, details = self.validate_user_call(person)
                 if validation != True:
                     self.logger.info(details)
                     not_valid_users += 1
@@ -2506,28 +2384,7 @@ class InstaPy:
 
                 self.logger.info("User '{}' [{}/{}]".format((person), index + 1, len(person_list)))
 
-                validation, details = validate_username(self.browser,
-                                                        person,
-                                                        self.username,
-                                                        self.ignore_users,
-                                                        self.blacklist,
-                                                        self.potency_ratio,
-                                                        self.delimit_by_numbers,
-                                                        self.max_followers,
-                                                        self.max_following,
-                                                        self.min_followers,
-                                                        self.min_following,
-                                                        self.min_posts,
-                                                        self.max_posts,
-                                                        self.skip_private,
-                                                        self.skip_private_percentage,
-                                                        self.skip_no_profile_pic,
-                                                        self.skip_no_profile_pic_percentage,
-                                                        self.skip_business,
-                                                        self.skip_business_percentage,
-                                                        self.skip_business_categories,
-                                                        self.dont_skip_business_categories,
-                                                        self.logger)
+                validation, details = self.validate_user_call(person)
                 if validation != True:
                     self.logger.info(details)
                     not_valid_users += 1
@@ -2674,28 +2531,7 @@ class InstaPy:
                 self.logger.info(
                     "Ongoing Follow [{}/{}]: now following '{}'...".format(index + 1, len(person_list), person))
 
-                validation, details = validate_username(self.browser,
-                                                        person,
-                                                        self.username,
-                                                        self.ignore_users,
-                                                        self.blacklist,
-                                                        self.potency_ratio,
-                                                        self.delimit_by_numbers,
-                                                        self.max_followers,
-                                                        self.max_following,
-                                                        self.min_followers,
-                                                        self.min_following,
-                                                        self.min_posts,
-                                                        self.max_posts,
-                                                        self.skip_private,
-                                                        self.skip_private_percentage,
-                                                        self.skip_no_profile_pic,
-                                                        self.skip_no_profile_pic_percentage,
-                                                        self.skip_business,
-                                                        self.skip_business_percentage,
-                                                        self.skip_business_categories,
-                                                        self.dont_skip_business_categories,
-                                                        self.logger)
+                validation, details = self.validate_user_call(person)
                 if validation != True:
                     self.logger.info(details)
                     not_valid_users += 1
@@ -2853,28 +2689,7 @@ class InstaPy:
                 self.logger.info(
                     "Ongoing Follow [{}/{}]: now following '{}'...".format(index + 1, len(person_list), person))
 
-                validation, details = validate_username(self.browser,
-                                                        person,
-                                                        self.username,
-                                                        self.ignore_users,
-                                                        self.blacklist,
-                                                        self.potency_ratio,
-                                                        self.delimit_by_numbers,
-                                                        self.max_followers,
-                                                        self.max_following,
-                                                        self.min_followers,
-                                                        self.min_following,
-                                                        self.min_posts,
-                                                        self.max_posts,
-                                                        self.skip_private,
-                                                        self.skip_private_percentage,
-                                                        self.skip_no_profile_pic,
-                                                        self.skip_no_profile_pic_percentage,
-                                                        self.skip_business,
-                                                        self.skip_business_percentage,
-                                                        self.skip_business_categories,
-                                                        self.dont_skip_business_categories,
-                                                        self.logger)
+                validation, details = self.validate_user_call(person)
                 if validation != True:
                     self.logger.info(details)
                     not_valid_users += 1
@@ -3116,28 +2931,7 @@ class InstaPy:
 
                             if not inappropriate and self.liking_approved:
                                 # validate user
-                                validation, details = validate_username(self.browser,
-                                                                        user_name,
-                                                                        self.username,
-                                                                        self.ignore_users,
-                                                                        self.blacklist,
-                                                                        self.potency_ratio,
-                                                                        self.delimit_by_numbers,
-                                                                        self.max_followers,
-                                                                        self.max_following,
-                                                                        self.min_followers,
-                                                                        self.min_following,
-                                                                        self.min_posts,
-                                                                        self.max_posts,
-                                                                        self.skip_private,
-                                                                        self.skip_private_percentage,
-                                                                        self.skip_no_profile_pic,
-                                                                        self.skip_no_profile_pic_percentage,
-                                                                        self.skip_business,
-                                                                        self.skip_business_percentage,
-                                                                        self.skip_business_categories,
-                                                                        self.dont_skip_business_categories,
-                                                                        self.logger)
+                                validation, details = self.validate_user_call(user_name)
                                 if validation != True:
                                     self.logger.info(details)
                                     not_valid_users += 1
@@ -3581,28 +3375,7 @@ class InstaPy:
 
                     if not inappropriate:
                         # validate user
-                        validation, details = validate_username(self.browser,
-                                                                user_name,
-                                                                self.username,
-                                                                self.ignore_users,
-                                                                self.blacklist,
-                                                                self.potency_ratio,
-                                                                self.delimit_by_numbers,
-                                                                self.max_followers,
-                                                                self.max_following,
-                                                                self.min_followers,
-                                                                self.min_following,
-                                                                self.min_posts,
-                                                                self.max_posts,
-                                                                self.skip_private,
-                                                                self.skip_private_percentage,
-                                                                self.skip_no_profile_pic,
-                                                                self.skip_no_profile_pic_percentage,
-                                                                self.skip_business,
-                                                                self.skip_business_percentage,
-                                                                self.skip_business_categories,
-                                                                self.dont_skip_business_categories,
-                                                                self.logger)
+                        validation, details = self.validate_user_call(user_name)
                         if validation != True:
                             self.logger.info(details)
                             not_valid_users += 1
@@ -3699,28 +3472,7 @@ class InstaPy:
 
                 if not inappropriate and self.liking_approved:
                     # validate user
-                    validation, details = validate_username(self.browser,
-                                                            user_name,
-                                                            self.username,
-                                                            self.ignore_users,
-                                                            self.blacklist,
-                                                            self.potency_ratio,
-                                                            self.delimit_by_numbers,
-                                                            self.max_followers,
-                                                            self.max_following,
-                                                            self.min_followers,
-                                                            self.min_following,
-                                                            self.min_posts,
-                                                            self.max_posts,
-                                                            self.skip_private,
-                                                            self.skip_private_percentage,
-                                                            self.skip_no_profile_pic,
-                                                            self.skip_no_profile_pic_percentage,
-                                                            self.skip_business,
-                                                            self.skip_business_percentage,
-                                                            self.skip_business_categories,
-                                                            self.dont_skip_business_categories,
-                                                            self.logger)
+                    validation, details = self.validate_user_call(user_name)
                     if validation != True:
                         self.logger.info(details)
                         not_valid_users += 1
