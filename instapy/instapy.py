@@ -2144,7 +2144,6 @@ class InstaPy:
 
     def interact_by_users_tagged_posts(self,
                           usernames,
-                          interact_with_self=True,
                           amount=10,
                           randomize=False,
                           media=None):
@@ -2180,7 +2179,7 @@ class InstaPy:
                 'Username [{}/{}]'.format(index + 1, len(usernames)))
             self.logger.info('--> {}'.format(username.encode('utf-8')))
 
-            if not users_validated and not (interact_with_self and username == self.username):
+            if not users_validated and username != self.username:
                 validation, details = validate_username(self.browser,
                                                username,
                                                self.username,
