@@ -1127,6 +1127,7 @@ class InstaPy:
 
                     if not inappropriate and self.liking_approved:
                         # validate user
+                        validation, details = self.validate_user_call(user_name)
 
                         if validation != True:
                             self.logger.info("--> Not a valid user: {}".format(details))
