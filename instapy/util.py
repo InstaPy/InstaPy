@@ -1,4 +1,5 @@
 """ Common utilities """
+import random
 import time
 import datetime
 import re
@@ -77,8 +78,11 @@ def validate_username(browser,
                       min_posts,
                       max_posts,
                       skip_private,
+                      skip_private_percentage,
                       skip_no_profile_pic,
+                      skip_no_profile_pic_percentage,
                       skip_business,
+                      skip_business_percentage,
                       skip_business_categories,
                       dont_skip_business_categories,
                       logger):
@@ -203,13 +207,14 @@ def validate_username(browser,
                     number_of_posts, username, min_posts)
     """Skip users"""
     # Skip private
+
     if skip_private:
         try:
             is_private = getUserData("graphql.user.is_private", browser)
         except WebDriverException:
             logger.error("~cannot get if user is private")
             return False, "---> Sorry, couldn't get if user is private\n"
-        if is_private:
+        if is_private and (random.randint(0, 100) <= skip_private_percentage):
             return False, "{} is private account, by default skip\n".format(username)
 
     # Skip no profile pic
@@ -219,7 +224,7 @@ def validate_username(browser,
         except WebDriverException:
             logger.error("~cannot get the post profile pic url")
             return False, "---> Sorry, couldn't get if user profile pic url\n"
-        if profile_pic in default_profile_pic_instagram or str(profile_pic).find("11906329_960233084022564_1448528159_a.jpg") > 0:
+        if (profile_pic in default_profile_pic_instagram or str(profile_pic).find("11906329_960233084022564_1448528159_a.jpg") > 0) and (random.randint(0, 100) <= skip_no_profile_pic_percentage):
             return False, "{} has default instagram profile picture\n".format(username)
 
     # Skip business
@@ -239,7 +244,7 @@ def validate_username(browser,
             if len(skip_business_categories) == 0:
                 # skip if not in dont_include
                 if category not in dont_skip_business_categories:
-                    if len(dont_skip_business_categories) == 0:
+                    if len(dont_skip_business_categories) == 0 and (random.randint(0, 100) <= skip_business_percentage):
                         return False, "{} has business account\n".format(username)
                     else:
                         return False, "{} has business account as a {} which is in the skip_business_categories list given\n".format(

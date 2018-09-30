@@ -586,33 +586,53 @@ session.set_relationship_bounds(max_posts=1000)
 Will skip only users that have more than 1000 posts in their feed
 
 #### This is used to skip users with certain condition
+```python
+session.set_skip_users(skip_private=True,
+                       private_percentage=100,
+                       skip_no_profile_pic=False,
+                       no_profile_pic_percentage=100,
+                       skip_business=False,
+                       business_percentage=100,
+                       skip_business_categories=[],
+                       dont_skip_business_categories=[])
+```
 ##### Skip private account
 **This is done by default**
 ```python
 session.set_skip_users(skip_private=True,
-                       skip_no_profile_pic=False,
-                       skip_business=False,
-                       skip_business_categories=[],
-                       dont_skip_business_categories=[])
+                       private_percentage=100)
 ```
-Will skip users that have private account, even if are followed by running account
+Will skip users that have private account, even if are followed by running account.
+You can set a percentage of skipping:
+    _private_percentage_= 100 always skip private users
+    _private_percentage_= 0 never skip private users (so set skip_private=False)
 
 ##### Skip users that don't have profile picture
 
 ```python
 session.set_skip_users(skip_private=True,
-                       skip_no_profile_pic=True)
+                       skip_no_profile_pic=True,
+                       no_profile_pic_percentage=100)
 ```
 Will skip users that haven't uploaded yet a profile picture
+You can set a percentage of skipping:
+    _no_profile_pic_percentage_= 100 always skip users without profile picture
+    _no_profile_pic_percentage_= 0 never skip users without profile picture (so set _skip_no_profile_pic_=False)
 
 ##### Skip users that have business account
 
 ```python
 session.set_skip_users(skip_private=True,
                        skip_no_profile_pic=True,
-		       skip_business=True)
+		               skip_business=True,
+		               business_percentage=100)
 ```
 This will skip all users that have business account activated.
+You can set a percentage of skipping:
+    _business_percentage_= 100 always skip business users
+    _business_percentage_= 0 never skip business users (so set _skip_business_=False)
+
+*N.B.:* This _business_percentage_ parameter works only if no _skip_business_categories_ or _dont_skip_business_categories_ are provided!
 
 ###### Skip only users that have certain business account
 ```python

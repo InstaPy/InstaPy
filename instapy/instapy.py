@@ -91,6 +91,7 @@ class InstaPy:
                  bypass_suspicious_attempt=False,
                  multi_logs=True):
 
+
         if nogui:
             self.display = Display(visible=0, size=(800, 600))
             self.display.start()
@@ -193,6 +194,9 @@ class InstaPy:
         self.skip_business = False
         self.skip_no_profile_pic = False
         self.skip_private = True
+        self.skip_business_percentage = 100
+        self.skip_no_profile_pic_percentage = 100
+        self.skip_private_percentage = 100
 
         self.relationship_data = {username: {"all_following": [], "all_followers": []}}
 
@@ -873,8 +877,11 @@ class InstaPy:
                                                         self.min_posts,
                                                         self.max_posts,
                                                         self.skip_private,
+                                                        self.skip_private_percentage,
                                                         self.skip_no_profile_pic,
+                                                        self.skip_no_profile_pic_percentage,
                                                         self.skip_business,
+                                                        self.skip_business_percentage,
                                                         self.skip_business_categories,
                                                         self.dont_skip_business_categories,
                                                         self.logger)
@@ -992,14 +999,20 @@ class InstaPy:
 
     def set_skip_users(self,
                        skip_private=True,
+                       private_percentage=100,
                        skip_no_profile_pic=False,
+                       no_profile_pic_percentage=100,
                        skip_business=False,
+                       business_percentage=100,
                        skip_business_categories=[],
                        dont_skip_business_categories=[]):
 
         self.skip_business = skip_business
         self.skip_private = skip_private
         self.skip_no_profile_pic = skip_no_profile_pic
+        self.skip_business_percentage = business_percentage
+        self.skip_no_profile_pic_percentage = no_profile_pic_percentage
+        self.skip_private_percentage = private_percentage
         if skip_business:
             self.skip_business_categories = skip_business_categories
             if len(skip_business_categories) == 0:
@@ -1124,8 +1137,11 @@ class InstaPy:
                                                                 self.min_posts,
                                                                 self.max_posts,
                                                                 self.skip_private,
+                                                                self.skip_private_percentage,
                                                                 self.skip_no_profile_pic,
+                                                                self.skip_no_profile_pic_percentage,
                                                                 self.skip_business,
+                                                                self.skip_business_percentage,
                                                                 self.skip_business_categories,
                                                                 self.dont_skip_business_categories,
                                                                 self.logger)
@@ -1336,8 +1352,11 @@ class InstaPy:
                                                                 self.min_posts,
                                                                 self.max_posts,
                                                                 self.skip_private,
+                                                                self.skip_private_percentage,
                                                                 self.skip_no_profile_pic,
+                                                                self.skip_no_profile_pic_percentage,
                                                                 self.skip_business,
+                                                                self.skip_business_percentage,
                                                                 self.skip_business_categories,
                                                                 self.dont_skip_business_categories,
                                                                 self.logger)
@@ -1553,8 +1572,11 @@ class InstaPy:
                                                                 self.min_posts,
                                                                 self.max_posts,
                                                                 self.skip_private,
+                                                                self.skip_private_percentage,
                                                                 self.skip_no_profile_pic,
+                                                                self.skip_no_profile_pic_percentage,
                                                                 self.skip_business,
+                                                                self.skip_business_percentage,
                                                                 self.skip_business_categories,
                                                                 self.dont_skip_business_categories,
                                                                 self.logger)
@@ -1747,8 +1769,11 @@ class InstaPy:
                                                     self.min_posts,
                                                     self.max_posts,
                                                     self.skip_private,
+                                                    self.skip_private_percentage,
                                                     self.skip_no_profile_pic,
+                                                    self.skip_no_profile_pic_percentage,
                                                     self.skip_business,
+                                                    self.skip_business_percentage,
                                                     self.skip_business_categories,
                                                     self.dont_skip_business_categories,
                                                     self.logger)
@@ -1985,8 +2010,11 @@ class InstaPy:
                                                         self.min_posts,
                                                         self.max_posts,
                                                         self.skip_private,
+                                                        self.skip_private_percentage,
                                                         self.skip_no_profile_pic,
+                                                        self.skip_no_profile_pic_percentage,
                                                         self.skip_business,
+                                                        self.skip_business_percentage,
                                                         self.skip_business_categories,
                                                         self.dont_skip_business_categories,
                                                         self.logger)
@@ -2327,8 +2355,11 @@ class InstaPy:
                                                         self.min_posts,
                                                         self.max_posts,
                                                         self.skip_private,
+                                                        self.skip_private_percentage,
                                                         self.skip_no_profile_pic,
+                                                        self.skip_no_profile_pic_percentage,
                                                         self.skip_business,
+                                                        self.skip_business_percentage,
                                                         self.skip_business_categories,
                                                         self.dont_skip_business_categories,
                                                         self.logger)
@@ -2489,8 +2520,11 @@ class InstaPy:
                                                         self.min_posts,
                                                         self.max_posts,
                                                         self.skip_private,
+                                                        self.skip_private_percentage,
                                                         self.skip_no_profile_pic,
+                                                        self.skip_no_profile_pic_percentage,
                                                         self.skip_business,
+                                                        self.skip_business_percentage,
                                                         self.skip_business_categories,
                                                         self.dont_skip_business_categories,
                                                         self.logger)
@@ -2654,8 +2688,11 @@ class InstaPy:
                                                         self.min_posts,
                                                         self.max_posts,
                                                         self.skip_private,
+                                                        self.skip_private_percentage,
                                                         self.skip_no_profile_pic,
+                                                        self.skip_no_profile_pic_percentage,
                                                         self.skip_business,
+                                                        self.skip_business_percentage,
                                                         self.skip_business_categories,
                                                         self.dont_skip_business_categories,
                                                         self.logger)
@@ -2830,8 +2867,11 @@ class InstaPy:
                                                         self.min_posts,
                                                         self.max_posts,
                                                         self.skip_private,
+                                                        self.skip_private_percentage,
                                                         self.skip_no_profile_pic,
+                                                        self.skip_no_profile_pic_percentage,
                                                         self.skip_business,
+                                                        self.skip_business_percentage,
                                                         self.skip_business_categories,
                                                         self.dont_skip_business_categories,
                                                         self.logger)
@@ -3090,8 +3130,11 @@ class InstaPy:
                                                                         self.min_posts,
                                                                         self.max_posts,
                                                                         self.skip_private,
+                                                                        self.skip_private_percentage,
                                                                         self.skip_no_profile_pic,
+                                                                        self.skip_no_profile_pic_percentage,
                                                                         self.skip_business,
+                                                                        self.skip_business_percentage,
                                                                         self.skip_business_categories,
                                                                         self.dont_skip_business_categories,
                                                                         self.logger)
@@ -3552,8 +3595,11 @@ class InstaPy:
                                                                 self.min_posts,
                                                                 self.max_posts,
                                                                 self.skip_private,
+                                                                self.skip_private_percentage,
                                                                 self.skip_no_profile_pic,
+                                                                self.skip_no_profile_pic_percentage,
                                                                 self.skip_business,
+                                                                self.skip_business_percentage,
                                                                 self.skip_business_categories,
                                                                 self.dont_skip_business_categories,
                                                                 self.logger)
@@ -3667,8 +3713,11 @@ class InstaPy:
                                                             self.min_posts,
                                                             self.max_posts,
                                                             self.skip_private,
+                                                            self.skip_private_percentage,
                                                             self.skip_no_profile_pic,
+                                                            self.skip_no_profile_pic_percentage,
                                                             self.skip_business,
+                                                            self.skip_business_percentage,
                                                             self.skip_business_categories,
                                                             self.dont_skip_business_categories,
                                                             self.logger)
