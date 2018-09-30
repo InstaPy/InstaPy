@@ -632,7 +632,7 @@ You can set a percentage of skipping:
     _business_percentage_= 100 always skip business users
     _business_percentage_= 0 never skip business users (so set _skip_business_=False)
 
-*N.B.:* This _business_percentage_ parameter works only if no _skip_business_categories_ or _dont_skip_business_categories_ are provided!
+**N.B.:** This _business_percentage_ parameter works only if no _skip_business_categories_ or _dont_skip_business_categories_ are provided!
 
 ###### Skip only users that have certain business account
 ```python
