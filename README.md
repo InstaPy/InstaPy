@@ -49,7 +49,8 @@ Table of Contents
   * [Unfollowing](#unfollowing)
   * [Don't unfollow active users](#dont-unfollow-active-users)
   * [Interactions based on the number of followers and/or following a user has](#interactions-based-on-the-number-of-followers-andor-following-a-user-has)
-  * [Skipping user for number of posts boundaries, private account, no profile picture, business account](#skipping-user-for-number-of-posts-boundaries-private-account-no-profile-picture-business-account)
+  * [Interactions based on the number of posts a user has](#interactions-based-on-the-number-of-posts-a-user-has)
+  * [Skipping user for private account, no profile picture, business account](#skipping-user-for-private-account-no-profile-picture-business-account)
   * [Liking based on the number of existing likes a post has](#liking-based-on-the-number-of-existing-likes-a-post-has)
   * [Commenting based on the number of existing comments a post has](#commenting-based-on-the-number-of-existing-comments-a-post-has)
   * [Commenting based on madatory words in the description or first comment](#commenting-based-on-madatory-words-in-the-description-or-first-comment)
@@ -519,7 +520,7 @@ _here the unfollow method- **alFollowing** is used_
 session.set_dont_unfollow_active_users(enabled=True, posts=5)
 ```
 
-### Interactions based on the number of followers and/or following a user has
+### Interactions based on the number of followers and/or following a user has 
 
 ##### This is used to check the number of _followers_ and/or _following_ a user has and if these numbers _either_ **exceed** the number set OR **does not pass** the number set OR if **their ratio does not reach** desired potency ratio then no further interaction happens
 ```python
@@ -529,7 +530,9 @@ session.set_relationship_bounds(enabled=True,
 				   max_followers=8500,
 				    max_following=4490,
 				     min_followers=100,
-				      min_following=56)
+				      min_following=56,
+				       min_posts=10,
+                                        max_posts=1000)
 ```
 Use `enabled=True` to **activate** this feature, and `enabled=False` to **deactivate** it, _any time_  
 `delimit_by_numbers` is used to **activate** & **deactivate** the usage of max & min values  
@@ -543,7 +546,6 @@ _**find** desired_ `potency_ratio` _with this formula_: `potency_ratio` == **fol
 _**find** desired_ `potency_ratio` _with this formula_: `potency_ratio` == **following count** / **followers count**  (_use desired counts_)
 >_**e.g.**_, target user has _`2000` followers_ & _`3000` following_ and you set `potency_ratio = -1.7`.  
 **Now** it _will **not** interact_ with this user, **cos** the user's **relationship ratio** is `3000/2000==1.5` and `1.5` is **below** _desired_ `potency_ratio` _of `1.7`_ (_**note that**, negative `-` sign is only used to determine your style, nothing more_)
-
 
 ###### There are **3** **COMBINATIONS** _available_ to use:
 * **1**. You can use `potency_ratio` **or not** (**e.g.**, `potency_ratio=None`, `delimit_by_numbers=True`) - _will decide only by your **pre-defined** max & min values regardless of the_ `potency_ratio`
@@ -564,12 +566,8 @@ session.set_relationship_bounds (enabled=True, potency_ratio=2.35, delimit_by_nu
 ```python
 session.set_relationship_bounds (enabled=True, potency_ratio=-1.44, delimit_by_numbers=True, max_followers=52639, max_following=None, min_followers=None, min_following=2240)
 ```
-
-
-### Skipping user for number of posts boundaries, private account, no profile picture, business account
-
+### Interactions based on the number of posts a user has
 #### This is used to check number of posts of a user and skip if they aren't in the boundaries provided
-
 ```python
 session.set_relationship_bounds(min_posts=10,
                                  max_posts=1000)
@@ -584,6 +582,9 @@ session.set_relationship_bounds(max_posts=1000)
 ```
 
 Will skip only users that have more than 1000 posts in their feed
+
+
+### Skipping user for private account, no profile picture, business account
 
 #### This is used to skip users with certain condition
 ```python
@@ -653,8 +654,7 @@ session.set_skip_users(skip_private=True,
 This will skip all business accounts except the ones that have a category that matches one item in the list of _dont_skip_business_categories_
 **N.B.** If both _dont_skip_business_categories_ and _skip_business_categories_, InstaPy will skip only business accounts in the list given from _skip_business_categories_.
 		       
-		      
-
+> [A list of all availlable business categories can be found here](./assets/business_categories.md)
 
 ### Liking based on the number of existing likes a post has
 
