@@ -317,7 +317,7 @@ def get_active_users(browser, username, posts, boundary, logger):
             except WebDriverException:
                 try:
                     likers_count = (browser.find_element_by_xpath(
-                        "//a[contains(@class, 'zV_Nj')]/span").text)
+                         "//button[contains(@class, '_8A5w5')]/span").text)
                     if likers_count: ##prevent an empty string scenarios
                         likers_count = format_number(likers_count)
                     else:
@@ -327,8 +327,8 @@ def get_active_users(browser, username, posts, boundary, logger):
                     logger.info("Failed to get likers count on your post {}".format(count))
                     likers_count = None
 
-            likes_button = browser.find_element_by_xpath(
-                                       "//a[contains(@class, 'zV_Nj')]")
+            likes_button = browser.find_elements_by_xpath(
+                "//button[contains(@class, '_8A5w5')]")[1]
             click_element(browser, likes_button)
             sleep_actual(5)
 
