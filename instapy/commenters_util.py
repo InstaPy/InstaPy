@@ -1,15 +1,22 @@
 """Methods to extract the data for the given usernames profile"""
 #code created by modification of original code copied from https://github.com/timgrossmann/instagram-profilecrawl/blob/master/util/extractor.py
 from time import sleep
-from re import findall
 from datetime import datetime, timedelta
-from selenium.common.exceptions import NoSuchElementException
-from selenium.webdriver.common.keys import Keys 
+import random
+import collections
+from operator import itemgetter, attrgetter
+from selenium.webdriver.common.keys import Keys
+
 from .util import get_number_of_posts
 from .util import click_element
 from .util import update_activity
+from .util import web_address_navigator
 from .util import username_url_to_username
-import random
+
+from selenium.common.exceptions import NoSuchElementException
+
+
+
 
 def check_exists_by_xpath(browser, xpath):
     try:
@@ -18,16 +25,19 @@ def check_exists_by_xpath(browser, xpath):
         return False
     return True
 
+
+
 def remove_duplicates_preserving_order(seq):
     seen = set()
     seen_add = seen.add
     return [x for x in seq if not (x in seen or seen_add(x))]
 
+
+
 def extract_post_info(browser):
     """Get the information from the current post"""
-                                              
     comments = []                                          
-  
+
     user_commented_list = []
     if browser.find_element_by_xpath("//div/ul"):
         comment_list = browser.find_element_by_xpath("//div/ul")
@@ -36,37 +46,39 @@ def extract_post_info(browser):
         if len(comments) > 1:
             # load hidden comments
             more_comments = 0
+
             while (" comments" in comments[1].text):
                 more_comments += 1
                 print ("loading more comments.")
-                load_more_comments_element = browser.find_element_by_xpath("//div/ul/li[2]/a")
-                browser.execute_script("arguments[0].click();", load_more_comments_element)
-                sleep(1)
+                load_more_comments_element = browser.find_element_by_xpath("//div/ul/li[2]/button")
+                click_element(browser, load_more_comments_element)
                 #comment_list = post.find_element_by_tag_name('ul')
                 comments = comment_list.find_elements_by_tag_name('li')
+
                 if more_comments > 10:
                     print ("Won't load more than that, moving on..")
                     break
-            
+
             #if post autor didnt write description, more comments text is in first comment
             if more_comments == 0:
                 while (" comments" in comments[0].text):
                     more_comments += 1
                     print ("loading more comments.")
-                    load_more_comments_element = browser.find_element_by_xpath("//div/ul/li[1]/a")
-                    browser.execute_script("arguments[0].click();", load_more_comments_element)
-                    sleep(1)
+                    load_more_comments_element = browser.find_element_by_xpath("//div/ul/li[1]/button")
+                    click_element(browser, load_more_comments_element)
                     #comment_list = post.find_element_by_tag_name('ul')
                     comments = comment_list.find_elements_by_tag_name('li')
+
                     if more_comments > 10:
                         print ("Won't load more than that, moving on..")
                         break
-                 
+
             #adding who commented into user_commented_list
             try:
                 for comm in comments:
                     user_commented = comm.find_element_by_tag_name('a').get_attribute("href").split('/')
                     user_commented_list.append(user_commented[3])
+
             except:
                 print ("cant get comments")
                 
@@ -75,13 +87,18 @@ def extract_post_info(browser):
         
     return user_commented_list, date_time
 
+
+
 def extract_information(browser, username, daysold, max_pic):
   
     """Get all the information for the given username"""
-    browser.get('https://www.instagram.com/' + username)
+    web_address_navigator(browser,'https://www.instagram.com/' + username)
     
     try:
         num_of_posts = get_number_of_posts(browser)
+        num_of_posts = (min (num_of_posts,max_pic))
+        #we don't need to scroll more than is max number of posts we want to extract
+
     except:
         print ("\nError: Couldn't get user profile. Moving on..")
         return []
@@ -121,6 +138,7 @@ def extract_information(browser, username, daysold, max_pic):
                 print ("Cannot scroll, quitting..")
                 sleep(0.5)
                 break
+
             else:
                 print ("Scrolling profile ", len(links2), "/", num_of_posts)
                 
@@ -129,19 +147,25 @@ def extract_information(browser, username, daysold, max_pic):
                 #only do it if we have a lot to images to go
                 if (num_of_posts - len(links2) > 60) and (len(links2) > opened_overlay):
                     opened_overlay += 60
-                    one_pic_elem = browser.find_element_by_xpath("//section/main/article/div[1]/div/div[8]/div[3]/a/div")
+
                     print ("clicking on one photo..")
                     try:
-                        one_pic_elem = browser.find_element_by_xpath("//section/main/article/div[1]/div/div[10]/div[3]/a/div")
-                        browser.execute_script("arguments[0].click();", one_pic_elem)
+                        one_pic_elem = browser.find_element_by_xpath(
+                                    "//section/main/article/div[1]/div/div[10]/div[3]/a/div")
+                        click_element(browser, one_pic_elem)
+
                     except:
+                        print ("Error: cant click on the photo..")
                         pass
+
                     sleep(1.5)
+
                     #following 6 lines give like to opened picture, to use our time effectively and look less suspicious
                     try:
                         like_element = browser.find_elements_by_xpath("//a[@role='button']/span[text()='Like']/..")
-                        browser.execute_script("arguments[0].click();", like_element[0])
+                        click_element(browser, like_element[0])
                         print ("clicking like..")
+
                     except:
                         pass
                     sleep(2)
@@ -152,7 +176,7 @@ def extract_information(browser, username, daysold, max_pic):
                     
                     print ("closing overlay")
                     close_overlay = browser.find_element_by_xpath("//div/div[@role='dialog']")
-                    browser.execute_script("arguments[0].click();", close_overlay)
+                    click_element(browser, close_overlay)
                     
                     print ("date of this picture was:", date_of_pic)
 
@@ -160,6 +184,7 @@ def extract_information(browser, username, daysold, max_pic):
                         print ("\nFinished scrolling, too old photos")
                         sleep(3)
                         break
+
                     else:
                         print ("\nPhotos seems to be fresh, continuing scrolling")
                         sleep(2)
@@ -170,6 +195,7 @@ def extract_information(browser, username, daysold, max_pic):
 
     except NoSuchElementException as err:
         print('\n- Something went terribly wrong\n - Stopping everything and moving on with what I have\n')
+        print (err)
   
     links4 = remove_duplicates_preserving_order(links3)
     post_infos = []
@@ -187,7 +213,7 @@ def extract_information(browser, username, daysold, max_pic):
         print ("\nScrapping link: ", link)
         
         try:
-            browser.get(link)  
+            web_address_navigator(browser, link)
             user_commented_list, pic_date_time = extract_post_info(browser)     
             user_commented_total_list = user_commented_total_list + user_commented_list
 
@@ -207,8 +233,6 @@ def extract_information(browser, username, daysold, max_pic):
   
     #PREPARE THE USER LIST TO EXPORT
     #sorts the list by frequencies, so users who comment the most are at the top
-    import collections
-    from operator import itemgetter, attrgetter
     counter=collections.Counter(user_commented_total_list)
     com = sorted(counter.most_common(), key=itemgetter(1,0), reverse=True)
     com = map(lambda x: [x[0]] * x[1], com)
@@ -227,17 +251,21 @@ def extract_information(browser, username, daysold, max_pic):
     print (user_commented_list, "\n")
     return user_commented_list
 
+
+
 def users_liked (browser, photo_url, amount=100):
     photo_likers = []
     try:
-        browser.get(photo_url)  
+        web_address_navigator(browser,photo_url)
         photo_likers = likers_from_photo(browser, amount)   
         sleep(2)  
     except NoSuchElementException:
         print('Could not get information from post: ' + photo_url,' nothing to return')
             
     return photo_likers
-    
+
+
+
 def likers_from_photo(browser, amount=20):                                       
 
     user_liked_list = []
@@ -273,23 +301,30 @@ def likers_from_photo(browser, amount=20):
         follow_buttons = []
         browser.execute_script(
                 "arguments[0].scrollTop = arguments[0].scrollHeight", dialog)
+        update_activity()
         sleep(1)
+
         follow_buttons = dialog.find_elements_by_xpath(
-            "//div/div/span/button[text()='Follow']")
+            "//div/div/button[text()='Follow']")
+
         while (len(follow_buttons) != previous_len) and (len(follow_buttons)<amount):
             if previous_len+10 >= amount:
                 print ("Scrolling finished")
                 sleep(1)
                 break
+
             previous_len = len(follow_buttons)
             browser.execute_script(
                 "arguments[0].scrollTop = arguments[0].scrollHeight", dialog)
+            update_activity()
             sleep(1)
+
             follow_buttons = dialog.find_elements_by_xpath(
-            "//div/div/span/button[text()='Follow']")
+            "//div/div/button[text()='Follow']")
             print ("Scrolling down... ",previous_len,"->", len(follow_buttons) ," / ",amount) 
 
         person_list = []
+
         for person in follow_buttons:
             username_url = person.find_element_by_xpath("../../../*").find_element_by_tag_name("a").get_attribute('href')
             username = username_url_to_username(username_url)
@@ -297,27 +332,30 @@ def likers_from_photo(browser, amount=20):
         
         random.shuffle(person_list)     
         sleep(1)
+
         try:
             close = browser.find_element_by_xpath("//span[text()='Close']")
             click_element(browser, close)
             print ("Like window closed")
+
         except:
             pass
                
-        print ("\nGot ",len(person_list)," likers shuffled randomly, who you can follow:\n", person_list, "\n")      
-        return person_list    
-        sleep(2)
-    except Exception as e:
-        print ("Some problem")
-        print (e)
+        print("Got {} likers shuffled randomly whom you can follow:\n{}\n".format(len(person_list), person_list))
+        return person_list
+
+    except Exception as exc:
+        print ("Some problem occred!\n\t{}".format(str(exc).encode("utf-8")))
         return []              
-        
+
+
+
 def get_photo_urls_from_profile (browser, username, links_to_return_amount=1, randomize=True):
     #try:   
     #input can be both username or user profile url
     username = username_url_to_username(username)
     print ("\nGetting likers from user: ", username,"\n")
-    browser.get('https://www.instagram.com/' + username +'/')
+    web_address_navigator(browser,'https://www.instagram.com/' + username +'/')
     sleep(1)
     
     photos_a_elems = browser.find_elements_by_xpath("//div/a")
@@ -329,7 +367,7 @@ def get_photo_urls_from_profile (browser, username, links_to_return_amount=1, ra
         if ("/p/" in photo_url):
             links.append(photo_url)
 
-    if (randomize == True):
+    if randomize == True:
         print ("shuffling links")
         random.shuffle(links)   
     print ("Got ", len(links), ", returning ", min(links_to_return_amount, len(links)), " links: ", links[:links_to_return_amount])      
@@ -338,3 +376,6 @@ def get_photo_urls_from_profile (browser, username, links_to_return_amount=1, ra
     #except:
     print ("Error: Couldnt get pictures links.")
     return []
+
+
+

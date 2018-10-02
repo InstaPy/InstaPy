@@ -1,2 +1,4 @@
 recursive-include assets *
 recursive-include db *
+include README.md
+include LICENSE

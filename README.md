@@ -1,7 +1,7 @@
 <img src="https://i.imgur.com/sJzfZsL.jpg" width="150" align="right">
 
 # InstaPy
-[![MIT license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/timgrossmann/InstaPy/blob/master/LICENSE)
+[![MIT license](https://img.shields.io/badge/license-GPLv3-blue.svg)](https://github.com/timgrossmann/InstaPy/blob/master/LICENSE)
 [![built with Selenium](https://img.shields.io/badge/built%20with-Selenium-yellow.svg)](https://github.com/SeleniumHQ/selenium)
 [![built with Python3](https://img.shields.io/badge/built%20with-Python3-red.svg)](https://www.python.org/)
 [![Travis](https://img.shields.io/travis/rust-lang/rust.svg)](https://travis-ci.org/timgrossmann/InstaPy)
@@ -32,7 +32,7 @@ Table of Contents
 
 * [Getting Started](#getting-started)
   * [Basic Installation](#basic-installation)
-  * [Basic Setup](#basic-setup)
+  * [Preferred Installation](#preferred-installation)
 * [InstaPy Available Features](#instapy-available-features)
   * [Commenting](#commenting)
   * [Following](#following)
@@ -45,15 +45,18 @@ Table of Contents
   * [Interact with specific users](#interact-with-specific-users)
   * [Interact with users that someone else is following](#interact-with-users-that-someone-else-is-following)
   * [Interact with someone else's followers](#interact-with-someone-elses-followers)
+  * [Interact on posts at given URLs](#interact-on-posts-at-given-urls)
   * [Unfollowing](#unfollowing)
   * [Don't unfollow active users](#dont-unfollow-active-users)
   * [Interactions based on the number of followers and/or following a user has](#interactions-based-on-the-number-of-followers-andor-following-a-user-has)
   * [Liking based on the number of existing likes a post has](#liking-based-on-the-number-of-existing-likes-a-post-has)
   * [Commenting based on the number of existing comments a post has](#commenting-based-on-the-number-of-existing-comments-a-post-has)
+  * [Commenting based on madatory words in the description or first comment](#commenting-based-on-madatory-words-in-the-description-or-first-comment)
   * [Comment by Locations](#comment-by-locations)
   * [Like by Locations](#like-by-locations)
   * [Like by Tags](#like-by-tags)
   * [Like by Feeds](#like-by-feeds)
+  * [Mandatory Words](#mandatory-words)
   * [Restricting Likes](#restricting-likes)
   * [Ignoring Users](#ignoring-users)
   * [Ignoring Restrictions](#ignoring-restrictions)
@@ -62,7 +65,14 @@ Table of Contents
   * [Smart Hashtags](#smart-hashtags)
   * [Follow/Unfollow/exclude not working?](#followunfollowexclude-not-working)
   * [Bypass Suspicious Login Attempt](#bypass-suspicious-login-attempt)
-* [Third Party InstaPy GUI for Windows](#third-party-instapy-gui-for-windows)
+  * [Quota Supervisor](#quota-supervisor)
+* [Relationship tools](#relationship-tools)
+  * [Grab Followers of a user](#grab-followers-of-a-user)
+  * [Grab Following of a user](#grab-following-of-a-user)
+  * [Pick Unfollowers of a user](#pick-unfollowers-of-a-user)
+  * [Pick Nonfollowers of a user](#pick-nonfollowers-of-a-user)
+  * [Pick Fans of a user](#pick-fans-of-a-user)
+  * [Pick Mutual Following of a user](#pick-mutual-following-of-a-user)
 * [Use a proxy](#use-a-proxy)
 * [Switching to Firefox](#switching-to-firefox)
 * [Emoji Support](#emoji-support)
@@ -76,7 +86,13 @@ Table of Contents
   * [Windows Task Scheduler](#windows-task-scheduler)
   * [cron](#cron)
   * [Schedule](#schedule)
-* [Extra Informations](#extra-informations)
+* [Extra Information](#extra-information)  
+  * [Using one of the templates](#using-one-of-the-templates)
+  * [How not to be banned](#how-not-to-be-banned)
+  * [Simulation](#simulation)
+  * [Disable Image Loading](#disable-image-loading)
+  * [Using Multiple Chromedrivers](#using-multiple-chromedrivers)
+  * [Changing DB or Chromedriver locations](#changing-db-or-chromedriver-locations)
 
 ## Getting started
 
@@ -124,33 +140,36 @@ Basic setup is a good way to test the tool. At project root folder open `quickst
 
 ```python
 from instapy import InstaPy
+from instapy.util import smart_run
 
+
+
+# login credentials
 insta_username = ''
 insta_password = ''
 
-# if you want to run this script on a server,
-# simply add nogui=True to the InstaPy() constructor
-session = InstaPy(username=insta_username, password=insta_password)
-session.login()
+# get an InstaPy session!
+# set headless_browser=True to run InstaPy in the background
+session = InstaPy(username=insta_username,
+                  password=insta_password,
+                  headless_browser=False)
 
-# set up all the settings
-session.set_relationship_bounds(enabled=True,
-				 potency_ratio=-1.21,
-				  delimit_by_numbers=True,
-				   max_followers=4590,
-				    max_following=5555,
-				     min_followers=45,
-				      min_following=77)
-session.set_do_comment(True, percentage=10)
-session.set_comments(['aMEIzing!', 'So much fun!!', 'Nicey!'])
-session.set_dont_include(['friend1', 'friend2', 'friend3'])
-session.set_dont_like(['pizza', 'girl'])
 
-# do the actual liking
-session.like_by_tags(['natgeo', 'world'], amount=100)
-
-# end the bot session
-session.end()
+with smart_run(session):
+    """ Activity flow """
+    # settings
+    session.set_relationship_bounds(enabled=True,
+                                      delimit_by_numbers=True,
+                                       max_followers=4590,
+                                        min_followers=45,
+                                        min_following=77)
+    
+    session.set_dont_include(["friend1", "friend2", "friend3"])
+    session.set_dont_like(["pizza", "#store"])
+    
+    
+    # actions
+    session.like_by_tags(["natgeo"], amount=10)
 ```
 
 Execute it:
@@ -159,15 +178,13 @@ Execute it:
 $ python quickstart.py
 ```
 
-### Or use one of our GUIs
+### Or use our GUI
 
-**[1. Official Cross Platform GUI](https://github.com/ahmadudin/electron-instaPy-GUI)**
+[1. Cross Platform GUI](https://github.com/ahmadudin/electron-instaPy-GUI)
 
-[<img src="https://raw.githubusercontent.com/ahmadudin/ahmadudin.github.io/master/assets/images/screencapture1.PNG" width="400" />](https://github.com/ahmadudin/electron-instaPy-GUI)
+[2. Session scheduling with Telegram](https://github.com/Tkd-Alex/Telegram-InstaPy-Scheduling)
 
-[2. Third Party InstaPy GUI for Windows](https://github.com/Nemixalone/GUI-tool-for-InstaPy-script)
-
-[3. Session scheduling with Telegram](https://github.com/Tkd-Alex/Telegram-InstaPy-Scheduling)
+[3. InstaPy-Light, a light version of InstaPy](https://github.com/converge/InstaPy-Light)
 
 ## InstaPy Available Features
 
@@ -238,6 +255,9 @@ session.follow_user_followers(['friend1', 'friend2', 'friend3'], amount=10, rand
 
 session.follow_user_followers(['friend1', 'friend2', 'friend3'], amount=10, randomize=False, sleep_delay=60)
 ```
+> **Note**: [simulation](#simulation) takes place while running this feature.
+
+
 
 ### Follow users that someone else is following
 
@@ -254,6 +274,9 @@ session.follow_user_following(['friend1', 'friend2', 'friend3'], amount=10, rand
 
 session.follow_user_following(['friend1', 'friend2', 'friend3'], amount=10, randomize=False, sleep_delay=60)
 ```
+> **Note**: [simulation](#simulation) takes place while running this feature.
+
+
 
 ### Follow someone else's followers/following
 
@@ -267,6 +290,8 @@ session.set_user_interact(amount=5, randomize=True, percentage=50, media='Photo'
 session.follow_user_followers(['friend1', 'friend2', 'friend3'], amount=10, randomize=False, interact=True)
 ```
 
+
+
 ### Follow by Tags
 
 ```python
@@ -274,6 +299,8 @@ session.follow_user_followers(['friend1', 'friend2', 'friend3'], amount=10, rand
 
 session.follow_by_tags(['tag1', 'tag2'], amount=10)
 ```
+
+
 
 ### Follow the likers of photos of users
 
@@ -296,6 +323,8 @@ session.set_user_interact(amount=2,
                    media='Photo')
 session.follow_likers (['user1' , 'user2'], photos_grab_amount = 2, follow_likers_per_photo = 3, randomize=True, sleep_delay=600, interact=True)
 ```
+
+
 
 ### Follow the commenters of photos of users
 
@@ -320,6 +349,7 @@ session.follow_commenters(['user1', 'user2', 'user3'], amount=100, daysold=365, 
 ```
 
 ### Interact with specific users
+
 ```python
 # Interact with specific users
 # set_do_like, set_do_comment, set_do_follow are applicable
@@ -332,6 +362,7 @@ session.interact_by_users(['user1', 'user2', 'user3'], amount=5, randomize=True,
 ```
 
 ### Interact with users that someone else is following
+
 ```python
 # Interact with the people that a given user is following
 # set_do_comment, set_do_follow and set_do_like are applicable
@@ -343,10 +374,14 @@ session.set_comments(["Cool", "Super!"])
 session.set_do_comment(enabled=True, percentage=80)
 session.interact_user_following(['natgeo'], amount=10, randomize=True)
 ```
+> **Note**: [simulation](#simulation) takes place while running this feature.
+
+
 
 ### Interact with someone else's followers
+
 ```python
-# Interact with the people that a given user is following
+# Interact with the people that a given user is followed by
 # set_do_comment, set_do_follow and set_do_like are applicable
 
 session.set_user_interact(amount=5, randomize=True, percentage=50, media='Photo')
@@ -356,36 +391,124 @@ session.set_comments(["Cool", "Super!"])
 session.set_do_comment(enabled=True, percentage=80)
 session.interact_user_followers(['natgeo'], amount=10, randomize=True)
 ```
+> **Note**: [simulation](#simulation) takes place while running this feature.
 
-### Unfollowing
+
+
+### Interact on posts at given URLs
+###### Like, comment, follow on the post in the links provided, also can interact the owner of the post
 
 ```python
-# unfollows 10 of the accounts you're following -> instagram will only
-# unfollow 10 before you'll be 'blocked for 10 minutes' (if you enter a
-# higher number than 10 it will unfollow 10, then wait 10 minutes and will
-# continue then).
-# You can choose to only unfollow the user that Insta has followed by adding
-# onlyInstapyFollowed = True otherwise it will unfollow all users
-# You can choose unfollow method as FIFO (First-Input-First-Output) or
-# LIFO (Last-Input-First-Output). The default is FIFO method.
-# onlyInstapyMethod is using only when onlyInstapyFollowed = True
-# sleep_delay sets the time it will sleep every 10 profile unfollow, default
-# is 10min
-session.unfollow_users(amount=10, onlyInstapyFollowed = True, onlyInstapyMethod = 'FIFO', sleep_delay=60 )
-
-# You can only unfollow user that won't follow you back by adding
-# onlyNotFollowMe = True it still only support on profile following
-# you should disable onlyInstapyFollowed when use this
-session.unfollow_users(amount=10, onlyNotFollowMe=True, sleep_delay=60)
-
-# You can also unfollow users only after following them certain amount of time,
-# this will provide seamless unfollow activity without the notice of the targeted user
-# To use, just add `unfollow_after` argument with the desired time, e.g.
-session.unfollow_users(amount=10, onlyInstapyFollowed = True, onlyInstapyMethod = 'FIFO', sleep_delay=600, unfollow_after=48*60*60)
-# will unfollow users only after following them 48 hours (2 days), since `unfollow_after`s value
-# is seconds, you can simply give it `unfollow_after=100` to unfollow after 100 seconds,
-# but `1*60*60` (which is equal to 1 hour or 3600 seconds) style is a lot simpler to use 👍
+session.interact_by_URL(urls=["some/URL/1", "some/URL/2" "other/URL"], randomize=True, interact=True)
 ```
+
+**To use**, _define_ all of the `interaction settings` and **start** the feature right away!
+```python
+#define interaction settings
+session.set_do_like(enabled=True, percentage=94)
+session.set_do_comment(enabled=True, percentage=24)
+session.set_comments(["Masterful shot", "Chilling!", "Unbelievably great..."])
+session.set_do_follow(enabled=True, percentage=44)
+session.set_user_interact(amount=6, randomize=True, percentage=72, media='Photo')
+
+#start the feature
+session.interact_by_URL(urls=["Fv0J4AJ3Y7r/?taken-at=628416252", "Vb0D4bJgY7r" "Dj0J4VJgY7r"], randomize=True, interact=True)
+```
+##### Parameters:
+`urls`:  
+Contains the _URLs_ of the **posts** _to be interacted_.  
+* You can provide _URLs_ in these formats:  
+**full:** `"https://www.IG.com/p/Aj0J4bJDY7r/?taken-at=128316221"`  
+just **post link:** `"https://www.IG.com/p/Aj0J4bJDY7r/"`  
+just post **handle:** `"Aj0J4bJDY7r/?taken-at=128316221"`  
+just post **ID:** `"Aj0J4bJDY7r"`  
+
+`randomize`:  
+Shuffles the **order** of the _URLs_ in the given list _before starts to interact_.  
+
+`interact`:  
+Use it if you like to also _interact the post owner_ **after** doing interactions on the **post itself**.  
+
+
+
+### Unfollowing
+###### Unfollows the accounts you're following  
+_It will unfollow ~`10` accounts and sleep for ~`10` minutes and then will continue to unfollow..._
+
+##### There are `4` _Unfollow methods_ available to use:
+`|>` **customList**  `|>` **InstapyFollowed**  `|>` **nonFollowers**  `|>` **allFollowing**
+
+**1** - Unfollow **specific users** from a _CUSTOM_ list (_has `2` **track**s- `"all"` and `"nonfollowers"`_):  
+_when **track** is `"all"`, it will unfollow **all of the users** in a given list_;
+```python
+custom_list = ["user_1", "user_2", "user_49", "user332", "user50921", "user_n"]
+session.unfollow_users(amount=84, customList=(True, custom_list, "all"), style="RANDOM", unfollow_after=55*60*60, sleep_delay=600)
+```
+_if **track** is `"nonfollowers"`, it will unfollow all of the users in a given list **WHO are not following you back**_;
+```python
+custom_list = ["user_1", "user_2", "user_49", "user332", "user50921", "user_n"]
+session.unfollow_users(amount=84, customList=(True, custom_list, "nonfollowers"), style="RANDOM", unfollow_after=55*60*60, sleep_delay=600)
+```
+* **PRO**: `customList` method can any kind of _iterable container_, such as `list`, `tuple` or `set`.
+
+**2** - Unfollow the users **WHO** was _followed by `InstaPy`_ (_has `2` **track**s- `"all"` and `"nonfollowers"`_):  
+_again, if you like to unfollow **all of the users** followed by InstaPy, use the **track**- `"all"`_;
+```python
+session.unfollow_users(amount=60, InstapyFollowed=(True, "all"), style="FIFO", unfollow_after=90*60*60, sleep_delay=501)
+```
+_but if you like you unfollow only the users followed by InstaPy **WHO do not follow you back**, use the **track**- `"nonfollowers"`_;
+```python
+session.unfollow_users(amount=60, InstapyFollowed=(True, "nonfollowers"), style="FIFO", unfollow_after=90*60*60, sleep_delay=501)
+```
+
+**3** - Unfollow the users **WHO** `do not` _follow you back_:
+```python
+session.unfollow_users(amount=126, nonFollowers=True, style="RANDOM", unfollow_after=42*60*60, sleep_delay=655)
+```
+
+**4** - `Just` unfollow, **regardless of** a user _follows you or not_:
+```python
+session.unfollow_users(amount=40, allFollowing=True, style="LIFO", unfollow_after=3*60*60, sleep_delay=450)
+```
+
+#### Parameters (_all of these parameters apply to all of the 4 methods available_):
+
+`style`  
+You can choose _unfollow style_ as `"FIFO"` (_First-Input-First-Output_) **OR** `"LIFO"` (_Last-Input-First-Output_) **OR** `"RANDOM"`.  
+* with `"FIFO"`, it will unfollow users _in the **exact** order they are loaded_ (_`"FIFO"` is the default style unless you **change** it_);  
+* with `"LIFO`" it will unfollow users _in the **reverse** order they were loaded_;  
+* with `"RANDOM"` it will unfollow users _in the **shuffled** order_;
+
+
+`unfollow_after`  
+By using this, you can unfollow users **only after** following them certain amount of time.  
+_it will help to provide **seamless** unfollow activity without the notice of the target user_   
+To use it, just add `unfollow_after` parameter with the _desired time interval_, _e.g._,
+```python
+session.unfollow_users(amount=94, InstapyFollowed=(True, "all"), style="RANDOM", unfollow_after=48*60*60, sleep_delay=600)
+```
+_will unfollow users **only after following them** `48` hours (`2` days)_.  
+* Since `unfollow_after`s value is in _seconds_, you can simply give it `unfollow_after=3600` to unfollow after `3600` seconds.  
+_Yeah, values kind of `1*60*60`- which is also equal to `1` hour or `3600` seconds, is much more easier to use_.  
+
+**Sure** if you like to not use it, give the value of `None`- `unfollow_after=None`.
+
+`sleep_delay`  
+Sleep delay _sets_ the time it will sleep **after** every ~`10` unfollows (_default delay is ~`10` minutes_).
+
+> **NOTE**: You should know that, _in one RUN_, `unfollow_users` feature can take only one method from all `4` above.  
+That's why, **it is best** to **disable** other `3` methods _while using a one_:
+```python
+session.unfollow_users(amount=200, customList=(True, ["user1", "user2", "user88", "user200"], "all"), InstapyFollowed=(False, "all"), nonFollowers=False, allFollowing=False, style="FIFO", unfollow_after=22*60*60, sleep_delay=600)
+```
+_here the unfollow method- **customList** is used_  
+**OR** just keep the method you want to use and remove other 3 methods from the feature
+```python
+session.unfollow_users(amount=200, allFollowing=True, style="FIFO", unfollow_after=22*60*60, sleep_delay=600)
+```
+_here the unfollow method- **alFollowing** is used_
+
+
 
 ### Don't unfollow active users
 
@@ -476,8 +599,10 @@ session.set_delimit_commenting(enabled=True, max=32, min=0)
 Use `enabled=True` to **activate** and `enabled=False` to **deactivate** it, _any time_  
 `max` is the maximum number of comments to compare  
 `min` is the minimum number of comments to compare
-> You can use **both** _max_ & _min_ values OR **one of them** _as you desire_, just **put** the value of `None` _to the one_ you **don't want to** check for., _e.g._,
+> You can use **both** _max_ & _min_ values OR **one of them** _as you desire_, just **leave** it out or **put** it to `None` _to the one_ you **don't want to** check for., _e.g._,
 ```python
+session.set_delimit_commenting(enabled=True, min=4)
+# or
 session.set_delimit_commenting(enabled=True, max=None, min=4)
 ```
 _at this configuration above, it **will not** check number of the existing comments against **maximum** value_
@@ -489,7 +614,16 @@ session.set_delimit_commenting(enabled=True, max=70, min=5)
 _**Now**, if a post has more comments than the maximum value of `70`, then it will not comment on that post,
 **similarly**, if that post has less comments than the minimum value of `5`, then it will not comment on that post..._
 
+### Commenting based on madatory words in the description or first comment
 
+##### This is used to check the description of the post and the first comment of the post (some users only put tags in the comments instead of the post description) for the occurence of mandatory words before commenting. If none of the mandatory words is present, the post will not be commented.
+
+This feature is helpful when you want to comment only on specific tags.
+
+```python
+session.set_delimit_commenting(enabled=True, comments_mandatory_words=['cat', 'dog'])
+```
+> This will only comment on posts that contain either cat or dog in the post description or first comment.
 
 ### Comment by Locations
 
@@ -586,6 +720,15 @@ session.set_smart_hashtags(['cycling', 'roadbike'], limit=3, sort='top', log_tag
 session.like_by_tags(amount=10, use_smart_hashtags=True)
 ```
 
+### Mandatory Words
+
+```python
+session.set_mandatory_words(['#food', '#instafood'])
+```
+
+`.set_mandatory_words` searches the description and owner comments for words and
+will like the image if **all** of those words are in there
+
 ### Restricting Likes
 
 ```python
@@ -634,6 +777,8 @@ session.set_do_follow(enabled=True, percentage=10, times=2)
 ```
 but none of the profiles are being followed - or any such functionality is misbehaving - then one thing you should check is the position/order of such methods in your script. Essentially, all the ```set_*``` methods have to be before ```like_by_tags``` or ```like_by_locations``` or ```unfollow```. This is also implicit in all the exmples and quickstart.py
 
+
+
 ### Bypass Suspicious Login Attempt
 
 If you're having issues with the "we detected an unusual login attempt" message,
@@ -647,6 +792,440 @@ session = InstaPy(username=insta_username, password=insta_password, bypass_suspi
 email, and you will be prompted to enter the security code sent to your email.
 It will login to your account, now you can set bypass_suspicious_attempt to False
 ```bypass_suspicious_attempt=False``` and InstaPy will quickly login using cookies.
+
+
+
+### Quota Supervisor
+###### Take full control of the actions with the most sophisticated approaches
+
+```python
+session.set_quota_supervisor(enabled=True, sleep_after=["likes", "comments_d", "follows", "unfollows", "server_calls_h"], sleepyhead=True, stochastic_flow=True, notify_me=True,
+                              peak_likes=(57, 585),
+                               peak_comments=(21, 182),
+                                peak_follows=(48, None),
+                                 peak_unfollows=(35, 402),
+                                  peak_server_calls=(None, 4700))
+```
+#### Parameters:
+`enabled`: put `True` to **activate** or `False` to **deactivate** supervising any time
+
+
+`peak_likes`: the **first value** indicates the **hourly** and the **second** indicates the **daily** peak value  
++ _e.g._ in `peak_likes=(66, 700)` - `66` is the **hourly**, and `700` is the **daily** peak value  
+_such as_,
+    + `peak_server_calls=(500, 4745)` will _supervise_ server calls with **hourly** peak of `500` and **daily** peak of `4745`
+    + `peak_likes=(70, None)` will _supervise_ only hourly likes with the peak of `70`
+    + `peak_unfollows=(None, 350)` will _supervise_ only daily unfollows with the peak of `350`
+    + `peak_comments=(None, None)` will not _supervise_ comments at all
+
+If you **don't want to** _supervise_ likes **at all**, simply **remove** `peak_likes` parameter **OR** use `peak_likes=(None, None)`.  
+_Once_ likes **reach** peak, it will **jump** every other like, _yet_, **will do all available actions** (_e.g. follow or unfollow_).  
++ Only `server calls` **does not** jump, it exits the program **once reaches the peak**.
+> Although, you can put server calls to sleep once reaches peak, read `sleep_after` parameter.  
++ _Every action_ will be **jumped** separately after reaching it's peak, _except_ comments. Cos commenting without a like isn't welcomed that's why as like peak is reached, it will jump comments, too.
+
+**Notice**: `peak_likes=(50)` will not work, use `peak_likes=(50, None)` to supervise **hourly** peak and `peak_likes=(None, 50)` for **daily** peak.  
+>_Same **form**_ **applies** to **all** actions. Just specify the peaks in desired intervals- **hourly** or **daily** you want to _supervise_.
+ 
+   
+`sleep_after`: is used to put **InstaPy** to _sleep_ **after reaching peak** _rather than_ **jumping the action** (_or exiting- **for** server calls_)  
+_Any action_ can be included `["likes", "comments", "follows", "unfollows", "server_calls"]`.  
+_As if_ you want to put _sleep_ **only after** reaching **hourly** like peak, put `"likes_h"` **OR** put `"likes_d"` for _sleeping_ **only after** reaching **daily** like peak.  
+_such as_,
++ `sleep_after=['follows_h']` will _sleep_ after reaching **hourly** follow peak  
++ `sleep_after=['likes_d', 'follows', 'server_calls_h']` will _sleep_ after reaching **daily** like peak, follow peaks (_**hourly** and **daily**_) and **hourly** server call peak.  
+
+**Notice**: there can be _either_ `"likes"` (_for both **hourly** and **daily** sleep_) **OR** `"likes_h"` (_for **hourly** sleep only_) **OR** `"likes_d"` (_for **daily** sleep only_).  
+>_Once_ gone to sleep, it will **wake up** as _new_ **hour**/**day** (_according to the interval_) arrives AND **continue** the activity.
+
+
+`sleepyhead`: can help to _sound_ **more humanly** which will **wake up a little bit later** in a randomly chosen time interval around accurate wake up time.
+>_e.g._, if remaining time is `17` minutes, it will sleep `20` minutes instead (_random values each time_)..
+
+
+`stochastic_flow`: can provide _smooth_ peak value generation by your original values.  
++ Every ~**hour**/**day** it will generate peaks **at close range** _around_ your **original peaks** (_but below them_).  
+> _e.g._, your peak likes **hourly** is `45`, next hour that peak will be `39`, the next `43`, etc.
+
+
+`notify_me`: sends **toast notifications** (_directly to your OS_) _about_ the **important states of** _supervisor_- **sleep**, **wake up** and **exit** messages.
+
+#### Mini-Examples:
++ Claudio has written **a new 😊 quickstart** script where it **mostly** _put likes and comments_. He wants the program to **comment safely** cos he is _afraid of exceeding_ **hourly** & **daily** comment limits,
+```python
+session.set_quota_supervisor(enabled=True, peak_comments=(21, 240))
+```
+>_That's it! When it reaches the comments peak, it will just jump all of the comments and will again continue to put comments when is available [in the next  hour/day]_.
+
++ Alicia has a **24**/**7** 🕦 working **quickstart** script and **would like to** keep _server calls_ in control to AVOID **excessive amount of requests** to the _server_ in **hourly** basis, also,
+    + **wants** the program to **sleep after** reaching **hourly** _server calls_ peak: **adds** `"server_calls_h"` into `sleep_after` parameter
+    + **wants** the program to **wake up** _a little bit later_ than real sleep time [once reaches the peaks]: **uses** `sleepyhead=True` parameter
+```python
+session.set_quota_supervisor(enabled=True, peak_server_calls=(490, None) sleep_after=["server_calls_h"], sleepyhead=True)
+```
+>_It will sleep after **hourly** server calls reaches its peak given - `490` and **never allow** one more extra request to the server out of the peak and **wake up** when **new hour** comes in WHILST **daily** server calls **will not be** supervised at all- as Alicia wishes_.
+
++ Sam has a _casual_ 🦆 **quickstart** script full of _follow_/_unfollow_ features and he wants to **do it safely**, also,
+    + is **gonna** run on local computer and **wants** to receive **toast notifications** 😋 on _supervising states_: **uses** `notify_me` parameter
+    + **wants** QS to _randomize_ his `pre-defined` peak values [at close range] each new _hour_/_day_: **uses** `stochastic_flow=True` parameter
+    + **wants** the program to sleep after reaching **hourly** _follow_ peak and **daily** _unfollow_ peak: **adds** `"follows_h"` and `"unfollows_d"`into `sleep_after` parameter
+```python
+session.set_quota_supervisor(enabled=True, peak_follows=(56, 660), peak_unfollows=(49, 550) sleep_after=["follows_h", "unfollows_d"], stochastic_flow=True, notify_me=True)
+```
+
+---
+>**Big Hint**: _Find your NEED_ 🤔 _and supervise it!_  
++ _EITHER_ **fully** configure QS to supervise **all** of the _actions_ all time  
++ _OR_ **just** supervise the desired _action_(_s_) in desired _interval_(_s_) [**hourly** and/or **daily**] per your need
+
+
+
+## Relationship tools
+
+
+### Grab Followers of a user  
+###### Gets and returns `followers` of the given user in desired amount, also can save locally  
+```python
+popeye_followers = session.grab_followers(username="Popeye", amount="full", live_match=True, store_locally=True)
+##now, `popeye_followers` variable which is a list- holds the `Followers` data of "Popeye" at requested time
+```  
+#### Parameters:  
+`username`:  
+A desired username to grab its followers  
+* It can be your `own` username **OR** a _username of some `non-private` account._
+
+`amount`:  
+Defines the desired amount of usernames to grab from the given account
+* `amount="full"`:
+    + Grabs followers **entirely**
+* `amount=3089`:
+    * Grabs `3089` usernames **if exist**, _if not_, grabs **available** amount
+
+`live_match`:  
+Defines the method of grabbing `Followers` data
+> **Knowledge Base**:  
+Every time you grab `Followers` data in `"full"` range of **any** user, it is also gonna be _stored in some corner_ of `InstaPy` **for that session**.
+
++ `live_match=False`:
+    + If the user **already do have** a `Followers` data loaded _earlier_ in the **same** session, it will run a _smart_ `data-matching` _algorithm_.  
+    And **there**, it will **load only the new data** _from the server_ and then **return a compact result** of _current data_.  
+    The _algorithm_ **works like**: _load the usernames **until hits the** ones from the **previous query** at certain amount_.  
+    + **Also if** the `live_match` is `False` and the user has **no any** _sessional_ `Followers` data, **then** it will load `live` data at _requested range_.
+    + As a **result**, `live_match=False` saves lots of `precious time` and `server requests`.  
++ `live_match=True`:  
+    + It will **always** load `live` data from the server at _requested range_.
+
+`store_locally`:  
+Gives the _option_ to `save` the loaded `Followers` data in a **local storage**  
+The files will be saved _into_ your **logs folder**, `~/InstaPy/logs/YourOwnUsername/relationship_data/Popeye/followers/` directory.  
+Sample **filename** `14-06-2018~full~6874.json`:  
++ `14-06-2018` means the **time** of the data acquisition.
++ `"full"` means the **range** of the data acquisition;  
+_If the data is requested at the range **else than** `"full"`, it will write **that** range_.
++ `6874` means the **count** of the usernames retrieved.
++ `json` is the **filetype** and the data is stored as a `list` in it.
+
+
+There are **several** `use cases` of this tool for **various purposes**.  
+_E.g._, inside your **quickstart** script, you can **do** _something like this_:
+```python
+#get followers of "Popeye" and "Cinderella"
+popeye_followers = session.grab_followers(username="Popeye", amount="full", live_match=True, store_locally=True)
+sleep(600)
+cinderella_followers = session.grab_followers(username="Cinderella", amount="full", live_match=True, store_locally=True)
+
+#find the users following "Popeye" WHO also follow "Cinderella" :D
+popeye_cinderella_followers = [follower for follower in popeye_followers if follower in cinderella_followers]
+```
+
+#### `PRO`s:
+You can **use** this tool to take a **backup** of _your_ **or** _any other user's_ **current** followers.
+
+
+
+### Grab Following of a user  
+###### Gets and returns `following` of the given user in desired amount, also can save locally  
+```python
+lazySmurf_following = session.grab_following(username="lazy.smurf", amount="full", live_match=True, store_locally=True)
+##now, `lazySmurf_following` variable which is a list- holds the `Following` data of "lazy.smurf" at requested time
+```  
+#### Parameters:  
+`username`:  
+A desired username to grab its following  
+* It can be your `own` username **OR** a _username of some `non-private` account._
+
+`amount`:  
+Defines the desired amount of usernames to grab from the given account
+* `amount="full"`:
+    + Grabs following **entirely**
+* `amount=3089`:
+    * Grabs `3089` usernames **if exist**, _if not_, grabs **available** amount
+
+`live_match`:  
+Defines the method of grabbing `Following` data
+> **Knowledge Base**:  
+Every time you grab `Following` data in `"full"` range of **any** user, it is also gonna be _stored in some corner_ of `InstaPy` **for that session**.
+
++ `live_match=False`:
+    + If the user **already do have** a `Following` data loaded _earlier_ in the **same** session, it will run a _smart_ `data-matching` _algorithm_.  
+    And **there**, it will **load only the new data** _from the server_ and then **return a compact result** of _current data_.
+    The _algorithm_ **works like**: _load the usernames **until hits the** ones from the **previous query** at certain amount_.  
+    + **Also if** the `live_match` is `False` and the user has **no any** _sessional_ `Following` data, **then** it will load `live` data at _requested range_.
+    + As a **result**, `live_match=False` saves lots of `precious time` and `server requests`.  
++ `live_match=True`:  
+    + It will **always** load `live` data from the server at _requested range_.
+
+`store_locally`:  
+Gives the _option_ to `save` the loaded `Following` data in a **local storage**  
+The files will be saved _into_ your **logs folder**, `~/InstaPy/logs/YourOwnUsername/relationship_data/lazy.smurf/following/` directory.  
+Sample **filename** `15-06-2018~full~2409.json`:  
++ `15-06-2018` means the **time** of the data acquisition.
++ `"full"` means the **range** of the data acquisition;  
+_If the data is requested at the range **else than** `"full"`, it will write **that** range_.
++ `2409` means the **count** of the usernames retrieved.
++ `json` is the **filetype** and the data is stored as a `list` in it.
+
+
+There are **several** `use cases` of this tool for **various purposes**.  
+_E.g._, inside your **quickstart** script, you can **do** _something like this_:
+```python
+##as we know that all lazy Smurf care is to take some good rest, so by mistake, he can follow somebody WHOM Gargamel also follow!
+#so let's find it out to save Smurfs from troubles! :D
+
+#get following of "lazy.smurf" and "Gargamel"
+lazySmurf_following = session.grab_following(username="lazy.smurf", amount="full", live_match=True, store_locally=True)
+sleep(600)
+gargamel_following = session.grab_following(username="Gargamel", amount="full", live_match=True, store_locally=True)
+
+#find the users "lazy.smurf" is following WHOM "Gargamel" also follow :D
+lazySmurf_gargamel_following = [following for following in lazySmurf_following if following in gargamel_following]
+```
+
+#### `PRO`s:
+You can **use** this tool to take a **backup** of _your_ **or** _any other user's_ **current** following.
+
+
+
+### Pick Unfollowers of a user
+###### Compares the `followers` stored in a local storage against current followers and returns absent followers
+```python
+all_unfollowers, active_unfollowers = session.pick_unfollowers(username="Bernard_bear", compare_by="month", compare_track="first", live_match=True, store_locally=True, print_out=True)
+##now, `all_unfollowers` and `all_unfollowers` variables which are lists- hold the `Unfollowers` data of "Bernard_bear" at requested time
+#`all_unfollowers` holds all of the unfollowers WHILST `active_unfollowers` holds the unfollowers WHOM "Bernard_bear" is still following
+```
+#### Parameters:  
+`username`:  
+A desired username to pick its unfollowers  
+* It can be your `own` username **OR** a _username of some `non-private` account._
+
+`compare_by`:
+Defines the `compare point` to pick unfollowers
++ Available **value**s are:
+    + `"latest"` chooses the very latest record from the existing records in the local folder
+    + `"earliest"` chooses the very earliest record from the existing records in the local folder
+
+    The compare points below needs a **compare track** defined, too:
+    + `"day"` chooses from the existing records of today in the local folder
+    + `"month"` chooses from the existing records of this month in the local folder
+    + `"year"` chooses from the existing records of this year in the local folder
+
+`compare_track`:
+Defines the track to choose a file to compare for `"day"`, `"month"` and `"year"` compare points
++ Available **value**s are:
+    + `"first"` selects the first record from the given `day`, `month` or `year`
+    + `"median"` selects the median (_the one in the middle_) record from the given `day`, `month` or `year`
+    + `"last"` selects the last record from the given `day`, `month` or `year`
+
+`live_match`:  
+Defines the method of grabbing **new** `Followers` data to compare with **existing** data
+> **Knowledge Base**:  
+Every time you grab `Followers` data in `"full"` range of **any** user, it is also gonna be _stored in some corner_ of `InstaPy` **for that session**.
+
++ `live_match=False`:
+    + If the user **already do have** a `Followers` data loaded _earlier_ in the **same** session, it will run a _smart_ `data-matching` _algorithm_.  
+    And **there**, it will **load only the new data** _from the server_ and then **return a compact result** of _current data_.  
+    The _algorithm_ **works like**: _load the usernames **until hits the** ones from the **previous query** at certain amount_.  
+    + **Also if** the `live_match` is `False` and the user has **no any** _sessional_ `Followers` data, **then** it will load `live` data at _requested range_.
+    + As a **result**, `live_match=False` saves lots of `precious time` and `server requests`.  
++ `live_match=True`:  
+    + It will **always** load `live` data from the server at _requested range_.
+
+`store_locally`:  
+Gives the _option_ to `save` the loaded `Unfollowers` data in a **local storage**  
+There will be 2 files saved in their own directory:  
++ `all_unfollowers`:  
+    + Will store all of the unfollowers in there  
+    + Its files will be saved at **logs folder**, `~/InstaPy/logs/YourOwnUsername/relationship_data/Bernard_bear/unfollowers/all_unfollowers/` directory.    
++ `active_unfollowers`:    
+    + Will store only the unfollowers WHOM you are currently following.  
+    + Its files will be saved at **logs folder**, `~/InstaPy/logs/YourOwnUsername/relationship_data/Bernard_bear/unfollowers/active_unfollowers/` directory.    
+
+Sample **filename** `03-06-2018~all~75.json`:  
++ `03-06-2018` means the **time** of the data acquisition.
++ `"all"` means that it is all of the unfollowers data;  
+_*`"active"` unfollowers files will have `"active"` written in there_.
++ `75` means the **count** of the unfollowers retrieved.
++ `json` is the **filetype** and the data is stored as a `list` in it.
+
+`print_out`:  
+Use this parameter if you would like the `see` those unfollowers **printed** into the **console output** _right after finding them_.    
+
+There are **several** `use cases` of this tool for **various purposes**.  
++ You can the get the unfollowers you have had from the **start of the** _year_, or from the **middle of the** _year_ or from the start of the **month**, etc.  
+And then, e.g. do some `useful` **analysis** with that _generated unfollowers data_.
++ _And_ you can also **find** the unfollowers to `block` them **all**.
++ Also, you can **unfollow back** those `active unfollowers` _right away_:
+```python
+#find all of the active unfollowers of Bernard bear
+all_unfollowers, active_unfollowers = session.pick_unfollowers(username="Bernard_bear", compare_by="earliest", compare_track="first", live_match=True, store_locally=True, print_out=True)
+sleep(200)
+#let's unfollow them immediately cos Bernard will be angry if heards about those unfollowers! :D
+session.unfollow_users(amount=len(active_unfollowers), customList=(True, active_unfollowers, "all"), style="RANDOM", unfollow_after=None, sleep_delay=600)
+```
+
+
+
+### Pick Nonfollowers of a user
+###### Compares the `Followers` data against `Following` data of a user and returns the `Nonfollowers` data
+```python
+scoobyDoo_nonfollowers = session.pick_nonfollowers(username="ScoobyDoo", live_match=True, store_locally=True)
+#now, `scoobyDoo_nonfollowers` variable which is a list- holds the `Nonfollowers` data of "ScoobyDoo" at requested time
+```
+#### Parameters:  
+`username`:  
+A desired username to pick its nonfollowers  
+* It can be your `own` username **OR** a _username of some `non-private` account._
+
+`live_match`:  
+Defines the method of grabbing `Followers` and `Following` data to compare with each other to find **nonfollowers**
+> **Knowledge Base**:  
+Every time you grab `Followers` and/or `Following` data in `"full"` range of **any** user, it is also gonna be _stored in some corner_ of `InstaPy` **for that session**.
+
++ `live_match=False`:
+    + If the user **already do have** a `Followers` and/or `Following` data loaded _earlier_ in the **same** session, it will run a _smart_ `data-matching` _algorithm_.  
+    And **there**, it will **load only the new data** _from the server_ and then **return a compact result** of _current data_.  
+    The _algorithm_ **works like**: _load the usernames **until hits the** ones from the **previous query** at certain amount_.  
+    + **Also if** the `live_match` is `False` and the user has **no any** _sessional_ `Followers` and/or `Following` data, **then** it will load `live` data at _requested range_.
+    + As a **result**, `live_match=False` saves lots of `precious time` and `server requests`.  
++ `live_match=True`:  
+    + It will **always** load `live` data from the server at _requested range_.
+
+`store_locally`:  
+Gives the _option_ to `save` the loaded `Nonfollowers` data in a **local storage**  
+The files will be saved _into_ your **logs folder**, `~/InstaPy/logs/YourOwnUsername/relationship_data/ScoobyDoo/nonfollowers/` directory.  
+Sample **filename** `01-06-2018~[5886-3575]~2465.json`:  
++ `01-06-2018` means the **time** of the data acquisition.
++ `5886` means the **count** of the followers retrieved.
++ `3575` means the **count** of the following retrieved.
++ `2465` means the **count** of the nonfollowers picked.
++ `json` is the **filetype** and the data is stored as a `list` in it.
+
+
+There are **several** `use cases` of this tool for **various purposes**.  
++ You can get the nonfollowers of several users and then do analysis.  
+    + _e.g., in this example Scooby Do used it like this_:  
+    ```python
+    ##Scooby Doo always wonders a lot and this time he wonders if there are people Shaggy is following WHO do not follow him back...
+    shaggy_nonfollowers = session.pick_nonfollowers(username="Shaggy", live_match=True, store_locally=True)
+
+    #now Scooby Doo will tell his friend Shaggy about this, who knows, maybe Shaggy will unfollow them all or even add to block :D
+    ```  
+
+
+
+### Pick Fans of a user
+###### Returns Fans data- all of the accounts who do follow the user WHOM user itself do not follow back
+```python
+smurfette_fans = session.pick_fans(username="Smurfette", live_match=True, store_locally=True)
+#now, `smurfette_fans` variable which is a list- holds the `Fans` data of "Smurfette" at requested time
+```
+#### Parameters:  
+`username`:  
+A desired username to pick its fans  
+* It can be your `own` username **OR** a _username of some `non-private` account._
+
+`live_match`:  
+Defines the method of grabbing `Followers` and `Following` data to compare with each other to find **fans**
+> **Knowledge Base**:  
+Every time you grab `Followers` and/or `Following` data in `"full"` range of **any** user, it is also gonna be _stored in some corner_ of `InstaPy` **for that session**.
+
++ `live_match=False`:
+    + If the user **already do have** a `Followers` and/or `Following` data loaded _earlier_ in the **same** session, it will run a _smart_ `data-matching` _algorithm_.  
+    And **there**, it will **load only the new data** _from the server_ and then **return a compact result** of _current data_.  
+    The _algorithm_ **works like**: _load the usernames **until hits the** ones from the **previous query** at certain amount_.  
+    + **Also if** the `live_match` is `False` and the user has **no any** _sessional_ `Followers` and/or `Following` data, **then** it will load `live` data at _requested range_.
+    + As a **result**, `live_match=False` saves lots of `precious time` and `server requests`.  
++ `live_match=True`:  
+    + It will **always** load `live` data from the server at _requested range_.
+
+`store_locally`:  
+Gives the _option_ to `save` the loaded `Fans` data in a **local storage**  
+The files will be saved _into_ your **logs folder**, `~/InstaPy/logs/YourOwnUsername/relationship_data/Smurfette/fans/` directory.  
+Sample **filename** `05-06-2018~[4591-2575]~3477.json`:  
++ `05-06-2018` means the **time** of the data acquisition.
++ `4591` means the **count** of the followers retrieved.
++ `2575` means the **count** of the following retrieved.
++ `3477` means the **count** of the fans picked.
++ `json` is the **filetype** and the data is stored as a `list` in it.
+
+
+There are **several** `use cases` of this tool for **various purposes**.  
++ You can get the fans of several users and then do analysis.  
+    + _e.g., in this example Smurfette used it like this_:  
+    ```python
+    ##Smurfette is so famous in the place and she wonders which smurfs is following her WHOM she doesn't even know of :D
+    smurfette_fans = session.pick_fans(username="Smurfette", live_match=True, store_locally=True)
+    #and now, maybe she will follow back some of the smurfs whom she may know :P
+    ```  
+
+
+
+### Pick Mutual Following of a user
+###### Returns `Mutual Following` data- all of the accounts who do follow the user WHOM user itself **also** do follow back
+```python
+Winnie_mutualFollowing = session.pick_mutual_following(username="WinnieThePooh", live_match=True, store_locally=True)
+#now, `Winnie_mutualFollowing` variable which is a list- holds the `Mutual Following` data of "WinnieThePooh" at requested time
+```
+#### Parameters:  
+`username`:  
+A desired username to pick its mutual following  
+* It can be your `own` username **OR** a _username of some `non-private` account._
+
+`live_match`:  
+Defines the method of grabbing `Followers` and `Following` data to compare with each other to find **mutual following**
+> **Knowledge Base**:  
+Every time you grab `Followers` and/or `Following` data in `"full"` range of **any** user, it is also gonna be _stored in some corner_ of `InstaPy` **for that session**.
+
++ `live_match=False`:
+    + If the user **already do have** a `Followers` and/or `Following` data loaded _earlier_ in the **same** session, it will run a _smart_ `data-matching` _algorithm_.  
+    And **there**, it will **load only the new data** _from the server_ and then **return a compact result** of _current data_.  
+    The _algorithm_ **works like**: _load the usernames **until hits the** ones from the **previous query** at certain amount_.  
+    + **Also if** the `live_match` is `False` and the user has **no any** _sessional_ `Followers` and/or `Following` data, **then** it will load `live` data at _requested range_.
+    + As a **result**, `live_match=False` saves lots of `precious time` and `server requests`.  
++ `live_match=True`:  
+    + It will **always** load `live` data from the server at _requested range_.
+
+`store_locally`:  
+Gives the _option_ to `save` the loaded `Mutual Following` data in a **local storage**  
+The files will be saved _into_ your **logs folder**, `~/InstaPy/logs/YourOwnUsername/relationship_data/WinnieThePooh/mutual_following/` directory.  
+Sample **filename** `11-06-2018~[3872-2571]~1120.json`:  
++ `11-06-2018` means the **time** of the data acquisition.
++ `3872` means the **count** of the followers retrieved.
++ `2571` means the **count** of the following retrieved.
++ `1120` means the **count** of the mutual following picked.
++ `json` is the **filetype** and the data is stored as a `list` in it.
+
+
+There are **several** `use cases` of this tool for **various purposes**.  
++ You can get the mutual following of several users and then do analysis.  
+    + _e.g., in this example Winnie The Pooh used it like this_:  
+    ```python
+    #Winnie The Pooh is a very friendly guy and almost everybody follows him back, but he wants to be sure about it :D
+    Winnie_mutual_following = session.pick_mutual_following(username="WinnieThePooh", live_match=True, store_locally=True)
+    ##now, he will write a message to his mutual followers to help him get a new honey pot :>
+    ```  
+
+
 
 ### Use a proxy
 
@@ -754,7 +1333,7 @@ session = InstaPy(username='test', password='test', nogui=True)
 
 ## Running on a Headless Browser
 
-**Note:** Chrome only! Must user chromedriver v2.9+
+**Note:** Chrome only! Must use chromedriver v2.9+
 
 Use `headless_browser` parameter to run the bot via the CLI. Works great if running the scripts locally, or to deploy on a server. No GUI, less CPU intensive. [Example](http://g.recordit.co/BhEgXANLhJ.gif)
 
@@ -923,14 +1502,70 @@ while True:
     time.sleep(1)
 ```
 
-## Extra Informations
 
-#### How not to be banned ?
-Built-in delays prevent your account from getting banned. (Just make sure you don't like 1000s of post/day)
+
+## Extra Information
+
+### Using one of the templates
+
+If you're interested in what other users setup looks like, feel free to check out the `quickstart_templates` folder which includes several working setups with different features.
+
+In order to use them, just copy the desired file and put it next to the `quickstart.py` file in the, what is called root, directory.
+
+Finally simply adjust the username and any tags or firend lists before executing it.
+That's it.
+
+### How not to be banned
+- Built-in delays prevent your account from getting banned. (Just make sure you don't like 1000s of post/day)
+- Use the Quota Supervisor feature to set some fixed limits for the bot for maximum safety.
+
 
 ### Chrome Browser
 
 64-bit system is a requirement for current versions of chrome browser.
+
+
+### Simulation  
+##### During indirect data retrieval, **simulation** happens to provide a _genuine_ activity flow triggered by a wise algorithm.  
+To **turn off** simulation or to **decrease** its occurrence frequency, use `set_simulation` setting:  
+```python
+#use the value of `False` to permanently turn it off
+session.set_simulation(enabled=False)
+
+#use a desired occurrence percentage
+session.set_simulation(enabled=True, percentage=66)
+```
+
+
+### Disable Image Loading
+If you want to save some bandwidth, you can simply disable the image/video loading. This will lead to, if you watch InstaPy running, not downloading and displaying any more images and videos.
+
+> Note: This can save a tremendous amount of data. This is turned off by default (`False`).
+
+To do this simply pass the `disable_image_load=True` parameter in the InstaPy constructor like so:
+```python
+session = InstaPy(username=insta_username,
+                  password=insta_password,
+                  headless_browser=False,
+		  disable_image_load=True,
+                  multi_logs=True)
+```
+
+### Using Multiple Chromedrivers
+If you need multiple os versions of chromedriver just rename it like:
+```bash
+chromedriver_linux
+chromedriver_osx
+chromedriver_windows
+```
+
+### Changing DB or Chromedriver locations
+If you want to change the location/path of either the DB or the chromedriver, simply head into the `instapy/settings.py` file and change the following lines. 
+Set these in instapy/settings.py if you're locating the library in the /usr/lib/pythonX.X/ directory.
+```
+Settings.database_location = '/path/to/instapy.db'
+Settings.chromedriver_location = '/path/to/chromedriver'
+```
 
 ---
 ###### Have Fun & Feel Free to report any issues
