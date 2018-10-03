@@ -731,7 +731,7 @@ def get_relationship_counts(browser, username, logger):
                         followers_count = None
 
                 except NoSuchElementException:
-                    logger.error("Error occured during getting the followers count of '{}'\n".format(username))
+                    logger.error("Error occurred during getting the followers count of '{}'\n".format(username))
                     followers_count = None
 
     try:
@@ -766,7 +766,7 @@ def get_relationship_counts(browser, username, logger):
                         following_count = None
 
                 except NoSuchElementException:
-                    logger.error("\nError occured during getting the following count of '{}'\n".format(username))
+                    logger.error("\nError occurred during getting the following count of '{}'\n".format(username))
                     following_count = None
 
     return followers_count, following_count
@@ -932,7 +932,7 @@ def dump_record_activity(profile_name, logger, logfolder):
                 json.dump(current_data, recordActFile)
 
     except Exception as exc:
-        logger.error("Pow! Error occured while dumping record activity data to a local JSON:\n\t{}".format(
+        logger.error("Pow! Error occurred while dumping record activity data to a local JSON:\n\t{}".format(
             str(exc).encode("utf-8")))
 
     finally:
