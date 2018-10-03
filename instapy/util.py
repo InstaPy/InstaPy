@@ -685,7 +685,7 @@ def username_url_to_username(username_url):
 
 def get_number_of_posts(browser):
     """Get the number of posts from the profile screen"""
-    num_of_posts_txt = browser.find_element_by_xpath("//section/main/div/header/section/ul/li[1]/span/span").text
+    num_of_posts_txt = browser.find_element_by_xpath("//section/div[3]/div/header/section/ul/li[1]/span/span").text
     num_of_posts_txt = num_of_posts_txt.replace(" ", "")
     num_of_posts_txt = num_of_posts_txt.replace(",", "")
     num_of_posts = int(num_of_posts_txt)
