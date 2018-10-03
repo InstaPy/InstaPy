@@ -62,7 +62,7 @@ def create_database(address, logger, name):
 
     except Exception as exc:
         logger.warning(
-            "Wah! Error occured while getting a DB for '{}':\n\t{}".format(name, str(exc).encode("utf-8")))
+            "Wah! Error occurred while getting a DB for '{}':\n\t{}".format(name, str(exc).encode("utf-8")))
 
     finally:
         if connection:
@@ -119,7 +119,7 @@ def get_profile(name, address, logger):
                 profile = select_profile_by_username(cursor, name)
 
     except Exception as exc:
-        logger.warning("Heeh! Error occured while getting a DB profile for '{}':\n\t{}".format(name, str(exc).encode("utf-8")))
+        logger.warning("Heeh! Error occurred while getting a DB profile for '{}':\n\t{}".format(name, str(exc).encode("utf-8")))
 
     finally:
         if conn:
