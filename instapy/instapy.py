@@ -1097,7 +1097,7 @@ class InstaPy:
                                                media,
                                                skip_top_posts)
             except NoSuchElementException as exc:
-                self.logger.warning("Error occured while getting images from location: {}  "
+                self.logger.warning("Error occurred while getting images from location: {}  "
                                     "~maybe too few images exist\n\t{}\n".format(location, str(exc).encode("utf-8")))
                 continue
 
@@ -2160,7 +2160,7 @@ class InstaPy:
             self.logger.info(tags)
             self.like_by_tags(tags, amount, media)
         except TypeError as err:
-            self.logger.error('Sorry, an error occured: {}'.format(err))
+            self.logger.error('Sorry, an error occurred: {}'.format(err))
             self.aborting = True
             return self
 
@@ -2223,7 +2223,7 @@ class InstaPy:
 
                 else:
                     self.logger.error(
-                        'Sorry, an error occured: {}'.format(err))
+                        'Sorry, an error occurred: {}'.format(err))
                     self.aborting = True
                     return self
 
@@ -2367,7 +2367,7 @@ class InstaPy:
 
                 else:
                     self.logger.error(
-                        'Sorry, an error occured: {}'.format(err))
+                        'Sorry, an error occurred: {}'.format(err))
                     self.aborting = True
                     return self
 
@@ -2512,7 +2512,7 @@ class InstaPy:
 
                 else:
                     self.logger.error(
-                        'Sorry, an error occured: {}'.format(err))
+                        'Sorry, an error occurred: {}'.format(err))
                     self.aborting = True
                     return self
 
@@ -2670,7 +2670,7 @@ class InstaPy:
 
                 else:
                     self.logger.error(
-                        'Sorry, an error occured: {}'.format(err))
+                        'Sorry, an error occurred: {}'.format(err))
                     self.aborting = True
                     return self
 
@@ -2824,7 +2824,7 @@ class InstaPy:
                     u'Warning: {} , stopping unfollow_users'.format(exc))
                 return self
             else:
-                self.logger.error('Sorry, an error occured: {}'.format(exc))
+                self.logger.error('Sorry, an error occurred: {}'.format(exc))
                 self.aborting = True
                 return self
 
@@ -3281,7 +3281,7 @@ class InstaPy:
                 self.browser.delete_all_cookies()
             except Exception as exc:
                 if isinstance(exc, WebDriverException):
-                    self.logger.exception("Error occured while deleting cookies from web browser!\n\t{}"
+                    self.logger.exception("Error occurred while deleting cookies from web browser!\n\t{}"
                                           .format(str(exc).encode("utf-8")))
 
             # close web browser
@@ -3289,7 +3289,7 @@ class InstaPy:
                 self.browser.quit()
             except Exception as exc:
                 if isinstance(exc, WebDriverException):
-                    self.logger.exception("Error occured while closing web browser!\n\t{}"
+                    self.logger.exception("Error occurred while closing web browser!\n\t{}"
                                           .format(str(exc).encode("utf-8")))
 
             # close virtual display
