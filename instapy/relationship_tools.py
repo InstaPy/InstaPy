@@ -105,7 +105,7 @@ def get_followers(browser,
                 sc_rolled_all = graphql_queries[username][query_date]["sc_rolled"]
 
         except Exception as exc:
-            logger.info("Error occured while getting `scroll` data from graphql_queries.json\n{}\n".format(str(exc).encode("utf-8")))
+            logger.info("Error occurred while getting `scroll` data from graphql_queries.json\n{}\n".format(str(exc).encode("utf-8")))
             local_read_failure = True
 
         start_time = time.time()
@@ -174,7 +174,7 @@ def get_followers(browser,
                                 json.dump(graphql_queries, graphql_queries_file)
                     except Exception as exc:
                         print('\n')
-                        logger.info("Error occured while writing `scroll` data to graphql_queries.json\n{}\n".format(str(exc).encode("utf-8")))
+                        logger.info("Error occurred while writing `scroll` data to graphql_queries.json\n{}\n".format(str(exc).encode("utf-8")))
 
                 #take breaks gradually
                 if sc_rolled > 91:
@@ -306,7 +306,7 @@ def get_following(browser,
                     graphql_queries[username][query_date] = {"sc_rolled":0}
                 sc_rolled_all = graphql_queries[username][query_date]["sc_rolled"]
         except Exception as exc:
-            logger.info("Error occured while getting `scroll` data from graphql_queries.json\n{}\n".format(str(exc).encode("utf-8")))
+            logger.info("Error occurred while getting `scroll` data from graphql_queries.json\n{}\n".format(str(exc).encode("utf-8")))
             local_read_failure = True
 
         start_time = time.time()
@@ -375,7 +375,7 @@ def get_following(browser,
                                 json.dump(graphql_queries, graphql_queries_file)
                     except Exception as exc:
                         print('\n')
-                        logger.info("Error occured while writing `scroll` data to graphql_queries.json\n{}\n".format(str(exc).encode("utf-8")))
+                        logger.info("Error occurred while writing `scroll` data to graphql_queries.json\n{}\n".format(str(exc).encode("utf-8")))
 
                 #take breaks gradually
                 if sc_rolled > 91:
@@ -998,6 +998,4 @@ def progress_tracker(current_value, highest_value, initial_time, logger):
         sys.stdout.flush()
 
     except Exception as exc:
-        logger.info("Error occured with Progress Tracker:\n{}".format(str(exc).encode("utf-8")))
-
-
+        logger.info("Error occurred with Progress Tracker:\n{}".format(str(exc).encode("utf-8")))
