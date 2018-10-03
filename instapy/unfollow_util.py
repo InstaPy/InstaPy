@@ -91,7 +91,7 @@ def set_automated_followed_pool(username, unfollow_after, logger, logfolder):
         followedPoolFile.close()
 
     except BaseException as exc:
-        logger.error("Error occured while generating a user list from the followed pool!\n\t{}"
+        logger.error("Error occurred while generating a user list from the followed pool!\n\t{}"
                         .format(str(exc).encode("utf-8")))
 
     return automatedFollowedPool
@@ -801,7 +801,7 @@ def follow_through_dialog(browser,
                 logger.info("Not followed '{}'  ~inappropriate user".format(person))
 
     except BaseException as e:
-        logger.error("Error occured while following through dialog box:\n{}".format(str(e)))
+        logger.error("Error occurred while following through dialog box:\n{}".format(str(e)))
 
     return person_followed
 
@@ -871,7 +871,7 @@ def get_given_user_followers(browser,
                         allfollowers = None
 
                 except NoSuchElementException:
-                    logger.error("Error occured during getting the followers count of '{}'\n".format(user_name))
+                    logger.error("Error occurred during getting the followers count of '{}'\n".format(user_name))
                     return [], []
 
     # skip early for no followers
@@ -959,7 +959,7 @@ def get_given_user_following(browser,
                         allfollowing = None
 
                 except NoSuchElementException:
-                    logger.error("\nError occured during getting the following count of '{}'\n".format(user_name))
+                    logger.error("\nError occurred during getting the following count of '{}'\n".format(user_name))
                     return [], []
 
     # skip early for no followers
@@ -1029,7 +1029,7 @@ def dump_follow_restriction(profile_name, logger, logfolder):
                 json.dump(current_data, followResFile)
 
     except Exception as exc:
-        logger.error("Pow! Error occured while dumping follow restriction data to a local JSON:\n\t{}".format(str(exc).encode("utf-8")))
+        logger.error("Pow! Error occurred while dumping follow restriction data to a local JSON:\n\t{}".format(str(exc).encode("utf-8")))
 
     finally:
         if conn:
@@ -1083,7 +1083,7 @@ def follow_restriction(operation, username, limit, logger):
                     return True
 
     except Exception as exc:
-        logger.error("Dap! Error occured with follow Restriction:\n\t{}".format(str(exc).encode("utf-8")))
+        logger.error("Dap! Error occurred with follow Restriction:\n\t{}".format(str(exc).encode("utf-8")))
 
     finally:
         if conn:
