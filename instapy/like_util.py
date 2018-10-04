@@ -581,7 +581,7 @@ def like_image(browser, username, blacklist, logger, logfolder, tag):
             if blacklist['enabled'] is False:
                 track_action = 'liked'
                 add_user_to_tracklist(
-                    username, "No Campaign", track_action, logger, logfolder)
+                    username, "No Campaign", track_action, logger, logfolder,tag)
 
 
 
