@@ -1,5 +1,6 @@
 """ Common utilities """
 import random
+from datetime import datetime
 import time
 import datetime
 import re
@@ -349,8 +350,9 @@ def add_user_to_blacklist(username, campaign, action, logger, logfolder):
 
 def add_user_to_tracklist(username, campaign, action, logger, logfolder, tag):
     file_exists = os.path.isfile('{}campaign_list.csv'.format(logfolder))
-    fieldnames = ['date', 'username', 'campaign', 'action', 'tag']
-    today = datetime.date.today().strftime('%m/%d/%y')
+    fieldnames = ['date', 'username', 'campaign', 'action', 'likedtag']
+    # changed this to datetime.now and added H and M to log
+    today = datetime.now().strftime('%m/%d/%y %H:%M')
 
     try:
         with open('{}campaign_list.csv'.format(logfolder), 'a+', encoding="utf-8") as tracklist:
@@ -362,12 +364,12 @@ def add_user_to_tracklist(username, campaign, action, logger, logfolder, tag):
                 'username': username,
                 'campaign': campaign,
                 'action': action,
-                'tag': tag
+                'likedtag': tag
             })
     except Exception as err:
         logger.error('tracklist dictWrite error {}'.format(err))
 
-    logger.info('--> {} added to tracking list for {} campaign (action: {})'
+    logger.info('---> {} added to tracking list for {} campaign (action: {})'
                 .format(username, campaign, action))
 
 
