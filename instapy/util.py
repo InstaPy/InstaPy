@@ -1,6 +1,5 @@
 """ Common utilities """
 import random
-from datetime import datetime
 import time
 import datetime
 import re
