@@ -1480,9 +1480,9 @@ class InstaPy:
         for index, tag in enumerate(tags):
             if self.quotient_breach:
                 break
-            #This prints to console when liking by tag
-            self.logger.info('Tag [{}/{}]'.format(index + 1, len(tags)))
-            self.logger.info('---------!josh!--> {}'.format(tag.encode('utf-8')))
+            #This prints to console when
+            self.logger.info('Tag!! [{}/{}]'.format(index + 1, len(tags)))
+            self.logger.info('--> {}'.format(tag.encode('utf-8')))
 
             try:
                 links = get_links_for_tag(self.browser,
@@ -2011,13 +2011,14 @@ class InstaPy:
                         if self.do_like and liking and self.delimit_liking:
                             self.liking_approved = verify_liking(self.browser, self.max_likes, self.min_likes,
                                                                  self.logger)
-
+                        #this is like function used when interacting with users followers
                         if self.do_like and liking and self.liking_approved:
                             like_state, msg = like_image(self.browser,
                                                          user_name,
                                                          self.blacklist,
                                                          self.logger,
-                                                         self.logfolder)
+                                                         self.logfolder,
+                                                         tag="NONE")
                             if like_state == True:
                                 total_liked_img += 1
                                 liked_img += 1
