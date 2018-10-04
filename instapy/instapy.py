@@ -2025,7 +2025,7 @@ class InstaPy:
                                                          self.logger,
                                                          self.logfolder,
                                                          tag="NONE",
-                                                         like_method="InteractUsersFollowers")
+                                                         like_method="InteractUsersFollowers: {}".format(targeted_username))
                             if like_state == True:
                                 total_liked_img += 1
                                 liked_img += 1
@@ -2177,7 +2177,7 @@ class InstaPy:
         return self
 
     def interact_user_followers(self, usernames, amount=10, randomize=False):
-
+        # this does the work when interacting with followers. It gets username list.
         if self.aborting:
             return self
 
@@ -2211,6 +2211,8 @@ class InstaPy:
                 break
 
             self.logger.info("User '{}' [{}/{}]".format((user), index + 1, len(usernames)))
+            global targeted_username
+            targeted_username = user
             try:
                 person_list, simulated_list = get_given_user_followers(self.browser,
                                                                        self.username,
