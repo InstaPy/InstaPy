@@ -346,6 +346,34 @@ def add_user_to_blacklist(username, campaign, action, logger, logfolder):
                 .format(username, campaign, action))
 
 
+
+def add_user_to_tracklist(username, campaign, action, logger, logfolder):
+    file_exists = os.path.isfile('{}campaign_list.csv'.format(logfolder))
+    fieldnames = ['date', 'username', 'campaign', 'action']
+    today = datetime.date.today().strftime('%m/%d/%y')
+
+    try:
+        with open('{}campaign_list.csv'.format(logfolder), 'a+', encoding="utf-8") as tracklist:
+            writer = csv.DictWriter(tracklist, fieldnames=fieldnames)
+            if not file_exists:
+                writer.writeheader()
+            writer.writerow({
+                'date': today,
+                'username': username,
+                'campaign': campaign,
+                'action': action
+            })
+    except Exception as err:
+        logger.error('tracklist dictWrite error {}'.format(err))
+
+    logger.info('--> {} added to tracking list for {} campaign (action: {})'
+                .format(username, campaign, action))
+
+
+
+
+
+
 def get_active_users(browser, username, posts, boundary, logger):
     """Returns a list with usernames who liked the latest n posts"""
 

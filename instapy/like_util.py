@@ -7,6 +7,7 @@ from selenium.webdriver.common.keys import Keys
 from .time_util import sleep
 from .util import format_number
 from .util import add_user_to_blacklist
+from .util import add_user_to_tracklist
 from .util import click_element
 from .util import is_private_profile
 from .util import update_activity
@@ -575,9 +576,13 @@ def like_image(browser, username, blacklist, logger, logfolder):
             logger.info('--> Image Liked!')
             update_activity('likes')
 
+
+
             if blacklist['enabled'] is True:
                 action = 'liked'
                 add_user_to_blacklist(
+                    username, blacklist['campaign'], action, logger, logfolder)
+                add_user_to_tracklist(
                     username, blacklist['campaign'], action, logger, logfolder)
             sleep(2)
             return True, "success"
