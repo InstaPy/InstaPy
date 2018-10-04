@@ -347,9 +347,9 @@ def add_user_to_blacklist(username, campaign, action, logger, logfolder):
 
 
 
-def add_user_to_tracklist(username, campaign, action, logger, logfolder):
+def add_user_to_tracklist(username, campaign, action, logger, logfolder, tag):
     file_exists = os.path.isfile('{}campaign_list.csv'.format(logfolder))
-    fieldnames = ['date', 'username', 'campaign', 'action']
+    fieldnames = ['date', 'username', 'campaign', 'action', 'tag']
     today = datetime.date.today().strftime('%m/%d/%y')
 
     try:
@@ -361,7 +361,8 @@ def add_user_to_tracklist(username, campaign, action, logger, logfolder):
                 'date': today,
                 'username': username,
                 'campaign': campaign,
-                'action': action
+                'action': action,
+                'tag': tag
             })
     except Exception as err:
         logger.error('tracklist dictWrite error {}'.format(err))

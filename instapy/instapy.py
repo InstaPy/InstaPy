@@ -1,4 +1,5 @@
 """OS Modules environ method to get the setup vars from the Environment"""
+"""OS Modules environ method to get the setup vars from the Environment"""
 # import built-in & third-party modules
 import time
 from math import ceil
@@ -1479,9 +1480,9 @@ class InstaPy:
         for index, tag in enumerate(tags):
             if self.quotient_breach:
                 break
-
+            #This prints to console when liking by tag
             self.logger.info('Tag [{}/{}]'.format(index + 1, len(tags)))
-            self.logger.info('--> {}'.format(tag.encode('utf-8')))
+            self.logger.info('---------!josh!--> {}'.format(tag.encode('utf-8')))
 
             try:
                 links = get_links_for_tag(self.browser,
@@ -1534,7 +1535,8 @@ class InstaPy:
                                                      user_name,
                                                      self.blacklist,
                                                      self.logger,
-                                                     self.logfolder)
+                                                     self.logfolder,
+                                                     tag)
 
                         if like_state == True:
                             liked_img += 1
