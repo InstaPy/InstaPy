@@ -553,7 +553,7 @@ def check_link(browser, post_link, dont_like, mandatory_words, ignore_if_contain
 
 
 
-def like_image(browser, username, blacklist, logger, logfolder, tag):
+def like_image(browser, username, blacklist, logger, logfolder, tag, like_method):
     """Likes the browser opened image"""
     # check action availability
     if quota_supervisor("likes") == "jump":
@@ -580,15 +580,19 @@ def like_image(browser, username, blacklist, logger, logfolder, tag):
             # trying out testing the user like tracking here, in case no campaign was crated
             if blacklist['enabled'] is False:
                 track_action = 'liked'
+                if like_method == "":
+                    like_method = "NotSet"
                 add_user_to_tracklist(
-                    username, "No Campaign", track_action, logger, logfolder,tag)
+                    username, "No Campaign", track_action, logger, logfolder,tag, like_method)
 
 
 
             if blacklist['enabled'] is True:
                 action = 'liked'
+                if like_method == "":
+                    like_method = "NotSet"
                 add_user_to_tracklist(
-                    username, blacklist['campaign'], action, logger, logfolder, tag)
+                    username, blacklist['campaign'], action, logger, logfolder, tag, like_method)
                 add_user_to_blacklist(
                     username, blacklist['campaign'], action, logger, logfolder)
 

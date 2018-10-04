@@ -1531,12 +1531,15 @@ class InstaPy:
                             web_address_navigator(self.browser, link)
 
                         # try to like
+                        # set method info for campaign tracking
+                        like_method="None"
                         like_state, msg = like_image(self.browser,
                                                      user_name,
                                                      self.blacklist,
                                                      self.logger,
                                                      self.logfolder,
-                                                     tag)
+                                                     tag,
+                                                     like_method="LikeByTag")
 
                         if like_state == True:
                             liked_img += 1
@@ -1887,6 +1890,7 @@ class InstaPy:
                           randomize=False,
                           media=None):
         """Likes some amounts of images for each usernames"""
+        """Called to like users pages that follow a specified user"""
         if self.aborting:
             return self
 
@@ -2012,13 +2016,16 @@ class InstaPy:
                             self.liking_approved = verify_liking(self.browser, self.max_likes, self.min_likes,
                                                                  self.logger)
                         #this is like function used when interacting with users followers
+
                         if self.do_like and liking and self.liking_approved:
+                            like_method = "none"
                             like_state, msg = like_image(self.browser,
                                                          user_name,
                                                          self.blacklist,
                                                          self.logger,
                                                          self.logfolder,
-                                                         tag="NONE")
+                                                         tag="NONE",
+                                                         like_method="InteractUsersFollowers")
                             if like_state == True:
                                 total_liked_img += 1
                                 liked_img += 1

@@ -348,9 +348,9 @@ def add_user_to_blacklist(username, campaign, action, logger, logfolder):
 
 
 
-def add_user_to_tracklist(username, campaign, action, logger, logfolder, tag):
+def add_user_to_tracklist(username, campaign, action, logger, logfolder, tag, like_method):
     file_exists = os.path.isfile('{}campaign_list.csv'.format(logfolder))
-    fieldnames = ['date', 'username', 'campaign', 'action', 'likedtag']
+    fieldnames = ['date', 'username', 'campaign', 'action', 'likedtag', 'like_method']
     # changed this to datetime.now and added H and M to log
     #today = datetime.now().strftime('%m/%d/%y %H:%M')
     now = datetime.datetime.now().strftime("%m/%d/%y %H:%M")
@@ -365,7 +365,8 @@ def add_user_to_tracklist(username, campaign, action, logger, logfolder, tag):
                 'username': username,
                 'campaign': campaign,
                 'action': action,
-                'likedtag': tag
+                'likedtag': tag,
+                'like_method': like_method
             })
     except Exception as err:
         logger.error('tracklist dictWrite error {}'.format(err))
