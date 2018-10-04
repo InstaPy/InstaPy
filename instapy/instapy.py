@@ -3170,7 +3170,7 @@ class InstaPy:
                                           self.logfolder)
         return grabbed_followers
 
-    def grab_following(self, username=None, amount=None, live_match=False, store_locally=True):
+    def grab_following(self, username=None, amount=None, live_match=False, store_locally=True, ignore_private=False):
         """ Gets and returns `following` information of given user in desired amount, also, saves locally """
 
         message = "Starting to get the `Following` data.."
@@ -3195,7 +3195,8 @@ class InstaPy:
                                           live_match,
                                           store_locally,
                                           self.logger,
-                                          self.logfolder)
+                                          self.logfolder,
+                                          ignore_private)
         return grabbed_following
 
     def pick_unfollowers(self, username=None, compare_by="latest", compare_track="first", live_match=False,

@@ -226,7 +226,8 @@ def get_following(browser,
                       live_match,
                        store_locally,
                         logger,
-                         logfolder):
+                         logfolder,
+                          skip_private):
     """ Get entire list of following using graphql queries. """
     if username not in relationship_data:
         relationship_data.update({username: {"all_following":[], "all_followers":[]}})
@@ -258,7 +259,7 @@ def get_following(browser,
 
     graphql_endpoint = 'https://www.instagram.com/graphql/query/'
     graphql_following = (
-        graphql_endpoint + '?query_hash=58712303d941c6855d4e888c5f0cd22f')
+        graphql_endpoint + '?query_hash=c56ee0ae1f89cdbd1c89e2bc6b8f3d18')
 
     all_following = []
 
@@ -321,7 +322,8 @@ def get_following(browser,
                 data['user']['edge_follow']['page_info'])
             edges = data['user']['edge_follow']['edges']
             for user in edges:
-                all_following.append(user['node']['username'])
+                if (skip_private == False or user['node']['is_private'] == False):
+                    all_following.append(user['node']['username'])
 
             grabbed = len(set(all_following))
 
@@ -473,7 +475,8 @@ def get_unfollowers(browser,
                                               live_match,
                                                store_locally,
                                                 logger,
-                                                 logfolder)
+                                                 logfolder,
+                                                  False)
 
         active_unfollowers = [unfollower for unfollower in current_following if unfollower in all_unfollowers]
     
@@ -525,7 +528,8 @@ def get_nonfollowers(browser,
                                       live_match,
                                        store_locally,
                                         logger,
-                                         logfolder)
+                                         logfolder,
+                                          False)
 
     #using this approach we can preserve the order of elements to be used with `FIFO`, `LIFO` or `RANDOM` styles
     nonfollowers = [user for user in all_following if user not in all_followers]
@@ -576,7 +580,8 @@ def get_fans(browser,
                                       live_match,
                                        store_locally,
                                         logger,
-                                         logfolder)
+                                         logfolder,
+                                          False)
 
     #using this approach we can preserve the order of elements to be used with `FIFO`, `LIFO` or `RANDOM` styles
     fans = [user for user in all_followers if user not in all_following]
@@ -627,7 +632,8 @@ def get_mutual_following(browser,
                                       live_match,
                                        store_locally,
                                         logger,
-                                         logfolder)
+                                         logfolder,
+                                          False)
 
     #using this approach we can preserve the order of elements to be used with `FIFO`, `LIFO` or `RANDOM` styles
     mutual_following = [user for user in all_following if user in all_followers]
