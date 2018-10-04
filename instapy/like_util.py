@@ -558,13 +558,23 @@ def like_image(browser, username, blacklist, logger, logfolder, tag, like_method
     # check action availability
     if quota_supervisor("likes") == "jump":
         return False, "jumped"
+    #wanted to do a check to see how many times we have interacted with the user
+    getBlacklistCount=open('{}campaign_list.csv'.format(logfolder), 'r').read().count(username)
+    logger.info('---> User({}) Found {} Times in Blacklist Already!'.format(username, getBlacklistCount))
+
+    if getBlacklistCount >= 3:
+        logger.info('---> {} Already Interacted with 3 times or more!. Should Skip Like!!')
+    #'{}campaign_list.csv'.format(logfolder)
+
 
     like_xpath = "//button/span[@aria-label='Like']"
     unlike_xpath = "//button/span[@aria-label='Unlike']"
-
+    """" This is the final step before the image is clicked/liked.. Need to do blacklist final logic here"""
 
     # find first for like element
     like_elem = browser.find_elements_by_xpath(like_xpath)
+    # this is just debug into, but was lazy and just used info instead of looking at debug handler REMOVE
+    logger.info(' ---> [DEBUG]:Output of like_elem in like_image function {}'.format(like_elem))
 
     if len(like_elem) == 1:
         # sleep real quick right before clicking the element
@@ -577,18 +587,20 @@ def like_image(browser, username, blacklist, logger, logfolder, tag, like_method
             logger.info('--> Image Liked!')
             update_activity('likes')
 
-            # trying out testing the user like tracking here, in case no campaign was crated
+            # Track like actions even is campaign wasn't ceated. NEED TO TEST
             if blacklist['enabled'] is False:
                 track_action = 'liked'
                 if like_method == "":
                     like_method = "NotSet"
                 add_user_to_tracklist(
-                    username, "No Campaign", track_action, logger, logfolder,tag, like_method)
+                    username, "No Campaign", track_action, logger, logfolder, tag, like_method)
 
 
 
             if blacklist['enabled'] is True:
                 action = 'liked'
+                #tracking like_method to compare followers list and determine new follower source
+                #initialized the variable here, sure it could be done better in settings.
                 if like_method == "":
                     like_method = "NotSet"
                 add_user_to_tracklist(

@@ -1921,6 +1921,8 @@ class InstaPy:
             self.logger.info(
                 'Username [{}/{}]'.format(index + 1, len(usernames)))
             self.logger.info('--> {}'.format(username.encode('utf-8')))
+            #this is just a debug to verify I'm in the right part of the code. REMOVEME
+            self.logger.info('---> This action is called when targeting a pages followers')
 
             if not users_validated:
                 validation, details = self.validate_user_call(username)
@@ -2211,6 +2213,7 @@ class InstaPy:
                 break
 
             self.logger.info("User '{}' [{}/{}]".format((user), index + 1, len(usernames)))
+            # this needs to be better defined elsewhere in settings. Send this to like function.
             global targeted_username
             targeted_username = user
             try:
@@ -2291,7 +2294,8 @@ class InstaPy:
 
                     self.logger.info("Interaction [{}/{}]  |  Total Interaction: {}"
                                      .format(interacted_personal, len(person_list), interacted_all))
-
+                    #this makes the call that does the actual liking. interact_by_user
+                    #
                     with self.feature_in_feature("interact_by_users", False):
                         self.interact_by_users(person,
                                                self.user_interact_amount,
