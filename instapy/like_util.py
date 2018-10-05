@@ -554,6 +554,8 @@ def check_link(browser, post_link, dont_like, mandatory_words, ignore_if_contain
 
 
 def like_image(browser, username, blacklist, logger, logfolder, tag, like_method):
+    global maxLikeSkipCount
+    maxLikeSkipCount=0
     """Likes the browser opened image"""
     # check action availability
     if quota_supervisor("likes") == "jump":
@@ -561,9 +563,14 @@ def like_image(browser, username, blacklist, logger, logfolder, tag, like_method
     #wanted to do a check to see how many times we have interacted with the user
     getBlacklistCount=open('{}campaign_list.csv'.format(logfolder), 'r').read().count(username)
     logger.info('---> User({}) Found {} Times in Blacklist Already!'.format(username, getBlacklistCount))
-
-    if getBlacklistCount >= 3:
-        logger.info('---> {} Already Interacted with 3 times or more!. Should Skip Like!!')
+    logger.info('---> {} Max Blacklist Image Likes from Settings : This stops multipls tag likes!!'.format(blacklist['maxLikes']))
+    #integer conversion here to fix string mismatch
+    #convertMaxLikes=int(blacklist['maxLikes'])
+    if getBlacklistCount >= int(blacklist['maxLikes']):
+        logger.info('---> {} Already Interacted with {} times or more!. SKIPPING!!!'.format(username, blacklist['maxLikes']))
+        # returning to we wont like after hitting blacklist interaction limit.
+        maxLikeSkipCount+=1
+        return False, "Hit Blacklist Limit"
     #'{}campaign_list.csv'.format(logfolder)
 
 
@@ -573,8 +580,8 @@ def like_image(browser, username, blacklist, logger, logfolder, tag, like_method
 
     # find first for like element
     like_elem = browser.find_elements_by_xpath(like_xpath)
-    # this is just debug into, but was lazy and just used info instead of looking at debug handler REMOVE
-    logger.info(' ---> [DEBUG]:Output of like_elem in like_image function {}'.format(like_elem))
+    # changed this to debug. It shows the browser instance and element ID#
+    logger.debug(' ---> [DEBUG]:Output of like_elem in like_image function {}'.format(like_elem))
 
     if len(like_elem) == 1:
         # sleep real quick right before clicking the element

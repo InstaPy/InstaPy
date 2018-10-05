@@ -146,7 +146,8 @@ class InstaPy:
         self.follow_percentage = 0
         self.dont_include = set()
         self.white_list = set()
-        self.blacklist = {'enabled': 'True', 'campaign': ''}
+        #added in maxLikes here, so I can skip image like after X likes
+        self.blacklist = {'enabled': 'True', 'campaign': '', 'maxLikes': ''}
         self.automatedFollowedPool = {"all": [], "eligible": []}
         self.do_like = False
         self.like_percentage = 0
@@ -2139,6 +2140,7 @@ class InstaPy:
                          .format(interacted_media_size, len(usernames)))
 
         # print results
+
         self.logger.info('Liked: {}'.format(total_liked_img))
         self.logger.info('Already Liked: {}'.format(already_liked))
         self.logger.info('Commented: {}'.format(commented))
@@ -2459,6 +2461,8 @@ class InstaPy:
         inap_img = (self.inap_img - inap_img_init)
 
         # print results
+        # checking this summary section to see if we need to add maxlikes count here
+
         self.logger.info('Liked: {}'.format(liked))
         self.logger.info('Already Liked: {}'.format(already_liked))
         self.logger.info('Commented: {}'.format(commented))
@@ -3139,15 +3143,17 @@ class InstaPy:
         # include active user to not unfollow list
         self.dont_include.update(active_users)
 
-    def set_blacklist(self, enabled, campaign):
+    def set_blacklist(self, enabled, campaign, maxLikes):
         """Enable/disable blacklist. If enabled, adds users to a blacklist after
         interact with and adds users to dont_include list"""
+        #added in Maxlikes here, so will return false in like function
 
         if enabled is False:
             return
 
         self.blacklist['enabled'] = True
         self.blacklist['campaign'] = campaign
+        self.blacklist['maxLikes'] = maxLikes
 
         try:
             with open('{}blacklist.csv'.format(self.logfolder), 'r') as blacklist:
