@@ -1,4 +1,5 @@
 """OS Modules environ method to get the setup vars from the Environment"""
+"""OS Modules environ method to get the setup vars from the Environment"""
 # import built-in & third-party modules
 import time
 from math import ceil
@@ -145,7 +146,8 @@ class InstaPy:
         self.follow_percentage = 0
         self.dont_include = set()
         self.white_list = set()
-        self.blacklist = {'enabled': 'True', 'campaign': ''}
+        #added in maxLikes here, so I can skip image like after X likes
+        self.blacklist = {'enabled': 'True', 'campaign': '', 'maxLikes': ''}
         self.automatedFollowedPool = {"all": [], "eligible": []}
         self.do_like = False
         self.like_percentage = 0
@@ -1479,8 +1481,8 @@ class InstaPy:
         for index, tag in enumerate(tags):
             if self.quotient_breach:
                 break
-
-            self.logger.info('Tag [{}/{}]'.format(index + 1, len(tags)))
+            #This prints to console when
+            self.logger.info('Tag!! [{}/{}]'.format(index + 1, len(tags)))
             self.logger.info('--> {}'.format(tag.encode('utf-8')))
 
             try:
@@ -1530,11 +1532,15 @@ class InstaPy:
                             web_address_navigator(self.browser, link)
 
                         # try to like
+                        # set method info for campaign tracking
+                        like_method="None"
                         like_state, msg = like_image(self.browser,
                                                      user_name,
                                                      self.blacklist,
                                                      self.logger,
-                                                     self.logfolder)
+                                                     self.logfolder,
+                                                     tag,
+                                                     like_method="LikeByTag")
 
                         if like_state == True:
                             liked_img += 1
@@ -1885,6 +1891,7 @@ class InstaPy:
                           randomize=False,
                           media=None):
         """Likes some amounts of images for each usernames"""
+        """Called to like users pages that follow a specified user"""
         if self.aborting:
             return self
 
@@ -1915,6 +1922,8 @@ class InstaPy:
             self.logger.info(
                 'Username [{}/{}]'.format(index + 1, len(usernames)))
             self.logger.info('--> {}'.format(username.encode('utf-8')))
+            #this is just a debug to verify I'm in the right part of the code. REMOVEME
+            self.logger.info('---> This action is called when targeting a pages followers')
 
             if not users_validated:
                 validation, details = self.validate_user_call(username)
@@ -2009,13 +2018,17 @@ class InstaPy:
                         if self.do_like and liking and self.delimit_liking:
                             self.liking_approved = verify_liking(self.browser, self.max_likes, self.min_likes,
                                                                  self.logger)
+                        #this is like function used when interacting with users followers
 
                         if self.do_like and liking and self.liking_approved:
+                            like_method = "none"
                             like_state, msg = like_image(self.browser,
                                                          user_name,
                                                          self.blacklist,
                                                          self.logger,
-                                                         self.logfolder)
+                                                         self.logfolder,
+                                                         tag="NONE",
+                                                         like_method="InteractUsersFollowers: {}".format(targeted_username))
                             if like_state == True:
                                 total_liked_img += 1
                                 liked_img += 1
@@ -2127,6 +2140,7 @@ class InstaPy:
                          .format(interacted_media_size, len(usernames)))
 
         # print results
+
         self.logger.info('Liked: {}'.format(total_liked_img))
         self.logger.info('Already Liked: {}'.format(already_liked))
         self.logger.info('Commented: {}'.format(commented))
@@ -2167,7 +2181,7 @@ class InstaPy:
         return self
 
     def interact_user_followers(self, usernames, amount=10, randomize=False):
-
+        # this does the work when interacting with followers. It gets username list.
         if self.aborting:
             return self
 
@@ -2201,6 +2215,9 @@ class InstaPy:
                 break
 
             self.logger.info("User '{}' [{}/{}]".format((user), index + 1, len(usernames)))
+            # this needs to be better defined elsewhere in settings. Send this to like function.
+            global targeted_username
+            targeted_username = user
             try:
                 person_list, simulated_list = get_given_user_followers(self.browser,
                                                                        self.username,
@@ -2279,7 +2296,8 @@ class InstaPy:
 
                     self.logger.info("Interaction [{}/{}]  |  Total Interaction: {}"
                                      .format(interacted_personal, len(person_list), interacted_all))
-
+                    #this makes the call that does the actual liking. interact_by_user
+                    #
                     with self.feature_in_feature("interact_by_users", False):
                         self.interact_by_users(person,
                                                self.user_interact_amount,
@@ -2443,6 +2461,8 @@ class InstaPy:
         inap_img = (self.inap_img - inap_img_init)
 
         # print results
+        # checking this summary section to see if we need to add maxlikes count here
+
         self.logger.info('Liked: {}'.format(liked))
         self.logger.info('Already Liked: {}'.format(already_liked))
         self.logger.info('Commented: {}'.format(commented))
@@ -3123,15 +3143,17 @@ class InstaPy:
         # include active user to not unfollow list
         self.dont_include.update(active_users)
 
-    def set_blacklist(self, enabled, campaign):
+    def set_blacklist(self, enabled, campaign, maxLikes):
         """Enable/disable blacklist. If enabled, adds users to a blacklist after
         interact with and adds users to dont_include list"""
+        #added in Maxlikes here, so will return false in like function
 
         if enabled is False:
             return
 
         self.blacklist['enabled'] = True
         self.blacklist['campaign'] = campaign
+        self.blacklist['maxLikes'] = maxLikes
 
         try:
             with open('{}blacklist.csv'.format(self.logfolder), 'r') as blacklist:

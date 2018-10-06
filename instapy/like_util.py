@@ -7,6 +7,7 @@ from selenium.webdriver.common.keys import Keys
 from .time_util import sleep
 from .util import format_number
 from .util import add_user_to_blacklist
+from .util import add_user_to_tracklist
 from .util import click_element
 from .util import is_private_profile
 from .util import update_activity
@@ -552,17 +553,35 @@ def check_link(browser, post_link, dont_like, mandatory_words, ignore_if_contain
 
 
 
-def like_image(browser, username, blacklist, logger, logfolder):
+def like_image(browser, username, blacklist, logger, logfolder, tag, like_method):
+    global maxLikeSkipCount
+    maxLikeSkipCount=0
     """Likes the browser opened image"""
     # check action availability
     if quota_supervisor("likes") == "jump":
         return False, "jumped"
+    #wanted to do a check to see how many times we have interacted with the user
+    getBlacklistCount=open('{}campaign_list.csv'.format(logfolder), 'r').read().count(username)
+    logger.info('---> User({}) Found {} Times in Blacklist Already!'.format(username, getBlacklistCount))
+    logger.info('---> {} Max Blacklist Image Likes from Settings : This stops multipls tag likes!!'.format(blacklist['maxLikes']))
+    #integer conversion here to fix string mismatch
+    #convertMaxLikes=int(blacklist['maxLikes'])
+    if getBlacklistCount >= int(blacklist['maxLikes']):
+        logger.info('---> {} Already Interacted with {} times or more!. SKIPPING!!!'.format(username, blacklist['maxLikes']))
+        # returning to we wont like after hitting blacklist interaction limit.
+        maxLikeSkipCount+=1
+        return False, "Hit Blacklist Limit"
+    #'{}campaign_list.csv'.format(logfolder)
+
 
     like_xpath = "//button/span[@aria-label='Like']"
     unlike_xpath = "//button/span[@aria-label='Unlike']"
+    """" This is the final step before the image is clicked/liked.. Need to do blacklist final logic here"""
 
     # find first for like element
     like_elem = browser.find_elements_by_xpath(like_xpath)
+    # changed this to debug. It shows the browser instance and element ID#
+    logger.debug(' ---> [DEBUG]:Output of like_elem in like_image function {}'.format(like_elem))
 
     if len(like_elem) == 1:
         # sleep real quick right before clicking the element
@@ -575,10 +594,27 @@ def like_image(browser, username, blacklist, logger, logfolder):
             logger.info('--> Image Liked!')
             update_activity('likes')
 
+            # Track like actions even is campaign wasn't ceated. NEED TO TEST
+            if blacklist['enabled'] is False:
+                track_action = 'liked'
+                if like_method == "":
+                    like_method = "NotSet"
+                add_user_to_tracklist(
+                    username, "No Campaign", track_action, logger, logfolder, tag, like_method)
+
+
+
             if blacklist['enabled'] is True:
                 action = 'liked'
+                #tracking like_method to compare followers list and determine new follower source
+                #initialized the variable here, sure it could be done better in settings.
+                if like_method == "":
+                    like_method = "NotSet"
+                add_user_to_tracklist(
+                    username, blacklist['campaign'], action, logger, logfolder, tag, like_method)
                 add_user_to_blacklist(
                     username, blacklist['campaign'], action, logger, logfolder)
+
             sleep(2)
             return True, "success"
 
