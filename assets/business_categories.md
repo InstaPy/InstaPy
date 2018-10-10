@@ -3,3 +3,36 @@
 - Auto Dealers
 - Transportation & Accomodation Services
 - Restaurants
+- Athlete
+- Photography Videography"
+- Public Figure"
+- Artist
+- Sport
+- Ski Resort
+- Photographer
+- Consulting Agency
+- Jewelry/Watches
+- Sports & Recreation
+- Wine/Spirits
+- Travel Agency
+- Local Business
+- Product/Service
+- Community
+- Arts & Entertainment
+- Professional Sports Team
+- Arts & Humanities Website
+- Community Organization
+- Art
+- Management Service
+- Company
+- Art Museum
+- Clothing Store
+- Art Gallery
+- Graphic Designer
+- Advertising Agency
+- Advertising/Marketing
+- Media/News Company
+- Public Relations Agency
+- Party Entertainment Service
+- Education
+- Professional Service
