@@ -1,38 +1,49 @@
 ### List of available Instagram business categories
-- Creators & Celebrities
-- Auto Dealers
-- Transportation & Accomodation Services
-- Restaurants
-- Athlete
-- Photography Videography"
-- Public Figure"
-- Artist
-- Sport
-- Ski Resort
-- Photographer
-- Consulting Agency
-- Jewelry/Watches
-- Sports & Recreation
-- Wine/Spirits
-- Travel Agency
-- Local Business
-- Product/Service
-- Community
-- Arts & Entertainment
-- Professional Sports Team
-- Arts & Humanities Website
-- Community Organization
-- Art
-- Management Service
-- Company
-- Art Museum
-- Clothing Store
-- Art Gallery
-- Graphic Designer
 - Advertising Agency
 - Advertising/Marketing
-- Media/News Company
-- Public Relations Agency
-- Party Entertainment Service
+- Art
+- Art Gallery
+- Art Museum
+- Artist
+- Arts & Entertainment
+- Arts & Humanities Website
+- Athlete
+- Auto Dealers
+- Business & Utility Services
+- Clothing Store
+- Community
+- Community Organization
+- Company
+- Consulting Agency
+- Content & Apps
+- Creators & Celebrities
 - Education
+- Food & Personal Goods
+- General Interest
+- Graphic Designer
+- Home Goods Stores
+- Home Services
+- Jewelry/Watches
+- Lifestyle Services
+- Local Business
+- Local Events
+- Management Service
+- Media/News Company
+- Non-Profits & Religious Organizations
+- Party Entertainment Service
+- Personal Goods & General Merchandise Stores
+- Photographer
+- Photography Videography
+- Product/Service
 - Professional Service
+- Professional Sports Team
+- Public Figure
+- Public Relations Agency
+- Publishers
+- Restaurants
+- Ski Resort
+- Sport
+- Sports & Recreation
+- Transportation & Accomodation Services
+- Travel Agency
+- Wine/Spirits
