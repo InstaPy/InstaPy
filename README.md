@@ -1420,6 +1420,16 @@ session.clarifai_check_img_for(['building'])
 
 session.set_use_clarifai(enabled=True, api_key='xxx', full_match=True)
 session.clarifai_check_img_for(['food', 'lunch'], comment=True, comments=['Tasty!', 'Yum!'])
+
+
+# To adjust the threshold for accepted concept predictions
+# and their respective score (degree of confidence)
+# you can set the default probability parameter for Clarifai (default 50%).
+# For example, if you only want to accept results with a high degree of confidence,
+# you could set probability to 90%.
+
+session.set_use_clarifai(enabled=True, api_key='xxx', probability=0.90, full_match=True)
+session.clarifai_check_img_for(['food', 'lunch'], comment=True, comments=['Tasty!', 'Yum!'])
 ```
 
 ###### Check out [https://clarifai.com/demo](https://clarifai.com/demo) to see some of the available tags.</h6>

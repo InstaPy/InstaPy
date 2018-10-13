@@ -164,6 +164,7 @@ class InstaPy:
 
         self.use_clarifai = False
         self.clarifai_api_key = None
+        self.clarifai_probability = 0.50
         self.clarifai_img_tags = []
         self.clarifai_img_tags_skip = []
         self.clarifai_full_match = False
@@ -537,7 +538,7 @@ class InstaPy:
         self.switch_language = option
         return self
 
-    def set_use_clarifai(self, enabled=False, api_key=None, full_match=False):
+    def set_use_clarifai(self, enabled=False, api_key=None, probability=0.50, full_match=False):
         """
         Defines if the clarifai img api should be used
         Which 'project' will be used (only 5000 calls per month)
@@ -558,6 +559,7 @@ class InstaPy:
         elif api_key is not None:
             self.clarifai_api_key = api_key
 
+        self.clarifai_probability = probability
         self.clarifai_full_match = full_match
 
         return self
@@ -620,7 +622,8 @@ class InstaPy:
     def query_clarifai(self):
         """Method for querying Clarifai using parameters set in clarifai_check_img_for"""
         return check_image(self.browser, self.clarifai_api_key, self.clarifai_img_tags,
-                           self.clarifai_img_tags_skip, self.logger, self.clarifai_full_match)
+                           self.clarifai_img_tags_skip, self.logger, self.clarifai_probability,
+                           self.clarifai_full_match)
 
     def follow_commenters(self, usernames, amount=10, daysold=365, max_pic=50, sleep_delay=600, interact=False):
         """ Follows users' commenters """

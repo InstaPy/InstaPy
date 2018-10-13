@@ -4,7 +4,7 @@ from clarifai.rest import ClarifaiApp
 
 
 def check_image(browser, clarifai_api_key, img_tags, img_tags_skip_if_contain, logger,
-                full_match=False, picture_url=None):
+                probability, full_match=False, picture_url=None):
     """Uses the link to the image to check for invalid content in the image"""
     clarifai_api = ClarifaiApp(api_key=clarifai_api_key)
     # set req image to given one or get it from current page
@@ -20,7 +20,7 @@ def check_image(browser, clarifai_api_key, img_tags, img_tags_skip_if_contain, l
     # Get Clarifai Response
     result = model.predict_by_url(img_link)
     # Use get_clarifai_tags method to filter results returned from Clarifai
-    clarifai_tags = get_clarifai_tags(result)
+    clarifai_tags = get_clarifai_tags(result, probability)
 
     for (tags, should_comment, comments) in img_tags:
         if should_comment and given_tags_in_result(tags, clarifai_tags, full_match):
@@ -48,14 +48,14 @@ def get_imagelink(browser):
         .get_attribute('src')
 
 
-def get_clarifai_tags(clarifai_response):
+def get_clarifai_tags(clarifai_response, probability):
     """Get the response from the Clarifai API and return results filtered by
     models with 50% or higher confidence"""
     results = []
     concepts = [{concept.get('name').lower(): concept.get('value')}
                 for concept in clarifai_response['outputs'][0]['data']['concepts']]
     for concept in concepts:
-        if float([x for x in concept.values()][0]) > 0.50:
+        if float([x for x in concept.values()][0]) > probability:
             results.append(str([x for x in concept.keys()][0]))
 
     return results
