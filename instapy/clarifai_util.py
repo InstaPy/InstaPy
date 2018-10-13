@@ -52,8 +52,13 @@ def get_clarifai_tags(clarifai_response, probability):
     """Get the response from the Clarifai API and return results filtered by
     models with 50% or higher confidence"""
     results = []
-    concepts = [{concept.get('name').lower(): concept.get('value')}
-                for concept in clarifai_response['outputs'][0]['data']['concepts']]
+
+    try:
+        concepts = [{concept.get('name').lower(): concept.get('value')}
+                    for concept in clarifai_response['outputs'][0]['data']['concepts']]
+    except KeyError:
+        concepts = [{'No Results': 0.00}]
+
     for concept in concepts:
         if float([x for x in concept.values()][0]) > probability:
             results.append(str([x for x in concept.keys()][0]))
