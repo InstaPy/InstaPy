@@ -47,12 +47,30 @@ def get_imagelink(browser):
 
 
 def get_clarifai_response(clarifai_api, models, img_link):
-    """Compiles a list of tags from Clarifai using the
-    chosen models"""
+    """Compiles a list of tags from Clarifai using the chosen models.
+    First checks the value of each item in the models list against a
+    dictionary. If the model value provided does not match one of the
+    keys in the dictionary below, model value is used in
+    clarifai_api.models.get(). Useful for custom models."""
     results = []
+    clarifai_model = {
+        'general': 'general-v1.5',
+        'nsfw': 'nsfw-v1.0',
+        'apparel': 'apparel',
+        'celebrity': 'celeb-v1.3',
+        'color': 'color',
+        'demographics': 'demographics',
+        'face detection': 'face-v1.3',
+        'food': 'food-items-v1.0',
+        'moderation': 'moderation',
+        'textures': 'Textures & Patterns',
+        'travel': 'travel-v1.0',
+        'weddings': 'weddings-v1.0'
+    }
 
     for model in models:
-        model = get_model(clarifai_api, model)
+        model = clarifai_api.models.get(clarifai_model.get(model.lower(), model))
+        # Get response from Clarifai API
         clarifai_response = model.predict_by_url(img_link)
         # Use get_clarifai_tags function to filter results returned from Clarifai
         clarifai_tags = get_clarifai_tags(clarifai_response)
@@ -72,38 +90,3 @@ def get_clarifai_tags(clarifai_response):
             results.append(str([x for x in concept.keys()][0]))
 
     return results
-
-
-def get_model(clarifai_api, model):
-    """Selects model(s) from publics models provided by
-    Clarifai. Includes support for custom models"""
-    selector = model.lower()
-
-    if 'general' == selector:
-        return clarifai_api.public_models.general_model
-    elif 'nsfw' == selector:
-        return clarifai_api.models.get('nsfw-v1.0')
-    elif 'apparel' == selector:
-        return clarifai_api.models.get('apparel')
-    elif 'celebrity' == selector:
-        return clarifai_api.models.get('celeb-v1.3')
-    elif 'color' == selector:
-        return clarifai_api.models.get('color')
-    elif 'demographics' == selector:
-        return clarifai_api.models.get('demographics')
-    elif 'face detection' == selector:
-        return clarifai_api.models.get('face-v1.3')
-    elif 'food' == selector:
-        return clarifai_api.models.get('food-items-v1.0')
-    elif 'moderation' == selector:
-        return clarifai_api.models.get("moderation")
-    elif 'textures' == selector:
-        return clarifai_api.models.get("Textures & Patterns")
-    elif 'travel' == selector:
-        return clarifai_api.models.get('travel-v1.0')
-    elif 'weddings' == selector:
-        return clarifai_api.models.get('weddings-v1.0')
-    else:
-        # When using custom models, provide a value for
-        # model different from the options given above
-        return clarifai_api.models.get(model)
