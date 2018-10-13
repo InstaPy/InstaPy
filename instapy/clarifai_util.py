@@ -4,7 +4,7 @@ from clarifai.rest import ClarifaiApp
 
 
 def check_image(browser, clarifai_api_key, img_tags, img_tags_skip_if_contain, logger,
-                clarifai_models, full_match=False, picture_url=None):
+                clarifai_models, probability, full_match=False, picture_url=None):
     """Uses the link to the image to check for invalid content in the image"""
     clarifai_api = ClarifaiApp(api_key=clarifai_api_key)
     # set req image to given one or get it from current page
@@ -13,7 +13,7 @@ def check_image(browser, clarifai_api_key, img_tags, img_tags_skip_if_contain, l
     else:
         img_link = picture_url
     # Get list of tags from Clarifai API by checking link against provided model(s)
-    clarifai_tags = get_clarifai_response(clarifai_api, clarifai_models, img_link)
+    clarifai_tags = get_clarifai_response(clarifai_api, clarifai_models, probability, img_link)
 
     # Will not comment on an image if any of the tags in img_tags_skip_if_contain are matched
     if given_tags_in_result(img_tags_skip_if_contain, clarifai_tags):
@@ -46,7 +46,7 @@ def get_imagelink(browser):
         .get_attribute('src')
 
 
-def get_clarifai_response(clarifai_api, models, img_link):
+def get_clarifai_response(clarifai_api, models, probability, img_link):
     """Compiles a list of tags from Clarifai using the chosen models.
     First checks the value of each item in the models list against a
     dictionary. If the model value provided does not match one of the
@@ -73,20 +73,20 @@ def get_clarifai_response(clarifai_api, models, img_link):
         # Get response from Clarifai API
         clarifai_response = model.predict_by_url(img_link)
         # Use get_clarifai_tags function to filter results returned from Clarifai
-        clarifai_tags = get_clarifai_tags(clarifai_response)
+        clarifai_tags = get_clarifai_tags(clarifai_response, probability)
         results.extend(clarifai_tags)
 
     return results
 
 
-def get_clarifai_tags(clarifai_response):
+def get_clarifai_tags(clarifai_response, probability):
     """Get the response from the Clarifai API and return results filtered by
     models with 50% or higher confidence"""
     results = []
     concepts = [{concept.get('name').lower(): concept.get('value')}
                 for concept in clarifai_response['outputs'][0]['data']['concepts']]
     for concept in concepts:
-        if float([x for x in concept.values()][0]) > 0.50:
+        if float([x for x in concept.values()][0]) > probability:
             results.append(str([x for x in concept.keys()][0]))
 
     return results
