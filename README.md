@@ -1417,9 +1417,6 @@ session.set_use_clarifai(enabled=True, api_key=‘xxx’, models=[‘model’])
 # Check image using the Demographics model
 session.set_use_clarifai(enabled=True, api_key=‘xxx’, models=[‘demographics’])
 
-# Check image using the Face Detection model
-session.set_use_clarifai(enabled=True, api_key=‘xxx’, models=[‘face detection’])
-
 # Check image using the Food model
 session.set_use_clarifai(enabled=True, api_key=‘xxx’, models=[‘food’])
 
@@ -1460,6 +1457,14 @@ session.clarifai_check_img_for(['nsfw'])
 
 session.set_use_clarifai(enabled=True, api_key=‘xxx’, models=[‘moderation’])
 session.clarifai_check_img_for(['suggestive', 'explicit'])
+
+# To adjust the threshold for accepted concept predictions and their 
+# respective score (degree of confidence) you can set the default probability 
+# parameter for Clarifai (default 50%). For example, you could set probability to 15%.
+# -> any image with a nsfw score of 0.15 of higher will not be commented on
+
+session.set_use_clarifai(enabled=True, api_key=‘xxx’, probability= 0.15, models=[‘nsfw’])
+session.clarifai_check_img_for(['nsfw'])
 ```
 
 ### Filtering by Keyword
@@ -1481,15 +1486,12 @@ session.clarifai_check_img_for(['building'])
 session.set_use_clarifai(enabled=True, api_key='xxx', full_match=True)
 session.clarifai_check_img_for(['food', 'lunch'], comment=True, comments=['Tasty!', 'Yum!'])
 
-
-# To adjust the threshold for accepted concept predictions
-# and their respective score (degree of confidence)
-# you can set the default probability parameter for Clarifai (default 50%).
-# For example, if you only want to accept results with a high degree of confidence,
-# you could set probability to 90%.
+# If you only want to accept results with a high degree of confidence, you could 
+# set a probability to a higher value, like 90%. 
 
 session.set_use_clarifai(enabled=True, api_key='xxx', probability=0.90, full_match=True)
 session.clarifai_check_img_for(['food', 'lunch'], comment=True, comments=['Tasty!', 'Yum!'])
+```
 ```
 
 ### Support for Compound Model Queries
@@ -1504,7 +1506,7 @@ session.clarifai_check_img_for([‘woman’, ‘man’], [‘nsfw’, ‘explici
 ```
 If Clarifai’s response includes the concepts of either `woman` or `man` but also includes at least `nsfw`, `explicit`, or `suggestive`, InstaPy will not comment. On the other hand, if Clarifai’s response includes the concepts of either `woman` or `man` but does not include any of the concepts `nsfw`, `explicit`, or `suggestive`, InstaPy will add the comment `Great shot!`
 
-###### Check out [https://clarifai.com/demo](https://clarifai.com/demo) to see some of the available tags.</h6>
+##### Check out [https://clarifai.com/demo](https://clarifai.com/demo) to see some of the available tags.</h6>
 
 ## Running on a Server
 

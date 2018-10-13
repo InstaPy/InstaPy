@@ -17,7 +17,7 @@ def check_image(browser, clarifai_api_key, img_tags, img_tags_skip_if_contain, l
 
     # Will not comment on an image if any of the tags in img_tags_skip_if_contain are matched
     if given_tags_in_result(img_tags_skip_if_contain, clarifai_tags):
-        logger.info('Not Commenting, image contains concept: "{}".'.format(
+        logger.info('Not Commenting, image contains concept(s): "{}".'.format(
             ', '.join(list(set(clarifai_tags) & set(img_tags_skip_if_contain)))))
         return False, []
 
@@ -54,13 +54,10 @@ def get_clarifai_response(clarifai_api, models, probability, img_link):
     clarifai_api.models.get(). Useful for custom models."""
     results = []
     clarifai_model = {
-        'general': 'general-v1.5',
+        'general': 'general-v1.3',
         'nsfw': 'nsfw-v1.0',
         'apparel': 'apparel',
         'celebrity': 'celeb-v1.3',
-        'color': 'color',
-        'demographics': 'demographics',
-        'face detection': 'face-v1.3',
         'food': 'food-items-v1.0',
         'moderation': 'moderation',
         'textures': 'Textures & Patterns',
@@ -81,10 +78,14 @@ def get_clarifai_response(clarifai_api, models, probability, img_link):
 
 def get_clarifai_tags(clarifai_response, probability):
     """Get the response from the Clarifai API and return results filtered by
-    models with 50% or higher confidence"""
+    concepts with a confidence set by probability parameter (default 50%)"""
     results = []
-    concepts = [{concept.get('name').lower(): concept.get('value')}
-                for concept in clarifai_response['outputs'][0]['data']['concepts']]
+    try:
+        concepts = [{concept.get('name').lower(): concept.get('value')}
+                   for concept in clarifai_response['outputs'][0]['data']['concepts']]
+    except KeyError:
+        concepts = [{'No Results': 0.00}]
+
     for concept in concepts:
         if float([x for x in concept.values()][0]) > probability:
             results.append(str([x for x in concept.keys()][0]))
