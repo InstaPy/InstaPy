@@ -228,12 +228,12 @@ class InstaPy:
         Handles the creation and retrieval of loggers to avoid re-instantiation.
         """
 
-        existing_logger = Settings.loggers.get(__name__)
+        existing_logger = Settings.loggers.get(self.username)
         if existing_logger is not None:
             return existing_logger
         else:
             # initialize and setup logging system for the InstaPy object
-            logger = logging.getLogger(__name__)
+            logger = logging.getLogger(self.username)
             logger.setLevel(logging.DEBUG)
             file_handler = logging.FileHandler('{}general.log'.format(self.logfolder))
             file_handler.setLevel(logging.DEBUG)
@@ -251,7 +251,7 @@ class InstaPy:
 
             logger = logging.LoggerAdapter(logger, extra)
 
-            Settings.loggers[__name__] = logger
+            Settings.loggers[self.username] = logger
             Settings.logger = logger
             return logger
 
