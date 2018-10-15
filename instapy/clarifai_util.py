@@ -1,19 +1,28 @@
 """Module which handles the clarifai api and checks
 the image for invalid content"""
 from clarifai.rest import ClarifaiApp
+from clarifai.rest import Workflow
 
 
 def check_image(browser, clarifai_api_key, img_tags, img_tags_skip_if_contain, logger,
-                clarifai_models, probability, full_match=False, picture_url=None):
+                clarifai_models, workflow, probability, full_match=False, picture_url=None):
     """Uses the link to the image to check for invalid content in the image"""
     clarifai_api = ClarifaiApp(api_key=clarifai_api_key)
+
     # set req image to given one or get it from current page
     if picture_url is None:
         img_link = get_imagelink(browser)
     else:
         img_link = picture_url
-    # Get list of tags from Clarifai API by checking link against provided model(s)
-    clarifai_tags = get_clarifai_response(clarifai_api, clarifai_models, probability, img_link)
+    # If a workflow has been selected, get list of tags from Clarifai API
+    # by checking link against models included in the workflow. If a workflow
+    # hasn't been provided, InstaPy will check images against given model(s)
+    if workflow:
+        clarifai_workflow = Workflow(clarifai_api.api, workflow_id=workflow[0])
+        clarifai_response = clarifai_workflow.predict_by_url(img_link)
+        clarifai_tags = get_clarifai_tags(clarifai_response, probability)
+    else:
+        clarifai_tags = get_clarifai_response(clarifai_api, clarifai_models, probability, img_link)
 
     # Will not comment on an image if any of the tags in img_tags_skip_if_contain are matched
     if given_tags_in_result(img_tags_skip_if_contain, clarifai_tags):
@@ -58,6 +67,8 @@ def get_clarifai_response(clarifai_api, models, probability, img_link):
         'nsfw': 'nsfw-v1.0',
         'apparel': 'apparel',
         'celebrity': 'celeb-v1.3',
+        'color': 'color',
+        'demographics': 'demographics',
         'food': 'food-items-v1.0',
         'moderation': 'moderation',
         'textures': 'Textures & Patterns',
@@ -80,11 +91,78 @@ def get_clarifai_tags(clarifai_response, probability):
     """Get the response from the Clarifai API and return results filtered by
     concepts with a confidence set by probability parameter (default 50%)"""
     results = []
+
     try:
-        concepts = [{concept.get('name').lower(): concept.get('value')}
-                   for concept in clarifai_response['outputs'][0]['data']['concepts']]
+        concepts = []
+        if clarifai_response['workflow']:
+            for item in clarifai_response['results'][0]['outputs']:
+                if item['model'].get('name') == 'color':
+                    try:
+                        item_concepts = [{concept.get('w3c', {}).get('name').lower(): concept.get('value')}
+                                         for concept in item['data']['colors']]
+                    except KeyError:
+                        item_concepts = [{'No Results': 0.00}]
+
+                    concepts.extend(item_concepts)
+                elif item['model'].get('name') == 'celeb-v1.3':
+                    try:
+                        for value in item['data']['regions']:
+                            item_concepts = [{concept.get('name').lower(): concept.get('value')} for concept in
+                                             value['data']['face']['identity']['concepts']]
+                            concepts.extend(item_concepts)
+                    except KeyError:
+                        item_concepts = [{'No Results': 0.00}]
+                        concepts.extend(item_concepts)
+                elif item['model'].get('name') == 'demographics':
+                    try:
+                        for value in item['data']['regions'][0]['data']['face'].values():
+                            item_concepts = [{concept.get('name').lower(): concept.get('value')} for concept in
+                                             value['concepts']]
+                            concepts.extend(item_concepts)
+                    except KeyError:
+                        item_concepts = [{'No Results': 0.00}]
+                        concepts.extend(item_concepts)
+                else:
+                    try:
+                        item_concepts = [{concept.get('name').lower(): concept.get('value')}
+                                         for concept in item['data']['concepts']]
+                    except KeyError:
+                        item_concepts = [{'No Results': 0.00}]
+
+                    concepts.extend(item_concepts)
+        concepts = concepts
     except KeyError:
-        concepts = [{'No Results': 0.00}]
+        if clarifai_response['outputs'][0]['model'].get('name') == 'color':
+            try:
+                concepts = [{concept.get('w3c', {}).get('name').lower(): concept.get('value')}
+                            for concept in clarifai_response['outputs'][0]['data']['colors']]
+            except KeyError:
+                concepts = [{'No Results': 0.00}]
+        elif clarifai_response['outputs'][0]['model'].get('name') == 'celeb-v1.3':
+            concepts = []
+            try:
+                for value in clarifai_response['outputs'][0]['data']['regions']:
+                    item_concepts = [{concept.get('name').lower(): concept.get('value')} for concept in
+                                     value['data']['face']['identity']['concepts']]
+                    concepts.extend(item_concepts)
+            except KeyError:
+                item_concepts = [{'No Results': 0.00}]
+                concepts.extend(item_concepts)
+        elif clarifai_response['outputs'][0]['model'].get('name') == 'demographics':
+            concepts = []
+            try:
+                for item in clarifai_response['outputs'][0]['data']['regions'][0]['data']['face'].values():
+                    item_concepts = [{concept.get('name').lower(): concept.get('value')} for concept in
+                                     item['concepts']]
+                    concepts.extend(item_concepts)
+            except KeyError:
+                concepts = [{'No Results': 0.00}]
+        else:
+            try:
+                concepts = [{concept.get('name').lower(): concept.get('value')}
+                            for concept in clarifai_response['outputs'][0]['data']['concepts']]
+            except KeyError:
+                concepts = [{'No Results': 0.00}]
 
     for concept in concepts:
         if float([x for x in concept.values()][0]) > probability:
