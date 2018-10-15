@@ -32,5 +32,8 @@ with smart_run(session):
     # actions
     session.like_by_tags(["natgeo"], amount=10)
 
+    session.set_do_comment(True, percentage=100)
+    session.comments_by_tags(["cricket", "movies"], amount=10)
+
 
 
