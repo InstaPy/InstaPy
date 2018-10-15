@@ -70,7 +70,10 @@ def get_clarifai_response(clarifai_api, models, probability, img_link):
         'color': 'color',
         'demographics': 'demographics',
         'food': 'food-items-v1.0',
+        'landscape quality': 'Landscape Quality',
+        'logo': 'logo',
         'moderation': 'moderation',
+        'portrait quality': 'Portrait Quality',
         'textures': 'Textures & Patterns',
         'travel': 'travel-v1.0',
         'weddings': 'weddings-v1.0'
@@ -92,8 +95,10 @@ def get_clarifai_tags(clarifai_response, probability):
     concepts with a confidence set by probability parameter (default 50%)"""
     results = []
 
+    # First check if API response is from a workflow or individual model
     try:
         concepts = []
+        # If response is a workflow, iterate over the response to extract tags and values
         if clarifai_response['workflow']:
             for item in clarifai_response['results'][0]['outputs']:
                 if item['model'].get('name') == 'color':
@@ -122,6 +127,14 @@ def get_clarifai_tags(clarifai_response, probability):
                     except KeyError:
                         item_concepts = [{'No Results': 0.00}]
                         concepts.extend(item_concepts)
+                elif item['model'].get('name') == 'logo':
+                    try:
+                        item_concepts = [{concept.get('name').lower(): concept.get('value')}
+                                         for concept in item['data']['regions'][0]['data']['concepts']]
+                        concepts.extend(item_concepts)
+                    except KeyError:
+                        item_concepts = [{'No Results': 0.00}]
+                        concepts.extend(item_concepts)
                 else:
                     try:
                         item_concepts = [{concept.get('name').lower(): concept.get('value')}
@@ -132,6 +145,7 @@ def get_clarifai_tags(clarifai_response, probability):
                     concepts.extend(item_concepts)
         concepts = concepts
     except KeyError:
+        # If returns a KeyError for 'workflow', iterate over the model response(s) to extract tags and values
         if clarifai_response['outputs'][0]['model'].get('name') == 'color':
             try:
                 concepts = [{concept.get('w3c', {}).get('name').lower(): concept.get('value')}
@@ -157,13 +171,19 @@ def get_clarifai_tags(clarifai_response, probability):
                     concepts.extend(item_concepts)
             except KeyError:
                 concepts = [{'No Results': 0.00}]
+        elif clarifai_response['outputs'][0]['model'].get('name') == 'logo':
+            try:
+                concepts = [{concept.get('name').lower(): concept.get('value')} for concept in
+                            clarifai_response['outputs'][0]['data']['regions'][0]['data']['concepts']]
+            except KeyError:
+                concepts = [{'No Results': 0.00}]
         else:
             try:
                 concepts = [{concept.get('name').lower(): concept.get('value')}
                             for concept in clarifai_response['outputs'][0]['data']['concepts']]
             except KeyError:
                 concepts = [{'No Results': 0.00}]
-
+    # Filter concepts based on probability threshold
     for concept in concepts:
         if float([x for x in concept.values()][0]) > probability:
             results.append(str([x for x in concept.keys()][0]))

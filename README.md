@@ -1401,6 +1401,8 @@ If you wish to check against a specific model or multiple models (see Support fo
 
 To get a better understanding of the models and their associated concepts, see the Clarifai [Model Gallery](https://clarifai.com/models) and [Developer Guide](https://clarifai.com/developer/guide/)
 
+**NOTE ON MODEL SUPPORT**: At this time, the support for the`Focus`, `Face Detection`, `Face Embedding`, and `General Embedding` has not been added.
+
 ```python
 # Check image using the NSFW model
 session.set_use_clarifai(enabled=True, api_key='xxx', models=['nsfw'])
@@ -1420,8 +1422,17 @@ session.set_use_clarifai(enabled=True, api_key=‘xxx’, models=[‘demographic
 # Check image using the Food model
 session.set_use_clarifai(enabled=True, api_key='xxx', models=['food'])
 
+# Check image using the Landscape Quality model
+session.set_use_clarifai(enabled=True, api_key='xxx', models=['landscape quality'])
+
+# Check image using the Logo model
+session.set_use_clarifai(enabled=True, api_key='xxx', models=['logo'])
+
 # Check image using the Moderation model
 session.set_use_clarifai(enabled=True, api_key='xxx', models=['moderation'])
+
+# Check image using the Portrait Quality model
+session.set_use_clarifai(enabled=True, api_key='xxx', models=['portrait quality'])
 
 # Check image using the Textures and Patterns model
 session.set_use_clarifai(enabled=True, api_key='xxx', models=['textures'])
@@ -1491,9 +1502,9 @@ session.clarifai_check_img_for(['food', 'lunch'], comment=True, comments=['Tasty
 ```
 
 ### Querying Multiple Models with Workflow (Single API Call)
-You can query multiple Clarifai models with a single API call by setting up a custom workflow. To setup a workflow, see the [Workflow Documentation](https://www.clarifai.com/developer/guide/workflow#workflow).
+You can query multiple Clarifai models with a single API call by setting up a custom workflow. To setup a workflow, see the [Workflow Documentation](https://www.clarifai.com/developer/guide/workflow#workflow). **NOTE** :As mentioned above, the `Focus`, `Face Detection`, `Face Embedding`, and `General Embedding` models are not current supported.
 
-**Note**: Using a workflow is the recommended way to query multiple models. Alternatively, it is possible to query multiple models separately (see Querying Multiple Models (Multiple API Calls) below)
+**NOTE**: Using a `workflow` is the recommended way to query multiple models. Alternatively, it is possible to query multiple models separately (see Querying Multiple Models (Multiple API Calls) below).
 
 Once you have a workflow setup, you can use InstaPy to check images with the Clarifai Image API by setting the `workflow` parameter in `session.set_use_clarifai` to the name of your custom workflow.
 
@@ -1510,7 +1521,7 @@ If Clarifai's response includes the concepts of either `woman` or `man` but also
 ### Querying Multiple Models (Multiple API Calls)
 In the event that you do not want to set up a workflow, you can also query multiple models using multiple API calls.
 
-**Warning**: If you are using a free account with Clarifiai, be mindful that the using compound API queries could greatly increase your chances of exceeding your allotment of free 5000 operations per month. The number of Clarifai billable operations per image check equals the number of models selected. For example, if you check 100 images against `models=['general', 'nsfw', 'moderation']`, the total number of billable operations will be 300.
+**WARNING**: If you are using a free account with Clarifiai, be mindful that the using compound API queries could greatly increase your chances of exceeding your allotment of free 5000 operations per month. The number of Clarifai billable operations per image check equals the number of models selected. For example, if you check 100 images against `models=['general', 'nsfw', 'moderation']`, the total number of billable operations will be 300.
 
 Following the example above, to get general concepts, e.g. `woman`, you would use the model `general` and to check the image for the concepts `nsfw` and `explicit` you would also want to check the image against the NSFW and Moderation models. 
 
