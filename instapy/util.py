@@ -686,10 +686,23 @@ def username_url_to_username(username_url):
 
 def get_number_of_posts(browser):
     """Get the number of posts from the profile screen"""
-    num_of_posts_txt = browser.find_element_by_xpath("//section/div[3]/div/header/section/ul/li[1]/span/span").text
-    num_of_posts_txt = num_of_posts_txt.replace(" ", "")
-    num_of_posts_txt = num_of_posts_txt.replace(",", "")
-    num_of_posts = int(num_of_posts_txt)
+    try:
+        num_of_posts = browser.execute_script(
+            "return window._sharedData.entry_data."
+            "ProfilePage[0].graphql.user.edge_owner_to_timeline_media.count")
+
+    except WebDriverException:
+      
+        try:
+            num_of_posts_txt = browser.find_element_by_xpath("//section/main/div/header/section/ul/li[1]/span/span").text
+
+        except NoSuchElementException:
+            num_of_posts_txt = browser.find_element_by_xpath("//section/div[3]/div/header/section/ul/li[1]/span/span").text
+
+        num_of_posts_txt = num_of_posts_txt.replace(" ", "")
+        num_of_posts_txt = num_of_posts_txt.replace(",", "")
+        num_of_posts = int(num_of_posts_txt)
+
     return num_of_posts
 
 
