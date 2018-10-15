@@ -1387,9 +1387,9 @@ session.end()
 ### Enabling Imagechecking
 
 ```python
-# default enabled=False , enables the checking with the clarifai api (image
+# default enabled=False , enables the checking with the Clarifai API (image
 # tagging) if secret and proj_id are not set, it will get the environment
-# variables 'CLARIFAI_API_KEY'
+# variables 'CLARIFAI_API_KEY'.
 
 session.set_use_clarifai(enabled=True, api_key='xxx')
 ```
@@ -1401,14 +1401,35 @@ session.set_use_clarifai(enabled=True, api_key='xxx')
 
 session.clarifai_check_img_for(['nsfw'])
 ```
+
+### Filtering by keyword
+
+```python
+# uses the clarifai api to check if the image concepts contain the keyword(s)
+# -> won't comment if image contains the keyword
+
+session.clarifai_check_img_for(['building'])
+```
 ### Specialized comments for images with specific content
 
 ```python
-# checks the image for keywords food and lunch, if both are found,
-# comments with the given comments. If full_match is False (default), it only
+# checks the image for keywords food and lunch. To check for both, set full_match in 
+# in session.set_use_clarifia to True, and if both keywords are found,
+# InstaPy will comment with the given comments. If full_match is False (default), it only
 # requires a single tag to match Clarifai results.
 
-session.clarifai_check_img_for(['food', 'lunch'], comment=True, comments=['Tasty!', 'Yum!'], full_match=True)
+session.set_use_clarifai(enabled=True, api_key='xxx', full_match=True)
+session.clarifai_check_img_for(['food', 'lunch'], comment=True, comments=['Tasty!', 'Yum!'])
+
+
+# To adjust the threshold for accepted concept predictions
+# and their respective score (degree of confidence)
+# you can set the default probability parameter for Clarifai (default 50%).
+# For example, if you only want to accept results with a high degree of confidence,
+# you could set probability to 90%.
+
+session.set_use_clarifai(enabled=True, api_key='xxx', probability=0.90, full_match=True)
+session.clarifai_check_img_for(['food', 'lunch'], comment=True, comments=['Tasty!', 'Yum!'])
 ```
 
 ###### Check out [https://clarifai.com/demo](https://clarifai.com/demo) to see some of the available tags.</h6>
