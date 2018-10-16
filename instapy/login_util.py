@@ -277,5 +277,14 @@ def dismiss_get_app_offer(browser, logger):
         dismiss_elem = browser.find_element_by_xpath(dismiss_elem)
         click_element(browser, dismiss_elem)
 
+    """ Dismiss 'Turn On' page after a fresh login """
+    offer_elem = "//*[contains(text(), 'Turn On')]"
+    dismiss_elem = "//*[contains(text(), 'Not Now')]"
+
+    turn_on = explicit_wait(browser, "VOEL", [offer_elem, "XPath"], logger, 5, False)
+    if turn_on:
+        dismiss_elem = browser.find_element_by_xpath(dismiss_elem)
+        click_element(browser, dismiss_elem)
+
 
 
