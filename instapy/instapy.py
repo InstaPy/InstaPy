@@ -166,7 +166,7 @@ class InstaPy:
         self.clarifai_api_key = None
         self.clarifai_models = []
         self.clarifai_workflow = []
-        self.clarifai_probability = 0.25
+        self.clarifai_probability = 0.50
         self.clarifai_img_tags = []
         self.clarifai_img_tags_skip = []
         self.clarifai_full_match = False
@@ -540,7 +540,7 @@ class InstaPy:
         self.switch_language = option
         return self
 
-    def set_use_clarifai(self, enabled=False, api_key=None, models=None, workflow=None, probability=0.25, full_match=False):
+    def set_use_clarifai(self, enabled=False, api_key=None, models=None, workflow=None, probability=0.50, full_match=False):
         """
         Defines if the clarifai img api should be used
         Which 'project' will be used (only 5000 calls per month)
