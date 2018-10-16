@@ -1502,9 +1502,11 @@ session.clarifai_check_img_for(['food', 'lunch'], comment=True, comments=['Tasty
 ```
 
 ### Querying Multiple Models with Workflow (Single API Call)
-You can query multiple Clarifai models with a single API call by setting up a custom workflow. To setup a workflow, see the [Workflow Documentation](https://www.clarifai.com/developer/guide/workflow#workflow). **NOTE** :As mentioned above, the `Focus`, `Face Detection`, `Face Embedding`, and `General Embedding` models are not current supported.
+You can query multiple Clarifai models with a single API call by setting up a custom workflow.  Using a `workflow` is the recommended way to query multiple models. Alternatively, it is possible to query multiple models separately (see Querying Multiple Models (Multiple API Calls) below).
 
-**NOTE**: Using a `workflow` is the recommended way to query multiple models. Alternatively, it is possible to query multiple models separately (see Querying Multiple Models (Multiple API Calls) below).
+To setup a workflow, see the [Workflow Documentation](https://www.clarifai.com/developer/guide/workflow#workflow).
+
+**NOTE** :As mentioned above, the `Focus`, `Face Detection`, `Face Embedding`, and `General Embedding` models are not current supported.
 
 Once you have a workflow setup, you can use InstaPy to check images with the Clarifai Image API by setting the `workflow` parameter in `session.set_use_clarifai` to the name of your custom workflow.
 
