@@ -11,6 +11,7 @@ def check_image(browser, clarifai_api_key, img_tags, img_tags_skip_if_contain, l
     by checking link against models included in the workflow. If a workflow
     hasn't been provided, InstaPy will check images against given model(s)"""
     clarifai_api = ClarifaiApp(api_key=clarifai_api_key)
+    clarifai_tags = []
 
     # set req image to given one or get it from current page
     if picture_url is None:
@@ -22,12 +23,13 @@ def check_image(browser, clarifai_api_key, img_tags, img_tags_skip_if_contain, l
     if workflow:
         clarifai_workflow = Workflow(clarifai_api.api, workflow_id=workflow[0])
         clarifai_response = clarifai_workflow.predict_by_url(img_link)
-        clarifai_tags = get_clarifai_tags(clarifai_response, probability)
+        for response in clarifai_response['results'][0]['outputs']:
+            results = get_clarifai_tags(response, probability)
+            clarifai_tags.extend(results)
     else:
-        clarifai_tags = []
         for model in clarifai_models:
             clarifai_response = get_clarifai_response(clarifai_api, model, img_link)
-            results = get_clarifai_tags(clarifai_response, probability)
+            results = get_clarifai_tags(clarifai_response['outputs'][0], probability)
             clarifai_tags.extend(results)
 
     # Will not comment on an image if any of the tags in img_tags_skip_if_contain are matched
@@ -96,93 +98,42 @@ def get_clarifai_tags(clarifai_response, probability):
     results = []
     concepts = []
 
-    # First check if API response is from a workflow or individual model
+    # Parse response for Color model
     try:
-        clarifai_response['workflow']
-        # If returns a KeyError for 'workflow', iterate over the model response(s) to extract tags and values
+        concepts = [{concept.get('w3c', {}).get('name').lower(): concept.get('value')}
+                    for concept in clarifai_response['data']['colors']]
     except KeyError:
-        # Parse response for Color model
-        try:
-            concepts = [{concept.get('w3c', {}).get('name').lower(): concept.get('value')} for concept in
-                        clarifai_response['outputs'][0]['data']['colors']]
-        except KeyError:
-            pass
+        pass
 
-        # Parse response for Color model
-        try:
-            for value in clarifai_response['outputs'][0]['data']['regions']:
-                item_concepts = [{concept.get('name').lower(): concept.get('value')} for concept in
-                                 value['data']['face']['identity']['concepts']]
-                concepts.extend(item_concepts)
-        except KeyError:
-            pass
-
-        # Parse response for Demographics model
-        try:
-            for item in clarifai_response['outputs'][0]['data']['regions'][0]['data']['face'].values():
-                item_concepts = [{concept.get('name').lower(): concept.get('value')} for concept in
-                                 item['concepts']]
-                concepts.extend(item_concepts)
-        except KeyError:
-            pass
-
-        # Parse response for Logo model
-        try:
+    # Parse response for Celebrity model
+    try:
+        for value in clarifai_response['data']['regions']:
             concepts = [{concept.get('name').lower(): concept.get('value')} for concept in
-                        clarifai_response['outputs'][0]['data']['regions'][0]['data']['concepts']]
-        except KeyError:
-            pass
+                        value['data']['face']['identity']['concepts']]
+    except KeyError:
+        pass
 
-        # Parse response for General model and similarly structured responses
-        try:
+    # Parse response for Demographics model
+    try:
+        for value in clarifai_response['data']['regions'][0]['data']['face'].values():
             concepts = [{concept.get('name').lower(): concept.get('value')} for concept in
-                        clarifai_response['outputs'][0]['data']['concepts']]
-        except KeyError:
-            pass
-    # If response is a workflow, iterate over the response to extract tags and values
-    else:
-        for item in clarifai_response['results'][0]['outputs']:
-            # Parse response for Color model
-            try:
-                item_concepts = [{concept.get('w3c', {}).get('name').lower(): concept.get('value')}
-                                 for concept in item['data']['colors']]
-                concepts.extend(item_concepts)
-            except KeyError:
-                pass
+                        value['concepts']]
+    except KeyError:
+        pass
 
-            # Parse response for Celebrity model
-            try:
-                for value in item['data']['regions']:
-                    item_concepts = [{concept.get('name').lower(): concept.get('value')} for concept in
-                                     value['data']['face']['identity']['concepts']]
-                    concepts.extend(item_concepts)
-            except KeyError:
-                pass
+    # Parse response for Logo model
+    try:
+        concepts = [{concept.get('name').lower(): concept.get('value')} for concept in
+                    clarifai_response['data']['regions'][0]['data']['concepts']]
+    except KeyError:
+        pass
 
-            # Parse response for Demographics model
-            try:
-                for value in item['data']['regions'][0]['data']['face'].values():
-                    item_concepts = [{concept.get('name').lower(): concept.get('value')} for concept in
-                                     value['concepts']]
-                    concepts.extend(item_concepts)
-            except KeyError:
-                pass
-
-            # Parse response for Logo model
-            try:
-                item_concepts = [{concept.get('name').lower(): concept.get('value')} for concept in
-                                 item['data']['regions'][0]['data']['concepts']]
-                concepts.extend(item_concepts)
-            except KeyError:
-                pass
-
-            # Parse response for General model and similarly structured responses
-            try:
-                item_concepts = [{concept.get('name').lower(): concept.get('value')} for concept in
-                                 item['data']['concepts']]
-                concepts.extend(item_concepts)
-            except KeyError:
-                pass
+    # Parse response for General model and similarly structured responses
+    try:
+        concepts = [{concept.get('name').lower(): concept.get('value')} for concept in
+                    clarifai_response['data']['concepts']]
+    except KeyError:
+        pass
 
     # Filter concepts based on probability threshold
     for concept in concepts:
