@@ -164,6 +164,7 @@ def login_user(browser,
     # Login text is not found, user logged in
     # If not, issue with cookie, create new cookie
     if len(login_elem) == 0:
+        dismiss_notification_offer(browser, logger)
         return True
 
     # If not, issue with cookie, create new cookie
@@ -247,6 +248,7 @@ def login_user(browser,
     update_activity()
 
     dismiss_get_app_offer(browser, logger)
+    dismiss_notification_offer(browser, logger)
 
     if bypass_suspicious_attempt is True:
         bypass_suspicious_login(browser)
@@ -277,14 +279,16 @@ def dismiss_get_app_offer(browser, logger):
         dismiss_elem = browser.find_element_by_xpath(dismiss_elem)
         click_element(browser, dismiss_elem)
 
-    """ Dismiss 'Turn On' page after a fresh login """
-    offer_elem = "//*[contains(text(), 'Turn On')]"
-    dismiss_elem = "//*[contains(text(), 'Not Now')]"
+def dismiss_notification_offer(browser, logger):
+    """ Dismiss 'Turn on Notifications' offer on session start """
+    offer_elem_loc = "//div/h2[text()='Turn On']"
+    dismiss_elem_loc = "//button[text()='Not Now']"
 
-    turn_on = explicit_wait(browser, "VOEL", [offer_elem, "XPath"], logger, 5, False)
-    if turn_on:
-        dismiss_elem = browser.find_element_by_xpath(dismiss_elem)
+    # wait a bit and see if the 'Turn on Notifications' offer rises up
+    offer_loaded = explicit_wait(browser, "VOEL", [offer_elem_loc, "XPath"], logger, 4, False)
+
+    if offer_loaded:
+        dismiss_elem = browser.find_element_by_xpath(dismiss_elem_loc)
         click_element(browser, dismiss_elem)
-
 
 
