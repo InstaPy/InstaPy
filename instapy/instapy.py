@@ -183,6 +183,7 @@ class InstaPy:
         self.liking_approved = True
         self.max_likes = 1000
         self.min_likes = 0
+        self.break_after_already_liked = False
 
         self.delimit_commenting = False
         self.commenting_approved = True
@@ -489,7 +490,16 @@ class InstaPy:
         self.mandatory_words = tags or []
 
         return self
+    
+    def set_break_after_already_liked(self, active=True) :
+        """Break the loop if one image is already liked"""
+        if self.aborting:
+            return self
 
+        self.break_after_already_liked = active
+
+        return self
+    
     def set_user_interact(self,
                           amount=10,
                           percentage=100,
@@ -1241,7 +1251,9 @@ class InstaPy:
 
                         elif msg == "already liked":
                             already_liked += 1
-
+                            if self.break_after_already_liked == True :
+                                break
+                                
                         elif msg == "jumped":
                             # will break the loop after certain consecutive jumps
                             self.jumps["consequent"]["likes"] += 1
@@ -1632,7 +1644,9 @@ class InstaPy:
 
                         elif msg == "already liked":
                             already_liked += 1
-
+                            if self.break_after_already_liked == True :
+                                break
+                                
                         elif msg == "jumped":
                             # will break the loop after certain consecutive jumps
                             self.jumps["consequent"]["likes"] += 1
@@ -1835,7 +1849,9 @@ class InstaPy:
 
                         elif msg == "already liked":
                             already_liked += 1
-
+                            if self.break_after_already_liked == True :
+                                break
+        
                         elif msg == "jumped":
                             # will break the loop after certain consecutive jumps
                             self.jumps["consequent"]["likes"] += 1
