@@ -329,7 +329,7 @@ def add_user_to_blacklist(username, campaign, action, logger, logfolder):
     today = datetime.date.today().strftime('%m/%d/%y')
 
     try:
-        with open('{}blacklist.csv'.format(logfolder), 'a+', encoding="utf-8") as blacklist:
+        with open('{}blacklist.csv'.format(logfolder), 'a+') as blacklist:
             writer = csv.DictWriter(blacklist, fieldnames=fieldnames)
             if not file_exists:
                 writer.writeheader()
