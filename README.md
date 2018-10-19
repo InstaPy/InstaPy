@@ -16,7 +16,7 @@ Head over to https://github.com/timgrossmann/InstaPy/wiki/How-to-Contribute to f
 **Have an issue?**
 Head over to https://github.com/timgrossmann/InstaPy/wiki/Reporting-An-Issue to find out how to report this to us and get help.
 
-**Disclaimer**: Please Note that this is a research project. I am by no means responsible for any usage of this tool. Use on your own behalf. I’m also not responsible if your accounts get banned due to extensive use of this tool.
+**Disclaimer**: Please Note that this is a research project. I am by no means responsible for any usage of this tool. Use on your own behalf. I'm also not responsible if your accounts get banned due to extensive use of this tool.
 
 #### Newsletter: [SignUp for the Newsletter here!](http://eepurl.com/cZbV_v)
 
@@ -1364,9 +1364,9 @@ Emoji text codes are implemented using 2 different naming codes. A complete list
 
 ## Clarifai ImageAPI
 
-<img src="https://d1qb2nb5cznatu.cloudfront.net/startups/i/396673-2fb6e8026b393dddddc093c23d8cd866-medium_jpg.jpg?buster=1399901540" width="200" align="right">
+<img src="https://clarifai.com/cms-assets/20180311184054/Clarifai_Pos.svg" width="200" align="right">
 
-###### Note: Head over to [https://developer.clarifai.com/signup/](https://developer.clarifai.com/signup/) and create a free account, once you’re logged in go to [https://developer.clarifai.com/account/applications/](https://developer.clarifai.com/account/applications/) and create a new application. You can find the client ID and Secret there. You get 5000 API-calls free/month.
+###### Note: Head over to [https://developer.clarifai.com/signup/](https://developer.clarifai.com/signup/) and create a free account, once you're logged in go to [https://developer.clarifai.com/account/applications/](https://developer.clarifai.com/account/applications/) and create a new application. You can find the client ID and Secret there. You get 5000 API-calls free/month.
 
 If you want the script to get your CLARIFAI_API_KEY for your environment, you can do:
 
@@ -1393,16 +1393,89 @@ session.end()
 
 session.set_use_clarifai(enabled=True, api_key='xxx')
 ```
-### Filtering inappropriate images
+
+### Using Clarifai Public Models and Custom Models
+If not specified by setting the `models=['model_name1']` in `session.set_use_clarifai`, `models` will be set to `general` by default.
+
+If you wish to check against a specific model or multiple models (see Support for Compound Model Queries below), you can specify the models to be checked as shown below.
+
+To get a better understanding of the models and their associated concepts, see the Clarifai [Model Gallery](https://clarifai.com/models) and [Developer Guide](https://clarifai.com/developer/guide/)
+
+**NOTE ON MODEL SUPPORT**: At this time, the support for the`Focus`, `Face Detection`, `Face Embedding`, and `General Embedding` has not been added.
+
+```python
+# Check image using the NSFW model
+session.set_use_clarifai(enabled=True, api_key='xxx', models=['nsfw'])
+
+# Check image using the Apparel model
+session.set_use_clarifai(enabled=True, api_key='xxx', models=['apparel'])
+
+# Check image using the Celebrity model
+session.set_use_clarifai(enabled=True, api_key='xxx', models=['celebrity'])
+
+# Check image using the Color model
+session.set_use_clarifai(enabled=True, api_key=‘xxx’, models=[‘model’])
+
+# Check image using the Demographics model
+session.set_use_clarifai(enabled=True, api_key=‘xxx’, models=[‘demographics’])
+
+# Check image using the Food model
+session.set_use_clarifai(enabled=True, api_key='xxx', models=['food'])
+
+# Check image using the Landscape Quality model
+session.set_use_clarifai(enabled=True, api_key='xxx', models=['landscape quality'])
+
+# Check image using the Logo model
+session.set_use_clarifai(enabled=True, api_key='xxx', models=['logo'])
+
+# Check image using the Moderation model
+session.set_use_clarifai(enabled=True, api_key='xxx', models=['moderation'])
+
+# Check image using the Portrait Quality model
+session.set_use_clarifai(enabled=True, api_key='xxx', models=['portrait quality'])
+
+# Check image using the Textures and Patterns model
+session.set_use_clarifai(enabled=True, api_key='xxx', models=['textures'])
+
+# Check image using the Travel model
+session.set_use_clarifai(enabled=True, api_key='xxx', models=['travel'])
+
+# Chaeck image using the Weddings model
+session.set_use_clarifai(enabled=True, api_key='xxx', models=['weddings'])
+
+# Check image using a custom model where model_name is name of your choosing (see Clarifai documentation for using custom models)
+session.set_use_clarifai(enabled=True, api_key='xxx', models=['your-model-name'])
+```
+
+### Filtering Inappropriate Images
 
 ```python
 # uses the clarifai api to check if the image contains nsfw content
+# by checking against Clarifai's NSFW model
 # -> won't comment if image is nsfw
 
+session.set_use_clarifai(enabled=True, api_key='xxx', models=['nsfw'])
 session.clarifai_check_img_for(['nsfw'])
 ```
 
-### Filtering by keyword
+```python
+# uses the clarifai api to check if the image contains inappropriate content
+# by checking against Clarifai's Moderation model
+# -> won't comment if image is suggestive or explicit
+
+session.set_use_clarifai(enabled=True, api_key='xxx', models=['moderation'])
+session.clarifai_check_img_for(['suggestive', 'explicit'])
+
+# To adjust the threshold for accepted concept predictions and their 
+# respective score (degree of confidence) you can set the default probability 
+# parameter for Clarifai (default 50%). For example, you could set probability to 15%.
+# -> any image with a nsfw score of 0.15 of higher will not be commented on
+
+session.set_use_clarifai(enabled=True, api_key='xxx', probability= 0.15, models=['nsfw'])
+session.clarifai_check_img_for(['nsfw'])
+```
+
+### Filtering by Keyword
 
 ```python
 # uses the clarifai api to check if the image concepts contain the keyword(s)
@@ -1410,7 +1483,7 @@ session.clarifai_check_img_for(['nsfw'])
 
 session.clarifai_check_img_for(['building'])
 ```
-### Specialized comments for images with specific content
+### Specialized Comments for Images with Specific Content
 
 ```python
 # checks the image for keywords food and lunch. To check for both, set full_match in 
@@ -1421,18 +1494,46 @@ session.clarifai_check_img_for(['building'])
 session.set_use_clarifai(enabled=True, api_key='xxx', full_match=True)
 session.clarifai_check_img_for(['food', 'lunch'], comment=True, comments=['Tasty!', 'Yum!'])
 
-
-# To adjust the threshold for accepted concept predictions
-# and their respective score (degree of confidence)
-# you can set the default probability parameter for Clarifai (default 50%).
-# For example, if you only want to accept results with a high degree of confidence,
-# you could set probability to 90%.
+# If you only want to accept results with a high degree of confidence, you could 
+# set a probability to a higher value, like 90%. 
 
 session.set_use_clarifai(enabled=True, api_key='xxx', probability=0.90, full_match=True)
 session.clarifai_check_img_for(['food', 'lunch'], comment=True, comments=['Tasty!', 'Yum!'])
 ```
 
-###### Check out [https://clarifai.com/demo](https://clarifai.com/demo) to see some of the available tags.</h6>
+### Querying Multiple Models with Workflow (Single API Call)
+You can query multiple Clarifai models with a single API call by setting up a custom workflow.  Using a `workflow` is the recommended way to query multiple models. Alternatively, it is possible to query multiple models separately (see Querying Multiple Models (Multiple API Calls) below).
+
+To setup a workflow, see the [Workflow Documentation](https://www.clarifai.com/developer/guide/workflow#workflow).
+
+**NOTE** :As mentioned above, the `Focus`, `Face Detection`, `Face Embedding`, and `General Embedding` models are not current supported.
+
+Once you have a workflow setup, you can use InstaPy to check images with the Clarifai Image API by setting the `workflow` parameter in `session.set_use_clarifai` to the name of your custom workflow.
+
+Let's say you want to comment 'Great shot!' on images of men or women with the hashtag `#selfie`, but you want to make sure not to comment on images which might contain inappropriate content. To get general concepts, e.g. `woman`, you would setup your workflow using `General` and to check the image for the concepts `nsfw` and `explicit` you would also want to add NSFW and Moderation models to your workflow.
+
+For example:
+```python
+session.set_use_clarifai(enabled=True, api_key='xxx', workflow=['your-workflow'])
+session.clarifai_check_img_for(['woman', 'man'], ['nsfw', 'explicit', 'suggestive'], comment=True, comments=['Great shot!'])
+```
+If Clarifai's response includes the concepts of either `woman` or `man` but also includes at least `nsfw`, `explicit`, or `suggestive`, InstaPy will not comment. On the other hand, if Clarifai's response includes the concepts of either `woman` or `man` but does not include any of the concepts `nsfw`, `explicit`, or `suggestive`, InstaPy will add the comment `Great shot!`
+
+
+### Querying Multiple Models (Multiple API Calls)
+In the event that you do not want to set up a workflow, you can also query multiple models using multiple API calls.
+
+**WARNING**: If you are using a free account with Clarifiai, be mindful that the using compound API queries could greatly increase your chances of exceeding your allotment of free 5000 operations per month. The number of Clarifai billable operations per image check equals the number of models selected. For example, if you check 100 images against `models=['general', 'nsfw', 'moderation']`, the total number of billable operations will be 300.
+
+Following the example above, to get general concepts, e.g. `woman`, you would use the model `general` and to check the image for the concepts `nsfw` and `explicit` you would also want to check the image against the NSFW and Moderation models. 
+
+For example:
+```python
+session.set_use_clarifai(enabled=True, api_key='xxx', models=['general', 'nsfw', 'moderation'])
+session.clarifai_check_img_for(['woman', 'man'], ['nsfw', 'explicit', 'suggestive'], comment=True, comments=['Great shot!'])
+```
+
+##### Check out [https://clarifai.com/demo](https://clarifai.com/demo) to see some of the available tags.</h6>
 
 ## Running on a Server
 
