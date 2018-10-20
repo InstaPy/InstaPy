@@ -89,6 +89,7 @@ class InstaPy:
                  proxy_port=None,
                  disable_image_load=False,
                  bypass_suspicious_attempt=False,
+                 bypass_with_mobile=False,
                  multi_logs=True):
 
         if nogui:
@@ -104,6 +105,7 @@ class InstaPy:
         self.selenium_local_session = selenium_local_session
         self.show_logs = show_logs
         self.bypass_suspicious_attempt = bypass_suspicious_attempt
+        self.bypass_with_mobile = bypass_with_mobile
         self.disable_image_load = disable_image_load
 
         self.username = username or os.environ.get('INSTA_USER')
@@ -390,7 +392,8 @@ class InstaPy:
                           self.logger,
                           self.logfolder,
                           self.switch_language,
-                          self.bypass_suspicious_attempt):
+                          self.bypass_suspicious_attempt,
+                          self.bypass_with_mobile):
             message = "Wrong login data!"
             highlight_print(self.username, message, "login", "critical", self.logger)
 
