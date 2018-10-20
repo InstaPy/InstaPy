@@ -16,7 +16,7 @@ Head over to https://github.com/timgrossmann/InstaPy/wiki/How-to-Contribute to f
 **Have an issue?**
 Head over to https://github.com/timgrossmann/InstaPy/wiki/Reporting-An-Issue to find out how to report this to us and get help.
 
-**Disclaimer**: Please Note that this is a research project. I am by no means responsible for any usage of this tool. Use on your own behalf. I’m also not responsible if your accounts get banned due to extensive use of this tool.
+**Disclaimer**: Please Note that this is a research project. I am by no means responsible for any usage of this tool. Use on your own behalf. I'm also not responsible if your accounts get banned due to extensive use of this tool.
 
 #### Newsletter: [SignUp for the Newsletter here!](http://eepurl.com/cZbV_v)
 
@@ -49,6 +49,8 @@ Table of Contents
   * [Unfollowing](#unfollowing)
   * [Don't unfollow active users](#dont-unfollow-active-users)
   * [Interactions based on the number of followers and/or following a user has](#interactions-based-on-the-number-of-followers-andor-following-a-user-has)
+  * [Interactions based on the number of posts a user has](#interactions-based-on-the-number-of-posts-a-user-has)
+  * [Skipping user for private account, no profile picture, business account](#skipping-user-for-private-account-no-profile-picture-business-account)
   * [Liking based on the number of existing likes a post has](#liking-based-on-the-number-of-existing-likes-a-post-has)
   * [Commenting based on the number of existing comments a post has](#commenting-based-on-the-number-of-existing-comments-a-post-has)
   * [Commenting based on madatory words in the description or first comment](#commenting-based-on-madatory-words-in-the-description-or-first-comment)
@@ -518,7 +520,7 @@ _here the unfollow method- **alFollowing** is used_
 session.set_dont_unfollow_active_users(enabled=True, posts=5)
 ```
 
-### Interactions based on the number of followers and/or following a user has
+### Interactions based on the number of followers and/or following a user has 
 
 ##### This is used to check the number of _followers_ and/or _following_ a user has and if these numbers _either_ **exceed** the number set OR **does not pass** the number set OR if **their ratio does not reach** desired potency ratio then no further interaction happens
 ```python
@@ -528,7 +530,9 @@ session.set_relationship_bounds(enabled=True,
 				   max_followers=8500,
 				    max_following=4490,
 				     min_followers=100,
-				      min_following=56)
+				      min_following=56,
+				       min_posts=10,
+                                        max_posts=1000)
 ```
 Use `enabled=True` to **activate** this feature, and `enabled=False` to **deactivate** it, _any time_  
 `delimit_by_numbers` is used to **activate** & **deactivate** the usage of max & min values  
@@ -542,7 +546,6 @@ _**find** desired_ `potency_ratio` _with this formula_: `potency_ratio` == **fol
 _**find** desired_ `potency_ratio` _with this formula_: `potency_ratio` == **following count** / **followers count**  (_use desired counts_)
 >_**e.g.**_, target user has _`2000` followers_ & _`3000` following_ and you set `potency_ratio = -1.7`.  
 **Now** it _will **not** interact_ with this user, **cos** the user's **relationship ratio** is `3000/2000==1.5` and `1.5` is **below** _desired_ `potency_ratio` _of `1.7`_ (_**note that**, negative `-` sign is only used to determine your style, nothing more_)
-
 
 ###### There are **3** **COMBINATIONS** _available_ to use:
 * **1**. You can use `potency_ratio` **or not** (**e.g.**, `potency_ratio=None`, `delimit_by_numbers=True`) - _will decide only by your **pre-defined** max & min values regardless of the_ `potency_ratio`
@@ -562,9 +565,96 @@ session.set_relationship_bounds (enabled=True, potency_ratio=2.35, delimit_by_nu
 > **All** of the **4** max & min values are _able to **freely** operate_, **e.g.**, you may want to _**only** delimit_ `max_followers` and `min_following` (**e.g.**, `max_followers=52639`, `max_following=None`, `min_followers=None`, `min_following=2240`)
 ```python
 session.set_relationship_bounds (enabled=True, potency_ratio=-1.44, delimit_by_numbers=True, max_followers=52639, max_following=None, min_followers=None, min_following=2240)
-```  
+```
+### Interactions based on the number of posts a user has
+#### This is used to check number of posts of a user and skip if they aren't in the boundaries provided
+```python
+session.set_relationship_bounds(min_posts=10,
+                                 max_posts=1000)
+```
+Users that have more than 1000 posts or less than 10 will be discarded
+
+**N.B.:** It is up to the user to check that `min_posts < max_posts`
+
+You can also set only one parameter at a time:
+```python
+session.set_relationship_bounds(max_posts=1000)
+```
+
+Will skip only users that have more than 1000 posts in their feed
 
 
+### Skipping user for private account, no profile picture, business account
+
+#### This is used to skip users with certain condition
+```python
+session.set_skip_users(skip_private=True,
+                       private_percentage=100,
+                       skip_no_profile_pic=False,
+                       no_profile_pic_percentage=100,
+                       skip_business=False,
+                       business_percentage=100,
+                       skip_business_categories=[],
+                       dont_skip_business_categories=[])
+```
+##### Skip private account
+**This is done by default**
+```python
+session.set_skip_users(skip_private=True,
+                       private_percentage=100)
+```
+Will skip users that have private account, even if are followed by running account.
+You can set a percentage of skipping:
+    _private_percentage_= 100 always skip private users
+    _private_percentage_= 0 never skip private users (so set skip_private=False)
+
+##### Skip users that don't have profile picture
+
+```python
+session.set_skip_users(skip_private=True,
+                       skip_no_profile_pic=True,
+                       no_profile_pic_percentage=100)
+```
+Will skip users that haven't uploaded yet a profile picture
+You can set a percentage of skipping:
+    _no_profile_pic_percentage_= 100 always skip users without profile picture
+    _no_profile_pic_percentage_= 0 never skip users without profile picture (so set _skip_no_profile_pic_=False)
+
+##### Skip users that have business account
+
+```python
+session.set_skip_users(skip_private=True,
+                       skip_no_profile_pic=True,
+		               skip_business=True,
+		               business_percentage=100)
+```
+This will skip all users that have business account activated.
+You can set a percentage of skipping:
+    _business_percentage_= 100 always skip business users
+    _business_percentage_= 0 never skip business users (so set _skip_business_=False)
+
+**N.B.:** This _business_percentage_ parameter works only if no _skip_business_categories_ or _dont_skip_business_categories_ are provided!
+
+###### Skip only users that have certain business account
+```python
+session.set_skip_users(skip_private=True,
+                       skip_no_profile_pic=True,
+		       skip_business=True,
+		       skip_business_categories=['Creators & Celebrities'])
+```
+This will skip all business accounts that have category in given list
+**N.B.** In _skip_business_categories_ you can add more than one category
+###### Skip all business accounts, except from list given
+```python
+session.set_skip_users(skip_private=True,
+                       skip_no_profile_pic=True,
+		       skip_business=True,
+		       dont_skip_business_categories=['Creators & Celebrities'])
+```
+This will skip all business accounts except the ones that have a category that matches one item in the list of _dont_skip_business_categories_
+**N.B.** If both _dont_skip_business_categories_ and _skip_business_categories_, InstaPy will skip only business accounts in the list given from _skip_business_categories_.
+		       
+> [A list of all availlable business categories can be found here](./assets/business_categories.md)
 
 ### Liking based on the number of existing likes a post has
 
@@ -1274,9 +1364,9 @@ Emoji text codes are implemented using 2 different naming codes. A complete list
 
 ## Clarifai ImageAPI
 
-<img src="https://d1qb2nb5cznatu.cloudfront.net/startups/i/396673-2fb6e8026b393dddddc093c23d8cd866-medium_jpg.jpg?buster=1399901540" width="200" align="right">
+<img src="https://clarifai.com/cms-assets/20180311184054/Clarifai_Pos.svg" width="200" align="right">
 
-###### Note: Head over to [https://developer.clarifai.com/signup/](https://developer.clarifai.com/signup/) and create a free account, once you’re logged in go to [https://developer.clarifai.com/account/applications/](https://developer.clarifai.com/account/applications/) and create a new application. You can find the client ID and Secret there. You get 5000 API-calls free/month.
+###### Note: Head over to [https://developer.clarifai.com/signup/](https://developer.clarifai.com/signup/) and create a free account, once you're logged in go to [https://developer.clarifai.com/account/applications/](https://developer.clarifai.com/account/applications/) and create a new application. You can find the client ID and Secret there. You get 5000 API-calls free/month.
 
 If you want the script to get your CLARIFAI_API_KEY for your environment, you can do:
 
@@ -1297,31 +1387,153 @@ session.end()
 ### Enabling Imagechecking
 
 ```python
-# default enabled=False , enables the checking with the clarifai api (image
+# default enabled=False , enables the checking with the Clarifai API (image
 # tagging) if secret and proj_id are not set, it will get the environment
-# variables 'CLARIFAI_API_KEY'
+# variables 'CLARIFAI_API_KEY'.
 
 session.set_use_clarifai(enabled=True, api_key='xxx')
 ```
-### Filtering inappropriate images
+
+### Using Clarifai Public Models and Custom Models
+If not specified by setting the `models=['model_name1']` in `session.set_use_clarifai`, `models` will be set to `general` by default.
+
+If you wish to check against a specific model or multiple models (see Support for Compound Model Queries below), you can specify the models to be checked as shown below.
+
+To get a better understanding of the models and their associated concepts, see the Clarifai [Model Gallery](https://clarifai.com/models) and [Developer Guide](https://clarifai.com/developer/guide/)
+
+**NOTE ON MODEL SUPPORT**: At this time, the support for the`Focus`, `Face Detection`, `Face Embedding`, and `General Embedding` has not been added.
+
+```python
+# Check image using the NSFW model
+session.set_use_clarifai(enabled=True, api_key='xxx', models=['nsfw'])
+
+# Check image using the Apparel model
+session.set_use_clarifai(enabled=True, api_key='xxx', models=['apparel'])
+
+# Check image using the Celebrity model
+session.set_use_clarifai(enabled=True, api_key='xxx', models=['celebrity'])
+
+# Check image using the Color model
+session.set_use_clarifai(enabled=True, api_key=‘xxx’, models=[‘model’])
+
+# Check image using the Demographics model
+session.set_use_clarifai(enabled=True, api_key=‘xxx’, models=[‘demographics’])
+
+# Check image using the Food model
+session.set_use_clarifai(enabled=True, api_key='xxx', models=['food'])
+
+# Check image using the Landscape Quality model
+session.set_use_clarifai(enabled=True, api_key='xxx', models=['landscape quality'])
+
+# Check image using the Logo model
+session.set_use_clarifai(enabled=True, api_key='xxx', models=['logo'])
+
+# Check image using the Moderation model
+session.set_use_clarifai(enabled=True, api_key='xxx', models=['moderation'])
+
+# Check image using the Portrait Quality model
+session.set_use_clarifai(enabled=True, api_key='xxx', models=['portrait quality'])
+
+# Check image using the Textures and Patterns model
+session.set_use_clarifai(enabled=True, api_key='xxx', models=['textures'])
+
+# Check image using the Travel model
+session.set_use_clarifai(enabled=True, api_key='xxx', models=['travel'])
+
+# Chaeck image using the Weddings model
+session.set_use_clarifai(enabled=True, api_key='xxx', models=['weddings'])
+
+# Check image using a custom model where model_name is name of your choosing (see Clarifai documentation for using custom models)
+session.set_use_clarifai(enabled=True, api_key='xxx', models=['your-model-name'])
+```
+
+### Filtering Inappropriate Images
 
 ```python
 # uses the clarifai api to check if the image contains nsfw content
+# by checking against Clarifai's NSFW model
 # -> won't comment if image is nsfw
 
+session.set_use_clarifai(enabled=True, api_key='xxx', models=['nsfw'])
 session.clarifai_check_img_for(['nsfw'])
 ```
-### Specialized comments for images with specific content
 
 ```python
-# checks the image for keywords food and lunch, if both are found,
-# comments with the given comments. If full_match is False (default), it only
-# requires a single tag to match Clarifai results.
+# uses the clarifai api to check if the image contains inappropriate content
+# by checking against Clarifai's Moderation model
+# -> won't comment if image is suggestive or explicit
 
-session.clarifai_check_img_for(['food', 'lunch'], comment=True, comments=['Tasty!', 'Yum!'], full_match=True)
+session.set_use_clarifai(enabled=True, api_key='xxx', models=['moderation'])
+session.clarifai_check_img_for(['suggestive', 'explicit'])
+
+# To adjust the threshold for accepted concept predictions and their 
+# respective score (degree of confidence) you can set the default probability 
+# parameter for Clarifai (default 50%). For example, you could set probability to 15%.
+# -> any image with a nsfw score of 0.15 of higher will not be commented on
+
+session.set_use_clarifai(enabled=True, api_key='xxx', probability= 0.15, models=['nsfw'])
+session.clarifai_check_img_for(['nsfw'])
 ```
 
-###### Check out [https://clarifai.com/demo](https://clarifai.com/demo) to see some of the available tags.</h6>
+### Filtering by Keyword
+
+```python
+# uses the clarifai api to check if the image concepts contain the keyword(s)
+# -> won't comment if image contains the keyword
+
+session.clarifai_check_img_for(['building'])
+```
+### Specialized Comments for Images with Specific Content
+
+```python
+# checks the image for keywords food and lunch. To check for both, set full_match in 
+# in session.set_use_clarifia to True, and if both keywords are found,
+# InstaPy will comment with the given comments. If full_match is False (default), it only
+# requires a single tag to match Clarifai results.
+
+session.set_use_clarifai(enabled=True, api_key='xxx', full_match=True)
+session.clarifai_check_img_for(['food', 'lunch'], comment=True, comments=['Tasty!', 'Yum!'])
+
+# If you only want to accept results with a high degree of confidence, you could 
+# set a probability to a higher value, like 90%. 
+
+session.set_use_clarifai(enabled=True, api_key='xxx', probability=0.90, full_match=True)
+session.clarifai_check_img_for(['food', 'lunch'], comment=True, comments=['Tasty!', 'Yum!'])
+```
+
+### Querying Multiple Models with Workflow (Single API Call)
+You can query multiple Clarifai models with a single API call by setting up a custom workflow.  Using a `workflow` is the recommended way to query multiple models. Alternatively, it is possible to query multiple models separately (see Querying Multiple Models (Multiple API Calls) below).
+
+To setup a workflow, see the [Workflow Documentation](https://www.clarifai.com/developer/guide/workflow#workflow).
+
+**NOTE** :As mentioned above, the `Focus`, `Face Detection`, `Face Embedding`, and `General Embedding` models are not current supported.
+
+Once you have a workflow setup, you can use InstaPy to check images with the Clarifai Image API by setting the `workflow` parameter in `session.set_use_clarifai` to the name of your custom workflow.
+
+Let's say you want to comment 'Great shot!' on images of men or women with the hashtag `#selfie`, but you want to make sure not to comment on images which might contain inappropriate content. To get general concepts, e.g. `woman`, you would setup your workflow using `General` and to check the image for the concepts `nsfw` and `explicit` you would also want to add NSFW and Moderation models to your workflow.
+
+For example:
+```python
+session.set_use_clarifai(enabled=True, api_key='xxx', workflow=['your-workflow'])
+session.clarifai_check_img_for(['woman', 'man'], ['nsfw', 'explicit', 'suggestive'], comment=True, comments=['Great shot!'])
+```
+If Clarifai's response includes the concepts of either `woman` or `man` but also includes at least `nsfw`, `explicit`, or `suggestive`, InstaPy will not comment. On the other hand, if Clarifai's response includes the concepts of either `woman` or `man` but does not include any of the concepts `nsfw`, `explicit`, or `suggestive`, InstaPy will add the comment `Great shot!`
+
+
+### Querying Multiple Models (Multiple API Calls)
+In the event that you do not want to set up a workflow, you can also query multiple models using multiple API calls.
+
+**WARNING**: If you are using a free account with Clarifiai, be mindful that the using compound API queries could greatly increase your chances of exceeding your allotment of free 5000 operations per month. The number of Clarifai billable operations per image check equals the number of models selected. For example, if you check 100 images against `models=['general', 'nsfw', 'moderation']`, the total number of billable operations will be 300.
+
+Following the example above, to get general concepts, e.g. `woman`, you would use the model `general` and to check the image for the concepts `nsfw` and `explicit` you would also want to check the image against the NSFW and Moderation models. 
+
+For example:
+```python
+session.set_use_clarifai(enabled=True, api_key='xxx', models=['general', 'nsfw', 'moderation'])
+session.clarifai_check_img_for(['woman', 'man'], ['nsfw', 'explicit', 'suggestive'], comment=True, comments=['Great shot!'])
+```
+
+##### Check out [https://clarifai.com/demo](https://clarifai.com/demo) to see some of the available tags.</h6>
 
 ## Running on a Server
 

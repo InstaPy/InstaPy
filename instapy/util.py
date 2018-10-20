@@ -1,4 +1,5 @@
 """ Common utilities """
+import random
 import time
 import datetime
 import re
@@ -27,7 +28,11 @@ from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import WebDriverException
 from selenium.common.exceptions import TimeoutException
 
-
+default_profile_pic_instagram = ["https://instagram.flas1-2.fna.fbcdn.net/vp/a8539c22ed9fec8e1c43b538b1ebfd1d/5C5A1A7A/t51.2885-19/11906329_960233084022564_1448528159_a.jpg",
+                                 "https://scontent-yyz1-1.cdninstagram.com/vp/a8539c22ed9fec8e1c43b538b1ebfd1d/5C5A1A7A/t51.2885-19/11906329_960233084022564_1448528159_a.jpg",
+                                 "https://instagram.faep12-1.fna.fbcdn.net/vp/a8539c22ed9fec8e1c43b538b1ebfd1d/5C5A1A7A/t51.2885-19/11906329_960233084022564_1448528159_a.jpg",
+                                 "https://instagram.fbts2-1.fna.fbcdn.net/vp/a8539c22ed9fec8e1c43b538b1ebfd1d/5C5A1A7A/t51.2885-19/11906329_960233084022564_1448528159_a.jpg",
+                                 "https://scontent-mia3-1.cdninstagram.com/vp/a8539c22ed9fec8e1c43b538b1ebfd1d/5C5A1A7A/t51.2885-19/11906329_960233084022564_1448528159_a.jpg"]
 
 
 def is_private_profile(browser, logger, following=True):
@@ -59,7 +64,6 @@ def is_private_profile(browser, logger, following=True):
     return is_private
 
 
-
 def validate_username(browser,
                       username_or_link,
                       own_username,
@@ -71,48 +75,58 @@ def validate_username(browser,
                       max_following,
                       min_followers,
                       min_following,
+                      min_posts,
+                      max_posts,
+                      skip_private,
+                      skip_private_percentage,
+                      skip_no_profile_pic,
+                      skip_no_profile_pic_percentage,
+                      skip_business,
+                      skip_business_percentage,
+                      skip_business_categories,
+                      dont_skip_business_categories,
                       logger):
     """Check if we can interact with the user"""
 
     # Some features may not povide `username` and in those cases we will get it from post's page.
     if '/' in username_or_link:
-        link = username_or_link   # if there is a `/` in `username_or_link`, then it is a `link`
+        link = username_or_link  # if there is a `/` in `username_or_link`, then it is a `link`
 
         # check URL of the webpage, if it already is user's profile page, then do not navigate to it again
         web_address_navigator(browser, link)
 
         try:
             username = browser.execute_script(
-                    "return window._sharedData.entry_data."
-                    "PostPage[0].graphql.shortcode_media.owner.username")
+                "return window._sharedData.entry_data."
+                "PostPage[0].graphql.shortcode_media.owner.username")
 
         except WebDriverException:
             try:
-                browser.execute_script("location.relaod()")
+                browser.execute_script("location.reload()")
                 update_activity()
 
                 username = browser.execute_script(
-                        "return window._sharedData.entry_data."
-                        "PostPage[0].graphql.shortcode_media.owner.username")
+                    "return window._sharedData.entry_data."
+                    "PostPage[0].graphql.shortcode_media.owner.username")
 
             except WebDriverException:
                 logger.error("Username validation failed! ~cannot get the post owner's username")
                 return False, \
-                        "---> Sorry, this page isn't available! ~link is broken, or page is removed\n"
+                       "---> Sorry, this page isn't available! ~link is broken, or page is removed\n"
     else:
-        username = username_or_link   # if there is no `/` in `username_or_link`, then it is a `username`
+        username = username_or_link  # if there is no `/` in `username_or_link`, then it is a `username`
 
     if username == own_username:
         return False, \
-                "---> Username '{}' is yours!  ~skipping user\n".format(own_username)
+               "---> Username '{}' is yours!  ~skipping user\n".format(own_username)
 
     if username in ignore_users:
         return False, \
-                "---> {} is in ignore_users list  ~skipping user\n".format(username)
+               "---> {} is in ignore_users list  ~skipping user\n".format(username)
 
     if username in blacklist:
         return False, \
-                "---> {} is in blacklist  ~skipping user\n".format(username)
+               "---> {} is in blacklist  ~skipping user\n".format(username)
 
     """Checks the potential of target user by relationship status in order to delimit actions within the desired boundary"""
     if potency_ratio or delimit_by_numbers and (max_followers or max_following or min_followers or min_following):
@@ -128,53 +142,134 @@ def validate_username(browser,
             reverse_relationship = True
 
         if followers_count and following_count:
-            relationship_ratio = (float(followers_count)/float(following_count)
-                       if not reverse_relationship
-                        else float(following_count)/float(followers_count))
+            relationship_ratio = (float(followers_count) / float(following_count)
+                                  if not reverse_relationship
+                                  else float(following_count) / float(followers_count))
 
         logger.info('User: {} >> followers: {}  |  following: {}  |  relationship ratio: {}'.format(username,
-        followers_count if followers_count else 'unknown',
-        following_count if following_count else 'unknown',
-        float("{0:.2f}".format(relationship_ratio)) if relationship_ratio else 'unknown'))
+                                                                                                    followers_count if followers_count else 'unknown',
+                                                                                                    following_count if following_count else 'unknown',
+                                                                                                    float(
+                                                                                                        "{0:.2f}".format(
+                                                                                                            relationship_ratio)) if relationship_ratio else 'unknown'))
 
-        if followers_count  or following_count:
+        if followers_count or following_count:
             if potency_ratio and not delimit_by_numbers:
                 if relationship_ratio and relationship_ratio < potency_ratio:
-                        return False, \
-                            "{} is not a {} with the relationship ratio of {}  ~skipping user\n".format(
-                            username, "potential user" if not reverse_relationship else "massive follower",
-                            float("{0:.2f}".format(relationship_ratio)))
+                    return False, \
+                           "{} is not a {} with the relationship ratio of {}  ~skipping user\n".format(
+                               username, "potential user" if not reverse_relationship else "massive follower",
+                               float("{0:.2f}".format(relationship_ratio)))
 
             elif delimit_by_numbers:
                 if followers_count:
                     if max_followers:
                         if followers_count > max_followers:
                             return False, \
-                                "User {}'s followers count exceeds maximum limit  ~skipping user\n".format(username)
+                                   "User {}'s followers count exceeds maximum limit  ~skipping user\n".format(username)
                     if min_followers:
                         if followers_count < min_followers:
                             return False, \
-                                "User {}'s followers count is less than minimum limit  ~skipping user\n".format(username)
+                                   "User {}'s followers count is less than minimum limit  ~skipping user\n".format(
+                                       username)
                 if following_count:
                     if max_following:
                         if following_count > max_following:
                             return False, \
-                                "User {}'s following count exceeds maximum limit  ~skipping user\n".format(username)
+                                   "User {}'s following count exceeds maximum limit  ~skipping user\n".format(username)
                     if min_following:
                         if following_count < min_following:
                             return False, \
-                                "User {}'s following count is less than minimum limit  ~skipping user\n".format(username)
+                                   "User {}'s following count is less than minimum limit  ~skipping user\n".format(
+                                       username)
                 if potency_ratio:
                     if relationship_ratio and relationship_ratio < potency_ratio:
                         return False, \
-                            "{} is not a {} with the relationship ratio of {}  ~skipping user\n".format(
-                            username, "potential user" if not reverse_relationship else "massive follower",
-                            float("{0:.2f}".format(relationship_ratio)))
+                               "{} is not a {} with the relationship ratio of {}  ~skipping user\n".format(
+                                   username, "potential user" if not reverse_relationship else "massive follower",
+                                   float("{0:.2f}".format(relationship_ratio)))
 
+    web_address_navigator(browser, "https://www.instagram.com/" + username + "/")
+    if min_posts or max_posts:
+        # If you are interested in relationship number of posts boundaries
+        try:
+            number_of_posts = getUserData("graphql.user.edge_owner_to_timeline_media.count", browser)
+        except WebDriverException:
+            logger.error("~cannot get number of posts for username")
+            return False, "---> Sorry, couldn't check for number of posts of username\n"
+        if max_posts:
+            if number_of_posts > max_posts:
+                return False, "Number of posts ({}) of {} exceeds the max limit given {}\n".format(number_of_posts,
+                                                                                                   username, max_posts)
+        if min_posts:
+            if number_of_posts < min_posts:
+                return False, "Number of posts ({}) of {} is not enough for the minimum limit given {}\n".format(
+                    number_of_posts, username, min_posts)
+    """Skip users"""
+    # Skip private
+
+    if skip_private:
+        try:
+            is_private = getUserData("graphql.user.is_private", browser)
+        except WebDriverException:
+            logger.error("~cannot get if user is private")
+            return False, "---> Sorry, couldn't get if user is private\n"
+        if is_private and (random.randint(0, 100) <= skip_private_percentage):
+            return False, "{} is private account, by default skip\n".format(username)
+
+    # Skip no profile pic
+    if skip_no_profile_pic:
+        try:
+            profile_pic = getUserData("graphql.user.profile_pic_url", browser)
+        except WebDriverException:
+            logger.error("~cannot get the post profile pic url")
+            return False, "---> Sorry, couldn't get if user profile pic url\n"
+        if (profile_pic in default_profile_pic_instagram or str(profile_pic).find("11906329_960233084022564_1448528159_a.jpg") > 0) and (random.randint(0, 100) <= skip_no_profile_pic_percentage):
+            return False, "{} has default instagram profile picture\n".format(username)
+
+    # Skip business
+    if skip_business:
+        # If is business account skip under conditions
+        try:
+            is_business_account = getUserData("graphql.user.is_business_account", browser)
+        except WebDriverException:
+            logger.error("~cannot get if user has business account active")
+            return False, "---> Sorry, couldn't get if user has business account active\n"
+        if is_business_account:
+            try:
+                category = getUserData("graphql.user.business_category_name", browser)
+            except WebDriverException:
+                logger.error("~cannot get category name for user")
+                return False, "---> Sorry, couldn't get category name for user\n"
+            if len(skip_business_categories) == 0:
+                # skip if not in dont_include
+                if category not in dont_skip_business_categories:
+                    if len(dont_skip_business_categories) == 0 and (random.randint(0, 100) <= skip_business_percentage):
+                        return False, "{} has business account\n".format(username)
+                    else:
+                        return False, "{} has business account as a {} which is in the skip_business_categories list given\n".format(
+                            username, category)
+            else:
+                if category in skip_business_categories:
+                    return False, "{} has business account as a {} which is in the skip_business_categories list given\n".format(
+                        username, category)
 
     # if everything ok
     return True, "Valid user"
 
+
+def getUserData(query, browser, basequery="return window._sharedData.entry_data.ProfilePage[0]."):
+    try:
+        data = browser.execute_script(
+            basequery + query)
+        return data
+    except WebDriverException:
+        browser.execute_script("location.reload()")
+        update_activity()
+
+        data = browser.execute_script(
+            basequery + query)
+        return data
 
 
 def update_activity(action="server_calls"):
@@ -193,7 +288,7 @@ def update_activity(action="server_calls"):
         # collect today data
         cur.execute("SELECT * FROM recordActivity WHERE profile_id=:var AND "
                     "STRFTIME('%Y-%m-%d %H', created) == STRFTIME('%Y-%m-%d %H', 'now', 'localtime')",
-                        {"var":id})
+                    {"var": id})
         data = cur.fetchone()
 
         if data is None:
@@ -228,30 +323,27 @@ def update_activity(action="server_calls"):
         conn.commit()
 
 
-
 def add_user_to_blacklist(username, campaign, action, logger, logfolder):
-
     file_exists = os.path.isfile('{}blacklist.csv'.format(logfolder))
     fieldnames = ['date', 'username', 'campaign', 'action']
     today = datetime.date.today().strftime('%m/%d/%y')
 
     try:
-        with open('{}blacklist.csv'.format(logfolder), 'a+', encoding="utf-8") as blacklist:
+        with open('{}blacklist.csv'.format(logfolder), 'a+') as blacklist:
             writer = csv.DictWriter(blacklist, fieldnames=fieldnames)
             if not file_exists:
                 writer.writeheader()
             writer.writerow({
-                    'date': today,
-                    'username': username,
-                    'campaign': campaign,
-                    'action': action
+                'date': today,
+                'username': username,
+                'campaign': campaign,
+                'action': action
             })
     except Exception as err:
         logger.error('blacklist dictWrite error {}'.format(err))
 
     logger.info('--> {} added to blacklist for {} campaign (action: {})'
                 .format(username, campaign, action))
-
 
 
 def get_active_users(browser, username, posts, boundary, logger):
@@ -272,7 +364,7 @@ def get_active_users(browser, username, posts, boundary, logger):
             topCount_elements = browser.find_elements_by_xpath(
                 "//span[contains(@class,'g47SY')]")
 
-            if topCount_elements: #prevent an empty string scenario
+            if topCount_elements:  # prevent an empty string scenario
                 total_posts = format_number(topCount_elements[0].text)
 
             else:
@@ -289,7 +381,7 @@ def get_active_users(browser, username, posts, boundary, logger):
     # click latest post
     try:
         latest_post = browser.find_elements_by_xpath(
-                            "//div[contains(@class, '_9AhH0')]")[0]
+            "//div[contains(@class, '_9AhH0')]")[0]
         click_element(browser, latest_post)
 
     except (NoSuchElementException, WebDriverException):
@@ -317,7 +409,7 @@ def get_active_users(browser, username, posts, boundary, logger):
             except WebDriverException:
                 try:
                     likers_count = (browser.find_element_by_xpath(
-                        "//a[contains(@class, 'zV_Nj')]/span").text)
+                         "//button[contains(@class, '_8A5w5')]/span").text)
                     if likers_count: ##prevent an empty string scenarios
                         likers_count = format_number(likers_count)
                     else:
@@ -327,13 +419,14 @@ def get_active_users(browser, username, posts, boundary, logger):
                     logger.info("Failed to get likers count on your post {}".format(count))
                     likers_count = None
 
-            likes_button = browser.find_element_by_xpath(
-                                       "//a[contains(@class, 'zV_Nj')]")
+            likes_button = browser.find_elements_by_xpath(
+                "//button[contains(@class, '_8A5w5')]")[1]
+
             click_element(browser, likes_button)
             sleep_actual(5)
 
             dialog = browser.find_element_by_xpath(
-                                 "//div[text()='Likes']/following-sibling::div")
+                "//div[text()='Likes']/following-sibling::div")
 
             scroll_it = True
             try_again = 0
@@ -369,16 +462,16 @@ def get_active_users(browser, username, posts, boundary, logger):
                         break
 
                 if (scroll_it == False and
-                      likers_count and
+                        likers_count and
                         likers_count - 1 > len(tmp_list)):
 
                     if ((boundary is not None and likers_count - 1 > boundary) or
-                                boundary is None):
+                            boundary is None):
 
                         if try_again <= 1:  # you can increase the amount of tries here
                             logger.info("Cor! ~failed to get the desired amount of usernames, "
-                                            "trying again!  |  post:{}  |  attempt: {}".format(
-                                                                                posts, try_again + 1))
+                                        "trying again!  |  post:{}  |  attempt: {}".format(
+                                posts, try_again + 1))
                             try_again += 1
                             too_many_requests += 1
                             scroll_it = True
@@ -389,7 +482,7 @@ def get_active_users(browser, username, posts, boundary, logger):
                 "//a[contains(@class, 'FPmhX')]")
 
             logger.info("Post {}  |  Likers: found {}, catched {}".format(
-                                            count, likers_count, len(tmp_list)))
+                count, likers_count, len(tmp_list)))
 
         except NoSuchElementException:
             try:
@@ -409,12 +502,12 @@ def get_active_users(browser, username, posts, boundary, logger):
         sleep_actual(1)
 
         # if not reached posts(parameter) value, continue
-        if count +1 != posts +1 and count != 0:
+        if count + 1 != posts + 1 and count != 0:
             try:
                 # click next button
                 next_button = browser.find_element_by_xpath(
-                                    "//a[contains(@class, 'HBoOv')]"
-                                        "[text()='Next']")
+                    "//a[contains(@class, 'HBoOv')]"
+                    "[text()='Next']")
                 click_element(browser, next_button)
 
             except:
@@ -429,23 +522,22 @@ def get_active_users(browser, username, posts, boundary, logger):
 
     logger.info("Gathered total of {} unique active followers from the latest {}"
                 "posts in {} minutes and {} seconds".format(len(active_users),
-                                                             posts,
-                                                              diff_in_minutes,
-                                                              diff_in_seconds))
+                                                            posts,
+                                                            diff_in_minutes,
+                                                            diff_in_seconds))
 
     return active_users
-
 
 
 def delete_line_from_file(filepath, userToDelete, logger):
     """ Remove user's record from the followed pool file after unfollowing """
     if not os.path.isfile(filepath):
-        #in case of there is no any followed pool file yet
+        # in case of there is no any followed pool file yet
         return 0
 
     try:
-        file_path_old = filepath+".old"
-        file_path_Temp = filepath+".temp"
+        file_path_old = filepath + ".old"
+        file_path_Temp = filepath + ".temp"
 
         with open(filepath, "r") as f:
             lines = f.readlines()
@@ -490,6 +582,7 @@ def delete_line_from_file(filepath, userToDelete, logger):
     except BaseException as e:
         logger.error("delete_line_from_file error {}\n{}".format(str(e).encode("utf-8")))
 
+
 def scroll_bottom(browser, element, range_int):
     # put a limit to the scrolling
     if range_int > 50:
@@ -503,7 +596,6 @@ def scroll_bottom(browser, element, range_int):
         sleep(1)
 
     return
-
 
 
 def click_element(browser, element, tryNum=0):
@@ -538,7 +630,8 @@ def click_element(browser, element, tryNum=0):
 
         if tryNum == 0:
             # try scrolling the element into view
-            browser.execute_script("document.getElementsByClassName('" +  element.get_attribute("class") + "')[0].scrollIntoView({ inline: 'center' });")
+            browser.execute_script("document.getElementsByClassName('" + element.get_attribute(
+                "class") + "')[0].scrollIntoView({ inline: 'center' });")
 
         elif tryNum == 1:
             # well, that didn't work, try scrolling to the top and then clicking again
@@ -551,7 +644,8 @@ def click_element(browser, element, tryNum=0):
         else:
             # try `execute_script` as a last resort
             # print("attempting last ditch effort for click, `execute_script`")
-            browser.execute_script("document.getElementsByClassName('" +  element.get_attribute("class") + "')[0].click()")
+            browser.execute_script(
+                "document.getElementsByClassName('" + element.get_attribute("class") + "')[0].click()")
             # update server calls after last click attempt by JS
             update_activity()
             # end condition for the recursive function
@@ -569,7 +663,6 @@ def click_element(browser, element, tryNum=0):
         click_element(browser, element, tryNum)
 
 
-
 def format_number(number):
     """
     Format number. Remove the unused comma. Replace the concatenation with relevant zeros. Remove the dot.
@@ -585,22 +678,32 @@ def format_number(number):
     return int(formatted_num)
 
 
-
 def username_url_to_username(username_url):
-    a = username_url.replace ("https://www.instagram.com/","")
-    username = a.split ('/')
+    a = username_url.replace("https://www.instagram.com/", "")
+    username = a.split('/')
     return username[0]
-
 
 
 def get_number_of_posts(browser):
     """Get the number of posts from the profile screen"""
-    num_of_posts_txt = browser.find_element_by_xpath("//section/main/div/header/section/ul/li[1]/span/span").text
-    num_of_posts_txt = num_of_posts_txt.replace(" ", "")
-    num_of_posts_txt = num_of_posts_txt.replace(",", "")
-    num_of_posts = int(num_of_posts_txt)
-    return num_of_posts
+    try:
+        num_of_posts = browser.execute_script(
+            "return window._sharedData.entry_data."
+            "ProfilePage[0].graphql.user.edge_owner_to_timeline_media.count")
 
+    except WebDriverException:
+      
+        try:
+            num_of_posts_txt = browser.find_element_by_xpath("//section/main/div/header/section/ul/li[1]/span/span").text
+
+        except NoSuchElementException:
+            num_of_posts_txt = browser.find_element_by_xpath("//section/div[3]/div/header/section/ul/li[1]/span/span").text
+
+        num_of_posts_txt = num_of_posts_txt.replace(" ", "")
+        num_of_posts_txt = num_of_posts_txt.replace(",", "")
+        num_of_posts = int(num_of_posts_txt)
+
+    return num_of_posts
 
 
 def get_relationship_counts(browser, username, logger):
@@ -642,7 +745,7 @@ def get_relationship_counts(browser, username, logger):
                         followers_count = None
 
                 except NoSuchElementException:
-                    logger.error("Error occured during getting the followers count of '{}'\n".format(username))
+                    logger.error("Error occurred during getting the followers count of '{}'\n".format(username))
                     followers_count = None
 
     try:
@@ -677,18 +780,17 @@ def get_relationship_counts(browser, username, logger):
                         following_count = None
 
                 except NoSuchElementException:
-                    logger.error("\nError occured during getting the following count of '{}'\n".format(username))
+                    logger.error("\nError occurred during getting the following count of '{}'\n".format(username))
                     following_count = None
 
     return followers_count, following_count
-
 
 
 def web_address_navigator(browser, link):
     """Checks and compares current URL of web page and the URL to be navigated and if it is different, it does navigate"""
     current_url = get_current_url(browser)
     total_timeouts = 0
-    page_type = None   # file or directory
+    page_type = None  # file or directory
 
     # remove slashes at the end to compare efficiently
     if current_url is not None and current_url.endswith('/'):
@@ -696,12 +798,12 @@ def web_address_navigator(browser, link):
 
     if link.endswith('/'):
         link = link[:-1]
-        page_type = "dir"   # slash at the end is a directory
+        page_type = "dir"  # slash at the end is a directory
 
     new_navigation = (current_url != link)
 
     if current_url is None or new_navigation:
-        link = link+'/' if page_type=="dir" else link   # directory links navigate faster
+        link = link + '/' if page_type == "dir" else link  # directory links navigate faster
 
         while True:
             try:
@@ -714,11 +816,11 @@ def web_address_navigator(browser, link):
             except TimeoutException as exc:
                 if total_timeouts >= 7:
                     raise TimeoutException("Retried {} times to GET '{}' webpage "
-                       "but failed out of a timeout!\n\t{}".format(total_timeouts,
-                             str(link).encode("utf-8"), str(exc).encode("utf-8")))
+                                           "but failed out of a timeout!\n\t{}".format(total_timeouts,
+                                                                                       str(link).encode("utf-8"),
+                                                                                       str(exc).encode("utf-8")))
                 total_timeouts += 1
                 sleep(2)
-
 
 
 @contextmanager
@@ -736,36 +838,35 @@ def interruption_handler(SIG_type=signal.SIGINT, handler=signal.SIG_IGN, notify=
         signal.signal(SIG_type, original_handler)
 
 
-
 def highlight_print(username=None, message=None, priority=None, level=None, logger=None):
     """ Print headers in a highlighted style """
-    #can add other highlighters at other priorities enriching this function
+    # can add other highlighters at other priorities enriching this function
 
-    #find the number of chars needed off the length of the logger message
-    output_len = 28+len(username)+3+len(message)
+    # find the number of chars needed off the length of the logger message
+    output_len = 28 + len(username) + 3 + len(message)
 
     if priority in ["initialization", "end"]:
-        #OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
-        #E.g.:          Session started!
-        #oooooooooooooooooooooooooooooooooooooooooooooooo
+        # OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
+        # E.g.:          Session started!
+        # oooooooooooooooooooooooooooooooooooooooooooooooo
         upper_char = "O"
         lower_char = "o"
 
     elif priority == "login":
-        #................................................
-        #E.g.:        Logged in successfully!
-        #''''''''''''''''''''''''''''''''''''''''''''''''
+        # ................................................
+        # E.g.:        Logged in successfully!
+        # ''''''''''''''''''''''''''''''''''''''''''''''''
         upper_char = "."
         lower_char = "'"
 
-    elif priority == "feature":  #feature highlighter
-        #________________________________________________
-        #E.g.:    Starting to interact by users..
-        #""""""""""""""""""""""""""""""""""""""""""""""""
+    elif priority == "feature":  # feature highlighter
+        # ________________________________________________
+        # E.g.:    Starting to interact by users..
+        # """"""""""""""""""""""""""""""""""""""""""""""""
         upper_char = "_"
         lower_char = "\""
 
-    print("\n{}".format(upper_char*output_len))
+    print("\n{}".format(upper_char * output_len))
 
     if level == "info":
         logger.info(message)
@@ -774,8 +875,7 @@ def highlight_print(username=None, message=None, priority=None, level=None, logg
     elif level == "critical":
         logger.critical(message)
 
-    print("{}".format(lower_char*output_len))
-
+    print("{}".format(lower_char * output_len))
 
 
 def remove_duplicates(container, keep_order, logger):
@@ -792,11 +892,10 @@ def remove_duplicates(container, keep_order, logger):
     else:
         logger.warning("The given data type- '{}' is not supported "
                        "in `remove_duplicates` function, yet!"
-                           .format(type(container)))
+                       .format(type(container)))
         result = container
 
     return result
-
 
 
 def dump_record_activity(profile_name, logger, logfolder):
@@ -811,7 +910,7 @@ def dump_record_activity(profile_name, logger, logfolder):
             conn.row_factory = sqlite3.Row
             cur = conn.cursor()
 
-            cur.execute("SELECT * FROM recordActivity WHERE profile_id=:var", {"var":id})
+            cur.execute("SELECT * FROM recordActivity WHERE profile_id=:var", {"var": id})
             user_data = cur.fetchall()
 
         if user_data:
@@ -833,27 +932,27 @@ def dump_record_activity(profile_name, logger, logfolder):
                 if day not in ordered_user_data.keys():
                     ordered_user_data.update({day: {}})
 
-                ordered_user_data[day].update({hour: {"likes":hourly_data[1],
-                                                      "comments":hourly_data[2],
-                                                      "follows":hourly_data[3],
-                                                      "unfollows":hourly_data[4],
-                                                       "server_calls":hourly_data[5]}})
+                ordered_user_data[day].update({hour: {"likes": hourly_data[1],
+                                                      "comments": hourly_data[2],
+                                                      "follows": hourly_data[3],
+                                                      "unfollows": hourly_data[4],
+                                                      "server_calls": hourly_data[5]}})
 
             # update user data with live data whilst preserving all other data (keys)
-            current_data.update({profile_name:ordered_user_data})
+            current_data.update({profile_name: ordered_user_data})
 
             # dump the fresh record data to a local human readable JSON
             with open(filename, 'w') as recordActFile:
                 json.dump(current_data, recordActFile)
 
     except Exception as exc:
-        logger.error("Pow! Error occured while dumping record activity data to a local JSON:\n\t{}".format(str(exc).encode("utf-8")))
+        logger.error("Pow! Error occurred while dumping record activity data to a local JSON:\n\t{}".format(
+            str(exc).encode("utf-8")))
 
     finally:
         if conn:
             # close the open connection
             conn.close()
-
 
 
 def ping_server(host, logger):
@@ -864,10 +963,10 @@ def ping_server(host, logger):
     logger.info("Pinging '{}' to check the connectivity...".format(str(host)))
 
     # ping command count option as function of OS
-    param = "-n" if system().lower()=="windows" else "-c"
+    param = "-n" if system().lower() == "windows" else "-c"
     # building the command. Ex: "ping -c 1 google.com"
     command = ' '.join(["ping", param, '1', str(host)])
-    need_sh = False if  system().lower()=="windows" else True
+    need_sh = False if system().lower() == "windows" else True
 
     # pinging
     ping_attempts = 2
@@ -878,7 +977,7 @@ def ping_server(host, logger):
 
         if connectivity == False:
             logger.warning("Pinging the server again!\t~total attempts left: {}"
-                                .format(ping_attempts))
+                           .format(ping_attempts))
             ping_attempts -= 1
             sleep(5)
 
@@ -887,7 +986,6 @@ def ping_server(host, logger):
         return False
 
     return True
-
 
 
 def emergency_exit(browser, username, logger):
@@ -907,7 +1005,6 @@ def emergency_exit(browser, username, logger):
         return True, "not logged in"
 
     return False, "no emergency"
-
 
 
 def load_user_id(username, person, logger, logfolder):
@@ -938,13 +1035,12 @@ def load_user_id(username, person, logger, logfolder):
     return user_id
 
 
-
 def check_authorization(browser, username, method, logger):
     """ Check if user is NOW logged in """
     logger.info("Checking if '{}' is logged in...".format(username))
 
     # different methods can be added in future
-    if method=="activity counts":
+    if method == "activity counts":
 
         profile_link = 'https://www.instagram.com/{}/'.format(username)
         web_address_navigator(browser, profile_link)
@@ -960,7 +1056,7 @@ def check_authorization(browser, username, method, logger):
                 update_activity()
 
                 activity_counts = browser.execute_script(
-                                    "return window._sharedData.activity_counts")
+                    "return window._sharedData.activity_counts")
 
             except WebDriverException:
                 activity_counts = None
@@ -986,7 +1082,6 @@ def check_authorization(browser, username, method, logger):
     return True
 
 
-
 def get_username(browser, track, logger):
     """ Get the username of a user from the loaded profile page """
     if track == "profile":
@@ -1010,13 +1105,12 @@ def get_username(browser, track, logger):
         except WebDriverException:
             current_url = get_current_url(browser)
             logger.info("Failed to get the username from '{}' page".format(current_url or
-                                                        "user" if track == "profile" else "post"))
+                                                                           "user" if track == "profile" else "post"))
             username = None
 
     # in future add XPATH ways of getting username
 
     return username
-
 
 
 def find_user_id(browser, track, username, logger):
@@ -1062,7 +1156,6 @@ def find_user_id(browser, track, username, logger):
     return user_id
 
 
-
 @contextmanager
 def new_tab(browser):
     """ USE once a host tab must remain untouched and yet needs extra data- get from guest tab """
@@ -1084,7 +1177,6 @@ def new_tab(browser):
         sleep(2)
 
 
-
 def explicit_wait(browser, track, ec_params, logger, timeout=35, notify=True):
     """
     Explicitly wait until expected condition validates
@@ -1100,7 +1192,6 @@ def explicit_wait(browser, track, ec_params, logger, timeout=35, notify=True):
 
     if not isinstance(ec_params, list):
         ec_params = [ec_params]
-
 
     # find condition according to the tracks
     if track == "VOEL":
@@ -1122,7 +1213,7 @@ def explicit_wait(browser, track, ec_params, logger, timeout=35, notify=True):
     elif track == "PFL":
         ec_name = "page fully loaded"
         condition = (lambda browser: browser.execute_script("return document.readyState")
-                                                in ["complete" or "loaded"])
+                                     in ["complete" or "loaded"])
 
     # generic wait block
     try:
@@ -1132,11 +1223,10 @@ def explicit_wait(browser, track, ec_params, logger, timeout=35, notify=True):
     except TimeoutException:
         if notify == True:
             logger.info("Timed out with failure while explicitly waiting until {}!\n"
-                            .format(ec_name))
+                        .format(ec_name))
         return False
 
     return result
-
 
 
 def get_current_url(browser):
@@ -1154,15 +1244,14 @@ def get_current_url(browser):
     return current_url
 
 
-
 def get_username_from_id(browser, user_id, logger):
     """ Convert user ID to username """
     # method using graphql 'Account media' endpoint
     logger.info("Trying to find the username from the given user ID by loading a post")
 
-    query_hash = "42323d64886122307be10013ad2dcc44"   # earlier- "472f257a40c653c64c666ce877d59d2b"
+    query_hash = "42323d64886122307be10013ad2dcc44"  # earlier- "472f257a40c653c64c666ce877d59d2b"
     graphql_query_URL = "https://www.instagram.com/graphql/query/?query_hash={}".format(query_hash)
-    variables = {"id":str(user_id), "first":1}
+    variables = {"id": str(user_id), "first": 1}
     post_url = u"{}&variables={}".format(graphql_query_URL, str(json.dumps(variables)))
 
     web_address_navigator(browser, post_url)
@@ -1192,25 +1281,23 @@ def get_username_from_id(browser, user_id, logger):
         logger.info("No profile found, the user may have blocked you (ID: {})".format(user_id))
         return None
 
-
     # method using private API
     logger.info("Trying to find the username from the given user ID by a quick API call")
 
     req = requests.get(u"https://i.instagram.com/api/v1/users/{}/info/"
-                            .format(user_id))
+                       .format(user_id))
     if req:
         data = json.loads(req.text)
         if data["user"]:
             username = data["user"]["username"]
             return username
 
-
     # method using graphql 'Follow' endpoint
     logger.info("Trying to find the username from the given user ID "
-                   "by using the GraphQL Follow endpoint")
+                "by using the GraphQL Follow endpoint")
 
     user_link_by_id = ("https://www.instagram.com/web/friendships/{}/follow/"
-                            .format(user_id))
+                       .format(user_id))
 
     web_address_navigator(browser, user_link_by_id)
     username = get_username(browser, "profile", logger)
@@ -1218,8 +1305,7 @@ def get_username_from_id(browser, user_id, logger):
     return username
 
 
- 
-def is_page_available(browser, logger): 
+def is_page_available(browser, logger):
     """ Check if the page is available and valid """
     # wait for the current page fully load
     explicit_wait(browser, "PFL", [], logger, 10)
@@ -1253,10 +1339,8 @@ def is_page_available(browser, logger):
     return True
 
 
-
 @contextmanager
 def smart_run(session):
-    
     try:
         session.login()
         yield
@@ -1270,7 +1354,7 @@ def smart_run(session):
                 fp.write(session.browser.page_source.encode("utf-8"))
             print("{0}\nIf raising an issue, "
                   "please also upload the file located at:\n{1}\n{0}"
-                    .format('*' * 70, file_path))
+                  .format('*' * 70, file_path))
 
         # provide full stacktrace (else than external interrupt)
         if isinstance(exc, KeyboardInterrupt):
@@ -1281,6 +1365,3 @@ def smart_run(session):
 
     finally:
         session.end()
-
-
-
