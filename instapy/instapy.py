@@ -2166,18 +2166,7 @@ class InstaPy:
             self.logger.info('--> {}'.format(username.encode('utf-8')))
 
             if not users_validated and username != self.username:
-                validation, details = validate_username(self.browser,
-                                               username,
-                                               self.username,
-                                               self.ignore_users,
-                                               self.blacklist,
-                                               self.potency_ratio,
-                                               self.delimit_by_numbers,
-                                               self.max_followers,
-                                               self.max_following,
-                                               self.min_followers,
-                                               self.min_following,
-                                               self.logger)
+                validation, details = self.validate_user_call(username)
                 if not validation:
                     self.logger.info("--> not a valid user: {}".format(details))
                     not_valid_users += 1

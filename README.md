@@ -43,6 +43,7 @@ Table of Contents
   * [Follow the likers of photos of users](#follow-the-likers-of-photos-of-users)  
   * [Follow the commenters of photos of users](#follow-the-commenters-of-photos-of-users)  
   * [Interact with specific users](#interact-with-specific-users)
+  * [Interact with specific users' tagged posts](#interact-with-specific-users-tagged-posts)
   * [Interact with users that someone else is following](#interact-with-users-that-someone-else-is-following)
   * [Interact with someone else's followers](#interact-with-someone-elses-followers)
   * [Interact on posts at given URLs](#interact-on-posts-at-given-urls)
@@ -362,6 +363,20 @@ session.set_do_comment(enabled=True, percentage=80)
 session.set_do_like(True, percentage=70)
 session.interact_by_users(['user1', 'user2', 'user3'], amount=5, randomize=True, media='Photo')
 ```
+
+### Interact with specific users' tagged posts
+
+```python
+# Interact with specific users' tagged posts
+# set_do_like, set_do_comment, set_do_follow are applicable
+
+session.set_do_follow(enabled=False, percentage=50)
+session.set_comments(["Cool", "Super!"])
+session.set_do_comment(enabled=True, percentage=80)
+session.set_do_like(True, percentage=70)
+session.interact_by_users_tagged_posts(['user1', 'user2', 'user3'], amount=5, randomize=True, media='Photo')
+```
+
 
 ### Interact with users that someone else is following
 
