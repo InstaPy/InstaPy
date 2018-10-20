@@ -108,6 +108,7 @@ class InstaPy:
 
         self.username = username or os.environ.get('INSTA_USER')
         self.password = password or os.environ.get('INSTA_PW')
+        self.user_id = 0
         Settings.profile["name"] = self.username
         self.nogui = nogui
         self.logfolder = Settings.log_location + os.path.sep
@@ -402,6 +403,9 @@ class InstaPy:
 
         self.followed_by = log_follower_num(self.browser, self.username, self.logfolder)
         self.following_num = log_following_num(self.browser, self.username, self.logfolder)
+        self.user_id = self.browser.execute_script(
+            "return window._sharedData.config."
+            "viewer.id")
 
         return self
 
@@ -1205,7 +1209,8 @@ class InstaPy:
                                                                        comments,
                                                                        self.blacklist,
                                                                        self.logger,
-                                                                       self.logfolder)
+                                                                       self.logfolder,
+                                                                       self.user_id)
                                     if comment_state == True:
                                         commented += 1
 
@@ -1387,7 +1392,8 @@ class InstaPy:
                                                                    comments,
                                                                    self.blacklist,
                                                                    self.logger,
-                                                                   self.logfolder)
+                                                                   self.logfolder,
+                                                                   self.user_id)
                                 if comment_state == True:
                                     commented += 1
                                     # reset jump counter after a successful comment
@@ -1586,7 +1592,8 @@ class InstaPy:
                                                                        comments,
                                                                        self.blacklist,
                                                                        self.logger,
-                                                                       self.logfolder)
+                                                                       self.logfolder,
+                                                                       self.user_id)
                                     if comment_state == True:
                                         commented += 1
 
@@ -1822,7 +1829,8 @@ class InstaPy:
                                                                        comments,
                                                                        self.blacklist,
                                                                        self.logger,
-                                                                       self.logfolder)
+                                                                       self.logfolder,
+                                                                       self.user_id)
                                     if comment_state == True:
                                         commented += 1
 
@@ -2051,7 +2059,8 @@ class InstaPy:
                                                                            comments,
                                                                            self.blacklist,
                                                                            self.logger,
-                                                                           self.logfolder)
+                                                                           self.logfolder,
+                                                                           self.user_id)
                                         if comment_state == True:
                                             commented += 1
 
@@ -3511,7 +3520,8 @@ class InstaPy:
                                                                    comments,
                                                                    self.blacklist,
                                                                    self.logger,
-                                                                   self.logfolder)
+                                                                   self.logfolder,
+                                                                   self.user_id)
                                 if comment_state == True:
                                     commented += 1
 

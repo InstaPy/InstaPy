@@ -47,7 +47,7 @@ def open_comment_section(browser, logger):
 
 
 
-def comment_image(browser, username, comments, blacklist, logger, logfolder):
+def comment_image(browser, username, comments, blacklist, logger, logfolder, user_id):
     """Checks if it should comment on the image"""
     # check action availability
     if quota_supervisor('comments') == 'jump':
@@ -62,6 +62,19 @@ def comment_image(browser, username, comments, blacklist, logger, logfolder):
 
     try:
         if len(comment_input) > 0:
+            try:
+                comment_list = list(browser.execute_script(
+                    "return window._sharedData.entry_data."
+                    "PostPage[0].graphql.shortcode_media.edge_media_to_comment.edges"))
+                for d in comment_list:
+                    if d['node']['owner']['id'] == user_id:
+                        disapproval_reason = "This post is already commented by you! Skipping post..."
+                        return False, disapproval_reason
+
+            except Exception as e:
+                logger.info("Failed to check if post was already commented!\n\t{}".format(str(e).encode("utf-8")))
+                return True, 'Verification failure'
+
             comment_input[0].clear()
             comment_input = get_comment_input(browser)
             comment_to_be_sent = rand_comment+' '   # an extra space is added here to forces the input box to update the reactJS core
