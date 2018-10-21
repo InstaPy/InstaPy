@@ -611,7 +611,11 @@ def follow_user(browser, track, login, user_name, button, blacklist, logger, log
 
     return True, "success"
 
-
+def scroll_to_bottom_of_followers_list(browser, element):
+    browser.execute_script(
+            "arguments[0].children[1].scrollIntoView()", element)
+    sleep(1)
+    return
 
 def get_users_through_dialog(browser,
                           login,
@@ -651,6 +655,9 @@ def get_users_through_dialog(browser,
     simulated_list = []
     simulator_counter = 0
 
+    # scroll to end of follower list to initiate first load which hides the suggestions
+    scroll_to_bottom_of_followers_list(browser, dialog)
+    
     # scroll down if the generated list of user to follow is not enough to
     # follow amount set
     while (total_list < amount) and not abort:
