@@ -2347,7 +2347,7 @@ class InstaPy:
 
                 follow_state, msg = follow_user(
                     self.browser,
-                    "post",
+                    "profile",
                     self.username,
                     username,
                     None,
