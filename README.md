@@ -883,6 +883,11 @@ email, and you will be prompted to enter the security code sent to your email.
 It will login to your account, now you can set bypass_suspicious_attempt to False
 ```bypass_suspicious_attempt=False``` and InstaPy will quickly login using cookies.
 
+If you want to bypass suspicious login attempt with your phone number, set `bypass_with_mobile` to `True`
+
+```python
+InstaPy(username=insta_username, password=insta_password, bypass_suspicious_attempt=True, bypass_with_mobile=True)
+```
 
 
 ### Quota Supervisor

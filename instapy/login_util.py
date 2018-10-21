@@ -13,9 +13,7 @@ from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import WebDriverException
 
 
-
-
-def bypass_suspicious_login(browser):
+def bypass_suspicious_login(browser, bypass_with_mobile):
     """Bypass suspicious loggin attempt verification. This should be only enabled
     when there isn't available cookie for the username, otherwise it will and
     shows "Unable to locate email or phone button" message, folollowed by
@@ -53,17 +51,17 @@ def bypass_suspicious_login(browser):
         pass
 
     try:
-        user_email = browser.find_element_by_xpath(
+        choice = browser.find_element_by_xpath(
             "//label[@for='choice_1']").text
 
     except NoSuchElementException:
         try:
-            user_email = browser.find_element_by_xpath(
+            choice = browser.find_element_by_xpath(
                 "//label[@class='_q0nt5']").text
 
         except:
             try:
-                user_email = browser.find_element_by_xpath(
+                choice = browser.find_element_by_xpath(
                     "//label[@class='_q0nt5 _a7z3k']").text
 
             except:
@@ -71,8 +69,22 @@ def bypass_suspicious_login(browser):
                         "bypass_suspicious_login=True isn't needed anymore.")
                 return False
 
-    send_security_code_button = browser.find_element_by_xpath(
-        "//button[text()='Send Security Code']")
+    if bypass_with_mobile:
+        choice = browser.find_element_by_xpath(
+            "//label[@for='choice_0']").text
+
+        send_security_code_button = browser.find_element_by_xpath(
+            "//button[text()='Send Security Code']")
+
+        mobile_button = browser.find_element_by_xpath(
+            "//label[@for='choice_0']")
+
+        (ActionChains(browser)
+            .move_to_element(mobile_button)
+            .click()
+            .perform())
+        
+        sleep(5)
 
     (ActionChains(browser)
         .move_to_element(send_security_code_button)
@@ -83,7 +95,7 @@ def bypass_suspicious_login(browser):
     update_activity()
 
     print('Instagram detected an unusual login attempt')
-    print('A security code was sent to your {}'.format(user_email))
+    print('A security code was sent to your {}'.format(choice))
     security_code = input('Type the security code here: ')
 
     security_code_field = browser.find_element_by_xpath((
@@ -133,7 +145,9 @@ def login_user(browser,
                logger,
                logfolder,
                switch_language=True,
-               bypass_suspicious_attempt=False):
+               bypass_suspicious_attempt=False,
+               bypass_with_mobile=False
+               ):
     """Logins the user with the given username and password"""
     assert username, 'Username not provided'
     assert password, 'Password not provided'
@@ -251,7 +265,7 @@ def login_user(browser,
     dismiss_notification_offer(browser, logger)
 
     if bypass_suspicious_attempt is True:
-        bypass_suspicious_login(browser)
+        bypass_suspicious_login(browser, bypass_with_mobile)
 
     sleep(5)
 
