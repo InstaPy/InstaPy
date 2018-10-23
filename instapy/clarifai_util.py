@@ -23,7 +23,7 @@ def check_image(
     clarifai_api = ClarifaiApp(api_key=clarifai_api_key)
     clarifai_tags = []
 
-    # set req image to given one or get it from current page
+    # Set req image to given one or get it from current page
     if picture_url is None:
         img_link = get_imagelink(browser)
     else:
