@@ -657,7 +657,7 @@ def get_users_through_dialog(browser,
 
     # scroll to end of follower list to initiate first load which hides the suggestions
     scroll_to_bottom_of_followers_list(browser, dialog)
-    
+
     # scroll down if the generated list of user to follow is not enough to
     # follow amount set
     while (total_list < amount) and not abort:
@@ -740,12 +740,17 @@ def dialog_username_extractor(buttons):
 
     person_list = []
     for person in buttons:
-        if person and hasattr(person, 'text') and person.text:
-            try:
-                person_list.append(person.find_element_by_xpath("../../../*")
-                                   .find_elements_by_tag_name("a")[1].text)
-            except IndexError:
-                pass  # Element list is too short to have a [1] element
+
+        try:
+            if person and hasattr(person, 'text') and person.text:
+                try:
+                    person_list.append(person.find_element_by_xpath("../../../*")
+                            .find_elements_by_tag_name("a")[1].text)
+
+                except IndexError:
+                    pass  # Element list is too short to have a [1] element
+        except StaleElementReferenceException:
+            pass  # Dont know why this happens, just ignore
 
     return person_list
 
@@ -1269,7 +1274,7 @@ def get_user_id(browser, track, username, logger):
     """ Get user's ID either from a profile page or post page """
     user_id = "unknown"
 
-    if track != "dialog":   # currently do not get the user ID for follows from 'dialog' 
+    if track != "dialog":   # currently do not get the user ID for follows from 'dialog'
         user_id = find_user_id(browser, track, username, logger)
 
     return user_id
@@ -1300,6 +1305,3 @@ def verify_username_by_id(browser, username, person, person_id, logger, logfolde
                         "doesn't exist in local records".format(person))
 
     return None
-
-
-
