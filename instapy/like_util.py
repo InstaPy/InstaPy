@@ -591,6 +591,13 @@ def like_image(browser, username, blacklist, logger, logfolder):
         liked_elem = browser.find_elements_by_xpath(unlike_xpath)
         if len(liked_elem) == 1:
             logger.info('--> Image already liked!')
+#
+#
+            if blacklist['enabled'] is True:
+                action = 'aliked'
+                add_user_to_blacklist(
+                    username, blacklist['campaign'], action, logger, logfolder)
+#
             return False, "already liked"
 
     logger.info('--> Invalid Like Element!')
