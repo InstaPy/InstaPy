@@ -96,6 +96,18 @@ ENV/
 # Mac files
 .DS_Store
 
+# Storage
+instapy.db
+logs/
+
 # Editors
 .idea
 .vscode
+
+# pytest
+.pytest_cache/
+tests/logs
+
+# Pipfile
+Pipfile
+Pipfile.lock
