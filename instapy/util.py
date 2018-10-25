@@ -1293,6 +1293,7 @@ def get_username_from_id(browser, user_id, logger):
             username = data["user"]["username"]
             return username
 
+    """ Having a BUG (random log-outs) with the method below, use it only in the external sessions
     # method using graphql 'Follow' endpoint
     logger.info("Trying to find the username from the given user ID "
                 "by using the GraphQL Follow endpoint")
@@ -1302,8 +1303,9 @@ def get_username_from_id(browser, user_id, logger):
 
     web_address_navigator(browser, user_link_by_id)
     username = get_username(browser, "profile", logger)
+    """
 
-    return username
+    return None
 
 
 def is_page_available(browser, logger):
