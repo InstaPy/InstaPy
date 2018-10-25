@@ -748,7 +748,8 @@ def dialog_username_extractor(buttons):
                             .find_elements_by_tag_name("a")[1].text)
 
                 except IndexError:
-                    pass  # Element list is too short to have a [1] element
+                    logger.error("--> person element list is too short to have a [1] element")
+                    pass
         except StaleElementReferenceException:
             pass  # Dont know why this happens, just ignore
 
