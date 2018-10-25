@@ -555,7 +555,10 @@ def delete_line_from_file(filepath, userToDelete, logger):
                     user = entries[1]
 
                 if user == userToDelete:
-                    logger.info("\tRemoved '{}' from {} file".format(line.split(',\n')[0], filepath))
+                    slash_in_filepath = '/' if '/' in filepath else '\\'
+                    filename = filepath.split(slash_in_filepath)[-1]
+                    logger.info("\tRemoved '{}' from {} file".format(line.split(',\n')[0], filename))
+
                 else:
                     f.write(line)
 
@@ -563,16 +566,19 @@ def delete_line_from_file(filepath, userToDelete, logger):
         while os.path.isfile(file_path_old):
             try:
                 os.remove(file_path_old)
+
             except OSError as e:
                 logger.error("Can't remove file_path_old {}".format(str(e)))
                 sleep(5)
 
         # rename original file to _old
         os.rename(filepath, file_path_old)
+
         # rename new temp file to filepath
         while os.path.isfile(file_path_Temp):
             try:
                 os.rename(file_path_Temp, filepath)
+
             except OSError as e:
                 logger.error("Can't rename file_path_Temp to filepath {}".format(str(e)))
                 sleep(5)
@@ -582,6 +588,7 @@ def delete_line_from_file(filepath, userToDelete, logger):
 
     except BaseException as e:
         logger.error("delete_line_from_file error {}\n{}".format(str(e).encode("utf-8")))
+
 
 
 def scroll_bottom(browser, element, range_int):
@@ -693,7 +700,7 @@ def get_number_of_posts(browser):
             "ProfilePage[0].graphql.user.edge_owner_to_timeline_media.count")
 
     except WebDriverException:
-      
+
         try:
             num_of_posts_txt = browser.find_element_by_xpath("//section/main/div/header/section/ul/li[1]/span/span").text
 
