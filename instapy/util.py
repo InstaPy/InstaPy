@@ -1366,6 +1366,32 @@ def smart_run(session):
 
     finally:
         session.end()
+def get_page_title(browser, logger):
+    """ Get the title of the webpage """
+    # wait for the current page fully load to get the correct page's title
+    explicit_wait(browser, "PFL", [], logger, 10)
+
+    try:
+        page_title = browser.title
+
+    except WebDriverException:
+        try:
+            page_title = browser.execute_script("return document.title")
+
+        except WebDriverException:
+            try:
+                page_title = browser.execute_script(
+                    "return document.getElementsByTagName('title')[0].text")
+
+            except WebDriverException:
+                logger.info("Unable to find the title of the page :(")
+                return None
+
+    return page_title
+
+
+
+
 def get_action_delay(action):
     """ Get the delay time to sleep after doing actions """
     defaults = {"like": 2,
