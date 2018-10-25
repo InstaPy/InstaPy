@@ -23,6 +23,7 @@ from .util import find_user_id
 from .util import explicit_wait
 from .util import get_username_from_id
 from .util import is_page_available
+from .util import get_action_delay
 from .print_log_writer import log_followed_pool
 from .print_log_writer import log_uncertain_unfollowed_pool
 from .print_log_writer import log_record_all_unfollowed
@@ -607,7 +608,10 @@ def follow_user(browser, track, login, user_name, button, blacklist, logger, log
                                 action,
                                  logger,
                                   logfolder)
-    sleep(3)
+
+    # get the post-follow delay time to sleep
+    naply = get_action_delay("follow")
+    sleep(naply)
 
     return True, "success"
 
@@ -1164,6 +1168,10 @@ def unfollow_user(browser, track, username, person, person_id, button, relations
     update_activity('unfollows')
     post_unfollow_cleanup("successful", username, person, relationship_data, logger, logfolder)
 
+    # get the post-unfollow delay time to sleep
+    naply = get_action_delay("unfollow")
+    sleep(naply)
+
     return True, "success"
 
 
@@ -1196,23 +1204,24 @@ def confirm_unfollow(browser):
 
 def post_unfollow_cleanup(state, username, person, relationship_data, logger, logfolder):
     """ Casual local data cleaning after an unfollow """
+    if not isinstance(state, list):
+        state = [state]
+
     delete_line_from_file("{0}{1}_followedPool.csv"
                             .format(logfolder, username), person, logger)
-    nap = 10 if state == "successful" else 3
 
-    if state == "successful":
+    if "successful" in state:
         if person in relationship_data[username]["all_following"]:
             relationship_data[username]["all_following"].remove(person)
 
-    if state == "uncertain":
+    if "uncertain" in state:
         # this user was found in our unfollow list but currently is not being followed
         log_uncertain_unfollowed_pool(username, person, logger, logfolder)
         # save any unfollowed person
         log_record_all_unfollowed(username, person, logger, logfolder)
+        sleep(3)
 
     print('')
-    sleep(nap)
-
 
 
 

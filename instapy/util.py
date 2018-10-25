@@ -2,6 +2,7 @@
 import random
 import time
 import datetime
+import random
 import re
 import signal
 import os
@@ -1365,3 +1366,50 @@ def smart_run(session):
 
     finally:
         session.end()
+def get_action_delay(action):
+    """ Get the delay time to sleep after doing actions """
+    defaults = {"like": 2,
+                "comment": 2,
+                "follow": 3,
+                "unfollow": 10}
+    config = Settings.action_delays
+
+    if (not config or
+         config["enabled"] != True or
+          config[action] is None or
+           type(config[action]) not in [int, float]):
+        return defaults[action]
+
+    else:
+        custom_delay = config[action]
+
+    # randomize the custom delay in user-defined range
+    if (config["randomize"] == True and
+         type(config["random_range"]) == tuple and
+          len(config["random_range"]) == 2 and
+           all((type(i) in [type(None), int, float] for i in config["random_range"])) and
+            any(type(i) is not None for i in config["random_range"])):
+        min_range = config["random_range"][0]
+        max_range = config["random_range"][1]
+
+        if not min_range or min_range < 0:
+            min_range = 100
+
+        if not max_range or max_range < 0:
+            max_range = 100
+
+        if min_range > max_range:
+            a = min_range
+            min_range = max_range
+            max_range = a
+
+        custom_delay = random.uniform(custom_delay*min_range/100,
+                                      custom_delay*max_range/100)
+
+    if custom_delay < defaults[action]:
+        return defaults[action]
+
+    return custom_delay
+
+
+

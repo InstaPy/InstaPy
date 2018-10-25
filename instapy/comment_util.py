@@ -7,6 +7,7 @@ from .time_util import sleep
 from .util import update_activity
 from .util import add_user_to_blacklist
 from .util import click_element
+from .util import get_action_delay
 from .quota_supervisor import quota_supervisor
 
 from selenium.common.exceptions import WebDriverException
@@ -92,7 +93,10 @@ def comment_image(browser, username, comments, blacklist, logger, logfolder):
         return False, "invalid element state"
 
     logger.info("--> Commented: {}".format(rand_comment.encode('utf-8')))
-    sleep(2)
+
+    # get the post-comment delay time to sleep
+    naply = get_action_delay("comment")
+    sleep(naply)
 
     return True, "success"
 
