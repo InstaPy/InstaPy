@@ -1308,34 +1308,21 @@ def get_username_from_id(browser, user_id, logger):
 
 def is_page_available(browser, logger):
     """ Check if the page is available and valid """
-    # wait for the current page fully load
-    explicit_wait(browser, "PFL", [], logger, 10)
-
-    try:
-        page_title = browser.title
-
-    except WebDriverException:
-        try:
-            page_title = browser.execute_script("return document.title")
-
-        except WebDriverException:
-            try:
-                page_title = browser.execute_script(
-                    "return document.getElementsByTagName('title')[0].text")
-
-            except WebDriverException:
-                logger.info("Unable to find the title of the page :(")
-                return True
-
     expected_keywords = ["Page Not Found", "Content Unavailable"]
+    page_title = get_page_title(browser, logger)
+
     if any(keyword in page_title for keyword in expected_keywords):
-        if "Page Not Found" in page_title:
-            logger.warning("The page isn't available!\t~the link may be broken, or the page may have been removed...")
+        reload_webpage(browser)
+        page_title = get_page_title(browser, logger)
 
-        elif "Content Unavailable" in page_title:
-            logger.warning("The page isn't available!\t~the user may have blocked you...")
+        if any(keyword in page_title for keyword in expected_keywords):
+            if "Page Not Found" in page_title:
+                logger.warning("The page isn't available!\t~the link may be broken, or the page may have been removed...")
 
-        return False
+            elif "Content Unavailable" in page_title:
+                logger.warning("The page isn't available!\t~the user may have blocked you...")
+
+            return False
 
     return True
 
