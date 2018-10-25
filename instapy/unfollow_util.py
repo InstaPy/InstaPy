@@ -521,89 +521,62 @@ def unfollow(browser,
 
 
 def follow_user(browser, track, login, user_name, button, blacklist, logger, logfolder):
-    """ Follows the user from either its 'profile' page, a 'post' page or the users 'dialog' box """
+    """ Follow a user either from the profile page or post page or dialog box """
+    # list of available tracks to follow in: ["profile", "post" "dialog"]
+
     # check action availability
     if quota_supervisor("follows") == "jump":
         return False, "jumped"
 
-    # available tracks are to follow in `profile`, `post` and `dialog`
     if track in ["profile", "post"]:
         if track == "profile":
             # check URL of the webpage, if it already is user's profile page, then do not navigate to it again
             user_link = "https://www.instagram.com/{}/".format(user_name)
             web_address_navigator(browser, user_link)
 
-        try:
-            sleep(2)
-            follow_xpath = "//button[text()='Follow' or text()='Follow Back']"
-            follow_button = browser.find_element_by_xpath(follow_xpath)
+        # find out CURRENT following status
+        following_status, follow_button = get_following_status(browser,
+                                                         track,
+                                                          login,
+                                                          user_name,
+                                                           None,
+                                                            logger,
+                                                            logfolder)
+        if following_status in ["Follow", "Follow Back"]:
+            click_visibly(browser, follow_button)   # click to follow
+            follow_state, msg = verify_action(browser, "follow", track, login,
+                                               user_name, None, logger, logfolder)
+            if follow_state != True:
+                return False, msg
 
-            # click to follow
-            if follow_button.is_displayed():
-                click_element(browser, follow_button)
+        elif following_status in ["Following", "Requested"]:
+            if following_status == "Following":
+                logger.info("--> Already following '{}'!\n".format(user_name))
 
-            else:
-                browser.execute_script("arguments[0].style.visibility = 'visible'; "
-                                       "arguments[0].style.height = '10px'; "
-                                       "arguments[0].style.width = '10px'; "
-                                       "arguments[0].style.opacity = 1",
-                                            follow_button)
-                # update server calls
-                update_activity()
+            elif following_status == "Requested":
+                logger.info("--> Already requested '{}' to follow!\n".format(user_name))
 
-                click_element(browser, follow_button)
-
-            # wait until the follow action succeed
-            post_follow_element = "//button[text()='Following' or text()='Requested']"
-            button_change = explicit_wait(browser, "VOEL", [post_follow_element, "XPath"], logger, 9, False)
-
-            # verify the last follow
-            if not button_change:
-                browser.execute_script("location.reload()")
-                update_activity()
-                sleep(2)
-
-                following, follow_button = get_following_status(browser,
-                                                                 track,
-                                                                  user_name,
-                                                                   logger)
-                if following is None:
-                    valid_page = is_page_available(browser, logger)
-                    if valid_page:
-                        sirens_wailing, emergency_state = emergency_exit(browser,
-                                                                          user_name,
-                                                                           logger)
-                        if sirens_wailing == True:
-                            logger.warning("There is a serious issue: '{}'!\n".format(emergency_state))
-                            return False, emergency_state
-
-                    if not valid_page or sirens_wailing == False:
-                        logger.error("Unexpected failure happened after last follow!\n")
-                        return False, "unexpected failure"
-
-                if following == False:
-                    logger.warning("Last follow is not verified!\t~smells of a temporary block\n")
-                    sleep(600)
-                    return False, "temporary block"
-
-                elif following in [True, "Requested"]:
-                    logger.info("Last follow is verified after reloading the page!\n")
-
-        except NoSuchElementException:
-            logger.info("--> '{}' is already followed".format(user_name))
             sleep(1)
-
             return False, "already followed"
 
-        except StaleElementReferenceException:
-            # https://stackoverflow.com/questions/16166261/selenium-webdriver-how-to-resolve-stale-element-reference-exception
-            # 1. An element that is found on a web page referenced as a WebElement in WebDriver then the DOM changes
-            # (probably due to JavaScript functions) that WebElement goes stale.
-            # 2. The element has been deleted entirely.
-            logger.error('--> element that is found on a web page referenced while the DOM changes')
-            sleep(1)
+        elif following_status in ["Unblock", "UNAVAILABLE"]:
+            if following_status == "Unblock":
+                failure_msg = "user is in block"
 
-            return False, "stale element"
+            elif following_status == "UNAVAILABLE":
+                failure_msg = "user is inaccessible"
+
+            logger.warning("--> Couldn't follow '{}'!\t~{}".format(user_name, failure_msg))
+            return False, following_status
+
+        elif following_status is None:
+            sirens_wailing, emergency_state = emergency_exit(browser, login, logger)
+            if sirens_wailing == True:
+                return False, emergency_state
+
+            else:
+                logger.warning("--> Couldn't unfollow '{}'!\t~unexpected failure".format(user_name))
+                return False, "unexpected failure"
 
 
     elif track == "dialog":
@@ -638,11 +611,15 @@ def follow_user(browser, track, login, user_name, button, blacklist, logger, log
 
     return True, "success"
 
+
+
 def scroll_to_bottom_of_followers_list(browser, element):
     browser.execute_script(
             "arguments[0].children[1].scrollIntoView()", element)
     sleep(1)
     return
+
+
 
 def get_users_through_dialog(browser,
                           login,
