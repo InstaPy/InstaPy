@@ -101,39 +101,60 @@ def set_automated_followed_pool(username, unfollow_after, logger, logfolder):
 
 
 
-def get_following_status(browser, track, person, logger):
+def get_following_status(browser, track, username, person, person_id, logger, logfolder):
     """ Verify if you are following the user in the loaded page """
     if track == "profile":
-        user_link = "https://www.instagram.com/{}/".format(person)
-        web_address_navigator(browser, user_link)
+        ig_homepage = "https://www.instagram.com/"
+        web_address_navigator(browser, ig_homepage+person)
 
     follow_button_XP = ("//button[text()='Following' or \
                                   text()='Requested' or \
                                   text()='Follow' or \
                                   text()='Follow Back' or \
-                                  text()='Unblock']")
+                                  text()='Unblock']"
+                        )
+    failure_msg = "--> Unable to detect the following status of '{}'!"
+    user_inaccessible_msg = ("Couldn't access the profile page of '{}'!"
+                             "\t~might have changed the username".format(username))
+
+    # check if the page is available
+    valid_page = is_page_available(browser, logger)
+    if not valid_page:
+        logger.warning(user_inaccessible_msg)
+        person_new = verify_username_by_id(browser,
+                                            username,
+                                            person,
+                                             None,
+                                              logger,
+                                              logfolder)
+        if person_new:
+            web_address_navigator(browser, ig_homepage+person_new)
+            valid_page = is_page_available(browser, logger)
+            if not valid_page:
+                logger.error(failure_msg.format(person_new.encode("utf-8")))
+                return "UNAVAILABLE", None
+
+        else:
+            logger.error(failure_msg.format(person.encode("utf-8")))
+            return "UNAVAILABLE", None
+
 
     # wait until the follow button is located and visible, then get it
     follow_button = explicit_wait(browser, "VOEL", [follow_button_XP, "XPath"], logger, 7, False)
-
     if not follow_button:
         browser.execute_script("location.reload()")
         update_activity()
 
         follow_button = explicit_wait(browser, "VOEL", [follow_button_XP, "XPath"], logger, 14, False)
-
         if not follow_button:
-            logger.error("--> Unable to detect the following status of '{}'!"
-                                  .format(person.encode("utf-8")))
+            # cannot find the any of the expected buttons
+            logger.error(failure_msg.format(person.encode("utf-8")))
             return None, None
 
-    # get follow state
-    state = follow_button.text
-    following = (False if state in ['Follow', 'Follow Back'] else
-                 True if state == "Following" else "Requested" if
-                 state == "Requested" else "Blocked")
+    # get follow status
+    following_status = follow_button.text
 
-    return following, follow_button
+    return following_status, follow_button
 
 
 
