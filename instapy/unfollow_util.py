@@ -23,6 +23,7 @@ from .util import find_user_id
 from .util import explicit_wait
 from .util import get_username_from_id
 from .util import is_page_available
+from .util import reload_webpage
 from .util import get_action_delay
 from .print_log_writer import log_followed_pool
 from .print_log_writer import log_uncertain_unfollowed_pool

@@ -1366,6 +1366,19 @@ def smart_run(session):
 
     finally:
         session.end()
+
+
+
+def reload_webpage(browser):
+    """ Reload the current webpage """
+    browser.execute_script("location.reload()")
+    update_activity()
+    sleep(2)
+
+    return True
+
+
+
 def get_page_title(browser, logger):
     """ Get the title of the webpage """
     # wait for the current page fully load to get the correct page's title
