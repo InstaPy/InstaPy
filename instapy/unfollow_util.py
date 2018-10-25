@@ -847,40 +847,8 @@ def get_given_user_followers(browser,
     web_address_navigator(browser, user_link)
 
     # check how many people are following this user.
-    try:
-        allfollowers = format_number(browser.find_element_by_xpath("//a[contains"
-                                "(@href,'followers')]/span").text)
-
-    except NoSuchElementException:
-        try:
-            allfollowers = browser.execute_script(
-                "return window._sharedData.entry_data."
-                "ProfilePage[0].graphql.user.edge_followed_by.count")
-
-        except WebDriverException:
-            try:
-                browser.execute_script("location.reload()")
-                update_activity()
-
-                allfollowers = browser.execute_script(
-                    "return window._sharedData.entry_data."
-                    "ProfilePage[0].graphql.user.edge_followed_by.count")
-
-            except WebDriverException:
-                try:
-                    topCount_elements = browser.find_elements_by_xpath(
-                        "//span[contains(@class,'g47SY')]")
-
-                    if topCount_elements:
-                        allfollowers = format_number(topCount_elements[1].text)
-                    else:
-                        logger.info("Failed to get followers count of '{}'  ~empty list".format(user_name))
-                        allfollowers = None
-
-                except NoSuchElementException:
-                    logger.error("Error occurred during getting the followers count of '{}'\n".format(user_name))
-                    return [], []
-
+    allfollowers, allfollowing = get_relationship_counts(browser, user_name, logger)
+    
     # skip early for no followers
     if not allfollowers:
         logger.info("'{}' has no followers".format(user_name))
