@@ -1405,6 +1405,26 @@ def get_page_title(browser, logger):
 
 
 
+def click_visibly(browser, element):
+    """ Click as the element become visible """
+    if element.is_displayed():
+        click_element(browser, element)
+
+    else:
+        browser.execute_script("arguments[0].style.visibility = 'visible'; "
+                               "arguments[0].style.height = '10px'; "
+                               "arguments[0].style.width = '10px'; "
+                               "arguments[0].style.opacity = 1",
+                                    element)
+        # update server calls
+        update_activity()
+
+        click_element(browser, element)
+
+    return True
+
+
+
 def get_action_delay(action):
     """ Get the delay time to sleep after doing actions """
     defaults = {"like": 2,
