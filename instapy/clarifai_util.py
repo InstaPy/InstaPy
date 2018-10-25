@@ -126,23 +126,16 @@ def get_clarifai_tags(clarifai_response, probability):
     except KeyError:
         pass
 
-    # Parse response for Celebrity model
+    # Parse response for Celebrity and Demographics models
     try:
         for value in clarifai_response['data']['regions']:
-            concepts = [
-                {concept.get('name').lower(): concept.get('value')}
-                for concept in value['data']['face']['identity']['concepts']
-            ]
-    except KeyError:
-        pass
-
-    # Parse response for Demographics model
-    try:
-        for value in clarifai_response['data']['regions'][0]['data']['face'].values():
-            concepts = [
-                {concept.get('name').lower(): concept.get('value')}
-                for concept in value['concepts']
-            ]
+            for face in value['data']['face'].values():
+                concepts.extend(
+                    [
+                        {concept.get('name').lower(): concept.get('value')}
+                        for concept in face['concepts']
+                    ]
+                )
     except KeyError:
         pass
 
