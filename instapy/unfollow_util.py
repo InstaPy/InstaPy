@@ -1282,3 +1282,62 @@ def verify_username_by_id(browser, username, person, person_id, logger, logfolde
 
 
 
+def verify_action(browser, action, track, username, person, person_id, logger, logfolder):
+    """ Verify if the action has succeeded """
+    # currently supported actions are follow & unfollow
+
+    if action in ["follow", "unfollow"]:
+        if action == "follow":
+            post_action_text = "//button[text()='Following' or text()='Requested']"
+
+        elif action == "unfollow":
+            post_action_text = "//button[text()='Follow' or text()='Follow Back']"
+
+        button_change = explicit_wait(browser, "VOEL", [post_action_text, "XPath"], logger, 7, False)
+        if not button_change:
+            reload_webpage(browser)
+            following_status, follow_button = get_following_status(browser,
+                                                             track,
+                                                              username,
+                                                              person,
+                                                               person_id,
+                                                                logger,
+                                                                logfolder)
+            # find action state *.^
+            if following_status in ["Following", "Requested"]:
+                action_state = False if action == "unfollow" else True
+
+            elif following_status in ["Follow", "Follow Back"]:
+                action_state = True if action == "unfollow" else False
+
+            else:
+                action_state = None
+
+            # handle it!
+            if action_state == True:
+                logger.info("Last {} is verified after reloading the page!\n".format(action))
+
+            elif action_state == False:
+                #try to do the action one more time!
+                click_visibly(browser, follow_button)
+
+                if action == "unfollow":
+                    sleep(4)   # TODO: use explicit wait here
+                    confirm_unfollow(browser)
+
+                button_change = explicit_wait(browser, "VOEL", [post_action_text, "XPath"], logger, 9, False)
+                if not button_change:
+                    logger.warning("Phew! Last {0} is not verified."
+                                    "\t~'{1}' might be temporarily blocked from {0}ing\n"
+                                        .format(action, username))
+                    sleep(210)
+                    return False, "temporary block"
+
+            elif action_state == None:
+                logger.error("Hey! Last {} is not verified out of an unexpected failure!")
+                return False, "unexpected"
+
+    return True, "success"
+
+
+
