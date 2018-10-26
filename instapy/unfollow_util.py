@@ -731,7 +731,6 @@ def get_users_through_dialog(browser,
     return person_list, simulated_list
 
 
-
 def dialog_username_extractor(buttons):
     """ Extract username of a follow button from a dialog box """
 
@@ -748,13 +747,14 @@ def dialog_username_extractor(buttons):
                             .find_elements_by_tag_name("a")[1].text)
 
                 except IndexError:
-                    #logger.errr("--> Element list is too short to have a [1] element".format(str(e)))
-                    pass
+                        # Element list is too short to have a [1] element
+                        pass
         except StaleElementReferenceException:
-            #logger.error("--> #Dont know why this happens, just ignore".format(str(e))))
-            pass
+                        #Dont know why this happens, just ignore
+                        pass
 
     return person_list
+
 
 
 def follow_through_dialog(browser,
