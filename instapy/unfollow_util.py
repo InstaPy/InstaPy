@@ -749,11 +749,11 @@ def dialog_username_extractor(buttons):
                             .find_elements_by_tag_name("a")[1].text)
 
                 except IndexError:
-                    logger.error("--> Element list is too short to have a [1] element")
-                    pass
+                    logger.error("--> Element list is too short to have a [1] element" .format(person.encode("utf-8")))
+                pass
         except StaleElementReferenceException:
-            logger.error("--> Dont know why this happens, just ignore")
-            pass
+                logger.error("--> Dont know why this happens, just ignore" .format(person.encode("utf-8")))
+                pass
 
     return person_list
 
