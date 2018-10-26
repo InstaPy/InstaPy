@@ -1284,7 +1284,7 @@ def verify_action(browser, action, track, username, person, person_id, logger, l
 
             # handle it!
             if action_state == True:
-                logger.info("Last {} is verified after reloading the page!\n".format(action))
+                logger.info("Last {} is verified after reloading the page!".format(action))
 
             elif action_state == False:
                 #try to do the action one more time!
@@ -1303,7 +1303,7 @@ def verify_action(browser, action, track, username, person, person_id, logger, l
                     return False, "temporary block"
 
             elif action_state == None:
-                logger.error("Hey! Last {} is not verified out of an unexpected failure!")
+                logger.error("Hey! Last {} is not verified out of an unexpected failure!".format(action))
                 return False, "unexpected"
 
     return True, "success"
