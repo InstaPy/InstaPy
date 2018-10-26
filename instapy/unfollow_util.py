@@ -882,6 +882,7 @@ def get_given_user_followers(browser,
     web_address_navigator(browser, user_link)
 
     # check how many people are following this user.
+Option-1
     try:
         allfollowers = format_number(browser.find_element_by_xpath("//a[contains"
                                                                    "(@href,'followers')]/span").text)
@@ -918,6 +919,9 @@ def get_given_user_followers(browser,
                         "Error occurred during getting the followers count of '{}'\n".format(user_name))
                     return [], []
 
+
+
+    
     # skip early for no followers
     if not allfollowers:
         logger.info("'{}' has no followers".format(user_name))
