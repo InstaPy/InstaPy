@@ -5,6 +5,7 @@ import random
 import json
 import csv
 import sqlite3
+import logger
 from math import ceil
 
 from .time_util import sleep
@@ -740,12 +741,19 @@ def dialog_username_extractor(buttons):
 
     person_list = []
     for person in buttons:
-        if person and hasattr(person, 'text') and person.text:
-            try:
-                person_list.append(person.find_element_by_xpath("../../../*")
-                                   .find_elements_by_tag_name("a")[1].text)
-            except IndexError:
-                pass  # Element list is too short to have a [1] element
+
+        try:
+            if person and hasattr(person, 'text') and person.text:
+                try:
+                    person_list.append(person.find_element_by_xpath("../../../*")
+                            .find_elements_by_tag_name("a")[1].text)
+
+                except IndexError:
+                    #logger.errr("--> Element list is too short to have a [1] element".format(str(e)))
+                    pass
+        except StaleElementReferenceException:
+            #logger.error("--> #Dont know why this happens, just ignore".format(str(e))))
+            pass
 
     return person_list
 
