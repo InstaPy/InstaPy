@@ -1519,7 +1519,7 @@ Let's say you want to comment 'Great shot!' on images of men or women with the h
 
 For example:
 ```python
-session.set_use_clarifai(enabled=True, api_key='xxx', workflow=['your-workflow'])
+session.set_use_clarifai(enabled=True, api_key='xxx', workflow=['your-workflow'], proxy=123.123.123.123:5555)
 session.clarifai_check_img_for(['woman', 'man'], ['nsfw', 'explicit', 'suggestive'], comment=True, comments=['Great shot!'])
 ```
 If Clarifai's response includes the concepts of either `woman` or `man` but also includes at least `nsfw`, `explicit`, or `suggestive`, InstaPy will not comment. On the other hand, if Clarifai's response includes the concepts of either `woman` or `man` but does not include any of the concepts `nsfw`, `explicit`, or `suggestive`, InstaPy will add the comment `Great shot!`
@@ -1534,9 +1534,15 @@ Following the example above, to get general concepts, e.g. `woman`, you would us
 
 For example:
 ```python
-session.set_use_clarifai(enabled=True, api_key='xxx', models=['general', 'nsfw', 'moderation'])
+session.set_use_clarifai(enabled=True, api_key='xxx', models=['general', 'nsfw', 'moderation'], proxy=None)
 session.clarifai_check_img_for(['woman', 'man'], ['nsfw', 'explicit', 'suggestive'], comment=True, comments=['Great shot!'])
 ```
+
+Using proxy to access clarifai:
+We have 3 options:
+1. ip:port
+2. user:pass@ip:port
+3. None
 
 ##### Check out [https://clarifai.com/demo](https://clarifai.com/demo) to see some of the available tags.</h6>
 

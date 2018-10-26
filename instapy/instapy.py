@@ -543,7 +543,14 @@ class InstaPy:
         self.switch_language = option
         return self
 
-    def set_use_clarifai(self, enabled=False, api_key=None, models=None, workflow=None, probability=0.50, full_match=False):
+    def set_use_clarifai(self,
+                         enabled=False,
+                         api_key=None,
+                         models=None,
+                         workflow=None,
+                         probability=0.50,
+                         full_match=False,
+                         proxy=None):
         """
         Defines if the clarifai img api should be used
         Which 'project' will be used (only 5000 calls per month)
@@ -568,6 +575,9 @@ class InstaPy:
         self.clarifai_workflow = workflow or []
         self.clarifai_probability = probability
         self.clarifai_full_match = full_match
+
+        if proxy is not None:
+            self.clarifai_proxy = 'https://' + proxy
 
         return self
 
@@ -631,10 +641,13 @@ class InstaPy:
         return check_image(self.browser, self.clarifai_api_key, self.clarifai_img_tags,
                            self.clarifai_img_tags_skip, self.logger, self.clarifai_models,
                            self.clarifai_workflow, self.clarifai_probability,
-                           self.clarifai_full_match)
+                           self.clarifai_full_match, proxy=self.clarifai_proxy)
 
     def follow_commenters(self, usernames, amount=10, daysold=365, max_pic=50, sleep_delay=600, interact=False):
         """ Follows users' commenters """
+
+        if self.aborting:
+            return self
 
         message = "Starting to follow commenters.."
         highlight_print(self.username, message, "feature", "info", self.logger)
@@ -735,6 +748,8 @@ class InstaPy:
     def follow_likers(self, usernames, photos_grab_amount=3, follow_likers_per_photo=3, randomize=True, sleep_delay=600,
                       interact=False):
         """ Follows users' likers """
+        if self.aborting:
+            return self
 
         message = "Starting to follow likers.."
         highlight_print(self.username, message, "feature", "info", self.logger)
@@ -1174,7 +1189,7 @@ class InstaPy:
 
                             if self.use_clarifai and (following or commenting):
                                 try:
-                                    checked_img, temp_comments = (self.query_clarifai())
+                                    checked_img, temp_comments, clarifai_tags = (self.query_clarifai())
 
                                 except Exception as err:
                                     self.logger.error(
@@ -1357,7 +1372,7 @@ class InstaPy:
 
                         if self.use_clarifai:
                             try:
-                                checked_img, temp_comments = (self.query_clarifai())
+                                checked_img, temp_comments, clarifai_tags = (self.query_clarifai())
 
                             except Exception as err:
                                 self.logger.error(
@@ -1555,7 +1570,7 @@ class InstaPy:
 
                             if self.use_clarifai and (following or commenting):
                                 try:
-                                    checked_img, temp_comments = (self.query_clarifai())
+                                    checked_img, temp_comments, clarifai_tags = (self.query_clarifai())
 
                                 except Exception as err:
                                     self.logger.error(
@@ -1791,7 +1806,7 @@ class InstaPy:
 
                             if self.use_clarifai and (following or commenting):
                                 try:
-                                    checked_img, temp_comments = (self.query_clarifai())
+                                    checked_img, temp_comments, clarifai_tags = (self.query_clarifai())
 
                                 except Exception as err:
                                     self.logger.error(
@@ -1801,7 +1816,7 @@ class InstaPy:
                                     user_name not in self.dont_include and
                                     checked_img and
                                     commenting):
-
+                                    
                                 if self.delimit_commenting:
                                     (self.commenting_approved,
                                      disapproval_reason) = verify_commenting(
@@ -2020,7 +2035,7 @@ class InstaPy:
 
                                 if self.use_clarifai and commenting:
                                     try:
-                                        checked_img, temp_comments = (self.query_clarifai())
+                                        checked_img, temp_comments, clarifai_tags = (self.query_clarifai())
 
                                     except Exception as err:
                                         self.logger.error(
@@ -2271,6 +2286,8 @@ class InstaPy:
                                                self.user_interact_amount,
                                                self.user_interact_random,
                                                self.user_interact_media)
+                    if self.aborting:
+                        return self
                     sleep(1)
 
         # final words
@@ -2415,6 +2432,8 @@ class InstaPy:
                                                self.user_interact_amount,
                                                self.user_interact_random,
                                                self.user_interact_media)
+                    if self.aborting:
+                        return self
                     sleep(1)
 
         # final words
@@ -2818,6 +2837,10 @@ class InstaPy:
 
     def like_by_feed(self, **kwargs):
         """Like the users feed"""
+
+        if self.aborting:
+            return self
+
         for i in self.like_by_feed_generator(**kwargs):
             pass
 
@@ -2949,7 +2972,7 @@ class InstaPy:
                                     if (self.use_clarifai and
                                             (following or commenting)):
                                         try:
-                                            checked_img, temp_comments = (self.query_clarifai())
+                                            checked_img, temp_comments, clarifai_tags = (self.query_clarifai())
 
                                         except Exception as err:
                                             self.logger.error(
@@ -3087,6 +3110,9 @@ class InstaPy:
     def set_dont_unfollow_active_users(self, enabled=False, posts=4, boundary=500):
         """Prevents unfollow followers who have liked one of
         your latest X posts"""
+
+        if self.aborting:
+            return
 
         # do nothing
         if not enabled:
@@ -3482,7 +3508,7 @@ class InstaPy:
 
                         if self.use_clarifai and (following or commenting):
                             try:
-                                checked_img, temp_comments = (self.query_clarifai())
+                                checked_img, temp_comments, clarifai_tags = (self.query_clarifai())
                             except Exception as err:
                                 self.logger.error(
                                     'Image check error: {}'.format(err))
