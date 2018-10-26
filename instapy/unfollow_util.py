@@ -5,6 +5,7 @@ import random
 import json
 import csv
 import sqlite3
+import logger
 from math import ceil
 
 from .time_util import sleep
