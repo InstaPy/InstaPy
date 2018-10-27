@@ -848,7 +848,7 @@ def get_given_user_followers(browser,
 
     # check how many people are following this user.
     allfollowers, allfollowing = get_relationship_counts(browser, user_name, logger)
-    
+
     # skip early for no followers
     if not allfollowers:
         logger.info("'{}' has no followers".format(user_name))

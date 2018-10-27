@@ -15,54 +15,69 @@ def check_image(
     probability,
     full_match=False,
     picture_url=None,
+    proxy=None,
 ):
-    """Uses the link to the image to check for invalid content in the image.
-    If a workflow has been selected, get list of tags from Clarifai API
-    by checking link against models included in the workflow. If a workflow
-    hasn't been provided, InstaPy will check images against given model(s)"""
-    clarifai_api = ClarifaiApp(api_key=clarifai_api_key)
-    clarifai_tags = []
 
-    # Set req image to given one or get it from current page
-    if picture_url is None:
-        img_link = get_imagelink(browser)
-    else:
-        img_link = picture_url
+    try:
+        """Uses the link to the image to check for invalid content in the image.
+        If a workflow has been selected, get list of tags from Clarifai API
+        by checking link against models included in the workflow. If a workflow
+        hasn't been provided, InstaPy will check images against given model(s)"""
+        clarifai_api = ClarifaiApp(api_key=clarifai_api_key)
+        clarifai_tags = []
 
-    # Check image using workflow if provided. If no workflow, check image using model(s)
-    if workflow:
-        clarifai_workflow = Workflow(clarifai_api.api, workflow_id=workflow[0])
-        clarifai_response = clarifai_workflow.predict_by_url(img_link)
-        for response in clarifai_response['results'][0]['outputs']:
-            results = get_clarifai_tags(response, probability)
-            clarifai_tags.extend(results)
-    else:
-        for model in clarifai_models:
-            clarifai_response = get_clarifai_response(clarifai_api, model, img_link)
-            results = get_clarifai_tags(clarifai_response['outputs'][0], probability)
-            clarifai_tags.extend(results)
+        if proxy is not None:
+            clarifai_api.api.session.proxies = {'https': proxy}
+        # set req image to given one or get it from current page
+        if picture_url is None:
+            img_link = get_imagelink(browser)
+        else:
+            img_link = picture_url
 
-    # Will not comment on an image if any of the tags in img_tags_skip_if_contain are matched
-    if given_tags_in_result(img_tags_skip_if_contain, clarifai_tags):
-        logger.info(
-            'Not Commenting, image contains concept(s): "{}".'.format(
-                ', '.join(list(set(clarifai_tags) & set(img_tags_skip_if_contain)))
-            )
-        )
-        return False, []
+        # no image in page
+        if img_link is None:
+            return True, [], []
 
-    for (tags, should_comment, comments) in img_tags:
-        if should_comment and given_tags_in_result(tags, clarifai_tags, full_match):
-            return True, comments
-        elif given_tags_in_result(tags, clarifai_tags, full_match):
+        # Check image using workflow if provided. If no workflow, check image using model(s)
+        if workflow:
+            clarifai_workflow = Workflow(clarifai_api.api, workflow_id=workflow[0])
+            clarifai_response = clarifai_workflow.predict_by_url(img_link)
+            for response in clarifai_response['results'][0]['outputs']:
+                results = get_clarifai_tags(response, probability)
+                clarifai_tags.extend(results)
+        else:
+            for model in clarifai_models:
+                clarifai_response = get_clarifai_response(clarifai_api, model, img_link)
+                results = get_clarifai_tags(clarifai_response['outputs'][0], probability)
+                clarifai_tags.extend(results)
+
+        # Will not comment on an image if any of the tags in img_tags_skip_if_contain are matched
+        if given_tags_in_result(img_tags_skip_if_contain, clarifai_tags):
             logger.info(
                 'Not Commenting, image contains concept(s): "{}".'.format(
-                    ', '.join(list(set(clarifai_tags) & set(tags)))
-                )
+                    ', '.join(list(set(clarifai_tags) & set(img_tags_skip_if_contain)))
             )
-            return False, []
+        )
+        return False, [], clarifai_tags
+        
+        logger.info('img_link {} got predicted result:\n{}'.format(img_link, clarifai_tags))
 
-    return True, []
+        for (tags, should_comment, comments) in img_tags:
+            if should_comment and given_tags_in_result(tags, clarifai_tags, full_match):
+                return True, comments, clarifai_tags
+            elif given_tags_in_result(tags, clarifai_tags, full_match):
+                logger.info(
+                    'Not Commenting, image contains concept(s): "{}".'.format(
+                        ', '.join(list(set(clarifai_tags) & set(tags)))
+                    )
+                )
+                return False, [], clarifai_tags
+
+        return True, [], clarifai_tags
+        
+    except Exception as err:
+        logger.error(
+            'Image check error: {}'.format(err))
 
 
 def given_tags_in_result(search_tags, clarifai_tags, full_match=False):
