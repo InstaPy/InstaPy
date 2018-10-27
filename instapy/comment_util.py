@@ -1,103 +1,134 @@
 # -*- coding: utf-8 -*-
 """Module which handles the commenting features"""
 from random import choice
+import emoji
+
 from .time_util import sleep
 from .util import update_activity
 from .util import add_user_to_blacklist
-from .util import format_number
+from .util import click_element
+from .quota_supervisor import quota_supervisor
+
 from selenium.common.exceptions import WebDriverException
-from selenium.common.exceptions import NoSuchElementException
-import emoji
+from selenium.common.exceptions import InvalidElementStateException
+
+
 
 
 def get_comment_input(browser):
     comment_input = browser.find_elements_by_xpath(
         '//textarea[@placeholder = "Add a comment…"]')
+
     if len(comment_input) <= 0:
         comment_input = browser.find_elements_by_xpath(
             '//input[@placeholder = "Add a comment…"]')
+
     return comment_input
 
 
-def open_comment_section(browser):
+
+def open_comment_section(browser, logger):
     missing_comment_elem_warning = (
-        '--> Warning: Comment Button Not Found:'
-        ' May cause issues with browser windows of smaller widths')
+        "--> Comment Button Not Found!"
+            "\t~may cause issues with browser windows of smaller widths")
+
     comment_elem = browser.find_elements_by_xpath(
-        "//a[@role='button']/span[text()='Comment']/..")
+                            "//button/span[@aria-label='Comment']")
+
     if len(comment_elem) > 0:
         try:
-            browser.execute_script(
-                "arguments[0].click();", comment_elem[0])
+            click_element(browser, comment_elem[0])
+
         except WebDriverException:
-            print(missing_comment_elem_warning)
+            logger.warning(missing_comment_elem_warning)
+
     else:
-        print(missing_comment_elem_warning)
+        logger.warning(missing_comment_elem_warning)
+
 
 
 def comment_image(browser, username, comments, blacklist, logger, logfolder):
     """Checks if it should comment on the image"""
+    # check action availability
+    if quota_supervisor('comments') == 'jump':
+        return False, "jumped"
+
     rand_comment = (choice(comments).format(username))
     rand_comment = emoji.demojize(rand_comment)
     rand_comment = emoji.emojize(rand_comment, use_aliases=True)
 
-    open_comment_section(browser)
+    open_comment_section(browser, logger)
     comment_input = get_comment_input(browser)
 
-    if len(comment_input) > 0:
-        comment_input[0].clear()
-        comment_input = get_comment_input(browser)
+    try:
+        if len(comment_input) > 0:
+            comment_input[0].clear()
+            comment_input = get_comment_input(browser)
+            comment_to_be_sent = rand_comment+' '   # an extra space is added here to forces the input box to update the reactJS core
 
-        browser.execute_script(
-            "arguments[0].value = '" + rand_comment + " ';", comment_input[0])
-        # An extra space is added here and then deleted.
-        # This forces the input box to update the reactJS core
-        comment_input[0].send_keys("\b")
-        comment_input = get_comment_input(browser)
-        comment_input[0].submit()
-        update_activity('comments')
-        if blacklist['enabled'] is True:
-            action = 'commented'
-            add_user_to_blacklist(
-                browser, username, blacklist['campaign'], action, logger, logfolder
-            )
-    else:
-        logger.warning('--> Warning: Comment Action Likely Failed:'
-                       ' Comment Element not found')
+            browser.execute_script(
+                "arguments[0].value = arguments[1];", comment_input[0], comment_to_be_sent)
+
+            comment_input[0].send_keys('\b')   # this also will remove that extra space added above COS '\b' is a backspace char in ASCII
+            comment_input = get_comment_input(browser)
+            comment_input[0].submit()
+            update_activity('comments')
+
+            if blacklist['enabled'] is True:
+                action = 'commented'
+                add_user_to_blacklist(username,
+                                       blacklist['campaign'],
+                                        action,
+                                         logger,
+                                         logfolder)
+        else:
+            logger.warning("--> Comment Action Likely Failed!"
+                                "\t~comment Element was not found")
+            return False, "commenting disabled"
+
+    except InvalidElementStateException:
+        logger.warning("--> Comment Action Likely Failed!"
+                            "\t~encountered `InvalidElementStateException` :/")
+        return False, "invalid element state"
 
     logger.info("--> Commented: {}".format(rand_comment.encode('utf-8')))
     sleep(2)
 
-    return 1
+    return True, "success"
 
 
-def verify_commenting(browser, max, min, logger):
+
+def verify_commenting(browser, max, min, mand_words, logger):
         """ Get the amount of existing existing comments and compare it against max & min values defined by user """
         try:
             comments_disabled = browser.execute_script(
                 "return window._sharedData.entry_data."
                 "PostPage[0].graphql.shortcode_media.comments_disabled")
+
         except WebDriverException:
             try:
                 browser.execute_script("location.reload()")
+                update_activity()
+
                 comments_disabled = browser.execute_script(
                     "return window._sharedData.entry_data."
                     "PostPage[0].graphql.shortcode_media.comments_disabled")            
-            except:
-                logger.info("Failed to check comments' status for verification...\n")
-                raise
+
+            except Exception as e:
+                logger.info("Failed to check comments' status for verification!\n\t{}".format(str(e).encode("utf-8"))) 
                 return True, 'Verification failure'
 
         if comments_disabled == True:
             disapproval_reason = "Not commenting ~comments are disabled for this post"
             return False, disapproval_reason
+
         try:
             comments_count = browser.execute_script(
                 "return window._sharedData.entry_data."
                 "PostPage[0].graphql.shortcode_media.edge_media_to_comment.count")
-        except:
-            logger.info("Failed to check comments' count for verification...\n")
-            raise
+
+        except Exception as e:
+            logger.info("Failed to check comments' count for verification!\n\t{}".format(str(e).encode("utf-8"))) 
             return True, 'Verification failure'
 
         if max is not None and comments_count > max:
@@ -106,5 +137,25 @@ def verify_commenting(browser, max, min, logger):
         elif min is not None and comments_count < min:
             disapproval_reason = "Not commented on this post! ~less comments exist off minumum limit at {}".format(comments_count)
             return False, disapproval_reason
+
+        if len(mand_words) != 0:
+            try:
+                post_desc = browser.execute_script(
+                    "return window._sharedData.entry_data."
+                    "PostPage[0].graphql.shortcode_media.edge_media_to_caption.edges[0]['node']['text']").lower()
+            except Exception as e:
+                post_desc = None
+
+            try:
+                first_comment = browser.execute_script(
+                    "return window._sharedData.entry_data."
+                    "PostPage[0].graphql.shortcode_media.edge_media_to_comment.edges[0]['node']['text']").lower()
+            except Exception as e:
+                first_comment = None
+
+            if ((post_desc is not None and not any(mand_word.lower() in post_desc for mand_word in mand_words)) or
+                    (first_comment is not None and not any(
+                            mand_word.lower() in first_comment for mand_word in mand_words))):
+                return False, 'mandantory words not in post desc'
 
         return True, 'Approval'
