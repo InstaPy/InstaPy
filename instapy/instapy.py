@@ -3391,6 +3391,8 @@ class InstaPy:
             highlight_print(self.username, message, "end", "info", self.logger)
             print("\n\n")
 
+
+
     def follow_by_tags(self,
                        tags=None,
                        amount=50,

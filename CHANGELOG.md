@@ -11,6 +11,7 @@ _The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 - **Custom action delays** capability (_see **README**_).
 - Now follow engine has the same compact _action verification procedure_ used in the unfollow engine.
 - Lots of stability in action verification steps which are held at newly added `verify_action` function.
+- New quickstart templates from 11 different people shared at #3033.
 
 ### Changed
 - Now "_already followed_" state is being tracked by the _following status_ result rather than catching a `NoSuchElementException`.
