@@ -639,7 +639,7 @@ def get_users_through_dialog(browser,
     person_followed = []
     real_amount = amount
     if randomize and amount >= 3:
-        # expanding the popultaion for better sampling distribution
+        # expanding the population for better sampling distribution
         amount = amount * 3
 
     if amount > int(users_count*0.85):   # taking 85 percent of possible amounts is a safe study
@@ -651,6 +651,9 @@ def get_users_through_dialog(browser,
     dialog_address = "//div[text()='Followers' or text()='Following']/../../following-sibling::div"
     dialog = browser.find_element_by_xpath(dialog_address)
 
+    # scroll to end of follower list to initiate first load which hides the suggestions
+    scroll_to_bottom_of_followers_list(browser, dialog)
+
     buttons = get_buttons_from_dialog(dialog, channel)
 
     abort = False
@@ -659,9 +662,6 @@ def get_users_through_dialog(browser,
     simulated_list = []
     simulator_counter = 0
 
-    # scroll to end of follower list to initiate first load which hides the suggestions
-    scroll_to_bottom_of_followers_list(browser, dialog)
-    
     # scroll down if the generated list of user to follow is not enough to
     # follow amount set
     while (total_list < amount) and not abort:

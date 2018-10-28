@@ -16,6 +16,9 @@ _The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 ### Changed
 - Now "_already followed_" state is being tracked by the _following status_ result rather than catching a `NoSuchElementException`.
 
+### Fixed
+- Stale element reference error raised at #3173 (occured after #3159).
+
 
 ## [0.1.0] - 2016-10-12
 ### Added
