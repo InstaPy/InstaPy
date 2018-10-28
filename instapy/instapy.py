@@ -431,7 +431,8 @@ class InstaPy:
                                  follow=None,
                                  unfollow=None,
                                   randomize=False,
-                                  random_range=(None, None)):
+                                  random_range=(None, None),
+                                   safety_match=True):
         """ Set custom sleep delay after actions """
         Settings.action_delays.update({"enabled":enabled,
                                         "like": like,
@@ -439,7 +440,8 @@ class InstaPy:
                                         "follow": follow,
                                         "unfollow": unfollow,
                                          "randomize": randomize,
-                                         "random_range": random_range})
+                                         "random_range": random_range,
+                                          "safety_match": safety_match})
 
 
 

@@ -1465,7 +1465,8 @@ def get_action_delay(action):
         custom_delay = random.uniform(custom_delay*min_range/100,
                                       custom_delay*max_range/100)
 
-    if custom_delay < defaults[action]:
+    if (custom_delay < defaults[action] and
+         config["safety_match"] != False):
         return defaults[action]
 
     return custom_delay

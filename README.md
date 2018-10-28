@@ -1834,7 +1834,10 @@ E.g. `random_range=(-10, 140)` is an invalid range and no randomization will hap
 + You can provide **floating point numbers** as percentages, too!  
 `random_range=(70.7, 200.45)` will work greatly.
 
-###### Note: There is a **default** delay for each action and if you enter a smaller time of delay than the default value, then it will **pick the default value**.  
+###### Note: There is a _minimum_ **default** delay for each action and if you enter a smaller time of delay than the default value, then it will **pick the default value**. You can turn that behaviour off with `safety_match` parameter.
+```python
+session.set_action_delays(enabled=True, like=0.15, safety_match=False)
+```
 _It has been held due to safety considerations. Cos sleeping a respective time after doing actions- for example ~`10` seconds after an unfollow, is very important to avoid possible temporary blocks and if you might enter e.g. `3` seconds for that without realizing the outcome..._
 
 
