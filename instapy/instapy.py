@@ -1820,6 +1820,7 @@ class InstaPy:
                                         self.browser,
                                         self.max_comments,
                                         self.min_comments,
+                                        self.comments_mandatory_words,
                                         self.logger)
                                 if self.commenting_approved:
                                     # smart commenting
