@@ -51,17 +51,17 @@ def check_image(
                 results = get_clarifai_tags(clarifai_response['outputs'][0], probability)
                 clarifai_tags.extend(results)
 
+        logger.info('img_link {} got predicted result:\n{}'.format(img_link, clarifai_tags))
+
         # Will not comment on an image if any of the tags in img_tags_skip_if_contain are matched
         if given_tags_in_result(img_tags_skip_if_contain, clarifai_tags):
             logger.info(
                 'Not Commenting, image contains concept(s): "{}".'.format(
                     ', '.join(list(set(clarifai_tags) & set(img_tags_skip_if_contain)))
+                )
             )
-        )
-        return False, [], clarifai_tags
+            return False, [], clarifai_tags
         
-        logger.info('img_link {} got predicted result:\n{}'.format(img_link, clarifai_tags))
-
         for (tags, should_comment, comments) in img_tags:
             if should_comment and given_tags_in_result(tags, clarifai_tags, full_match):
                 return True, comments, clarifai_tags
