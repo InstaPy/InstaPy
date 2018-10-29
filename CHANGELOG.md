@@ -5,7 +5,7 @@ _The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 
 
-## [Unreleased] - 2018-10-27
+## [Unreleased] - 2018-10-29
 ### Added
 - This CHANGELOG file to hopefully serve as a useful resource for InstaPy fellas to stay up-to-date with the changes happened so far.
 - **Custom action delays** capability (_see **README**_).
