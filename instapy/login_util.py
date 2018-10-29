@@ -75,9 +75,6 @@ def bypass_suspicious_login(browser, bypass_with_mobile):
         choice = browser.find_element_by_xpath(
             "//label[@for='choice_0']").text
 
-        send_security_code_button = browser.find_element_by_xpath(
-            "//button[text()='Send Security Code']")
-
         mobile_button = browser.find_element_by_xpath(
             "//label[@for='choice_0']")
 
@@ -87,6 +84,9 @@ def bypass_suspicious_login(browser, bypass_with_mobile):
             .perform())
         
         sleep(5)
+
+    send_security_code_button = browser.find_element_by_xpath(
+            "//button[text()='Send Security Code']")
 
     (ActionChains(browser)
         .move_to_element(send_security_code_button)
