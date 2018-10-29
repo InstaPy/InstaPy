@@ -13,6 +13,8 @@ from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import WebDriverException
 
 
+
+
 def bypass_suspicious_login(browser, bypass_with_mobile):
     """Bypass suspicious loggin attempt verification. This should be only enabled
     when there isn't available cookie for the username, otherwise it will and
@@ -293,9 +295,11 @@ def dismiss_get_app_offer(browser, logger):
         dismiss_elem = browser.find_element_by_xpath(dismiss_elem)
         click_element(browser, dismiss_elem)
 
+
+
 def dismiss_notification_offer(browser, logger):
     """ Dismiss 'Turn on Notifications' offer on session start """
-    offer_elem_loc = "//div/h2[text()='Turn On']"
+    offer_elem_loc = "//div/h2[text()='Turn on Notifications']"
     dismiss_elem_loc = "//button[text()='Not Now']"
 
     # wait a bit and see if the 'Turn on Notifications' offer rises up
@@ -304,5 +308,6 @@ def dismiss_notification_offer(browser, logger):
     if offer_loaded:
         dismiss_elem = browser.find_element_by_xpath(dismiss_elem_loc)
         click_element(browser, dismiss_elem)
+
 
 

@@ -229,6 +229,8 @@ class InstaPy:
         if self.selenium_local_session == True:
             self.set_selenium_local_session()
 
+
+
     def get_instapy_logger(self, show_logs):
         """
         Handles the creation and retrieval of loggers to avoid re-instantiation.
@@ -260,6 +262,8 @@ class InstaPy:
             Settings.loggers[self.username] = logger
             Settings.logger = logger
             return logger
+
+
 
     def set_selenium_local_session(self):
         """Starts local session for a selenium server.
@@ -364,6 +368,8 @@ class InstaPy:
 
         return self
 
+      
+
     def set_selenium_remote_session(self, selenium_url='', selenium_driver=None):
         """
         Starts remote session for a selenium server.
@@ -395,6 +401,8 @@ class InstaPy:
 
         return self
 
+
+
     def login(self):
         """Used to login the user either with the username and password"""
         if not login_user(self.browser,
@@ -419,10 +427,34 @@ class InstaPy:
 
         return self
 
+
+
     def set_sleep_reduce(self, percentage):
         set_sleep_percentage(percentage)
 
         return self
+
+
+
+    def set_action_delays(self, enabled=False,
+                                 like=None,
+                                 comment=None,
+                                 follow=None,
+                                 unfollow=None,
+                                  randomize=False,
+                                  random_range=(None, None),
+                                   safety_match=True):
+        """ Set custom sleep delay after actions """
+        Settings.action_delays.update({"enabled":enabled,
+                                        "like": like,
+                                        "comment": comment,
+                                        "follow": follow,
+                                        "unfollow": unfollow,
+                                         "randomize": randomize,
+                                         "random_range": random_range,
+                                          "safety_match": safety_match})
+
+
 
     def set_do_comment(self, enabled=False, percentage=0):
         """Defines if images should be commented or not
@@ -434,6 +466,8 @@ class InstaPy:
         self.comment_percentage = percentage
 
         return self
+
+
 
     def set_comments(self, comments=None, media=None):
         """Changes the possible comments"""
@@ -454,6 +488,8 @@ class InstaPy:
 
         return self
 
+
+
     def set_do_follow(self, enabled=False, percentage=0, times=1):
         """Defines if the user of the liked image should be followed"""
         if self.aborting:
@@ -465,6 +501,8 @@ class InstaPy:
 
         return self
 
+
+
     def set_do_like(self, enabled=False, percentage=0):
         if self.aborting:
             return self
@@ -473,6 +511,8 @@ class InstaPy:
         self.like_percentage = percentage
 
         return self
+
+
 
     def set_dont_like(self, tags=None):
         """Changes the possible restriction tags, if one of this
@@ -489,6 +529,8 @@ class InstaPy:
 
         return self
 
+
+
     def set_mandatory_words(self, tags=None):
         """Changes the possible restriction tags, if all of this
          hashtags is in the description, the image will be liked"""
@@ -503,6 +545,8 @@ class InstaPy:
         self.mandatory_words = tags or []
 
         return self
+
+
 
     def set_user_interact(self,
                           amount=10,
@@ -520,6 +564,8 @@ class InstaPy:
 
         return self
 
+
+
     def set_ignore_users(self, users=None):
         """Changes the possible restriction to users, if a user who posts
         is one of these, the image won't be liked"""
@@ -529,6 +575,8 @@ class InstaPy:
         self.ignore_users = users or []
 
         return self
+
+
 
     def set_ignore_if_contains(self, words=None):
         """Ignores the don't likes if the description contains
@@ -540,6 +588,8 @@ class InstaPy:
 
         return self
 
+
+
     def set_dont_include(self, friends=None):
         """Defines which accounts should not be unfollowed"""
         if self.aborting:
@@ -549,6 +599,8 @@ class InstaPy:
         self.white_list = set(friends) or set()
 
         return self
+
+
 
     def set_switch_language(self, option=True):
         self.switch_language = option
@@ -592,6 +644,8 @@ class InstaPy:
 
         return self
 
+
+
     def set_smart_hashtags(self,
                            tags=None,
                            limit=3,
@@ -634,6 +688,8 @@ class InstaPy:
         self.smart_hashtags = list(set(self.smart_hashtags))
         return self
 
+
+
     def clarifai_check_img_for(self, tags=None, tags_skip=None, comment=False, comments=None):
         """Defines the tags the images should be checked for"""
         if self.aborting:
@@ -653,6 +709,7 @@ class InstaPy:
                            self.clarifai_img_tags_skip, self.logger, self.clarifai_models,
                            self.clarifai_workflow, self.clarifai_probability,
                            self.clarifai_full_match, proxy=self.clarifai_proxy)
+
 
     def follow_commenters(self, usernames, amount=10, daysold=365, max_pic=50, sleep_delay=600, interact=False):
         """ Follows users' commenters """
@@ -906,7 +963,7 @@ class InstaPy:
                 # Verify if the user should be followed
                 validation, details = self.validate_user_call(acc_to_follow)
                 if validation != True or acc_to_follow == self.username:
-                    self.logger.info("--> Not a valid user: {}\n".format(details))
+                    self.logger.info("--> Not a valid user: {}".format(details))
                     not_valid_users += 1
                     continue
 
@@ -1308,6 +1365,8 @@ class InstaPy:
 
         return self
 
+
+
     def comment_by_locations(self,
                              locations=None,
                              amount=50,
@@ -1688,6 +1747,8 @@ class InstaPy:
 
         return self
 
+
+
     def like_by_users(self, usernames, amount=10, randomize=False, media=None):
         """Likes some amounts of images for each usernames"""
         if self.aborting:
@@ -1720,7 +1781,7 @@ class InstaPy:
 
             validation, details = self.validate_user_call(username)
             if not validation:
-                self.logger.info("--> not a valid user: {}".format(details))
+                self.logger.info("--> Not a valid user: {}".format(details))
                 not_valid_users += 1
                 continue
 
@@ -2823,6 +2884,7 @@ class InstaPy:
                 self.logger.warning(
                     u'Warning: {} , stopping unfollow_users'.format(exc))
                 return self
+
             else:
                 self.logger.error('Sorry, an error occurred: {}'.format(exc))
                 self.aborting = True
@@ -3093,6 +3155,8 @@ class InstaPy:
 
         return
 
+
+
     def set_dont_unfollow_active_users(self, enabled=False, posts=4, boundary=500):
         """Prevents unfollow followers who have liked one of
         your latest X posts"""
@@ -3114,6 +3178,8 @@ class InstaPy:
         # include active user to not unfollow list
         self.dont_include.update(active_users)
 
+
+
     def set_blacklist(self, enabled, campaign):
         """Enable/disable blacklist. If enabled, adds users to a blacklist after
         interact with and adds users to dont_include list"""
@@ -3132,6 +3198,8 @@ class InstaPy:
                         self.dont_include.add(row['username'])
         except:
             self.logger.info('Campaign {} first run'.format(campaign))
+
+
 
     def grab_followers(self, username=None, amount=None, live_match=False, store_locally=True):
         """ Gets and returns `followers` information of given user in desired amount, also, saves locally """
@@ -3160,6 +3228,8 @@ class InstaPy:
                                           self.logger,
                                           self.logfolder)
         return grabbed_followers
+
+
 
     def grab_following(self, username=None, amount=None, live_match=False, store_locally=True):
         """ Gets and returns `following` information of given user in desired amount, also, saves locally """
@@ -3211,6 +3281,8 @@ class InstaPy:
 
         return all_unfollowers, active_unfollowers
 
+
+
     def pick_nonfollowers(self, username=None, live_match=False, store_locally=True):
         """ Returns Nonfollowers data of a given user """
 
@@ -3227,6 +3299,8 @@ class InstaPy:
                                         self.logfolder)
 
         return nonfollowers
+
+
 
     def pick_fans(self, username=None, live_match=False, store_locally=True):
         """ Returns Fans data- all of the usernames who do follow
@@ -3246,6 +3320,8 @@ class InstaPy:
 
         return fans
 
+
+
     def pick_mutual_following(self, username=None, live_match=False, store_locally=True):
         """ Returns Mutual Following data- all of the usernames who do follow
         the user WHOM user itself also do follow back"""
@@ -3263,6 +3339,8 @@ class InstaPy:
                                                 self.logfolder)
 
         return mutual_following
+
+
 
     def end(self):
         """Closes the current session"""
@@ -3300,6 +3378,8 @@ class InstaPy:
             message = "Session ended!"
             highlight_print(self.username, message, "end", "info", self.logger)
             print("\n\n")
+
+
 
     def follow_by_tags(self,
                        tags=None,
