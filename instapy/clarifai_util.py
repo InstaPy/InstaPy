@@ -51,17 +51,17 @@ def check_image(
                 results = get_clarifai_tags(clarifai_response['outputs'][0], probability)
                 clarifai_tags.extend(results)
 
+        logger.info('img_link {} got predicted result:\n{}'.format(img_link, clarifai_tags))
+
         # Will not comment on an image if any of the tags in img_tags_skip_if_contain are matched
         if given_tags_in_result(img_tags_skip_if_contain, clarifai_tags):
             logger.info(
                 'Not Commenting, image contains concept(s): "{}".'.format(
                     ', '.join(list(set(clarifai_tags) & set(img_tags_skip_if_contain)))
+                )
             )
-        )
-        return False, [], clarifai_tags
+            return False, [], clarifai_tags
         
-        logger.info('img_link {} got predicted result:\n{}'.format(img_link, clarifai_tags))
-
         for (tags, should_comment, comments) in img_tags:
             if should_comment and given_tags_in_result(tags, clarifai_tags, full_match):
                 return True, comments, clarifai_tags
@@ -141,23 +141,16 @@ def get_clarifai_tags(clarifai_response, probability):
     except KeyError:
         pass
 
-    # Parse response for Celebrity model
+    # Parse response for Celebrity and Demographics models
     try:
         for value in clarifai_response['data']['regions']:
-            concepts = [
-                {concept.get('name').lower(): concept.get('value')}
-                for concept in value['data']['face']['identity']['concepts']
-            ]
-    except KeyError:
-        pass
-
-    # Parse response for Demographics model
-    try:
-        for value in clarifai_response['data']['regions'][0]['data']['face'].values():
-            concepts = [
-                {concept.get('name').lower(): concept.get('value')}
-                for concept in value['concepts']
-            ]
+            for face in value['data']['face'].values():
+                concepts.extend(
+                    [
+                        {concept.get('name').lower(): concept.get('value')}
+                        for concept in face['concepts']
+                    ]
+                )
     except KeyError:
         pass
 

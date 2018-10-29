@@ -198,7 +198,7 @@ def login_user(browser,
 
     # Check if the first div is 'Create an Account' or 'Log In'
     login_elem = browser.find_element_by_xpath(
-        "//article/div/div/p/a[text()='Log in']")
+        "//article//a[text()='Log in']")
 
     if login_elem is not None:
         (ActionChains(browser)
