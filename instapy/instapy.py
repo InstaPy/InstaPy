@@ -172,6 +172,7 @@ class InstaPy:
         self.clarifai_img_tags = []
         self.clarifai_img_tags_skip = []
         self.clarifai_full_match = False
+        self.clarifai_proxy = None
 
         self.potency_ratio = 1.3466
         self.delimit_by_numbers = True
