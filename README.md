@@ -103,6 +103,8 @@ Table of Contents
 
 **[Setting up InstaPy at Digital Ocean (for Debian)](https://www.youtube.com/watch?v=2Ci-hXU1IEY)**
 
+**[Setting up InstaPy for Windows](https://www.youtube.com/watch?v=AOUraeus-XA)**
+
 ### Guides:
 **[How to Ubuntu (64-Bit)](./docs/How_To_DO_Ubuntu_on_Digital_Ocean.md) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**
 
