@@ -491,12 +491,15 @@ class InstaPy:
 
         return self
     
-    def set_break_after_already_liked(self, active=True) :
+    def set_break_after_already_liked(self, after=5) :
         """Break the loop if one image is already liked"""
         if self.aborting:
             return self
 
-        self.break_after_already_liked = active
+        if after <= 0 :
+            after = False
+
+        self.break_after_already_liked = after
 
         return self
     
@@ -1096,6 +1099,7 @@ class InstaPy:
 
         liked_img = 0
         already_liked = 0
+        already_liked_continuous = 0
         inap_img = 0
         commented = 0
         followed = 0
@@ -1167,6 +1171,7 @@ class InstaPy:
                                                      self.logfolder)
 
                         if like_state == True:
+                            already_liked_continuous = 0
                             liked_img += 1
                             # reset jump counter after a successful like
                             self.jumps["consequent"]["likes"] = 0
@@ -1251,8 +1256,11 @@ class InstaPy:
 
                         elif msg == "already liked":
                             already_liked += 1
-                            if self.break_after_already_liked == True :
-                                break
+                            already_liked_continuous += 1
+                            # if "break_after_already_liked" enable will break the loop after certain consecutive image already liked
+                            if self.break_after_already_liked != False :
+                                if self.break_after_already_liked < already_liked_continuous :
+                                    break
                                 
                         elif msg == "jumped":
                             # will break the loop after certain consecutive jumps
@@ -1474,6 +1482,7 @@ class InstaPy:
 
         liked_img = 0
         already_liked = 0
+        already_liked_continuous = 0
         inap_img = 0
         commented = 0
         followed = 0
@@ -1550,6 +1559,7 @@ class InstaPy:
                                                      self.logfolder)
 
                         if like_state == True:
+                            already_liked_continuous = 0
                             liked_img += 1
                             # reset jump counter after a successful like
                             self.jumps["consequent"]["likes"] = 0
@@ -1644,8 +1654,11 @@ class InstaPy:
 
                         elif msg == "already liked":
                             already_liked += 1
-                            if self.break_after_already_liked == True :
-                                break
+                            already_liked_continuous += 1
+                            # if "break_after_already_liked" enable will break the loop after certain consecutive image already liked
+                            if self.break_after_already_liked != False :
+                                if self.break_after_already_liked < already_liked_continuous :
+                                    break
                                 
                         elif msg == "jumped":
                             # will break the loop after certain consecutive jumps
@@ -1687,6 +1700,7 @@ class InstaPy:
         liked_img = 0
         total_liked_img = 0
         already_liked = 0
+        already_liked_continuous = 0
         inap_img = 0
         commented = 0
         followed = 0
@@ -1789,6 +1803,7 @@ class InstaPy:
                                                      self.logger,
                                                      self.logfolder)
                         if like_state == True:
+                            already_liked_continuous = 0
                             total_liked_img += 1
                             liked_img += 1
                             # reset jump counter after a successful like
@@ -1849,8 +1864,11 @@ class InstaPy:
 
                         elif msg == "already liked":
                             already_liked += 1
-                            if self.break_after_already_liked == True :
-                                break
+                            already_liked_continuous += 1
+                            # if "break_after_already_liked" enable will break the loop after certain consecutive image already liked
+                            if self.break_after_already_liked != False :
+                                if self.break_after_already_liked < already_liked_continuous :
+                                    break
         
                         elif msg == "jumped":
                             # will break the loop after certain consecutive jumps
