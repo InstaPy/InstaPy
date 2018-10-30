@@ -12,6 +12,7 @@ from .util import is_private_profile
 from .util import update_activity
 from .util import web_address_navigator
 from .util import get_number_of_posts
+from .util import get_action_delay
 from .quota_supervisor import quota_supervisor
 
 from selenium.common.exceptions import WebDriverException
@@ -579,7 +580,10 @@ def like_image(browser, username, blacklist, logger, logfolder):
                 action = 'liked'
                 add_user_to_blacklist(
                     username, blacklist['campaign'], action, logger, logfolder)
-            sleep(2)
+
+            # get the post-like delay time to sleep
+            naply = get_action_delay("like")
+            sleep(naply)
             return True, "success"
 
         else:
@@ -591,13 +595,6 @@ def like_image(browser, username, blacklist, logger, logfolder):
         liked_elem = browser.find_elements_by_xpath(unlike_xpath)
         if len(liked_elem) == 1:
             logger.info('--> Image already liked!')
-#
-#
-            if blacklist['enabled'] is True:
-                action = 'aliked'
-                add_user_to_blacklist(
-                    username, blacklist['campaign'], action, logger, logfolder)
-#
             return False, "already liked"
 
     logger.info('--> Invalid Like Element!')
@@ -688,6 +685,5 @@ def verify_liking(browser, max, min, logger):
             return False
 
         return True
-
 
 
