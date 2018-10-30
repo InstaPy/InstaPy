@@ -82,7 +82,7 @@ def bypass_suspicious_login(browser, bypass_with_mobile):
             .move_to_element(mobile_button)
             .click()
             .perform())
-        
+
         sleep(5)
 
     send_security_code_button = browser.find_element_by_xpath(
@@ -171,8 +171,16 @@ def login_user(browser,
 
     # include time.sleep(1) to prevent getting stuck on google.com
     time.sleep(1)
-    
+
     web_address_navigator(browser, ig_homepage)
+
+    # Changes instagram language to english, to ensure no errors ensue from
+    # having the site on a different language
+    # Might cause problems if the OS language is english
+    if switch_language:
+        language_element_ENG = browser.find_element_by_xpath(
+          "//select[@class='hztqj']/option[text()='English']")
+        click_element(browser, language_element_ENG)
 
     # Cookie has been loaded, user should be logged in. Ensurue this is true
     login_elem = browser.find_elements_by_xpath(
@@ -187,14 +195,6 @@ def login_user(browser,
     if cookie_loaded:
         print("Issue with cookie for user " + username
               + ". Creating new cookie...")
-
-    # Changes instagram language to english, to ensure no errors ensue from
-    # having the site on a different language
-    # Might cause problems if the OS language is english
-    if switch_language:
-        language_element_ENG = browser.find_element_by_xpath(
-          "//select[@class='hztqj']/option[text()='English']")
-        click_element(browser, language_element_ENG)
 
     # Check if the first div is 'Create an Account' or 'Log In'
     login_elem = browser.find_element_by_xpath(
@@ -308,6 +308,3 @@ def dismiss_notification_offer(browser, logger):
     if offer_loaded:
         dismiss_elem = browser.find_element_by_xpath(dismiss_elem_loc)
         click_element(browser, dismiss_elem)
-
-
-
