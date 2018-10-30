@@ -2,6 +2,7 @@
 import random
 import time
 import datetime
+import random
 import re
 import signal
 import os
@@ -28,11 +29,15 @@ from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import WebDriverException
 from selenium.common.exceptions import TimeoutException
 
-default_profile_pic_instagram = ["https://instagram.flas1-2.fna.fbcdn.net/vp/a8539c22ed9fec8e1c43b538b1ebfd1d/5C5A1A7A/t51.2885-19/11906329_960233084022564_1448528159_a.jpg",
-                                 "https://scontent-yyz1-1.cdninstagram.com/vp/a8539c22ed9fec8e1c43b538b1ebfd1d/5C5A1A7A/t51.2885-19/11906329_960233084022564_1448528159_a.jpg",
-                                 "https://instagram.faep12-1.fna.fbcdn.net/vp/a8539c22ed9fec8e1c43b538b1ebfd1d/5C5A1A7A/t51.2885-19/11906329_960233084022564_1448528159_a.jpg",
-                                 "https://instagram.fbts2-1.fna.fbcdn.net/vp/a8539c22ed9fec8e1c43b538b1ebfd1d/5C5A1A7A/t51.2885-19/11906329_960233084022564_1448528159_a.jpg",
-                                 "https://scontent-mia3-1.cdninstagram.com/vp/a8539c22ed9fec8e1c43b538b1ebfd1d/5C5A1A7A/t51.2885-19/11906329_960233084022564_1448528159_a.jpg"]
+
+default_profile_pic_instagram = [
+"https://instagram.flas1-2.fna.fbcdn.net/vp/a8539c22ed9fec8e1c43b538b1ebfd1d/5C5A1A7A/t51.2885-19/11906329_960233084022564_1448528159_a.jpg",
+"https://scontent-yyz1-1.cdninstagram.com/vp/a8539c22ed9fec8e1c43b538b1ebfd1d/5C5A1A7A/t51.2885-19/11906329_960233084022564_1448528159_a.jpg",
+"https://instagram.faep12-1.fna.fbcdn.net/vp/a8539c22ed9fec8e1c43b538b1ebfd1d/5C5A1A7A/t51.2885-19/11906329_960233084022564_1448528159_a.jpg",
+"https://instagram.fbts2-1.fna.fbcdn.net/vp/a8539c22ed9fec8e1c43b538b1ebfd1d/5C5A1A7A/t51.2885-19/11906329_960233084022564_1448528159_a.jpg",
+"https://scontent-mia3-1.cdninstagram.com/vp/a8539c22ed9fec8e1c43b538b1ebfd1d/5C5A1A7A/t51.2885-19/11906329_960233084022564_1448528159_a.jpg"]
+
+
 
 
 def is_private_profile(browser, logger, following=True):
@@ -554,7 +559,10 @@ def delete_line_from_file(filepath, userToDelete, logger):
                     user = entries[1]
 
                 if user == userToDelete:
-                    logger.info("\tRemoved '{}' from {} file".format(line.split(',\n')[0], filepath))
+                    slash_in_filepath = '/' if '/' in filepath else '\\'
+                    filename = filepath.split(slash_in_filepath)[-1]
+                    logger.info("\tRemoved '{}' from {} file".format(line.split(',\n')[0], filename))
+
                 else:
                     f.write(line)
 
@@ -562,16 +570,19 @@ def delete_line_from_file(filepath, userToDelete, logger):
         while os.path.isfile(file_path_old):
             try:
                 os.remove(file_path_old)
+
             except OSError as e:
                 logger.error("Can't remove file_path_old {}".format(str(e)))
                 sleep(5)
 
         # rename original file to _old
         os.rename(filepath, file_path_old)
+
         # rename new temp file to filepath
         while os.path.isfile(file_path_Temp):
             try:
                 os.rename(file_path_Temp, filepath)
+
             except OSError as e:
                 logger.error("Can't rename file_path_Temp to filepath {}".format(str(e)))
                 sleep(5)
@@ -581,6 +592,7 @@ def delete_line_from_file(filepath, userToDelete, logger):
 
     except BaseException as e:
         logger.error("delete_line_from_file error {}\n{}".format(str(e).encode("utf-8")))
+
 
 
 def scroll_bottom(browser, element, range_int):
@@ -692,7 +704,7 @@ def get_number_of_posts(browser):
             "ProfilePage[0].graphql.user.edge_owner_to_timeline_media.count")
 
     except WebDriverException:
-      
+
         try:
             num_of_posts_txt = browser.find_element_by_xpath("//section/main/div/header/section/ul/li[1]/span/span").text
 
@@ -1292,6 +1304,7 @@ def get_username_from_id(browser, user_id, logger):
             username = data["user"]["username"]
             return username
 
+    """ Having a BUG (random log-outs) with the method below, use it only in the external sessions
     # method using graphql 'Follow' endpoint
     logger.info("Trying to find the username from the given user ID "
                 "by using the GraphQL Follow endpoint")
@@ -1301,40 +1314,28 @@ def get_username_from_id(browser, user_id, logger):
 
     web_address_navigator(browser, user_link_by_id)
     username = get_username(browser, "profile", logger)
+    """
 
-    return username
+    return None
 
 
 def is_page_available(browser, logger):
     """ Check if the page is available and valid """
-    # wait for the current page fully load
-    explicit_wait(browser, "PFL", [], logger, 10)
-
-    try:
-        page_title = browser.title
-
-    except WebDriverException:
-        try:
-            page_title = browser.execute_script("return document.title")
-
-        except WebDriverException:
-            try:
-                page_title = browser.execute_script(
-                    "return document.getElementsByTagName('title')[0].text")
-
-            except WebDriverException:
-                logger.info("Unable to find the title of the page :(")
-                return True
-
     expected_keywords = ["Page Not Found", "Content Unavailable"]
+    page_title = get_page_title(browser, logger)
+
     if any(keyword in page_title for keyword in expected_keywords):
-        if "Page Not Found" in page_title:
-            logger.warning("The page isn't available!\t~the link may be broken, or the page may have been removed...")
+        reload_webpage(browser)
+        page_title = get_page_title(browser, logger)
 
-        elif "Content Unavailable" in page_title:
-            logger.warning("The page isn't available!\t~the user may have blocked you...")
+        if any(keyword in page_title for keyword in expected_keywords):
+            if "Page Not Found" in page_title:
+                logger.warning("The page isn't available!\t~the link may be broken, or the page may have been removed...")
 
-        return False
+            elif "Content Unavailable" in page_title:
+                logger.warning("The page isn't available!\t~the user may have blocked you...")
+
+            return False
 
     return True
 
@@ -1365,3 +1366,110 @@ def smart_run(session):
 
     finally:
         session.end()
+
+
+
+def reload_webpage(browser):
+    """ Reload the current webpage """
+    browser.execute_script("location.reload()")
+    update_activity()
+    sleep(2)
+
+    return True
+
+
+
+def get_page_title(browser, logger):
+    """ Get the title of the webpage """
+    # wait for the current page fully load to get the correct page's title
+    explicit_wait(browser, "PFL", [], logger, 10)
+
+    try:
+        page_title = browser.title
+
+    except WebDriverException:
+        try:
+            page_title = browser.execute_script("return document.title")
+
+        except WebDriverException:
+            try:
+                page_title = browser.execute_script(
+                    "return document.getElementsByTagName('title')[0].text")
+
+            except WebDriverException:
+                logger.info("Unable to find the title of the page :(")
+                return None
+
+    return page_title
+
+
+
+
+def click_visibly(browser, element):
+    """ Click as the element become visible """
+    if element.is_displayed():
+        click_element(browser, element)
+
+    else:
+        browser.execute_script("arguments[0].style.visibility = 'visible'; "
+                               "arguments[0].style.height = '10px'; "
+                               "arguments[0].style.width = '10px'; "
+                               "arguments[0].style.opacity = 1",
+                                    element)
+        # update server calls
+        update_activity()
+
+        click_element(browser, element)
+
+    return True
+
+
+
+def get_action_delay(action):
+    """ Get the delay time to sleep after doing actions """
+    defaults = {"like": 2,
+                "comment": 2,
+                "follow": 3,
+                "unfollow": 10}
+    config = Settings.action_delays
+
+    if (not config or
+         config["enabled"] != True or
+          config[action] is None or
+           type(config[action]) not in [int, float]):
+        return defaults[action]
+
+    else:
+        custom_delay = config[action]
+
+    # randomize the custom delay in user-defined range
+    if (config["randomize"] == True and
+         type(config["random_range"]) == tuple and
+          len(config["random_range"]) == 2 and
+           all((type(i) in [type(None), int, float] for i in config["random_range"])) and
+            any(type(i) is not None for i in config["random_range"])):
+        min_range = config["random_range"][0]
+        max_range = config["random_range"][1]
+
+        if not min_range or min_range < 0:
+            min_range = 100
+
+        if not max_range or max_range < 0:
+            max_range = 100
+
+        if min_range > max_range:
+            a = min_range
+            min_range = max_range
+            max_range = a
+
+        custom_delay = random.uniform(custom_delay*min_range/100,
+                                      custom_delay*max_range/100)
+
+    if (custom_delay < defaults[action] and
+         config["safety_match"] != False):
+        return defaults[action]
+
+    return custom_delay
+
+
+

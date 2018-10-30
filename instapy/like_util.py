@@ -12,6 +12,7 @@ from .util import is_private_profile
 from .util import update_activity
 from .util import web_address_navigator
 from .util import get_number_of_posts
+from .util import get_action_delay
 from .quota_supervisor import quota_supervisor
 
 from selenium.common.exceptions import WebDriverException
@@ -558,8 +559,8 @@ def like_image(browser, username, blacklist, logger, logfolder):
     if quota_supervisor("likes") == "jump":
         return False, "jumped"
 
-    like_xpath = "//button/span[@aria-label='Like']"
-    unlike_xpath = "//button/span[@aria-label='Unlike']"
+    like_xpath = "//section/span/button/span[@aria-label='Like']"
+    unlike_xpath = "//section/span/button/span[@aria-label='Unlike']"
 
     # find first for like element
     like_elem = browser.find_elements_by_xpath(like_xpath)
@@ -579,7 +580,10 @@ def like_image(browser, username, blacklist, logger, logfolder):
                 action = 'liked'
                 add_user_to_blacklist(
                     username, blacklist['campaign'], action, logger, logfolder)
-            sleep(2)
+
+            # get the post-like delay time to sleep
+            naply = get_action_delay("like")
+            sleep(naply)
             return True, "success"
 
         else:
