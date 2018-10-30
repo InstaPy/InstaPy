@@ -18,6 +18,7 @@ _The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 ### Fixed
 - Stale element reference error raised at #3173 (occured after #3159).
+- Invalid like element issue (occured after IG introduced comment _liking_ to its web interface).
 
 
 ## [0.1.0] - 2016-10-12

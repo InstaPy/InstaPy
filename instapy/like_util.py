@@ -559,8 +559,8 @@ def like_image(browser, username, blacklist, logger, logfolder):
     if quota_supervisor("likes") == "jump":
         return False, "jumped"
 
-    like_xpath = "//button/span[@aria-label='Like']"
-    unlike_xpath = "//button/span[@aria-label='Unlike']"
+    like_xpath = "//section/span/button/span[@aria-label='Like']"
+    unlike_xpath = "//section/span/button/span[@aria-label='Unlike']"
 
     # find first for like element
     like_elem = browser.find_elements_by_xpath(like_xpath)
