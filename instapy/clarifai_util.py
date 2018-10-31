@@ -2,6 +2,7 @@
 the image for invalid content"""
 from clarifai.rest import ClarifaiApp
 from clarifai.rest import Workflow
+from selenium.common.exceptions import NoSuchElementException
 
 
 def check_image(
@@ -15,6 +16,7 @@ def check_image(
     probability,
     full_match=False,
     picture_url=None,
+    check_video=False,
     proxy=None,
 ):
 
@@ -28,30 +30,41 @@ def check_image(
 
         if proxy is not None:
             clarifai_api.api.session.proxies = {'https': proxy}
-        # set req image to given one or get it from current page
+        # Set req image or video source URL to given one or get it from current page
         if picture_url is None:
-            img_link = get_imagelink(browser)
+            source_link = get_source_link(browser)
         else:
-            img_link = picture_url
+            source_link = [picture_url]
 
-        # no image in page
-        if img_link is None:
+        # No image in page
+        if source_link is None:
             return True, [], []
 
         # Check image using workflow if provided. If no workflow, check image using model(s)
         if workflow:
             clarifai_workflow = Workflow(clarifai_api.api, workflow_id=workflow[0])
-            clarifai_response = clarifai_workflow.predict_by_url(img_link)
+            # If source is video, checks keyframe against models as video inputs not supported when using workflows
+            if source_link[0].endswith('mp4'):
+                clarifai_response = clarifai_workflow.predict_by_url(source_link[1])
+            else:
+                clarifai_response = clarifai_workflow.predict_by_url(source_link[0])
+
             for response in clarifai_response['results'][0]['outputs']:
                 results = get_clarifai_tags(response, probability)
                 clarifai_tags.extend(results)
         else:
             for model in clarifai_models:
-                clarifai_response = get_clarifai_response(clarifai_api, model, img_link)
-                results = get_clarifai_tags(clarifai_response['outputs'][0], probability)
+                clarifai_response = get_clarifai_response(
+                    clarifai_api, model, source_link, check_video
+                )
+                results = get_clarifai_tags(
+                    clarifai_response['outputs'][0], probability
+                )
                 clarifai_tags.extend(results)
 
-        logger.info('img_link {} got predicted result:\n{}'.format(img_link, clarifai_tags))
+        logger.info(
+            'img_link {} got predicted result:\n{}'.format(source_link, clarifai_tags)
+        )
 
         # Will not comment on an image if any of the tags in img_tags_skip_if_contain are matched
         if given_tags_in_result(img_tags_skip_if_contain, clarifai_tags):
@@ -61,7 +74,7 @@ def check_image(
                 )
             )
             return False, [], clarifai_tags
-        
+
         for (tags, should_comment, comments) in img_tags:
             if should_comment and given_tags_in_result(tags, clarifai_tags, full_match):
                 return True, comments, clarifai_tags
@@ -74,10 +87,9 @@ def check_image(
                 return False, [], clarifai_tags
 
         return True, [], clarifai_tags
-        
+
     except Exception as err:
-        logger.error(
-            'Image check error: {}'.format(err))
+        logger.error('Image check error: {}'.format(err))
 
 
 def given_tags_in_result(search_tags, clarifai_tags, full_match=False):
@@ -88,19 +100,37 @@ def given_tags_in_result(search_tags, clarifai_tags, full_match=False):
         return any((tag in clarifai_tags for tag in search_tags))
 
 
-def get_imagelink(browser):
-    """Gets the imagelink from the given webpage open in the browser"""
-    return browser.find_element_by_xpath(
-        '//img[@class = "FFVAD" or @class="_8jZFn"]'
-    ).get_attribute('src')
+def get_source_link(browser):
+    """Checks to see if a post is an image. If so, returns list with image source URL.
+    If a NoSuchElement exception occurs, checks post for video and returns the source URLs
+    for both the video and the video's keyframe."""
+    source = []
+
+    try:
+        source.append(
+            browser.find_element_by_xpath('//img[@class="FFVAD"]').get_attribute('src')
+        )
+    except NoSuchElementException:
+        source.append(
+            browser.find_element_by_xpath('//video[@class="tWeCl"]').get_attribute(
+                'src'
+            )
+        )
+        source.append(
+            browser.find_element_by_xpath('//img[@class="_8jZFn"]').get_attribute('src')
+        )
+
+    return source
 
 
-def get_clarifai_response(clarifai_api, clarifai_model, img_link):
+def get_clarifai_response(clarifai_api, clarifai_model, source_link, check_video):
     """Compiles a list of tags from Clarifai using the chosen models.
     First checks the value of each item in the models list against a
     dictionary. If the model value provided does not match one of the
     keys in the dictionary below, model value is used in
     clarifai_api.models.get(). Useful for custom models."""
+    # List of models which support video inputs
+    video_models = ['apparel', 'food', 'general', 'nsfw', 'travel', 'wedding']
     clarifai_models = {
         'general': 'general-v1.3',
         'nsfw': 'nsfw-v1.0',
@@ -122,8 +152,20 @@ def get_clarifai_response(clarifai_api, clarifai_model, img_link):
         clarifai_models.get(clarifai_model.lower(), clarifai_model)
     )
     # Get response from Clarifai API
-    clarifai_response = model.predict_by_url(img_link)
-    return clarifai_response
+    # If source is video, model accepts video inputs and check_video is True, analyze content of frames in video
+    if (
+        check_video
+        and source_link[0].endswith('mp4')
+        and clarifai_model.lower() in video_models
+    ):
+        response = model.predict_by_url(source_link[0], is_video=True)
+    # If source is video but model does not accept video inputs or check_video is False, analyze content of keyframe
+    elif source_link[0].endswith('mp4'):
+        response = model.predict_by_url(source_link[1])
+    else:
+        response = model.predict_by_url(source_link[0])
+
+    return response
 
 
 def get_clarifai_tags(clarifai_response, probability):
