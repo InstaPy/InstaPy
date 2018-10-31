@@ -15,9 +15,9 @@ def check_image(
     workflow,
     probability,
     full_match=False,
-    picture_url=None,
     check_video=False,
     proxy=None,
+    picture_url=None,
 ):
 
     try:
@@ -37,7 +37,7 @@ def check_image(
             source_link = [picture_url]
 
         # No image in page
-        if source_link is None:
+        if not source_link:
             return True, [], []
 
         # Check image using workflow if provided. If no workflow, check image using model(s)
@@ -63,7 +63,9 @@ def check_image(
                 clarifai_tags.extend(results)
 
         logger.info(
-            'img_link {} got predicted result:\n{}'.format(source_link, clarifai_tags)
+            'source_link {} got predicted result(s):\n{}'.format(
+                source_link, clarifai_tags
+            )
         )
 
         # Will not comment on an image if any of the tags in img_tags_skip_if_contain are matched
