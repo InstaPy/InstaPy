@@ -214,6 +214,18 @@ def get_clarifai_tags(clarifai_response, probability):
     except KeyError:
         pass
 
+    # Parse response for Video input
+    try:
+        for frame in clarifai_response['data']['frames']:
+            concepts.extend(
+                [
+                    {concept.get('name').lower(): concept.get('value')}
+                    for concept in frame['data']['concepts']
+                ]
+            )
+    except KeyError:
+        pass
+
     # Filter concepts based on probability threshold
     for concept in concepts:
         if float([x for x in concept.values()][0]) > probability:
