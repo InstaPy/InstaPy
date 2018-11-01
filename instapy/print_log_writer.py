@@ -1,5 +1,6 @@
 """Module only used to log the number of followers to a file"""
 from datetime import datetime
+import os.path
 
 from .time_util import sleep
 from .util import interruption_handler
@@ -118,3 +119,18 @@ def log_record_all_followed(login, followed, logger, logfolder):
                 followPool.write('{},\n'.format(followed))
     except BaseException as e:
         logger.error("log_record_all_followed_pool error {}".format(str(e)))
+
+
+def log_table_activity(login, action, user, logger, logfolder, logtime, source):
+    """Logs all interactions into
+    a seperate file"""
+    newFile = os.path.exists('{0}{1}_loggingActivity.csv'.format(logfolder, login)) == False
+    try:
+        with open('{0}{1}_loggingActivity.csv'.format(logfolder, login), 'a') as loggingActivityTable:
+            with interruption_handler():
+                if newFile:
+                    loggingActivityTable.write('LogTime,Source,Action,User,\n')
+
+                loggingActivityTable.write('{},{},{},{},\n'.format(logtime, source, action, user))
+    except BaseException as e:
+        logger.error("loggingActivityTable error {}".format(str(e)))
