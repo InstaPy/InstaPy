@@ -7,7 +7,7 @@ _The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 ## [Unreleased] - 2018-11-01
 ### Added
 - Interact with tagged images of users, and validation of a user to be optional
-- Use Clarifai to check video content by setting `check_video=True` in `session.set_use_clarifai`. By default `check_video` is set to `False` and should only be used if necessary (_see **README**_ for further details). Clarifai will check one frame of video for content for every one second of video. Feature to be updated with ability to check frames every X seconds as soon as Clarifai enables that feature in their API.
+- Use Clarifai to check video content. By default deactivated and should only be used if necessary.
 
 ## [Unreleased] - 2018-10-29
 ### Added
