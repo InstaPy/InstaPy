@@ -331,7 +331,8 @@ def get_links_for_username(browser,
                            amount,
                            logger,
                            randomize=False,
-                           media=None):
+                           media=None,
+                           taggedImages=False):
 
     """Fetches the number of links specified
     by amount and returns a list of links"""
@@ -348,6 +349,8 @@ def get_links_for_username(browser,
     logger.info('Getting {} image list...'.format(username))
 
     user_link = "https://www.instagram.com/{}/".format(username)
+    if taggedImages:
+        user_link = user_link + 'tagged/'
 
     #Check URL of the webpage, if it already is user's profile page, then do not navigate to it again
     web_address_navigator(browser, user_link)
