@@ -18,7 +18,7 @@ session = InstaPy(username=insta_username,
 
 with smart_run(session):
     """ Activity flow """
-    # settings
+    # general settings
     session.set_relationship_bounds(enabled=True,
                                       delimit_by_numbers=True,
                                        max_followers=4590,
@@ -29,7 +29,7 @@ with smart_run(session):
     session.set_dont_like(["pizza", "#store"])
     
     
-    # actions
+    # activity
     session.like_by_tags(["natgeo"], amount=10)
 
 

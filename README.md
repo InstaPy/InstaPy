@@ -89,13 +89,14 @@ Table of Contents
   * [Windows Task Scheduler](#windows-task-scheduler)
   * [cron](#cron)
   * [Schedule](#schedule)
-* [Extra Information](#extra-information)  
+* [Extra Information](#extra-information)
   * [Using one of the templates](#using-one-of-the-templates)
   * [How not to be banned](#how-not-to-be-banned)
   * [Simulation](#simulation)
   * [Disable Image Loading](#disable-image-loading)
   * [Using Multiple Chromedrivers](#using-multiple-chromedrivers)
   * [Changing DB or Chromedriver locations](#changing-db-or-chromedriver-locations)
+  * [Custom action delays](#custom-action-delays)
 
 ## Getting started
 
@@ -103,6 +104,8 @@ Table of Contents
 **[Setting up InstaPy for OSX](https://www.youtube.com/watch?v=I025CEBJCvQ)**
 
 **[Setting up InstaPy at Digital Ocean (for Debian)](https://www.youtube.com/watch?v=2Ci-hXU1IEY)**
+
+**[Setting up InstaPy for Windows](https://www.youtube.com/watch?v=AOUraeus-XA)**
 
 ### Guides:
 **[How to Ubuntu (64-Bit)](./docs/How_To_DO_Ubuntu_on_Digital_Ocean.md) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**
@@ -166,11 +169,11 @@ with smart_run(session):
                                        max_followers=4590,
                                         min_followers=45,
                                         min_following=77)
-    
+
     session.set_dont_include(["friend1", "friend2", "friend3"])
     session.set_dont_like(["pizza", "#store"])
-    
-    
+
+
     # actions
     session.like_by_tags(["natgeo"], amount=10)
 ```
@@ -535,7 +538,7 @@ _here the unfollow method- **alFollowing** is used_
 session.set_dont_unfollow_active_users(enabled=True, posts=5)
 ```
 
-### Interactions based on the number of followers and/or following a user has 
+### Interactions based on the number of followers and/or following a user has
 
 ##### This is used to check the number of _followers_ and/or _following_ a user has and if these numbers _either_ **exceed** the number set OR **does not pass** the number set OR if **their ratio does not reach** desired potency ratio then no further interaction happens
 ```python
@@ -668,7 +671,7 @@ session.set_skip_users(skip_private=True,
 ```
 This will skip all business accounts except the ones that have a category that matches one item in the list of _dont_skip_business_categories_
 **N.B.** If both _dont_skip_business_categories_ and _skip_business_categories_, InstaPy will skip only business accounts in the list given from _skip_business_categories_.
-		       
+
 > [A list of all availlable business categories can be found here](./assets/business_categories.md)
 
 ### Liking based on the number of existing likes a post has
@@ -898,6 +901,11 @@ email, and you will be prompted to enter the security code sent to your email.
 It will login to your account, now you can set bypass_suspicious_attempt to False
 ```bypass_suspicious_attempt=False``` and InstaPy will quickly login using cookies.
 
+If you want to bypass suspicious login attempt with your phone number, set `bypass_with_mobile` to `True`
+
+```python
+InstaPy(username=insta_username, password=insta_password, bypass_suspicious_attempt=True, bypass_with_mobile=True)
+```
 
 
 ### Quota Supervisor
@@ -931,8 +939,8 @@ _Once_ likes **reach** peak, it will **jump** every other like, _yet_, **will do
 
 **Notice**: `peak_likes=(50)` will not work, use `peak_likes=(50, None)` to supervise **hourly** peak and `peak_likes=(None, 50)` for **daily** peak.  
 >_Same **form**_ **applies** to **all** actions. Just specify the peaks in desired intervals- **hourly** or **daily** you want to _supervise_.
- 
-   
+
+
 `sleep_after`: is used to put **InstaPy** to _sleep_ **after reaching peak** _rather than_ **jumping the action** (_or exiting- **for** server calls_)  
 _Any action_ can be included `["likes", "comments", "follows", "unfollows", "server_calls"]`.  
 _As if_ you want to put _sleep_ **only after** reaching **hourly** like peak, put `"likes_h"` **OR** put `"likes_d"` for _sleeping_ **only after** reaching **daily** like peak.  
@@ -1481,8 +1489,8 @@ session.clarifai_check_img_for(['nsfw'])
 session.set_use_clarifai(enabled=True, api_key='xxx', models=['moderation'])
 session.clarifai_check_img_for(['suggestive', 'explicit'])
 
-# To adjust the threshold for accepted concept predictions and their 
-# respective score (degree of confidence) you can set the default probability 
+# To adjust the threshold for accepted concept predictions and their
+# respective score (degree of confidence) you can set the default probability
 # parameter for Clarifai (default 50%). For example, you could set probability to 15%.
 # -> any image with a nsfw score of 0.15 of higher will not be commented on
 
@@ -1501,7 +1509,7 @@ session.clarifai_check_img_for(['building'])
 ### Specialized Comments for Images with Specific Content
 
 ```python
-# checks the image for keywords food and lunch. To check for both, set full_match in 
+# checks the image for keywords food and lunch. To check for both, set full_match in
 # in session.set_use_clarifia to True, and if both keywords are found,
 # InstaPy will comment with the given comments. If full_match is False (default), it only
 # requires a single tag to match Clarifai results.
@@ -1509,8 +1517,8 @@ session.clarifai_check_img_for(['building'])
 session.set_use_clarifai(enabled=True, api_key='xxx', full_match=True)
 session.clarifai_check_img_for(['food', 'lunch'], comment=True, comments=['Tasty!', 'Yum!'])
 
-# If you only want to accept results with a high degree of confidence, you could 
-# set a probability to a higher value, like 90%. 
+# If you only want to accept results with a high degree of confidence, you could
+# set a probability to a higher value, like 90%.
 
 session.set_use_clarifai(enabled=True, api_key='xxx', probability=0.90, full_match=True)
 session.clarifai_check_img_for(['food', 'lunch'], comment=True, comments=['Tasty!', 'Yum!'])
@@ -1529,7 +1537,7 @@ Let's say you want to comment 'Great shot!' on images of men or women with the h
 
 For example:
 ```python
-session.set_use_clarifai(enabled=True, api_key='xxx', workflow=['your-workflow'])
+session.set_use_clarifai(enabled=True, api_key='xxx', workflow=['your-workflow'], proxy='123.123.123.123:5555')
 session.clarifai_check_img_for(['woman', 'man'], ['nsfw', 'explicit', 'suggestive'], comment=True, comments=['Great shot!'])
 ```
 If Clarifai's response includes the concepts of either `woman` or `man` but also includes at least `nsfw`, `explicit`, or `suggestive`, InstaPy will not comment. On the other hand, if Clarifai's response includes the concepts of either `woman` or `man` but does not include any of the concepts `nsfw`, `explicit`, or `suggestive`, InstaPy will add the comment `Great shot!`
@@ -1540,13 +1548,19 @@ In the event that you do not want to set up a workflow, you can also query multi
 
 **WARNING**: If you are using a free account with Clarifiai, be mindful that the using compound API queries could greatly increase your chances of exceeding your allotment of free 5000 operations per month. The number of Clarifai billable operations per image check equals the number of models selected. For example, if you check 100 images against `models=['general', 'nsfw', 'moderation']`, the total number of billable operations will be 300.
 
-Following the example above, to get general concepts, e.g. `woman`, you would use the model `general` and to check the image for the concepts `nsfw` and `explicit` you would also want to check the image against the NSFW and Moderation models. 
+Following the example above, to get general concepts, e.g. `woman`, you would use the model `general` and to check the image for the concepts `nsfw` and `explicit` you would also want to check the image against the NSFW and Moderation models.
 
 For example:
 ```python
-session.set_use_clarifai(enabled=True, api_key='xxx', models=['general', 'nsfw', 'moderation'])
+session.set_use_clarifai(enabled=True, api_key='xxx', models=['general', 'nsfw', 'moderation'], proxy=None)
 session.clarifai_check_img_for(['woman', 'man'], ['nsfw', 'explicit', 'suggestive'], comment=True, comments=['Great shot!'])
 ```
+
+Using proxy to access clarifai:
+We have 3 options:
+1. ip:port
+2. user:pass@ip:port
+3. None
 
 ##### Check out [https://clarifai.com/demo](https://clarifai.com/demo) to see some of the available tags.</h6>
 
@@ -1742,6 +1756,7 @@ In order to use them, just copy the desired file and put it next to the `quickst
 Finally simply adjust the username and any tags or firend lists before executing it.
 That's it.
 
+
 ### How not to be banned
 - Built-in delays prevent your account from getting banned. (Just make sure you don't like 1000s of post/day)
 - Use the Quota Supervisor feature to set some fixed limits for the bot for maximum safety.
@@ -1778,6 +1793,7 @@ session = InstaPy(username=insta_username,
                   multi_logs=True)
 ```
 
+
 ### Using Multiple Chromedrivers
 If you need multiple os versions of chromedriver just rename it like:
 ```bash
@@ -1786,14 +1802,63 @@ chromedriver_osx
 chromedriver_windows
 ```
 
+
 ### Changing DB or Chromedriver locations
-If you want to change the location/path of either the DB or the chromedriver, simply head into the `instapy/settings.py` file and change the following lines. 
+If you want to change the location/path of either the DB or the chromedriver, simply head into the `instapy/settings.py` file and change the following lines.
 Set these in instapy/settings.py if you're locating the library in the /usr/lib/pythonX.X/ directory.
 ```
 Settings.database_location = '/path/to/instapy.db'
 Settings.chromedriver_location = '/path/to/chromedriver'
 ```
 
+
+### Custom action delays
+###### _After doing each action- like, comment, follow or unfollow, there is a sleep delay to provide smooth activity flow_.  
+##### But you can set a _custom_ sleep delay for each action yourself by using the `set_action_delays` setting!
+```python
+session.set_action_delays(enabled=True,
+                           like=3,
+                           comment=5,
+                           follow=4.17,
+                           unfollow=28)
+```
+_Now it will sleep `3` seconds **after putting every single like**, `5` seconds for every single comment and similarly for the others.._
+
+
+You can also customize the sleep delay of _e.g._ **only the likes**:
+```python
+session.set_action_delays(enabled=True, like=3)
+```
+
+##### Wanna go smarter? - use `random_range(min, max)`  
+By just enabling `randomize` parameter, you can **enjoy** having random sleep delays at desired range, e.g.,
+```python
+session.set_action_delays(enabled=True, like=5.2, randomize=True, random_range=(70, 140))
+```
+_There, it will have a **random sleep delay between** `3.64` (_`70`% of `5.2`_) and `7.28`(_`140`% of `5.2`_) seconds _each time_ **after putting a like**._  
++ You can also put **only the max range** as- `random_range=(None, 200)`  
+Then, the _min range will automatically be_ `100`%- the same time delay itself.  
+And the random sleep delays will be between `5.2` and `10.4` seconds.  
++ If you put **only the min range** as- `random_range=(70, None)`  
+Then, the _max range will automatically be_ `100`%- the same time delay itself.  
+And the random sleep delays will be between `3.64` and `5.2` seconds.  
++ But if you **put `None` to both** min & max ranges as- `random_range=(None, None)`  
+Then no randomization will occur and the sleep delay will always be `5.2` seconds.
++ Heh! You **mistakenly put** min range instead of max range as- `random_range=(100, 70)`?  
+No worries. It will automatically take the smaller number as min and the bigger one as max.
++ Make sure to use the values **bigger than `0`** for the `random_rage` percentages.  
+E.g. `random_range=(-10, 140)` is an invalid range and no randomization will happen.
++ You can provide **floating point numbers** as percentages, too!  
+`random_range=(70.7, 200.45)` will work greatly.
+
+###### Note: There is a _minimum_ **default** delay for each action and if you enter a smaller time of delay than the default value, then it will **pick the default value**. You can turn that behaviour off with `safety_match` parameter.
+```python
+session.set_action_delays(enabled=True, like=0.15, safety_match=False)
+```
+_It has been held due to safety considerations. Cos sleeping a respective time after doing actions- for example ~`10` seconds after an unfollow, is very important to avoid possible temporary blocks and if you might enter e.g. `3` seconds for that without realizing the outcome..._
+
+
+
 ---
-###### Have Fun & Feel Free to report any issues
+###### Have Fun & Feel Free to report any issues  
 ---

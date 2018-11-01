@@ -37,6 +37,9 @@ class Settings:
     # specify either connected locally or through a proxy
     connection_type = None
 
+    # store user-defined delay time to sleep after doing actions
+    action_delays = {}
+
 
 
 class Storage:

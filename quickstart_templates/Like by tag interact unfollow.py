@@ -1,8 +1,12 @@
-"""This script is automatically executed every 6h on my server via cron"""
+"""
+This template is written by @timgrossmann
 
-# additional imports random amount of likes and unfollows
+What does this quickstart script aim to do?
+- This script is automatically executed every 6h on my server via cron
+"""
+
+
 import random
-
 from instapy import InstaPy
 from instapy.util import smart_run
 
@@ -34,13 +38,14 @@ ignore_list = ['vegan', 'veggie', 'plantbased']
 accounts = ['accounts with similar content']
 
 
+
+# get a session!
 session = InstaPy(username=insta_username,
                       password=insta_password,
                       headless_browser=True)
 
-with smart_run(session):
-    session.login()
 
+with smart_run(session):
     # settings
     session.set_relationship_bounds(enabled=True,
 				   max_followers=15000)
@@ -53,7 +58,10 @@ with smart_run(session):
     session.set_do_follow(enabled=True, percentage=40)
     session.set_do_like(enabled=True, percentage=80)
 
-    # actions
+    # activity
     session.like_by_tags(random.sample(like_tag_list, 3), amount=random.randint(50, 100), interact=True)
 
     session.unfollow_users(amount=random.randint(75,150), InstapyFollowed=(True, "all"), style="FIFO", unfollow_after=90*60*60, sleep_delay=501)
+
+
+
