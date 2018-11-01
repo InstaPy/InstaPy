@@ -1562,6 +1562,21 @@ We have 3 options:
 2. user:pass@ip:port
 3. None
 
+### Checking Video
+**WARNING**: Clarifai checks one frame of video for content for every second of video. **That is, in a 60 second video, 60 billable operations would be run for every model that the video is being checked against.** Running checks on video should only be used if you have special needs and are prepared to use a large number of billable operations.
+
+To have Clarifai run a predict on video posts, you can set the `check_video` argument in `session.set_use_clarifai` to `True`. By default, this argument is set to `False`. Even if you do not choose to check the entire video, Clarifai will still check the video's keyframe for content.
+
+For example:
+
+```python
+session.set_use_clarifai(enabled=True, api_key='xxx', check_video=True)
+```
+
+With video inputs, Clarifai's Predict API response will return a list of concepts at a rate of one frame for every second of a video.
+
+Be aware that you cannot check video using a `workflow` and that only a select number of public models are currently supported. Models currently supported are: Apparel, Food, General, NSFW, Travel, and Wedding. In the event that the models being used do not support video inputs or you are using a workflow, the video's keyframe will still be checked for content.
+
 ##### Check out [https://clarifai.com/demo](https://clarifai.com/demo) to see some of the available tags.</h6>
 
 ## Running on a Server

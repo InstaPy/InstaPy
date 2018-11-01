@@ -172,6 +172,7 @@ class InstaPy:
         self.clarifai_img_tags = []
         self.clarifai_img_tags_skip = []
         self.clarifai_full_match = False
+        self.clarifai_check_video = False
         self.clarifai_proxy = None
 
         self.potency_ratio = 1.3466
@@ -613,6 +614,7 @@ class InstaPy:
                          workflow=None,
                          probability=0.50,
                          full_match=False,
+                         check_video=False,
                          proxy=None):
         """
         Defines if the clarifai img api should be used
@@ -638,6 +640,7 @@ class InstaPy:
         self.clarifai_workflow = workflow or []
         self.clarifai_probability = probability
         self.clarifai_full_match = full_match
+        self.clarifai_check_video = check_video
 
         if proxy is not None:
             self.clarifai_proxy = 'https://' + proxy
@@ -708,7 +711,8 @@ class InstaPy:
         return check_image(self.browser, self.clarifai_api_key, self.clarifai_img_tags,
                            self.clarifai_img_tags_skip, self.logger, self.clarifai_models,
                            self.clarifai_workflow, self.clarifai_probability,
-                           self.clarifai_full_match, proxy=self.clarifai_proxy)
+                           self.clarifai_full_match, self.clarifai_check_video,
+                           proxy=self.clarifai_proxy)
 
 
     def follow_commenters(self, usernames, amount=10, daysold=365, max_pic=50, sleep_delay=600, interact=False):
