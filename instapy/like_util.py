@@ -366,7 +366,7 @@ def get_links_for_username(browser,
         return False
 
     # if private user, we can get links only if we following
-    following, follow_button = get_following_status(browser, 'profile', username, person, logger, logfolder)
+    following, follow_button = get_following_status(browser, 'profile', username, person, None, logger, logfolder)
     if following == 'Following':
         following = True
     is_private = is_private_profile(browser, logger, following)
