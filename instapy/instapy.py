@@ -1792,9 +1792,11 @@ class InstaPy:
             try:
                 links = get_links_for_username(
                     self.browser,
+                    self.username,
                     username,
                     amount,
                     self.logger,
+                    self.logfolder,
                     randomize,
                     media)
 
@@ -2030,9 +2032,11 @@ class InstaPy:
 
             try:
                 links = get_links_for_username(self.browser,
+                                               self.username,
                                                username,
                                                amount,
                                                self.logger,
+                                               self.logfolder,
                                                randomize,
                                                media)
             except NoSuchElementException:
@@ -2281,9 +2285,11 @@ class InstaPy:
 
             try:
                 links = get_links_for_username(self.browser,
+                                               self.username,
                                                username,
                                                amount,
                                                self.logger,
+                                               self.logfolder,
                                                randomize,
                                                media,
                                                taggedImages=True)
@@ -2354,14 +2360,7 @@ class InstaPy:
 
                                 if self.use_clarifai and commenting:
                                     try:
-                                        checked_img, temp_comments = (
-                                            check_image(self.browser,
-                                                        self.clarifai_api_key,
-                                                        self.clarifai_img_tags,
-                                                        self.clarifai_img_tags_skip,
-                                                        self.logger,
-                                                        self.clarifai_full_match))
-
+                                        checked_img, temp_comments, clarifai_tags = (self.query_clarifai())
                                     except Exception as err:
                                         self.logger.error(
                                             'Image check error: {}'.format(err))
