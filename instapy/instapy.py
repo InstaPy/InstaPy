@@ -1726,6 +1726,14 @@ class InstaPy:
                                                                 self.logfolder)
                                 if follow_state == True:
                                     followed += 1
+
+                                    # Populate logs table
+                                    action = 'Followed'
+                                    source = ('#{}'.format(tag))
+                                    logtime = datetime.now().strftime('%Y-%m-%d %H:%M')
+                                    log_table_activity(self.username, action, user_name, self.logger, self.logfolder,
+                                                       logtime, source)
+
                             else:
                                 self.logger.info('--> Not following')
                                 sleep(1)
