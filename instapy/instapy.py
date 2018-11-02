@@ -549,7 +549,7 @@ class InstaPy:
         self.switch_language = option
         return self
 
-    def set_use_clarifai(self, enabled=False, api_key=None, models=None, workflow=None, probability=0.50,
+    def set_use_clarifai(self, enabled=False, api_key=None, models=None, workflow=None, probability=0.50, 
                          full_match=False):
         """
         Defines if the clarifai img api should be used
@@ -1213,7 +1213,6 @@ class InstaPy:
                                      disapproval_reason) = verify_commenting(self.browser,
                                                                              self.max_comments,
                                                                              self.min_comments,
-                                                                             self.comments_mandatory_words,
                                                                              self.logger)
                                 if self.commenting_approved:
                                     if temp_comments:
