@@ -208,7 +208,7 @@ class InstaPy:
 
         #use for logTable
         self.sourceInteract = None
-            
+
         self.relationship_data = {username: {"all_following": [], "all_followers": []}}
 
         self.simulation = {"enabled": True, "percentage": 100}
@@ -234,8 +234,6 @@ class InstaPy:
 
         if self.selenium_local_session == True:
             self.set_selenium_local_session()
-
-
 
     def get_instapy_logger(self, show_logs):
         """
@@ -268,8 +266,6 @@ class InstaPy:
             Settings.loggers[self.username] = logger
             Settings.logger = logger
             return logger
-
-
 
     def set_selenium_local_session(self):
         """Starts local session for a selenium server.
@@ -374,8 +370,6 @@ class InstaPy:
 
         return self
 
-      
-
     def set_selenium_remote_session(self, selenium_url='', selenium_driver=None):
         """
         Starts remote session for a selenium server.
@@ -407,8 +401,6 @@ class InstaPy:
 
         return self
 
-
-
     def login(self):
         """Used to login the user either with the username and password"""
         if not login_user(self.browser,
@@ -433,34 +425,28 @@ class InstaPy:
 
         return self
 
-
-
     def set_sleep_reduce(self, percentage):
         set_sleep_percentage(percentage)
 
         return self
 
-
-
     def set_action_delays(self, enabled=False,
-                                 like=None,
-                                 comment=None,
-                                 follow=None,
-                                 unfollow=None,
-                                  randomize=False,
-                                  random_range=(None, None),
-                                   safety_match=True):
+                          like=None,
+                          comment=None,
+                          follow=None,
+                          unfollow=None,
+                          randomize=False,
+                          random_range=(None, None),
+                          safety_match=True):
         """ Set custom sleep delay after actions """
-        Settings.action_delays.update({"enabled":enabled,
-                                        "like": like,
-                                        "comment": comment,
-                                        "follow": follow,
-                                        "unfollow": unfollow,
-                                         "randomize": randomize,
-                                         "random_range": random_range,
-                                          "safety_match": safety_match})
-
-
+        Settings.action_delays.update({"enabled": enabled,
+                                       "like": like,
+                                       "comment": comment,
+                                       "follow": follow,
+                                       "unfollow": unfollow,
+                                       "randomize": randomize,
+                                       "random_range": random_range,
+                                       "safety_match": safety_match})
 
     def set_do_comment(self, enabled=False, percentage=0):
         """Defines if images should be commented or not
@@ -472,8 +458,6 @@ class InstaPy:
         self.comment_percentage = percentage
 
         return self
-
-
 
     def set_comments(self, comments=None, media=None):
         """Changes the possible comments"""
@@ -494,8 +478,6 @@ class InstaPy:
 
         return self
 
-
-
     def set_do_follow(self, enabled=False, percentage=0, times=1):
         """Defines if the user of the liked image should be followed"""
         if self.aborting:
@@ -507,8 +489,6 @@ class InstaPy:
 
         return self
 
-
-
     def set_do_like(self, enabled=False, percentage=0):
         if self.aborting:
             return self
@@ -517,8 +497,6 @@ class InstaPy:
         self.like_percentage = percentage
 
         return self
-
-
 
     def set_dont_like(self, tags=None):
         """Changes the possible restriction tags, if one of this
@@ -535,8 +513,6 @@ class InstaPy:
 
         return self
 
-
-
     def set_mandatory_words(self, tags=None):
         """Changes the possible restriction tags, if all of this
          hashtags is in the description, the image will be liked"""
@@ -551,8 +527,6 @@ class InstaPy:
         self.mandatory_words = tags or []
 
         return self
-
-
 
     def set_user_interact(self,
                           amount=10,
@@ -570,8 +544,6 @@ class InstaPy:
 
         return self
 
-
-
     def set_ignore_users(self, users=None):
         """Changes the possible restriction to users, if a user who posts
         is one of these, the image won't be liked"""
@@ -581,8 +553,6 @@ class InstaPy:
         self.ignore_users = users or []
 
         return self
-
-
 
     def set_ignore_if_contains(self, words=None):
         """Ignores the don't likes if the description contains
@@ -594,8 +564,6 @@ class InstaPy:
 
         return self
 
-
-
     def set_dont_include(self, friends=None):
         """Defines which accounts should not be unfollowed"""
         if self.aborting:
@@ -605,8 +573,6 @@ class InstaPy:
         self.white_list = set(friends) or set()
 
         return self
-
-
 
     def set_switch_language(self, option=True):
         self.switch_language = option
@@ -652,8 +618,6 @@ class InstaPy:
 
         return self
 
-
-
     def set_smart_hashtags(self,
                            tags=None,
                            limit=3,
@@ -696,8 +660,6 @@ class InstaPy:
         self.smart_hashtags = list(set(self.smart_hashtags))
         return self
 
-
-
     def clarifai_check_img_for(self, tags=None, tags_skip=None, comment=False, comments=None):
         """Defines the tags the images should be checked for"""
         if self.aborting:
@@ -718,7 +680,6 @@ class InstaPy:
                            self.clarifai_workflow, self.clarifai_probability,
                            self.clarifai_full_match, self.clarifai_check_video,
                            proxy=self.clarifai_proxy)
-
 
     def follow_commenters(self, usernames, amount=10, daysold=365, max_pic=50, sleep_delay=600, interact=False):
         """ Follows users' commenters """
@@ -885,9 +846,9 @@ class InstaPy:
                     action = 'Followed'
                     source = ('@{}'.format(username))
                     logtime = datetime.now().strftime('%Y-%m-%d %H:%M')
-                    log_table_activity(self.username, action, liker, self.logger, self.logfolder, logtime, source)                                   
-                    
-                    if followed > 0:
+                    log_table_activity(self.username, action, liker, self.logger, self.logfolder, logtime, source)
+
+                if followed > 0:
                         followed_all += 1
                         followed_new += 1
                         self.logger.info("Total Follow: {}\n".format(str(followed_all)))
@@ -1277,8 +1238,9 @@ class InstaPy:
                             # Populate logs table
                             action = 'Liked'
                             logtime = datetime.now().strftime('%Y-%m-%d %H:%M')
-                            log_table_activity(self.username, action, user_name, self.logger, self.logfolder, logtime, location)
-                            
+                            log_table_activity(self.username, action, user_name, self.logger, self.logfolder, logtime,
+                                               location)
+
                             # reset jump counter after a successful like
                             self.jumps["consequent"]["likes"] = 0
 
@@ -1328,7 +1290,9 @@ class InstaPy:
                                             # Populate logs table
                                             action = 'Commented'
                                             logtime = datetime.now().strftime('%Y-%m-%d %H:%M')
-                                            log_table_activity(self.username, action, user_name, self.logger, self.logfolder, logtime, location)
+                                            log_table_activity(self.username, action, user_name, self.logger,
+                                                               self.logfolder, logtime, location)
+
 
                                 else:
                                     self.logger.info(disapproval_reason)
@@ -1359,7 +1323,9 @@ class InstaPy:
                                     # Populate logs table
                                     action = 'Followed'
                                     logtime = datetime.now().strftime('%Y-%m-%d %H:%M')
-                                    log_table_activity(self.username, action, user_name, self.logger, self.logfolder, logtime, location)
+                                    log_table_activity(self.username, action, user_name, self.logger, self.logfolder,
+                                                       logtime, location)
+
 
                             else:
                                 self.logger.info('--> Not following')
@@ -1396,8 +1362,6 @@ class InstaPy:
         self.not_valid_users += not_valid_users
 
         return self
-
-
 
     def comment_by_locations(self,
                              locations=None,
@@ -1516,8 +1480,9 @@ class InstaPy:
                                         # Populate logs table
                                         action = 'Commented'
                                         logtime = datetime.now().strftime('%Y-%m-%d %H:%M')
-                                        log_table_activity(self.username, action, user_name, self.logger, self.logfolder, logtime, location)
-                                        
+                                        log_table_activity(self.username, action, user_name, self.logger,
+                                                           self.logfolder, logtime, location)
+
                                         # reset jump counter after a successful comment
                                         self.jumps["consequent"]["comments"] = 0
 
@@ -1545,9 +1510,11 @@ class InstaPy:
                                                 # Populate logs table
                                                 action = 'Followed'
                                                 logtime = datetime.now().strftime('%Y-%m-%d %H:%M')
-                                                log_table_activity(self.username, action, user_name, self.logger, self.logfolder, logtime, location)
+                                                log_table_activity(self.username, action, user_name, self.logger,
+                                                                   self.logfolder, logtime, location)
 
-                                        else:
+
+                                    else:
                                             self.logger.info('--> Not following')
                                             sleep(1)
 
@@ -1677,8 +1644,9 @@ class InstaPy:
                             action = 'Liked'
                             source = ('#{}'.format(tag))
                             logtime = datetime.now().strftime('%Y-%m-%d %H:%M')
-                            log_table_activity(self.username, action, user_name, self.logger, self.logfolder, logtime, source)
-                            
+                            log_table_activity(self.username, action, user_name, self.logger, self.logfolder, logtime,
+                                               source)
+
                             # reset jump counter after a successful like
                             self.jumps["consequent"]["likes"] = 0
 
@@ -1729,7 +1697,9 @@ class InstaPy:
                                             action = 'Commented'
                                             source = ('#{}'.format(tag))
                                             logtime = datetime.now().strftime('%Y-%m-%d %H:%M')
-                                            log_table_activity(self.username, action, user_name, self.logger, self.logfolder, logtime, source)
+                                            log_table_activity(self.username, action, user_name, self.logger,
+                                                               self.logfolder, logtime, source)
+
 
                                 else:
                                     self.logger.info(disapproval_reason)
@@ -1756,12 +1726,6 @@ class InstaPy:
                                                                 self.logfolder)
                                 if follow_state == True:
                                     followed += 1
-
-                                    # Populate logs table
-                                    action = 'Followed'
-                                    source = ('#{}'.format(tag))
-                                    logtime = datetime.now().strftime('%Y-%m-%d %H:%M')
-                                    log_table_activity(self.username, action, user_name, self.logger, self.logfolder, logtime, source)
                             else:
                                 self.logger.info('--> Not following')
                                 sleep(1)
@@ -1808,8 +1772,6 @@ class InstaPy:
         self.not_valid_users += not_valid_users
 
         return self
-
-
 
     def like_by_users(self, usernames, amount=10, randomize=False, media=None):
         """Likes some amounts of images for each usernames"""
@@ -1947,7 +1909,7 @@ class InstaPy:
                                     user_name not in self.dont_include and
                                     checked_img and
                                     commenting):
-                                    
+
                                 if self.delimit_commenting:
                                     (self.commenting_approved,
                                      disapproval_reason) = verify_commenting(
@@ -2157,8 +2119,9 @@ class InstaPy:
                                 action = 'Liked'
                                 logtime = datetime.now().strftime('%Y-%m-%d %H:%M')
                                 source = '@{}'.format(self.sourceInteract)
-                                log_table_activity(self.username, action, user_name, self.logger, self.logfolder, logtime, source)
-                                
+                                log_table_activity(self.username, action, user_name, self.logger, self.logfolder,
+                                                   logtime, source)
+
                                 # reset jump counter after a successful like
                                 self.jumps["consequent"]["likes"] = 0
 
@@ -2202,7 +2165,9 @@ class InstaPy:
                                                 action = 'Commented'
                                                 logtime = datetime.now().strftime('%Y-%m-%d %H:%M')
                                                 source = '@{}'.format(self.sourceInteract)
-                                                log_table_activity(self.username, action, user_name, self.logger, self.logfolder, logtime, source)
+                                                log_table_activity(self.username, action, user_name, self.logger,
+                                                                   self.logfolder, logtime, source)
+
 
                                     else:
                                         self.logger.info(disapproval_reason)
@@ -2246,7 +2211,7 @@ class InstaPy:
                     logtime = datetime.now().strftime('%Y-%m-%d %H:%M')
                     source = '@{}'.format(self.sourceInteract)
                     log_table_activity(self.username, action, user_name, self.logger, self.logfolder, logtime, source)
-                    
+
                 elif msg == "already followed":
                     already_followed += 1
 
@@ -2284,10 +2249,10 @@ class InstaPy:
         return self
 
     def interact_by_users_tagged_posts(self,
-                          usernames,
-                          amount=10,
-                          randomize=False,
-                          media=None):
+                                       usernames,
+                                       amount=10,
+                                       randomize=False,
+                                       media=None):
         """Likes some amounts of tagged images for each usernames"""
         if self.aborting:
             return self
@@ -2331,7 +2296,7 @@ class InstaPy:
             # static conditions
             not_dont_include = username not in self.dont_include
             follow_restricted = follow_restriction("read", username,
-                                                    self.follow_times, self.logger)
+                                                   self.follow_times, self.logger)
             counter = 0
             while True:
                 following = (random.randint(0, 100) <= self.follow_percentage and
@@ -2349,7 +2314,8 @@ class InstaPy:
                 if commenting and not liking and amount == 1:
                     continue
                 if following or commenting or liking:
-                    self.logger.info('username actions: following={} commenting={} liking={}'.format(following, commenting, liking))
+                    self.logger.info(
+                        'username actions: following={} commenting={} liking={}'.format(following, commenting, liking))
                     break
                 # if for some reason we have no actions on this user
                 if counter > 5:
@@ -2406,19 +2372,20 @@ class InstaPy:
                         if i > 0:
                             liking = (random.randint(0, 100) <= self.like_percentage)
                             commenting = (random.randint(0, 100) <= self.comment_percentage and
-                                            self.do_comment and
-                                                not_dont_include)
+                                          self.do_comment and
+                                          not_dont_include)
 
                         # like
                         if self.do_like and liking and self.delimit_liking:
-                            self.liking_approved = verify_liking(self.browser, self.max_likes, self.min_likes, self.logger)
+                            self.liking_approved = verify_liking(self.browser, self.max_likes, self.min_likes,
+                                                                 self.logger)
 
                         if self.do_like and liking and self.liking_approved:
                             like_state, msg = like_image(self.browser,
-                                               user_name,
-                                               self.blacklist,
-                                               self.logger,
-                                               self.logfolder)
+                                                         user_name,
+                                                         self.blacklist,
+                                                         self.logger,
+                                                         self.logfolder)
                             if like_state == True:
                                 total_liked_img += 1
                                 liked_img += 1
@@ -2447,12 +2414,12 @@ class InstaPy:
 
                                     if self.delimit_commenting:
                                         (self.commenting_approved,
-                                          disapproval_reason) = verify_commenting(
-                                                                     self.browser,
-                                                                      self.max_comments,
-                                                                      self.min_comments,
-                                                                      self.comments_mandatory_words,
-                                                                       self.logger)
+                                         disapproval_reason) = verify_commenting(
+                                            self.browser,
+                                            self.max_comments,
+                                            self.min_comments,
+                                            self.comments_mandatory_words,
+                                            self.logger)
                                     if self.commenting_approved:
                                         if temp_comments:
                                             # use clarifai related comments only!
@@ -2467,11 +2434,11 @@ class InstaPy:
                                                         self.photo_comments)
 
                                         comment_state, msg = comment_image(self.browser,
-                                                                            user_name,
-                                                                             comments,
-                                                                              self.blacklist,
-                                                                               self.logger,
-                                                                               self.logfolder)
+                                                                           user_name,
+                                                                           comments,
+                                                                           self.blacklist,
+                                                                           self.logger,
+                                                                           self.logfolder)
                                         if comment_state == True:
                                             commented += 1
 
@@ -2525,9 +2492,9 @@ class InstaPy:
                                  "reached its end\n")
 
         # final words
-        interacted_media_size = (len(usernames)*amount - inap_img)
+        interacted_media_size = (len(usernames) * amount - inap_img)
         self.logger.info("Finished interacting on total of {} images from {} users! xD\n"
-                            .format(interacted_media_size, len(usernames)))
+                         .format(interacted_media_size, len(usernames)))
 
         # print results
         self.logger.info('Liked: {}'.format(total_liked_img))
@@ -2603,7 +2570,7 @@ class InstaPy:
             if self.quotient_breach:
                 break
 
-            self.sourceInteract = user    
+            self.sourceInteract = user
             self.logger.info("User '{}' [{}/{}]".format((user), index + 1, len(usernames)))
             try:
                 person_list, simulated_list = get_given_user_followers(self.browser,
@@ -2977,7 +2944,7 @@ class InstaPy:
                 source = ('@{}'.format(user))
                 logtime = datetime.now().strftime('%Y-%m-%d %H:%M')
                 log_table_activity(self.username, action, person, self.logger, self.logfolder, logtime, source)
-                                                   
+
                 sleep(1)
 
                 if followed > 0:
@@ -3142,7 +3109,7 @@ class InstaPy:
                 source = ('#{}'.format(tag))
                 logtime = datetime.now().strftime('%Y-%m-%d %H:%M')
                 log_table_activity(self.username, action, person, self.logger, self.logfolder, logtime, source)
-                                                   
+
                 sleep(1)
 
                 if followed > 0:
@@ -3517,8 +3484,6 @@ class InstaPy:
 
         return
 
-
-
     def set_dont_unfollow_active_users(self, enabled=False, posts=4, boundary=500):
         """Prevents unfollow followers who have liked one of
         your latest X posts"""
@@ -3540,8 +3505,6 @@ class InstaPy:
         # include active user to not unfollow list
         self.dont_include.update(active_users)
 
-
-
     def set_blacklist(self, enabled, campaign):
         """Enable/disable blacklist. If enabled, adds users to a blacklist after
         interact with and adds users to dont_include list"""
@@ -3560,8 +3523,6 @@ class InstaPy:
                         self.dont_include.add(row['username'])
         except:
             self.logger.info('Campaign {} first run'.format(campaign))
-
-
 
     def grab_followers(self, username=None, amount=None, live_match=False, store_locally=True):
         """ Gets and returns `followers` information of given user in desired amount, also, saves locally """
@@ -3590,8 +3551,6 @@ class InstaPy:
                                           self.logger,
                                           self.logfolder)
         return grabbed_followers
-
-
 
     def grab_following(self, username=None, amount=None, live_match=False, store_locally=True):
         """ Gets and returns `following` information of given user in desired amount, also, saves locally """
@@ -3643,8 +3602,6 @@ class InstaPy:
 
         return all_unfollowers, active_unfollowers
 
-
-
     def pick_nonfollowers(self, username=None, live_match=False, store_locally=True):
         """ Returns Nonfollowers data of a given user """
 
@@ -3661,8 +3618,6 @@ class InstaPy:
                                         self.logfolder)
 
         return nonfollowers
-
-
 
     def pick_fans(self, username=None, live_match=False, store_locally=True):
         """ Returns Fans data- all of the usernames who do follow
@@ -3682,8 +3637,6 @@ class InstaPy:
 
         return fans
 
-
-
     def pick_mutual_following(self, username=None, live_match=False, store_locally=True):
         """ Returns Mutual Following data- all of the usernames who do follow
         the user WHOM user itself also do follow back"""
@@ -3701,8 +3654,6 @@ class InstaPy:
                                                 self.logfolder)
 
         return mutual_following
-
-
 
     def end(self):
         """Closes the current session"""
@@ -3740,8 +3691,6 @@ class InstaPy:
             message = "Session ended!"
             highlight_print(self.username, message, "end", "info", self.logger)
             print("\n\n")
-
-
 
     def follow_by_tags(self,
                        tags=None,
