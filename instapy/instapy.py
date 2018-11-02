@@ -549,7 +549,7 @@ class InstaPy:
         self.switch_language = option
         return self
 
-    def set_use_clarifai(self, enabled=False, api_key=None, models=None, workflow=None, probability=0.50, 
+    def set_use_clarifai(self, enabled=False, api_key=None, models=None, workflow=None, probability=0.50,
                          full_match=False):
         """
         Defines if the clarifai img api should be used
@@ -803,7 +803,7 @@ class InstaPy:
                     logtime = datetime.now().strftime('%Y-%m-%d %H:%M')
                     log_table_activity(self.username, action, liker, self.logger, self.logfolder, logtime, source)
 
-                if followed > 0:
+                    if followed > 0:
                         followed_all += 1
                         followed_new += 1
                         self.logger.info("Total Follow: {}\n".format(str(followed_all)))
@@ -1213,6 +1213,7 @@ class InstaPy:
                                      disapproval_reason) = verify_commenting(self.browser,
                                                                              self.max_comments,
                                                                              self.min_comments,
+                                                                             self.comments_mandatory_words,
                                                                              self.logger)
                                 if self.commenting_approved:
                                     if temp_comments:
