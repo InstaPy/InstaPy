@@ -174,8 +174,6 @@ class InstaPy:
         self.clarifai_img_tags = []
         self.clarifai_img_tags_skip = []
         self.clarifai_full_match = False
-        self.clarifai_check_video = False
-        self.clarifai_proxy = None
 
         self.potency_ratio = 1.3466
         self.delimit_by_numbers = True
@@ -381,8 +379,6 @@ class InstaPy:
                 command_executor=selenium_url,
                 desired_capabilities=DesiredCapabilities.FIREFOX)
 
-        if selenium_driver:
-            self.browser = selenium_driver
         else:
             self.browser = webdriver.Remote(
                 command_executor=selenium_url,
@@ -553,8 +549,8 @@ class InstaPy:
         self.switch_language = option
         return self
 
-        def set_use_clarifai(self, enabled=False, api_key=None, models=None, workflow=None, probability=0.50,
-                             full_match=False):
+    def set_use_clarifai(self, enabled=False, api_key=None, models=None, workflow=None, probability=0.50,
+                         full_match=False):
         """
         Defines if the clarifai img api should be used
         Which 'project' will be used (only 5000 calls per month)
