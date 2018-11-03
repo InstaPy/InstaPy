@@ -2084,6 +2084,13 @@ class InstaPy:
                             if like_state == True:
                                 total_liked_img += 1
                                 liked_img += 1
+
+                                # Populate logs table
+                                action = 'Liked'
+                                logtime = datetime.now().strftime('%Y-%m-%d %H:%M')
+                                source = '@{}'.format(self.sourceInteract)
+                                log_table_activity(self.username, action, user_name, self.logger, self.logfolder, logtime, source)
+
                                 # reset jump counter after a successful like
                                 self.jumps["consequent"]["likes"] = 0
 
@@ -2131,6 +2138,12 @@ class InstaPy:
                                         if comment_state == True:
                                             commented += 1
 
+                                            # Populate logs table
+                                            action = 'Commented'
+                                            logtime = datetime.now().strftime('%Y-%m-%d %H:%M')
+                                            source = '@{}'.format(self.sourceInteract)
+                                            log_table_activity(self.username, action, user_name, self.logger, self.logfolder, logtime, source)
+
                                     else:
                                         self.logger.info(disapproval_reason)
 
@@ -2167,6 +2180,12 @@ class InstaPy:
                     self.logfolder)
                 if follow_state == True:
                     followed += 1
+
+                    # Populate logs table
+                    action = 'Followed'
+                    logtime = datetime.now().strftime('%Y-%m-%d %H:%M')
+                    source = '@{}'.format(self.sourceInteract)
+                    log_table_activity(self.username, action, username, self.logger, self.logfolder, logtime, source)
 
                 elif msg == "already followed":
                     already_followed += 1
