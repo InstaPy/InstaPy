@@ -2360,7 +2360,7 @@ class InstaPy:
 
                                 if self.use_clarifai and commenting:
                                     try:
-                                        checked_img, temp_comments, clarifai_tags = (self.query_clarifai())
+                                        checked_img, temp_comments, clarifai_tags = self.query_clarifai()
                                     except Exception as err:
                                         self.logger.error(
                                             'Image check error: {}'.format(err))
