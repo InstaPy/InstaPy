@@ -14,6 +14,7 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver import DesiredCapabilities
 from selenium.webdriver.common.proxy import Proxy, ProxyType
+from selenium.webdriver.firefox.options import Options as Firefox_Options
 from pyvirtualdisplay import Display
 import logging
 from contextlib import contextmanager
@@ -273,6 +274,10 @@ class InstaPy:
             return self
 
         if self.use_firefox:
+            firefox_options = Firefox_Options()
+            if self.headless_browser:
+                firefox_options.add_argument('-headless')
+
             if self.browser_profile_path is not None:
                 firefox_profile = webdriver.FirefoxProfile(
                     self.browser_profile_path)
@@ -295,7 +300,8 @@ class InstaPy:
                 firefox_profile.set_preference('network.proxy.ssl_port',
                                                self.proxy_port)
 
-            self.browser = webdriver.Firefox(firefox_profile=firefox_profile)
+            self.browser = webdriver.Firefox(firefox_profile=firefox_profile,
+                                             options=firefox_options)
 
         else:
             chromedriver_location = Settings.chromedriver_location
@@ -369,7 +375,7 @@ class InstaPy:
 
         return self
 
-      
+
 
     def set_selenium_remote_session(self, selenium_url='', selenium_driver=None):
         """
@@ -1889,7 +1895,7 @@ class InstaPy:
                                     user_name not in self.dont_include and
                                     checked_img and
                                     commenting):
-                                    
+
                                 if self.delimit_commenting:
                                     (self.commenting_approved,
                                      disapproval_reason) = verify_commenting(
