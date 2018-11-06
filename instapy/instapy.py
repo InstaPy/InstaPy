@@ -14,7 +14,6 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver import DesiredCapabilities
 from selenium.webdriver.common.proxy import Proxy, ProxyType
-from selenium.webdriver.firefox.options import Options as Firefox_Options
 from pyvirtualdisplay import Display
 import logging
 from contextlib import contextmanager
@@ -173,8 +172,6 @@ class InstaPy:
         self.clarifai_img_tags = []
         self.clarifai_img_tags_skip = []
         self.clarifai_full_match = False
-        self.clarifai_check_video = False
-        self.clarifai_proxy = None
 
         self.potency_ratio = 1.3466
         self.delimit_by_numbers = True
@@ -234,19 +231,17 @@ class InstaPy:
         if self.selenium_local_session == True:
             self.set_selenium_local_session()
 
-
-
     def get_instapy_logger(self, show_logs):
         """
         Handles the creation and retrieval of loggers to avoid re-instantiation.
         """
 
-        existing_logger = Settings.loggers.get(self.username)
+        existing_logger = Settings.loggers.get(__name__)
         if existing_logger is not None:
             return existing_logger
         else:
             # initialize and setup logging system for the InstaPy object
-            logger = logging.getLogger(self.username)
+            logger = logging.getLogger(_name_)
             logger.setLevel(logging.DEBUG)
             file_handler = logging.FileHandler('{}general.log'.format(self.logfolder))
             file_handler.setLevel(logging.DEBUG)
@@ -264,11 +259,9 @@ class InstaPy:
 
             logger = logging.LoggerAdapter(logger, extra)
 
-            Settings.loggers[self.username] = logger
+            Settings.loggers[__name__] = logger
             Settings.logger = logger
             return logger
-
-
 
     def set_selenium_local_session(self):
         """Starts local session for a selenium server.
@@ -277,10 +270,6 @@ class InstaPy:
             return self
 
         if self.use_firefox:
-            firefox_options = Firefox_Options()
-            if self.headless_browser:
-                firefox_options.add_argument('-headless')
-
             if self.browser_profile_path is not None:
                 firefox_profile = webdriver.FirefoxProfile(
                     self.browser_profile_path)
@@ -303,8 +292,7 @@ class InstaPy:
                 firefox_profile.set_preference('network.proxy.ssl_port',
                                                self.proxy_port)
 
-            self.browser = webdriver.Firefox(firefox_profile=firefox_profile,
-                                             options=firefox_options)
+            self.browser = webdriver.Firefox(firefox_profile=firefox_profile)
 
         else:
             chromedriver_location = Settings.chromedriver_location
@@ -380,38 +368,26 @@ class InstaPy:
 
 
 
-    def set_selenium_remote_session(self, selenium_url='', selenium_driver=None):
-        """
-        Starts remote session for a selenium server.
-        Creates a new selenium driver instance for remote session or uses provided
-        one. Useful for docker setup.
-
-        :param selenium_url: string
-        :param selenium_driver: selenium WebDriver
-        :return: self
-        """
+    def set_selenium_remote_session(self, selenium_url=''):
+        """Starts remote session for a selenium server.
+         Useful for docker setup."""
         if self.aborting:
             return self
 
-        if selenium_driver:
-            self.browser = selenium_driver
+        if self.use_firefox:
+            self.browser = webdriver.Remote(
+                command_executor=selenium_url,
+                desired_capabilities=DesiredCapabilities.FIREFOX)
         else:
-            if self.use_firefox:
-                self.browser = webdriver.Remote(
-                    command_executor=selenium_url,
-                    desired_capabilities=DesiredCapabilities.FIREFOX)
-            else:
-                self.browser = webdriver.Remote(
-                    command_executor=selenium_url,
-                    desired_capabilities=DesiredCapabilities.CHROME)
+            self.browser = webdriver.Remote(
+                command_executor=selenium_url,
+                desired_capabilities=DesiredCapabilities.CHROME)
 
         message = "Session started!"
         highlight_print(self.username, message, "initialization", "info", self.logger)
         print('')
 
         return self
-
-
 
     def login(self):
         """Used to login the user either with the username and password"""
@@ -437,34 +413,10 @@ class InstaPy:
 
         return self
 
-
-
     def set_sleep_reduce(self, percentage):
         set_sleep_percentage(percentage)
 
         return self
-
-
-
-    def set_action_delays(self, enabled=False,
-                                 like=None,
-                                 comment=None,
-                                 follow=None,
-                                 unfollow=None,
-                                  randomize=False,
-                                  random_range=(None, None),
-                                   safety_match=True):
-        """ Set custom sleep delay after actions """
-        Settings.action_delays.update({"enabled":enabled,
-                                        "like": like,
-                                        "comment": comment,
-                                        "follow": follow,
-                                        "unfollow": unfollow,
-                                         "randomize": randomize,
-                                         "random_range": random_range,
-                                          "safety_match": safety_match})
-
-
 
     def set_do_comment(self, enabled=False, percentage=0):
         """Defines if images should be commented or not
@@ -476,8 +428,6 @@ class InstaPy:
         self.comment_percentage = percentage
 
         return self
-
-
 
     def set_comments(self, comments=None, media=None):
         """Changes the possible comments"""
@@ -498,8 +448,6 @@ class InstaPy:
 
         return self
 
-
-
     def set_do_follow(self, enabled=False, percentage=0, times=1):
         """Defines if the user of the liked image should be followed"""
         if self.aborting:
@@ -511,8 +459,6 @@ class InstaPy:
 
         return self
 
-
-
     def set_do_like(self, enabled=False, percentage=0):
         if self.aborting:
             return self
@@ -521,8 +467,6 @@ class InstaPy:
         self.like_percentage = percentage
 
         return self
-
-
 
     def set_dont_like(self, tags=None):
         """Changes the possible restriction tags, if one of this
@@ -539,8 +483,6 @@ class InstaPy:
 
         return self
 
-
-
     def set_mandatory_words(self, tags=None):
         """Changes the possible restriction tags, if all of this
          hashtags is in the description, the image will be liked"""
@@ -555,8 +497,6 @@ class InstaPy:
         self.mandatory_words = tags or []
 
         return self
-
-
 
     def set_user_interact(self,
                           amount=10,
@@ -574,8 +514,6 @@ class InstaPy:
 
         return self
 
-
-
     def set_ignore_users(self, users=None):
         """Changes the possible restriction to users, if a user who posts
         is one of these, the image won't be liked"""
@@ -585,8 +523,6 @@ class InstaPy:
         self.ignore_users = users or []
 
         return self
-
-
 
     def set_ignore_if_contains(self, words=None):
         """Ignores the don't likes if the description contains
@@ -598,8 +534,6 @@ class InstaPy:
 
         return self
 
-
-
     def set_dont_include(self, friends=None):
         """Defines which accounts should not be unfollowed"""
         if self.aborting:
@@ -610,21 +544,10 @@ class InstaPy:
 
         return self
 
-
-
     def set_switch_language(self, option=True):
         self.switch_language = option
         return self
-
-    def set_use_clarifai(self,
-                         enabled=False,
-                         api_key=None,
-                         models=None,
-                         workflow=None,
-                         probability=0.50,
-                         full_match=False,
-                         check_video=False,
-                         proxy=None):
+    def set_use_clarifai(self, enabled=False, api_key=None, models=None, workflow=None, probability=0.50, full_match=False):
         """
         Defines if the clarifai img api should be used
         Which 'project' will be used (only 5000 calls per month)
@@ -649,14 +572,8 @@ class InstaPy:
         self.clarifai_workflow = workflow or []
         self.clarifai_probability = probability
         self.clarifai_full_match = full_match
-        self.clarifai_check_video = check_video
-
-        if proxy is not None:
-            self.clarifai_proxy = 'https://' + proxy
 
         return self
-
-
 
     def set_smart_hashtags(self,
                            tags=None,
@@ -720,15 +637,10 @@ class InstaPy:
         return check_image(self.browser, self.clarifai_api_key, self.clarifai_img_tags,
                            self.clarifai_img_tags_skip, self.logger, self.clarifai_models,
                            self.clarifai_workflow, self.clarifai_probability,
-                           self.clarifai_full_match, self.clarifai_check_video,
-                           proxy=self.clarifai_proxy)
-
+                           self.clarifai_full_match)
 
     def follow_commenters(self, usernames, amount=10, daysold=365, max_pic=50, sleep_delay=600, interact=False):
         """ Follows users' commenters """
-
-        if self.aborting:
-            return self
 
         message = "Starting to follow commenters.."
         highlight_print(self.username, message, "feature", "info", self.logger)
@@ -830,8 +742,6 @@ class InstaPy:
     def follow_likers(self, usernames, photos_grab_amount=3, follow_likers_per_photo=3, randomize=True, sleep_delay=600,
                       interact=False):
         """ Follows users' likers """
-        if self.aborting:
-            return self
 
         message = "Starting to follow likers.."
         highlight_print(self.username, message, "feature", "info", self.logger)
@@ -978,7 +888,7 @@ class InstaPy:
                 # Verify if the user should be followed
                 validation, details = self.validate_user_call(acc_to_follow)
                 if validation != True or acc_to_follow == self.username:
-                    self.logger.info("--> Not a valid user: {}".format(details))
+                    self.logger.info("--> Not a valid user: {}\n".format(details))
                     not_valid_users += 1
                     continue
 
@@ -1115,19 +1025,6 @@ class InstaPy:
                                                 self.dont_skip_business_categories,
                                                 self.logger)
         return validation, details
-
-    def fetch_smart_comments(self, is_video, temp_comments):
-        if temp_comments:
-            # Use clarifai related comments only!
-            comments = temp_comments
-        elif is_video:
-            comments = (self.comments +
-                        self.video_comments)
-        else:
-            comments = (self.comments +
-                        self.photo_comments)
-
-        return comments
 
     def set_skip_users(self,
                        skip_private=True,
@@ -1288,7 +1185,7 @@ class InstaPy:
 
                             if self.use_clarifai and (following or commenting):
                                 try:
-                                    checked_img, temp_comments, clarifai_tags = (self.query_clarifai())
+                                    checked_img, temp_comments = (self.query_clarifai())
 
                                 except Exception as err:
                                     self.logger.error(
@@ -1308,20 +1205,25 @@ class InstaPy:
                                                                              self.comments_mandatory_words,
                                                                              self.logger)
                                 if self.commenting_approved:
-                                    # smart commenting
-                                    comments = self.fetch_smart_comments(is_video,
-                                                                         temp_comments)
-                                    if comments:
-                                        comment_state, msg = comment_image(self.browser,
-                                                                           user_name,
-                                                                           comments,
-                                                                           self.blacklist,
-                                                                           self.username,
-                                                                           Location,
-                                                                           self.logger,
-                                                                           self.logfolder)
-                                        if comment_state == True:
-                                            commented += 1
+                                    if temp_comments:
+                                         # Use clarifai related comments only!
+                                         comments = temp_comments
+                                    elif is_video:
+                                        comments = (self.comments +
+                                                    self.video_comments)
+                                    else:
+                                        comments = (self.comments +
+                                                    self.photo_comments)
+                                    comment_state, msg = comment_image(self.browser,
+                                                                       user_name,
+                                                                       comments,
+                                                                       self.blacklist,
+                                                                       self.username,
+                                                                       Location,
+                                                                       self.logger,
+                                                                       self.logfolder)
+                                    if comment_state == True:
+                                        commented += 1
 
                                 else:
                                     self.logger.info(disapproval_reason)
@@ -1385,8 +1287,6 @@ class InstaPy:
         self.not_valid_users += not_valid_users
 
         return self
-
-
 
     def comment_by_locations(self,
                              locations=None,
@@ -1471,7 +1371,7 @@ class InstaPy:
 
                         if self.use_clarifai:
                             try:
-                                checked_img, temp_comments, clarifai_tags = (self.query_clarifai())
+                                checked_img, temp_comments = (self.query_clarifai())
 
                             except Exception as err:
                                 self.logger.error(
@@ -1489,48 +1389,52 @@ class InstaPy:
                                                                          self.comments_mandatory_words,
                                                                          self.logger)
                             if self.commenting_approved:
-                                # smart commenting
-                                comments = self.fetch_smart_comments(is_video,
-                                                                     temp_comments)
-                                if comments:
-                                    comment_state, msg = comment_image(self.browser,
-                                                                       user_name,
-                                                                       comments,
-                                                                       self.blacklist,
-                                                                       self.username,
-                                                                       Location,
-                                                                       self.logger,
-                                                                       self.logfolder)
+                                if temp_comments:
+                                    # Use clarifai related comments only!
+                                    comments = temp_comments
+                                elif is_video:
+                                    comments = (self.comments +
+                                                self.video_comments)
+                                else:
+                                    comments = (self.comments +
+                                                self.photo_comments)
+                                comment_state, msg = comment_image(self.browser,
+                                                                   user_name,
+                                                                   comments,
+                                                                   self.blacklist,
+                                                                   self.username,
+                                                                   Location,
+                                                                   self.logger,
+                                                                   self.logfolder)
                                     if comment_state == True:
-                                        commented += 1
-                                        # reset jump counter after a successful comment
-                                        self.jumps["consequent"]["comments"] = 0
+                                    commented += 1
+                                    # reset jump counter after a successful comment
+                                    self.jumps["consequent"]["comments"] = 0
+                                     # try to follow
+                                    if (self.do_follow and
+                                            user_name not in self.dont_include and
+                                            checked_img and
+                                            following and
+                                            not follow_restriction("read",
+                                                                   user_name,
+                                                                   self.follow_times,
+                                                                   self.logger)):
 
-                                        # try to follow
-                                        if (self.do_follow and
-                                                user_name not in self.dont_include and
-                                                checked_img and
-                                                following and
-                                                not follow_restriction("read",
-                                                                       user_name,
-                                                                       self.follow_times,
-                                                                       self.logger)):
+                                        follow_state, msg = follow_user(self.browser,
+                                                                        "post",
+                                                                        self.username,
+                                                                        user_name,
+                                                                        None,
+                                                                        self.blacklist,
+                                                                        Location,
+                                                                        self.logger,
+                                                                        self.logfolder)
+                                        if follow_state == True:
+                                            followed += 1
 
-                                            follow_state, msg = follow_user(self.browser,
-                                                                            "post",
-                                                                            self.username,
-                                                                            user_name,
-                                                                            None,
-                                                                            self.blacklist,
-                                                                            Location,
-                                                                            self.logger,
-                                                                            self.logfolder)
-                                            if follow_state == True:
-                                                followed += 1
-
-                                        else:
-                                            self.logger.info('--> Not following')
-                                            sleep(1)
+                                    else:
+                                        self.logger.info('--> Not following')
+                                        sleep(1)
 
                                 elif msg == "jumped":
                                     # will break the loop after certain consecutive jumps
@@ -1668,7 +1572,7 @@ class InstaPy:
 
                             if self.use_clarifai and (following or commenting):
                                 try:
-                                    checked_img, temp_comments, clarifai_tags = (self.query_clarifai())
+                                    checked_img, temp_comments = (self.query_clarifai())
 
                                 except Exception as err:
                                     self.logger.error(
@@ -1688,20 +1592,25 @@ class InstaPy:
                                                                              self.comments_mandatory_words,
                                                                              self.logger)
                                 if self.commenting_approved:
-                                    # smart commenting
-                                    comments = self.fetch_smart_comments(is_video,
-                                                                         temp_comments)
-                                    if comments:
-                                        comment_state, msg = comment_image(self.browser,
-                                                                           user_name,
-                                                                           comments,
-                                                                           self.blacklist,
-                                                                           self.username,
-                                                                           '#{}'.format(tag),
-                                                                           self.logger,
-                                                                           self.logfolder)
-                                        if comment_state == True:
-                                            commented += 1
+                                    if temp_comments:
+                                        # Use clarifai related comments only!
+                                        comments = temp_comments
+                                    elif is_video:
+                                        comments = (self.comments +
+                                                    self.video_comments)
+                                    else:
+                                        comments = (self.comments +
+                                                    self.photo_comments)
+                                    comment_state, msg = comment_image(self.browser,
+                                                                       user_name,
+                                                                       comments,
+                                                                       self.blacklist,
+                                                                       self.username,
+                                                                       '#{}'.format(tag),
+                                                                       self.logger,
+                                                                       self.logfolder)
+                                    if comment_state == True:
+                                        commented += 1
 
                                 else:
                                     self.logger.info(disapproval_reason)
@@ -1776,8 +1685,6 @@ class InstaPy:
 
         return self
 
-
-
     def like_by_users(self, usernames, amount=10, randomize=False, media=None):
         """Likes some amounts of images for each usernames"""
         if self.aborting:
@@ -1810,7 +1717,7 @@ class InstaPy:
 
             validation, details = self.validate_user_call(username)
             if not validation:
-                self.logger.info("--> Not a valid user: {}".format(details))
+                self.logger.info("--> not a valid user: {}".format(details))
                 not_valid_users += 1
                 continue
 
@@ -1840,7 +1747,7 @@ class InstaPy:
                                                 username,
                                                 None,
                                                 self.blacklist,
-                                                'By User',
+                                                'By @{}'.format(user),
                                                 self.logger,
                                                 self.logfolder)
                 if follow_state == True:
@@ -1890,7 +1797,7 @@ class InstaPy:
                                                      user_name,
                                                      self.blacklist,
                                                      self.username,
-                                                     '@{}'.format(user),
+                                                     'By @{}'.format(user),
                                                      self.logger,
                                                      self.logfolder)
                         if like_state == True:
@@ -1907,7 +1814,7 @@ class InstaPy:
 
                             if self.use_clarifai and (following or commenting):
                                 try:
-                                    checked_img, temp_comments, clarifai_tags = (self.query_clarifai())
+                                    checked_img, temp_comments = (self.query_clarifai())
 
                                 except Exception as err:
                                     self.logger.error(
@@ -1927,20 +1834,25 @@ class InstaPy:
                                         self.comments_mandatory_words,
                                         self.logger)
                                 if self.commenting_approved:
-                                    # smart commenting
-                                    comments = self.fetch_smart_comments(is_video,
-                                                                         temp_comments)
-                                    if comments:
-                                        comment_state, msg = comment_image(self.browser,
-                                                                           user_name,
-                                                                           comments,
-                                                                           self.blacklist,
-                                                                           self.username,
-                                                                           '@{}'.format(user),
-                                                                           self.logger,
-                                                                           self.logfolder)
-                                        if comment_state == True:
-                                            commented += 1
+                                    if temp_comments:
+                                        # Use clarifai related comments only!
+                                        comments = temp_comments
+                                    elif is_video:
+                                        comments = (self.comments +
+                                                    self.video_comments)
+                                    else:
+                                        comments = (self.comments +
+                                                    self.photo_comments)
+                                    comment_state, msg = comment_image(self.browser,
+                                                                       user_name,
+                                                                       comments,
+                                                                       self.blacklist,
+                                                                       self.username,
+                                                                       'By @{}'.format(user),
+                                                                       self.logger,
+                                                                       self.logfolder)
+                                    if comment_state == True:
+                                        commented += 1
 
                                 else:
                                     self.logger.info(disapproval_reason)
@@ -2135,7 +2047,7 @@ class InstaPy:
 
                                 if self.use_clarifai and commenting:
                                     try:
-                                        checked_img, temp_comments, clarifai_tags = (self.query_clarifai())
+                                        checked_img, temp_comments = (self.query_clarifai())
 
                                     except Exception as err:
                                         self.logger.error(
@@ -2152,20 +2064,26 @@ class InstaPy:
                                             self.comments_mandatory_words,
                                             self.logger)
                                     if self.commenting_approved:
-                                        # smart commenting
-                                        comments = self.fetch_smart_comments(is_video,
-                                                                             temp_comments)
-                                        if comments:
-                                            comment_state, msg = comment_image(self.browser,
-                                                                               user_name,
-                                                                               comments,
-                                                                               self.blacklist,
-                                                                               self.username,
-                                                                               self.sourceInteract,
-                                                                               self.logger,
-                                                                               self.logfolder)
-                                            if comment_state == True:
-                                                commented += 1
+                                        if temp_comments:
+                                            # use clarifai related comments only!
+                                            comments = temp_comments
+                                        elif is_video:
+                                            comments = (self.comments +
+                                                        self.video_comments)
+                                        else:
+                                            comments = (self.comments +
+                                                        self.photo_comments)
+
+                                        comment_state, msg = comment_image(self.browser,
+                                                                           user_name,
+                                                                           comments,
+                                                                           self.blacklist,
+                                                                           self.username,
+                                                                           self.sourceInteract,
+                                                                           self.logger,
+                                                                           self.logfolder)
+                                        if comment_state == True:
+                                            commented += 1
 
                                     else:
                                         self.logger.info(disapproval_reason)
@@ -2464,7 +2382,7 @@ class InstaPy:
 
                 follow_state, msg = follow_user(
                     self.browser,
-                    "profile",
+                    "post",
                     self.username,
                     username,
                     None,
@@ -2488,9 +2406,9 @@ class InstaPy:
                                  "reached its end\n")
 
         # final words
-        interacted_media_size = (len(usernames)*amount - inap_img)
+        interacted_media_size = (len(usernames) * amount - inap_img)
         self.logger.info("Finished interacting on total of {} images from {} users! xD\n"
-                            .format(interacted_media_size, len(usernames)))
+                        .format(interacted_media_size, len(usernames)))
 
         # print results
         self.logger.info('Liked: {}'.format(total_liked_img))
@@ -2652,8 +2570,6 @@ class InstaPy:
                                                self.user_interact_amount,
                                                self.user_interact_random,
                                                self.user_interact_media)
-                    if self.aborting:
-                        return self
                     sleep(1)
 
         # final words
@@ -2799,8 +2715,6 @@ class InstaPy:
                                                self.user_interact_amount,
                                                self.user_interact_random,
                                                self.user_interact_media)
-                    if self.aborting:
-                        return self
                     sleep(1)
 
         # final words
@@ -3197,7 +3111,6 @@ class InstaPy:
                 self.logger.warning(
                     u'Warning: {} , stopping unfollow_users'.format(exc))
                 return self
-
             else:
                 self.logger.error('Sorry, an error occurred: {}'.format(exc))
                 self.aborting = True
@@ -3207,10 +3120,6 @@ class InstaPy:
 
     def like_by_feed(self, **kwargs):
         """Like the users feed"""
-
-        if self.aborting:
-            return self
-
         for i in self.like_by_feed_generator(**kwargs):
             pass
 
@@ -3344,7 +3253,7 @@ class InstaPy:
                                     if (self.use_clarifai and
                                             (following or commenting)):
                                         try:
-                                            checked_img, temp_comments, clarifai_tags = (self.query_clarifai())
+                                            checked_img, temp_comments = (self.query_clarifai())
 
                                         except Exception as err:
                                             self.logger.error(
@@ -3473,14 +3382,9 @@ class InstaPy:
 
         return
 
-
-
     def set_dont_unfollow_active_users(self, enabled=False, posts=4, boundary=500):
         """Prevents unfollow followers who have liked one of
         your latest X posts"""
-
-        if self.aborting:
-            return
 
         # do nothing
         if not enabled:
@@ -3495,8 +3399,6 @@ class InstaPy:
 
         # include active user to not unfollow list
         self.dont_include.update(active_users)
-
-
 
     def set_blacklist(self, enabled, campaign):
         """Enable/disable blacklist. If enabled, adds users to a blacklist after
@@ -3516,8 +3418,6 @@ class InstaPy:
                         self.dont_include.add(row['username'])
         except:
             self.logger.info('Campaign {} first run'.format(campaign))
-
-
 
     def grab_followers(self, username=None, amount=None, live_match=False, store_locally=True):
         """ Gets and returns `followers` information of given user in desired amount, also, saves locally """
@@ -3546,8 +3446,6 @@ class InstaPy:
                                           self.logger,
                                           self.logfolder)
         return grabbed_followers
-
-
 
     def grab_following(self, username=None, amount=None, live_match=False, store_locally=True):
         """ Gets and returns `following` information of given user in desired amount, also, saves locally """
@@ -3599,8 +3497,6 @@ class InstaPy:
 
         return all_unfollowers, active_unfollowers
 
-
-
     def pick_nonfollowers(self, username=None, live_match=False, store_locally=True):
         """ Returns Nonfollowers data of a given user """
 
@@ -3638,8 +3534,6 @@ class InstaPy:
 
         return fans
 
-
-
     def pick_mutual_following(self, username=None, live_match=False, store_locally=True):
         """ Returns Mutual Following data- all of the usernames who do follow
         the user WHOM user itself also do follow back"""
@@ -3657,8 +3551,6 @@ class InstaPy:
                                                 self.logfolder)
 
         return mutual_following
-
-
 
     def end(self):
         """Closes the current session"""
@@ -3696,8 +3588,6 @@ class InstaPy:
             message = "Session ended!"
             highlight_print(self.username, message, "end", "info", self.logger)
             print("\n\n")
-
-
 
     def follow_by_tags(self,
                        tags=None,
@@ -3895,7 +3785,7 @@ class InstaPy:
 
                         if self.use_clarifai and (following or commenting):
                             try:
-                                checked_img, temp_comments, clarifai_tags = (self.query_clarifai())
+                                checked_img, temp_comments = (self.query_clarifai())
                             except Exception as err:
                                 self.logger.error(
                                     'Image check error: {}'.format(err))
@@ -3913,20 +3803,29 @@ class InstaPy:
                                                                          self.comments_mandatory_words,
                                                                          self.logger)
                             if self.commenting_approved:
-                                # smart commenting
-                                comments = self.fetch_smart_comments(is_video,
-                                                                     temp_comments)
-                                if comments:
-                                    comment_state, msg = comment_image(self.browser,
-                                                                       user_name,
-                                                                       comments,
-                                                                       self.blacklist,
-                                                                       self.username,
-                                                                       '//URL',
-                                                                       self.logger,
-                                                                       self.logfolder)
-                                    if comment_state == True:
-                                        commented += 1
+                                if temp_comments:
+                                    # use clarifai related
+                                    # comments only!
+                                    comments = temp_comments
+                                elif is_video:
+                                     comments = (
+                                            self.comments +
+                                            self.video_comments)
+                                else:
+                                     comments = (
+                                            self.comments +
+                                            self.photo_comments)
+                                comment_state, msg = comment_image(self.browser,
+                                                                   user_name,
+                                                                   comments,
+                                                                   self.blacklist,
+                                                                   self.username,
+                                                                   '//URL',
+                                                                   self.logger,
+                                                                   self.logfolder)
+                                if comment_state == True:
+                                    commented += 1
+
                             else:
                                 self.logger.info(disapproval_reason)
 
