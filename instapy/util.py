@@ -4,6 +4,7 @@ import time
 import datetime
 import random
 import re
+import regex
 import signal
 import os
 from sys import exit as clean_exit
@@ -18,6 +19,8 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as ec
 from selenium.webdriver.common.by import By
 from tempfile import gettempdir
+import emoji
+from emoji.unicode_codes import UNICODE_EMOJI
 
 from .time_util import sleep
 from .time_util import sleep_actual
@@ -1476,6 +1479,30 @@ def get_action_delay(action):
         return defaults[action]
 
     return custom_delay
+
+
+
+def deform_emojis(text):
+    """ Convert unicode emojis into their text form """
+    new_text = ''
+    data = regex.findall(r'\X', text)
+    emojis_in_text = []
+
+    for word in data:
+        if any(char in UNICODE_EMOJI for char in word):
+            word_emoji = (emoji.demojize(word)
+                            .replace(':', '')
+                            .replace('_', ' '))
+            if word_emoji not in emojis_in_text:   # do not add an emoji if already exists in text
+                new_text += " ({}) ".format(word_emoji)
+                emojis_in_text.append(word_emoji)
+            else:
+                new_text += ' '   # add a space [instead of an emoji to be duplicated]
+
+        else:
+            new_text += word
+
+    return new_text
 
 
 
