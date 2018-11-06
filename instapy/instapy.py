@@ -3011,8 +3011,8 @@ class InstaPy:
                                                 comments = (
                                                         self.comments +
                                                         self.video_comments)
-                                             else:
-                                                 comments = (
+                                            else:
+                                                comments = (
                                                         self.comments +
                                                         self.photo_comments)
                                             comment_state, msg = comment_image(self.browser,
@@ -3539,8 +3539,7 @@ class InstaPy:
                                                                          self.logger)
                             if self.commenting_approved:
                                 if temp_comments:
-                                    # use clarifai related
-                                    # comments only!
+                                    # Use clarifai related comments only!
                                     comments = temp_comments
                                 elif is_video:
                                      comments = (
