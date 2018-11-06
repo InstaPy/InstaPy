@@ -104,26 +104,9 @@ def comment_image(browser, username, comments, blacklist, logger, logfolder):
 
 def verify_commenting(browser, max, min, mand_words, logger):
         """ Get the amount of existing existing comments and compare it against max & min values defined by user """
-        try:
-            comments_disabled = browser.execute_script(
-                "return window._sharedData.entry_data."
-                "PostPage[0].graphql.shortcode_media.comments_disabled")
-
-        except WebDriverException:
-            try:
-                browser.execute_script("location.reload()")
-                update_activity()
-
-                comments_disabled = browser.execute_script(
-                    "return window._sharedData.entry_data."
-                    "PostPage[0].graphql.shortcode_media.comments_disabled")            
-
-            except Exception as e:
-                logger.info("Failed to check comments' status for verification!\n\t{}".format(str(e).encode("utf-8"))) 
-                return True, 'Verification failure'
-
-        if comments_disabled == True:
-            disapproval_reason = "Not commenting ~comments are disabled for this post"
+        commenting_state, msg = is_commenting_enabled(browser, logger)
+        if commenting_state != True:
+            disapproval_reason = "--> Not commenting! {}".format(msg)
             return False, disapproval_reason
 
         comments_count, msg = get_comments_count(browser, logger)
@@ -161,6 +144,34 @@ def verify_commenting(browser, max, min, mand_words, logger):
 
         return True, 'Approval'
 
+
+
+
+def is_commenting_enabled(browser, logger):
+    """ Find out if commenting on the post is enabled """
+    try:
+        comments_disabled = browser.execute_script(
+            "return window._sharedData.entry_data."
+            "PostPage[0].graphql.shortcode_media.comments_disabled")
+
+    except WebDriverException:
+        try:
+            browser.execute_script("location.reload()")
+            update_activity()
+
+            comments_disabled = browser.execute_script(
+                "return window._sharedData.entry_data."
+                "PostPage[0].graphql.shortcode_media.comments_disabled")
+
+        except Exception as e:
+            msg = "Failed to check comments' status for verification!\n\t{}".format(str(e).encode("utf-8"))
+            return False, "Failure"
+
+    if comments_disabled == True:
+        msg = "Comments are disabled for this post."
+        return False, msg
+
+    return True, "Success"
 
 
 
