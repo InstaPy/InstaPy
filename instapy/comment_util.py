@@ -2,12 +2,15 @@
 """Module which handles the commenting features"""
 from random import choice
 import emoji
+from datetime import datetime
 
 from .time_util import sleep
 from .util import update_activity
 from .util import add_user_to_blacklist
 from .util import click_element
+from .util import get_action_delay
 from .quota_supervisor import quota_supervisor
+from .print_log_writer import log_table_activity
 
 from selenium.common.exceptions import WebDriverException
 from selenium.common.exceptions import InvalidElementStateException
@@ -47,7 +50,7 @@ def open_comment_section(browser, logger):
 
 
 
-def comment_image(browser, username, comments, blacklist, logger, logfolder):
+def comment_image(browser, username, comments, blacklist, login, source, logger, logfolder):
     """Checks if it should comment on the image"""
     # check action availability
     if quota_supervisor('comments') == 'jump':
@@ -92,7 +95,15 @@ def comment_image(browser, username, comments, blacklist, logger, logfolder):
         return False, "invalid element state"
 
     logger.info("--> Commented: {}".format(rand_comment.encode('utf-8')))
-    sleep(2)
+
+
+    # Populate logs table
+    logtime = datetime.now().strftime('%Y-%m-%d %H:%M')
+    log_table_activity(login, 'Commented', username, logger, logfolder, logtime, source)
+
+    # get the post-comment delay time to sleep
+    naply = get_action_delay("comment")
+    sleep(naply)
 
     return True, "success"
 
@@ -112,10 +123,10 @@ def verify_commenting(browser, max, min, mand_words, logger):
 
                 comments_disabled = browser.execute_script(
                     "return window._sharedData.entry_data."
-                    "PostPage[0].graphql.shortcode_media.comments_disabled")            
+                    "PostPage[0].graphql.shortcode_media.comments_disabled")
 
             except Exception as e:
-                logger.info("Failed to check comments' status for verification!\n\t{}".format(str(e).encode("utf-8"))) 
+                logger.info("Failed to check comments' status for verification!\n\t{}".format(str(e).encode("utf-8")))
                 return True, 'Verification failure'
 
         if comments_disabled == True:
@@ -128,7 +139,7 @@ def verify_commenting(browser, max, min, mand_words, logger):
                 "PostPage[0].graphql.shortcode_media.edge_media_to_comment.count")
 
         except Exception as e:
-            logger.info("Failed to check comments' count for verification!\n\t{}".format(str(e).encode("utf-8"))) 
+            logger.info("Failed to check comments' count for verification!\n\t{}".format(str(e).encode("utf-8")))
             return True, 'Verification failure'
 
         if max is not None and comments_count > max:
