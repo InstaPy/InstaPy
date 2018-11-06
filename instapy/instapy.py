@@ -24,6 +24,7 @@ from copy import deepcopy
 from .clarifai_util import check_image
 from .comment_util import comment_image
 from .comment_util import verify_commenting
+from .comment_util import get_comments_on_post
 from .like_util import check_link
 from .like_util import verify_liking
 from .like_util import get_links_for_tag
@@ -32,6 +33,7 @@ from .like_util import get_tags
 from .like_util import get_links_for_location
 from .like_util import like_image
 from .like_util import get_links_for_username
+from .like_util import like_comment
 from .login_util import login_user
 from .settings import Settings
 from .print_log_writer import log_follower_num
@@ -63,6 +65,7 @@ from .relationship_tools import get_nonfollowers
 from .relationship_tools import get_fans
 from .relationship_tools import get_mutual_following
 from .database_engine import get_database
+from .aylien_util import aylien_text_analysis
 
 # import exceptions
 from selenium.common.exceptions import NoSuchElementException, WebDriverException
@@ -138,7 +141,9 @@ class InstaPy:
 
         self.liked_img = 0
         self.already_liked = 0
+        self.liked_comments = 0
         self.commented = 0
+        self.replied_comments = 0
         self.followed = 0
         self.already_followed = 0
         self.unfollowed = 0
@@ -4145,5 +4150,287 @@ class InstaPy:
                                  "polarity_confidence": polarity_confidence,
                                  "lang": lang,
                                  "lang_confidence": lang_confidence})
+
+
+
+    def interact_by_comments(self,
+                              usernames=None,
+                               posts_amount=10,
+                               comments_per_post=1,
+                                reply=False,
+                                interact=False,
+                                 randomize=False,
+                                  media=None):
+        """ Like comments of people on posts, reply to them and also interact with those commenters """
+        message = "Starting to interact by comments.."
+        highlight_print(self.username, message, "feature", "info", self.logger)
+
+        if not isinstance(usernames, list):
+            usernames = [usernames]
+
+        if media not in ["Photo", "Video", None]:
+            self.logger.warning("Unkown media type- \"{}\" set at Interact-By-Comments!"
+                                    " Treating as 'any'."
+                                        .format(media))
+            media = None
+
+        # hold the current global values for differentiating at the end
+        liked_init = self.liked_img
+        already_liked_init = self.already_liked
+        liked_comments_init = self.liked_comments
+        commented_init = self.commented
+        replied_comments_init = self.replied_comments
+        followed_init = self.followed
+        already_followed_init = self.already_followed
+        inap_img_init = self.inap_img
+        not_valid_users_init = self.not_valid_users
+
+        overall_posts_count = 0
+        self.replied_comments = 0
+        per_user_liked_comments = 0
+        per_user_replied_comments = 0
+        per_post_liked_comments = 0
+        per_post_replied_comments = 0
+
+        self.quotient_breach = False
+        like_failures_tracker = {"consequent": {"post_likes": 0, "comment_likes": 0},
+                                 "limit": {"post_likes": 5, "comment_likes": 10}}
+        leave_msg = "\t~leaving Interact-By-Comments activity\n"
+
+
+        for s, username in enumerate(usernames):
+            if self.quotient_breach:
+                break
+
+            message = "User: [{}/{}]".format(s+1, len(usernames))
+            highlight_print(self.username, message, "user iteration", "info", self.logger)
+
+            validation, details = self.validate_user_call(username)
+            if validation != True:
+                self.logger.info("--> Not a valid user: {}".format(details))
+                self.not_valid_users += 1
+                continue
+
+            per_user_liked_comments = 0
+            per_user_replied_comments = 0
+            per_user_used_replies = []
+
+            try:
+                links = get_links_for_username(self.browser,
+                                               username,
+                                               posts_amount,
+                                               self.logger,
+                                               randomize,
+                                               media)
+            except NoSuchElementException:
+                self.logger.error("Element not found, skipping this user.")
+                continue
+
+            if links == False:
+                continue
+
+            else:
+                if randomize:
+                    random.shuffle(links)
+                links = links[:posts_amount]
+                overall_posts_count += len(links)
+
+            for i, link in enumerate(links):
+                if self.quotient_breach:
+                   break
+
+                elif self.jumps["consequent"]["comments"] >= self.jumps["limit"]["comments"]:
+                    self.logger.warning("--> Comment quotient reached its peak!{}".format(leave_msg))
+                    self.quotient_breach = True
+                    # reset jump counter after a breach report
+                    self.jumps["consequent"]["comments"] = 0
+                    break
+
+                elif like_failures_tracker["consequent"]["post_likes"] >= like_failures_tracker["limit"]["post_likes"]:
+                    self.logger.warning("--> Too many failures to like posts!{}".format(leave_msg))
+                    # this example shows helpful usage of quotient breach outside QS needs..
+                    self.quotient_breach = True
+                    break
+
+                message = "Post: [{}/{}]".format(i+1, len(links))
+                highlight_print(self.username, message, "post iteration", "info", self.logger)
+
+                inappropriate, user_name, is_video, reason, scope = (
+                    check_link(self.browser,
+                               link,
+                               self.dont_like,
+                               self.mandatory_words,
+                               self.ignore_if_contains,
+                               self.logger)
+                )
+
+                if inappropriate:
+                    self.logger.info(
+                        "--> Post not interacted. {}\n".format(reason.encode('utf-8')))
+                    self.inap_img += 1
+                    continue
+
+                # go go!
+                per_post_liked_comments = 0
+                per_post_replied_comments = 0
+                commenters_interacted_per_post = []
+
+                # get comments (if any)
+                comment_data = get_comments_on_post(self.browser,
+                                                     self.username,
+                                                     username,
+                                                      comments_per_post,
+                                                       link,
+                                                        self.ignore_users,
+                                                         randomize,
+                                                          self.logger)
+                if not comment_data:
+                    self.logger.info("No interaction did happen.\n")
+                    continue
+
+                # like the post before interacting on comments
+                image_like_state, msg = like_image(self.browser,
+                                                    user_name,
+                                                     self.blacklist,
+                                                      self.logger,
+                                                      self.logfolder)
+                if image_like_state == True:
+                    like_failures_tracker["consequent"]["post_likes"] = 0
+                    self.liked_img += 1
+
+                elif msg == "already liked":
+                    self.already_liked += 1
+
+                else:
+                    self.logger.info("Can't interact by comments unless the post is liked! :(\t~skipping this post\n")
+                    like_failures_tracker["consequent"]["post_likes"] += 1
+                    continue
+
+                # perfect! now going to work with comments...
+                for commenter, comment, comment_like_button in comment_data:
+                    if per_post_liked_comments >= comments_per_post:
+                        break
+
+                    elif like_failures_tracker["consequent"]["comment_likes"] >= like_failures_tracker["limit"]["comment_likes"]:
+                        self.logger.warning("--> Too many failures to like comments!{}".format(leave_msg))
+                        # this example shows helpful usage of quotient breach outside QS needs..
+                        self.quotient_breach = True
+                        break
+
+                    # this makes sure "replies" will be sent ONLY to appropriate comments [checked by Aylien]..
+                    comment_is_appropriate = None
+
+                    # verify the comment text through Aylian Text Analysis API if enabled
+                    if self.aylien_data["enabled"]:
+                        aylien_analysis_state = aylien_text_analysis(self.aylien_data,
+                                                                      comment,
+                                                                       "comment",
+                                                                        self.logger)
+                        if aylien_analysis_state == True:
+                            comment_is_appropriate = True
+                        else:
+                            # comment is inappropriate to be liked
+                            continue
+
+                    # like the comment
+                    comment_like_state, msg = like_comment(self.browser,
+                                                           comment_like_button,
+                                                           comment,
+                                                           self.logger)
+                    if comment_like_state != True:
+                        like_failures_tracker["consequent"]["comment_likes"] += 1
+                        continue
+
+                    else:
+                        commenters_interacted_per_post.append(commenter)
+                        self.liked_comments += 1
+                        per_user_liked_comments += 1
+                        per_post_liked_comments += 1
+                        like_failures_tracker["consequent"]["comment_likes"] = 0
+
+                        # send a reply to the comment if is appropriate
+                        if (reply and
+                             comment_is_appropriate == True and
+                              self.do_comment):
+                            put_comment = (self.comment_percentage >= random.randint(0, 100))
+                            reply_comments_base = (self.photo_reply_comments if is_video == "Photo" else
+                                                   self.video_reply_comments if is_video == "Video" else
+                                                   self.reply_comments)
+                            reply_comments_base = [reply for reply in reply_comments_base if reply not in per_user_used_replies]
+                            if put_comment and reply_comments_base:
+                                chosen_reply = random.choice(reply_comments_base)
+                                reply_msg = ["@{} {}".format(commenter, chosen_reply)]
+                                comment_reply_state, msg = comment_image(self.browser,
+                                                                          commenter,
+                                                                           reply_msg,
+                                                                            self.blacklist,
+                                                                             self.logger,
+                                                                             self.logfolder)
+                                if comment_reply_state == True:
+                                    per_user_used_replies.extend(chosen_reply)
+                                    self.replied_comments += 1
+                                    per_user_replied_comments += 1
+                                    per_post_replied_comments += 1
+                                    # reset jump counter after a successful comment
+                                    self.jumps["consequent"]["comments"] = 0
+
+                                elif msg == "jumped":
+                                    # will break the loop after certain consecutive jumps
+                                    self.jumps["consequent"]["comments"] += 1
+
+                post_No_ending = ("st" if str(i+1).endswith('1') else
+                                  "nd" if str(i+1).endswith('2') else
+                                  "rd" if str(i+1).endswith('3') else
+                                  "th" if str(i+1).endswith('4') else '')
+                post_No = "{}{}".format(str(i+1), post_No_ending)
+
+                # quick log after interacting on a post
+                print('')
+                self.logger.info("Finished interacting on {} post's comments!".format(post_No))
+                self.logger.info("\tComments liked: {}".format(per_post_liked_comments))
+                self.logger.info("\tComments replied: {}\n".format(per_post_replied_comments))
+
+                # standalone interaction with commenters whose comment was liked on the post
+                if interact and commenters_interacted_per_post:
+                    with self.feature_in_feature("interact_by_users", True):
+                        self.interact_by_users(commenters_interacted_per_post,
+                                               self.user_interact_amount,
+                                               self.user_interact_random,
+                                               self.user_interact_media)
+
+            # quick log after interacting with a user
+            print('')
+            self.logger.info("Finished interacting on {} posts' comments of '{}'!".format(len(links), username))
+            self.logger.info("\tComments liked: {}".format(per_user_liked_comments))
+            self.logger.info("\tComments replied: {}\n".format(per_user_replied_comments))
+
+        # full log after finishing whole work
+        self.logger.info("Finished interacting on {} posts' comments from {} users!".format(overall_posts_count, len(usernames)))
+
+        # find the feature-wide action sizes by taking a difference
+        liked_img = (self.liked_img - liked_init)
+        already_liked = (self.already_liked - already_liked_init)
+        liked_comments = (self.liked_comments - liked_comments_init)
+        commented = (self.commented - commented_init)
+        replied_comments = (self.replied_comments - replied_comments_init)
+        followed = (self.followed - followed_init)
+        already_followed = (self.already_followed - already_followed_init)
+        inap_img = (self.inap_img - inap_img_init)
+        not_valid_users = (self.not_valid_users - not_valid_users_init)
+
+        if self.liked_comments:
+            # output results
+            self.logger.info("\tComments liked: {}".format(liked_comments))
+            self.logger.info("\tComments replied: {}".format(replied_comments))
+            self.logger.info("\tLiked posts: {}".format(liked_img))
+            self.logger.info("\tAlready liked posts: {}".format(already_liked))
+            self.logger.info("\tCommented posts: {}".format(commented))
+            self.logger.info("\tFollowed users: {}".format(followed))
+            self.logger.info("\tAlready followed users: {}".format(already_followed))
+            self.logger.info("\tInappropriate posts: {}".format(inap_img))
+            self.logger.info("\tNot valid users: {}".format(not_valid_users))
+
+
+
 
 
