@@ -1220,7 +1220,7 @@ def get_user_id(browser, track, username, logger):
     """ Get user's ID either from a profile page or post page """
     user_id = "unknown"
 
-    if track != "dialog":   # currently do not get the user ID for follows from 'dialog' 
+    if track != "dialog":   # currently do not get the user ID for follows from 'dialog'
         user_id = find_user_id(browser, track, username, logger)
 
     return user_id
@@ -1282,6 +1282,7 @@ def verify_action(browser, action, track, username, person, person_id, logger, l
 
             else:
                 action_state = None
+
 
             # handle it!
             if action_state == True:
