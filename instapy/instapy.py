@@ -181,6 +181,14 @@ class InstaPy:
         self.clarifai_check_video = False
         self.clarifai_proxy = None
 
+        self.aylien_data = {"enabled": False,
+                            "app_id": None,
+                            "key": None,
+                            "polarity": None,
+                            "polarity_confidence": None,
+                            "lang": None,
+                            "lang_confidence": None}
+
         self.potency_ratio = 1.3466
         self.delimit_by_numbers = True
 
@@ -4074,5 +4082,42 @@ class InstaPy:
                 self.logger.warning("Unkown media type set at reply comments! Treating as 'any'.")
 
             self.reply_comments = replies
+
+
+
+    def set_use_aylien(self,
+                        enabled=False,
+                         app_id=None,
+                         key=None,
+                          polarity="positive",
+                          polarity_confidence=0.50,
+                           lang="en",
+                           lang_confidence=0.50):
+        """Defines if the aylien Text Analysis API should be used,
+           which, allows 1000 calls per day (30k per month)
+        """
+        self.aylien_data["enabled"] = enabled
+
+        if app_id is None and self.aylien_data["app_id"] is None:
+            self.aylien_data["app_id"] = os.environ.get('AYLIEN_APP_ID')
+        elif app_id is not None:
+            self.aylien_data["app_id"] = app_id
+
+        if key is None and self.aylien_data["key"] is None:
+            self.aylien_data["key"] = os.environ.get('AYLIEN_KEY')
+        elif key is not None:
+            self.aylien_data["key"] = key
+
+        # turn off Aylien service if wrongly configured
+        if (not self.aylien_data["app_id"] or   #no app ID provided;
+            not self.aylien_data["key"] or   #no key provided;
+                ((polarity not in ["positive", "neutral", "negative"]) and   #neither any valid polarity value provided,
+                  not lang)):   #nor a language to detect is set;
+            self.aylien_data["enabled"] = False
+
+        self.aylien_data.update({"polarity": polarity,
+                                 "polarity_confidence": polarity_confidence,
+                                 "lang": lang,
+                                 "lang_confidence": lang_confidence})
 
 
