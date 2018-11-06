@@ -126,18 +126,15 @@ def verify_commenting(browser, max, min, mand_words, logger):
             disapproval_reason = "Not commenting ~comments are disabled for this post"
             return False, disapproval_reason
 
-        try:
-            comments_count = browser.execute_script(
-                "return window._sharedData.entry_data."
-                "PostPage[0].graphql.shortcode_media.edge_media_to_comment.count")
-
-        except Exception as e:
-            logger.info("Failed to check comments' count for verification!\n\t{}".format(str(e).encode("utf-8"))) 
-            return True, 'Verification failure'
+        comments_count, msg = get_comments_count(browser, logger)
+        if not comments_count:
+            disapproval_reason = "--> Not commenting! {}".format(msg)
+            return False, disapproval_reason
 
         if max is not None and comments_count > max:
             disapproval_reason = "Not commented on this post! ~more comments exist off maximum limit at {}".format(comments_count)
             return False, disapproval_reason
+
         elif min is not None and comments_count < min:
             disapproval_reason = "Not commented on this post! ~less comments exist off minumum limit at {}".format(comments_count)
             return False, disapproval_reason
@@ -163,3 +160,31 @@ def verify_commenting(browser, max, min, mand_words, logger):
                 return False, 'mandantory words not in post desc'
 
         return True, 'Approval'
+
+
+
+
+def get_comments_count(browser, logger):
+    """ Get the number of total comments in the post """
+    try:
+        comments_count = browser.execute_script(
+            "return window._sharedData.entry_data."
+            "PostPage[0].graphql.shortcode_media.edge_media_to_comment.count")
+
+    except Exception as e:
+        msg = "Failed to get comments' count!\n\t{}".format(str(e).encode("utf-8"))
+        return None, msg
+
+    if not comments_count:
+        if comments_count == 0:
+            msg = "There are no any comments in the post."
+            return 0, msg
+        else:
+            msg = "Couldn't get comments' count."
+            return None, msg
+
+
+    return comments_count, "Success"
+
+
+
