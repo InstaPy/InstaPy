@@ -4027,6 +4027,8 @@ class InstaPy:
                                     "Please use supported formats."
                                     "\t~disabled QS")
 
+
+
     @contextmanager
     def feature_in_feature(self, feature, validate_users):
         """ USE once a host feature calls a guest feature WHERE guest needs special behaviour(s) """
@@ -4039,26 +4041,50 @@ class InstaPy:
             # remove the guest just after using it
             self.internal_usage.pop(feature)
 
+
+
     def live_report(self):
         """ Report live sessional statistics """
-        self.logger.info("Sessional Live Report:\n"
-                         "\t|> LIKED {} images  |  ALREADY LIKED: {}\n"
-                         "\t|> COMMENTED on {} images\n"
-                         "\t|> FOLLOWED {} users  |  ALREADY FOLLOWED: {}\n"
-                         "\t|> UNFOLLOWED {} users\n"
-                         "\t|> INAPPROPRIATE images: {}\n"
-                         "\t|> NOT VALID users: {}\n"
-                         "currently FOLLOWING {} users & has got {} FOLLOWERS\n"
-                         .format(self.liked_img,
-                                 self.already_liked,
-                                 self.commented,
-                                 self.followed,
-                                 self.already_followed,
-                                 self.unfollowed,
-                                 self.inap_img,
-                                 self.not_valid_users,
-                                 self.following_num,
-                                 self.followed_by))
+        print('')
+
+        stats = [self.liked_img, self.already_liked,
+                 self.commented,
+                 self.followed, self.already_followed,
+                 self.unfollowed,
+                 self.inap_img,
+                 self.not_valid_users]
+
+        if self.following_num and self.followed_by:
+            owner_relationship_info = ("On session start was FOLLOWING {} users & had {} FOLLOWERS\n"
+                                            .format(
+                                                self.following_num,
+                                                self.followed_by))
+        else:
+            owner_relationship_info = ''
+
+        if any(stat for stat in stats):
+            self.logger.info("Sessional Live Report:\n"
+                                 "\t|> LIKED {} images  |  ALREADY LIKED: {}\n"
+                                 "\t|> COMMENTED on {} images\n"
+                                 "\t|> FOLLOWED {} users  |  ALREADY FOLLOWED: {}\n"
+                                 "\t|> UNFOLLOWED {} users\n"
+                                 "\t|> INAPPROPRIATE images: {}\n"
+                                 "\t|> NOT VALID users: {}\n"
+                                     "{}".format(self.liked_img,
+                                                 self.already_liked,
+                                                 self.commented,
+                                                 self.followed,
+                                                 self.already_followed,
+                                                 self.unfollowed,
+                                                 self.inap_img,
+                                                 self.not_valid_users,
+                                                    owner_relationship_info))
+        else:
+            self.logger.info("Sessional Live Report:\n"
+                                "\t|> No any statistics to show\n"
+                                     "{}".format(owner_relationship_info))
+
+
 
     def set_reply_comments(self,
                             replies=[],
