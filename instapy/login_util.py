@@ -269,7 +269,8 @@ def login_user(browser,
     if bypass_suspicious_attempt is True:
         bypass_suspicious_login(browser, bypass_with_mobile)
 
-    sleep(5)
+    # wait until page fully load
+    explicit_wait(browser, "PFL", [], logger, 5)
 
     # Check if user is logged-in (If there's two 'nav' elements)
     nav = browser.find_elements_by_xpath('//nav')
