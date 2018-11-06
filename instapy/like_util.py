@@ -13,10 +13,13 @@ from .util import update_activity
 from .util import web_address_navigator
 from .util import get_number_of_posts
 from .util import get_action_delay
+from .util import explicit_wait
+from .util import extract_text_from_element
 from .quota_supervisor import quota_supervisor
 
 from selenium.common.exceptions import WebDriverException
 from selenium.common.exceptions import NoSuchElementException
+from selenium.common.exceptions import StaleElementReferenceException
 
 
 
@@ -688,6 +691,41 @@ def verify_liking(browser, max, min, logger):
             return False
 
         return True
+
+
+
+def like_comment(browser, comment_like_button, original_comment_text, logger):
+    """ Like the given comment """
+    comments_block_XPath = "//div/div/h3/../../.."   # quite an efficient location path
+    like_button_XPath = "//span[contains(@aria-label, 'Like')]"
+
+    try:
+        comments_block = browser.find_elements_by_xpath(comments_block_XPath)
+        for comment_line in comments_block:
+            comment_elem = comment_line.find_elements_by_tag_name("span")[0]
+            comment = extract_text_from_element(comment_elem)
+            if comment and (comment == original_comment_text):
+                # like
+                comment_like_button = comment_line.find_element_by_xpath(like_button_XPath)
+                click_element(browser, comment_like_button)
+
+                # verify [wait until the like button element goes stale...]
+                button_change = explicit_wait(browser, "SO", [comment_like_button], logger, 7, False)
+
+                if button_change:
+                    logger.info("--> Liked the comment!")
+                    return True, "success"
+
+                else:
+                    logger.info("--> Unfortunately, comment was not liked.")
+                    return False, "failure"
+
+    except (NoSuchElementException, StaleElementReferenceException) as exc:
+        logger.error("Error occured while liking a comment.\n\t{}\n\n.".format(str(exc).encode("utf-8")))
+        return False, "error"
+
+
+    return None, "unknown"
 
 
 
