@@ -26,6 +26,7 @@ from .util import is_page_available
 from .util import reload_webpage
 from .util import click_visibly
 from .util import get_action_delay
+from .util import truncate_float
 from .print_log_writer import log_followed_pool
 from .print_log_writer import log_uncertain_unfollowed_pool
 from .print_log_writer import log_record_all_unfollowed
@@ -326,7 +327,7 @@ def unfollow(browser,
                     delay_random = random.randint(ceil(sleep_delay*0.85), ceil(sleep_delay*1.14))
                     logger.info("Unfollowed {} new users  ~sleeping about {}\n".format(sleep_counter,
                                     '{} seconds'.format(delay_random) if delay_random < 60 else
-                                    '{} minutes'.format(float("{0:.2f}".format(delay_random/60)))))
+                                    '{} minutes'.format(truncate_float(delay_random/60, 2))))
                     sleep(delay_random)
                     sleep_counter = 0
                     sleep_after = random.randint(8, 12)

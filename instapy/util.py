@@ -151,12 +151,11 @@ def validate_username(browser,
                                   if not reverse_relationship
                                   else float(following_count) / float(followers_count))
 
-        logger.info('User: {} >> followers: {}  |  following: {}  |  relationship ratio: {}'.format(username,
-                                                                                                    followers_count if followers_count else 'unknown',
-                                                                                                    following_count if following_count else 'unknown',
-                                                                                                    float(
-                                                                                                        "{0:.2f}".format(
-                                                                                                            relationship_ratio)) if relationship_ratio else 'unknown'))
+        logger.info("User: '{}'  |> followers: {}  |> following: {}  |> relationship ratio: {}"
+                        .format(username,
+                                followers_count if followers_count else 'unknown',
+                                following_count if following_count else 'unknown',
+                                truncate_float(relationship_ratio, 2) if relationship_ratio else 'unknown'))
 
         if followers_count or following_count:
             if potency_ratio and not delimit_by_numbers:
@@ -164,7 +163,7 @@ def validate_username(browser,
                     return False, \
                            "{} is not a {} with the relationship ratio of {}  ~skipping user\n".format(
                                username, "potential user" if not reverse_relationship else "massive follower",
-                               float("{0:.2f}".format(relationship_ratio)))
+                               truncate_float(relationship_ratio, 2))
 
             elif delimit_by_numbers:
                 if followers_count:
@@ -192,7 +191,7 @@ def validate_username(browser,
                         return False, \
                                "{} is not a {} with the relationship ratio of {}  ~skipping user\n".format(
                                    username, "potential user" if not reverse_relationship else "massive follower",
-                                   float("{0:.2f}".format(relationship_ratio)))
+                                   truncate_float(relationship_ratio, 2))
 
     web_address_navigator(browser, "https://www.instagram.com/" + username + "/")
     if min_posts or max_posts:

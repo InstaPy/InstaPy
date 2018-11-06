@@ -10,6 +10,7 @@ from .time_util import sleep
 from .util import web_address_navigator
 from .util import get_relationship_counts
 from .util import interruption_handler
+from .util import truncate_float
 
 
 def get_followers(browser,
@@ -132,7 +133,7 @@ def get_followers(browser,
             diff_n, diff_s = ((diff_time/60/60, "hours") if diff_time/60/60>=1 else 
                                     (diff_time/60, "minutes") if diff_time/60>=1 else 
                                         (diff_time, "seconds"))
-            diff_n = float("{0:.2f}".format(diff_n))
+            diff_n = truncate_float(diff_n, 2)
             passed_time = ("{} {}".format(diff_n, diff_s))
 
             if match is not None:
@@ -209,7 +210,7 @@ def get_followers(browser,
     sleep_t = sleep_t if sleep_t < 600 else random.randint(585, 655)
     sleep_n, sleep_s = ((sleep_t/60, "minutes") if sleep_t/60>=1 else 
                                 (sleep_t, "seconds"))
-    sleep_n = float("{0:.4f}".format(sleep_n))
+    sleep_n = truncate_float(sleep_n, 4)
 
     print('')
     logger.info("Zz :[ time to take a good nap  ~sleeping {} {}".format(sleep_n, sleep_s))
@@ -333,7 +334,7 @@ def get_following(browser,
             diff_n, diff_s = ((diff_time/60/60, "hours") if diff_time/60/60>=1 else 
                                     (diff_time/60, "minutes") if diff_time/60>=1 else 
                                         (diff_time, "seconds"))
-            diff_n = float("{0:.2f}".format(diff_n))
+            diff_n = truncate_float(diff_n, 2)
             passed_time = ("{} {}".format(diff_n, diff_s))
 
             if match is not None:
@@ -411,7 +412,7 @@ def get_following(browser,
     sleep_t = sleep_t if sleep_t < 600 else random.randint(585, 655)
     sleep_n, sleep_s = ((sleep_t/60, "minutes") if sleep_t/60>=1 else 
                                 (sleep_t, "seconds"))
-    sleep_n = float("{0:.4f}".format(sleep_n))
+    sleep_n = truncate_float(sleep_n, 4)
 
     print('')
     logger.info("Zz :[ time to take a good nap  ~sleeping {} {}".format(sleep_n, sleep_s))
@@ -975,14 +976,14 @@ def progress_tracker(current_value, highest_value, initial_time, logger):
         progress_percent = int((current_value/highest_value)*100)
         
         elapsed_time = real_time-initial_time
-        elapsed_formatted = float("{0:.2f}".format(elapsed_time))
+        elapsed_formatted = truncate_float(elapsed_time, 2)
         elapsed = ("{} seconds".format(elapsed_formatted) if elapsed_formatted < 60 else
-               "{} minutes".format(float("{0:.2f}".format(elapsed_formatted/60))))
+               "{} minutes".format(truncate_float(elapsed_formatted/60, 2)))
 
         eta_time = abs((elapsed_time*100)/(progress_percent if progress_percent != 0 else 1)-elapsed_time)
-        eta_formatted = float("{0:.2f}".format(eta_time))
+        eta_formatted = truncate_float(eta_time, 2)
         eta = ("{} seconds".format(eta_formatted) if eta_formatted < 60 else
-               "{} minutes".format(float("{0:.2f}".format(eta_formatted/60))))
+               "{} minutes".format(truncate_float(eta_formatted/60, 2)))
 
         tracker_line = "-----------------------------------"
         filled_index = int(progress_percent/2.77)
