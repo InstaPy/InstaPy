@@ -1472,6 +1472,17 @@ def get_action_delay(action):
 
 
 
+def extract_text_from_element(elem):
+    """ As an element is valid and contains text, extract it and return """
+    if elem and hasattr(elem, 'text') and elem.text:
+        text = elem.text
+    else:
+        text = None
+
+    return text
+
+
+
 def truncate_float(number, precision, round=False):
     """ Truncate (shorten) a floating point value at given precision """
 
