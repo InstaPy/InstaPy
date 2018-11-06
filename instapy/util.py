@@ -880,7 +880,20 @@ def highlight_print(username=None, message=None, priority=None, level=None, logg
         upper_char = "_"
         lower_char = "\""
 
-    print("\n{}".format(upper_char * output_len))
+    elif priority == "user iteration":
+        # ::::::::::::::::::::::::::::::::::::::::::::::::
+        # E.g.:            User: [1/4]
+        upper_char = ":"
+        lower_char = None
+
+    elif priority == "post iteration":
+        # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        # E.g.:            Post: [2/10]
+        upper_char = "~"
+        lower_char = None
+
+
+    print("\n{}".format(upper_char * ceil(output_len/len(upper_char))))
 
     if level == "info":
         logger.info(message)
@@ -889,7 +902,9 @@ def highlight_print(username=None, message=None, priority=None, level=None, logg
     elif level == "critical":
         logger.critical(message)
 
-    print("{}".format(lower_char * output_len))
+    if lower_char:
+        print("{}".format(lower_char * output_len))
+
 
 
 def remove_duplicates(container, keep_order, logger):
