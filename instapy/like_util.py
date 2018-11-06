@@ -2,6 +2,7 @@
 import random
 import re
 from re import findall
+from datetime import datetime
 from selenium.webdriver.common.keys import Keys
 
 from .time_util import sleep
@@ -12,7 +13,9 @@ from .util import is_private_profile
 from .util import update_activity
 from .util import web_address_navigator
 from .util import get_number_of_posts
+from .util import get_action_delay
 from .quota_supervisor import quota_supervisor
+from .print_log_writer import log_table_activity
 
 from selenium.common.exceptions import WebDriverException
 from selenium.common.exceptions import NoSuchElementException
@@ -330,7 +333,8 @@ def get_links_for_username(browser,
                            amount,
                            logger,
                            randomize=False,
-                           media=None):
+                           media=None,
+                           taggedImages=False):
 
     """Fetches the number of links specified
     by amount and returns a list of links"""
@@ -347,6 +351,8 @@ def get_links_for_username(browser,
     logger.info('Getting {} image list...'.format(username))
 
     user_link = "https://www.instagram.com/{}/".format(username)
+    if taggedImages:
+        user_link = user_link + 'tagged/'
 
     #Check URL of the webpage, if it already is user's profile page, then do not navigate to it again
     web_address_navigator(browser, user_link)
@@ -552,14 +558,14 @@ def check_link(browser, post_link, dont_like, mandatory_words, ignore_if_contain
 
 
 
-def like_image(browser, username, blacklist, logger, logfolder):
+def like_image(browser, username, blacklist, login, source, logger, logfolder):
     """Likes the browser opened image"""
     # check action availability
     if quota_supervisor("likes") == "jump":
         return False, "jumped"
 
-    like_xpath = "//button/span[@aria-label='Like']"
-    unlike_xpath = "//button/span[@aria-label='Unlike']"
+    like_xpath = "//section/span/button/span[@aria-label='Like']"
+    unlike_xpath = "//section/span/button/span[@aria-label='Unlike']"
 
     # find first for like element
     like_elem = browser.find_elements_by_xpath(like_xpath)
@@ -575,11 +581,19 @@ def like_image(browser, username, blacklist, logger, logfolder):
             logger.info('--> Image Liked!')
             update_activity('likes')
 
+            # Populate logs table
+            logtime = datetime.now().strftime('%Y-%m-%d %H:%M')
+            log_table_activity(login, 'Liked', username,
+                logger, logfolder, logtime, source)
+
             if blacklist['enabled'] is True:
                 action = 'liked'
                 add_user_to_blacklist(
                     username, blacklist['campaign'], action, logger, logfolder)
-            sleep(2)
+
+            # get the post-like delay time to sleep
+            naply = get_action_delay("like")
+            sleep(naply)
             return True, "success"
 
         else:
@@ -681,6 +695,3 @@ def verify_liking(browser, max, min, logger):
             return False
 
         return True
-
-
-
