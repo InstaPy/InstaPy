@@ -1226,6 +1226,13 @@ def explicit_wait(browser, track, ec_params, logger, timeout=35, notify=True):
         condition = (lambda browser: browser.execute_script("return document.readyState")
                                      in ["complete" or "loaded"])
 
+    elif track == "SO":
+        ec_name = "staleness of"
+        element = ec_params[0]
+
+        condition = ec.staleness_of(element)
+
+
     # generic wait block
     try:
         wait = WebDriverWait(browser, timeout)
