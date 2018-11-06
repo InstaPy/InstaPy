@@ -2,6 +2,7 @@
 import random
 import time
 import datetime
+from math import ceil
 import random
 import re
 import regex
@@ -118,23 +119,23 @@ def validate_username(browser,
                     "PostPage[0].graphql.shortcode_media.owner.username")
 
             except WebDriverException:
-                logger.error("Username validation failed! ~cannot get the post owner's username")
+                logger.error("Username validation failed!\t~cannot get the post owner's username")
                 return False, \
-                       "---> Sorry, this page isn't available! ~link is broken, or page is removed\n"
+                       "---> Sorry, this page isn't available!\t~either link is broken or page is removed\n"
     else:
         username = username_or_link  # if there is no `/` in `username_or_link`, then it is a `username`
 
     if username == own_username:
         return False, \
-               "---> Username '{}' is yours!  ~skipping user\n".format(own_username)
+               "---> Username '{}' is yours!\t~skipping user\n".format(own_username)
 
     if username in ignore_users:
         return False, \
-               "---> {} is in ignore_users list  ~skipping user\n".format(username)
+               "---> '{}' is in the `ignore_users` list\t~skipping user\n".format(username)
 
     if username in blacklist:
         return False, \
-               "---> {} is in blacklist  ~skipping user\n".format(username)
+               "---> '{}' is in the blacklist\t~skipping user\n".format(username)
 
     """Checks the potential of target user by relationship status in order to delimit actions within the desired boundary"""
     if potency_ratio or delimit_by_numbers and (max_followers or max_following or min_followers or min_following):
@@ -164,7 +165,7 @@ def validate_username(browser,
             if potency_ratio and not delimit_by_numbers:
                 if relationship_ratio and relationship_ratio < potency_ratio:
                     return False, \
-                           "{} is not a {} with the relationship ratio of {}  ~skipping user\n".format(
+                           "'{}' is not a {} with the relationship ratio of {}  ~skipping user\n".format(
                                username, "potential user" if not reverse_relationship else "massive follower",
                                truncate_float(relationship_ratio, 2))
 
@@ -173,26 +174,26 @@ def validate_username(browser,
                     if max_followers:
                         if followers_count > max_followers:
                             return False, \
-                                   "User {}'s followers count exceeds maximum limit  ~skipping user\n".format(username)
+                                   "User '{}'s followers count exceeds maximum limit  ~skipping user\n".format(username)
                     if min_followers:
                         if followers_count < min_followers:
                             return False, \
-                                   "User {}'s followers count is less than minimum limit  ~skipping user\n".format(
+                                   "User '{}'s followers count is less than minimum limit  ~skipping user\n".format(
                                        username)
                 if following_count:
                     if max_following:
                         if following_count > max_following:
                             return False, \
-                                   "User {}'s following count exceeds maximum limit  ~skipping user\n".format(username)
+                                   "User '{}'s following count exceeds maximum limit  ~skipping user\n".format(username)
                     if min_following:
                         if following_count < min_following:
                             return False, \
-                                   "User {}'s following count is less than minimum limit  ~skipping user\n".format(
+                                   "User '{}'s following count is less than minimum limit  ~skipping user\n".format(
                                        username)
                 if potency_ratio:
                     if relationship_ratio and relationship_ratio < potency_ratio:
                         return False, \
-                               "{} is not a {} with the relationship ratio of {}  ~skipping user\n".format(
+                               "'{}' is not a {} with the relationship ratio of {}  ~skipping user\n".format(
                                    username, "potential user" if not reverse_relationship else "massive follower",
                                    truncate_float(relationship_ratio, 2))
 
@@ -206,11 +207,11 @@ def validate_username(browser,
             return False, "---> Sorry, couldn't check for number of posts of username\n"
         if max_posts:
             if number_of_posts > max_posts:
-                return False, "Number of posts ({}) of {} exceeds the max limit given {}\n".format(number_of_posts,
+                return False, "Number of posts ({}) of '{}' exceeds the maximum limit given {}\n".format(number_of_posts,
                                                                                                    username, max_posts)
         if min_posts:
             if number_of_posts < min_posts:
-                return False, "Number of posts ({}) of {} is not enough for the minimum limit given {}\n".format(
+                return False, "Number of posts ({}) of '{}' is less than the minimum limit given {}\n".format(
                     number_of_posts, username, min_posts)
     """Skip users"""
     # Skip private
@@ -242,27 +243,30 @@ def validate_username(browser,
         except WebDriverException:
             logger.error("~cannot get if user has business account active")
             return False, "---> Sorry, couldn't get if user has business account active\n"
+
         if is_business_account:
             try:
                 category = getUserData("graphql.user.business_category_name", browser)
             except WebDriverException:
                 logger.error("~cannot get category name for user")
                 return False, "---> Sorry, couldn't get category name for user\n"
+
             if len(skip_business_categories) == 0:
                 # skip if not in dont_include
                 if category not in dont_skip_business_categories:
                     if len(dont_skip_business_categories) == 0 and (random.randint(0, 100) <= skip_business_percentage):
-                        return False, "{} has business account\n".format(username)
+                        return False, "'{}' has a business account\n".format(username)
                     else:
-                        return False, "{} has business account as a {} which is in the skip_business_categories list given\n".format(
+                        return False, "'{}' has a business account in the undesired category of '{}'\n".format(
                             username, category)
             else:
                 if category in skip_business_categories:
-                    return False, "{} has business account as a {} which is in the skip_business_categories list given\n".format(
+                    return False, "'{}' has a business account in the undesired category of '{}'\n".format(
                         username, category)
 
     # if everything ok
     return True, "Valid user"
+
 
 
 def getUserData(query, browser, basequery="return window._sharedData.entry_data.ProfilePage[0]."):
@@ -755,11 +759,11 @@ def get_relationship_counts(browser, username, logger):
                         followers_count = format_number(topCount_elements[1].text)
 
                     else:
-                        logger.info("Failed to get followers count of '{}'  ~empty list".format(username))
+                        logger.info("Failed to get followers count of '{}'  ~empty list".format(username.encode("utf-8")))
                         followers_count = None
 
                 except NoSuchElementException:
-                    logger.error("Error occurred during getting the followers count of '{}'\n".format(username))
+                    logger.error("Error occurred during getting the followers count of '{}'\n".format(username.encode("utf-8")))
                     followers_count = None
 
     try:
@@ -790,11 +794,11 @@ def get_relationship_counts(browser, username, logger):
                         following_count = format_number(topCount_elements[2].text)
 
                     else:
-                        logger.info("Failed to get following count of '{}'  ~empty list".format(username))
+                        logger.info("Failed to get following count of '{}'  ~empty list".format(username.encode("utf-8")))
                         following_count = None
 
                 except NoSuchElementException:
-                    logger.error("\nError occurred during getting the following count of '{}'\n".format(username))
+                    logger.error("\nError occurred during getting the following count of '{}'\n".format(username.encode("utf-8")))
                     following_count = None
 
     return followers_count, following_count
