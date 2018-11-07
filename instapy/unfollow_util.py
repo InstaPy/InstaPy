@@ -115,7 +115,7 @@ def get_following_status(browser, track, username, person, person_id, logger, lo
                         )
     failure_msg = "--> Unable to detect the following status of '{}'!"
     user_inaccessible_msg = ("Couldn't access the profile page of '{}'!"
-                             "\t~might have changed the username".format(username))
+                             "\t~might have changed the username".format(person))
 
     # check if the page is available
     valid_page = is_page_available(browser, logger)

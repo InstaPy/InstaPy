@@ -22,8 +22,8 @@ Head over to https://github.com/timgrossmann/InstaPy/wiki/Reporting-An-Issue to 
 
 ### Social
 
-#### [Slack Workspace](https://join.slack.com/t/instapy/shared_invite/enQtMjYzNTgwMDg3MDEyLTk2NWI0MjY2MTVjYmM2NjFlYjVmMmE0ZjU1OGQ0OWM2MTQwOTc1NTIyOGVhZDEwMTFkYzFmODE5ZWIxZjhjMTQ) | [InstaPy Twitter](https://twitter.com/InstaPy) | [My Twitter](https://twitter.com/timigrossmann) | [How it works (Medium)](https://medium.freecodecamp.com/my-open-source-instagram-bot-got-me-2-500-real-followers-for-5-in-server-costs-e40491358340) | [Check out the talk](https://youtu.be/4TmKFZy-ioQ) |
-[Listen to the "Talk Python to me"-Episode](https://talkpython.fm/episodes/show/142/automating-the-web-with-selenium-and-instapy) | [Support InstaPy!](https://www.paypal.me/supportInstaPy)
+#### [Slack Workspace](https://join.slack.com/t/instapy/shared_invite/enQtMjYzNTgwMDg3MDEyLTk2NWI0MjY2MTVjYmM2NjFlYjVmMmE0ZjU1OGQ0OWM2MTQwOTc1NTIyOGVhZDEwMTFkYzFmODE5ZWIxZjhjMTQ) | [InstaPy Twitter](https://twitter.com/InstaPy) | [My Twitter](https://twitter.com/timigrossmann) | [How it works (Medium)](https://medium.freecodecamp.com/my-open-source-instagram-bot-got-me-2-500-real-followers-for-5-in-server-costs-e40491358340) |   
+[Talk about automating your Instagram](https://youtu.be/4TmKFZy-ioQ) | [Talk about doing Open-Source work](https://www.youtube.com/watch?v=A_UtST302Og&t=0s&list=PLa4P1NPX9hthXV-wko0xyxFpbhYZFkW7o) | [Listen to the "Talk Python to me"-Episode](https://talkpython.fm/episodes/show/142/automating-the-web-with-selenium-and-instapy)
 
 [![paypal](https://img.shields.io/badge/-PayPal-blue.svg)](https://www.paypal.me/supportInstaPy)
 
@@ -43,6 +43,7 @@ Table of Contents
   * [Follow the likers of photos of users](#follow-the-likers-of-photos-of-users)  
   * [Follow the commenters of photos of users](#follow-the-commenters-of-photos-of-users)  
   * [Interact with specific users](#interact-with-specific-users)
+  * [Interact with specific users' tagged posts](#interact-with-specific-users-tagged-posts)
   * [Interact with users that someone else is following](#interact-with-users-that-someone-else-is-following)
   * [Interact with someone else's followers](#interact-with-someone-elses-followers)
   * [Interact on posts at given URLs](#interact-on-posts-at-given-urls)
@@ -365,6 +366,20 @@ session.set_do_comment(enabled=True, percentage=80)
 session.set_do_like(True, percentage=70)
 session.interact_by_users(['user1', 'user2', 'user3'], amount=5, randomize=True, media='Photo')
 ```
+
+### Interact with specific users' tagged posts
+
+```python
+# Interact with specific users' tagged posts
+# set_do_like, set_do_comment, set_do_follow are applicable
+
+session.set_do_follow(enabled=False, percentage=50)
+session.set_comments(["Cool", "Super!"])
+session.set_do_comment(enabled=True, percentage=80)
+session.set_do_like(True, percentage=70)
+session.interact_by_users_tagged_posts(['user1', 'user2', 'user3'], amount=5, randomize=True, media='Photo')
+```
+
 
 ### Interact with users that someone else is following
 
@@ -1546,6 +1561,21 @@ We have 3 options:
 1. ip:port
 2. user:pass@ip:port
 3. None
+
+### Checking Video
+**WARNING**: Clarifai checks one frame of video for content for every second of video. **That is, in a 60 second video, 60 billable operations would be run for every model that the video is being checked against.** Running checks on video should only be used if you have special needs and are prepared to use a large number of billable operations.
+
+To have Clarifai run a predict on video posts, you can set the `check_video` argument in `session.set_use_clarifai` to `True`. By default, this argument is set to `False`. Even if you do not choose to check the entire video, Clarifai will still check the video's keyframe for content.
+
+For example:
+
+```python
+session.set_use_clarifai(enabled=True, api_key='xxx', check_video=True)
+```
+
+With video inputs, Clarifai's Predict API response will return a list of concepts at a rate of one frame for every second of a video.
+
+Be aware that you cannot check video using a `workflow` and that only a select number of public models are currently supported. Models currently supported are: Apparel, Food, General, NSFW, Travel, and Wedding. In the event that the models being used do not support video inputs or you are using a workflow, the video's keyframe will still be checked for content.
 
 ##### Check out [https://clarifai.com/demo](https://clarifai.com/demo) to see some of the available tags.</h6>
 
