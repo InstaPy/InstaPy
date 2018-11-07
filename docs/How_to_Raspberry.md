@@ -97,3 +97,11 @@ Pi2.2 sudo dpkg -i firefox_49.0+build4-0ubuntu0.14.04.1_armhf.deb
 5. in the assets folder: `wget https://github.com/electron/electron/releases/download/v3.0.0-beta.5/chromedriver-v3.0.0-beta.5-linux-armv7l.zip`
 6. also in the assets folder: `unzip chromedriver-v3.0.0-beta.5-linux-armv7l.zip`
 7. 🎉
+
+
+# Solve Ensure chromedriver is installed at .. (Tested on Raspberry Pi 3 B+)
+1. Follow the complete installation above.
+2. Remove the chromedriver currently in the assets folder: 'rm chromedriver'
+3. Inside the assets folder: 'wget https://github.com/electron/electron/releases/download/v3.0.0-beta.5/chromedriver-v3.0.0-beta.5-linux-armv7l.zip'
+4. Inside the assets folder: 'unzip chromedriver-v3.0.0-beta.5-linux-armv7l.zip'
+5. 'sudo apt-get remove chromium'
