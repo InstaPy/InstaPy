@@ -8,6 +8,8 @@ _The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 ### Changed
 - Maintain names: 'person' for target user and 'username' for our running user
 - Verify private users in get_links_for_username
+- Changed behaviour of validate_username to check if a user is included in the blacklist. If yes will skip it and log why.
+
 
 ## [Unreleased] - 2018-11-01
 ### Added
