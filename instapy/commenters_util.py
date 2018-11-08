@@ -4,7 +4,6 @@ from time import sleep
 from datetime import datetime, timedelta
 import random
 import collections
-from operator import itemgetter, attrgetter
 from selenium.webdriver.common.keys import Keys
 
 from .util import get_number_of_posts
@@ -36,7 +35,7 @@ def remove_duplicates_preserving_order(seq):
 
 def extract_post_info(browser):
     """Get the information from the current post"""
-    comments = []                                          
+    comments = []
 
     user_commented_list = []
     if browser.find_element_by_xpath("//div/ul"):
@@ -81,19 +80,19 @@ def extract_post_info(browser):
 
             except:
                 print ("cant get comments")
-                
+
         print (len(user_commented_list), " comments.")
-    date_time = browser.find_element_by_tag_name('time').get_attribute("datetime")    
-        
+    date_time = browser.find_element_by_tag_name('time').get_attribute("datetime")
+
     return user_commented_list, date_time
 
 
 
 def extract_information(browser, username, daysold, max_pic):
-  
+
     """Get all the information for the given username"""
     web_address_navigator(browser,'https://www.instagram.com/' + username)
-    
+
     try:
         num_of_posts = get_number_of_posts(browser)
         num_of_posts = (min (num_of_posts,max_pic))
@@ -102,14 +101,14 @@ def extract_information(browser, username, daysold, max_pic):
     except:
         print ("\nError: Couldn't get user profile. Moving on..")
         return []
-    
+
     #PROFILE SCROLLING AND HARVESTING LINKS
     try:
         body_elem = browser.find_element_by_tag_name('body')
-    
+
         links = []
-        links2 = [] 
-        links3 = []  
+        links2 = []
+        links3 = []
         #list links contains 30 links from the current view, as that is the maximum Instagram is showing at one time
         #list links2 contains all the links collected so far without duplicates, in mixed order
         #list links3 contains all the links collected so far with duplicates in preserved order
@@ -118,22 +117,22 @@ def extract_information(browser, username, daysold, max_pic):
         #every 60 links we will open picture and check it's date not to scroll endlessly in huge profiles such as natgeo
         opened_overlay = 42
         sleep(0.5)
-        
+
         #cycle that scrolls down the feed and collects links and saving them into links2
         while (len(links2) < num_of_posts):
-            prev_divs = browser.find_elements_by_tag_name('main')      
+            prev_divs = browser.find_elements_by_tag_name('main')
             #harvesting current img links:
-            links_elems = [div.find_elements_by_tag_name('a') for div in prev_divs]  
+            links_elems = [div.find_elements_by_tag_name('a') for div in prev_divs]
             links = sum([[link_elem.get_attribute('href')
                 for link_elem in elems] for elems in links_elems], [])
             #saving links for later:
             for link in links:
                 if "/p/" in link:
-                    links2.append(link) 
+                    links2.append(link)
                     links3.append(link)
                 last_link = link
-            links2 = list(set(links2)) 
-            #if after previous scroll, size of links2 didnt increase, we should finish else we continue  
+            links2 = list(set(links2))
+            #if after previous scroll, size of links2 didnt increase, we should finish else we continue
             if (len(links2) == previouslen):
                 print ("Cannot scroll, quitting..")
                 sleep(0.5)
@@ -141,7 +140,7 @@ def extract_information(browser, username, daysold, max_pic):
 
             else:
                 print ("Scrolling profile ", len(links2), "/", num_of_posts)
-                
+
                 #TRYING TO END SCROLLING IN TIME
                 #check the date of the image once in a 60 to not scroll too much
                 #only do it if we have a lot to images to go
@@ -169,15 +168,15 @@ def extract_information(browser, username, daysold, max_pic):
                     except:
                         pass
                     sleep(2)
-                    
-                    pic_date_time = browser.find_element_by_tag_name('time').get_attribute("datetime")    
+
+                    pic_date_time = browser.find_element_by_tag_name('time').get_attribute("datetime")
                     pastdate = datetime.now() - timedelta(days=daysold)
                     date_of_pic = datetime.strptime(pic_date_time, "%Y-%m-%dT%H:%M:%S.%fZ")
-                    
+
                     print ("closing overlay")
                     close_overlay = browser.find_element_by_xpath("//div/div[@role='dialog']")
                     click_element(browser, close_overlay)
-                    
+
                     print ("date of this picture was:", date_of_pic)
 
                     if (date_of_pic < pastdate):
@@ -188,7 +187,7 @@ def extract_information(browser, username, daysold, max_pic):
                     else:
                         print ("\nPhotos seems to be fresh, continuing scrolling")
                         sleep(2)
-               
+
                 previouslen = len(links2)
                 body_elem.send_keys(Keys.END)
                 sleep(1.5)
@@ -196,12 +195,12 @@ def extract_information(browser, username, daysold, max_pic):
     except NoSuchElementException as err:
         print('\n- Something went terribly wrong\n - Stopping everything and moving on with what I have\n')
         print (err)
-  
+
     links4 = remove_duplicates_preserving_order(links3)
     post_infos = []
-            
+
     #PICTURES SCRAPPER ONE BY ONE
-    #into user_commented_total_list go all username links who commented on any post of this user 
+    #into user_commented_total_list go all username links who commented on any post of this user
     counter = 1
     user_commented_total_list = []
     for link in links4:
@@ -211,10 +210,10 @@ def extract_information(browser, username, daysold, max_pic):
         print ("\n", counter , " of max ", len(links4), " --- ", max_pic, " to go.")
         counter = counter + 1
         print ("\nScrapping link: ", link)
-        
+
         try:
             web_address_navigator(browser, link)
-            user_commented_list, pic_date_time = extract_post_info(browser)     
+            user_commented_list, pic_date_time = extract_post_info(browser)
             user_commented_total_list = user_commented_total_list + user_commented_list
 
             #stop if date older than daysago
@@ -226,18 +225,18 @@ def extract_information(browser, username, daysold, max_pic):
             else:
                 print ("Old pic, ending getting users who commented.")
                 sleep(3)
-                break          
+                break
             sleep(1)
         except NoSuchElementException:
             print('- Could not get information from post: ' + link)
-  
+
     #PREPARE THE USER LIST TO EXPORT
     #sorts the list by frequencies, so users who comment the most are at the top
     counter=collections.Counter(user_commented_total_list)
     com = sorted(counter.most_common(), key=itemgetter(1,0), reverse=True)
     com = map(lambda x: [x[0]] * x[1], com)
     user_commented_total_list = [item for sublist in com for item in sublist]
-     
+
     #remove duplicates preserving order (that's why not using set())
     user_commented_list = []
     last = ''
@@ -245,8 +244,8 @@ def extract_information(browser, username, daysold, max_pic):
         if username.lower() != user_commented_total_list[i]:
             if (last != user_commented_total_list[i] and 'p' not in user_commented_total_list[i]):
                user_commented_list.append(user_commented_total_list[i])
-            last = user_commented_total_list[i]     
-    
+            last = user_commented_total_list[i]
+
     print ("\nGetting list of users who commented on this profile finished: ")
     print (user_commented_list, "\n")
     return user_commented_list
@@ -257,16 +256,16 @@ def users_liked (browser, photo_url, amount=100):
     photo_likers = []
     try:
         web_address_navigator(browser,photo_url)
-        photo_likers = likers_from_photo(browser, amount)   
-        sleep(2)  
+        photo_likers = likers_from_photo(browser, amount)
+        sleep(2)
     except NoSuchElementException:
         print('Could not get information from post: ' + photo_url,' nothing to return')
-            
+
     return photo_likers
 
 
 
-def likers_from_photo(browser, amount=20):                                       
+def likers_from_photo(browser, amount=20):
 
     user_liked_list = []
     try:
@@ -274,28 +273,28 @@ def likers_from_photo(browser, amount=20):
         likers = []
         for liker in liked_this:
             if "like this" not in liker.text:
-                likers.append(liker.text)        
+                likers.append(liker.text)
         if check_exists_by_xpath(browser, "//div/article/div[2]/section[2]/div/a"):
             if "likes" not in liked_this[0].text:
                 print ("Few likes, not guaranteed you don't follow these likers already.\nGot photo likers: ", likers," \n")
-                return likers 
+                return likers
         else:
             print ("Video has no likes?")
             print ("Moving on..")
             return []
-            
+
         sleep(1)
         click_element(browser, liked_this[0])
         print ("opening likes")
         # update server calls
-        #update_activity()    
-            
+        #update_activity()
+
         sleep(1)
-    
+
         # find dialog box
         dialog = browser.find_element_by_xpath(
             "//div[text()='Likes']/following-sibling::div")
-        
+
         # scroll down the page
         previous_len = -1
         follow_buttons = []
@@ -321,7 +320,7 @@ def likers_from_photo(browser, amount=20):
 
             follow_buttons = dialog.find_elements_by_xpath(
             "//div/div/button[text()='Follow']")
-            print ("Scrolling down... ",previous_len,"->", len(follow_buttons) ," / ",amount) 
+            print ("Scrolling down... ",previous_len,"->", len(follow_buttons) ," / ",amount)
 
         person_list = []
 
@@ -329,8 +328,8 @@ def likers_from_photo(browser, amount=20):
             username_url = person.find_element_by_xpath("../../../*").find_element_by_tag_name("a").get_attribute('href')
             username = username_url_to_username(username_url)
             person_list.append(username)
-        
-        random.shuffle(person_list)     
+
+        random.shuffle(person_list)
         sleep(1)
 
         try:
@@ -340,27 +339,27 @@ def likers_from_photo(browser, amount=20):
 
         except:
             pass
-               
+
         print("Got {} likers shuffled randomly whom you can follow:\n{}\n".format(len(person_list), person_list))
         return person_list
 
     except Exception as exc:
         print ("Some problem occred!\n\t{}".format(str(exc).encode("utf-8")))
-        return []              
+        return []
 
 
 
 def get_photo_urls_from_profile (browser, username, links_to_return_amount=1, randomize=True):
-    #try:   
+    #try:
     #input can be both username or user profile url
     username = username_url_to_username(username)
     print ("\nGetting likers from user: ", username,"\n")
     web_address_navigator(browser,'https://www.instagram.com/' + username +'/')
     sleep(1)
-    
+
     photos_a_elems = browser.find_elements_by_xpath("//div/a")
-   
-    links = [] 
+
+    links = []
     for photo_element in photos_a_elems:
         photo_url = photo_element.get_attribute("href")
         #print ("photo url: ", photo_url)
@@ -369,13 +368,10 @@ def get_photo_urls_from_profile (browser, username, links_to_return_amount=1, ra
 
     if randomize == True:
         print ("shuffling links")
-        random.shuffle(links)   
-    print ("Got ", len(links), ", returning ", min(links_to_return_amount, len(links)), " links: ", links[:links_to_return_amount])      
-    sleep(1)      
+        random.shuffle(links)
+    print ("Got ", len(links), ", returning ", min(links_to_return_amount, len(links)), " links: ", links[:links_to_return_amount])
+    sleep(1)
     return links[:links_to_return_amount]
     #except:
     print ("Error: Couldnt get pictures links.")
     return []
-
-
-
