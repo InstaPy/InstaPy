@@ -4,6 +4,7 @@ from time import sleep
 from datetime import datetime, timedelta
 import random
 import collections
+from operator import itemgetter
 from selenium.webdriver.common.keys import Keys
 
 from .util import get_number_of_posts
