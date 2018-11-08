@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """Module which handles the commenting features"""
-from random import choice
+import random
 import emoji
 
 from .time_util import sleep
@@ -59,7 +59,7 @@ def comment_image(browser, username, comments, blacklist, logger, logfolder):
     if quota_supervisor('comments') == 'jump':
         return False, "jumped"
 
-    rand_comment = (choice(comments).format(username))
+    rand_comment = (random.choice(comments).format(username))
     rand_comment = emoji.demojize(rand_comment)
     rand_comment = emoji.emojize(rand_comment, use_aliases=True)
 
