@@ -4216,9 +4216,11 @@ class InstaPy:
 
             try:
                 links = get_links_for_username(self.browser,
+                                               self.username,
                                                username,
                                                posts_amount,
                                                self.logger,
+                                               self.logfolder,
                                                randomize,
                                                media)
             except NoSuchElementException:
