@@ -16,6 +16,7 @@ from .util import get_action_delay
 from .util import explicit_wait
 from .util import extract_text_from_element
 from .quota_supervisor import quota_supervisor
+from .unfollow_util import get_following_status
 
 from selenium.common.exceptions import WebDriverException
 from selenium.common.exceptions import NoSuchElementException
@@ -331,8 +332,10 @@ def get_links_for_tag(browser,
 
 def get_links_for_username(browser,
                            username,
+                           person,
                            amount,
                            logger,
+                           logfolder,
                            randomize=False,
                            media=None,
                            taggedImages=False):
@@ -349,9 +352,9 @@ def get_links_for_username(browser,
         # Make it an array to use it in the following part
         media = [media]
 
-    logger.info('Getting {} image list...'.format(username))
+    logger.info('Getting {} image list...'.format(person))
 
-    user_link = "https://www.instagram.com/{}/".format(username)
+    user_link = "https://www.instagram.com/{}/".format(person)
     if taggedImages:
         user_link = user_link + 'tagged/'
 
@@ -361,17 +364,16 @@ def get_links_for_username(browser,
     body_elem = browser.find_element_by_tag_name('body')
     abort = True
 
-    try:
-        is_private = is_private_profile(browser, logger)
-    except:
-        logger.info('Interaction begin...')
-    else:
-        if is_private:
-            logger.warning('This user is private...')
-            return False
-
     if "Page Not Found" in browser.title:
         logger.error('Intagram error: The link you followed may be broken, or the page may have been removed...')
+        return False
+
+    # if private user, we can get links only if we following
+    following, follow_button = get_following_status(browser, 'profile', username, person, None, logger, logfolder)
+    if following == 'Following':
+        following = True
+    is_private = is_private_profile(browser, logger, following)
+    if (is_private is None) or (is_private is True and not following) or (following == 'Blocked'):
         return False
 
     #Get links
@@ -382,7 +384,7 @@ def get_links_for_username(browser,
 
     if posts_count is not None and amount > posts_count:
         logger.info("You have requested to get {} posts from {}'s profile page BUT"
-                    " there only {} posts available :D".format(amount, username, posts_count))
+                    " there only {} posts available :D".format(amount, person, posts_count))
         amount = posts_count
 
     while len(links) < amount:
@@ -394,12 +396,12 @@ def get_links_for_username(browser,
         sleep(0.66)
 
         # using `extend`  or `+=` results reference stay alive which affects previous assignment (can use `copy()` for it)
-        links = links + get_links(browser, username, logger, media, main_elem)
+        links = links + get_links(browser, person, logger, media, main_elem)
         links = sorted(set(links), key=links.index)
 
         if len(links) == len(initial_links):
             if attempt >= 7:
-                logger.info("There are possibly less posts than {} in {}'s profile page!".format(amount, username))
+                logger.info("There are possibly less posts than {} in {}'s profile page!".format(amount, person))
                 break
             else:
                 attempt += 1
@@ -726,6 +728,3 @@ def like_comment(browser, comment_like_button, original_comment_text, logger):
 
 
     return None, "unknown"
-
-
-
