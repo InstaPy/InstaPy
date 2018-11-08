@@ -13,8 +13,6 @@ from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import WebDriverException
 
 
-
-
 def bypass_suspicious_login(browser, bypass_with_mobile):
     """Bypass suspicious loggin attempt verification. This should be only enabled
     when there isn't available cookie for the username, otherwise it will and

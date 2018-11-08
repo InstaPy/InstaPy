@@ -2,7 +2,6 @@
 import random
 import re
 from re import findall
-from selenium.webdriver.common.keys import Keys
 
 from .time_util import sleep
 from .util import format_number
@@ -690,6 +689,3 @@ def verify_liking(browser, max, min, logger):
             return False
 
         return True
-
-
-
