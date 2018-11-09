@@ -27,6 +27,7 @@ unfoll1.py
 unfollow.py
 interiors.py
 cabana.py
+nolikes.py
 
 # C extensions
 *.so
