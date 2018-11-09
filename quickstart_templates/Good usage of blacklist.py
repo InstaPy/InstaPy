@@ -5,16 +5,12 @@ What does this quickstart script aim to do?
 - Here's the configuration I use the most.
 
 NOTES:
-- Read the incredibly amazing advices & ideas from my experience at the end of this file :> 
+- Read the incredibly amazing advices & ideas from my experience at the end of this file :>
 """
 
 
-import time
-import os
-from tempfile import gettempdir
 from instapy import InstaPy
 from instapy.util import smart_run
-from selenium.common.exceptions import NoSuchElementException
 
 
 
@@ -54,10 +50,10 @@ with smart_run(session):
     session.set_dont_like(['#naked', '#sex', '#fight'])
     session.set_user_interact(amount=1, randomize=False, percentage=50)
     session.set_simulation(enabled=True)
-    
+
 
     # activity
-    
+
     """ First follow user followers leaves comments on these user's posts...
     """
     session.follow_user_followers(['user1', 'user2', 'user3'], amount=125, randomize=False, interact=True, sleep_delay=600)
@@ -102,6 +98,3 @@ Knowing this, my workaround for the premature unfollow actions ending is to chai
 
 Hope this helps! Open to any feedback and improvements anyone can suggest ^.^
 """
-
-
-

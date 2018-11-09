@@ -6,7 +6,6 @@ What does this quickstart script aim to do?
 """
 
 
-import os
 from instapy import InstaPy
 from instapy.util import smart_run
 
@@ -31,6 +30,3 @@ with smart_run(session):
 
     # activity
     session.like_by_tags(['xxx', 'xxx', 'xxx', 'xxx', 'xxx', 'xxx', 'xxx', 'xxx', 'xxx', 'xxx', 'xxx', 'xxx', 'xxx'], amount=8, skip_top_posts=True)
-
-
-
