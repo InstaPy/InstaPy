@@ -686,15 +686,44 @@ class InstaPy:
                     random_tags = random.sample(data['results'], limit)
                     for item in random_tags:
                         self.smart_hashtags.append(item['tag'])
-
-                if log_tags is True:
-                    for item in self.smart_hashtags:
-                        print(u'[smart hashtag generated: {}]'.format(item))
             else:
                 print(u'Too few results for #{} tag'.format(tag))
 
-        # delete duplicated tags
-        self.smart_hashtags = list(set(self.smart_hashtags))
+            # delete duplicated tags
+            self.smart_hashtags = list(set(self.smart_hashtags))
+            tags = self.smart_hashtags
+            # remove dont_like
+            removed = []
+            for smarthashtag in tags:
+                match_regex = []
+                for dont_likes in self.dont_like:
+                    if dont_likes.startswith("#"):
+                        match_regex.append(dont_likes + "([^\d\w]|$)")
+                    elif dont_likes.startswith("["):
+                        match_regex.append(dont_likes[1:] + "[\d\w]+([^\d\w]|$)")
+                    elif dont_likes.startswith("]"):
+                        match_regex.append("[\d\w]+" + dont_likes[1:] + "([^\d\w]|$)")
+                    else:
+                        match_regex.append(
+                            "[\d\w]*" + dont_likes + "[\d\w]*([^\d\w]|$)")
+
+                for regex in match_regex:
+                    result = re.search(regex, smarthashtag, re.IGNORECASE)
+                    if result:
+                        print(regex + " found in " + smarthashtag)
+                        if smarthashtag not in removed:
+                            removed.append(smarthashtag)
+                            try:
+                                print("removing "+ smarthashtag)
+                                self.smart_hashtags.remove(smarthashtag)
+                            except:
+                                print(smarthashtag + "Not found in "+ self.smart_hashtags)
+                        else:
+                            print(smarthashtag + " was already removed")
+
+        if log_tags is True:
+            for item in self.smart_hashtags:
+                print(u'[smart hashtag generated: {}]'.format(item))
         return self
 
 
