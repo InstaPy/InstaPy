@@ -2,7 +2,6 @@
 import random
 import time
 import datetime
-import random
 import re
 import signal
 import os
@@ -131,7 +130,7 @@ def validate_username(browser,
 
     logfolder = logfolder = '{0}{1}{2}{1}'.format(
             Settings.log_location, os.path.sep, own_username)
-    
+
     blacklist_file = "{}blacklist.csv".format(logfolder)
     blacklist_file_exists = os.path.isfile(blacklist_file)
     if blacklist_file_exists:
@@ -1480,6 +1479,3 @@ def get_action_delay(action):
         return defaults[action]
 
     return custom_delay
-
-
-

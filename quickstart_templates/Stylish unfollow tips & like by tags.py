@@ -9,7 +9,6 @@ NOTES:
 """
 
 
-import os
 from instapy import InstaPy
 from instapy.util import smart_run
 
@@ -30,10 +29,10 @@ with smart_run(session):
 
     """I used to have potency_ratio=-0.85 and max_followers=1200 for set_relationship_bounds()
         Having a stricter relationship bound to target only low profiles users was not very useful,
-        as interactions/sever calls ratio was very low. I would reach the server call threshold for 
-        the day before even crossing half of the presumed safe limits for likes, follow and comments (yes, 
+        as interactions/sever calls ratio was very low. I would reach the server call threshold for
+        the day before even crossing half of the presumed safe limits for likes, follow and comments (yes,
         looks like quiet a lot of big(bot) managed accounts out there!!).
-        So I relaxed it a bit to -0.50 and 2000 respectively. 
+        So I relaxed it a bit to -0.50 and 2000 respectively.
     """
     session.set_relationship_bounds(enabled=True,
                                      potency_ratio=-0.50,
@@ -49,8 +48,8 @@ with smart_run(session):
     session.set_sleep_reduce(200)
 
     """ Get the list of non-followers
-        I duplicated unfollow_users() to see a list of non-followers which I run once in a while when I time 
-        to review the list      
+        I duplicated unfollow_users() to see a list of non-followers which I run once in a while when I time
+        to review the list
     """
     # session.just_get_nonfollowers()
 
@@ -69,7 +68,7 @@ with smart_run(session):
     """ Actions start here """
     # Unfollow users
     """ Users who were followed by InstaPy, but not have followed back will be removed in
-        One week (168 * 60 * 60) 
+        One week (168 * 60 * 60)
         Yes, I give a liberal one week time to follow [back] :)
     """
     session.unfollow_users(amount=25, InstapyFollowed=(True, "nonfollowers"), style="RANDOM",
@@ -78,8 +77,8 @@ with smart_run(session):
 
 
     # Remove specific users immediately
-    """ I use InstaPy only for my personal account, I sometimes use custom list to remove users who fill up my feed 
-        with annoying photos           
+    """ I use InstaPy only for my personal account, I sometimes use custom list to remove users who fill up my feed
+        with annoying photos
     """
     # custom_list = ["sexy.girls.pagee", "browneyedbitch97"]
     #
@@ -88,8 +87,8 @@ with smart_run(session):
 
     # Like by tags
     """ I mostly use like by tags. I used to use a small list of targeted tags with a big 'amount' like 300
-        But that resulted in lots of "insufficient links" messages. So I started using a huge list of tags with 
-        'amount' set to something small like 50. Probably this is not the best way to deal with "insufficient links" 
+        But that resulted in lots of "insufficient links" messages. So I started using a huge list of tags with
+        'amount' set to something small like 50. Probably this is not the best way to deal with "insufficient links"
         message. But I feel it is a quick work around.
     """
 
@@ -107,6 +106,3 @@ with smart_run(session):
 - I think it is good opportunity to educate and get educated [using templates of other people] :) ...
 
 """
-
-
-
