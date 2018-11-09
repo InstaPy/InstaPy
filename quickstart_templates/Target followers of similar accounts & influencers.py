@@ -11,7 +11,6 @@ NOTES:
 
 
 import random
-import os
 from instapy import InstaPy
 from instapy.util import smart_run
 
@@ -105,7 +104,7 @@ with smart_run(session):
     """ Unfollow nonfollowers after one day...
     """
     session.unfollow_users(amount=random.randint(75,100), InstapyFollowed=(True, "nonfollowers"), style="FIFO", unfollow_after=24*60*60, sleep_delay=600)
-    
+
     """ Unfollow all users followed by InstaPy after one week to keep the following-level clean...
     """
     session.unfollow_users(amount=random.randint(75,100), InstapyFollowed=(True, "all"), style="FIFO", unfollow_after=168*60*60, sleep_delay=600)
@@ -115,6 +114,3 @@ with smart_run(session):
 """
 Have fun while optimizing for your purposes, Nuzzo
 """
-
-
-
