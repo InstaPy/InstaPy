@@ -2,7 +2,7 @@
 This template is written by @Mehran
 
 What does this quickstart script aim to do?
-- My quickstart is just for follow/unfollow users. 
+- My quickstart is just for follow/unfollow users.
 
 NOTES:
 - It uses schedulers to trigger activities in chosen hours and also, sends me messages through Telegram API.
@@ -12,17 +12,12 @@ NOTES:
 # -*- coding: UTF-8 -*-
 import time
 from datetime import datetime
-import os
 import schedule
 import traceback
-from tempfile import gettempdir
 import requests
 
 from instapy import InstaPy
 from instapy.util import smart_run
-
-from selenium.common.exceptions import NoSuchElementException
-
 
 
 insta_username = ''
@@ -47,14 +42,14 @@ def follow():
 
     # get a session!
     session = get_session()
-    
+
     # let's go!
     with smart_run(session):
         counter = 0
 
         while counter < 5:
             counter += 1
-            
+
             try:
                 # settings
                 session.set_relationship_bounds(enabled=True, potency_ratio=1.21)
@@ -126,15 +121,12 @@ def xunfollow():
 schedule.every().day.at("09:30").do(follow)
 schedule.every().day.at("13:30").do(follow)
 schedule.every().day.at("17:30").do(follow)
-  
+
 schedule.every().day.at("00:05").do(unfollow)
-  
+
 schedule.every().wednesday.at("03:00").do(xunfollow)
 
 
 while True:
     schedule.run_pending()
     time.sleep(1)
-
-
-

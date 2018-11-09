@@ -5,11 +5,10 @@ What does this quickstart script aim to do?
 - Interact with user followers, liking 3 pictures, doing 1-2 comment - and 25% chance of follow (ratios which work the best for my account)
 
 NOTES:
-- This is used in combination with putting a 40 sec sleep delay after every like the script does. It runs 24/7 at rather slower speed, but without problems (so far). 
+- This is used in combination with putting a 40 sec sleep delay after every like the script does. It runs 24/7 at rather slower speed, but without problems (so far).
 """
 
 
-import os
 from instapy import InstaPy
 from instapy.util import smart_run
 
@@ -54,6 +53,3 @@ with smart_run(session):
 - @Tachenz, the values in your script took my attention, it will be very good for new starters, as @Andercorp said. Stunning!
 
 """
-
-
-
