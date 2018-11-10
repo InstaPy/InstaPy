@@ -6,8 +6,6 @@ services:
       dockerfile: ./docker_conf/dev_python/Dockerfile
     volumes:
       - .:/code
-    env_file: 
-      - .env
     ports:
       - "22:22"
     depends_on:
