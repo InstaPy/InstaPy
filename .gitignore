@@ -111,3 +111,6 @@ tests/logs
 # Pipfile
 Pipfile
 Pipfile.lock
+
+# Configs
+data.yaml

@@ -3,7 +3,7 @@ RUN mkdir /code
 WORKDIR /code
 
 # install openssh
-RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get -y install openssh-server
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get -y install openssh-server bash libdbus-1-dev libdbus-glib-1-dev
 RUN mkdir -p /var/run/sshd
 RUN echo 'root:root' |chpasswd
 

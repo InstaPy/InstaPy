@@ -9,6 +9,8 @@ services:
       dockerfile: ./docker_conf/python/Dockerfile
     depends_on:
       - selenium
+    env_file: 
+      - .env
     volumes:
       - ./logs:/code/logs
   selenium:
