@@ -3470,7 +3470,8 @@ class InstaPy:
                 for row in reader:
                     if row['campaign'] == campaign:
                         self.dont_include.add(row['username'])
-        except:
+        # except:
+        except Exception:
             self.logger.info('Campaign {} first run'.format(campaign))
 
 

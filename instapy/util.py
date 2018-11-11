@@ -524,7 +524,7 @@ def get_active_users(browser, username, posts, boundary, logger):
                     "[text()='Next']")
                 click_element(browser, next_button)
 
-            except:
+            except Exception:
                 logger.error('Unable to go to next profile post')
 
     real_time = time.time()
@@ -645,7 +645,7 @@ def click_element(browser, element, tryNum=0):
         # update server calls after a successful click by selenium
         update_activity()
 
-    except:
+    except Exception:
         # click attempt failed
         # try something funky and try again
 
