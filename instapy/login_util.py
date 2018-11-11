@@ -59,12 +59,12 @@ def bypass_suspicious_login(browser, bypass_with_mobile):
             choice = browser.find_element_by_xpath(
                 "//label[@class='_q0nt5']").text
 
-        except:
+        except Exception:
             try:
                 choice = browser.find_element_by_xpath(
                     "//label[@class='_q0nt5 _a7z3k']").text
 
-            except:
+            except Exception:
                 print("Unable to locate email or phone button, maybe "
                         "bypass_suspicious_login=True isn't needed anymore.")
                 return False
