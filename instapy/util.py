@@ -1569,3 +1569,13 @@ def truncate_float(number, precision, round=False):
 
 
     return short_float
+
+def has_any_letters(text):
+    """ Check if the text has any letters in it """
+    #result = re.search("[A-Za-z]", text)   # works only with english letters
+    result = any(c.isalpha() for c in text)   # works with any letters - english or non-english
+
+    return result
+
+
+
