@@ -1572,6 +1572,20 @@ def truncate_float(number, precision, round=False):
 
 
 
+def time_until_next_month():
+    """ Get total seconds remaining until the next month """
+    now = datetime.datetime.now()
+    next_month = now.month + 1 if now.month < 12 else 1
+    year = now.year if now.month < 12 else now.year+1
+    date_of_next_month = datetime.datetime(year, next_month, 1)
+
+    remaining_seconds = (date_of_next_month - now).total_seconds()
+
+
+    return remaining_seconds
+
+
+
 def remove_extra_spaces(text):
     """ Find and remove redundant spaces more than 1 in text """
     new_text = re.sub(
