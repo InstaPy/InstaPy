@@ -10,7 +10,6 @@ from .util import click_element
 from .util import get_action_delay
 from .util import explicit_wait
 from .util import extract_text_from_element
-from .util import deform_emojis
 from .util import web_address_navigator
 from .quota_supervisor import quota_supervisor
 
