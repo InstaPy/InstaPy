@@ -1520,6 +1520,7 @@ def get_action_delay(action):
 def deform_emojis(text):
     """ Convert unicode emojis into their text form """
     new_text = ''
+    emojiless_text = ''
     data = regex.findall(r'\X', text)
     emojis_in_text = []
 
@@ -1529,15 +1530,21 @@ def deform_emojis(text):
                             .replace(':', '')
                             .replace('_', ' '))
             if word_emoji not in emojis_in_text:   # do not add an emoji if already exists in text
+                emojiless_text += ' '
                 new_text += " ({}) ".format(word_emoji)
                 emojis_in_text.append(word_emoji)
             else:
+                emojiless_text += ' '
                 new_text += ' '   # add a space [instead of an emoji to be duplicated]
 
         else:
             new_text += word
+            emojiless_text += word
 
-    return new_text
+    emojiless_text = remove_extra_spaces(emojiless_text)
+    new_text = remove_extra_spaces(new_text)
+
+    return new_text, emojiless_text
 
 
 
