@@ -65,15 +65,20 @@ from .relationship_tools import get_nonfollowers
 from .relationship_tools import get_fans
 from .relationship_tools import get_mutual_following
 from .database_engine import get_database
-from .aylien_util import aylien_text_analysis
+from .text_analytics import text_analysis
+from .text_analytics import yandex_supported_languages
 
 # import exceptions
 from selenium.common.exceptions import NoSuchElementException, WebDriverException
 
 
+
+
 class InstaPyError(Exception):
     """General error for InstaPy exceptions"""
     pass
+
+
 
 
 class InstaPy:
@@ -186,13 +191,6 @@ class InstaPy:
         self.clarifai_check_video = False
         self.clarifai_proxy = None
 
-        self.aylien_data = {"enabled": False,
-                            "app_id": None,
-                            "key": None,
-                            "polarity": None,
-                            "polarity_confidence": None,
-                            "lang": None,
-                            "lang_confidence": None}
 
         self.potency_ratio = 1.3466
         self.delimit_by_numbers = True
@@ -1986,6 +1984,9 @@ class InstaPy:
         """Likes some amounts of images for each usernames"""
         if self.aborting:
             return self
+
+        message = "Starting to interact by users.."
+        highlight_print(self.username, message, "feature", "info", self.logger)
 
         if not isinstance(usernames, list):
             usernames = [usernames]
@@ -3926,9 +3927,6 @@ class InstaPy:
                             do_interact = random.randint(0, 100) <= self.user_interact_percentage
                             # Do interactions if any
                             if do_interact and self.user_interact_amount > 0:
-                                self.logger.info(
-                                    '--> Starting to interact {}..'
-                                        .format(user_name))
                                 self.interact_by_users(user_name,
                                                        self.user_interact_amount,
                                                        self.user_interact_random,
@@ -4116,40 +4114,71 @@ class InstaPy:
 
 
 
-    def set_use_aylien(self,
-                        enabled=False,
-                         app_id=None,
-                         key=None,
-                          polarity="positive",
-                          polarity_confidence=0.50,
-                           lang="en",
-                           lang_confidence=0.50):
-        """Defines if the aylien Text Analysis API should be used,
-           which, allows 1000 calls per day (30k per month)
-        """
-        self.aylien_data["enabled"] = enabled
+    def set_use_meaningcloud(self,
+                             enabled=False,
+                             license_key=None,
+                             polarity="P",
+                             agreement=None,
+                             subjectivity=None,
+                             confidence=100):
+        """ Set MeaningCloud Sentiment Analysis API configuration """
+        if license_key is None:
+            license_key = os.environ.get("MEANINGCLOUD_LIC_KEY")
 
-        if app_id is None and self.aylien_data["app_id"] is None:
-            self.aylien_data["app_id"] = os.environ.get('AYLIEN_APP_ID')
-        elif app_id is not None:
-            self.aylien_data["app_id"] = app_id
+        if polarity.upper() not in ['P', "P+", "NEU", 'N', "N+"]:
+            self.logger.info("Oh no! Please provide a valid polarity score tag for MeaningCloud"
+                            "\t~service will not operate")
+            polarity = None
 
-        if key is None and self.aylien_data["key"] is None:
-            self.aylien_data["key"] = os.environ.get('AYLIEN_KEY')
-        elif key is not None:
-            self.aylien_data["key"] = key
+        if enabled and license_key and polarity:
+            Settings.meaningcloud_config.update(
+                enabled=enabled,
+                license_key=license_key,
+                score_tag=polarity.upper(),
+                agreement=agreement.upper() if agreement else None,
+                subjectivity=subjectivity.upper() if subjectivity else None,
+                confidence=int(confidence) if confidence else None)
 
-        # turn off Aylien service if wrongly configured
-        if (not self.aylien_data["app_id"] or   #no app ID provided;
-            not self.aylien_data["key"] or   #no key provided;
-                ((polarity not in ["positive", "neutral", "negative"]) and   #neither any valid polarity value provided,
-                  not lang)):   #nor a language to detect is set;
-            self.aylien_data["enabled"] = False
+        else:
+            # turn off MeaningCloud service if not enabled or wrongly configured
+            Settings.meaningcloud_config.update(enabled=False)
 
-        self.aylien_data.update({"polarity": polarity,
-                                 "polarity_confidence": polarity_confidence,
-                                 "lang": lang,
-                                 "lang_confidence": lang_confidence})
+
+
+    def set_use_yandex(self,
+                       enabled=False,
+                       API_key=None,
+                       match_language=False,
+                       language_code="en"):
+        """ Set Yandex Translate API configuration """
+        if API_key is None:
+            API_key = os.environ.get("YANDEX_API_KEY")
+
+        if enabled and API_key:
+            Settings.yandex_config.update(
+                enabled=enabled,
+                API_key=API_key)
+
+            if match_language == True and language_code:
+                supported_langs = yandex_supported_languages()
+
+                if not supported_langs or language_code.lower() not in supported_langs:
+                    msg = (
+                           "Oh no! Failed to get the list of supported languages by Yandex Translate :("
+                             if not supported_langs else
+                           "Oh no! The language with '{}' code is not supported by Yandex Translate :/"
+                                .format(language_code)
+                           )
+                    self.logger.info("{}\t~text language won't be matched".format(msg))
+                    match_language = False
+
+            Settings.yandex_config.update(
+                match_language=match_language if language_code else False,
+                language_code=language_code.lower() if language_code else None)
+
+        else:
+            # turn off Yandex service if not enabled or wrongly configured
+            Settings.yandex_config.update(enabled=False)
 
 
 
@@ -4309,7 +4338,7 @@ class InstaPy:
                     continue
 
                 # perfect! now going to work with comments...
-                for commenter, comment, comment_like_button in comment_data:
+                for commenter, comment in comment_data:
                     if per_post_liked_comments >= comments_per_post:
                         break
 
@@ -4319,24 +4348,16 @@ class InstaPy:
                         self.quotient_breach = True
                         break
 
-                    # this makes sure "replies" will be sent ONLY to appropriate comments [checked by Aylien]..
-                    comment_is_appropriate = None
-
-                    # verify the comment text through Aylian Text Analysis API if enabled
-                    if self.aylien_data["enabled"]:
-                        aylien_analysis_state = aylien_text_analysis(self.aylien_data,
-                                                                      comment,
-                                                                       "comment",
-                                                                        self.logger)
-                        if aylien_analysis_state == True:
-                            comment_is_appropriate = True
-                        else:
-                            # comment is inappropriate to be liked
-                            continue
+                    # verify the comment content by sentiment analysis & language detection if enabled
+                    text_analysis_state = text_analysis(comment,
+                                                        "comment",
+                                                        self.logger)
+                    if text_analysis_state == False:
+                        # comment is inappropriate to be liked [and replied]
+                        continue
 
                     # like the comment
                     comment_like_state, msg = like_comment(self.browser,
-                                                           comment_like_button,
                                                            comment,
                                                            self.logger)
                     if comment_like_state != True:
@@ -4352,13 +4373,14 @@ class InstaPy:
 
                         # send a reply to the comment if is appropriate
                         if (reply and
-                             comment_is_appropriate == True and
+                             text_analysis_state == True and
                               self.do_comment):
                             put_comment = (self.comment_percentage >= random.randint(0, 100))
                             reply_comments_base = (self.photo_reply_comments if is_video == "Photo" else
                                                    self.video_reply_comments if is_video == "Video" else
                                                    self.reply_comments)
-                            reply_comments_base = [reply for reply in reply_comments_base if reply not in per_user_used_replies]
+                            reply_comments_base = [reply for reply in reply_comments_base if
+                                                   reply not in per_user_used_replies]
                             if put_comment and reply_comments_base:
                                 chosen_reply = random.choice(reply_comments_base)
                                 reply_msg = ["@{} {}".format(commenter, chosen_reply)]
@@ -4431,8 +4453,6 @@ class InstaPy:
             self.logger.info("\tAlready followed users: {}".format(already_followed))
             self.logger.info("\tInappropriate posts: {}".format(inap_img))
             self.logger.info("\tNot valid users: {}".format(not_valid_users))
-
-
 
 
 
