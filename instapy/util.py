@@ -1570,6 +1570,18 @@ def truncate_float(number, precision, round=False):
 
     return short_float
 
+
+
+def remove_extra_spaces(text):
+    """ Find and remove redundant spaces more than 1 in text """
+    new_text = re.sub(
+                        r" {2,}", ' ', text
+                     )
+
+    return new_text
+
+
+
 def has_any_letters(text):
     """ Check if the text has any letters in it """
     #result = re.search("[A-Za-z]", text)   # works only with english letters
