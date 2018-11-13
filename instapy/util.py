@@ -1077,9 +1077,10 @@ def load_user_id(username, person, logger, logfolder):
     return user_id
 
 
-def check_authorization(browser, username, method, logger):
+def check_authorization(browser, username, method, logger, notify=True):
     """ Check if user is NOW logged in """
-    logger.info("Checking if '{}' is logged in...".format(username))
+    if notify == True:
+        logger.info("Checking if '{}' is logged in...".format(username))
 
     # different methods can be added in future
     if method == "activity counts":
@@ -1118,7 +1119,8 @@ def check_authorization(browser, username, method, logger):
                 activity_counts_new = None
 
         if activity_counts is None and activity_counts_new is None:
-            logger.critical("--> '{}' is not logged in!\n".format(username))
+            if notify == True:
+                logger.critical("--> '{}' is not logged in!\n".format(username))
             return False
 
     return True
