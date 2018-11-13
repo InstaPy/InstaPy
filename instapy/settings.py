@@ -40,6 +40,12 @@ class Settings:
     # store user-defined delay time to sleep after doing actions
     action_delays = {}
 
+    # store configuration of text analytics
+    meaningcloud_config = {}
+    yandex_config = {}
+
+
+
 
 
 class Storage:
