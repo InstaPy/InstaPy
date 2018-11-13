@@ -695,30 +695,32 @@ def verify_liking(browser, max, min, logger):
 
 
 
-def like_comment(browser, comment_like_button, original_comment_text, logger):
+def like_comment(browser, original_comment_text, logger):
     """ Like the given comment """
     comments_block_XPath = "//div/div/h3/../../.."   # quite an efficient location path
-    like_button_XPath = "//span[contains(@aria-label, 'Like')]"
 
     try:
         comments_block = browser.find_elements_by_xpath(comments_block_XPath)
         for comment_line in comments_block:
             comment_elem = comment_line.find_elements_by_tag_name("span")[0]
             comment = extract_text_from_element(comment_elem)
+
             if comment and (comment == original_comment_text):
-                # like
-                comment_like_button = comment_line.find_element_by_xpath(like_button_XPath)
+                # like the given comment
+                comment_like_button = comment_line.find_element_by_tag_name('button')
                 click_element(browser, comment_like_button)
 
-                # verify [wait until the like button element goes stale...]
+                # verify if like succeeded by waiting until the like button element goes stale..
                 button_change = explicit_wait(browser, "SO", [comment_like_button], logger, 7, False)
 
                 if button_change:
                     logger.info("--> Liked the comment!")
+                    sleep(random.uniform(1, 2))
                     return True, "success"
 
                 else:
                     logger.info("--> Unfortunately, comment was not liked.")
+                    sleep(random.uniform(0, 1))
                     return False, "failure"
 
     except (NoSuchElementException, StaleElementReferenceException) as exc:
@@ -727,3 +729,6 @@ def like_comment(browser, comment_like_button, original_comment_text, logger):
 
 
     return None, "unknown"
+
+
+
