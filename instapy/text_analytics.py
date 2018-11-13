@@ -5,15 +5,16 @@ Official Documentations:
     MeaningCloud: https://www.meaningcloud.com/developer/sentiment-analysis/doc
 """
 
-import traceback
 import json
 import requests
 from meaningcloud import SentimentResponse, SentimentRequest
 
 from .util import deform_emojis
 from .util import has_any_letters
-from .util import time_until_next_month
+from .util import get_time_until_next_month
+from .util import truncate_float
 from .settings import Settings
+from .time_util import sleep
 
 from requests.exceptions import SSLError
 
@@ -232,6 +233,7 @@ def detect_language(text):
 
     POST = "/api/{}/tr.json/detect?key={}&text={}".format(
                 YANDEX_API_VERSION, YANDEX_CONFIG["API_key"], text)
+    logger = Settings.logger
 
     try:
         req = requests.get(YANDEX_HOST+POST)
@@ -270,6 +272,7 @@ def yandex_supported_languages(language_code="en"):
 
     POST = "/api/{}/tr.json/getLangs?key={}&ui={}".format(
                 YANDEX_API_VERSION, YANDEX_CONFIG["API_key"], language_code)
+    logger = Settings.logger
 
     try:
         req = requests.get(YANDEX_HOST+POST)
@@ -315,6 +318,7 @@ def translate_text(translation_direction, text_to_translate):
     POST = "/api/{}/tr.json/translate?key={}&text={}&lang={}".format(
                 YANDEX_API_VERSION, YANDEX_CONFIG["API_key"],
                 text_to_translate, translation_direction)
+    logger = Settings.logger
 
     try:
         req = requests.get(YANDEX_HOST+POST)
@@ -420,7 +424,7 @@ def lift_meaningcloud_request(request):
 
         elif status_code == "102":
             consumed_credits = request.getConsumedCredits() or "unknown"
-            time_until_next_month = time_until_next_month()
+            time_until_next_month = get_time_until_next_month()
 
             error_msg = ("credits per subscription exceeded: ran out of credits for current month"
                          " (spent: {}) - wait for credits to be reset at month end ({} days)"

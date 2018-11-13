@@ -1586,7 +1586,7 @@ def truncate_float(number, precision, round=False):
 
 
 
-def time_until_next_month():
+def get_time_until_next_month():
     """ Get total seconds remaining until the next month """
     now = datetime.datetime.now()
     next_month = now.month + 1 if now.month < 12 else 1
