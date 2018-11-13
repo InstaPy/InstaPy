@@ -8,6 +8,7 @@ from .util import update_activity
 from .util import web_address_navigator
 from .util import explicit_wait
 from .util import click_element
+from .util import check_authorization
 
 from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import WebDriverException
@@ -180,16 +181,19 @@ def login_user(browser,
           "//select[@class='hztqj']/option[text()='English']")
         click_element(browser, language_element_ENG)
 
-    # Cookie has been loaded, user should be logged in. Ensurue this is true
-    login_elem = browser.find_elements_by_xpath(
-        "//*[contains(text(), 'Log in')]")
-    # Login text is not found, user logged in
-    # If not, issue with cookie, create new cookie
-    if len(login_elem) == 0:
+    # cookie has been LOADED, so the user SHOULD be logged in
+    # check if the user IS logged in
+    login_state = check_authorization(browser,
+                                      username,
+                                      "activity counts",
+                                      logger,
+                                      False)
+    if login_state == True:
         dismiss_notification_offer(browser, logger)
         return True
 
-    # If not, issue with cookie, create new cookie
+    # if user is still not logged in, then there is an issue with the cookie
+    # so go create a new cookie..
     if cookie_loaded:
         print("Issue with cookie for user " + username
               + ". Creating new cookie...")
