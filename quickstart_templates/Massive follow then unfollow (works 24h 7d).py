@@ -6,7 +6,6 @@ What does this quickstart script aim to do?
 """
 
 
-import os
 from instapy import InstaPy
 from instapy.util import smart_run
 
@@ -35,6 +34,3 @@ with smart_run(session):
     #session.follow_user_followers(['user1', 'user2', 'user3'], amount=8000, randomize=False, interact=True)
     #session.unfollow_users(amount=7500, nonFollowers=True, style="RANDOM", unfollow_after=42*60*60, sleep_delay=3)
     session.like_by_tags(['???'], amount=8000)
-
-
-

@@ -18,7 +18,6 @@ from .util import web_address_navigator
 from .util import get_relationship_counts
 from .util import emergency_exit
 from .util import load_user_id
-from .util import get_username
 from .util import find_user_id
 from .util import explicit_wait
 from .util import get_username_from_id
@@ -37,7 +36,6 @@ from .quota_supervisor import quota_supervisor
 
 from selenium.common.exceptions import WebDriverException
 from selenium.common.exceptions import NoSuchElementException
-from selenium.common.exceptions import StaleElementReferenceException
 from selenium.common.exceptions import ElementNotVisibleException
 
 
@@ -1309,6 +1307,3 @@ def verify_action(browser, action, track, username, person, person_id, logger, l
                 return False, "unexpected"
 
     return True, "success"
-
-
-

@@ -2,7 +2,6 @@
 import random
 import re
 from re import findall
-from selenium.webdriver.common.keys import Keys
 
 from .time_util import sleep
 from .util import format_number
@@ -179,7 +178,7 @@ def get_links_for_location(browser,
                 filtered_links = len(links)
                 try_again = 0
                 nap = 1.5
-    except:
+    except Exception:
         raise
 
     sleep(4)
@@ -319,7 +318,7 @@ def get_links_for_tag(browser,
                 filtered_links = len(links)
                 try_again = 0
                 nap = 1.5
-    except:
+    except Exception:
         raise
 
     sleep(4)

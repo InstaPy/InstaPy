@@ -1,5 +1,4 @@
 """ Common utilities """
-import random
 import time
 import datetime
 from math import ceil
@@ -135,7 +134,7 @@ def validate_username(browser,
 
     logfolder = logfolder = '{0}{1}{2}{1}'.format(
             Settings.log_location, os.path.sep, own_username)
-    
+
     blacklist_file = "{}blacklist.csv".format(logfolder)
     blacklist_file_exists = os.path.isfile(blacklist_file)
     if blacklist_file_exists:
@@ -531,7 +530,7 @@ def get_active_users(browser, username, posts, boundary, logger):
                     "[text()='Next']")
                 click_element(browser, next_button)
 
-            except:
+            except Exception:
                 logger.error('Unable to go to next profile post')
 
     real_time = time.time()
@@ -652,7 +651,7 @@ def click_element(browser, element, tryNum=0):
         # update server calls after a successful click by selenium
         update_activity()
 
-    except:
+    except Exception:
         # click attempt failed
         # try something funky and try again
 
