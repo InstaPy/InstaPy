@@ -1085,8 +1085,13 @@ def check_authorization(browser, username, method, logger, notify=True):
     # different methods can be added in future
     if method == "activity counts":
 
-        profile_link = 'https://www.instagram.com/{}/'.format(username)
-        web_address_navigator(browser, profile_link)
+        # navigate to owner's profile page only if it is on an unusual page
+        current_url = get_current_url(browser)
+        if (not current_url or
+             "https://www.instagram.com" not in current_url or
+              "https://www.instagram.com/graphql/" in current_url):
+            profile_link = 'https://www.instagram.com/{}/'.format(username)
+            web_address_navigator(browser, profile_link)
 
         # if user is not logged in, `activity_counts` will be `None`- JS `null`
         try:
