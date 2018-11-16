@@ -1056,7 +1056,7 @@ def load_user_id(username, person, logger, logfolder):
     return user_id
 
 
-def check_authorization(browser, username, method, logger):
+def check_authorization(browser, username, method, logger, stop=False):
     """ Check if user is NOW logged in """
     logger.info("Checking if '{}' is logged in...".format(username))
 
@@ -1064,7 +1064,7 @@ def check_authorization(browser, username, method, logger):
     if method == "activity counts":
 
         profile_link = 'https://www.instagram.com/{}/'.format(username)
-        web_address_navigator(browser, profile_link)
+        #web_address_navigator(browser, profile_link)
 
         # if user is not logged in, `activity_counts` will be `None`- JS `null`
         try:
@@ -1097,8 +1097,14 @@ def check_authorization(browser, username, method, logger):
                 activity_counts_new = None
 
         if activity_counts is None and activity_counts_new is None:
-            logger.critical("--> '{}' is not logged in!\n".format(username))
-            return False
+            auth = False
+            if not stop:
+                web_address_navigator(browser, profile_link)
+                auth = check_authorization(browser, username, method, logger, stop=True)
+
+            if not auth:
+                logger.critical("--> '{}' is not logged in!\n".format(username))
+                return False
 
     return True
 
