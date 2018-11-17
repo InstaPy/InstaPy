@@ -175,7 +175,7 @@ def get_links_for_location(browser,
                 filtered_links = len(links)
                 try_again = 0
                 nap = 1.5
-    except:
+    except Exception:
         raise
 
     sleep(4)
@@ -315,7 +315,7 @@ def get_links_for_tag(browser,
                 filtered_links = len(links)
                 try_again = 0
                 nap = 1.5
-    except:
+    except Exception:
         raise
 
     sleep(4)
