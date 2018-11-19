@@ -4,6 +4,7 @@ import pickle
 from .time_util import sleep
 from .util import update_activity
 from .util import web_address_navigator
+from .util import reload_webpage
 from .util import explicit_wait
 from .util import click_element
 from selenium.webdriver.common.action_chains import ActionChains
@@ -166,6 +167,7 @@ def login_user(browser,
     time.sleep(1)
 
     web_address_navigator(browser, ig_homepage)
+    reload_webpage(browser)
 
     # Changes instagram language to english, to ensure no errors ensue from
     # having the site on a different language
