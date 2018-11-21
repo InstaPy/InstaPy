@@ -113,10 +113,12 @@ class InstaPy:
         self.proxy_chrome_extension = proxy_chrome_extension
         self.multi_logs = multi_logs
         self.selenium_local_session = selenium_local_session
-        self.show_logs = show_logs
         self.bypass_suspicious_attempt = bypass_suspicious_attempt
         self.bypass_with_mobile = bypass_with_mobile
         self.disable_image_load = disable_image_load
+
+        self.show_logs = show_logs
+        Settings.show_logs = show_logs or None
 
         self.username = username or os.environ.get('INSTA_USER')
         self.password = password or os.environ.get('INSTA_PW')

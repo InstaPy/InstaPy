@@ -871,6 +871,7 @@ def highlight_print(username=None, message=None, priority=None, level=None, logg
 
     # find the number of chars needed off the length of the logger message
     output_len = 28 + len(username) + 3 + len(message)
+    show_logs = Settings.show_logs
 
     if priority in ["initialization", "end"]:
         # OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
@@ -906,7 +907,8 @@ def highlight_print(username=None, message=None, priority=None, level=None, logg
         lower_char = None
 
 
-    print("\n{}".format(upper_char * ceil(output_len/len(upper_char))))
+    if show_logs == True:
+        print("\n{}".format(upper_char * ceil(output_len/len(upper_char))))
 
     if level == "info":
         logger.info(message)
@@ -915,7 +917,7 @@ def highlight_print(username=None, message=None, priority=None, level=None, logg
     elif level == "critical":
         logger.critical(message)
 
-    if lower_char:
+    if lower_char and show_logs == True:
         print("{}".format(lower_char * output_len))
 
 

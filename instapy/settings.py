@@ -44,6 +44,9 @@ class Settings:
     meaningcloud_config = {}
     yandex_config = {}
 
+    # store the parameter for global access
+    show_logs = None
+
 
 
 

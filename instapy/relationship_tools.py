@@ -11,6 +11,7 @@ from .util import web_address_navigator
 from .util import get_relationship_counts
 from .util import interruption_handler
 from .util import truncate_float
+from .settings import Settings
 
 
 def get_followers(browser,
@@ -974,6 +975,7 @@ def progress_tracker(current_value, highest_value, initial_time, logger):
     try:
         real_time = time.time()
         progress_percent = int((current_value/highest_value)*100)
+        show_logs = Settings.show_logs
 
         elapsed_time = real_time-initial_time
         elapsed_formatted = truncate_float(elapsed_time, 2)
@@ -995,8 +997,9 @@ def progress_tracker(current_value, highest_value, initial_time, logger):
                                 "|> ETA: {}      ".format(
                         current_value, highest_value, progress_container, progress_percent, elapsed, eta))
 
-        sys.stdout.write(total_message)
-        sys.stdout.flush()
+        if show_logs == True:
+            sys.stdout.write(total_message)
+            sys.stdout.flush()
 
     except Exception as exc:
         logger.info("Error occurred with Progress Tracker:\n{}".format(str(exc).encode("utf-8")))
