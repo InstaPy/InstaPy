@@ -81,6 +81,8 @@ Table of Contents
   * [Pick Nonfollowers of a user](#pick-nonfollowers-of-a-user)
   * [Pick Fans of a user](#pick-fans-of-a-user)
   * [Pick Mutual Following of a user](#pick-mutual-following-of-a-user)
+* [Text Analytics](text-analytics)
+  *  [Yandex Translate API](yandex-translate-api)
 * [Use a proxy](#use-a-proxy)
 * [Switching to Firefox](#switching-to-firefox)
 * [Emoji Support](#emoji-support)
@@ -1458,6 +1460,72 @@ There are **several** `use cases` of this tool for **various purposes**.
     ```  
 
 
+
+## Text Analytics
+
+
+### Yandex Translate API
+
+<img src="https://yastatic.net/www/_/Q/r/sx-Y7-1azG3UMxG55avAdgwbM.svg" width="196" align="right">
+
+<img src="https://yastatic.net/s3/home/logos/services/1/translate.svg" width="66" align="left">
+
+###### Offers excellent language detection and synchronized translation for over 95 languages 😎 worldwide
+
+_This service currently is supported only by the [Interact by Comments](interact-by-commenters) feature_.
+
+#### Usage
+Go [**sign up**](https://translate.yandex.com/developers/keys) on [_translate.yandex.com_](https://translate.yandex.com) and get a _free_ `API_key`;  
+_Then configure its usage at your **quickstart** script_,
+```python
+session.set_use_yandex(enabled=True,
+                       API_key='',
+                       match_language=True,
+                       language_code="en")
+```
+
+
+#### Parameters
+`enabled`
+: Put `True` to **activate** or `False` to **deactivate** the service usage;  
+
+`API_key`
+: The _key_ which is **required** to authenticate `HTTP` _requests_ to the **API**;  
+
+`match_language`
+: **Enable** if you would like to match the language of the text;
+
+`language_code`
+: **Set** your desired language's code to **match language** (_if it's enabled_);
+>You can get the list of all supported languages and their codes at [_tech.yandex.com_](https://tech.yandex.com/translate/doc/dg/concepts/api-overview-docpage/#api-overview__languages).
+
+
+#### Rate Limits
+In its _free_ plan, the **daily** request _limit_ is `1,000,000` characters and the **monthly** _limit_ is `10,000,000` characters.
+>To increase the request limit, you can **switch** to the `fee-based` version of the service (_$`15`/million chars_)..
+
+
+#### Examples
+
+**1**-) Matching language;
+```python
+session.set_use_yandex(enabled=True, API_key='', match_language=True, language_code="az")
+```
+Target text
+: "_your technique encourages📸 me_"  
+
+_Now that text is gonna be labeled **inappropriate** COS its language is `english` rather than the desired `azerbaijani`_..    
+
+**2**-) Enabling the **Yandex** service _but NOT_ matching language;
+Since **Yandex** Translate is being used [internally] by the **MeaningCloud** service, you can just provide the API key of **Yandex** and enable it without enabling the `match_language` parameter what will be sufficient for the **MeaningCloud** to work..
+```python
+session.set_use_yandex(enabled=True, API_key='', match_language=False)
+```
+>And yes, you can enable **Yandex** service to make it be available for **MeaningCloud** and then also _match language_ if you like, in the same setup just by turning the `match_language` parameter on..
+
+
+#### Legal Notice
+[Powered by Yandex.Translate](http://translate.yandex.com/)
 
 ### Use a proxy
 
