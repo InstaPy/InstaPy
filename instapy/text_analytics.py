@@ -99,7 +99,6 @@ def text_analysis(text, text_type, logger):
             translation_direction = "{}-en".format(language_of_text)
             text = translate_text(translation_direction, text)
             language_of_text = "en"
-            print("translated text: {}".format(text))   # TEST LINE
 
         """ Sentiment Analysis """
         sentiment = sentiment_analysis(text, language_of_text, logger)
