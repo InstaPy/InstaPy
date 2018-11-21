@@ -51,6 +51,7 @@ Table of Contents
   * [Interact with users that someone else is following](#interact-with-users-that-someone-else-is-following)
   * [Interact with someone else's followers](#interact-with-someone-elses-followers)
   * [Interact on posts at given URLs](#interact-on-posts-at-given-urls)
+  * [Interact by Comments](interact-by-comments)
   * [Unfollowing](#unfollowing)
   * [Don't unfollow active users](#dont-unfollow-active-users)
   * [Interactions based on the number of followers and/or following a user has](#interactions-based-on-the-number-of-followers-andor-following-a-user-has)
@@ -455,6 +456,120 @@ Use it if you like to also _interact the post owner_ **after** doing interaction
 
 
 
+### Interact by Comments
+###### Like comments on posts, reply on them and then interact by the users whose comment was liked on the post
+
+```python
+session.interact_by_comments(usernames=["somebody", "other buddy"],
+                              posts_amount=10,
+                               comments_per_post=5,
+                                reply=True,
+                                interact=True,
+                                 randomize=True,
+                                  media="Photo")
+```
+#### Parameters
+`usernames`
+: A list containing the _usernames_ of users on WHOSE **posts'** _comments will be interacted_;  
+
+`posts_amount`
+: Number of the posts to get from **each user** for interacting by comments;  
+
+`comments_per_post`
+: Choose how many comments to interact (_like and then reply_) on **each post**;  
+
+`reply`
+: Choose if it **should reply** on comments;  
+
+`interact`
+: Use if you also like to _interact the commenters_ **after** finishing liking (_and then replying_) comments on the **post**;  
+
+`randomize`
+: Shuffles the **order** of the **_posts_** from users' feed and **_comments_** in the given post;  
+
+`media`
+: Choose the **type of** media to be interacted - _`"Photo"`_ for photos, _`"Video"`_ for videos, `None` for any media;
+
+
+#### Usage
+**To use**, set **commenting** configuration (_for replying on comments_) and **interaction** configuration (_for interating with the commenters after liking and replying on each post's comments.._)
+```python
+session.set_do_comment(enabled=True, percentage=14)
+# set reply comments to be used while replying on liked comments:
+session.set_reply_comments(replies=[u"😎😎😎", u"😁😁😁😁😁😁😁💪🏼", u"😋🎉", "😀🍬", u"😂😂😂👈🏼👏🏼👏🏼", u"🙂🙋🏼‍♂️🚀🎊🎊🎊", u"😁😁😁", u"😂",  u"🎉",  u"😎", u"🤓🤓🤓🤓🤓", u"👏🏼😉"],
+                            media="Photo")
+
+session.set_user_interact(amount=2, percentage=70, randomize=False, media="Photo")
+# also configure [at least] liking to be used while interacting with the commenters ...
+session.set_do_like(enabled=True, percentage=100)
+
+#start the feature
+session.interact_by_comments(usernames=["somebody", "other.buddy"], posts_amount=10, comments_per_post=5, reply=True, interact=True, randomize=True, media="Photo")
+```
+**Note**: To be able to reply on comments, you have to **turn on** _text analytics_- [**Yandex**](yandex-translate-api) & [**MeaningCloud**](meaningcloud-sentiment-analysis-api).  
+So that they will analyze the content of comments and if it is appropriate, will send a reply to the comment.  
+_To configure those text analytics, see the usage in their sections_.
+
+There are **3** **COMBINATIONS** _available_ to use regarding _text analysis_:  
+**a**-) ONLY **Sentiment Analysis**;  
+_MeaningCloud must be turned on and Yandex must be enabled with a valid API key_,
+```python
+session.set_use_meaningcloud(enabled=True, license_key='', polarity="P")
+session.set_use_yandex(enabled=True, API_key='')
+```
+**b**-) ONLY **Language Match**;
+_Yandex must be turned on_,
+```python
+session.set_use_yandex(enabled=True, API_key='', match_language=False, language_code="en")
+```
+**c**-) BOTH **Sentiment Analysis** and **Language Match**;
+_MeaningCloud and Yandex must be turned on_,  
+```python
+session.set_use_meaningcloud(enabled=True, license_key='', polarity="P")
+session.set_use_yandex(enabled=True, API_key='', match_language=True, language_code="en")
+```
+
+If you have **followed** any of those 3 _text analysis_ combinations:  
+It will first _analyze comments' content_ and if it _is appropriate_, then it will _be_ liked, _then_ replied.  
+All those inappropriate comments will neither be liked, nor replied.  
+
+If you have **not followed** any of those 3 _text analysis_ combinations OR **misconfigured** them:  
+Comments' content will _not be able to be analyzed_ and that's why _no any comments will be_ replied.  
+_Yet_, it will like _all of the comments_ that are available.  
+
+In conclusion, the whole block SHOULD look like this,  
+```python
+session.set_use_meaningcloud(enabled=True, license_key='', polarity="P")
+session.set_use_yandex(enabled=True, API_key='', match_language=True, language_code="en")
+
+session.set_do_comment(enabled=True, percentage=14)
+session.set_reply_comments(replies=[u"😎😎😎", u"😁😁😁😁😁😁😁💪🏼"], media="Photo")
+
+session.set_user_interact(amount=2, percentage=70, randomize=False, media="Photo")
+session.set_do_like(enabled=True, percentage=100)
+
+session.interact_by_comments(usernames=["somebody", "other.buddy"], posts_amount=10, comments_per_post=5, reply=True, interact=True, randomize=True, media="Photo")
+```
+
+#### Extras
++ comments from the poster are ignored (_those comments are mostly poster's reply comments_);  
++ owner's (_logged in user_) comments are also ignored;  
++ if the commenter is in _blacklist_ or `ignored_users` list that comment will also be ignored;  
++ it will take only one comment from each unique user;  
++ as if there are any usable comments, it will first **like the post itself** before _interacting by comments_ cos liking comments and replying them without liking the post can look spammy;    
++ it will not reply the same comment again on overall posts per each username in the list provided by you;  
++ it will reply to a comment only after liking it;  
+
+#### PROs
++ you can use this feature to **auto-like** and **auto-reply** the _comments_ on your _own_ posts;  
++ else than interacting by the comments in your _own_ posts, you can use this feature to like lots of comments from _other users'_ posts, reply some of _them_ and interact by those users just after _liking_ & _replying_ on their comments;  
+
+#### CONs
++ liking a comment doesn't fill up your like quota, but replying to a comment does it to the comment quota. Try to compensate it in your style and do not overuse;  
++ using auto-reply capability of this feature can result in unwanted miscommunication between you and the commenter IN CASE OF you do not make an efficient use of text analytics;  
+
+
+
 ### Unfollowing
 ###### Unfollows the accounts you're following  
 _It will unfollow ~`10` accounts and sleep for ~`10` minutes and then will continue to unfollow..._
@@ -554,7 +669,7 @@ session.set_relationship_bounds(enabled=True,
 				     min_followers=100,
 				      min_following=56,
 				       min_posts=10,
-                                        max_posts=1000)
+                max_posts=1000)
 ```
 Use `enabled=True` to **activate** this feature, and `enabled=False` to **deactivate** it, _any time_  
 `delimit_by_numbers` is used to **activate** & **deactivate** the usage of max & min values  
