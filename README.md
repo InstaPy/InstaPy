@@ -83,6 +83,7 @@ Table of Contents
   * [Pick Mutual Following of a user](#pick-mutual-following-of-a-user)
 * [Text Analytics](text-analytics)
   *  [Yandex Translate API](yandex-translate-api)
+  *  [MeaningCloud Sentiment Analysis API](meaningcloud-sentiment-analysis-api)
 * [Use a proxy](#use-a-proxy)
 * [Switching to Firefox](#switching-to-firefox)
 * [Emoji Support](#emoji-support)
@@ -1526,6 +1527,137 @@ session.set_use_yandex(enabled=True, API_key='', match_language=False)
 
 #### Legal Notice
 [Powered by Yandex.Translate](http://translate.yandex.com/)
+
+
+
+### MeaningCloud Sentiment Analysis API
+
+<img src="https://www.meaningcloud.com/developer/img/LogoMeaningCloud210x85.png" width="210" align="right">
+
+###### Offers a detailed, multilingual analysis of all kind of unstructured content determining its sentiment ⚖
+_This service currently is supported only by the [Interact by Comments](interact-by-commenters) feature_.
+
+Determines if text displays _positive_, _negative_, or _neutral_ sentiment - or is _not possible_ to detect.  
+Phrases are identified with the _relationship between_ them evaluated which identifies a _global polarity_ value of the text.
+
+
+#### Usage
+**1**-) Go [**sign up**](https://www.meaningcloud.com/developer/login) (_offers **sign in** with_ 😎 _**Github**_) on [_meaningcloud.com_](https://www.meaningcloud.com) and get a _free_ `license_key`;  
+_Then configure its usage at your **quickstart** script_,
+```python
+session.set_use_meaningcloud(enabled=True,
+                             license_key='',
+                             polarity="P",
+                             agreement="AGREEMENT",
+                             subjectivity="SUBJECTIVE",
+                             confidence=94)
+```
+**2**-) Install its _package_ for **python** by `pip`;
+```powershell
+pip install MeaningCloud-python
+```
+**3**-) Turn on **Yandex** _Translate_ service which is a **requirement** for the language _detection_ & _translation_ at request;  
+_To have it configured, read its [documentation](yandex-translate-api)_.
+
+
+#### Parameters  
+`enabled`
+: Put `True` to **activate** or `False` to **deactivate** the service usage;  
+
+`license_key`
+: The license key is **required** to do _calls_ to the API;  
+
+`polarity`
+: It indicates the polarity found (_or not found_) in the text and applies to the **global** polarity of the text;  
+_It's a **graduated** polarity - rates from **very** negative to **very** positive_.
+
+| `score_tag` |                   definition                    |  
+| ----------- | ----------------------------------------------- |    
+|    `"P+"`   |       match if text is _**strong** positive_    |  
+|    `"P"`    |       match if text is _positive_ or above      |   
+|    `"NEU"`  |       match if text is _neutral_ or above       |  
+|    `"N"`    |       match if text is _negative_ or above      |
+|    `"N+"`   | match if text is _**strong** negative_ or above |  
+|    `None`   |     do not match per _polarity_ found, at all   |  
+
+  > By "_or above_" it means- _e.g._, if you set `polarity` to `"P"`, and text is `"P+"` then it'll also be appropriate (_as it always leans towards positivity_) ..
+
+`agreement`
+: Identifies **opposing** opinions - _contradictory_, _ambiguous_;  
+_It marks the agreement **between** the sentiments detected in the text, the sentence or the segment it refers to_.
+
+|    `agreement`   |                            definition                                     |  
+| ---------------- | ------------------------------------------------------------------------- |    
+|   `"AGREEMENT"`  |       match if the different elements have **the same** polarity          |  
+| `"DISAGREEMENT"` | match if there is _disagreement_ between the different elements' polarity |   
+|      `None`      |              do not match per _agreement_ found, at all                   |    
+
+
+`subjectivity`
+: Identification of _opinions_ and _facts_ - **distinguishes** between _objective_ and _subjective_;  
+_It marks the subjectivity of the text_.
+
+| `subjectivity` |                          definition                           |  
+| -------------- | ------------------------------------------------------------- |    
+| `"SUBJECTIVE"` |           match if text that has _subjective_ marks           |  
+| `"OBJECTIVE"`  | match if text that does not have **any** _subjectivity_ marks |   
+|     `None`     |         do not match per _subjectivity_ found, at all         |    
+
+`confidence`
+: It represents the _confidence_ associated with the sentiment analysis **performed on the** text and takes an integer number in the _range of_ `(0, 100]`;  
+>If you **don't want to** match per _confidence_ found, at all, use the value of `None`.
+
+
+#### Rate Limits
+It gives you `20 000` single API calls per each month (_starting from the date you have **signed up**_).  
+It has _no daily limit_ but if you hit the limit set for number of requests can be carried out concurrently (_per second_) it'll return with error code of `104` rather than the result 😉
+
+
+#### Language Support
+**MeaningCloud** currently supports a generic sentiment model (_called general_) in these languages: _english_, _spanish_, _french_, _italian_, _catalan_, and _portuguese_.  
+>You can define your own sentiment models using the user sentiment models console and work with them in the same way as with the sentiment models it provides.  
+
+But **no need to worry** IF your _language_ or _target audience's language_ is NONE of those **officially** supported.  
+Cos, to **increase the coverage** and support **all other** languages, as well, **Yandex** _Translate_ service comes to rescue!  
+It detects the text's langugage before passing it to **MeaningCloud**, and, if its language is not supported by **MeaningCloud**, it translates it into english and only then passes it to **MeaningCloud** _Sentiment Analysis_..
+
+
+#### Examples
+**a** -) Match **ONLY** per `polarity` and `agreement`
+```python
+session.set_use_meaningcloud(enabled=True, license_key='', polarity="P", agreement="AGREEMENT")
+```
+Target text
+: "_I appreciate your innovative thinking that results, brilliant images_"  
+
+_Sentiment Analysis_ results for the text:
+
+| `score_tag` |  `agreement`  | `subjectivity` | `confidence` |
+| ----------- | ------------- | -------------- | ------------ |
+|   `"P+"`    | `"AGREEMENT"` | `"SUBJECTIVE"` |     `100`    |
+
+_Now that text is gonna be labeled **appropriate** COS its polarity is `"P+"` which is more positive than `"P"` and `agreement` values also do match_..  
+
+**b** -) Match **FULLY**
+```python
+session.set_use_meaningcloud(enabled=True, license_key='', polarity="P+", agreement="AGREEMENT", subjectivity="SUBJECTIVE", confidence=98)
+```
+Target text
+: "_truly fantastic but it looks sad!_"  
+
+_Sentiment Analysis_ results for the text:
+
+| `score_tag` |    `agreement`   | `subjectivity` | `confidence` |
+| ----------- | ---------------- | -------------- | ------------ |
+|    `"P"`    | `"DISAGREEMENT"` | `"SUBJECTIVE"` |     `92`    |
+
+_Now that text is gonna be labeled **inappropriate** COS its polarity is `"P"` which is less positive than `"P+"` and also, `agreement` values also **do NOT** match, and **lastly**, `confidence` is **below** user-defined `98`_..    
+
+
+#### Legal Notice
+This project uses MeaningCloud™ (http://www.meaningcloud.com) for Text Analytics.
+
+
 
 ### Use a proxy
 
