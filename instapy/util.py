@@ -96,7 +96,7 @@ def validate_username(browser,
                       logger):
     """Check if we can interact with the user"""
 
-    # Some features may not povide `username` and in those cases we will get it from post's page.
+    # some features may not provide `username` and in those cases we will get it from post's page.
     if '/' in username_or_link:
         link = username_or_link  # if there is a `/` in `username_or_link`, then it is a `link`
 
@@ -152,7 +152,7 @@ def validate_username(browser,
         relationship_ratio = None
         reverse_relationship = False
 
-        # Get followers & following counts
+        # get followers & following counts
         followers_count, following_count = get_relationship_counts(browser, username, logger)
 
         if potency_ratio and potency_ratio < 0:
@@ -206,9 +206,12 @@ def validate_username(browser,
                                    username, "potential user" if not reverse_relationship else "massive follower",
                                    truncate_float(relationship_ratio, 2))
 
-    web_address_navigator(browser, "https://www.instagram.com/" + username + "/")
+    if min_posts or max_posts or skip_private or skip_no_profile_pic or skip_business:
+        user_link = "https://www.instagram.com/{}/".format(username)
+        web_address_navigator(browser, user_link)
+
     if min_posts or max_posts:
-        # If you are interested in relationship number of posts boundaries
+        # if you are interested in relationship number of posts boundaries
         try:
             number_of_posts = getUserData("graphql.user.edge_owner_to_timeline_media.count", browser)
         except WebDriverException:
@@ -222,9 +225,10 @@ def validate_username(browser,
             if number_of_posts < min_posts:
                 return False, "Number of posts ({}) of '{}' is less than the minimum limit given {}\n".format(
                     number_of_posts, username, min_posts)
-    """Skip users"""
-    # Skip private
 
+    """Skip users"""
+
+    # skip private
     if skip_private:
         try:
             is_private = getUserData("graphql.user.is_private", browser)
@@ -234,7 +238,7 @@ def validate_username(browser,
         if is_private and (random.randint(0, 100) <= skip_private_percentage):
             return False, "{} is private account, by default skip\n".format(username)
 
-    # Skip no profile pic
+    # skip no profile pic
     if skip_no_profile_pic:
         try:
             profile_pic = getUserData("graphql.user.profile_pic_url", browser)
@@ -244,9 +248,9 @@ def validate_username(browser,
         if (profile_pic in default_profile_pic_instagram or str(profile_pic).find("11906329_960233084022564_1448528159_a.jpg") > 0) and (random.randint(0, 100) <= skip_no_profile_pic_percentage):
             return False, "{} has default instagram profile picture\n".format(username)
 
-    # Skip business
+    # skip business
     if skip_business:
-        # If is business account skip under conditions
+        # if is business account skip under conditions
         try:
             is_business_account = getUserData("graphql.user.is_business_account", browser)
         except WebDriverException:
@@ -273,7 +277,7 @@ def validate_username(browser,
                     return False, "'{}' has a business account in the undesired category of '{}'\n".format(
                         username, category)
 
-    # if everything ok
+    # if everything is ok
     return True, "Valid user"
 
 
