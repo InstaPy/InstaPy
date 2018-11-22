@@ -4217,7 +4217,6 @@ class InstaPy:
         not_valid_users_init = self.not_valid_users
 
         overall_posts_count = 0
-        self.replied_comments = 0
         per_user_liked_comments = 0
         per_user_replied_comments = 0
         per_post_liked_comments = 0
@@ -4395,6 +4394,7 @@ class InstaPy:
                                 if comment_reply_state == True:
                                     per_user_used_replies.extend(chosen_reply)
                                     self.replied_comments += 1
+                                    self.commented += 1
                                     per_user_replied_comments += 1
                                     per_post_replied_comments += 1
                                     # reset jump counter after a successful comment
@@ -4437,8 +4437,8 @@ class InstaPy:
         liked_img = (self.liked_img - liked_init)
         already_liked = (self.already_liked - already_liked_init)
         liked_comments = (self.liked_comments - liked_comments_init)
-        commented = (self.commented - commented_init)
         replied_comments = (self.replied_comments - replied_comments_init)
+        commented = ((self.commented - commented_init) - replied_comments)
         followed = (self.followed - followed_init)
         already_followed = (self.already_followed - already_followed_init)
         inap_img = (self.inap_img - inap_img_init)
