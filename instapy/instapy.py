@@ -1097,8 +1097,8 @@ class InstaPy:
         self.max_following = max_following
         self.min_following = min_following
 
-        self.min_posts = min_posts
-        self.max_posts = max_posts
+        self.min_posts = min_posts if enabled == True else None
+        self.max_posts = max_posts if enabled == True else None
 
     def validate_user_call(self, user_name):
         """Call the validate_username() function"""
