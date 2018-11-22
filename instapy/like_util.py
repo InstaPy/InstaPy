@@ -460,6 +460,8 @@ def check_link(browser, post_link, dont_like, mandatory_words, ignore_if_contain
         user_name = media['owner']['username']
         image_text = media['edge_media_to_caption']['edges']
         image_text = image_text[0]['node']['text'] if image_text else None
+        location = media['location']
+        location_name = location['name'] if location else None
         owner_comments = browser.execute_script('''
             latest_comments = window._sharedData.entry_data.PostPage[0].graphql.shortcode_media.edge_media_to_comment.edges;
             if (latest_comments === undefined) {
@@ -518,6 +520,11 @@ def check_link(browser, post_link, dont_like, mandatory_words, ignore_if_contain
     logger.info('Link: {}'.format(post_link.encode('utf-8')))
     logger.info('Description: {}'.format(image_text.encode('utf-8')))
 
+    """Append location to image_text so we can search through both in one go."""
+    if location_name:
+        logger.info('Location: {}'.format(location_name.encode('utf-8')))
+        image_text = image_text + '\n' + location_name
+    
     if mandatory_words :
         if not all((word in image_text for word in mandatory_words)) :
             return True, user_name, is_video, 'Mandatory words not fulfilled', "Not mandatory likes"
