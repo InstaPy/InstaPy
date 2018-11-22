@@ -838,7 +838,7 @@ session.like_by_tags(amount=10, use_smart_hashtags=True)
 session.set_mandatory_words(['#food', '#instafood'])
 ```
 
-`.set_mandatory_words` searches the description and owner comments for words and
+`.set_mandatory_words` searches the description, location and owner comments for words and
 will like the image if **all** of those words are in there
 
 ### Restricting Likes
