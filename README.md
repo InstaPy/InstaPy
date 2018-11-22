@@ -51,7 +51,7 @@ Table of Contents
   * [Interact with users that someone else is following](#interact-with-users-that-someone-else-is-following)
   * [Interact with someone else's followers](#interact-with-someone-elses-followers)
   * [Interact on posts at given URLs](#interact-on-posts-at-given-urls)
-  * [Interact by Comments](interact-by-comments)
+  * [Interact by Comments](#interact-by-comments)
   * [Unfollowing](#unfollowing)
   * [Don't unfollow active users](#dont-unfollow-active-users)
   * [Interactions based on the number of followers and/or following a user has](#interactions-based-on-the-number-of-followers-andor-following-a-user-has)
@@ -81,9 +81,9 @@ Table of Contents
   * [Pick Nonfollowers of a user](#pick-nonfollowers-of-a-user)
   * [Pick Fans of a user](#pick-fans-of-a-user)
   * [Pick Mutual Following of a user](#pick-mutual-following-of-a-user)
-* [Text Analytics](text-analytics)
-  *  [Yandex Translate API](yandex-translate-api)
-  *  [MeaningCloud Sentiment Analysis API](meaningcloud-sentiment-analysis-api)
+* [Text Analytics](#text-analytics)
+  *  [Yandex Translate API](#yandex-translate-api)
+  *  [MeaningCloud Sentiment Analysis API](#meaningcloud-sentiment-analysis-api)
 * [Use a proxy](#use-a-proxy)
 * [Switching to Firefox](#switching-to-firefox)
 * [Emoji Support](#emoji-support)
@@ -591,7 +591,7 @@ _if **track** is `"nonfollowers"`, it will unfollow all of the users in a given 
 custom_list = ["user_1", "user_2", "user_49", "user332", "user50921", "user_n"]
 session.unfollow_users(amount=84, customList=(True, custom_list, "nonfollowers"), style="RANDOM", unfollow_after=55*60*60, sleep_delay=600)
 ```
-* **PRO**: `customList` method can any kind of _iterable container_, such as `list`, `tuple` or `set`.
+* **PRO**: `customList` method can take any kind of _iterable container_, such as `list`, `tuple` or `set`.
 
 **2** - Unfollow the users **WHO** was _followed by `InstaPy`_ (_has `2` **track**s- `"all"` and `"nonfollowers"`_):  
 _again, if you like to unfollow **all of the users** followed by InstaPy, use the **track**- `"all"`_;
