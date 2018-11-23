@@ -130,7 +130,7 @@ def text_analysis(text, text_type, logger):
 
                 if desired_polarity_level > polarity_level:
                     logger.info("{}\t~polarity of text is '{}' with {}% confidence"
-                                    .format(inap_msg, sentiment["score_tag"], sentiment["confidence"]))
+                                .format(inap_msg, sentiment["score_tag"], sentiment["confidence"]))
                     return False
 
         # agreement verification
@@ -141,7 +141,7 @@ def text_analysis(text, text_type, logger):
 
             elif MEANINGCLOUD_CONFIG["agreement"] != sentiment["agreement"]:
                 logger.info("{}\t~expressions in text has {}"
-                                .format(inap_msg, sentiment["agreement"].lower()))
+                            .format(inap_msg, sentiment["agreement"].lower()))
                 return False
 
         # subjectivity verification
@@ -152,7 +152,7 @@ def text_analysis(text, text_type, logger):
 
             elif MEANINGCLOUD_CONFIG["subjectivity"] != sentiment["subjectivity"]:
                 logger.info("{}\t~text is {}"
-                                .format(inap_msg, sentiment["subjectivity"].lower()))
+                            .format(inap_msg, sentiment["subjectivity"].lower()))
                 return False
 
         # confidence verification
@@ -163,7 +163,7 @@ def text_analysis(text, text_type, logger):
 
             elif MEANINGCLOUD_CONFIG["confidence"] > int(sentiment["confidence"]):
                 logger.info("{}\t~sentiment confidence of text is {}"
-                                .format(inap_msg, sentiment["confidence"]))
+                            .format(inap_msg, sentiment["confidence"]))
                 return False
 
 
@@ -427,8 +427,8 @@ def lift_meaningcloud_request(request):
 
             error_msg = ("credits per subscription exceeded: ran out of credits for current month"
                          " (spent: {}) - wait for credits to be reset at month end ({} days)"
-                            .format(consumed_credits,
-                                    truncate_float(time_until_next_month/60/60/24, 2)))
+                         .format(consumed_credits,
+                                 truncate_float(time_until_next_month/60/60/24, 2)))
 
         print('')
         logger.error("{}\t~{} [{}]\n".format(MEANINGCLOUD_FAILURE_MSG,

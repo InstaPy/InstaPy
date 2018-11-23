@@ -724,7 +724,8 @@ def like_comment(browser, original_comment_text, logger):
                     return False, "failure"
 
     except (NoSuchElementException, StaleElementReferenceException) as exc:
-        logger.error("Error occured while liking a comment.\n\t{}\n\n.".format(str(exc).encode("utf-8")))
+        logger.error("Error occured while liking a comment.\n\t{}\n\n."
+                     .format(str(exc).encode("utf-8")))
         return False, "error"
 
 

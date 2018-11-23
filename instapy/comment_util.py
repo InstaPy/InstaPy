@@ -35,7 +35,7 @@ def get_comment_input(browser):
 def open_comment_section(browser, logger):
     missing_comment_elem_warning = (
         "--> Comment Button Not Found!"
-            "\t~may cause issues with browser windows of smaller widths")
+        "\t~may cause issues with browser windows of smaller widths")
 
     comment_elem = browser.find_elements_by_xpath(
                             "//button/span[@aria-label='Comment']")
@@ -82,18 +82,18 @@ def comment_image(browser, username, comments, blacklist, logger, logfolder):
             if blacklist['enabled'] is True:
                 action = 'commented'
                 add_user_to_blacklist(username,
-                                       blacklist['campaign'],
-                                        action,
-                                         logger,
-                                         logfolder)
+                                      blacklist['campaign'],
+                                      action,
+                                      logger,
+                                      logfolder)
         else:
             logger.warning("--> Comment Action Likely Failed!"
-                                "\t~comment Element was not found")
+                           "\t~comment Element was not found")
             return False, "commenting disabled"
 
     except InvalidElementStateException:
         logger.warning("--> Comment Action Likely Failed!"
-                            "\t~encountered `InvalidElementStateException` :/")
+                       "\t~encountered `InvalidElementStateException` :/")
         return False, "invalid element state"
 
     logger.info("--> Commented: {}".format(rand_comment.encode('utf-8')))
@@ -188,8 +188,8 @@ def get_comments_on_post(browser, owner, poster, amount, post_link, ignore_users
                 commenter_elem = comment_line.find_element_by_tag_name("a")
                 commenter = extract_text_from_element(commenter_elem)
                 if (commenter and
-                     commenter not in [owner, poster, ignore_users] and
-                      commenter not in commenters):
+                    commenter not in [owner, poster, ignore_users] and
+                        commenter not in commenters):
                     commenters.append(commenter)
                 else:
                     continue

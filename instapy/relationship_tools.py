@@ -15,18 +15,18 @@ from .settings import Settings
 
 
 def get_followers(browser,
-                   username,
-                    grab,
-                     relationship_data,
-                      live_match,
-                       store_locally,
-                        logger,
-                         logfolder):
+                  username,
+                  grab,
+                  relationship_data,
+                  live_match,
+                  store_locally,
+                  logger,
+                  logfolder):
     """ Get entire list of followers using graphql queries. """
     if username not in relationship_data:
-        relationship_data.update({username: {"all_following":[], "all_followers":[]}})
+        relationship_data.update({username: {"all_following": [], "all_followers": []}})
 
-    grab_info = "at \"full\" range" if grab=="full" else "at the range of {}".format(grab)
+    grab_info = "at \"full\" range" if grab == "full" else "at the range of {}".format(grab)
     tense = "live" if (live_match == True or not relationship_data[username]["all_followers"]) else "fresh"
 
     logger.info("Retrieving {} `Followers` data of {} {}".format(tense, username, grab_info))
@@ -41,10 +41,10 @@ def get_followers(browser,
         logger.info("You have requested higher amount than existing followers count  ~gonna grab all available")
         grab = followers_count
 
-    #TO-DO: Check if user's account is not private
+    # TO-DO: Check if user's account is not private
 
     # sets the amount of usernames to be matched in the next queries
-    match = None if live_match==True else 10 if relationship_data[username]["all_followers"] else None
+    match = None if live_match == True else 10 if relationship_data[username]["all_followers"] else None
 
     # if there has been prior graphql query, use that existing data to speed up querying time
     all_prior_followers = relationship_data[username]["all_followers"] if match is not None else None
@@ -89,20 +89,20 @@ def get_followers(browser,
             if not os.path.isfile(filename):
                 with interruption_handler():
                     with open(filename, 'w') as graphql_queries_file:
-                        json.dump({username:{query_date:{"sc_rolled":0}}}, graphql_queries_file)
+                        json.dump({username: {query_date: {"sc_rolled": 0}}}, graphql_queries_file)
                         graphql_queries_file.close()
 
-            #load the existing graphql queries data
+            # load the existing graphql queries data
             with open(filename) as graphql_queries_file:
                 graphql_queries = json.load(graphql_queries_file)
                 stored_usernames = list(name for name, date in graphql_queries.items())
 
                 if username not in stored_usernames:
-                    graphql_queries[username] = {query_date:{"sc_rolled":0}}
+                    graphql_queries[username] = {query_date: {"sc_rolled": 0}}
                 stored_query_dates = list(date for date, score in graphql_queries[username].items())
 
                 if query_date not in stored_query_dates:
-                    graphql_queries[username][query_date] = {"sc_rolled":0}
+                    graphql_queries[username][query_date] = {"sc_rolled": 0}
 
                 sc_rolled_all = graphql_queries[username][query_date]["sc_rolled"]
 
@@ -126,14 +126,14 @@ def get_followers(browser,
 
             grabbed = len(set(all_followers))
 
-            #write & update records at Progress Tracker
+            # write & update records at Progress Tracker
             progress_tracker(grabbed, highest_value, start_time, logger)
 
             finish_time = time.time()
             diff_time = finish_time-start_time
-            diff_n, diff_s = ((diff_time/60/60, "hours") if diff_time/60/60>=1 else
-                                    (diff_time/60, "minutes") if diff_time/60>=1 else
-                                        (diff_time, "seconds"))
+            diff_n, diff_s = ((diff_time/60/60, "hours") if diff_time/60/60 >= 1 else
+                              (diff_time/60, "minutes") if diff_time/60 >= 1 else
+                              (diff_time, "seconds"))
             diff_n = truncate_float(diff_n, 2)
             passed_time = ("{} {}".format(diff_n, diff_s))
 
@@ -167,7 +167,7 @@ def get_followers(browser,
                 web_address_navigator(browser, url)
                 sc_rolled += 1
 
-                #dump the current graphql queries data
+                # dump the current graphql queries data
                 if local_read_failure != True:
                     try:
                         with interruption_handler():
@@ -176,9 +176,10 @@ def get_followers(browser,
                                 json.dump(graphql_queries, graphql_queries_file)
                     except Exception as exc:
                         print('\n')
-                        logger.info("Error occurred while writing `scroll` data to graphql_queries.json\n{}\n".format(str(exc).encode("utf-8")))
+                        logger.info("Error occurred while writing `scroll` data to graphql_queries.json\n{}\n"
+                                    .format(str(exc).encode("utf-8")))
 
-                #take breaks gradually
+                # take breaks gradually
                 if sc_rolled > 91:
                     print('\n')
                     logger.info("Queried too much! ~ sleeping a bit :>")
@@ -189,8 +190,8 @@ def get_followers(browser,
         print('\n')
         logger.info("Unable to get `Followers` data:\n\t{}\n".format(str(exc).encode("utf-8")))
 
-    #remove possible duplicates
-    all_followers = sorted(set(all_followers), key=lambda x:all_followers.index(x))
+    # remove possible duplicates
+    all_followers = sorted(set(all_followers), key=lambda x: all_followers.index(x))
 
     if grab_notifier == False:
         print('\n')
@@ -204,13 +205,13 @@ def get_followers(browser,
             print('')
             logger.info("The `Followers` data is identical with the data in previous query  ~not storing the file again")
 
-        if grab=="full":
+        if grab == "full":
             relationship_data[username].update({"all_followers": all_followers})
 
     sleep_t = sc_rolled*6
     sleep_t = sleep_t if sleep_t < 600 else random.randint(585, 655)
-    sleep_n, sleep_s = ((sleep_t/60, "minutes") if sleep_t/60>=1 else
-                                (sleep_t, "seconds"))
+    sleep_n, sleep_s = ((sleep_t/60, "minutes") if sleep_t/60 >= 1 else
+                        (sleep_t, "seconds"))
     sleep_n = truncate_float(sleep_n, 4)
 
     print('')
@@ -222,18 +223,18 @@ def get_followers(browser,
 
 
 def get_following(browser,
-                   username,
-                    grab,
-                     relationship_data,
-                      live_match,
-                       store_locally,
-                        logger,
-                         logfolder):
+                  username,
+                  grab,
+                  relationship_data,
+                  live_match,
+                  store_locally,
+                  logger,
+                  logfolder):
     """ Get entire list of following using graphql queries. """
     if username not in relationship_data:
-        relationship_data.update({username: {"all_following":[], "all_followers":[]}})
+        relationship_data.update({username: {"all_following": [], "all_followers": []}})
 
-    grab_info = "at \"full\" range" if grab=="full" else "at the range of {}".format(grab)
+    grab_info = "at \"full\" range" if grab == "full" else "at the range of {}".format(grab)
     tense = "live" if (live_match == True or not relationship_data[username]["all_following"]) else "fresh"
 
     logger.info("Retrieving {} `Following` data of {} {}".format(tense, username, grab_info))
@@ -248,10 +249,10 @@ def get_following(browser,
         logger.info("You have requested higher amount than existing following count  ~gonna grab all available")
         grab = following_count
 
-    #TO-DO: Check if user's account is not private
+    # TO-DO: Check if user's account is not private
 
     # sets the amount of usernames to be matched in the next queries
-    match = None if live_match==True else 10 if relationship_data[username]["all_following"] else None
+    match = None if live_match == True else 10 if relationship_data[username]["all_following"] else None
 
     # if there has been prior graphql query, use that existing data to speed up querying time
     all_prior_following = relationship_data[username]["all_following"] if match is not None else None
@@ -295,20 +296,21 @@ def get_following(browser,
             if not os.path.isfile(filename):
                 with interruption_handler():
                     with open(filename, 'w') as graphql_queries_file:
-                        json.dump({username:{query_date:{"sc_rolled":0}}}, graphql_queries_file)
+                        json.dump({username: {query_date: {"sc_rolled": 0}}}, graphql_queries_file)
                         graphql_queries_file.close()
             """ Loads the existing graphql queries data """
             with open(filename) as graphql_queries_file:
                 graphql_queries = json.load(graphql_queries_file)
                 stored_usernames = list(name for name, date in graphql_queries.items())
                 if username not in stored_usernames:
-                    graphql_queries[username] = {query_date:{"sc_rolled":0}}
+                    graphql_queries[username] = {query_date: {"sc_rolled": 0}}
                 stored_query_dates = list(date for date, score in graphql_queries[username].items())
                 if query_date not in stored_query_dates:
-                    graphql_queries[username][query_date] = {"sc_rolled":0}
+                    graphql_queries[username][query_date] = {"sc_rolled": 0}
                 sc_rolled_all = graphql_queries[username][query_date]["sc_rolled"]
         except Exception as exc:
-            logger.info("Error occurred while getting `scroll` data from graphql_queries.json\n{}\n".format(str(exc).encode("utf-8")))
+            logger.info("Error occurred while getting `scroll` data from graphql_queries.json\n{}\n"
+                        .format(str(exc).encode("utf-8")))
             local_read_failure = True
 
         start_time = time.time()
@@ -327,14 +329,14 @@ def get_following(browser,
 
             grabbed = len(set(all_following))
 
-            #write & update records at Progress Tracker
+            # write & update records at Progress Tracker
             progress_tracker(grabbed, highest_value, start_time, logger)
 
             finish_time = time.time()
             diff_time = finish_time-start_time
-            diff_n, diff_s = ((diff_time/60/60, "hours") if diff_time/60/60>=1 else
-                                    (diff_time/60, "minutes") if diff_time/60>=1 else
-                                        (diff_time, "seconds"))
+            diff_n, diff_s = ((diff_time/60/60, "hours") if diff_time/60/60 >= 1 else
+                              (diff_time/60, "minutes") if diff_time/60 >= 1 else
+                              (diff_time, "seconds"))
             diff_n = truncate_float(diff_n, 2)
             passed_time = ("{} {}".format(diff_n, diff_s))
 
@@ -368,7 +370,7 @@ def get_following(browser,
                 web_address_navigator(browser, url)
                 sc_rolled += 1
 
-                #dumps the current graphql queries data
+                # dumps the current graphql queries data
                 if local_read_failure != True:
                     try:
                         with interruption_handler():
@@ -377,9 +379,10 @@ def get_following(browser,
                                 json.dump(graphql_queries, graphql_queries_file)
                     except Exception as exc:
                         print('\n')
-                        logger.info("Error occurred while writing `scroll` data to graphql_queries.json\n{}\n".format(str(exc).encode("utf-8")))
+                        logger.info("Error occurred while writing `scroll` data to graphql_queries.json\n{}\n"
+                                    .format(str(exc).encode("utf-8")))
 
-                #take breaks gradually
+                # take breaks gradually
                 if sc_rolled > 91:
                     print('\n')
                     logger.info("Queried too much! ~ sleeping a bit :>")
@@ -390,8 +393,8 @@ def get_following(browser,
         print('\n')
         logger.info("Unable to get `Following` data:\n\t{}\n".format(str(exc).encode("utf-8")))
 
-    #remove possible duplicates
-    all_following = sorted(set(all_following), key=lambda x:all_following.index(x))
+    # remove possible duplicates
+    all_following = sorted(set(all_following), key=lambda x: all_following.index(x))
 
     if grab_notifier == False:
         print('\n')
@@ -406,13 +409,13 @@ def get_following(browser,
             print('')
             logger.info("The `Following` data is identical with the data in previous query  ~not storing the file again")
 
-        if grab=="full":
+        if grab == "full":
             relationship_data[username].update({"all_following": all_following})
 
     sleep_t = sc_rolled*6
     sleep_t = sleep_t if sleep_t < 600 else random.randint(585, 655)
-    sleep_n, sleep_s = ((sleep_t/60, "minutes") if sleep_t/60>=1 else
-                                (sleep_t, "seconds"))
+    sleep_n, sleep_s = ((sleep_t/60, "minutes") if sleep_t/60 >= 1 else
+                        (sleep_t, "seconds"))
     sleep_n = truncate_float(sleep_n, 4)
 
     print('')
@@ -424,15 +427,15 @@ def get_following(browser,
 
 
 def get_unfollowers(browser,
-                     username,
-                      compare_by,
-                       compare_track,
-                        relationship_data,
-                         live_match,
-                          store_locally,
-                           print_out,
-                            logger,
-                             logfolder):
+                    username,
+                    compare_by,
+                    compare_track,
+                    relationship_data,
+                    live_match,
+                    store_locally,
+                    print_out,
+                    logger,
+                    logfolder):
 
     if compare_by not in ["latest", "day", "month", "year", "earliest"]:
         logger.info("Please choose a valid compare point to pick Unfollowers  ~leaving out of an invalid value")
@@ -442,52 +445,52 @@ def get_unfollowers(browser,
         logger.info("Please choose a valid compare track to pick Unfollowers  ~leaving out of an invalid value")
         return [], []
 
-    elif username is None or type(username)!=str:
+    elif username is None or type(username) != str:
         logger.info("Please enter a username to pick Unfollowers  ~leaving out of an invalid value")
         return [], []
 
     prior_followers, selected_filename = load_followers_data(username,
-                                                              compare_by,
-                                                               compare_track,
-                                                                logger,
-                                                                 logfolder)
+                                                             compare_by,
+                                                             compare_track,
+                                                             logger,
+                                                             logfolder)
 
     if not prior_followers and selected_filename is None:
         logger.info("Generate `Followers` data to find Unfollowers in future!  ~couldn't pick Unfollowers")
         return [], []
 
     current_followers = get_followers(browser,
-                                       username,
-                                        "full",
-                                         relationship_data,
-                                          live_match,
-                                           store_locally,
-                                            logger,
-                                             logfolder)
+                                      username,
+                                      "full",
+                                      relationship_data,
+                                      live_match,
+                                      store_locally,
+                                      logger,
+                                      logfolder)
 
     all_unfollowers = [follower for follower in prior_followers if follower not in current_followers]
 
     if len(all_unfollowers) > 0:
         current_following = get_following(browser,
-                                           username,
-                                            "full",
-                                             relationship_data,
-                                              live_match,
-                                               store_locally,
-                                                logger,
-                                                 logfolder)
+                                          username,
+                                          "full",
+                                          relationship_data,
+                                          live_match,
+                                          store_locally,
+                                          logger,
+                                          logfolder)
 
         active_unfollowers = [unfollower for unfollower in current_following if unfollower in all_unfollowers]
 
         logger.info("Unfollowers found from {}!  total: {}  |  active: {}  :|\n".format(
                             selected_filename, len(all_unfollowers), len(active_unfollowers)))
-        if store_locally==True:
-            #store all Unfollowers in a local file
+        if store_locally == True:
+            # store all Unfollowers in a local file
             store_all_unfollowers(username, all_unfollowers, logger, logfolder)
-            #store active Unfollowers in a local file
+            # store active Unfollowers in a local file
             store_active_unfollowers(username, active_unfollowers, logger, logfolder)
 
-        if print_out==True:
+        if print_out == True:
             logger.info("Unfollowers of {}:\n\n\tAll Unfollowers: {}\n\n\tActive Unfollowers: {}\n".format(
                             username, all_unfollowers, active_unfollowers))
     else:
@@ -498,154 +501,157 @@ def get_unfollowers(browser,
 
 
 def get_nonfollowers(browser,
-                      username,
-                       relationship_data,
-                        live_match,
-                         store_locally,
-                          logger,
-                           logfolder):
+                     username,
+                     relationship_data,
+                     live_match,
+                     store_locally,
+                     logger,
+                     logfolder):
     """ Finds Nonfollowers of a given user """
 
-    if username is None or type(username)!=str:
+    if username is None or type(username) != str:
         logger.info("Please enter a username to pick Nonfollowers  ~leaving out of an invalid value")
         return []
 
-    #get `Followers` data
+    # get `Followers` data
     all_followers = get_followers(browser,
-                                   username,
-                                    "full",
-                                     relationship_data,
-                                      live_match,
-                                       store_locally,
-                                        logger,
-                                         logfolder)
-    #get `Following` data
+                                  username,
+                                  "full",
+                                  relationship_data,
+                                  live_match,
+                                  store_locally,
+                                  logger,
+                                  logfolder)
+    # get `Following` data
     all_following = get_following(browser,
-                                   username,
-                                    "full",
-                                     relationship_data,
-                                      live_match,
-                                       store_locally,
-                                        logger,
-                                         logfolder)
+                                  username,
+                                  "full",
+                                  relationship_data,
+                                  live_match,
+                                  store_locally,
+                                  logger,
+                                  logfolder)
 
-    #using this approach we can preserve the order of elements to be used with `FIFO`, `LIFO` or `RANDOM` styles
+    # using this approach we can preserve the order of elements to be used with `FIFO`, `LIFO` or `RANDOM` styles
     nonfollowers = [user for user in all_following if user not in all_followers]
 
-    #uniqify elements
+    # uniqify elements
     nonfollowers = sorted(set(nonfollowers), key=nonfollowers.index)
 
-    logger.info("There are {0} Nonfollowers of {1}  ~the users {1} is following WHO do not follow back\n".format(len(nonfollowers), username))
+    logger.info("There are {0} Nonfollowers of {1}  ~the users {1} is following WHO do not follow back\n"
+                .format(len(nonfollowers), username))
 
-    #store Nonfollowers' data in a local file
+    # store Nonfollowers' data in a local file
     store_nonfollowers(username,
-                        len(all_followers),
-                         len(all_following),
-                          nonfollowers,
-                           logger,
-                            logfolder)
+                       len(all_followers),
+                       len(all_following),
+                       nonfollowers,
+                       logger,
+                       logfolder)
 
     return nonfollowers
 
 
 def get_fans(browser,
-              username,
-               relationship_data,
-                live_match,
-                 store_locally,
-                  logger,
-                   logfolder):
+             username,
+             relationship_data,
+             live_match,
+             store_locally,
+             logger,
+             logfolder):
     """ Find Fans of a given user """
 
-    if username is None or type(username)!=str:
+    if username is None or type(username) != str:
         logger.info("Please enter a username to pick Fans  ~leaving out of an invalid value")
         return []
 
-    #get `Followers` data
+    # get `Followers` data
     all_followers = get_followers(browser,
-                                   username,
-                                    "full",
-                                     relationship_data,
-                                      live_match,
-                                       store_locally,
-                                        logger,
-                                         logfolder)
-    #get `Following` data
+                                  username,
+                                  "full",
+                                  relationship_data,
+                                  live_match,
+                                  store_locally,
+                                  logger,
+                                  logfolder)
+    # get `Following` data
     all_following = get_following(browser,
-                                   username,
-                                    "full",
-                                     relationship_data,
-                                      live_match,
-                                       store_locally,
-                                        logger,
-                                         logfolder)
+                                  username,
+                                  "full",
+                                  relationship_data,
+                                  live_match,
+                                  store_locally,
+                                  logger,
+                                  logfolder)
 
-    #using this approach we can preserve the order of elements to be used with `FIFO`, `LIFO` or `RANDOM` styles
+    # using this approach we can preserve the order of elements to be used with `FIFO`, `LIFO` or `RANDOM` styles
     fans = [user for user in all_followers if user not in all_following]
 
-    #uniqify elements
+    # uniqify elements
     fans = sorted(set(fans), key=fans.index)
 
-    logger.info("There are {0} Fans of {1}  ~the users following {1} WHOM {1} does not follow back\n".format(len(fans), username))
+    logger.info("There are {0} Fans of {1}  ~the users following {1} WHOM {1} does not follow back\n"
+                .format(len(fans), username))
 
-    #store Nonfollowers data in a local file
+    # store Nonfollowers data in a local file
     store_fans(username,
-                len(all_followers),
-                 len(all_following),
-                  fans,
-                   logger,
-                    logfolder)
+               len(all_followers),
+               len(all_following),
+               fans,
+               logger,
+               logfolder)
 
     return fans
 
 
 def get_mutual_following(browser,
-                          username,
-                           relationship_data,
-                            live_match,
-                             store_locally,
-                              logger,
-                               logfolder):
+                         username,
+                         relationship_data,
+                         live_match,
+                         store_locally,
+                         logger,
+                         logfolder):
     """ Find Mutual Following of a given user """
 
-    if username is None or type(username)!=str:
+    if username is None or type(username) != str:
         logger.info("Please enter a username to pick Mutual Following  ~leaving out of an invalid value")
         return []
 
-    #get `Followers` data
+    # get `Followers` data
     all_followers = get_followers(browser,
-                                   username,
-                                    "full",
-                                     relationship_data,
-                                      live_match,
-                                       store_locally,
-                                        logger,
-                                         logfolder)
-    #get `Following` data
+                                  username,
+                                  "full",
+                                  relationship_data,
+                                  live_match,
+                                  store_locally,
+                                  logger,
+                                  logfolder)
+    # get `Following` data
     all_following = get_following(browser,
-                                   username,
-                                    "full",
-                                     relationship_data,
-                                      live_match,
-                                       store_locally,
-                                        logger,
-                                         logfolder)
+                                  username,
+                                  "full",
+                                  relationship_data,
+                                  live_match,
+                                  store_locally,
+                                  logger,
+                                  logfolder)
 
-    #using this approach we can preserve the order of elements to be used with `FIFO`, `LIFO` or `RANDOM` styles
+    # using this approach we can preserve the order of elements to be used with `FIFO`, `LIFO` or `RANDOM` styles
     mutual_following = [user for user in all_following if user in all_followers]
 
-    #uniqify elements
+    # uniqify elements
     mutual_following = sorted(set(mutual_following), key=mutual_following.index)
 
-    logger.info("There are {0} Mutual Following of {1}  ~the users {1} is following WHO also follow back\n".format(len(mutual_following), username))
+    logger.info("There are {0} Mutual Following of {1}  ~the users {1} is following WHO also follow back\n"
+                .format(len(mutual_following), username))
 
-    #store Mutual Following data in a local file
+    # store Mutual Following data in a local file
     store_mutual_following(username,
-                            len(all_followers),
-                             len(all_following),
-                              mutual_following,
-                               logger,
-                                logfolder)
+                           len(all_followers),
+                           len(all_following),
+                           mutual_following,
+                           logger,
+                           logfolder)
 
     return mutual_following
 
@@ -662,7 +668,7 @@ def store_followers_data(username, grab, grabbed_followers, logger, logfolder):
     try:
         if not os.path.exists(file_directory):
             os.makedirs(file_directory)
-        #this loop provides unique data files
+        # this loop provides unique data files
         while os.path.isfile(final_file):
             file_index += 1
             final_file = "{}({}).json".format(file_name, file_index)
@@ -688,7 +694,7 @@ def store_following_data(username, grab, grabbed_following, logger, logfolder):
     try:
         if not os.path.exists(file_directory):
             os.makedirs(file_directory)
-        #this loop provides unique data files
+        # this loop provides unique data files
         while os.path.isfile(final_file):
             file_index += 1
             final_file = "{}({}).json".format(file_name, file_index)
@@ -714,7 +720,7 @@ def store_all_unfollowers(username, all_unfollowers, logger, logfolder):
     try:
         if not os.path.exists(file_directory):
             os.makedirs(file_directory)
-        #this loop provides unique data files
+        # this loop provides unique data files
         while os.path.isfile(final_file):
             file_index += 1
             final_file = "{}({}).json".format(file_name, file_index)
@@ -740,7 +746,7 @@ def store_active_unfollowers(username, active_unfollowers, logger, logfolder):
     try:
         if not os.path.exists(file_directory):
             os.makedirs(file_directory)
-        #this loop provides unique data files
+        # this loop provides unique data files
         while os.path.isfile(final_file):
             file_index += 1
             final_file = "{}({}).json".format(file_name, file_index)
@@ -767,7 +773,7 @@ def store_nonfollowers(username, followers_size, following_size, nonfollowers, l
     try:
         if not os.path.exists(file_directory):
             os.makedirs(file_directory)
-        #this loop provides unique data files
+        # this loop provides unique data files
         while os.path.isfile(final_file):
             file_index += 1
             final_file = "{}({}).json".format(file_name, file_index)
@@ -796,7 +802,7 @@ def store_fans(username, followers_size, following_size, fans, logger, logfolder
     try:
         if not os.path.exists(file_directory):
             os.makedirs(file_directory)
-        #this loop provides unique data files
+        # this loop provides unique data files
         while os.path.isfile(final_file):
             file_index += 1
             final_file = "{}({}).json".format(file_name, file_index)
@@ -825,7 +831,7 @@ def store_mutual_following(username, followers_size, following_size, mutual_foll
     try:
         if not os.path.exists(file_directory):
             os.makedirs(file_directory)
-        #this loop provides unique data files
+        # this loop provides unique data files
         while os.path.isfile(final_file):
             file_index += 1
             final_file = "{}({}).json".format(file_name, file_index)
@@ -841,16 +847,16 @@ def store_mutual_following(username, followers_size, following_size, mutual_foll
 
 def load_followers_data(username, compare_by, compare_track, logger, logfolder):
     """ Write grabbed `followers` data into local storage """
-    #Get the list of all existing FULL `Followers` data files in ~/logfolder/username/followers/ location
+    # get the list of all existing FULL `Followers` data files in ~/logfolder/username/followers/ location
     files_location = "{}/relationship_data/{}/followers".format(logfolder, username)
     followers_data_files = [os.path.basename(file) for file in glob.glob("{}/*~full*.json".format(files_location))]
 
-    #Check if there is any file to be compared
+    # check if there is any file to be compared
     if not followers_data_files:
         logger.info("There are no any `Followers` data files in the {} location to compare".format(files_location))
         return [], None
 
-    #Filtrate and get the right track of file to compare
+    # Filtrate and get the right track of file to compare
     tracked_filenames = []
     for data_file in followers_data_files:
         tracked_filenames.append(data_file[:10])
@@ -868,7 +874,7 @@ def load_followers_data(username, compare_by, compare_track, logger, logfolder):
         entry_day = entry[:2]
 
         if not structured_entries:
-            structured_entries = {"years":{entry_year:{"months":{entry_month:{"days":{entry_day:{"entries":[entry]}}}}}}}
+            structured_entries = {"years": {entry_year: {"months": {entry_month: {"days": {entry_day: {"entries": [entry]}}}}}}}
             continue
 
         existing_years = list(year for year, month in structured_entries["years"].items())
@@ -876,37 +882,37 @@ def load_followers_data(username, compare_by, compare_track, logger, logfolder):
         existing_days = list(day for day, entry in structured_entries["years"][entry_year]["months"][entry_month]["days"].items())
 
         if entry_year not in existing_years:
-            structured_entries["years"][entry_year] = {"months":{entry_month:{"days":{entry_day:{"entries":[entry]}}}}}
+            structured_entries["years"][entry_year] = {"months": {entry_month: {"days": {entry_day: {"entries": [entry]}}}}}
         elif entry_month not in existing_months:
-            structured_entries["years"][entry_year]["months"][entry_month] = {"days":{entry_day:{"entries":[entry]}}}
+            structured_entries["years"][entry_year]["months"][entry_month] = {"days": {entry_day: {"entries": [entry]}}}
         elif entry_day not in existing_days:
-            structured_entries["years"][entry_year]["months"][entry_month]["days"][entry_day] = {"entries":[entry]}
+            structured_entries["years"][entry_year]["months"][entry_month]["days"][entry_day] = {"entries": [entry]}
         else:
             structured_entries["years"][entry_year]["months"][entry_month]["days"][entry_day]["entries"].append(entry)
 
-    if compare_by=="latest":
+    if compare_by == "latest":
         selected_filename = sorted_filenames[-1]
 
-    elif compare_by=="day":
+    elif compare_by == "day":
         latest_day = sorted_filenames[-1]
         current_day = datetime.today().strftime("%d-%m-%Y")
 
         if latest_day == current_day:
             data_for_today = structured_entries["years"][this_year]["months"][this_month]["days"][this_day]["entries"]
 
-            if compare_track=="first" or len(data_for_today)<=1:
+            if compare_track == "first" or len(data_for_today) <= 1:
                 selected_filename = data_for_today[0]
-            if compare_track=="median":
+            if compare_track == "median":
                 median_index = int(len(data_for_today)/2)
                 selected_filename = data_for_today[median_index]
-            if compare_track=="last":
+            if compare_track == "last":
                 selected_filename = data_for_today[-1]
 
         else:
             selected_filename = sorted_filenames[-1]
             logger.info("No any data exists for today!  ~choosing the last existing data from {}".format(selected_filename))
 
-    elif compare_by=="month":
+    elif compare_by == "month":
         latest_month = sorted_filenames[-1][-7:]
         current_month = datetime.today().strftime("%m-%Y")
 
@@ -916,19 +922,19 @@ def load_followers_data(username, compare_by, compare_track, logger, logfolder):
             for day in structured_entries["years"][this_year]["months"][this_month]["days"]:
                 data_for_month.extend(structured_entries["years"][this_year]["months"][this_month]["days"][day]["entries"])
 
-            if compare_track=="first" or len(data_for_month)<=1:
+            if compare_track == "first" or len(data_for_month) <= 1:
                 selected_filename = data_for_month[0]
-            if compare_track=="median":
+            if compare_track == "median":
                 median_index = int(len(data_for_month)/2)
                 selected_filename = data_for_month[median_index]
-            if compare_track=="last":
+            if compare_track == "last":
                 selected_filename = data_for_month[-1]
 
         else:
             selected_filename = sorted_filenames[-1]
             logger.info("No any data exists for this month!  ~choosing the last existing data from {}".format(selected_filename))
 
-    elif compare_by=="year":
+    elif compare_by == "year":
         latest_year = sorted_filenames[-1][-4:]
 
         if latest_year == this_year:
@@ -938,22 +944,22 @@ def load_followers_data(username, compare_by, compare_track, logger, logfolder):
                 for day in structured_entries["years"][this_year]["months"][month]["days"]:
                     data_for_year.extend(structured_entries["years"][this_year]["months"][month]["days"][day]["entries"])
 
-            if compare_track=="first" or len(data_for_year)<=1:
+            if compare_track == "first" or len(data_for_year) <= 1:
                 selected_filename = data_for_year[0]
-            if compare_track=="median":
+            if compare_track == "median":
                 median_index = int(len(data_for_year)/2)
                 selected_filename = data_for_year[median_index]
-            if compare_track=="last":
+            if compare_track == "last":
                 selected_filename = data_for_year[-1]
 
         else:
             selected_filename = sorted_filenames[-1]
             logger.info("No any data exists for this year!  ~choosing the last existing data from {}".format(selected_filename))
 
-    elif compare_by=="earliest":
+    elif compare_by == "earliest":
         selected_filename = sorted_filenames[0]
 
-    #Load that file
+    # load that file
     selected_file = (glob.glob("{}/{}~full*.json".format(files_location, selected_filename)))[0]
     with open(selected_file) as followers_data_file:
         followers_data = json.load(followers_data_file)
@@ -961,15 +967,15 @@ def load_followers_data(username, compare_by, compare_track, logger, logfolder):
     logger.info("Took prior `Followers` data file from {} with {} usernames to be compared with live data\n".format(
                     selected_filename, len(followers_data)))
 
-    #Return that file to be compared
+    # return that file to be compared
     return followers_data, selected_filename
 
 
 def progress_tracker(current_value, highest_value, initial_time, logger):
     """ Provide a progress tracker to keep value updated until finishes """
     if (current_value is None or
-         highest_value is None or
-          highest_value == 0):
+        highest_value is None or
+            highest_value == 0):
         return
 
     try:
@@ -980,7 +986,7 @@ def progress_tracker(current_value, highest_value, initial_time, logger):
         elapsed_time = real_time-initial_time
         elapsed_formatted = truncate_float(elapsed_time, 2)
         elapsed = ("{} seconds".format(elapsed_formatted) if elapsed_formatted < 60 else
-               "{} minutes".format(truncate_float(elapsed_formatted/60, 2)))
+                   "{} minutes".format(truncate_float(elapsed_formatted/60, 2)))
 
         eta_time = abs((elapsed_time*100)/(progress_percent if progress_percent != 0 else 1)-elapsed_time)
         eta_formatted = truncate_float(eta_time, 2)
@@ -993,9 +999,11 @@ def progress_tracker(current_value, highest_value, initial_time, logger):
         progress_container = progress_container[:filled_index+1].replace("-", "=")+progress_container[filled_index+1:]
 
         total_message = ("\r  {}/{} {}  {}%    "
-                            "|> Elapsed: {}    "
-                                "|> ETA: {}      ".format(
-                        current_value, highest_value, progress_container, progress_percent, elapsed, eta))
+                         "|> Elapsed: {}    "
+                         "|> ETA: {}      "
+                         .format(current_value, highest_value,
+                                 progress_container, progress_percent,
+                                 elapsed, eta))
 
         if show_logs == True:
             sys.stdout.write(total_message)
@@ -1003,3 +1011,6 @@ def progress_tracker(current_value, highest_value, initial_time, logger):
 
     except Exception as exc:
         logger.info("Error occurred with Progress Tracker:\n{}".format(str(exc).encode("utf-8")))
+
+
+

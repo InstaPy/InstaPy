@@ -34,11 +34,11 @@ from selenium.common.exceptions import TimeoutException
 
 
 default_profile_pic_instagram = [
-"https://instagram.flas1-2.fna.fbcdn.net/vp/a8539c22ed9fec8e1c43b538b1ebfd1d/5C5A1A7A/t51.2885-19/11906329_960233084022564_1448528159_a.jpg",
-"https://scontent-yyz1-1.cdninstagram.com/vp/a8539c22ed9fec8e1c43b538b1ebfd1d/5C5A1A7A/t51.2885-19/11906329_960233084022564_1448528159_a.jpg",
-"https://instagram.faep12-1.fna.fbcdn.net/vp/a8539c22ed9fec8e1c43b538b1ebfd1d/5C5A1A7A/t51.2885-19/11906329_960233084022564_1448528159_a.jpg",
-"https://instagram.fbts2-1.fna.fbcdn.net/vp/a8539c22ed9fec8e1c43b538b1ebfd1d/5C5A1A7A/t51.2885-19/11906329_960233084022564_1448528159_a.jpg",
-"https://scontent-mia3-1.cdninstagram.com/vp/a8539c22ed9fec8e1c43b538b1ebfd1d/5C5A1A7A/t51.2885-19/11906329_960233084022564_1448528159_a.jpg"]
+    "https://instagram.flas1-2.fna.fbcdn.net/vp/a8539c22ed9fec8e1c43b538b1ebfd1d/5C5A1A7A/t51.2885-19/11906329_960233084022564_1448528159_a.jpg",
+    "https://scontent-yyz1-1.cdninstagram.com/vp/a8539c22ed9fec8e1c43b538b1ebfd1d/5C5A1A7A/t51.2885-19/11906329_960233084022564_1448528159_a.jpg",
+    "https://instagram.faep12-1.fna.fbcdn.net/vp/a8539c22ed9fec8e1c43b538b1ebfd1d/5C5A1A7A/t51.2885-19/11906329_960233084022564_1448528159_a.jpg",
+    "https://instagram.fbts2-1.fna.fbcdn.net/vp/a8539c22ed9fec8e1c43b538b1ebfd1d/5C5A1A7A/t51.2885-19/11906329_960233084022564_1448528159_a.jpg",
+    "https://scontent-mia3-1.cdninstagram.com/vp/a8539c22ed9fec8e1c43b538b1ebfd1d/5C5A1A7A/t51.2885-19/11906329_960233084022564_1448528159_a.jpg"]
 
 
 
@@ -119,18 +119,19 @@ def validate_username(browser,
 
             except WebDriverException:
                 logger.error("Username validation failed!\t~cannot get the post owner's username")
-                return False, \
-                       "---> Sorry, this page isn't available!\t~either link is broken or page is removed\n"
+                inap_msg = "---> Sorry, this page isn't available!\t~either link is broken or page is removed\n"
+                return False, inap_msg
+
     else:
         username = username_or_link  # if there is no `/` in `username_or_link`, then it is a `username`
 
     if username == own_username:
-        return False, \
-               "---> Username '{}' is yours!\t~skipping user\n".format(own_username)
+        inap_msg = "---> Username '{}' is yours!\t~skipping user\n".format(own_username)
+        return False, inap_msg
 
     if username in ignore_users:
-        return False, \
-               "---> '{}' is in the `ignore_users` list\t~skipping user\n".format(username)
+        inap_msg = "---> '{}' is in the `ignore_users` list\t~skipping user\n".format(username)
+        return False, inap_msg
 
     logfolder = logfolder = '{0}{1}{2}{1}'.format(
             Settings.log_location, os.path.sep, own_username)
@@ -165,46 +166,54 @@ def validate_username(browser,
                                   else float(following_count) / float(followers_count))
 
         logger.info("User: '{}'  |> followers: {}  |> following: {}  |> relationship ratio: {}"
-                        .format(username,
-                                followers_count if followers_count else 'unknown',
-                                following_count if following_count else 'unknown',
-                                truncate_float(relationship_ratio, 2) if relationship_ratio else 'unknown'))
+                    .format(username,
+                            followers_count if followers_count else 'unknown',
+                            following_count if following_count else 'unknown',
+                            truncate_float(relationship_ratio, 2) if relationship_ratio else 'unknown'))
 
         if followers_count or following_count:
             if potency_ratio and not delimit_by_numbers:
                 if relationship_ratio and relationship_ratio < potency_ratio:
-                    return False, \
-                           "'{}' is not a {} with the relationship ratio of {}  ~skipping user\n".format(
-                               username, "potential user" if not reverse_relationship else "massive follower",
-                               truncate_float(relationship_ratio, 2))
+                    inap_msg = ("'{}' is not a {} with the relationship ratio of {}  ~skipping user\n"
+                                .format(username,
+                                        "potential user" if not reverse_relationship else "massive follower",
+                                        truncate_float(relationship_ratio, 2)))
+                    return False, inap_msg
 
             elif delimit_by_numbers:
                 if followers_count:
                     if max_followers:
                         if followers_count > max_followers:
-                            return False, \
-                                   "User '{}'s followers count exceeds maximum limit  ~skipping user\n".format(username)
+                            inap_msg = ("User '{}'s followers count exceeds maximum limit  ~skipping user\n"
+                                        .format(username))
+                            return False, inap_msg
+
                     if min_followers:
                         if followers_count < min_followers:
-                            return False, \
-                                   "User '{}'s followers count is less than minimum limit  ~skipping user\n".format(
-                                       username)
+                            inap_msg = ("User '{}'s followers count is less than minimum limit  ~skipping user\n"
+                                        .format(username))
+                            return False, inap_msg
+
                 if following_count:
                     if max_following:
                         if following_count > max_following:
-                            return False, \
-                                   "User '{}'s following count exceeds maximum limit  ~skipping user\n".format(username)
+                            inap_msg = ("User '{}'s following count exceeds maximum limit  ~skipping user\n"
+                                        .format(username))
+                            return False, inap_msg
+
                     if min_following:
                         if following_count < min_following:
-                            return False, \
-                                   "User '{}'s following count is less than minimum limit  ~skipping user\n".format(
-                                       username)
+                            inap_msg = ("User '{}'s following count is less than minimum limit  ~skipping user\n"
+                                        .format(username))
+                            return False, inap_msg
+
                 if potency_ratio:
                     if relationship_ratio and relationship_ratio < potency_ratio:
-                        return False, \
-                               "'{}' is not a {} with the relationship ratio of {}  ~skipping user\n".format(
-                                   username, "potential user" if not reverse_relationship else "massive follower",
-                                   truncate_float(relationship_ratio, 2))
+                        inap_msg = ("'{}' is not a {} with the relationship ratio of {}  ~skipping user\n"
+                                    .format(username,
+                                            "potential user" if not reverse_relationship else "massive follower",
+                                            truncate_float(relationship_ratio, 2)))
+                        return False, inap_msg
 
     if min_posts or max_posts or skip_private or skip_no_profile_pic or skip_business:
         user_link = "https://www.instagram.com/{}/".format(username)
@@ -216,15 +225,18 @@ def validate_username(browser,
             number_of_posts = getUserData("graphql.user.edge_owner_to_timeline_media.count", browser)
         except WebDriverException:
             logger.error("~cannot get number of posts for username")
-            return False, "---> Sorry, couldn't check for number of posts of username\n"
+            inap_msg = "---> Sorry, couldn't check for number of posts of username\n"
+            return False, inap_msg
         if max_posts:
             if number_of_posts > max_posts:
-                return False, "Number of posts ({}) of '{}' exceeds the maximum limit given {}\n".format(number_of_posts,
-                                                                                                   username, max_posts)
+                inap_msg = ("Number of posts ({}) of '{}' exceeds the maximum limit given {}\n"
+                            .format(number_of_posts, username, max_posts))
+                return False, inap_msg
         if min_posts:
             if number_of_posts < min_posts:
-                return False, "Number of posts ({}) of '{}' is less than the minimum limit given {}\n".format(
-                    number_of_posts, username, min_posts)
+                inap_msg = ("Number of posts ({}) of '{}' is less than the minimum limit given {}\n"
+                            .format(number_of_posts, username, min_posts))
+                return False, inap_msg
 
     """Skip users"""
 
@@ -282,7 +294,9 @@ def validate_username(browser,
 
 
 
-def getUserData(query, browser, basequery="return window._sharedData.entry_data.ProfilePage[0]."):
+def getUserData(query,
+                browser,
+                basequery="return window._sharedData.entry_data.ProfilePage[0]."):
     try:
         data = browser.execute_script(
             basequery + query)
@@ -415,7 +429,7 @@ def get_active_users(browser, username, posts, boundary, logger):
     active_users = []
     sc_rolled = 0
     start_time = time.time()
-    too_many_requests = 0  # this will help to prevent misbehaviours when you request the list of active users repeatedly within less than 10 min of breaks
+    too_many_requests = 0  # helps to prevent misbehaviours when requests list of active users repeatedly within less than 10 min of breaks
 
     message = ("~collecting the entire usernames from posts without a boundary!\n" if boundary is None else
                "~collecting only the visible usernames from posts without scrolling at the boundary of zero..\n" if boundary == 0 else
@@ -434,7 +448,7 @@ def get_active_users(browser, username, posts, boundary, logger):
                 try:
                     likers_count = (browser.find_element_by_xpath(
                          "//button[contains(@class, '_8A5w5')]/span").text)
-                    if likers_count: ##prevent an empty string scenarios
+                    if likers_count:   # prevent an empty string scenarios
                         likers_count = format_number(likers_count)
                     else:
                         logger.info("Failed to get likers count on your post {}  ~empty string".format(count))
@@ -494,8 +508,8 @@ def get_active_users(browser, username, posts, boundary, logger):
 
                         if try_again <= 1:  # you can increase the amount of tries here
                             logger.info("Cor! ~failed to get the desired amount of usernames, "
-                                        "trying again!  |  post:{}  |  attempt: {}".format(
-                                posts, try_again + 1))
+                                        "trying again!  |  post:{}  |  attempt: {}"
+                                        .format(posts, try_again + 1))
                             try_again += 1
                             too_many_requests += 1
                             scroll_it = True
@@ -1094,8 +1108,8 @@ def check_authorization(browser, username, method, logger, notify=True):
         # navigate to owner's profile page only if it is on an unusual page
         current_url = get_current_url(browser)
         if (not current_url or
-             "https://www.instagram.com" not in current_url or
-              "https://www.instagram.com/graphql/" in current_url):
+            "https://www.instagram.com" not in current_url or
+                "https://www.instagram.com/graphql/" in current_url):
             profile_link = 'https://www.instagram.com/{}/'.format(username)
             web_address_navigator(browser, profile_link)
 
@@ -1268,14 +1282,13 @@ def explicit_wait(browser, track, ec_params, logger, timeout=35, notify=True):
     elif track == "PFL":
         ec_name = "page fully loaded"
         condition = (lambda browser: browser.execute_script("return document.readyState")
-                                     in ["complete" or "loaded"])
+                     in ["complete" or "loaded"])
 
     elif track == "SO":
         ec_name = "staleness of"
         element = ec_params[0]
 
         condition = ec.staleness_of(element)
-
 
     # generic wait block
     try:
@@ -1465,7 +1478,7 @@ def click_visibly(browser, element):
                                "arguments[0].style.height = '10px'; "
                                "arguments[0].style.width = '10px'; "
                                "arguments[0].style.opacity = 1",
-                                    element)
+                               element)
         # update server calls
         update_activity()
 
@@ -1484,9 +1497,9 @@ def get_action_delay(action):
     config = Settings.action_delays
 
     if (not config or
-         config["enabled"] != True or
-          config[action] is None or
-           type(config[action]) not in [int, float]):
+        config["enabled"] != True or
+        config[action] is None or
+            type(config[action]) not in [int, float]):
         return defaults[action]
 
     else:
@@ -1494,9 +1507,9 @@ def get_action_delay(action):
 
     # randomize the custom delay in user-defined range
     if (config["randomize"] == True and
-         type(config["random_range"]) == tuple and
-          len(config["random_range"]) == 2 and
-           all((type(i) in [type(None), int, float] for i in config["random_range"])) and
+        type(config["random_range"]) == tuple and
+        len(config["random_range"]) == 2 and
+        all((type(i) in [type(None), int, float] for i in config["random_range"])) and
             any(type(i) is not None for i in config["random_range"])):
         min_range = config["random_range"][0]
         max_range = config["random_range"][1]
@@ -1516,7 +1529,7 @@ def get_action_delay(action):
                                       custom_delay*max_range/100)
 
     if (custom_delay < defaults[action] and
-         config["safety_match"] != False):
+            config["safety_match"] != False):
         return defaults[action]
 
     return custom_delay
@@ -1533,8 +1546,8 @@ def deform_emojis(text):
     for word in data:
         if any(char in UNICODE_EMOJI for char in word):
             word_emoji = (emoji.demojize(word)
-                            .replace(':', '')
-                            .replace('_', ' '))
+                          .replace(':', '')
+                          .replace('_', ' '))
             if word_emoji not in emojis_in_text:   # do not add an emoji if already exists in text
                 emojiless_text += ' '
                 new_text += " ({}) ".format(word_emoji)
@@ -1618,7 +1631,7 @@ def remove_extra_spaces(text):
 
 def has_any_letters(text):
     """ Check if the text has any letters in it """
-    #result = re.search("[A-Za-z]", text)   # works only with english letters
+    # result = re.search("[A-Za-z]", text)   # works only with english letters
     result = any(c.isalpha() for c in text)   # works with any letters - english or non-english
 
     return result
