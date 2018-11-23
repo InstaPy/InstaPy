@@ -269,13 +269,17 @@ def users_liked (browser, photo_url, amount=100):
 def likers_from_photo(browser, amount=20):
 
     user_liked_list = []
+    liked_counter_button = "//div/article/div[2]/section[2]/div/div/a"
+
     try:
-        liked_this = browser.find_elements_by_xpath("//div/article/div[2]/section[2]/div/a")
+        liked_this = browser.find_elements_by_xpath(liked_counter_button)
         likers = []
+
         for liker in liked_this:
             if "like this" not in liker.text:
                 likers.append(liker.text)
-        if check_exists_by_xpath(browser, "//div/article/div[2]/section[2]/div/a"):
+
+        if check_exists_by_xpath(browser, liked_counter_button):
             if "likes" not in liked_this[0].text:
                 print ("Few likes, not guaranteed you don't follow these likers already.\nGot photo likers: ", likers," \n")
                 return likers
