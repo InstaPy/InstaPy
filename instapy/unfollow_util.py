@@ -181,7 +181,7 @@ def unfollow(browser,
                 customList[0] == True and
                     type(customList[1]) in [list, tuple, set] and
                     len(customList[1]) > 0 and
-                     customList[2] in ["all", "nonfollowers"]):
+                     customList[2] in ["all", "nonfollowers", "keepfollowing"]):
         customList_data = customList[1]
         if type(customList_data) != list:
             customList_data = list(customList_data)
@@ -260,6 +260,16 @@ def unfollow(browser,
                 loyal_users = [user for user in unfollow_list if user in all_followers]
                 logger.info("Found {} loyal followers!  ~will not unfollow them".format(len(loyal_users)))
                 unfollow_list = [user for user in unfollow_list if user not in loyal_users]
+            
+            elif unfollow_track == "keepfollowing":
+                non_followers_list = get_nonfollowers(browser,
+                                              username,
+                                               relationship_data,
+                                                False,
+                                                 True,
+                                                  logger,
+                                                   logfolder)      
+                unfollow_list = [user for user in non_followers_list if user not in unfollow_list]  
 
             elif unfollow_track != "all":
                 logger.info("Unfollow track is not specified! ~choose \"all\" or \"nonfollowers\"")
