@@ -1473,7 +1473,7 @@ There are **several** `use cases` of this tool for **various purposes**.
 
 ###### Offers excellent language detection and synchronized translation for over 95 languages 😎 worldwide
 
-_This service currently is supported only by the [Interact by Comments](interact-by-commenters) feature_.
+_This service currently is supported only by the [Interact by Comments](#interact-by-comments) feature_.
 
 #### Usage
 Go [**sign up**](https://translate.yandex.com/developers/keys) on [_translate.yandex.com_](https://translate.yandex.com) and get a _free_ `API_key`;  
@@ -1535,7 +1535,7 @@ session.set_use_yandex(enabled=True, API_key='', match_language=False)
 <img src="https://www.meaningcloud.com/developer/img/LogoMeaningCloud210x85.png" width="210" align="right">
 
 ###### Offers a detailed, multilingual analysis of all kind of unstructured content determining its sentiment ⚖
-_This service currently is supported only by the [Interact by Comments](interact-by-commenters) feature_.
+_This service currently is supported only by the [Interact by Comments](#interact-by-comments) feature_.
 
 Determines if text displays _positive_, _negative_, or _neutral_ sentiment - or is _not possible_ to detect.  
 Phrases are identified with the _relationship between_ them evaluated which identifies a _global polarity_ value of the text.
