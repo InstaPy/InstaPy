@@ -4378,7 +4378,7 @@ class InstaPy:
                 supported_langs = yandex_supported_languages()
 
                 if (not supported_langs or
-                    language_code.lower() not in supported_langs):
+                        language_code.lower() not in supported_langs):
                     msg = ("Oh no! Failed to get the list of supported"
                            " languages by Yandex Translate :("
                            if not supported_langs else

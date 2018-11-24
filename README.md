@@ -509,7 +509,7 @@ session.set_do_like(enabled=True, percentage=100)
 #start the feature
 session.interact_by_comments(usernames=["somebody", "other.buddy"], posts_amount=10, comments_per_post=5, reply=True, interact=True, randomize=True, media="Photo")
 ```
-**Note**: To be able to reply on comments, you have to **turn on** _text analytics_- [**Yandex**](yandex-translate-api) & [**MeaningCloud**](meaningcloud-sentiment-analysis-api).  
+**Note**: To be able to reply on comments, you have to **turn on** _text analytics_- [**Yandex**](#yandex-translate-api) & [**MeaningCloud**](#meaningcloud-sentiment-analysis-api).  
 So that they will analyze the content of comments and if it is appropriate, will send a reply to the comment.  
 _To configure those text analytics, see the usage in their sections_.
 
@@ -1557,7 +1557,7 @@ session.set_use_meaningcloud(enabled=True,
 pip install MeaningCloud-python
 ```
 **3**-) Turn on **Yandex** _Translate_ service which is a **requirement** for the language _detection_ & _translation_ at request;  
-_To have it configured, read its [documentation](yandex-translate-api)_.
+_To have it configured, read its [documentation](#yandex-translate-api)_.
 
 
 #### Parameters  
