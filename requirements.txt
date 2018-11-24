@@ -16,3 +16,5 @@ requests>=2.20.1
 selenium>=3.141.0
 six>=1.11.0
 urllib3>=1.24.1
+regex>=2018.11.22
+MeaningCloud-python>=1.1.1
