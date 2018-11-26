@@ -3,6 +3,10 @@ The **goal** of this file is explaining to the users of our project the notable 
 
 _The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html)_.
 
+## [Unreleased] - 2018-11-26
+### Changed
+- Switch mandatory_words from ALL to ANY
+
 ## [Unreleased] - 2018-11-22
 ### Fixed
 - "Added location to image_text in the check_link method in like_util.py, so the script also searches for mandatory words in the location information.
