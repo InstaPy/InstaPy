@@ -411,7 +411,7 @@ def get_links_for_username(browser,
 
 
 
-def check_link(browser, post_link, dont_like, mandatory_words, ignore_if_contains, logger):
+def check_link(browser, post_link, dont_like, mandatory_words, mandatory_language, mandatory_character, is_mandatory_character, check_character_set, ignore_if_contains, logger):
     """
     Check the given link if it is appropriate
 
@@ -520,13 +520,18 @@ def check_link(browser, post_link, dont_like, mandatory_words, ignore_if_contain
     logger.info('Link: {}'.format(post_link.encode('utf-8')))
     logger.info('Description: {}'.format(image_text.encode('utf-8')))
 
+    """Check if mandatory character set, before adding the location to the text"""
+    if mandatory_language:
+        if not check_character_set(image_text):
+            return True, user_name, is_video, 'Mandatory language not fulfilled', "Not mandatory language"
+
     """Append location to image_text so we can search through both in one go."""
     if location_name:
         logger.info('Location: {}'.format(location_name.encode('utf-8')))
         image_text = image_text + '\n' + location_name
-    
-    if mandatory_words :
-        if not all((word in image_text for word in mandatory_words)) :
+
+    if mandatory_words:
+        if not any((word in image_text for word in mandatory_words)) :
             return True, user_name, is_video, 'Mandatory words not fulfilled', "Not mandatory likes"
 
     image_text_lower = [x.lower() for x in image_text]
