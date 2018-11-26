@@ -526,7 +526,7 @@ def check_link(browser, post_link, dont_like, mandatory_words, ignore_if_contain
         image_text = image_text + '\n' + location_name
     
     if mandatory_words :
-        if not all((word in image_text for word in mandatory_words)) :
+        if not any((word in image_text for word in mandatory_words)) :
             return True, user_name, is_video, 'Mandatory words not fulfilled', "Not mandatory likes"
 
     image_text_lower = [x.lower() for x in image_text]

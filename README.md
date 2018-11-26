@@ -843,7 +843,7 @@ session.set_mandatory_words(['#food', '#instafood'])
 ```
 
 `.set_mandatory_words` searches the description, location and owner comments for words and
-will like the image if **all** of those words are in there
+will like the image if **any** of those words are in there
 
 ### Restricting Likes
 
