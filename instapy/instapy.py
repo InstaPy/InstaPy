@@ -4115,6 +4115,7 @@ class InstaPy:
              return self.check_letters.setdefault(uchr, self.mandatory_character in unicodedata.name(uchr))
 
     def check_character_set(self, unistr):
+        self.check_letters = {}
         if self.aborting:
             return self
         return all(self.is_mandatory_character(uchr)
