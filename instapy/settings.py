@@ -6,7 +6,7 @@ from sys import platform as p_os
 
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-OS_ENV = "windows" if p_os=="win32" else "osx" if p_os=="darwin" else "linux"
+OS_ENV = "windows" if p_os == "win32" else "osx" if p_os == "darwin" else "linux"
 
 
 
@@ -29,7 +29,7 @@ class Settings:
     logger = None
 
     # set current profile credentials for DB operations
-    profile = {"id":None, "name":None}
+    profile = {"id": None, "name": None}
 
     # hold live Quota Supervisor configuration for global usage
     QS_config = {}
@@ -39,6 +39,15 @@ class Settings:
 
     # store user-defined delay time to sleep after doing actions
     action_delays = {}
+
+    # store configuration of text analytics
+    meaningcloud_config = {}
+    yandex_config = {}
+
+    # store the parameter for global access
+    show_logs = None
+
+
 
 
 

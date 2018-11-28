@@ -64,9 +64,8 @@ def controller(job):
 
     if supervise:
         if (any(e in [job, job+("_h" if interval == "hourly" else "_d")]
-                for e in sleep_after) and
-                    target != "lc_extra"):
-
+            for e in sleep_after) and
+                target != "lc_extra"):
             nap = remaining_time(sleepyhead, interval)
             send_message(job, "sleep", interval, nap)
 
@@ -80,7 +79,7 @@ def controller(job):
                 toast_notification(notify, "exit", job, interval)
 
                 logger.warning("You're about to leave the session. "
-                                           "InstaPy will exit soon!")
+                               "InstaPy will exit soon!")
                 exit()
 
             else:
@@ -120,7 +119,7 @@ def inspector(job, peaks):
             return True, "hourly", "job"
 
     if daily_peak is not None:
-        daily_record = get_record(job, "daily")        
+        daily_record = get_record(job, "daily")
 
         if daily_record >= daily_peak:
             return True, "daily", "job"
@@ -179,7 +178,7 @@ def stochast_values(peaks, orig_peaks, interval, percent):
         job_data = orig_peaks[job]
 
         stochastic_peak = (None if job_data[interval] is None else
-                stoch_randomizer(job_data[interval], percent))
+                           stoch_randomizer(job_data[interval], percent))
 
         # update the peaks object with a stochastic value for the given job
         peaks[job][interval] = stochastic_peak
@@ -211,10 +210,11 @@ def remaining_time(sleepyhead, interval):
 
     if sleepyhead == True:
         remaining_seconds = random.randint(
-            remaining_seconds, int(
-            remaining_seconds*extra_sleep_percent/100))
+            remaining_seconds,
+            int(remaining_seconds *
+                extra_sleep_percent/100))
 
-    return remaining_seconds 
+    return remaining_seconds
 
 
 
@@ -232,21 +232,23 @@ def send_message(job, action, interval, nap):
                                          "coffee colombia",
                                          "fruit juice"])
             message = ("Quota Supervisor: hourly {} reached quotient!"
-                        "\t~going to sleep {} minutes long\n\ttake a {} break? :>"
-                         .format(job, "%.0f" % (nap/60), quick_drink))
+                       "\t~going to sleep {} minutes long\n\ttake a {} break? :>"
+                       .format(job, "%.0f" % (nap/60), quick_drink))
 
         elif interval == "daily":
             message = ("Quota Supervisor: daily {} reached quotient!"
-                        "\t~going to sleep {} hours long\n"
-                         "\ttime for InstaPy to take a big good nap :-)"
-                          .format(job, "%.1f" % (nap/60/60)))
+                       "\t~going to sleep {} hours long\n"
+                       "\ttime for InstaPy to take a big good nap :-)"
+                       .format(job, "%.1f" % (nap/60/60)))
 
     elif action == "exit":
         message = ("Quota Supervisor: {} {} reached quotient!"
-                    "\t~exiting\n\tfor *non-stop botting use `sleep_after` parameter on the go! ;)".format(interval, job))
+                   "\t~exiting\n\tfor *non-stop botting use `sleep_after` parameter on the go! ;)"
+                   .format(interval, job))
 
     elif action == "jump":
-        message = ("Quota Supervisor: jumped a {} out of {} quotient!\t~be fair with numbers :]\n".format(job[:-1], interval))
+        message = ("Quota Supervisor: jumped a {} out of {} quotient!\t~be fair with numbers :]\n"
+                   .format(job[:-1], interval))
 
     logger.info(message)
 
@@ -263,9 +265,9 @@ def toast_notification(notify, alert, job, interval):
         label = job.replace('_', ' ').capitalize()
 
         expr = ("Yawn! {} filled {} quotient!\t~falling asleep a little bit :>"
-                    if alert == "sleep" else
+                if alert == "sleep" else
                 "Yikes! {} just woke up from {} quotient bandage!\t~let's chill again wakey ;)"
-                    if alert == "wakeup" else
+                if alert == "wakeup" else
                 "D\'oh! {} finished {} quotient!\t~exiting ~,~")
 
         try:
@@ -289,16 +291,25 @@ def toast_notification(notify, alert, job, interval):
 
 def get_icons():
     """ Return the locations of icons according to the operating system """
-    windows_ico = ["./icons/Windows/qs_sleep_windows.ico", "./icons/Windows/qs_wakeup_windows.ico",  "./icons/Windows/qs_exit_windows.ico"]
-    linux_png = ["./icons/Linux/qs_sleep_linux.png", "./icons/Linux/qs_wakeup_linux.png", "./icons/Linux/qs_exit_linux.png"]
-    mac_icns = ["./icons/Mac/qs_sleep_mac.icns", "./icons/Mac/qs_wakeup_mac.icns",  "./icons/Mac/qs_exit_mac.icns"]
+    windows_ico = [
+        "./icons/Windows/qs_sleep_windows.ico",
+        "./icons/Windows/qs_wakeup_windows.ico",
+        "./icons/Windows/qs_exit_windows.ico"]
+    linux_png = [
+        "./icons/Linux/qs_sleep_linux.png",
+        "./icons/Linux/qs_wakeup_linux.png",
+        "./icons/Linux/qs_exit_linux.png"]
+    mac_icns = [
+        "./icons/Mac/qs_sleep_mac.icns",
+        "./icons/Mac/qs_wakeup_mac.icns",
+        "./icons/Mac/qs_exit_mac.icns"]
 
     (sleep_icon,
-    wakeup_icon,
-    exit_icon) = (windows_ico if platform.startswith("win32") else
-                  linux_png if platform.startswith("linux") else
-                  mac_icns if platform.startswith("darwin") else
-                  [None, None, None])
+     wakeup_icon,
+     exit_icon) = (windows_ico if platform.startswith("win32") else
+                   linux_png if platform.startswith("linux") else
+                   mac_icns if platform.startswith("darwin") else
+                   [None, None, None])
 
     icons = {"sleep": sleep_icon, "wakeup": wakeup_icon, "exit": exit_icon}
 
@@ -316,10 +327,10 @@ def load_records():
         conn.row_factory = sqlite3.Row
         cur = conn.cursor()
         cur.execute("SELECT * FROM recordActivity "
-                     "WHERE profile_id=:var AND "
-                      "STRFTIME('%Y-%m-%d', created) == "
-                       "STRFTIME('%Y-%m-%d', 'now', 'localtime')",
-                        {"var": id})
+                    "WHERE profile_id=:var AND "
+                    "STRFTIME('%Y-%m-%d', created) == "
+                    "STRFTIME('%Y-%m-%d', 'now', 'localtime')",
+                    {"var": id})
         daily_data = cur.fetchall()
 
     if daily_data:
@@ -334,7 +345,7 @@ def load_records():
                                                "comments": hourly_data[2],
                                                "follows": hourly_data[3],
                                                "unfollows": hourly_data[4],
-                                                "server_calls": hourly_data[5]}})
+                                               "server_calls": hourly_data[5]}})
 
         # load data to the global storage
         records.update(ordered_data)
