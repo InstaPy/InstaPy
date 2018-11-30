@@ -242,10 +242,10 @@ class InstaPy:
 
         self.aborting = False
 
-        # Assign logger
+        # assign logger
         self.logger = self.get_instapy_logger(self.show_logs)
 
-        get_database(make=True)
+        get_database(make=True)   # IMPORTANT: think twice before relocating
 
         if self.selenium_local_session == True:
             self.set_selenium_local_session()
@@ -340,7 +340,7 @@ class InstaPy:
                 if self.disable_image_load:
                     chrome_options.add_argument('--blink-settings=imagesEnabled=false')
 
-                # Replaces browser User Agent from "HeadlessChrome".
+                # replaces browser User Agent from "HeadlessChrome".
                 user_agent = "Chrome"
                 chrome_options.add_argument('user-agent={user_agent}'
                                             .format(user_agent=user_agent))
@@ -484,8 +484,11 @@ class InstaPy:
 
 
     def set_do_comment(self, enabled=False, percentage=0):
-        """Defines if images should be commented or not
-        percentage=25 -> ~ every 4th picture will be commented"""
+        """
+         Defines if images should be commented or not.
+        E.g. percentage=25 means every ~4th picture will be commented.
+        """
+
         if self.aborting:
             return self
 
@@ -1137,6 +1140,8 @@ class InstaPy:
                                                 self.logger)
         return validation, details
 
+
+
     def fetch_smart_comments(self, is_video, temp_comments):
         if temp_comments:
             # Use clarifai related comments only!
@@ -1149,6 +1154,8 @@ class InstaPy:
                         self.photo_comments)
 
         return comments
+
+
 
     def set_skip_users(self,
                        skip_private=True,
