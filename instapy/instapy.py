@@ -145,6 +145,8 @@ class InstaPy:
         self.reply_comments = []
         self.photo_reply_comments = []
         self.video_reply_comments = []
+        self.do_reply_to_comments = False
+        self.reply_to_comments_percent = 0
 
         self.liked_img = 0
         self.already_liked = 0
@@ -4296,6 +4298,17 @@ class InstaPy:
                              "\t|> No any statistics to show\n"
                              "{}"
                              .format(owner_relationship_info))
+
+
+    def set_do_reply_to_comments(self,
+                                 enabled=False,
+                                 percentage=0):
+        """ Define if the comments on posts should be replied """
+
+        self.do_reply_to_comments = enabled
+        self.reply_to_comments_percent = percentage
+
+        return self
 
 
 
