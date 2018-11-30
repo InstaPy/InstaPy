@@ -241,6 +241,7 @@ class InstaPy:
             Settings.connection_type = "proxy"
 
         self.aborting = False
+        self.start_time = time.time()
 
         # assign logger
         self.logger = self.get_instapy_logger(self.show_logs)
@@ -4736,6 +4737,17 @@ class InstaPy:
                              .format(already_followed))
             self.logger.info("\tInappropriate posts: {}".format(inap_img))
             self.logger.info("\tNot valid users: {}".format(not_valid_users))
+
+
+
+    def run_time(self):
+        """ Get the time session lasted in seconds """
+
+        real_time = time.time()
+        run_time = (real_time - self.start_time)
+        run_time = truncate_float(run_time, 2)
+
+        return run_time
 
 
 
