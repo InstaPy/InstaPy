@@ -464,16 +464,16 @@ Use it if you like to also _interact the post owner_ **after** doing interaction
 
 
 ### Interact by Comments
-###### Like comments on posts, reply on them and then interact by the users whose comment was liked on the post
+###### Like comments on posts, reply to them and then interact by the users whose comment was liked on the post
 
 ```python
 session.interact_by_comments(usernames=["somebody", "other buddy"],
-                              posts_amount=10,
-                               comments_per_post=5,
-                                reply=True,
-                                interact=True,
-                                 randomize=True,
-                                  media="Photo")
+                             posts_amount=10,
+                             comments_per_post=5,
+                             reply=True,
+                             interact=True,
+                             randomize=True,
+                             media="Photo")
 ```
 #### Parameters
 `usernames`
@@ -486,10 +486,10 @@ session.interact_by_comments(usernames=["somebody", "other buddy"],
 : Choose how many comments to interact (_like and then reply_) on **each post**;  
 
 `reply`
-: Choose if it **should reply** on comments;  
+: Choose if it **should reply** to comments;  
 
 `interact`
-: Use if you also like to _interact the commenters_ **after** finishing liking (_and then replying_) comments on the **post**;  
+: Use if you also like to _interact the commenters_ **after** finishing liking (_and then replying to_) comments on the **post**;  
 
 `randomize`
 : Shuffles the **order** of the **_posts_** from users' feed and **_comments_** in the given post;  
@@ -499,21 +499,20 @@ session.interact_by_comments(usernames=["somebody", "other buddy"],
 
 
 #### Usage
-**To use**, set **commenting** configuration (_for replying on comments_) and **interaction** configuration (_for interating with the commenters after liking and replying on each post's comments.._)
+**To use**, set **replying** and **interaction** configuration(s)
 ```python
-session.set_do_comment(enabled=True, percentage=14)
-# set reply comments to be used while replying on liked comments:
-session.set_reply_comments(replies=[u"😎😎😎", u"😁😁😁😁😁😁😁💪🏼", u"😋🎉", "😀🍬", u"😂😂😂👈🏼👏🏼👏🏼", u"🙂🙋🏼‍♂️🚀🎊🎊🎊", u"😁😁😁", u"😂",  u"🎉",  u"😎", u"🤓🤓🤓🤓🤓", u"👏🏼😉"],
+session.set_do_reply_to_comments(enabled=True, percentage=14)
+session.set_comment_replies(replies=[u"😎😎😎", u"😁😁😁😁😁😁😁💪🏼", u"😋🎉", "😀🍬", u"😂😂😂👈🏼👏🏼👏🏼", u"🙂🙋🏼‍♂️🚀🎊🎊🎊", u"😁😁😁", u"😂",  u"🎉",  u"😎", u"🤓🤓🤓🤓🤓", u"👏🏼😉"],
                             media="Photo")
 
 session.set_user_interact(amount=2, percentage=70, randomize=False, media="Photo")
 # also configure [at least] liking to be used while interacting with the commenters ...
-session.set_do_like(enabled=True, percentage=100)
+session.set_do_like(enabled=True, percentage=94)
 
-#start the feature
+# start the feature
 session.interact_by_comments(usernames=["somebody", "other.buddy"], posts_amount=10, comments_per_post=5, reply=True, interact=True, randomize=True, media="Photo")
 ```
-**Note**: To be able to reply on comments, you have to **turn on** _text analytics_- [**Yandex**](#yandex-translate-api) & [**MeaningCloud**](#meaningcloud-sentiment-analysis-api).  
+**Note**: To be able to reply to comments, you have to **turn on** _text analytics_- [**Yandex**](#yandex-translate-api) & [**MeaningCloud**](#meaningcloud-sentiment-analysis-api).  
 So that they will analyze the content of comments and if it is appropriate, will send a reply to the comment.  
 _To configure those text analytics, see the usage in their sections_.
 
@@ -537,8 +536,8 @@ session.set_use_yandex(enabled=True, API_key='', match_language=True, language_c
 ```
 
 If you have **followed** any of those 3 _text analysis_ combinations:  
-It will first _analyze comments' content_ and if it _is appropriate_, then it will _be_ liked, _then_ replied.  
-All those inappropriate comments will neither be liked, nor replied.  
+It will first _analyze comments' content_ and if it _is appropriate_, then it will _first_ like, _then_ will reply to it.  
+All those inappropriate comments will neither be liked, nor replied to.  
 
 If you have **not followed** any of those 3 _text analysis_ combinations OR **misconfigured** them:  
 Comments' content will _not be able to be analyzed_ and that's why _no any comments will be_ replied.  
@@ -559,17 +558,17 @@ session.interact_by_comments(usernames=["somebody", "other.buddy"], posts_amount
 ```
 
 #### Extras
-+ comments from the poster are ignored (_those comments are mostly poster's reply comments_);  
++ comments from the poster are ignored (_those comments are mostly poster's replies_);  
 + owner's (_logged in user_) comments are also ignored;  
-+ if the commenter is in _blacklist_ or `ignored_users` list that comment will also be ignored;  
-+ it will take only one comment from each unique user;  
-+ as if there are any usable comments, it will first **like the post itself** before _interacting by comments_ cos liking comments and replying them without liking the post can look spammy;    
-+ it will not reply the same comment again on overall posts per each username in the list provided by you;  
++ if the commenter is in _blacklist_ or `ignored_users` list, that comment will also be ignored;  
++ it will take only one comment from each unique commenter;  
++ as if there are any usable comments, it will first **like the post itself** before _interacting by comments_ cos liking comments and replying to them without liking the post can look spammy;    
 + it will reply to a comment only after liking it;  
++ it will not send the same reply again on overall posts per each username in the list provided by you;  
 
 #### PROs
-+ you can use this feature to **auto-like** and **auto-reply** the _comments_ on your _own_ posts;  
-+ else than interacting by the comments in your _own_ posts, you can use this feature to like lots of comments from _other users'_ posts, reply some of _them_ and interact by those users just after _liking_ & _replying_ on their comments;  
++ you can use this feature to **auto-like** comments, **auto-reply** to them on your _own_ posts;  
++ else than interacting by the comments in your _own_ posts, you can use this feature to like lots of comments from _other users'_ posts, reply to some of _them_ and interact by those users just after _liking_ & _replying_ to their comments;  
 
 #### CONs
 + liking a comment doesn't fill up your like quota, but replying to a comment does it to the comment quota. Try to compensate it in your style and do not overuse;  
