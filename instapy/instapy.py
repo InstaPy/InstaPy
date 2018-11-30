@@ -152,7 +152,7 @@ class InstaPy:
         self.already_liked = 0
         self.liked_comments = 0
         self.commented = 0
-        self.replied_comments = 0
+        self.replied_to_comments = 0
         self.followed = 0
         self.already_followed = 0
         self.unfollowed = 0
@@ -194,7 +194,6 @@ class InstaPy:
         self.clarifai_full_match = False
         self.clarifai_check_video = False
         self.clarifai_proxy = None
-
 
         self.potency_ratio = 1.3466
         self.delimit_by_numbers = True
@@ -4443,23 +4442,19 @@ class InstaPy:
         already_liked_init = self.already_liked
         liked_comments_init = self.liked_comments
         commented_init = self.commented
-        replied_comments_init = self.replied_comments
+        replied_to_comments_init = self.replied_to_comments
         followed_init = self.followed
         already_followed_init = self.already_followed
         inap_img_init = self.inap_img
         not_valid_users_init = self.not_valid_users
 
         overall_posts_count = 0
-        per_user_liked_comments = 0
-        per_user_replied_comments = 0
-        per_post_liked_comments = 0
-        per_post_replied_comments = 0
-
         self.quotient_breach = False
         like_failures_tracker = {"consequent": {"post_likes": 0,
                                                 "comment_likes": 0},
                                  "limit": {"post_likes": 5,
                                            "comment_likes": 10}}
+
         leave_msg = "\t~leaving Interact-By-Comments activity\n"
 
         # start the interaction!
@@ -4468,7 +4463,8 @@ class InstaPy:
                 break
 
             message = "User: [{}/{}]".format(s+1, len(usernames))
-            highlight_print(self.username, message, "user iteration", "info", self.logger)
+            highlight_print(
+                self.username, message, "user iteration", "info", self.logger)
 
             validation, details = self.validate_user_call(username)
             if validation != True:
@@ -4478,7 +4474,7 @@ class InstaPy:
                 continue
 
             per_user_liked_comments = 0
-            per_user_replied_comments = 0
+            per_user_replied_to_comments = 0
             per_user_used_replies = []
 
             try:
@@ -4548,8 +4544,8 @@ class InstaPy:
 
                 # go go!
                 per_post_liked_comments = 0
-                per_post_replied_comments = 0
-                commenters_interacted_per_post = []
+                per_post_replied_to_comments = 0
+                per_post_interacted_commenters = []
 
                 # get comments (if any)
                 comment_data = get_comments_on_post(self.browser,
@@ -4617,31 +4613,37 @@ class InstaPy:
                         continue
 
                     else:
-                        commenters_interacted_per_post.append(commenter)
+                        per_post_interacted_commenters.append(commenter)
                         self.liked_comments += 1
                         per_user_liked_comments += 1
                         per_post_liked_comments += 1
                         like_failures_tracker["consequent"]["comment_likes"] = 0
 
                         # send a reply to the comment if is appropriate
-                        if (self.do_comment and reply and
+                        if (self.do_reply_to_comments and reply and
                                 text_analysis_state == True):
-                            put_comment = (self.comment_percentage
-                                           >= random.randint(0, 100))
-                            reply_comments_base = (self.photo_reply_comments if
-                                                   is_video == "Photo" else
-                                                   self.video_reply_comments if
-                                                   is_video == "Video" else
-                                                   self.reply_comments)
-                            reply_comments_base = [
-                                reply for reply in reply_comments_base if
+                            do_reply_to_comment = (
+                                self.reply_to_comments_percent
+                                >= random.randint(0, 100))
+
+                            comment_replies_base = (
+                                self.comment_replies
+                                + (self.video_comment_replies
+                                   if is_video else
+                                   self.photo_comment_replies))
+                            # dismiss the already used replies per each user
+                            comment_replies_base = [
+                                reply for reply in comment_replies_base if
                                 reply not in per_user_used_replies]
 
-                            if put_comment and reply_comments_base:
-                                chosen_reply = random.choice(reply_comments_base)
+                            if do_reply_to_comment and comment_replies_base:
+                                chosen_reply = random.choice(
+                                    comment_replies_base)
+                                # mention the commenter to make a reply :)
                                 reply_msg = ["@{} {}"
                                              .format(commenter, chosen_reply)]
-                                comment_reply_state, msg = comment_image(
+
+                                reply_to_comment_state, msg = comment_image(
                                     self.browser,
                                     commenter,
                                     reply_msg,
@@ -4649,12 +4651,12 @@ class InstaPy:
                                     self.logger,
                                     self.logfolder)
 
-                                if comment_reply_state == True:
+                                if reply_to_comment_state == True:
                                     per_user_used_replies.extend(chosen_reply)
-                                    self.replied_comments += 1
+                                    self.replied_to_comments += 1
                                     self.commented += 1
-                                    per_user_replied_comments += 1
-                                    per_post_replied_comments += 1
+                                    per_user_replied_to_comments += 1
+                                    per_post_replied_to_comments += 1
                                     # reset jump counter after a successful comment
                                     self.jumps["consequent"]["comments"] = 0
 
@@ -4673,16 +4675,16 @@ class InstaPy:
                 print('')
                 self.logger.info("Finished interacting on {} post's comments!"
                                  .format(post_No))
-                self.logger.info("\tComments liked: {}"
+                self.logger.info("\tLiked comments: {}"
                                  .format(per_post_liked_comments))
-                self.logger.info("\tComments replied: {}\n"
-                                 .format(per_post_replied_comments))
+                self.logger.info("\tReplied to comments: {}\n"
+                                 .format(per_post_replied_to_comments))
 
                 # standalone interaction with commenters whose
                 # comment was liked on the post
-                if interact and commenters_interacted_per_post:
+                if interact and per_post_interacted_commenters:
                     with self.feature_in_feature("interact_by_users", True):
-                        self.interact_by_users(commenters_interacted_per_post,
+                        self.interact_by_users(per_post_interacted_commenters,
                                                self.user_interact_amount,
                                                self.user_interact_random,
                                                self.user_interact_media)
@@ -4692,10 +4694,10 @@ class InstaPy:
             self.logger.info(
                 "Finished interacting on {} posts' comments of '{}'!"
                 .format(len(links), username))
-            self.logger.info("\tComments liked: {}"
+            self.logger.info("\tLiked comments: {}"
                              .format(per_user_liked_comments))
-            self.logger.info("\tComments replied: {}\n"
-                             .format(per_user_replied_comments))
+            self.logger.info("\tReplied to comments: {}\n"
+                             .format(per_user_replied_to_comments))
 
         # full log after finishing whole work
         self.logger.info(
@@ -4706,8 +4708,9 @@ class InstaPy:
         liked_img = (self.liked_img - liked_init)
         already_liked = (self.already_liked - already_liked_init)
         liked_comments = (self.liked_comments - liked_comments_init)
-        replied_comments = (self.replied_comments - replied_comments_init)
-        commented = ((self.commented - commented_init) - replied_comments)
+        replied_to_comments = (
+            self.replied_to_comments - replied_to_comments_init)
+        commented = ((self.commented - commented_init) - replied_to_comments)
         followed = (self.followed - followed_init)
         already_followed = (self.already_followed - already_followed_init)
         inap_img = (self.inap_img - inap_img_init)
@@ -4715,8 +4718,9 @@ class InstaPy:
 
         if self.liked_comments:
             # output results
-            self.logger.info("\tComments liked: {}".format(liked_comments))
-            self.logger.info("\tComments replied: {}".format(replied_comments))
+            self.logger.info("\tLiked comments: {}".format(liked_comments))
+            self.logger.info("\tReplied to comments: {}"
+                             .format(replied_to_comments))
             self.logger.info("\tLiked posts: {}".format(liked_img))
             self.logger.info("\tAlready liked posts: {}".format(already_liked))
             self.logger.info("\tCommented posts: {}".format(commented))
