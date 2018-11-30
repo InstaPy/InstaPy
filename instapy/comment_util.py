@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-"""Module which handles the commenting features"""
+""" Module which handles the commenting features """
+
 import random
 import emoji
 
@@ -69,12 +70,16 @@ def comment_image(browser, username, comments, blacklist, logger, logfolder):
         if len(comment_input) > 0:
             comment_input[0].clear()
             comment_input = get_comment_input(browser)
-            comment_to_be_sent = rand_comment+' '   # an extra space is added here to forces the input box to update the reactJS core
+            # below, an extra space is added to force
+            # the input box to update the reactJS core
+            comment_to_be_sent = rand_comment+' '
 
             browser.execute_script(
-                "arguments[0].value = arguments[1];", comment_input[0], comment_to_be_sent)
-
-            comment_input[0].send_keys('\b')   # this also will remove that extra space added above COS '\b' is a backspace char in ASCII
+                "arguments[0].value = arguments[1];",
+                comment_input[0], comment_to_be_sent)
+            # below, it also will remove that extra space added above
+            # COS '\b' is a backspace char in ASCII
+            comment_input[0].send_keys('\b')
             comment_input = get_comment_input(browser)
             comment_input[0].submit()
             update_activity('comments')
@@ -107,7 +112,11 @@ def comment_image(browser, username, comments, blacklist, logger, logfolder):
 
 
 def verify_commenting(browser, max, min, mand_words, logger):
-        """ Get the amount of existing existing comments and compare it against max & min values defined by user """
+        """
+         Get the amount of existing existing comments and
+        compare it against max & min values defined by user
+        """
+
         commenting_state, msg = is_commenting_enabled(browser, logger)
         if commenting_state != True:
             disapproval_reason = "--> Not commenting! {}".format(msg)
@@ -119,39 +128,61 @@ def verify_commenting(browser, max, min, mand_words, logger):
             return False, disapproval_reason
 
         if max is not None and comments_count > max:
-            disapproval_reason = "Not commented on this post! ~more comments exist off maximum limit at {}".format(comments_count)
+            disapproval_reason = (
+                "Not commented on this post! ~more comments exist"
+                " off maximum limit at {}"
+                .format(comments_count))
             return False, disapproval_reason
 
         elif min is not None and comments_count < min:
-            disapproval_reason = "Not commented on this post! ~less comments exist off minumum limit at {}".format(comments_count)
+            disapproval_reason = (
+                "Not commented on this post! ~less comments exist"
+                " off minumum limit at {}"
+                .format(comments_count))
             return False, disapproval_reason
 
         if len(mand_words) != 0:
             try:
                 post_desc = browser.execute_script(
                     "return window._sharedData.entry_data."
-                    "PostPage[0].graphql.shortcode_media.edge_media_to_caption.edges[0]['node']['text']").lower()
+                    "PostPage[0].graphql.shortcode_media."
+                    "edge_media_to_caption.edges[0]['node']['text']"
+                    ).lower()
+
             except Exception as e:
                 post_desc = None
 
             try:
                 first_comment = browser.execute_script(
                     "return window._sharedData.entry_data."
-                    "PostPage[0].graphql.shortcode_media.edge_media_to_comment.edges[0]['node']['text']").lower()
+                    "PostPage[0].graphql.shortcode_media."
+                    "edge_media_to_comment.edges[0]['node']['text']"
+                    ).lower()
+
             except Exception as e:
                 first_comment = None
 
-            if ((post_desc is not None and not any(mand_word.lower() in post_desc for mand_word in mand_words)) or
-                    (first_comment is not None and not any(
-                            mand_word.lower() in first_comment for mand_word in mand_words))):
+            if ((post_desc is not None and not any(mand_word.lower() in
+                 post_desc for mand_word in mand_words)) or
+                (first_comment is not None and not any(
+                 mand_word.lower() in first_comment for
+                    mand_word in mand_words))):
                 return False, 'mandantory words not in post desc'
 
         return True, 'Approval'
 
 
 
-def get_comments_on_post(browser, owner, poster, amount, post_link, ignore_users, randomize, logger):
+def get_comments_on_post(browser,
+                         owner,
+                         poster,
+                         amount,
+                         post_link,
+                         ignore_users,
+                         randomize,
+                         logger):
     """ Fetch comments data on posts """
+
     web_address_navigator(browser, post_link)
 
     orig_amount = amount
@@ -171,7 +202,7 @@ def get_comments_on_post(browser, owner, poster, amount, post_link, ignore_users
         return None
 
     # get comments & commenters information
-    comments_block_XPath = "//div/div/h3/../../.."   # quite an efficient location path
+    comments_block_XPath = "//div/div/h3/../../.."   # efficient location path
     like_button_full_XPath = "//div/span/button/span[@aria-label='Like']"
     unlike_button_full_XPath = "//div/span/button/span[@aria-label='Unlike']"
 
@@ -181,9 +212,11 @@ def get_comments_on_post(browser, owner, poster, amount, post_link, ignore_users
     explicit_wait(browser, "PFL", [], logger, 10)
 
     try:
-        all_comment_like_buttons = browser.find_elements_by_xpath(like_button_full_XPath)
+        all_comment_like_buttons = browser.find_elements_by_xpath(
+            like_button_full_XPath)
         if all_comment_like_buttons:
-            comments_block = browser.find_elements_by_xpath(comments_block_XPath)
+            comments_block = browser.find_elements_by_xpath(
+                comments_block_XPath)
             for comment_line in comments_block:
                 commenter_elem = comment_line.find_element_by_tag_name("a")
                 commenter = extract_text_from_element(commenter_elem)
@@ -194,7 +227,8 @@ def get_comments_on_post(browser, owner, poster, amount, post_link, ignore_users
                 else:
                     continue
 
-                comment_elem = comment_line.find_elements_by_tag_name("span")[0]
+                comment_elem = comment_line.find_elements_by_tag_name(
+                    "span")[0]
                 comment = extract_text_from_element(comment_elem)
                 if comment:
                     comments.append(comment)
@@ -203,11 +237,15 @@ def get_comments_on_post(browser, owner, poster, amount, post_link, ignore_users
                     continue
 
         else:
-            comment_unlike_buttons = browser.find_elements_by_xpath(unlike_button_full_XPath)
+            comment_unlike_buttons = browser.find_elements_by_xpath(
+                unlike_button_full_XPath)
             if comment_unlike_buttons:
-                logger.info("There are {} comments on this post and all of them are already liked.".format(len(comment_unlike_buttons)))
+                logger.info("There are {} comments on this post and all "
+                            "of them are already liked."
+                            .format(len(comment_unlike_buttons)))
             else:
-                logger.info("There are no any comments available on this post.")
+                logger.info(
+                    "There are no any comments available on this post.")
             return None
 
     except NoSuchElementException:
@@ -225,9 +263,11 @@ def get_comments_on_post(browser, owner, poster, amount, post_link, ignore_users
             random.shuffle(comment_data)
 
         if len(comment_data) < orig_amount:
-            logger.info("Could grab only {} usable comments from this post..".format(len(comment_data)))
+            logger.info("Could grab only {} usable comments from this post.."
+                        .format(len(comment_data)))
         else:
-            logger.info("Grabbed {} usable comments from this post..".format(len(comment_data)))
+            logger.info("Grabbed {} usable comments from this post.."
+                        .format(len(comment_data)))
 
 
         return comment_data
@@ -236,6 +276,7 @@ def get_comments_on_post(browser, owner, poster, amount, post_link, ignore_users
 
 def is_commenting_enabled(browser, logger):
     """ Find out if commenting on the post is enabled """
+
     try:
         comments_disabled = browser.execute_script(
             "return window._sharedData.entry_data."
@@ -251,7 +292,8 @@ def is_commenting_enabled(browser, logger):
                 "PostPage[0].graphql.shortcode_media.comments_disabled")
 
         except Exception as e:
-            msg = "Failed to check comments' status for verification!\n\t{}".format(str(e).encode("utf-8"))
+            msg = ("Failed to check comments' status for verification!\n\t{}"
+                   .format(str(e).encode("utf-8")))
             return False, "Failure"
 
     if comments_disabled == True:
@@ -267,10 +309,12 @@ def get_comments_count(browser, logger):
     try:
         comments_count = browser.execute_script(
             "return window._sharedData.entry_data."
-            "PostPage[0].graphql.shortcode_media.edge_media_to_comment.count")
+            "PostPage[0].graphql.shortcode_media."
+            "edge_media_to_comment.count")
 
     except Exception as e:
-        msg = "Failed to get comments' count!\n\t{}".format(str(e).encode("utf-8"))
+        msg = ("Failed to get comments' count!\n\t{}"
+               .format(str(e).encode("utf-8")))
         return None, msg
 
     if not comments_count:
