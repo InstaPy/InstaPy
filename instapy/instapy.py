@@ -142,11 +142,11 @@ class InstaPy:
         self.photo_comments = []
         self.video_comments = []
 
-        self.reply_comments = []
-        self.photo_reply_comments = []
-        self.video_reply_comments = []
         self.do_reply_to_comments = False
         self.reply_to_comments_percent = 0
+        self.comment_replies = []
+        self.photo_comment_replies = []
+        self.video_comment_replies = []
 
         self.liked_img = 0
         self.already_liked = 0
@@ -4312,30 +4312,31 @@ class InstaPy:
 
 
 
-    def set_reply_comments(self,
+    def set_comment_replies(self,
                             replies=[],
-                              media=None):
-        """ Set comments to be used as comment replies """
+                            media=None):
+        """ Set the replies to comments """
+
         if not replies:
             self.logger.info(
-                "Please, provide some reply comments for use next time.")
-            self.reply_comments = None
-            self.photo_reply_comments = None
-            self.video_reply_comments = None
+                "Please, provide some comment replies for use next time.")
+            self.comment_replies = None
+            self.photo_comment_replies = None
+            self.video_comment_replies = None
 
             return self
 
 
         if media in ["Photo", "Video"]:
-            attr = '{}_reply_comments'.format(media.lower())
+            attr = "{}_comment_replies".format(media.lower())
             setattr(self, attr, replies)
 
         else:
             if media is not None:
                 self.logger.warning("Unkown media type set at"
-                                    " reply comments! Treating as 'any'.")
+                                    " comment replies! Treating as 'any'.")
 
-            self.reply_comments = replies
+            self.comment_replies = replies
 
 
 
