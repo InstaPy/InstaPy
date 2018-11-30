@@ -4275,11 +4275,21 @@ class InstaPy:
         if self.following_num and self.followed_by:
             owner_relationship_info = (
                 "On session start was FOLLOWING {} users"
-                " & had {} FOLLOWERS\n"
+                " & had {} FOLLOWERS"
                 .format(self.following_num,
                         self.followed_by))
         else:
             owner_relationship_info = ''
+
+        sessional_run_time = self.run_time()
+        run_time_info = ("{} seconds".format(sessional_run_time) if
+                         sessional_run_time < 60 else
+                         "{} minutes".format(truncate_float(
+                          sessional_run_time / 60, 2)) if
+                         sessional_run_time < 3600 else
+                         "{} hours".format(truncate_float(
+                            sessional_run_time / 60 / 60, 2)))
+        run_time_msg = "[Session lasted {}]".format(run_time_info)
 
         if any(stat for stat in stats):
             self.logger.info(
@@ -4288,23 +4298,30 @@ class InstaPy:
                 "\t|> COMMENTED on {} images\n"
                 "\t|> FOLLOWED {} users  |  ALREADY FOLLOWED: {}\n"
                 "\t|> UNFOLLOWED {} users\n"
+                "\t|> LIKED {} comments\n"
+                "\t|> REPLIED to {} comments\n"
                 "\t|> INAPPROPRIATE images: {}\n"
                 "\t|> NOT VALID users: {}\n"
-                "{}"
+                "\n{}\n{}"
                 .format(self.liked_img,
-                            self.already_liked,
-                            self.commented,
-                            self.followed,
-                            self.already_followed,
-                            self.unfollowed,
-                            self.inap_img,
-                            self.not_valid_users,
-                            owner_relationship_info))
+                        self.already_liked,
+                        self.commented,
+                        self.followed,
+                        self.already_followed,
+                        self.unfollowed,
+                        self.liked_comments,
+                        self.replied_to_comments,
+                        self.inap_img,
+                        self.not_valid_users,
+                        owner_relationship_info,
+                        run_time_msg))
         else:
             self.logger.info("Sessional Live Report:\n"
                              "\t|> No any statistics to show\n"
-                             "{}"
-                             .format(owner_relationship_info))
+                             "\n{}\n{}"
+                             .format(owner_relationship_info,
+                                     run_time_msg))
+
 
 
     def set_do_reply_to_comments(self,
