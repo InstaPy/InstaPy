@@ -324,15 +324,20 @@ def update_activity(action="server_calls"):
         conn.row_factory = sqlite3.Row
         cur = conn.cursor()
         # collect today data
-        cur.execute("SELECT * FROM recordActivity WHERE profile_id=:var AND "
-                    "STRFTIME('%Y-%m-%d %H', created) == STRFTIME('%Y-%m-%d %H', 'now', 'localtime')",
-                    {"var": id})
+        # check if there is existent records for the current day
+        cur.execute("SELECT * FROM recordActivity "
+                    "WHERE profile_id = ? "
+                    "AND STRFTIME('%Y-%m-%d', created) == "
+                    "    STRFTIME('%Y-%m-%d','now', 'localtime')", (id,))
         data = cur.fetchone()
 
         if data is None:
-            # create a new record for the new day
-            cur.execute("INSERT INTO recordActivity VALUES "
-                        "(?, 0, 0, 0, 0, 1, STRFTIME('%Y-%m-%d %H:%M:%S', 'now', 'localtime'))", (id,))
+            # create a new record for the new day if there isnt records
+            # for the current day
+            cur.execute(
+                "INSERT INTO recordActivity "
+                "VALUES (?, 0, 0, 0, 0, 1, "
+                "STRFTIME('%Y-%m-%d %H:%M:%S', 'now', 'localtime'))", (id,))
 
         else:
             # sqlite3.Row' object does not support item assignment -> so,
@@ -348,11 +353,14 @@ def update_activity(action="server_calls"):
                 data["server_calls"] += 1
                 quota_supervisor("server_calls", update=True)
 
-            sql = ("UPDATE recordActivity set likes = ?, comments = ?, "
-                   "follows = ?, unfollows = ?, server_calls = ?, "
-                   "created = STRFTIME('%Y-%m-%d %H:%M:%S', 'now', 'localtime') "
-                   "WHERE  profile_id=? AND STRFTIME('%Y-%m-%d %H', created) == "
-                   "STRFTIME('%Y-%m-%d %H', 'now', 'localtime')")
+            sql = (
+                "UPDATE recordActivity "
+                "SET likes = ?, comments = ?, follows = ?, unfollows = ?, "
+                "server_calls = ?, "
+                "created = STRFTIME('%Y-%m-%d %H:%M:%S', 'now', 'localtime') "
+                "WHERE profile_id = ? "
+                "AND STRFTIME('%Y-%m-%d', created) == "
+                "STRFTIME('%Y-%m-%d', 'now', 'localtime')")
 
             cur.execute(sql, (data['likes'], data['comments'], data['follows'],
                               data['unfollows'], data['server_calls'], id))
