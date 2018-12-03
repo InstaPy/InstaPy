@@ -69,6 +69,7 @@ Table of Contents
   * [Like by Tags](#like-by-tags)
   * [Like by Feeds](#like-by-feeds)
   * [Mandatory Words](#mandatory-words)
+  * [Mandatory Language](#mandatory-language)
   * [Restricting Likes](#restricting-likes)
   * [Ignoring Users](#ignoring-users)
   * [Ignoring Restrictions](#ignoring-restrictions)
@@ -962,6 +963,16 @@ session.set_mandatory_words(['#food', '#instafood'])
 
 `.set_mandatory_words` searches the description, location and owner comments for words and
 will like the image if **any** of those words are in there
+
+### Mandatory Language
+
+```python
+session.set_mandatory_language(enabled=True, character_set='LATIN')
+```
+
+`.set_mandatory_language` restrict the interactions, liking and following if the character set of the description do not match the specified language (the location is not included).
+
+* Available character sets: `LATIN`,  `GREEK`, `CYRILLIC`, `ARABIC`, `HEBREW`, `CJK`, `HANGUL`, `HIRAGANA`, `KATAKANA` and `THAI`
 
 ### Restricting Likes
 
