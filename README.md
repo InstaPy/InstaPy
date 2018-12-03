@@ -970,7 +970,7 @@ will like the image if **any** of those words are in there
 session.set_mandatory_language(enabled=True, character_set='LATIN')
 ```
 
-`.set_mandatory_language` restrict the interactions, liking and following if the character set of the description do not match the specified language (the location is not included).
+`.set_mandatory_language` restrict the interactions, liking and following if any character of the description is outside of the character set selected (the location is not included and non-alphabetic characters are ignored). For example if you choose `LATIN`, any character in Cyrillic will flag the post as inappropriate.
 
 * Available character sets: `LATIN`,  `GREEK`, `CYRILLIC`, `ARABIC`, `HEBREW`, `CJK`, `HANGUL`, `HIRAGANA`, `KATAKANA` and `THAI`
 
