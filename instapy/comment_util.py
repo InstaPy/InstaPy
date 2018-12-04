@@ -18,8 +18,6 @@ from selenium.common.exceptions import InvalidElementStateException
 from selenium.common.exceptions import NoSuchElementException
 
 
-
-
 def get_comment_input(browser):
     comment_input = browser.find_elements_by_xpath(
         '//textarea[@placeholder = "Add a comment…"]')
@@ -31,14 +29,13 @@ def get_comment_input(browser):
     return comment_input
 
 
-
 def open_comment_section(browser, logger):
     missing_comment_elem_warning = (
         "--> Comment Button Not Found!"
         "\t~may cause issues with browser windows of smaller widths")
 
     comment_elem = browser.find_elements_by_xpath(
-                            "//button/span[@aria-label='Comment']")
+        "//button/span[@aria-label='Comment']")
 
     if len(comment_elem) > 0:
         try:
@@ -49,7 +46,6 @@ def open_comment_section(browser, logger):
 
     else:
         logger.warning(missing_comment_elem_warning)
-
 
 
 def comment_image(browser, username, comments, blacklist, logger, logfolder):
@@ -69,12 +65,13 @@ def comment_image(browser, username, comments, blacklist, logger, logfolder):
         if len(comment_input) > 0:
             comment_input[0].clear()
             comment_input = get_comment_input(browser)
-            comment_to_be_sent = rand_comment+' '   # an extra space is added here to forces the input box to update the reactJS core
+            comment_to_be_sent = rand_comment + ' '  # an extra space is added here to forces the input box to update the reactJS core
 
             browser.execute_script(
                 "arguments[0].value = arguments[1];", comment_input[0], comment_to_be_sent)
 
-            comment_input[0].send_keys('\b')   # this also will remove that extra space added above COS '\b' is a backspace char in ASCII
+            comment_input[0].send_keys(
+                '\b')  # this also will remove that extra space added above COS '\b' is a backspace char in ASCII
             comment_input = get_comment_input(browser)
             comment_input[0].submit()
             update_activity('comments')
@@ -105,49 +102,49 @@ def comment_image(browser, username, comments, blacklist, logger, logfolder):
     return True, "success"
 
 
-
 def verify_commenting(browser, max, min, mand_words, logger):
-        """ Get the amount of existing existing comments and compare it against max & min values defined by user """
-        commenting_state, msg = is_commenting_enabled(browser, logger)
-        if commenting_state != True:
-            disapproval_reason = "--> Not commenting! {}".format(msg)
-            return False, disapproval_reason
+    """ Get the amount of existing existing comments and compare it against max & min values defined by user """
+    commenting_state, msg = is_commenting_enabled(browser, logger)
+    if commenting_state != True:
+        disapproval_reason = "--> Not commenting! {}".format(msg)
+        return False, disapproval_reason
 
-        comments_count, msg = get_comments_count(browser, logger)
-        if not comments_count:
-            disapproval_reason = "--> Not commenting! {}".format(msg)
-            return False, disapproval_reason
+    comments_count, msg = get_comments_count(browser, logger)
+    if not comments_count:
+        disapproval_reason = "--> Not commenting! {}".format(msg)
+        return False, disapproval_reason
 
-        if max is not None and comments_count > max:
-            disapproval_reason = "Not commented on this post! ~more comments exist off maximum limit at {}".format(comments_count)
-            return False, disapproval_reason
+    if max is not None and comments_count > max:
+        disapproval_reason = "Not commented on this post! ~more comments exist off maximum limit at {}".format(
+            comments_count)
+        return False, disapproval_reason
 
-        elif min is not None and comments_count < min:
-            disapproval_reason = "Not commented on this post! ~less comments exist off minumum limit at {}".format(comments_count)
-            return False, disapproval_reason
+    elif min is not None and comments_count < min:
+        disapproval_reason = "Not commented on this post! ~less comments exist off minumum limit at {}".format(
+            comments_count)
+        return False, disapproval_reason
 
-        if len(mand_words) != 0:
-            try:
-                post_desc = browser.execute_script(
-                    "return window._sharedData.entry_data."
-                    "PostPage[0].graphql.shortcode_media.edge_media_to_caption.edges[0]['node']['text']").lower()
-            except Exception as e:
-                post_desc = None
+    if len(mand_words) != 0:
+        try:
+            post_desc = browser.execute_script(
+                "return window._sharedData.entry_data."
+                "PostPage[0].graphql.shortcode_media.edge_media_to_caption.edges[0]['node']['text']").lower()
+        except Exception as e:
+            post_desc = None
 
-            try:
-                first_comment = browser.execute_script(
-                    "return window._sharedData.entry_data."
-                    "PostPage[0].graphql.shortcode_media.edge_media_to_comment.edges[0]['node']['text']").lower()
-            except Exception as e:
-                first_comment = None
+        try:
+            first_comment = browser.execute_script(
+                "return window._sharedData.entry_data."
+                "PostPage[0].graphql.shortcode_media.edge_media_to_comment.edges[0]['node']['text']").lower()
+        except Exception as e:
+            first_comment = None
 
-            if ((post_desc is not None and not any(mand_word.lower() in post_desc for mand_word in mand_words)) or
-                    (first_comment is not None and not any(
-                            mand_word.lower() in first_comment for mand_word in mand_words))):
-                return False, 'mandantory words not in post desc'
+        if ((post_desc is not None and not any(mand_word.lower() in post_desc for mand_word in mand_words)) or
+                (first_comment is not None and not any(
+                    mand_word.lower() in first_comment for mand_word in mand_words))):
+            return False, 'mandantory words not in post desc'
 
-        return True, 'Approval'
-
+    return True, 'Approval'
 
 
 def get_comments_on_post(browser, owner, poster, amount, post_link, ignore_users, randomize, logger):
@@ -156,7 +153,7 @@ def get_comments_on_post(browser, owner, poster, amount, post_link, ignore_users
 
     orig_amount = amount
     if randomize == True:
-        amount = amount*3
+        amount = amount * 3
 
     # check if commenting on the post is enabled
     commenting_state, msg = is_commenting_enabled(browser, logger)
@@ -171,7 +168,7 @@ def get_comments_on_post(browser, owner, poster, amount, post_link, ignore_users
         return None
 
     # get comments & commenters information
-    comments_block_XPath = "//div/div/h3/../../.."   # quite an efficient location path
+    comments_block_XPath = "//div/div/h3/../../.."  # quite an efficient location path
     like_button_full_XPath = "//div/span/button/span[@aria-label='Like']"
     unlike_button_full_XPath = "//div/span/button/span[@aria-label='Unlike']"
 
@@ -188,7 +185,7 @@ def get_comments_on_post(browser, owner, poster, amount, post_link, ignore_users
                 commenter_elem = comment_line.find_element_by_tag_name("a")
                 commenter = extract_text_from_element(commenter_elem)
                 if (commenter and
-                    commenter not in [owner, poster, ignore_users] and
+                        commenter not in [owner, poster, ignore_users] and
                         commenter not in commenters):
                     commenters.append(commenter)
                 else:
@@ -205,7 +202,8 @@ def get_comments_on_post(browser, owner, poster, amount, post_link, ignore_users
         else:
             comment_unlike_buttons = browser.find_elements_by_xpath(unlike_button_full_XPath)
             if comment_unlike_buttons:
-                logger.info("There are {} comments on this post and all of them are already liked.".format(len(comment_unlike_buttons)))
+                logger.info("There are {} comments on this post and all of them are already liked.".format(
+                    len(comment_unlike_buttons)))
             else:
                 logger.info("There are no any comments available on this post.")
             return None
@@ -213,7 +211,6 @@ def get_comments_on_post(browser, owner, poster, amount, post_link, ignore_users
     except NoSuchElementException:
         logger.info("Failed to get comments on this post.")
         return None
-
 
     if not comments:
         logger.info("Could not grab any usable comments from this post..")
@@ -229,9 +226,7 @@ def get_comments_on_post(browser, owner, poster, amount, post_link, ignore_users
         else:
             logger.info("Grabbed {} usable comments from this post..".format(len(comment_data)))
 
-
         return comment_data
-
 
 
 def is_commenting_enabled(browser, logger):
@@ -261,7 +256,6 @@ def is_commenting_enabled(browser, logger):
     return True, "Success"
 
 
-
 def get_comments_count(browser, logger):
     """ Get the number of total comments in the post """
     try:
@@ -281,8 +275,4 @@ def get_comments_count(browser, logger):
             msg = "Couldn't get comments' count."
             return None, msg
 
-
     return comments_count, "Success"
-
-
-

@@ -6,20 +6,19 @@ from selenium.common.exceptions import NoSuchElementException
 
 
 def check_image(
-    browser,
-    clarifai_api_key,
-    img_tags,
-    img_tags_skip_if_contain,
-    logger,
-    clarifai_models,
-    workflow,
-    probability,
-    full_match=False,
-    check_video=False,
-    proxy=None,
-    picture_url=None,
+        browser,
+        clarifai_api_key,
+        img_tags,
+        img_tags_skip_if_contain,
+        logger,
+        clarifai_models,
+        workflow,
+        probability,
+        full_match=False,
+        check_video=False,
+        proxy=None,
+        picture_url=None,
 ):
-
     try:
         """Uses the link to the image to check for invalid content in the image.
         If a workflow has been selected, get list of tags from Clarifai API
@@ -156,9 +155,9 @@ def get_clarifai_response(clarifai_api, clarifai_model, source_link, check_video
     # Get response from Clarifai API
     # If source is video, model accepts video inputs and check_video is True, analyze content of frames in video
     if (
-        check_video
-        and source_link[0].endswith('mp4')
-        and clarifai_model.lower() in video_models
+            check_video
+            and source_link[0].endswith('mp4')
+            and clarifai_model.lower() in video_models
     ):
         response = model.predict_by_url(source_link[0], is_video=True)
     # If source is video but model does not accept video inputs or check_video is False, analyze content of keyframe

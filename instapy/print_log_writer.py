@@ -9,8 +9,6 @@ from .util import update_activity
 from selenium.common.exceptions import WebDriverException
 
 
-
-
 def log_follower_num(browser, username, logfolder):
     """Prints and logs the current number of followers to
     a seperate file"""
@@ -22,7 +20,7 @@ def log_follower_num(browser, username, logfolder):
             "return window._sharedData.""entry_data.ProfilePage[0]."
             "graphql.user.edge_followed_by.count")
 
-    except WebDriverException:   #handle the possible `entry_data` error
+    except WebDriverException:  # handle the possible `entry_data` error
         try:
             browser.execute_script("location.reload()")
             update_activity()

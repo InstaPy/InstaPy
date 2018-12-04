@@ -13,8 +13,6 @@ from .settings import Settings
 from .settings import Storage
 
 
-
-
 def quota_supervisor(job, update=False):
     """ Supervise activity flow through action engines and take measures"""
     # --ACTION----------ENGINE--------------FILE--------------OPTION--- #
@@ -37,13 +35,12 @@ def quota_supervisor(job, update=False):
         this_minute, this_hour, today = get_time(["this_minute",
                                                   "this_hour",
                                                   "today"])
-        if update:   # update the action's record in global storage
+        if update:  # update the action's record in global storage
             update_record(job)
 
-        else:   # inspect and control the action's availability
+        else:  # inspect and control the action's availability
             quota_state = controller(job)
             return quota_state
-
 
 
 def controller(job):
@@ -63,8 +60,8 @@ def controller(job):
     supervise, interval, target = inspector(job, peaks)
 
     if supervise:
-        if (any(e in [job, job+("_h" if interval == "hourly" else "_d")]
-            for e in sleep_after) and
+        if (any(e in [job, job + ("_h" if interval == "hourly" else "_d")]
+                for e in sleep_after) and
                 target != "lc_extra"):
             nap = remaining_time(sleepyhead, interval)
             send_message(job, "sleep", interval, nap)
@@ -87,7 +84,6 @@ def controller(job):
                 return "jump"
 
     return "available"
-
 
 
 def inspector(job, peaks):
@@ -135,7 +131,6 @@ def inspector(job, peaks):
     return False, None, None
 
 
-
 def stochasticity(peaks):
     """ Generate casually chosen arbitrary peak values based on originals set by the user """
     # in future, stochasticity percentage can be added to th QS parameters for users to define
@@ -171,7 +166,6 @@ def stochasticity(peaks):
                 daily_cycle = False
 
 
-
 def stochast_values(peaks, orig_peaks, interval, percent):
     """ Return randomly generated stochastic peak values """
     for job in orig_peaks:
@@ -184,15 +178,12 @@ def stochast_values(peaks, orig_peaks, interval, percent):
         peaks[job][interval] = stochastic_peak
 
 
-
-
 def stoch_randomizer(value, percent):
     """ Value randomizer for stochastic flow """
     stochastic_value = random.randint(
-                        int((value+1)*percent/100), value)
+        int((value + 1) * percent / 100), value)
 
     return stochastic_value
-
 
 
 def remaining_time(sleepyhead, interval):
@@ -200,7 +191,7 @@ def remaining_time(sleepyhead, interval):
     extra_sleep_percent = 140  # actually 114 also is not that bad amount
 
     if interval == "hourly":
-        remaining_seconds = (61 - int(this_minute))*60
+        remaining_seconds = (61 - int(this_minute)) * 60
 
     elif interval == "daily":
         tomorrow = date.today() + timedelta(1)
@@ -212,10 +203,9 @@ def remaining_time(sleepyhead, interval):
         remaining_seconds = random.randint(
             remaining_seconds,
             int(remaining_seconds *
-                extra_sleep_percent/100))
+                extra_sleep_percent / 100))
 
     return remaining_seconds
-
 
 
 def send_message(job, action, interval, nap):
@@ -233,13 +223,13 @@ def send_message(job, action, interval, nap):
                                          "fruit juice"])
             message = ("Quota Supervisor: hourly {} reached quotient!"
                        "\t~going to sleep {} minutes long\n\ttake a {} break? :>"
-                       .format(job, "%.0f" % (nap/60), quick_drink))
+                       .format(job, "%.0f" % (nap / 60), quick_drink))
 
         elif interval == "daily":
             message = ("Quota Supervisor: daily {} reached quotient!"
                        "\t~going to sleep {} hours long\n"
                        "\ttime for InstaPy to take a big good nap :-)"
-                       .format(job, "%.1f" % (nap/60/60)))
+                       .format(job, "%.1f" % (nap / 60 / 60)))
 
     elif action == "exit":
         message = ("Quota Supervisor: {} {} reached quotient!"
@@ -251,7 +241,6 @@ def send_message(job, action, interval, nap):
                    .format(job[:-1], interval))
 
     logger.info(message)
-
 
 
 def toast_notification(notify, alert, job, interval):
@@ -288,7 +277,6 @@ def toast_notification(notify, alert, job, interval):
             configuration.update(nofity=False)
 
 
-
 def get_icons():
     """ Return the locations of icons according to the operating system """
     windows_ico = [
@@ -314,7 +302,6 @@ def get_icons():
     icons = {"sleep": sleep_icon, "wakeup": wakeup_icon, "exit": exit_icon}
 
     return icons
-
 
 
 def load_records():
@@ -351,7 +338,6 @@ def load_records():
         records.update(ordered_data)
 
 
-
 def get_record(job, interval):
     """ Quickly get and return daily or hourly records """
     try:
@@ -368,7 +354,6 @@ def get_record(job, interval):
     return record
 
 
-
 def update_record(job):
     """ Update the corresponding record stored in the global Storage class """
     # the order of the 2 conditional statements below is crucial
@@ -383,6 +368,3 @@ def update_record(job):
 
     # update records
     records[today][this_hour].update({job: live_rec})
-
-
-

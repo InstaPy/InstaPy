@@ -3,7 +3,6 @@ import sqlite3
 
 from .settings import Settings
 
-
 SELECT_FROM_PROFILE_WHERE_NAME = "SELECT * FROM profiles WHERE name = :name"
 
 INSERT_INTO_PROFILE = "INSERT INTO profiles (name) VALUES (?)"
@@ -62,7 +61,7 @@ def create_database(address, logger, name):
     except Exception as exc:
         logger.warning(
             "Wah! Error occurred while getting a DB for '{}':\n\t{}"
-            .format(name, str(exc).encode("utf-8")))
+                .format(name, str(exc).encode("utf-8")))
 
     finally:
         if connection:
@@ -117,7 +116,7 @@ def get_profile(name, address, logger):
     except Exception as exc:
         logger.warning(
             "Heeh! Error occurred while getting a DB profile for '{}':\n\t{}"
-            .format(name, str(exc).encode("utf-8")))
+                .format(name, str(exc).encode("utf-8")))
 
     finally:
         if conn:
@@ -144,6 +143,3 @@ def select_profile_by_username(cursor, name):
     profile = cursor.fetchone()
 
     return profile
-
-
-

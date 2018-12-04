@@ -28,9 +28,9 @@ def bypass_suspicious_login(browser, bypass_with_mobile):
         close_button = browser.find_element_by_xpath("[text()='Close']")
 
         (ActionChains(browser)
-            .move_to_element(close_button)
-            .click()
-            .perform())
+         .move_to_element(close_button)
+         .click()
+         .perform())
 
         # update server calls
         update_activity()
@@ -44,9 +44,9 @@ def bypass_suspicious_login(browser, bypass_with_mobile):
             "//button[@name='choice'][text()='This Was Me']")
 
         (ActionChains(browser)
-            .move_to_element(this_was_me_button)
-            .click()
-            .perform())
+         .move_to_element(this_was_me_button)
+         .click()
+         .perform())
 
         # update server calls
         update_activity()
@@ -82,19 +82,19 @@ def bypass_suspicious_login(browser, bypass_with_mobile):
             "//label[@for='choice_0']")
 
         (ActionChains(browser)
-            .move_to_element(mobile_button)
-            .click()
-            .perform())
+         .move_to_element(mobile_button)
+         .click()
+         .perform())
 
         sleep(5)
 
     send_security_code_button = browser.find_element_by_xpath(
-            "//button[text()='Send Security Code']")
+        "//button[text()='Send Security Code']")
 
     (ActionChains(browser)
-        .move_to_element(send_security_code_button)
-        .click()
-        .perform())
+     .move_to_element(send_security_code_button)
+     .click()
+     .perform())
 
     # update server calls
     update_activity()
@@ -107,22 +107,22 @@ def bypass_suspicious_login(browser, bypass_with_mobile):
         "//input[@id='security_code']"))
 
     (ActionChains(browser)
-        .move_to_element(security_code_field)
-        .click()
-        .send_keys(security_code)
-        .perform())
+     .move_to_element(security_code_field)
+     .click()
+     .send_keys(security_code)
+     .perform())
 
     # update server calls for both 'click' and 'send_keys' actions
     for i in range(2):
         update_activity()
 
     submit_security_code_button = browser.find_element_by_xpath(
-                                            "//button[text()='Submit']")
+        "//button[text()='Submit']")
 
     (ActionChains(browser)
-        .move_to_element(submit_security_code_button)
-        .click()
-        .perform())
+     .move_to_element(submit_security_code_button)
+     .click()
+     .perform())
 
     # update server calls
     update_activity()
@@ -163,7 +163,7 @@ def login_user(browser,
     # try to load cookie from username
     try:
         for cookie in pickle.load(open('{0}{1}_cookie.pkl'
-                                       .format(logfolder, username), 'rb')):
+                                               .format(logfolder, username), 'rb')):
             browser.add_cookie(cookie)
             cookie_loaded = True
     except (WebDriverException, OSError, IOError):
@@ -175,12 +175,11 @@ def login_user(browser,
     # changes instagram website language to english to use english xpaths
     if switch_language:
         language_element_ENG = browser.find_element_by_xpath(
-          "//select[@class='hztqj']/option[text()='English']")
+            "//select[@class='hztqj']/option[text()='English']")
         click_element(browser, language_element_ENG)
 
     web_address_navigator(browser, ig_homepage)
     reload_webpage(browser)
-
 
     # cookie has been LOADED, so the user SHOULD be logged in
     # check if the user IS logged in
@@ -205,9 +204,9 @@ def login_user(browser,
 
     if login_elem is not None:
         (ActionChains(browser)
-            .move_to_element(login_elem)
-            .click()
-            .perform())
+         .move_to_element(login_elem)
+         .click()
+         .perform())
 
         # update server calls
         update_activity()
@@ -227,10 +226,10 @@ def login_user(browser,
     input_username = browser.find_element_by_xpath(input_username_XP)
 
     (ActionChains(browser)
-        .move_to_element(input_username)
-        .click()
-        .send_keys(username)
-        .perform())
+     .move_to_element(input_username)
+     .click()
+     .send_keys(username)
+     .perform())
 
     # update server calls for both 'click' and 'send_keys' actions
     for i in range(2):
@@ -246,10 +245,10 @@ def login_user(browser,
         password = str(password)
 
     (ActionChains(browser)
-        .move_to_element(input_password[0])
-        .click()
-        .send_keys(password)
-        .perform())
+     .move_to_element(input_password[0])
+     .click()
+     .send_keys(password)
+     .perform())
 
     # update server calls for both 'click' and 'send_keys' actions
     for i in range(2):
@@ -259,9 +258,9 @@ def login_user(browser,
         "//button[text()='Log in']")
 
     (ActionChains(browser)
-        .move_to_element(login_button)
-        .click()
-        .perform())
+     .move_to_element(login_button)
+     .click()
+     .perform())
 
     # update server calls
     update_activity()

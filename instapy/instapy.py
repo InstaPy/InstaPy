@@ -72,13 +72,9 @@ from .text_analytics import yandex_supported_languages
 from selenium.common.exceptions import NoSuchElementException, WebDriverException
 
 
-
-
 class InstaPyError(Exception):
     """General error for InstaPy exceptions"""
     pass
-
-
 
 
 class InstaPy:
@@ -193,7 +189,6 @@ class InstaPy:
         self.clarifai_check_video = False
         self.clarifai_proxy = None
 
-
         self.potency_ratio = 1.3466
         self.delimit_by_numbers = True
 
@@ -249,8 +244,6 @@ class InstaPy:
         if self.selenium_local_session == True:
             self.set_selenium_local_session()
 
-
-
     def get_instapy_logger(self, show_logs):
         """
         Handles the creation and retrieval of loggers to avoid re-instantiation.
@@ -282,8 +275,6 @@ class InstaPy:
             Settings.loggers[self.username] = logger
             Settings.logger = logger
             return logger
-
-
 
     def set_selenium_local_session(self):
         """Starts local session for a selenium server.
@@ -393,8 +384,6 @@ class InstaPy:
 
         return self
 
-
-
     def set_selenium_remote_session(self, selenium_url='', selenium_driver=None):
         """
         Starts remote session for a selenium server.
@@ -426,8 +415,6 @@ class InstaPy:
 
         return self
 
-
-
     def login(self):
         """Used to login the user either with the username and password"""
         if not login_user(self.browser,
@@ -452,14 +439,10 @@ class InstaPy:
 
         return self
 
-
-
     def set_sleep_reduce(self, percentage):
         set_sleep_percentage(percentage)
 
         return self
-
-
 
     def set_action_delays(self,
                           enabled=False,
@@ -480,8 +463,6 @@ class InstaPy:
                                        "random_range": random_range,
                                        "safety_match": safety_match})
 
-
-
     def set_do_comment(self, enabled=False, percentage=0):
         """Defines if images should be commented or not
         percentage=25 -> ~ every 4th picture will be commented"""
@@ -492,8 +473,6 @@ class InstaPy:
         self.comment_percentage = percentage
 
         return self
-
-
 
     def set_comments(self, comments=None, media=None):
         """Changes the possible comments"""
@@ -514,8 +493,6 @@ class InstaPy:
 
         return self
 
-
-
     def set_do_follow(self, enabled=False, percentage=0, times=1):
         """Defines if the user of the liked image should be followed"""
         if self.aborting:
@@ -527,8 +504,6 @@ class InstaPy:
 
         return self
 
-
-
     def set_do_like(self, enabled=False, percentage=0):
         if self.aborting:
             return self
@@ -537,8 +512,6 @@ class InstaPy:
         self.like_percentage = percentage
 
         return self
-
-
 
     def set_dont_like(self, tags=None):
         """Changes the possible restriction tags, if one of this
@@ -555,8 +528,6 @@ class InstaPy:
 
         return self
 
-
-
     def set_mandatory_words(self, tags=None):
         """Changes the possible restriction tags, if all of this
          hashtags is in the description, the image will be liked"""
@@ -571,8 +542,6 @@ class InstaPy:
         self.mandatory_words = tags or []
 
         return self
-
-
 
     def set_user_interact(self,
                           amount=10,
@@ -590,8 +559,6 @@ class InstaPy:
 
         return self
 
-
-
     def set_ignore_users(self, users=None):
         """Changes the possible restriction to users, if a user who posts
         is one of these, the image won't be liked"""
@@ -601,8 +568,6 @@ class InstaPy:
         self.ignore_users = users or []
 
         return self
-
-
 
     def set_ignore_if_contains(self, words=None):
         """Ignores the don't likes if the description contains
@@ -614,8 +579,6 @@ class InstaPy:
 
         return self
 
-
-
     def set_dont_include(self, friends=None):
         """Defines which accounts should not be unfollowed"""
         if self.aborting:
@@ -625,8 +588,6 @@ class InstaPy:
         self.white_list = set(friends) or set()
 
         return self
-
-
 
     def set_switch_language(self, option=True):
         self.switch_language = option
@@ -672,8 +633,6 @@ class InstaPy:
 
         return self
 
-
-
     def set_smart_hashtags(self,
                            tags=None,
                            limit=3,
@@ -716,8 +675,6 @@ class InstaPy:
         self.smart_hashtags = list(set(self.smart_hashtags))
         return self
 
-
-
     def clarifai_check_img_for(self, tags=None, tags_skip=None, comment=False, comments=None):
         """Defines the tags the images should be checked for"""
         if self.aborting:
@@ -738,7 +695,6 @@ class InstaPy:
                            self.clarifai_workflow, self.clarifai_probability,
                            self.clarifai_full_match, self.clarifai_check_video,
                            proxy=self.clarifai_proxy)
-
 
     def follow_commenters(self, usernames, amount=10, daysold=365, max_pic=50, sleep_delay=600, interact=False):
         """ Follows users' commenters """
@@ -1401,8 +1357,6 @@ class InstaPy:
 
         return self
 
-
-
     def comment_by_locations(self,
                              locations=None,
                              amount=50,
@@ -1782,8 +1736,6 @@ class InstaPy:
         self.not_valid_users += not_valid_users
 
         return self
-
-
 
     def like_by_users(self, usernames, amount=10, randomize=False, media=None):
         """Likes some amounts of images for each usernames"""
@@ -2311,7 +2263,8 @@ class InstaPy:
                 if commenting and not liking and amount == 1:
                     continue
                 if following or commenting or liking:
-                    self.logger.info('username actions: following={} commenting={} liking={}'.format(following, commenting, liking))
+                    self.logger.info(
+                        'username actions: following={} commenting={} liking={}'.format(following, commenting, liking))
                     break
                 # if for some reason we have no actions on this user
                 if counter > 5:
@@ -2369,11 +2322,11 @@ class InstaPy:
                         # after first image we roll again
                         if i > 0:
                             liking = (
-                                random.randint(0, 100) <= self.like_percentage)
+                                    random.randint(0, 100) <= self.like_percentage)
                             commenting = (
-                                random.randint(0, 100) <= self.comment_percentage and
-                                self.do_comment and
-                                not_dont_include)
+                                    random.randint(0, 100) <= self.comment_percentage and
+                                    self.do_comment and
+                                    not_dont_include)
 
                         # like
                         if self.do_like and liking and self.delimit_liking:
@@ -2491,7 +2444,7 @@ class InstaPy:
                                  "reached its end\n")
 
         # final words
-        interacted_media_size = (len(usernames)*amount - inap_img)
+        interacted_media_size = (len(usernames) * amount - inap_img)
         self.logger.info("Finished interacting on total of {} images from {} users! xD\n"
                          .format(interacted_media_size, len(usernames)))
 
@@ -2603,7 +2556,7 @@ class InstaPy:
             print('')
             self.logger.info(
                 "Grabbed {} usernames from '{}'s `Followers` to do interaction."
-                .format(len(person_list), user))
+                    .format(len(person_list), user))
 
             interacted_personal = 0
 
@@ -2627,7 +2580,7 @@ class InstaPy:
                         self.logger.warning(
                             "--> Simulated Unfollow {}:"
                             " unfollowing '{}' due to mismatching validation..."
-                            .format(simulated_unfollow + 1, person))
+                                .format(simulated_unfollow + 1, person))
                         unfollow_state, msg = unfollow_user(self.browser,
                                                             "profile",
                                                             self.username,
@@ -2648,7 +2601,7 @@ class InstaPy:
                 if do_interact == False:
                     self.logger.info(
                         "Skipping user '{}' due to the interaction percentage of {}"
-                        .format(person, self.user_interact_percentage))
+                            .format(person, self.user_interact_percentage))
                     continue
 
                 else:
@@ -2762,7 +2715,7 @@ class InstaPy:
             print('')
             self.logger.info(
                 "Grabbed {} usernames from '{}'s `Following` to do interaction."
-                .format(len(person_list), user))
+                    .format(len(person_list), user))
             interacted_personal = 0
 
             for index, person in enumerate(person_list):
@@ -2785,7 +2738,7 @@ class InstaPy:
                         self.logger.warning(
                             "--> Simulated Unfollow {}:"
                             " unfollowing '{}' due to mismatching validation..."
-                            .format(simulated_unfollow + 1, person))
+                                .format(simulated_unfollow + 1, person))
 
                         unfollow_state, msg = unfollow_user(
                             self.browser,
@@ -2862,6 +2815,8 @@ class InstaPy:
                               interact=False,
                               sleep_delay=600):
         """ Follow the `Followers` of given users """
+        if self.aborting:
+            return self
 
         message = "Starting to follow user `Followers`.."
         highlight_print(self.username, message, "feature", "info", self.logger)
@@ -2921,7 +2876,7 @@ class InstaPy:
             print('')
             self.logger.info(
                 "Grabbed {} usernames from '{}'s `Followers` to do following\n"
-                .format(len(person_list), user))
+                    .format(len(person_list), user))
 
             followed_personal = 0
             simulated_unfollow = 0
@@ -2935,9 +2890,9 @@ class InstaPy:
 
                 self.logger.info(
                     "Ongoing Follow [{}/{}]: now following '{}'..."
-                    .format(index + 1,
-                            len(person_list),
-                            person))
+                        .format(index + 1,
+                                len(person_list),
+                                person))
 
                 validation, details = self.validate_user_call(person)
                 if validation != True:
@@ -2948,7 +2903,7 @@ class InstaPy:
                         self.logger.warning(
                             "--> Simulated Unfollow {}: unfollowing"
                             " '{}' due to mismatching validation...\n"
-                            .format(simulated_unfollow + 1, person))
+                                .format(simulated_unfollow + 1, person))
 
                         unfollow_state, msg = unfollow_user(
                             self.browser,
@@ -2992,7 +2947,7 @@ class InstaPy:
                                       delay_random / 60, 2)))
                     self.logger.info(
                         "------=>  Followed {} new users ~sleeping about {}\n"
-                        .format(followed_new, sleep_time))
+                            .format(followed_new, sleep_time))
                     sleep(delay_random)
                     relax_point = random.randint(7, 14)
                     followed_new = 0
@@ -3031,6 +2986,8 @@ class InstaPy:
                               interact=False,
                               sleep_delay=600):
         """ Follow the `Following` of given users """
+        if self.aborting:
+            return self
 
         message = "Starting to follow user `Following`.."
         highlight_print(self.username, message, "feature", "info", self.logger)
@@ -3091,7 +3048,7 @@ class InstaPy:
             print('')
             self.logger.info(
                 "Grabbed {} usernames from '{}'s `Following` to do following\n"
-                .format(len(person_list), user))
+                    .format(len(person_list), user))
 
             followed_personal = 0
             simulated_unfollow = 0
@@ -3105,9 +3062,9 @@ class InstaPy:
 
                 self.logger.info(
                     "Ongoing Follow [{}/{}]: now following '{}'..."
-                    .format(index + 1,
-                            len(person_list),
-                            person))
+                        .format(index + 1,
+                                len(person_list),
+                                person))
 
                 validation, details = self.validate_user_call(person)
                 if validation != True:
@@ -3118,7 +3075,7 @@ class InstaPy:
                         self.logger.warning(
                             "--> Simulated Unfollow {}:"
                             " unfollowing '{}' due to mismatching validation...\n"
-                            .format(simulated_unfollow + 1, person))
+                                .format(simulated_unfollow + 1, person))
 
                         unfollow_state, msg = unfollow_user(
                             self.browser,
@@ -3162,7 +3119,7 @@ class InstaPy:
                                       delay_random / 60, 2)))
                     self.logger.info(
                         "------=>  Followed {} new users ~sleeping about {}\n"
-                        .format(followed_new, sleep_time))
+                            .format(followed_new, sleep_time))
                     sleep(delay_random)
                     relax_point = random.randint(7, 14)
                     followed_new = 0
@@ -3499,7 +3456,7 @@ class InstaPy:
                                 inap_img += 1
                                 self.logger.info(
                                     "--> Image not liked: {}"
-                                    .format(reason.encode('utf-8')))
+                                        .format(reason.encode('utf-8')))
 
                                 if "Inappropriate" in reason and unfollow:
                                     # example of unfollowing
@@ -3507,7 +3464,7 @@ class InstaPy:
                                     self.logger.warning(
                                         "--> Ongoing Unfollow {}: unfollowing"
                                         " '{}' due to inappropriate content..."
-                                        .format(inap_unfollow + 1, user_name))
+                                            .format(inap_unfollow + 1, user_name))
 
                                     unfollow_state, msg = unfollow_user(
                                         self.browser,
@@ -3543,8 +3500,6 @@ class InstaPy:
 
         return
 
-
-
     def set_dont_unfollow_active_users(self,
                                        enabled=False,
                                        posts=4,
@@ -3569,8 +3524,6 @@ class InstaPy:
         # include active user to not unfollow list
         self.dont_include.update(active_users)
 
-
-
     def set_blacklist(self, enabled, campaign):
         """
          Enable/disable blacklist. If enabled, adds users to a blacklist
@@ -3593,8 +3546,6 @@ class InstaPy:
         # except:
         except Exception:
             self.logger.info('Campaign {} first run'.format(campaign))
-
-
 
     def grab_followers(self,
                        username=None,
@@ -3635,8 +3586,6 @@ class InstaPy:
                                           self.logger,
                                           self.logfolder)
         return grabbed_followers
-
-
 
     def grab_following(self,
                        username=None,
@@ -3709,8 +3658,6 @@ class InstaPy:
 
         return all_unfollowers, active_unfollowers
 
-
-
     def pick_nonfollowers(self,
                           username=None,
                           live_match=False,
@@ -3730,8 +3677,6 @@ class InstaPy:
                                         self.logfolder)
 
         return nonfollowers
-
-
 
     def pick_fans(self,
                   username=None,
@@ -3756,8 +3701,6 @@ class InstaPy:
 
         return fans
 
-
-
     def pick_mutual_following(self,
                               username=None,
                               live_match=False,
@@ -3781,8 +3724,6 @@ class InstaPy:
 
         return mutual_following
 
-
-
     def end(self):
         """Closes the current session"""
 
@@ -3795,7 +3736,7 @@ class InstaPy:
                     self.logger.exception(
                         "Error occurred while deleting cookies "
                         "from web browser!\n\t{}"
-                        .format(str(exc).encode("utf-8")))
+                            .format(str(exc).encode("utf-8")))
 
             # close web browser
             try:
@@ -3805,7 +3746,7 @@ class InstaPy:
                     self.logger.exception(
                         "Error occurred while "
                         "closing web browser!\n\t{}"
-                        .format(str(exc).encode("utf-8")))
+                            .format(str(exc).encode("utf-8")))
 
             # close virtual display
             if self.nogui:
@@ -3829,8 +3770,6 @@ class InstaPy:
             message = "Session ended!"
             highlight_print(self.username, message, "end", "info", self.logger)
             print("\n\n")
-
-
 
     def follow_by_tags(self,
                        tags=None,
@@ -4078,12 +4017,12 @@ class InstaPy:
                             sleep(1)
 
                         if (self.do_follow and
-                            user_name not in self.dont_include and
-                            checked_img and following and
-                            not follow_restriction("read",
-                                                   user_name,
-                                                   self.follow_times,
-                                                   self.logger)):
+                                user_name not in self.dont_include and
+                                checked_img and following and
+                                not follow_restriction("read",
+                                                       user_name,
+                                                       self.follow_times,
+                                                       self.logger)):
                             follow_state, msg = follow_user(
                                 self.browser,
                                 "post",
@@ -4231,8 +4170,6 @@ class InstaPy:
                                     "Please use supported formats."
                                     "\t~disabled QS")
 
-
-
     @contextmanager
     def feature_in_feature(self, feature, validate_users):
         """
@@ -4248,8 +4185,6 @@ class InstaPy:
         finally:
             # remove the guest just after using it
             self.internal_usage.pop(feature)
-
-
 
     def live_report(self):
         """ Report live sessional statistics """
@@ -4267,8 +4202,8 @@ class InstaPy:
             owner_relationship_info = (
                 "On session start was FOLLOWING {} users"
                 " & had {} FOLLOWERS\n"
-                .format(self.following_num,
-                        self.followed_by))
+                    .format(self.following_num,
+                            self.followed_by))
         else:
             owner_relationship_info = ''
 
@@ -4282,7 +4217,7 @@ class InstaPy:
                 "\t|> INAPPROPRIATE images: {}\n"
                 "\t|> NOT VALID users: {}\n"
                 "{}"
-                .format(self.liked_img,
+                    .format(self.liked_img,
                             self.already_liked,
                             self.commented,
                             self.followed,
@@ -4297,11 +4232,9 @@ class InstaPy:
                              "{}"
                              .format(owner_relationship_info))
 
-
-
     def set_reply_comments(self,
-                            replies=[],
-                              media=None):
+                           replies=[],
+                           media=None):
         """ Set comments to be used as comment replies """
         if not replies:
             self.logger.info(
@@ -4311,7 +4244,6 @@ class InstaPy:
             self.video_reply_comments = None
 
             return self
-
 
         if media in ["Photo", "Video"]:
             attr = '{}_reply_comments'.format(media.lower())
@@ -4323,8 +4255,6 @@ class InstaPy:
                                     " reply comments! Treating as 'any'.")
 
             self.reply_comments = replies
-
-
 
     def set_use_meaningcloud(self,
                              enabled=False,
@@ -4356,8 +4286,6 @@ class InstaPy:
         else:
             # turn off MeaningCloud service if not enabled or wrongly configured
             Settings.meaningcloud_config.update(enabled=False)
-
-
 
     def set_use_yandex(self,
                        enabled=False,
@@ -4396,8 +4324,6 @@ class InstaPy:
         else:
             # turn off Yandex service if not enabled or wrongly configured
             Settings.yandex_config.update(enabled=False)
-
-
 
     def interact_by_comments(self,
                              usernames=None,
@@ -4453,7 +4379,7 @@ class InstaPy:
             if self.quotient_breach:
                 break
 
-            message = "User: [{}/{}]".format(s+1, len(usernames))
+            message = "User: [{}/{}]".format(s + 1, len(usernames))
             highlight_print(self.username, message, "user iteration", "info", self.logger)
 
             validation, details = self.validate_user_call(username)
@@ -4494,26 +4420,26 @@ class InstaPy:
                     break
 
                 elif (self.jumps["consequent"]["comments"]
-                        >= self.jumps["limit"]["comments"]):
+                      >= self.jumps["limit"]["comments"]):
                     self.logger.warning(
                         "--> Comment quotient reached its peak!{}"
-                        .format(leave_msg))
+                            .format(leave_msg))
                     self.quotient_breach = True
                     # reset jump counter after a breach report
                     self.jumps["consequent"]["comments"] = 0
                     break
 
                 elif (like_failures_tracker["consequent"]["post_likes"]
-                        >= like_failures_tracker["limit"]["post_likes"]):
+                      >= like_failures_tracker["limit"]["post_likes"]):
                     self.logger.warning(
                         "--> Too many failures to like posts!{}"
-                        .format(leave_msg))
+                            .format(leave_msg))
                     # this example shows helpful usage of
                     # quotient breach outside QS needs..
                     self.quotient_breach = True
                     break
 
-                message = "Post: [{}/{}]".format(i+1, len(links))
+                message = "Post: [{}/{}]".format(i + 1, len(links))
                 highlight_print(self.username, message, "post iteration", "info", self.logger)
 
                 (inappropriate, user_name,
@@ -4528,7 +4454,7 @@ class InstaPy:
                 if inappropriate:
                     self.logger.info(
                         "--> Post not interacted. {}\n"
-                        .format(reason.encode('utf-8')))
+                            .format(reason.encode('utf-8')))
                     self.inap_img += 1
                     continue
 
@@ -4576,10 +4502,10 @@ class InstaPy:
                         break
 
                     elif (like_failures_tracker["consequent"]["comment_likes"]
-                            >= like_failures_tracker["limit"]["comment_likes"]):
+                          >= like_failures_tracker["limit"]["comment_likes"]):
                         self.logger.warning(
                             "--> Too many failures to like comments!{}"
-                            .format(leave_msg))
+                                .format(leave_msg))
                         # this example shows helpful usage of
                         # quotient breach outside QS needs..
                         self.quotient_breach = True
@@ -4626,7 +4552,7 @@ class InstaPy:
                             if put_comment and reply_comments_base:
                                 chosen_reply = random.choice(reply_comments_base)
                                 reply_msg = ["@{} {}"
-                                             .format(commenter, chosen_reply)]
+                                                 .format(commenter, chosen_reply)]
                                 comment_reply_state, msg = comment_image(
                                     self.browser,
                                     commenter,
@@ -4649,11 +4575,11 @@ class InstaPy:
                                     # certain consecutive jumps
                                     self.jumps["consequent"]["comments"] += 1
 
-                post_No_ending = ("st" if str(i+1).endswith('1') else
-                                  "nd" if str(i+1).endswith('2') else
-                                  "rd" if str(i+1).endswith('3') else
-                                  "th" if str(i+1).endswith('4') else '')
-                post_No = "{}{}".format(str(i+1), post_No_ending)
+                post_No_ending = ("st" if str(i + 1).endswith('1') else
+                                  "nd" if str(i + 1).endswith('2') else
+                                  "rd" if str(i + 1).endswith('3') else
+                                  "th" if str(i + 1).endswith('4') else '')
+                post_No = "{}{}".format(str(i + 1), post_No_ending)
 
                 # quick log after interacting on a post
                 print('')
@@ -4677,7 +4603,7 @@ class InstaPy:
             print('')
             self.logger.info(
                 "Finished interacting on {} posts' comments of '{}'!"
-                .format(len(links), username))
+                    .format(len(links), username))
             self.logger.info("\tComments liked: {}"
                              .format(per_user_liked_comments))
             self.logger.info("\tComments replied: {}\n"
@@ -4686,7 +4612,7 @@ class InstaPy:
         # full log after finishing whole work
         self.logger.info(
             "Finished interacting on {} posts' comments from {} users!"
-            .format(overall_posts_count, len(usernames)))
+                .format(overall_posts_count, len(usernames)))
 
         # find the feature-wide action sizes by taking a difference
         liked_img = (self.liked_img - liked_init)
@@ -4711,6 +4637,3 @@ class InstaPy:
                              .format(already_followed))
             self.logger.info("\tInappropriate posts: {}".format(inap_img))
             self.logger.info("\tNot valid users: {}".format(not_valid_users))
-
-
-

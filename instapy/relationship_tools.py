@@ -53,7 +53,7 @@ def get_followers(browser,
 
     graphql_endpoint = 'https://www.instagram.com/graphql/query/'
     graphql_followers = (
-        graphql_endpoint + '?query_hash=37479f2b8209594dde7facb0d904896a')
+            graphql_endpoint + '?query_hash=37479f2b8209594dde7facb0d904896a')
 
     all_followers = []
 
@@ -77,7 +77,7 @@ def get_followers(browser,
 
         url = (
             '{}&variables={}'
-            .format(graphql_followers, str(json.dumps(variables)))
+                .format(graphql_followers, str(json.dumps(variables)))
         )
         web_address_navigator(browser, url)
 
@@ -107,7 +107,8 @@ def get_followers(browser,
                 sc_rolled_all = graphql_queries[username][query_date]["sc_rolled"]
 
         except Exception as exc:
-            logger.info("Error occurred while getting `scroll` data from graphql_queries.json\n{}\n".format(str(exc).encode("utf-8")))
+            logger.info("Error occurred while getting `scroll` data from graphql_queries.json\n{}\n".format(
+                str(exc).encode("utf-8")))
             local_read_failure = True
 
         start_time = time.time()
@@ -130,21 +131,21 @@ def get_followers(browser,
             progress_tracker(grabbed, highest_value, start_time, logger)
 
             finish_time = time.time()
-            diff_time = finish_time-start_time
-            diff_n, diff_s = ((diff_time/60/60, "hours") if diff_time/60/60 >= 1 else
-                              (diff_time/60, "minutes") if diff_time/60 >= 1 else
+            diff_time = finish_time - start_time
+            diff_n, diff_s = ((diff_time / 60 / 60, "hours") if diff_time / 60 / 60 >= 1 else
+                              (diff_time / 60, "minutes") if diff_time / 60 >= 1 else
                               (diff_time, "seconds"))
             diff_n = truncate_float(diff_n, 2)
             passed_time = ("{} {}".format(diff_n, diff_s))
 
             if match is not None:
-                matched_followers = len(set(all_followers)) - len(set(all_followers)-set(all_prior_followers))
+                matched_followers = len(set(all_followers)) - len(set(all_followers) - set(all_prior_followers))
                 if matched_followers >= match:
-                    new_followers = set(all_followers)-set(all_prior_followers)
-                    all_followers = all_followers+all_prior_followers
+                    new_followers = set(all_followers) - set(all_prior_followers)
+                    all_followers = all_followers + all_prior_followers
                     print('\n')
                     logger.info("Grabbed {} new usernames from `Followers` in {}  ~total of {} usernames".format(
-                                            len(set(new_followers)), passed_time, len(set(all_followers))))
+                        len(set(new_followers)), passed_time, len(set(all_followers))))
                     grab_notifier = True
                     break
 
@@ -160,7 +161,7 @@ def get_followers(browser,
 
                 url = (
                     '{}&variables={}'
-                    .format(
+                        .format(
                         graphql_followers, str(json.dumps(variables)))
                 )
 
@@ -203,14 +204,15 @@ def get_followers(browser,
             store_followers_data(username, grab, all_followers, logger, logfolder)
         elif store_locally == True:
             print('')
-            logger.info("The `Followers` data is identical with the data in previous query  ~not storing the file again")
+            logger.info(
+                "The `Followers` data is identical with the data in previous query  ~not storing the file again")
 
         if grab == "full":
             relationship_data[username].update({"all_followers": all_followers})
 
-    sleep_t = sc_rolled*6
+    sleep_t = sc_rolled * 6
     sleep_t = sleep_t if sleep_t < 600 else random.randint(585, 655)
-    sleep_n, sleep_s = ((sleep_t/60, "minutes") if sleep_t/60 >= 1 else
+    sleep_n, sleep_s = ((sleep_t / 60, "minutes") if sleep_t / 60 >= 1 else
                         (sleep_t, "seconds"))
     sleep_n = truncate_float(sleep_n, 4)
 
@@ -261,7 +263,7 @@ def get_following(browser,
 
     graphql_endpoint = 'https://www.instagram.com/graphql/query/'
     graphql_following = (
-        graphql_endpoint + '?query_hash=58712303d941c6855d4e888c5f0cd22f')
+            graphql_endpoint + '?query_hash=58712303d941c6855d4e888c5f0cd22f')
 
     all_following = []
 
@@ -285,7 +287,7 @@ def get_following(browser,
 
         url = (
             '{}&variables={}'
-            .format(graphql_following, str(json.dumps(variables)))
+                .format(graphql_following, str(json.dumps(variables)))
         )
         web_address_navigator(browser, url)
 
@@ -333,21 +335,21 @@ def get_following(browser,
             progress_tracker(grabbed, highest_value, start_time, logger)
 
             finish_time = time.time()
-            diff_time = finish_time-start_time
-            diff_n, diff_s = ((diff_time/60/60, "hours") if diff_time/60/60 >= 1 else
-                              (diff_time/60, "minutes") if diff_time/60 >= 1 else
+            diff_time = finish_time - start_time
+            diff_n, diff_s = ((diff_time / 60 / 60, "hours") if diff_time / 60 / 60 >= 1 else
+                              (diff_time / 60, "minutes") if diff_time / 60 >= 1 else
                               (diff_time, "seconds"))
             diff_n = truncate_float(diff_n, 2)
             passed_time = ("{} {}".format(diff_n, diff_s))
 
             if match is not None:
-                matched_following = len(set(all_following)) - len(set(all_following)-set(all_prior_following))
+                matched_following = len(set(all_following)) - len(set(all_following) - set(all_prior_following))
                 if matched_following >= match:
-                    new_following = set(all_following)-set(all_prior_following)
-                    all_following = all_following+all_prior_following
+                    new_following = set(all_following) - set(all_prior_following)
+                    all_following = all_following + all_prior_following
                     print('\n')
                     logger.info("Grabbed {} new usernames from `Following` in {}  ~total of {} usernames".format(
-                                            len(set(new_following)), passed_time, len(set(all_following))))
+                        len(set(new_following)), passed_time, len(set(all_following))))
                     grab_notifier = True
                     break
 
@@ -363,7 +365,7 @@ def get_following(browser,
 
                 url = (
                     '{}&variables={}'
-                    .format(
+                        .format(
                         graphql_following, str(json.dumps(variables)))
                 )
 
@@ -407,14 +409,15 @@ def get_following(browser,
             store_following_data(username, grab, all_following, logger, logfolder)
         elif store_locally == True:
             print('')
-            logger.info("The `Following` data is identical with the data in previous query  ~not storing the file again")
+            logger.info(
+                "The `Following` data is identical with the data in previous query  ~not storing the file again")
 
         if grab == "full":
             relationship_data[username].update({"all_following": all_following})
 
-    sleep_t = sc_rolled*6
+    sleep_t = sc_rolled * 6
     sleep_t = sleep_t if sleep_t < 600 else random.randint(585, 655)
-    sleep_n, sleep_s = ((sleep_t/60, "minutes") if sleep_t/60 >= 1 else
+    sleep_n, sleep_s = ((sleep_t / 60, "minutes") if sleep_t / 60 >= 1 else
                         (sleep_t, "seconds"))
     sleep_n = truncate_float(sleep_n, 4)
 
@@ -436,7 +439,6 @@ def get_unfollowers(browser,
                     print_out,
                     logger,
                     logfolder):
-
     if compare_by not in ["latest", "day", "month", "year", "earliest"]:
         logger.info("Please choose a valid compare point to pick Unfollowers  ~leaving out of an invalid value")
         return [], []
@@ -483,7 +485,7 @@ def get_unfollowers(browser,
         active_unfollowers = [unfollower for unfollower in current_following if unfollower in all_unfollowers]
 
         logger.info("Unfollowers found from {}!  total: {}  |  active: {}  :|\n".format(
-                            selected_filename, len(all_unfollowers), len(active_unfollowers)))
+            selected_filename, len(all_unfollowers), len(active_unfollowers)))
         if store_locally == True:
             # store all Unfollowers in a local file
             store_all_unfollowers(username, all_unfollowers, logger, logfolder)
@@ -492,7 +494,7 @@ def get_unfollowers(browser,
 
         if print_out == True:
             logger.info("Unfollowers of {}:\n\n\tAll Unfollowers: {}\n\n\tActive Unfollowers: {}\n".format(
-                            username, all_unfollowers, active_unfollowers))
+                username, all_unfollowers, active_unfollowers))
     else:
         logger.info("Yay! You have no any Unfollowers from {}!  ^v^".format(selected_filename))
         return [], []
@@ -874,15 +876,18 @@ def load_followers_data(username, compare_by, compare_track, logger, logfolder):
         entry_day = entry[:2]
 
         if not structured_entries:
-            structured_entries = {"years": {entry_year: {"months": {entry_month: {"days": {entry_day: {"entries": [entry]}}}}}}}
+            structured_entries = {
+                "years": {entry_year: {"months": {entry_month: {"days": {entry_day: {"entries": [entry]}}}}}}}
             continue
 
         existing_years = list(year for year, month in structured_entries["years"].items())
         existing_months = list(month for month, day in structured_entries["years"][entry_year]["months"].items())
-        existing_days = list(day for day, entry in structured_entries["years"][entry_year]["months"][entry_month]["days"].items())
+        existing_days = list(
+            day for day, entry in structured_entries["years"][entry_year]["months"][entry_month]["days"].items())
 
         if entry_year not in existing_years:
-            structured_entries["years"][entry_year] = {"months": {entry_month: {"days": {entry_day: {"entries": [entry]}}}}}
+            structured_entries["years"][entry_year] = {
+                "months": {entry_month: {"days": {entry_day: {"entries": [entry]}}}}}
         elif entry_month not in existing_months:
             structured_entries["years"][entry_year]["months"][entry_month] = {"days": {entry_day: {"entries": [entry]}}}
         elif entry_day not in existing_days:
@@ -903,14 +908,15 @@ def load_followers_data(username, compare_by, compare_track, logger, logfolder):
             if compare_track == "first" or len(data_for_today) <= 1:
                 selected_filename = data_for_today[0]
             if compare_track == "median":
-                median_index = int(len(data_for_today)/2)
+                median_index = int(len(data_for_today) / 2)
                 selected_filename = data_for_today[median_index]
             if compare_track == "last":
                 selected_filename = data_for_today[-1]
 
         else:
             selected_filename = sorted_filenames[-1]
-            logger.info("No any data exists for today!  ~choosing the last existing data from {}".format(selected_filename))
+            logger.info(
+                "No any data exists for today!  ~choosing the last existing data from {}".format(selected_filename))
 
     elif compare_by == "month":
         latest_month = sorted_filenames[-1][-7:]
@@ -920,19 +926,21 @@ def load_followers_data(username, compare_by, compare_track, logger, logfolder):
             data_for_month = []
 
             for day in structured_entries["years"][this_year]["months"][this_month]["days"]:
-                data_for_month.extend(structured_entries["years"][this_year]["months"][this_month]["days"][day]["entries"])
+                data_for_month.extend(
+                    structured_entries["years"][this_year]["months"][this_month]["days"][day]["entries"])
 
             if compare_track == "first" or len(data_for_month) <= 1:
                 selected_filename = data_for_month[0]
             if compare_track == "median":
-                median_index = int(len(data_for_month)/2)
+                median_index = int(len(data_for_month) / 2)
                 selected_filename = data_for_month[median_index]
             if compare_track == "last":
                 selected_filename = data_for_month[-1]
 
         else:
             selected_filename = sorted_filenames[-1]
-            logger.info("No any data exists for this month!  ~choosing the last existing data from {}".format(selected_filename))
+            logger.info("No any data exists for this month!  ~choosing the last existing data from {}".format(
+                selected_filename))
 
     elif compare_by == "year":
         latest_year = sorted_filenames[-1][-4:]
@@ -942,19 +950,21 @@ def load_followers_data(username, compare_by, compare_track, logger, logfolder):
 
             for month in structured_entries["years"][this_year]["months"]:
                 for day in structured_entries["years"][this_year]["months"][month]["days"]:
-                    data_for_year.extend(structured_entries["years"][this_year]["months"][month]["days"][day]["entries"])
+                    data_for_year.extend(
+                        structured_entries["years"][this_year]["months"][month]["days"][day]["entries"])
 
             if compare_track == "first" or len(data_for_year) <= 1:
                 selected_filename = data_for_year[0]
             if compare_track == "median":
-                median_index = int(len(data_for_year)/2)
+                median_index = int(len(data_for_year) / 2)
                 selected_filename = data_for_year[median_index]
             if compare_track == "last":
                 selected_filename = data_for_year[-1]
 
         else:
             selected_filename = sorted_filenames[-1]
-            logger.info("No any data exists for this year!  ~choosing the last existing data from {}".format(selected_filename))
+            logger.info(
+                "No any data exists for this year!  ~choosing the last existing data from {}".format(selected_filename))
 
     elif compare_by == "earliest":
         selected_filename = sorted_filenames[0]
@@ -965,7 +975,7 @@ def load_followers_data(username, compare_by, compare_track, logger, logfolder):
         followers_data = json.load(followers_data_file)
 
     logger.info("Took prior `Followers` data file from {} with {} usernames to be compared with live data\n".format(
-                    selected_filename, len(followers_data)))
+        selected_filename, len(followers_data)))
 
     # return that file to be compared
     return followers_data, selected_filename
@@ -974,29 +984,30 @@ def load_followers_data(username, compare_by, compare_track, logger, logfolder):
 def progress_tracker(current_value, highest_value, initial_time, logger):
     """ Provide a progress tracker to keep value updated until finishes """
     if (current_value is None or
-        highest_value is None or
+            highest_value is None or
             highest_value == 0):
         return
 
     try:
         real_time = time.time()
-        progress_percent = int((current_value/highest_value)*100)
+        progress_percent = int((current_value / highest_value) * 100)
         show_logs = Settings.show_logs
 
-        elapsed_time = real_time-initial_time
+        elapsed_time = real_time - initial_time
         elapsed_formatted = truncate_float(elapsed_time, 2)
         elapsed = ("{} seconds".format(elapsed_formatted) if elapsed_formatted < 60 else
-                   "{} minutes".format(truncate_float(elapsed_formatted/60, 2)))
+                   "{} minutes".format(truncate_float(elapsed_formatted / 60, 2)))
 
-        eta_time = abs((elapsed_time*100)/(progress_percent if progress_percent != 0 else 1)-elapsed_time)
+        eta_time = abs((elapsed_time * 100) / (progress_percent if progress_percent != 0 else 1) - elapsed_time)
         eta_formatted = truncate_float(eta_time, 2)
         eta = ("{} seconds".format(eta_formatted) if eta_formatted < 60 else
-               "{} minutes".format(truncate_float(eta_formatted/60, 2)))
+               "{} minutes".format(truncate_float(eta_formatted / 60, 2)))
 
         tracker_line = "-----------------------------------"
-        filled_index = int(progress_percent/2.77)
-        progress_container = "["+tracker_line[:filled_index]+"+"+tracker_line[filled_index:]+"]"
-        progress_container = progress_container[:filled_index+1].replace("-", "=")+progress_container[filled_index+1:]
+        filled_index = int(progress_percent / 2.77)
+        progress_container = "[" + tracker_line[:filled_index] + "+" + tracker_line[filled_index:] + "]"
+        progress_container = progress_container[:filled_index + 1].replace("-", "=") + progress_container[
+                                                                                       filled_index + 1:]
 
         total_message = ("\r  {}/{} {}  {}%    "
                          "|> Elapsed: {}    "
@@ -1011,6 +1022,3 @@ def progress_tracker(current_value, highest_value, initial_time, logger):
 
     except Exception as exc:
         logger.info("Error occurred with Progress Tracker:\n{}".format(str(exc).encode("utf-8")))
-
-
-

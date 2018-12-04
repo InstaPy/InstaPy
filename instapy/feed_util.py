@@ -3,7 +3,6 @@ from .util import update_activity
 
 from selenium.common.exceptions import NoSuchElementException
 
-
 LIKE_TAG_CLASS = 'coreSpriteHeartOpen'
 
 
