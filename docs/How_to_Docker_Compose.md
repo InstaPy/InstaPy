@@ -60,6 +60,9 @@ hashtags: [list]
 - user_interact: If `True` will enable interact with user's posts in like_by_tags interaction
 - do_unfollow: If `True` will enable unfollow execution
 
+## Script
+You can check [this example](../quickstart_templates/Friends-last-post-likes-and-interact-with-user-based-on-hashtags.py) to run the script using `data.yaml` file and specific config for running in docker.
+
 ### How to run
 Inside **z_{user}** directory:
 - run in background:
