@@ -45,7 +45,7 @@ Inside z_{user} directory:
   run in background:
     docker-compose down && docker-compose up -d --build
   run with log in terminal:
-    docker-compose down && docker-compose up -d --build && docker-compose logs
+    docker-compose down && docker-compose up -d --build && docker-compose logs -f
 """
 
 import yaml
