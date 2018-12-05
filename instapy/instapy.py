@@ -2906,6 +2906,8 @@ class InstaPy:
                               interact=False,
                               sleep_delay=600):
         """ Follow the `Followers` of given users """
+        if self.aborting:
+            return self
 
         message = "Starting to follow user `Followers`.."
         highlight_print(self.username, message, "feature", "info", self.logger)
@@ -3075,6 +3077,8 @@ class InstaPy:
                               interact=False,
                               sleep_delay=600):
         """ Follow the `Following` of given users """
+        if self.aborting:
+            return self
 
         message = "Starting to follow user `Following`.."
         highlight_print(self.username, message, "feature", "info", self.logger)
