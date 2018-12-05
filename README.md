@@ -1,3 +1,12 @@
+Build instructions for Share- Creators
+1. pip install -r requirements.txt
+2. sudo python3 sharecreator_bot.py 
+
+
+
+
+
+
 <img src="https://i.imgur.com/sJzfZsL.jpg" width="150" align="right">
 
 # InstaPy
