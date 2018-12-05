@@ -39,6 +39,13 @@ services:
   selenium:
     image: selenium/standalone-chrome
     shm_size: 128M
+
+::HOW TO RUN::
+Inside z_{user} directory:
+  run in background:
+    docker-compose down && docker-compose up -d --build
+  run with log in terminal:
+    docker-compose down && docker-compose up -d --build && docker-compose logs
 """
 
 import yaml
