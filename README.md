@@ -143,7 +143,7 @@ or
 The best way to install InstaPy is to create a virtualenv, install InstaPy there and run it from a separate file:
 
 ```bash
-1. virtualenv venv
+1. virtualenv -p python3 venv
 2. source venv/bin/activate
 3. pip install git+https://github.com/timgrossmann/InstaPy.git
 ```
