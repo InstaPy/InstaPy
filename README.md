@@ -96,8 +96,8 @@ Table of Contents
 * [Running on a Headless Browser](#running-on-a-headless-browser)
 * [Running Multiple Accounts](#running-multiple-accounts)
 * [Running with Docker microservices manual](#running-with-docker-microservices-manual)
-* [Running all-in-one with Docker (obsolete)](#running-all-in-one-with-dockr-obsolete)
-* [Ronning all with Docker Compose using config file](./docs/How_to_Docker_Compose.md)
+* [Running all-in-one with Docker (legacy)](#running-all-in-one-with-docker-legacy)
+* [Running all with Docker Compose using config file](./docs/How_to_Docker_Compose.md)
 * [Automate InstaPy](#automate-instapy)
   * [Windows Task Scheduler](#windows-task-scheduler)
   * [cron](#cron)
@@ -1992,7 +1992,7 @@ To access yor container console to run bot type `localhost:22` in your favorite 
 docker-compose -f docker-prod.yml up -d
 ```
 
-## Running all-in-one with Docker (obsolete)
+## Running all-in-one with Docker (legacy)
 
 ### 1. Build the Image
 
