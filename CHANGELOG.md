@@ -3,6 +3,10 @@ The **goal** of this file is explaining to the users of our project the notable 
 
 _The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html)_.
 
+## [Unreleased] - 2018-12-08
+### Fixed
+- Fixes likers_from_photo when liked counter is "liked by X and N others"
+
 ## [Unreleased] - 2018-11-26
 ### Changed
 - Switch mandatory_words from ALL to ANY
