@@ -9,6 +9,11 @@ from .util import update_activity
 from selenium.common.exceptions import WebDriverException
 
 
+def get_log_time():
+    ''' this method will keep same format for all recored'''
+    log_time = datetime.now().strftime('%Y-%m-%d %H:%M')
+
+    return log_time
 
 
 def log_follower_num(browser, username, logfolder):
@@ -85,16 +90,16 @@ def log_followed_pool(login, followed, logger, logfolder, logtime, user_id):
         logger.error("log_followed_pool error {}".format(str(e)))
 
     # We save all followed to a pool that will never be erase
-    log_record_all_followed(login, followed, logger, logfolder)
+    log_record_all_followed(login, followed, logger, logfolder, logtime, user_id)
 
 
-def log_uncertain_unfollowed_pool(login, unfollowed, logger, logfolder):
+def log_uncertain_unfollowed_pool(login, person, logger, logfolder, logtime, user_id):
     """Prints and logs the uncertain unfollowed to
     a seperate file"""
     try:
         with open('{0}{1}_uncertain_unfollowedPool.csv'.format(logfolder, login), 'a+') as followPool:
             with interruption_handler():
-                followPool.write('{},\n'.format(unfollowed))
+                followPool.write('{} ~ {} ~ {},\n'.format(logtime, person, user_id))
     except BaseException as e:
         logger.error("log_uncertain_unfollowed_pool error {}".format(str(e)))
 
@@ -110,11 +115,11 @@ def log_record_all_unfollowed(login, unfollowed, logger, logfolder):
         logger.error("log_record_all_unfollowed_pool error {}".format(str(e)))
 
 
-def log_record_all_followed(login, followed, logger, logfolder):
+def log_record_all_followed(login, followed, logger, logfolder, logtime, user_id):
     """logs all followed ever to a pool that will never be erase"""
     try:
         with open('{0}{1}_record_all_followed.csv'.format(logfolder, login), 'a+') as followPool:
             with interruption_handler():
-                followPool.write('{},\n'.format(followed))
+                followPool.write('{} ~ {} ~ {},\n'.format(logtime, followed, user_id))
     except BaseException as e:
         logger.error("log_record_all_followed_pool error {}".format(str(e)))
