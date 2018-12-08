@@ -14,7 +14,7 @@ import csv
 import sqlite3
 import json
 from contextlib import contextmanager
-import requests
+
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as ec
 from selenium.webdriver.common.by import By
@@ -456,12 +456,15 @@ def get_active_users(browser, username, posts, boundary, logger):
                 except NoSuchElementException:
                     logger.info("Failed to get likers count on your post {}".format(count))
                     likers_count = None
+            try:
+                likes_button = browser.find_elements_by_xpath(
+                    "//button[contains(@class, '_8A5w5')]")[1]
+                click_element(browser, likes_button)
+                sleep_actual(5)
+            except (IndexError, NoSuchElementException):
+                # Video have no likes button / no posts in page
+                continue
 
-            likes_button = browser.find_elements_by_xpath(
-                "//button[contains(@class, '_8A5w5')]")[1]
-
-            click_element(browser, likes_button)
-            sleep_actual(5)
 
             dialog = browser.find_element_by_xpath(
                 "//div[text()='Likes']/following-sibling::div")
@@ -824,7 +827,7 @@ def get_relationship_counts(browser, username, logger):
                         logger.info("Failed to get following count of '{}'  ~empty list".format(username.encode("utf-8")))
                         following_count = None
 
-                except NoSuchElementException:
+                except (NoSuchElementException, IndexError) as e:
                     logger.error("\nError occurred during getting the following count of '{}'\n".format(username.encode("utf-8")))
                     following_count = None
 
@@ -1356,16 +1359,17 @@ def get_username_from_id(browser, user_id, logger):
         logger.info("No profile found, the user may have blocked you (ID: {})".format(user_id))
         return None
 
-    # method using private API
-    logger.info("Trying to find the username from the given user ID by a quick API call")
+    """  method using private API
+    #logger.info("Trying to find the username from the given user ID by a quick API call")
 
-    req = requests.get(u"https://i.instagram.com/api/v1/users/{}/info/"
-                       .format(user_id))
-    if req:
-        data = json.loads(req.text)
-        if data["user"]:
-            username = data["user"]["username"]
-            return username
+    #req = requests.get(u"https://i.instagram.com/api/v1/users/{}/info/"
+    #                   .format(user_id))
+    #if req:
+    #    data = json.loads(req.text)
+    #    if data["user"]:
+    #        username = data["user"]["username"]
+    #        return username
+    """
 
     """ Having a BUG (random log-outs) with the method below, use it only in the external sessions
     # method using graphql 'Follow' endpoint

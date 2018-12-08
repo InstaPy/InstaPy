@@ -29,6 +29,7 @@ from .util import truncate_float
 from .print_log_writer import log_followed_pool
 from .print_log_writer import log_uncertain_unfollowed_pool
 from .print_log_writer import log_record_all_unfollowed
+from .print_log_writer import get_log_time
 from .relationship_tools import get_followers
 from .relationship_tools import get_nonfollowers
 from .database_engine import get_database
@@ -348,6 +349,9 @@ def unfollow(browser,
                                                              relationship_data,
                                                               logger,
                                                               logfolder)
+
+                    post_unfollow_actions(browser, person, logger)
+
                     if unfollow_state == True:
                         unfollowNum += 1
                         sleep_counter += 1
@@ -645,6 +649,7 @@ def get_users_through_dialog(browser,
         amount = int(users_count*0.85)
     try_again = 0
     sc_rolled = 0
+
     # find dialog box
     dialog_address = "//div[3]/div/div/div[2]"
     dialog = browser.find_element_by_xpath(dialog_address)
@@ -848,6 +853,10 @@ def get_given_user_followers(browser,
     user_link = "https://www.instagram.com/{}/".format(user_name)
     web_address_navigator(browser, user_link)
 
+
+    if not is_page_available(browser, logger):
+        return [], []
+
     # check how many people are following this user.
     allfollowers, allfollowing = get_relationship_counts(browser, user_name, logger)
 
@@ -903,6 +912,9 @@ def get_given_user_following(browser,
     user_link = "https://www.instagram.com/{}/".format(user_name)
     web_address_navigator(browser, user_link)
 
+    if not is_page_available(browser, logger):
+        return [], []
+
     #  check how many poeple are following this user.
     #  throw RuntimeWarning if we are 0 people following this user
     try:
@@ -935,8 +947,8 @@ def get_given_user_following(browser,
                         logger.info("Failed to get following count of '{}'  ~empty list".format(user_name))
                         allfollowing = None
 
-                except NoSuchElementException:
-                    logger.error("\nError occurred during getting the following count of '{}'\n".format(user_name))
+                except (NoSuchElementException, IndexError):
+                    logger.error("\nError occured during getting the following count of '{}'\n".format(user_name))
                     return [], []
 
     # skip early for no followers
@@ -1085,12 +1097,12 @@ def unfollow_user(browser, track, username, person, person_id, button, relations
 
         # find out CURRENT follow status
         following_status, follow_button = get_following_status(browser,
-                                                         track,
-                                                          username,
-                                                          person,
-                                                           person_id,
-                                                            logger,
-                                                            logfolder)
+                                                                track,
+                                                                username,
+                                                                person,
+                                                                person_id,
+                                                                logger,
+                                                                logfolder)
 
         if following_status in ["Following", "Requested"]:
             click_element(browser, follow_button)   # click to unfollow
@@ -1102,8 +1114,8 @@ def unfollow_user(browser, track, username, person, person_id, button, relations
                 return False, msg
 
         elif following_status in ["Follow", "Follow Back"]:
-            logger.info("--> Already unfollowed '{}'!".format(person))
-            post_unfollow_cleanup(["successful", "uncertain"], username, person, relationship_data, logger, logfolder)
+            logger.info("--> Already unfollowed '{}'! or a private user that rejected your req".format(person))
+            post_unfollow_cleanup(["successful", "uncertain"], username, person, relationship_data, person_id, logger, logfolder)
             return False, "already unfollowed"
 
         elif following_status in ["Unblock", "UNAVAILABLE"]:
@@ -1114,7 +1126,7 @@ def unfollow_user(browser, track, username, person, person_id, button, relations
                 failure_msg = "user is inaccessible"
 
             logger.warning("--> Couldn't unfollow '{}'!\t~{}".format(person, failure_msg))
-            post_unfollow_cleanup("uncertain", username, person, relationship_data, logger, logfolder)
+            post_unfollow_cleanup("uncertain", username, person, relationship_data, person_id, logger, logfolder)
             return False, following_status
 
         elif following_status is None:
@@ -1173,7 +1185,7 @@ def confirm_unfollow(browser):
 
 
 
-def post_unfollow_cleanup(state, username, person, relationship_data, logger, logfolder):
+def post_unfollow_cleanup(state, username, person, relationship_data, person_id, logger, logfolder):
     """ Casual local data cleaning after an unfollow """
     if not isinstance(state, list):
         state = [state]
@@ -1187,10 +1199,12 @@ def post_unfollow_cleanup(state, username, person, relationship_data, logger, lo
 
     if "uncertain" in state:
         # this user was found in our unfollow list but currently is not being followed
-        log_uncertain_unfollowed_pool(username, person, logger, logfolder)
+        logtime = get_log_time()
+        log_uncertain_unfollowed_pool(username, person, logger, logfolder, logtime, person_id)
         # save any unfollowed person
-        log_record_all_unfollowed(username, person, logger, logfolder)
-        sleep(3)
+
+    log_record_all_unfollowed(username, person, logger, logfolder)
+    sleep(3)
 
     print('')
 
@@ -1264,12 +1278,12 @@ def verify_action(browser, action, track, username, person, person_id, logger, l
         if not button_change:
             reload_webpage(browser)
             following_status, follow_button = get_following_status(browser,
-                                                             track,
-                                                              username,
-                                                              person,
-                                                               person_id,
-                                                                logger,
-                                                                logfolder)
+                                                            track,
+                                                            username,
+                                                            person,
+                                                            person_id,
+                                                            logger,
+                                                            logfolder)
             # find action state *.^
             if following_status in ["Following", "Requested"]:
                 action_state = False if action == "unfollow" else True
@@ -1306,3 +1320,9 @@ def verify_action(browser, action, track, username, person, person_id, logger, l
                 return False, "unexpected"
 
     return True, "success"
+
+
+def post_unfollow_actions(browser, person, logger):
+    pass
+        
+        
