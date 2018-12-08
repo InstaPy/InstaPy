@@ -5,6 +5,9 @@ _The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 
 ## [Unreleased] - 2018-12-08
+### Added
+- Full docker-compose and complex template + documentation
+
 ### Fixed
 - Fixes likers_from_photo when liked counter is "liked by X and N others"
 
