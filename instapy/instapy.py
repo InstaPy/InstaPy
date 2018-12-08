@@ -39,7 +39,7 @@ from .login_util import login_user
 from .settings import Settings
 from .print_log_writer import log_follower_num
 from .print_log_writer import log_following_num
-from .print_log_writer import get_log_time
+
 from .time_util import sleep
 from .time_util import set_sleep_percentage
 from .util import get_active_users
