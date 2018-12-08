@@ -1202,8 +1202,9 @@ def post_unfollow_cleanup(state, username, person, relationship_data, person_id,
         logtime = get_log_time()
         log_uncertain_unfollowed_pool(username, person, logger, logfolder, logtime, person_id)
         # save any unfollowed person
-        log_record_all_unfollowed(username, person, logger, logfolder)
-        sleep(3)
+
+    log_record_all_unfollowed(username, person, logger, logfolder)
+    sleep(3)
 
     print('')
 
