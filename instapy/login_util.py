@@ -150,8 +150,7 @@ def login_user(browser,
                logfolder,
                switch_language=True,
                bypass_suspicious_attempt=False,
-               bypass_with_mobile=False
-               ):
+               bypass_with_mobile=False):
     """Logins the user with the given username and password"""
     assert username, 'Username not provided'
     assert password, 'Password not provided'

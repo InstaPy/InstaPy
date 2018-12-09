@@ -49,6 +49,7 @@ from .util import interruption_handler
 from .util import highlight_print
 from .util import dump_record_activity
 from .util import truncate_float
+from .util import save_account_progress
 from .unfollow_util import get_given_user_followers
 from .unfollow_util import get_given_user_following
 from .unfollow_util import unfollow
@@ -432,8 +433,6 @@ class InstaPy:
 
         return self
 
-
-
     def login(self):
         """Used to login the user either with the username and password"""
         if not login_user(self.browser,
@@ -445,27 +444,42 @@ class InstaPy:
                           self.bypass_suspicious_attempt,
                           self.bypass_with_mobile):
             message = "Wrong login data!"
-            highlight_print(self.username, message, "login", "critical", self.logger)
+            highlight_print(self.username, 
+                            message,
+                            "login",
+                            "critical",
+                            self.logger)
 
             self.aborting = True
 
         else:
             message = "Logged in successfully!"
-            highlight_print(self.username, message, "login", "info", self.logger)
+            highlight_print(self.username,
+                            message,
+                            "login",
+                            "info",
+                            self.logger)
+            # try to save account progress
+            try:
+                save_account_progress(self.browser,
+                                      self.username,
+                                      self.logger)
+            except Exception:
+                self.logger.warning(
+                    'Unable to save account progress, skipping data update')
 
-        self.followed_by = log_follower_num(self.browser, self.username, self.logfolder)
-        self.following_num = log_following_num(self.browser, self.username, self.logfolder)
+        self.followed_by = log_follower_num(self.browser,
+                                            self.username,
+                                            self.logfolder)
+        self.following_num = log_following_num(self.browser,
+                                               self.username,
+                                               self.logfolder)
 
         return self
-
-
 
     def set_sleep_reduce(self, percentage):
         set_sleep_percentage(percentage)
-
         return self
-
-
 
     def set_action_delays(self,
                           enabled=False,
