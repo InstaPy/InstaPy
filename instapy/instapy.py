@@ -39,7 +39,6 @@ from .login_util import login_user
 from .settings import Settings
 from .print_log_writer import log_follower_num
 from .print_log_writer import log_following_num
-
 from .time_util import sleep
 from .time_util import set_sleep_percentage
 from .util import get_active_users
@@ -1610,7 +1609,8 @@ class InstaPy:
                      use_smart_hashtags=False,
                      interact=False,
                      randomize=False,
-                     media=None):
+                     media=None,
+                     sleep_delay=0):
         """Likes (default) 50 images per given tag"""
         if self.aborting:
             return self
@@ -1640,6 +1640,7 @@ class InstaPy:
             self.logger.info('--> {}'.format(tag.encode('utf-8')))
 
             try:
+                sleep(sleep_delay)
                 links = get_links_for_tag(self.browser,
                                           tag,
                                           amount,
