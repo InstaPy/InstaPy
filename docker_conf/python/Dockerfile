@@ -4,4 +4,4 @@ RUN mkdir /config
 WORKDIR /code
 COPY ./requirements.txt /config/
 RUN pip install -r /config/requirements.txt
-COPY ./ /code/
+COPY ./ /code/ 
