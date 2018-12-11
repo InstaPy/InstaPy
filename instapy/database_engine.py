@@ -29,6 +29,14 @@ SQL_CREATE_FOLLOW_RESTRICTION_TABLE = """
         `username` TEXT NOT NULL,
         `times` TINYINT UNSIGNED NOT NULL);"""
 
+SQL_CREATE_ACCOUNT_STATISTICS= """
+    CREATE TABLE IF NOT EXISTS `accountStatistics` (
+        `profile_id` INTEGER REFERENCES `profiles` (id),
+        `follower_count` SMALLINT UNSIGNED NOT NULL,
+        `follow_count` SMALLINT UNSIGNED NOT NULL,
+        `post_count` SMALLINT UNSIGNED NOT NULL,
+        `created` DATETIME NOT NULL);"""
+
 
 def get_database(make=False):
     address = Settings.database_location
@@ -55,7 +63,8 @@ def create_database(address, logger, name):
 
             create_tables(cursor, ["profiles",
                                    "recordActivity",
-                                   "followRestriction"])
+                                   "followRestriction",
+                                   "accountStats"])
 
             connection.commit()
 
@@ -79,6 +88,9 @@ def create_tables(cursor, tables):
 
     if "followRestriction" in tables:
         cursor.execute(SQL_CREATE_FOLLOW_RESTRICTION_TABLE)
+
+    if "accountStats" in tables:
+        cursor.execute(SQL_CREATE_ACCOUNT_STATISTICS)
 
 
 def verify_database_directories(address):
