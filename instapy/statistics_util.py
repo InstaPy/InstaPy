@@ -4,7 +4,7 @@ from .util import getUserData
 from .util import get_database
 #from .commenters_util import get_photo_urls_from_profile
 
-from datetime import date, datetime
+from datetime import datetime
 import sqlite3
 
 
