@@ -52,7 +52,6 @@ def saveEngagementRate(browser, username, logger, post_count = 5):
 
     try:
 
-        username = "live_life_at_redline"
         followers_count, following_count = get_relationship_counts(browser, username, logger)
         photo_urls = get_photo_urls_from_profile(browser, username, post_count, False)
 
