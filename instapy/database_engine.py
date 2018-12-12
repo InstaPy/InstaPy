@@ -37,6 +37,13 @@ SQL_CREATE_ACCOUNT_STATISTICS= """
         `post_count` SMALLINT UNSIGNED NOT NULL,
         `created` DATETIME NOT NULL);"""
 
+SQL_CREATE_POST_STATISTICS= """
+    CREATE TABLE IF NOT EXISTS `postStatistics` (
+        `profile_id` INTEGER REFERENCES `profiles` (id),
+        `avg_engagement` SMALLINT UNSIGNED NOT NULL,
+        `analysed_posts_urls` TEXT NOT NULL,
+        `analysed_posts_count` SMALLINT UNSIGNED NOT NULL,
+        `created` DATETIME NOT NULL);"""
 
 def get_database(make=False):
     address = Settings.database_location
@@ -64,7 +71,8 @@ def create_database(address, logger, name):
             create_tables(cursor, ["profiles",
                                    "recordActivity",
                                    "followRestriction",
-                                   "accountStats"])
+                                   "accountStats",
+                                   "postStats"])
 
             connection.commit()
 
@@ -91,6 +99,9 @@ def create_tables(cursor, tables):
 
     if "accountStats" in tables:
         cursor.execute(SQL_CREATE_ACCOUNT_STATISTICS)
+
+    if "postStats" in tables:
+        cursor.execute(SQL_CREATE_POST_STATISTICS)
 
 
 def verify_database_directories(address):
