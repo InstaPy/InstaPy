@@ -3749,6 +3749,7 @@ class InstaPy:
 
         close_browser(self.browser, False, self.logger)
 
+        with interruption_handler():
             # close virtual display
             if self.nogui:
                 self.display.stop()
