@@ -3,7 +3,6 @@
 import time
 from math import ceil
 import random
-import re
 from sys import platform
 from platform import python_version
 import os
@@ -11,10 +10,7 @@ import csv
 import json
 import requests
 from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
 from selenium.webdriver import DesiredCapabilities
-from selenium.webdriver.common.proxy import Proxy, ProxyType
-from selenium.webdriver.firefox.options import Options as Firefox_Options
 from pyvirtualdisplay import Display
 import logging
 from contextlib import contextmanager
@@ -71,9 +67,6 @@ from .text_analytics import text_analysis
 from .text_analytics import yandex_supported_languages
 from .browser import set_selenium_local_session
 from .browser import close_browser
-
-# import exceptions
-from selenium.common.exceptions import NoSuchElementException, WebDriverException
 
 
 
