@@ -16,6 +16,7 @@ _The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 ### Fixed
 - Fix bug off #3318 which hit python 2 saying, "_TypeError: can't multiply sequence by non-int of type 'float'_" (_raised & solved at #3451_).
 - Fix error occured while liking a comment (raised at #3594).
+- Fix Follow-Likers feature which couldn't fetch likers properly (raised at #3573).
 
 
 ## [Unreleased] - 2018-12-10
