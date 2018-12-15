@@ -4,7 +4,6 @@ from time import sleep
 from datetime import datetime, timedelta
 import random
 import collections
-import re
 from operator import itemgetter
 from selenium.webdriver.common.keys import Keys
 
