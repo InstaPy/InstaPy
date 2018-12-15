@@ -3747,7 +3747,7 @@ class InstaPy:
     def end(self):
         """Closes the current session"""
 
-            close_browser(self.browser, False, self.logger)
+        close_browser(self.browser, False, self.logger)
 
             # close virtual display
             if self.nogui:
