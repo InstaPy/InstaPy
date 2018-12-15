@@ -132,7 +132,7 @@ def set_selenium_local_session(proxy_address,
 
     # TODO: need to move to called
     message = "Session started!"
-    highlight_print(message, "initialization", "info", logger)
+    highlight_print('browser', message, "initialization", "info", logger)
     print('')
 
     return browser, err_msg
