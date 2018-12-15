@@ -202,7 +202,7 @@ def get_comments_on_post(browser,
         return None
 
     # get comments & commenters information
-    comments_block_XPath = "//div/div/h3/../../.."   # efficient location path
+    comments_block_XPath = "//div/div/h3/../../../.."   # efficient location path
     like_button_full_XPath = "//div/span/button/span[@aria-label='Like']"
     unlike_button_full_XPath = "//div/span/button/span[@aria-label='Unlike']"
 
@@ -218,7 +218,7 @@ def get_comments_on_post(browser,
             comments_block = browser.find_elements_by_xpath(
                 comments_block_XPath)
             for comment_line in comments_block:
-                commenter_elem = comment_line.find_element_by_tag_name("a")
+                commenter_elem = comment_line.find_element_by_tag_name('a')
                 commenter = extract_text_from_element(commenter_elem)
                 if (commenter and
                     commenter not in [owner, poster, ignore_users] and
