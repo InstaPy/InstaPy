@@ -68,7 +68,8 @@ from .text_analytics import yandex_supported_languages
 from .browser import set_selenium_local_session
 from .browser import close_browser
 
-
+# import exceptions
+from selenium.common.exceptions import NoSuchElementException
 
 
 class InstaPyError(Exception):
