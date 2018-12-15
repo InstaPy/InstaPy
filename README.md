@@ -69,6 +69,7 @@ Table of Contents
   * [Like by Tags](#like-by-tags)
   * [Like by Feeds](#like-by-feeds)
   * [Mandatory Words](#mandatory-words)
+  * [Mandatory Language](#mandatory-language)
   * [Restricting Likes](#restricting-likes)
   * [Ignoring Users](#ignoring-users)
   * [Ignoring Restrictions](#ignoring-restrictions)
@@ -96,7 +97,8 @@ Table of Contents
 * [Running on a Headless Browser](#running-on-a-headless-browser)
 * [Running Multiple Accounts](#running-multiple-accounts)
 * [Running with Docker microservices manual](#running-with-docker-microservices-manual)
-* [Running all-in-one with Docker (obsolete)](#running-all-in-one-with-docker-obsolete)
+* [Running all-in-one with Docker (legacy)](#running-all-in-one-with-docker-legacy)
+* [Running all with Docker Compose using config file](./docs/How_to_Docker_Compose.md)
 * [Automate InstaPy](#automate-instapy)
   * [Windows Task Scheduler](#windows-task-scheduler)
   * [cron](#cron)
@@ -160,8 +162,6 @@ Basic setup is a good way to test the tool. At project root folder open `quickst
 from instapy import InstaPy
 from instapy.util import smart_run
 
-
-
 # login credentials
 insta_username = ''
 insta_password = ''
@@ -172,19 +172,17 @@ session = InstaPy(username=insta_username,
                   password=insta_password,
                   headless_browser=False)
 
-
 with smart_run(session):
     """ Activity flow """
     # settings
     session.set_relationship_bounds(enabled=True,
-                                      delimit_by_numbers=True,
-                                       max_followers=4590,
-                                        min_followers=45,
-                                        min_following=77)
+                                    delimit_by_numbers=True,
+                                    max_followers=4590,
+                                    min_followers=45,
+                                    min_following=77)
 
     session.set_dont_include(["friend1", "friend2", "friend3"])
     session.set_dont_like(["pizza", "#store"])
-
 
     # actions
     session.like_by_tags(["natgeo"], amount=10)
@@ -196,13 +194,9 @@ Execute it:
 $ python quickstart.py
 ```
 
-### Or use our GUI
+### Extensions
 
-[1. Cross Platform GUI](https://github.com/ahmadudin/electron-instaPy-GUI)
-
-[2. Session scheduling with Telegram](https://github.com/Tkd-Alex/Telegram-InstaPy-Scheduling)
-
-[3. InstaPy-Light, a light version of InstaPy](https://github.com/converge/InstaPy-Light)
+[1. Session scheduling with Telegram](https://github.com/Tkd-Alex/Telegram-InstaPy-Scheduling)
 
 ## InstaPy Available Features
 
@@ -961,6 +955,16 @@ session.set_mandatory_words(['#food', '#instafood'])
 
 `.set_mandatory_words` searches the description, location and owner comments for words and
 will like the image if **any** of those words are in there
+
+### Mandatory Language
+
+```python
+session.set_mandatory_language(enabled=True, character_set='LATIN')
+```
+
+`.set_mandatory_language` restrict the interactions, liking and following if any character of the description is outside of the character set selected (the location is not included and non-alphabetic characters are ignored). For example if you choose `LATIN`, any character in Cyrillic will flag the post as inappropriate.
+
+* Available character sets: `LATIN`,  `GREEK`, `CYRILLIC`, `ARABIC`, `HEBREW`, `CJK`, `HANGUL`, `HIRAGANA`, `KATAKANA` and `THAI`
 
 ### Restricting Likes
 
@@ -1990,7 +1994,7 @@ To access yor container console to run bot type `localhost:22` in your favorite 
 docker-compose -f docker-prod.yml up -d
 ```
 
-## Running all-in-one with Docker (obsolete)
+## Running all-in-one with Docker (legacy)
 
 ### 1. Build the Image
 

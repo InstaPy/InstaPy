@@ -4,7 +4,7 @@ The **goal** of this file is explaining to the users of our project the notable 
 _The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html)_.
 
 
-## [Unreleased] - 2018-11-30
+## [Unreleased] - DATE-OF-MERGE
 ### Added
 - A new setting - `set_do_reply_to_comments()` to control replying to comments.  
 - A new feature - `run_time()` to get information of how many seconds the _session_ is running; Added to "_Sessional Live Report_" and can also be manually requested like `session.run_time()` from **quickstart** scripts, any time.
@@ -15,6 +15,40 @@ _The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 ### Fixed
 - Fix bug off #3318 which hit python 2 saying, "_TypeError: can't multiply sequence by non-int of type 'float'_" (_raised & solved at #3451_).
+- Fix error occured while liking a comment (raised at #3594).
+
+
+## [Unreleased] - 2018-12-10
+### Fixed
+- Fix `person_id` missing in post_unfollow_cleanup() [line 1152].
+
+
+## [Unreleased] - 2018-12-08
+### Fixed
+- Remove https://i.instagram.com/api/v1/users/{}/info/ as it not working and killing the unfollow with error.
+- Fix logging uncertain having no userid nor time log, will be important for sync feature.
+- Fix get active users when Video have no likes button / no posts in page.
+
+
+## [Unreleased] - 2018-12-08
+### Added
+- Full docker-compose and complex template + documentation.
+
+### Fixed
+- Fixes likers_from_photo when liked counter is "liked by X and N others".
+
+
+## [Unreleased] - 2018-12-06
+### Fixed
+- Fix for python 2.7 users, ceil returns a float in python 2.
+
+
+## [Unreleased] - 2018-12-05
+### Added
+- Added mandatory_language (updated check_link definition in like_util).
+
+### Fixed
+- Add self.aborts for the follow followers and follow following because otherwise InstaPy won't exit properly on them.
 
 
 ## [Unreleased] - 2018-11-28

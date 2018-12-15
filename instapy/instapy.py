@@ -19,6 +19,7 @@ from pyvirtualdisplay import Display
 import logging
 from contextlib import contextmanager
 from copy import deepcopy
+import unicodedata
 
 # import InstaPy modules
 from .clarifai_util import check_image
@@ -38,6 +39,7 @@ from .login_util import login_user
 from .settings import Settings
 from .print_log_writer import log_follower_num
 from .print_log_writer import log_following_num
+
 from .time_util import sleep
 from .time_util import set_sleep_percentage
 from .util import get_active_users
@@ -227,6 +229,10 @@ class InstaPy:
         self.relationship_data = {username: {"all_following": [], "all_followers": []}}
 
         self.simulation = {"enabled": True, "percentage": 100}
+
+        self.mandatory_language = False
+        self.mandatory_character = []
+        self.check_letters = {}
 
         # use this variable to terminate the nested loops after quotient reaches
         self.quotient_breach = False
@@ -719,6 +725,22 @@ class InstaPy:
 
         # delete duplicated tags
         self.smart_hashtags = list(set(self.smart_hashtags))
+        return self
+
+
+
+    def set_mandatory_language(self, enabled=False, character_set='LATIN'):
+        """Restrict the description of the image to a character set"""
+        if self.aborting:
+            return self
+
+        if (character_set not in ['LATIN', 'GREEK', 'CYRILLIC','ARABIC','HEBREW','CJK','HANGUL','HIRAGANA','KATAKANA','THAI']):
+            self.logger.warning('Unkown character set! Treating as "LATIN".')
+            character_set = 'LATIN'
+
+        self.mandatory_language = enabled
+        self.mandatory_character = character_set
+
         return self
 
 
@@ -1275,9 +1297,12 @@ class InstaPy:
                                    link,
                                    self.dont_like,
                                    self.mandatory_words,
+                                   self.mandatory_language,
+                                   self.is_mandatory_character,
+                                   self.mandatory_character,
+                                   self.check_character_set,
                                    self.ignore_if_contains,
-                                   self.logger)
-                    )
+                                   self.logger))
 
                     if not inappropriate and self.delimit_liking:
                         self.liking_approved = verify_liking(self.browser, self.max_likes, self.min_likes, self.logger)
@@ -1466,6 +1491,10 @@ class InstaPy:
                                    link,
                                    self.dont_like,
                                    self.mandatory_words,
+                                   self.mandatory_language,
+                                   self.is_mandatory_character,
+                                   self.mandatory_character,
+                                   self.check_character_set,
                                    self.ignore_if_contains,
                                    self.logger))
                     if not inappropriate:
@@ -1648,6 +1677,10 @@ class InstaPy:
                                    link,
                                    self.dont_like,
                                    self.mandatory_words,
+                                   self.mandatory_language,
+                                   self.is_mandatory_character,
+                                   self.mandatory_character,
+                                   self.check_character_set,
                                    self.ignore_if_contains,
                                    self.logger)
                     )
@@ -1896,6 +1929,10 @@ class InstaPy:
                                    link,
                                    self.dont_like,
                                    self.mandatory_words,
+                                   self.mandatory_language,
+                                   self.is_mandatory_character,
+                                   self.mandatory_character,
+                                   self.check_character_set,
                                    self.ignore_if_contains,
                                    self.logger))
 
@@ -2117,6 +2154,10 @@ class InstaPy:
                                    link,
                                    self.dont_like,
                                    self.mandatory_words,
+                                   self.mandatory_language,
+                                   self.is_mandatory_character,
+                                   self.mandatory_character,
+                                   self.check_character_set,
                                    self.ignore_if_contains,
                                    self.logger))
 
@@ -2371,6 +2412,10 @@ class InstaPy:
                                    link,
                                    self.dont_like,
                                    self.mandatory_words,
+                                   self.mandatory_language,
+                                   self.is_mandatory_character,
+                                   self.mandatory_character,
+                                   self.check_character_set,
                                    self.ignore_if_contains,
                                    self.logger))
 
@@ -2871,6 +2916,8 @@ class InstaPy:
                               interact=False,
                               sleep_delay=600):
         """ Follow the `Followers` of given users """
+        if self.aborting:
+            return self
 
         message = "Starting to follow user `Followers`.."
         highlight_print(self.username, message, "feature", "info", self.logger)
@@ -3040,6 +3087,8 @@ class InstaPy:
                               interact=False,
                               sleep_delay=600):
         """ Follow the `Following` of given users """
+        if self.aborting:
+            return self
 
         message = "Starting to follow user `Following`.."
         highlight_print(self.username, message, "feature", "info", self.logger)
@@ -3370,6 +3419,10 @@ class InstaPy:
                                 link,
                                 self.dont_like,
                                 self.mandatory_words,
+                                self.mandatory_language,
+                                self.is_mandatory_character,
+                                self.mandatory_character,
+                                self.check_character_set,
                                 self.ignore_if_contains,
                                 self.logger)
 
@@ -3587,6 +3640,7 @@ class InstaPy:
         """
 
         if enabled is False:
+            self.dont_include = self.white_list
             return
 
         self.blacklist['enabled'] = True
@@ -3903,6 +3957,10 @@ class InstaPy:
                                    link,
                                    self.dont_like,
                                    self.mandatory_words,
+                                   self.mandatory_language,
+                                   self.is_mandatory_character,
+                                   self.mandatory_character,
+                                   self.check_character_set,
                                    self.ignore_if_contains,
                                    self.logger)
                     )
@@ -4002,6 +4060,10 @@ class InstaPy:
                                url,
                                self.dont_like,
                                self.mandatory_words,
+                               self.mandatory_language,
+                               self.is_mandatory_character,
+                               self.mandatory_character,
+                               self.check_character_set,
                                self.ignore_if_contains,
                                self.logger))
 
@@ -4557,6 +4619,10 @@ class InstaPy:
                     link,
                     self.dont_like,
                     self.mandatory_words,
+                    self.mandatory_language,
+                    self.is_mandatory_character,
+                    self.mandatory_character,
+                    self.check_character_set,
                     self.ignore_if_contains,
                     self.logger)
 
@@ -4756,6 +4822,14 @@ class InstaPy:
             self.logger.info("\tNot valid users: {}".format(not_valid_users))
 
 
+    def is_mandatory_character(self, uchr):
+        if self.aborting:
+            return self
+        try:
+            return self.check_letters[uchr]
+        except KeyError:
+             return self.check_letters.setdefault(uchr, self.mandatory_character in unicodedata.name(uchr))
+
 
     def run_time(self):
         """ Get the time session lasted in seconds """
@@ -4767,4 +4841,10 @@ class InstaPy:
         return run_time
 
 
-
+    def check_character_set(self, unistr):
+        self.check_letters = {}
+        if self.aborting:
+            return self
+        return all(self.is_mandatory_character(uchr)
+               for uchr in unistr
+               if uchr.isalpha())
