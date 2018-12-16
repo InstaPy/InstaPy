@@ -162,8 +162,6 @@ Basic setup is a good way to test the tool. At project root folder open `quickst
 from instapy import InstaPy
 from instapy.util import smart_run
 
-
-
 # login credentials
 insta_username = ''
 insta_password = ''
@@ -174,19 +172,17 @@ session = InstaPy(username=insta_username,
                   password=insta_password,
                   headless_browser=False)
 
-
 with smart_run(session):
     """ Activity flow """
     # settings
     session.set_relationship_bounds(enabled=True,
-                                      delimit_by_numbers=True,
-                                       max_followers=4590,
-                                        min_followers=45,
-                                        min_following=77)
+                                    delimit_by_numbers=True,
+                                    max_followers=4590,
+                                    min_followers=45,
+                                    min_following=77)
 
     session.set_dont_include(["friend1", "friend2", "friend3"])
     session.set_dont_like(["pizza", "#store"])
-
 
     # actions
     session.like_by_tags(["natgeo"], amount=10)
@@ -198,13 +194,9 @@ Execute it:
 $ python quickstart.py
 ```
 
-### Or use our GUI
+### Extensions
 
-[1. Cross Platform GUI](https://github.com/ahmadudin/electron-instaPy-GUI)
-
-[2. Session scheduling with Telegram](https://github.com/Tkd-Alex/Telegram-InstaPy-Scheduling)
-
-[3. InstaPy-Light, a light version of InstaPy](https://github.com/converge/InstaPy-Light)
+[1. Session scheduling with Telegram](https://github.com/Tkd-Alex/Telegram-InstaPy-Scheduling)
 
 ## InstaPy Available Features
 

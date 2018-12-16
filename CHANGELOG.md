@@ -7,6 +7,10 @@ _The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 ### Added
 - Save account progress information into database adding the possibility for external tools to collect and organize the account progress.
 
+## [Unreleased] - 2018-12-10
+### Fixed
+- person_id missing in post_unfollow_cleanup() [line 1152]
+
 ## [Unreleased] - 2018-12-08
 ### Fixed
 - remove https://i.instagram.com/api/v1/users/{}/info/ as it not working and killing the unfollow with error

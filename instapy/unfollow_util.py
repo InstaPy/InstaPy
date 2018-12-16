@@ -1149,7 +1149,7 @@ def unfollow_user(browser, track, username, person, person_id, button, relations
     # general tasks after a successful unfollow
     logger.info("--> Unfollowed '{}'!".format(person))
     update_activity('unfollows')
-    post_unfollow_cleanup("successful", username, person, relationship_data, logger, logfolder)
+    post_unfollow_cleanup("successful", username, person, relationship_data, person_id, logger, logfolder)
 
     # get the post-unfollow delay time to sleep
     naply = get_action_delay("unfollow")

@@ -3645,6 +3645,7 @@ class InstaPy:
         """
 
         if enabled is False:
+            self.dont_include = self.white_list
             return
 
         self.blacklist['enabled'] = True
