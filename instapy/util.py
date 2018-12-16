@@ -1651,27 +1651,10 @@ def save_account_progress(browser, username, logger):
         :logger: library to log actions
     """
     logger.info('Saving account progress...')
-    browser.get('https://www.instagram.com/{}'.format(username))
-    followers = browser.execute_script(
-        "return window._sharedData.entry_data.ProfilePage[0].graphql"
-        ".user.edge_followed_by.count")
-    try:
-        following = browser.find_element_by_xpath("//li[3]/a/span").text
-    except Exception:
-        following = "0"
+    followers, following = get_relationship_counts (browser, username, logger)
     
     # save profile total posts
-    try:
-        # 1st try: logged
-        posts = browser.find_element_by_xpath("(//li)[1]/span/span").text
-    except Exception:
-        logger.warning('Unable to collect total posts, not saving '
-                       'account progress')
-        return
-
-    # delete decimal points
-    following = following.replace(",", "")
-    posts = posts.replace(",", "")
+    posts = getUserData("graphql.user.edge_owner_to_timeline_media.count", browser)
 
     try:
         # DB instance
