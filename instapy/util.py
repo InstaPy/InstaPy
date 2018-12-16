@@ -1641,4 +1641,33 @@ def has_any_letters(text):
     return result
 
 
+def save_account_progress(browser, username, logger):
+    """
+    Check account current progress and update database
 
+    Args:
+        :browser: web driver
+        :username: Account to be updated
+        :logger: library to log actions
+    """
+    logger.info('Saving account progress...')
+    followers, following = get_relationship_counts (browser, username, logger)
+    
+    # save profile total posts
+    posts = getUserData("graphql.user.edge_owner_to_timeline_media.count", browser)
+
+    try:
+        # DB instance
+        db, id = get_database()
+        conn = sqlite3.connect(db)
+        with conn:
+            conn.row_factory = sqlite3.Row
+            cur = conn.cursor()
+            sql = ("INSERT INTO accountsProgress (profile_id, followers, "
+                   "following, total_posts, created, modified) "
+                   "VALUES (?, ?, ?, ?, strftime('%Y-%m-%d %H:%M:%S'), "
+                   "strftime('%Y-%m-%d %H:%M:%S'))")
+            cur.execute(sql, (id, followers, following, posts))
+            conn.commit()
+    except Exception:
+        logger.exception('message')
