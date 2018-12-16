@@ -22,7 +22,6 @@ from copy import deepcopy
 import unicodedata
 
 # import InstaPy modules
-from .clarifai_util import check_image
 from .comment_util import comment_image
 from .comment_util import verify_commenting
 from .comment_util import get_comments_on_post
@@ -69,7 +68,7 @@ from .relationship_tools import get_mutual_following
 from .database_engine import get_database
 from .text_analytics import text_analysis
 from .text_analytics import yandex_supported_languages
-from .statistics_util import saveStatistics
+from .statistics_util import save_statistics
 
 # import exceptions
 from selenium.common.exceptions import NoSuchElementException, WebDriverException
@@ -4797,4 +4796,4 @@ class InstaPy:
                if uchr.isalpha())
 
     def save_stats(self):
-        saveStatistics(self.browser, self.username, self.logger)
+        save_statistics(self.browser, self.username, self.logger)

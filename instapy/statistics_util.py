@@ -8,16 +8,21 @@ import sqlite3
 
 
 
-def saveStatistics(browser, username, logger, save_engagement=True, amount=5):
-    save_AccountStatistics(browser, username, logger)
+def save_statistics(browser, username, logger, save_engagement=True, amount=5):
+    save_account_statistics(browser, username, logger)
 
     if save_engagement == True:
-        saveEngagementRate(browser, username, logger, amount)
+        save_engagement_rate(browser, username, logger, amount)
 
 
 
 
-def save_AccountStatistics(browser, username, logger):
+def save_account_statistics(browser, username, logger):
+
+    # get a DB and start a connection
+    db, id = get_database()
+    conn = sqlite3.connect(db)
+
     try:
 
         followers_count, following_count = get_relationship_counts(browser, username, logger)
@@ -28,9 +33,7 @@ def save_AccountStatistics(browser, username, logger):
         date = datetime.today()
 
 
-        # get a DB and start a connection
-        db, id = get_database()
-        conn = sqlite3.connect(db)
+
 
         with conn:
             conn.row_factory = sqlite3.Row
@@ -47,8 +50,11 @@ def save_AccountStatistics(browser, username, logger):
             conn.close()
 
 
-#work in progress
-def saveEngagementRate(browser, username, logger, post_count = 5):
+
+def save_engagement_rate(browser, username, logger, post_count = 5):
+
+    db, id = get_database()
+    conn = sqlite3.connect(db)
 
     try:
 
@@ -59,20 +65,39 @@ def saveEngagementRate(browser, username, logger, post_count = 5):
 
         for url in photo_urls:
             web_address_navigator(browser, url)
-            elems = browser.find_element_by_xpath("//section/div/div/a/span")
-            # logger.info(elems.get_attribute('innerHTML'))
-            likes = elems.get_attribute("innerHTML")
+
+            #TODO: Not Working Xpath not found for some unknown reason
+            try:
+                #xpatch changes depending on the nummber of likes
+                elem = browser.find_element_by_xpath("//section/div/div/button/span/")
+                likes = elem.get_attribute("innerHTML")
+
+            except Exception as ex1:
+
+                logger.warn(ex1)
+                logger.info("Adapt, improvise, overcome. (trying other xpath)")
+
+
+                try:
+                    elem = browser.find_element_by_xpath("//section/div/div/a/")
+                    likes = elem.get_attribute("innerHTML")
+
+                    likes = likes.split(" ")[0]  # remove text --> now only nummber
+                    likes = likes.replace("<span>", "")
+                    likes = likes.replace("</span>", "")
+                    likes = likes.replace(" ", "")
+
+                except Exception as ex2:
+                    raise ex2
+
+            logger.info(likes)
             rate = rate + (int(likes) / int(followers_count))
 
-        rate = round(rate / int(post_count), 2)
+        rate = round(rate / int(len(photo_urls)), 2)
 
-        date = datetime.today()
-
+        date = datetime.today().strftime("%Y-%m-%d %H:%M:%S")
+        logger.info(" Stats: Average Engagementrate for the last " + str(post_count) + " Posts: " + str(rate) + "%")
         #Save to DB
-        # get a DB and start a connection
-        db, id = get_database()
-        conn = sqlite3.connect(db)
-
         with conn:
             conn.row_factory = sqlite3.Row
             cur = conn.cursor()
