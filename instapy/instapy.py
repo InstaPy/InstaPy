@@ -22,6 +22,7 @@ from copy import deepcopy
 import unicodedata
 
 # import InstaPy modules
+from .clarifai_util import check_image
 from .comment_util import comment_image
 from .comment_util import verify_commenting
 from .comment_util import get_comments_on_post
