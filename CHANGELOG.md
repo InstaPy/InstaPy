@@ -18,6 +18,9 @@ _The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 - Fix error occured while liking a comment (raised at #3594).
 - Fix Follow-Likers feature which couldn't fetch likers properly (raised at #3573).
 
+## [Unreleased] - 2018-12-16
+### Added
+- Save account progress information into database adding the possibility for external tools to collect and organize the account progress.
 
 ## [Unreleased] - 2018-12-10
 ### Fixed
