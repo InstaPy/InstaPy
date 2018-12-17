@@ -4,7 +4,7 @@ The **goal** of this file is explaining to the users of our project the notable 
 _The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html)_.
 
 
-## [Unreleased] - DATE-OF-MERGE
+## [Unreleased] - 2018-12-17
 ### Added
 - A new setting - `set_do_reply_to_comments()` to control replying to comments.  
 - A new feature - `run_time()` to get information of how many seconds the _session_ is running; Added to "_Sessional Live Report_" and can also be manually requested like `session.run_time()` from **quickstart** scripts, any time.
