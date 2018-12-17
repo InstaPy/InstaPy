@@ -17,6 +17,7 @@ from .settings import Settings
 from .time_util import sleep
 
 from requests.exceptions import SSLError
+from requests.exceptions import ConnectionError
 
 
 YANDEX_API_VERSION = "v1.5"
@@ -213,11 +214,16 @@ def sentiment_analysis(text, language_of_text, logger):
                                          status_message))
             return None
 
-    except ValueError as exc:
+    except (ValueError, ConnectionError) as exc:
+        if isinstance(exc, ValueError):
+            level_info = "there was a value error :<"
+        elif isinstance(exc, ConnectionError):
+            level_info = "there was a connection error :<"
+
         print('')
-        logger.exception("{}\t~there was a value error :<"
-                         "\n{}\n".format(MEANINGCLOUD_FAILURE_MSG,
-                                         str(exc).encode("utf-8")))
+        logger.exception("{}\t~{}\n{}\n"
+                         .format(MEANINGCLOUD_FAILURE_MSG,
+                                 str(exc).encode("utf-8")))
         return None
 
 

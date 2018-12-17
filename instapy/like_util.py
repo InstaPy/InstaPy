@@ -709,7 +709,7 @@ def verify_liking(browser, max, min, logger):
 
 def like_comment(browser, original_comment_text, logger):
     """ Like the given comment """
-    comments_block_XPath = "//div/div/h3/../../.."   # quite an efficient location path
+    comments_block_XPath = "//div/div/h3/../../../.."   # quite an efficient location path
 
     try:
         comments_block = browser.find_elements_by_xpath(comments_block_XPath)
@@ -719,7 +719,7 @@ def like_comment(browser, original_comment_text, logger):
 
             if comment and (comment == original_comment_text):
                 # like the given comment
-                comment_like_button = comment_line.find_element_by_tag_name('button')
+                comment_like_button = comment_line.find_element_by_tag_name("button")
                 click_element(browser, comment_like_button)
 
                 # verify if like succeeded by waiting until the like button element goes stale..
@@ -736,7 +736,7 @@ def like_comment(browser, original_comment_text, logger):
                     return False, "failure"
 
     except (NoSuchElementException, StaleElementReferenceException) as exc:
-        logger.error("Error occured while liking a comment.\n\t{}\n\n."
+        logger.error("Error occured while liking a comment.\n\t{}\n\n"
                      .format(str(exc).encode("utf-8")))
         return False, "error"
 

@@ -77,7 +77,7 @@ with smart_run(session):
     session.set_user_interact(amount=3, randomize=True, percentage=80, media='Photo')
     session.set_do_like(enabled=True, percentage=90)
     session.set_do_comment(enabled=True, percentage=15)
-    session.set_comments([comments], media='Photo')
+    session.set_comments(comments, media='Photo')
     session.set_do_follow(enabled=True, percentage=40, times=1)
 
 
