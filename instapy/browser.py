@@ -58,7 +58,7 @@ def set_selenium_local_session(proxy_address,
                                            proxy_port)
 
         browser = webdriver.Firefox(firefox_profile=firefox_profile,
-                                         options=firefox_options)
+                                    options=firefox_options)
 
     else:
         chromedriver_location = Settings.chromedriver_location
@@ -82,7 +82,9 @@ def set_selenium_local_session(proxy_address,
             user_agent = "Chrome"
             chrome_options.add_argument('user-agent={user_agent}'
                                         .format(user_agent=user_agent))
+
         capabilities = DesiredCapabilities.CHROME
+
         # Proxy for chrome
         if proxy_address and proxy_port:
             prox = Proxy()
@@ -97,7 +99,7 @@ def set_selenium_local_session(proxy_address,
         if proxy_chrome_extension and not headless_browser:
             chrome_options.add_extension(proxy_chrome_extension)
 
-
+        # using saved profile for chrome
         if browser_profile_path is not None:
             chrome_options.add_argument('user-data-dir={}'.format(browser_profile_path))
 
@@ -130,7 +132,7 @@ def set_selenium_local_session(proxy_address,
 
     browser.implicitly_wait(page_delay)
 
-    # TODO: need to move to called
+    #
     message = "Session started!"
     highlight_print('browser', message, "initialization", "info", logger)
     print('')
@@ -138,8 +140,7 @@ def set_selenium_local_session(proxy_address,
     return browser, err_msg
 
 
-def set_selenium_remote_session(self,
-                                use_firefox,
+def set_selenium_remote_session(use_firefox,
                                 logger,
                                 selenium_url='',
                                 selenium_driver=None):
@@ -171,7 +172,9 @@ def set_selenium_remote_session(self,
     return browser
 
 
-def close_browser(browser, threaded_session, logger):
+def close_browser(browser,
+                  threaded_session,
+                  logger):
     with interruption_handler(threaded=threaded_session):
         # delete cookies
         try:
