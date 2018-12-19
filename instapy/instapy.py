@@ -3,7 +3,6 @@
 import time
 from math import ceil
 import random
-import re
 from sys import platform
 from platform import python_version
 import os
@@ -11,10 +10,7 @@ import csv
 import json
 import requests
 from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
 from selenium.webdriver import DesiredCapabilities
-from selenium.webdriver.common.proxy import Proxy, ProxyType
-from selenium.webdriver.firefox.options import Options as Firefox_Options
 from pyvirtualdisplay import Display
 import logging
 from contextlib import contextmanager
@@ -70,11 +66,11 @@ from .relationship_tools import get_mutual_following
 from .database_engine import get_database
 from .text_analytics import text_analysis
 from .text_analytics import yandex_supported_languages
+from .browser import set_selenium_local_session
+from .browser import close_browser
 
 # import exceptions
-from selenium.common.exceptions import NoSuchElementException, WebDriverException
-
-
+from selenium.common.exceptions import NoSuchElementException
 
 
 class InstaPyError(Exception):
@@ -163,6 +159,7 @@ class InstaPy:
         self.following_num = 0
         self.inap_img = 0
         self.not_valid_users = 0
+        self.video_played = 0
         self.already_Visited = 0
 
         self.follow_times = 1
@@ -244,7 +241,7 @@ class InstaPy:
         # stores the features' name which are being used by other features
         self.internal_usage = {}
 
-        if self.proxy_address and self.proxy_port > 0:
+        if (self.proxy_address and self.proxy_port > 0) or self.proxy_chrome_extension:
             Settings.connection_type = "proxy"
 
         self.aborting = False
@@ -293,114 +290,19 @@ class InstaPy:
             return logger
 
 
-
     def set_selenium_local_session(self):
-        """Starts local session for a selenium server.
-        Default case scenario."""
-        if self.aborting:
-            return self
-
-        if self.use_firefox:
-            firefox_options = Firefox_Options()
-            if self.headless_browser:
-                firefox_options.add_argument('-headless')
-
-            if self.browser_profile_path is not None:
-                firefox_profile = webdriver.FirefoxProfile(
-                    self.browser_profile_path)
-            else:
-                firefox_profile = webdriver.FirefoxProfile()
-
-            if self.disable_image_load:
-                # permissions.default.image = 2: Disable images load,
-                # this setting can improve pageload & save bandwidth
-                firefox_profile.set_preference('permissions.default.image', 2)
-
-            if self.proxy_address and self.proxy_port:
-                firefox_profile.set_preference('network.proxy.type', 1)
-                firefox_profile.set_preference('network.proxy.http',
-                                               self.proxy_address)
-                firefox_profile.set_preference('network.proxy.http_port',
-                                               self.proxy_port)
-                firefox_profile.set_preference('network.proxy.ssl',
-                                               self.proxy_address)
-                firefox_profile.set_preference('network.proxy.ssl_port',
-                                               self.proxy_port)
-
-            self.browser = webdriver.Firefox(firefox_profile=firefox_profile,
-                                             options=firefox_options)
-
-        else:
-            chromedriver_location = Settings.chromedriver_location
-            chrome_options = Options()
-            # chrome_options.add_argument("--disable-infobars")
-            chrome_options.add_argument("--mute-audio")
-            chrome_options.add_argument('--dns-prefetch-disable')
-            chrome_options.add_argument('--lang=en-US')
-            chrome_options.add_argument('--disable-setuid-sandbox')
-
-            # this option implements Chrome Headless, a new (late 2017)
-            # GUI-less browser. chromedriver 2.9 and above required
-            if self.headless_browser:
-                chrome_options.add_argument('--headless')
-                chrome_options.add_argument('--no-sandbox')
-
-                if self.disable_image_load:
-                    chrome_options.add_argument('--blink-settings=imagesEnabled=false')
-
-                # replaces browser User Agent from "HeadlessChrome".
-                user_agent = "Chrome"
-                chrome_options.add_argument('user-agent={user_agent}'
-                                            .format(user_agent=user_agent))
-            capabilities = DesiredCapabilities.CHROME
-            # Proxy for chrome
-            if self.proxy_address and self.proxy_port:
-                prox = Proxy()
-                proxy = ":".join([self.proxy_address, str(self.proxy_port)])
-                prox.proxy_type = ProxyType.MANUAL
-                prox.http_proxy = proxy
-                prox.socks_proxy = proxy
-                prox.ssl_proxy = proxy
-                prox.add_to_capabilities(capabilities)
-
-            # add proxy extension
-            if self.proxy_chrome_extension and not self.headless_browser:
-                chrome_options.add_extension(self.proxy_chrome_extension)
-
-            if self.browser_profile_path is not None:
-                chrome_options.add_argument('user-data-dir={}'.format(self.browser_profile_path))
-
-            chrome_prefs = {
-                'intl.accept_languages': 'en-US'
-            }
-
-            if self.disable_image_load:
-                chrome_prefs['profile.managed_default_content_settings.images'] = 2
-
-            chrome_options.add_experimental_option('prefs', chrome_prefs)
-            try:
-                self.browser = webdriver.Chrome(chromedriver_location,
-                                                desired_capabilities=capabilities,
-                                                chrome_options=chrome_options)
-            except WebDriverException as exc:
-                self.logger.exception(exc)
-                raise InstaPyError('ensure chromedriver is installed at {}'.format(
-                    Settings.chromedriver_location))
-
-            # prevent: Message: unknown error: call function result missing 'value'
-            matches = re.match(r'^(\d+\.\d+)',
-                               self.browser.capabilities['chrome']['chromedriverVersion'])
-            if float(matches.groups()[0]) < Settings.chromedriver_min_version:
-                raise InstaPyError('chromedriver {} is not supported, expects {}+'.format(
-                    float(matches.groups()[0]), Settings.chromedriver_min_version))
-
-        self.browser.implicitly_wait(self.page_delay)
-
-        message = "Session started!"
-        highlight_print(self.username, message, "initialization", "info", self.logger)
-        print('')
-
-        return self
+        self.browser, err_msg = set_selenium_local_session(self.proxy_address,
+                                                          self.proxy_port,
+                                                          self.proxy_chrome_extension,
+                                                          self.headless_browser,
+                                                          self.use_firefox,
+                                                          self.browser_profile_path,
+                # Replaces browser User Agent from "HeadlessChrome".
+                                                          self.disable_image_load,
+                                                          self.page_delay,
+                                                          self.logger)
+        if len(err_msg) > 0:
+            raise InstaPyError(err_msg)
 
 
 
@@ -3863,27 +3765,9 @@ class InstaPy:
     def end(self):
         """Closes the current session"""
 
+        close_browser(self.browser, False, self.logger)
+
         with interruption_handler():
-            # delete cookies
-            try:
-                self.browser.delete_all_cookies()
-            except Exception as exc:
-                if isinstance(exc, WebDriverException):
-                    self.logger.exception(
-                        "Error occurred while deleting cookies "
-                        "from web browser!\n\t{}"
-                        .format(str(exc).encode("utf-8")))
-
-            # close web browser
-            try:
-                self.browser.quit()
-            except Exception as exc:
-                if isinstance(exc, WebDriverException):
-                    self.logger.exception(
-                        "Error occurred while "
-                        "closing web browser!\n\t{}"
-                        .format(str(exc).encode("utf-8")))
-
             # close virtual display
             if self.nogui:
                 self.display.stop()

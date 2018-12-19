@@ -872,18 +872,20 @@ def web_address_navigator(browser, link):
 
 
 @contextmanager
-def interruption_handler(SIG_type=signal.SIGINT, handler=signal.SIG_IGN, notify=None, logger=None):
+def interruption_handler(threaded=False, SIG_type=signal.SIGINT, handler=signal.SIG_IGN, notify=None, logger=None):
     """ Handles external interrupt, usually initiated by the user like KeyboardInterrupt with CTRL+C """
     if notify is not None and logger is not None:
         logger.warning(notify)
 
-    original_handler = signal.signal(SIG_type, handler)
+    if not threaded:
+        original_handler = signal.signal(SIG_type, handler)
 
     try:
         yield
 
     finally:
-        signal.signal(SIG_type, original_handler)
+        if not threaded:
+            signal.signal(SIG_type, original_handler)
 
 
 def highlight_print(username=None, message=None, priority=None, level=None, logger=None):
