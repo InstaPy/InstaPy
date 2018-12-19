@@ -1201,11 +1201,11 @@ def post_unfollow_cleanup(state, username, person, relationship_data, person_id,
         # this user was found in our unfollow list but currently is not being followed
         logtime = get_log_time()
         log_uncertain_unfollowed_pool(username, person, logger, logfolder, logtime, person_id)
-        # save any unfollowed person
+        # take a generic 3 seconds of sleep per each uncertain unfollow
+        sleep(3)
 
+    # save any unfollowed person
     log_record_all_unfollowed(username, person, logger, logfolder)
-    sleep(3)
-
     print('')
 
 
@@ -1324,5 +1324,5 @@ def verify_action(browser, action, track, username, person, person_id, logger, l
 
 def post_unfollow_actions(browser, person, logger):
     pass
-        
-        
+
+

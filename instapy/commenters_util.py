@@ -4,7 +4,6 @@ from time import sleep
 from datetime import datetime, timedelta
 import random
 import collections
-import re
 from operator import itemgetter
 from selenium.webdriver.common.keys import Keys
 
@@ -277,17 +276,22 @@ def likers_from_photo(browser, amount=20):
         likers = []
 
         for liker in liked_this:
-            if "like this" not in liker.text:
+            if " like this" not in liker.text:
                 likers.append(liker.text)
 
         if check_exists_by_xpath(browser, liked_counter_button):
-            if re.match(r'\d+ others', liked_this[-1].text):
+            if " others" in liked_this[-1].text:
                 element_to_click = liked_this[-1]
-            elif "likes" not in liked_this[0].text:
-                print ("Few likes, not guaranteed you don't follow these likers already.\nGot photo likers: ", likers," \n")
-                return likers
-            else:
+
+            elif " likes" in liked_this[0].text:
                 element_to_click = liked_this[0]
+
+            else:
+                print ("Few likes, not guaranteed you don't follow these"
+                       " likers already.\nGot photo likers: {}\n"
+                       .format(likers))
+                return likers
+
         else:
             print ("Couldn't find liked counter button. May be a video.")
             print ("Moving on..")
