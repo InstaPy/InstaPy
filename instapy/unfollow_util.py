@@ -504,7 +504,7 @@ def follow_user(browser, track, login, user_name, button, blacklist, logger, log
 
     # available tracks are to follow in `profile`, `post` and `dialog`
     if track in ["profile", "post"]:
-        if track == "profile":
+        if track == "post":
             # check URL of the webpage, if it already is user's profile page, then do not navigate to it again
             user_link = "https://www.instagram.com/{}/".format(user_name)
             web_address_navigator(browser, user_link)
