@@ -3213,7 +3213,6 @@ class InstaPy:
                                   self.relationship_data,
                                   self.dont_include,
                                   self.white_list,
-                                  self.use_firefox,
                                   sleep_delay,
                                   self.jumps,
                                   self.logger,
@@ -3611,7 +3610,6 @@ class InstaPy:
                                           amount,
                                           self.relationship_data,
                                           live_match,
-                                          self.use_firefox,
                                           store_locally,
                                           self.logger,
                                           self.logfolder)
@@ -3654,7 +3652,6 @@ class InstaPy:
                                           amount,
                                           self.relationship_data,
                                           live_match,
-                                          self.use_firefox,
                                           store_locally,
                                           self.logger,
                                           self.logfolder)
@@ -3684,7 +3681,6 @@ class InstaPy:
             compare_track,
             self.relationship_data,
             live_match,
-            self.use_firefox,
             store_locally,
             print_out,
             self.logger,
@@ -3708,7 +3704,6 @@ class InstaPy:
                                         username,
                                         self.relationship_data,
                                         live_match,
-                                        self.use_firefox,
                                         store_locally,
                                         self.logger,
                                         self.logfolder)
@@ -3734,7 +3729,6 @@ class InstaPy:
                         username,
                         self.relationship_data,
                         live_match,
-                        self.use_firefox,
                         store_locally,
                         self.logger,
                         self.logfolder)
@@ -3760,7 +3754,6 @@ class InstaPy:
                                                 username,
                                                 self.relationship_data,
                                                 live_match,
-                                                self.use_firefox,
                                                 store_locally,
                                                 self.logger,
                                                 self.logfolder)

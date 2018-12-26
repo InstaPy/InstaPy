@@ -170,7 +170,6 @@ def unfollow(browser,
              relationship_data,
              dont_include,
              white_list,
-             use_firefox,
              sleep_delay,
              jumps,
              logger,
@@ -241,27 +240,25 @@ def unfollow(browser,
             logger.info("Unfollowing the users who do not follow back\n")
             """  Unfollow only the users who do not follow you back """
             unfollow_list = get_nonfollowers(browser,
-                                             username,
-                                             relationship_data,
-                                             False,
-                                             use_firefox,
-                                             True,
-                                             logger,
-                                             logfolder)
+                                              username,
+                                               relationship_data,
+                                                False,
+                                                 True,
+                                                  logger,
+                                                   logfolder)
 
         # pick only the users in the right track- ["all" or "nonfollowers"] for `customList` and
         #  `InstapyFollowed` unfollow methods
         if customList == True or InstapyFollowed == True:
             if unfollow_track == "nonfollowers":
                 all_followers = get_followers(browser,
-                                              username,
-                                              "full",
-                                              relationship_data,
-                                              False,
-                                              use_firefox,
-                                              True,
-                                              logger,
-                                              logfolder)
+                                               username,
+                                                "full",
+                                                 relationship_data,
+                                                  False,
+                                                   True,
+                                                    logger,
+                                                    logfolder)
                 loyal_users = [user for user in unfollow_list if user in all_followers]
                 logger.info("Found {} loyal followers!  ~will not unfollow them".format(len(loyal_users)))
                 unfollow_list = [user for user in unfollow_list if user not in loyal_users]

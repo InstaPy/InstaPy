@@ -19,7 +19,6 @@ def get_followers(browser,
                   grab,
                   relationship_data,
                   live_match,
-                  use_firefox,
                   store_locally,
                   logger,
                   logfolder):
@@ -51,10 +50,8 @@ def get_followers(browser,
     all_prior_followers = relationship_data[username]["all_followers"] if match is not None else None
 
     user_data = {}
-    if use_firefox:
-        graphql_endpoint = 'view-source:https://www.instagram.com/graphql/query/'
-    else:
-        graphql_endpoint = 'https://www.instagram.com/graphql/query/'
+
+    graphql_endpoint = 'https://www.instagram.com/graphql/query/'
     graphql_followers = (
         graphql_endpoint + '?query_hash=37479f2b8209594dde7facb0d904896a')
 
@@ -230,7 +227,6 @@ def get_following(browser,
                   grab,
                   relationship_data,
                   live_match,
-                  use_firefox,
                   store_locally,
                   logger,
                   logfolder):
@@ -262,10 +258,8 @@ def get_following(browser,
     all_prior_following = relationship_data[username]["all_following"] if match is not None else None
 
     user_data = {}
-    if use_firefox:
-        graphql_endpoint = 'view-source:https://www.instagram.com/graphql/query/'
-    else:
-        graphql_endpoint = 'https://www.instagram.com/graphql/query/'
+
+    graphql_endpoint = 'https://www.instagram.com/graphql/query/'
     graphql_following = (
         graphql_endpoint + '?query_hash=58712303d941c6855d4e888c5f0cd22f')
 
@@ -438,7 +432,6 @@ def get_unfollowers(browser,
                     compare_track,
                     relationship_data,
                     live_match,
-                    use_firefox,
                     store_locally,
                     print_out,
                     logger,
@@ -471,7 +464,6 @@ def get_unfollowers(browser,
                                       "full",
                                       relationship_data,
                                       live_match,
-                                      use_firefox,
                                       store_locally,
                                       logger,
                                       logfolder)
@@ -484,7 +476,6 @@ def get_unfollowers(browser,
                                           "full",
                                           relationship_data,
                                           live_match,
-                                          use_firefox,
                                           store_locally,
                                           logger,
                                           logfolder)
@@ -513,7 +504,6 @@ def get_nonfollowers(browser,
                      username,
                      relationship_data,
                      live_match,
-                     use_firefox,
                      store_locally,
                      logger,
                      logfolder):
@@ -529,7 +519,6 @@ def get_nonfollowers(browser,
                                   "full",
                                   relationship_data,
                                   live_match,
-                                  use_firefox,
                                   store_locally,
                                   logger,
                                   logfolder)
@@ -539,7 +528,6 @@ def get_nonfollowers(browser,
                                   "full",
                                   relationship_data,
                                   live_match,
-                                  use_firefox,
                                   store_locally,
                                   logger,
                                   logfolder)
@@ -568,7 +556,6 @@ def get_fans(browser,
              username,
              relationship_data,
              live_match,
-             use_firefox,
              store_locally,
              logger,
              logfolder):
@@ -584,7 +571,6 @@ def get_fans(browser,
                                   "full",
                                   relationship_data,
                                   live_match,
-                                  use_firefox,
                                   store_locally,
                                   logger,
                                   logfolder)
@@ -594,7 +580,6 @@ def get_fans(browser,
                                   "full",
                                   relationship_data,
                                   live_match,
-                                  use_firefox,
                                   store_locally,
                                   logger,
                                   logfolder)
@@ -623,7 +608,6 @@ def get_mutual_following(browser,
                          username,
                          relationship_data,
                          live_match,
-                         use_firefox,
                          store_locally,
                          logger,
                          logfolder):
@@ -639,7 +623,6 @@ def get_mutual_following(browser,
                                   "full",
                                   relationship_data,
                                   live_match,
-                                  use_firefox,
                                   store_locally,
                                   logger,
                                   logfolder)
@@ -649,7 +632,6 @@ def get_mutual_following(browser,
                                   "full",
                                   relationship_data,
                                   live_match,
-                                  use_firefox,
                                   store_locally,
                                   logger,
                                   logfolder)
