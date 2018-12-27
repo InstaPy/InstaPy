@@ -63,7 +63,7 @@ def set_selenium_local_session(proxy_address,
     else:
         chromedriver_location = Settings.chromedriver_location
         chrome_options = Options()
-        #chrome_options.add_argument("--disable-infobars")
+        # chrome_options.add_argument("--disable-infobars")
         chrome_options.add_argument("--mute-audio")
         chrome_options.add_argument('--dns-prefetch-disable')
         chrome_options.add_argument('--lang=en-US')
@@ -113,13 +113,13 @@ def set_selenium_local_session(proxy_address,
         chrome_options.add_experimental_option('prefs', chrome_prefs)
         try:
             browser = webdriver.Chrome(chromedriver_location,
-                                            desired_capabilities=capabilities,
-                                            chrome_options=chrome_options)
+                                       desired_capabilities=capabilities,
+                                       chrome_options=chrome_options)
 
         except WebDriverException as exc:
             logger.exception(exc)
             err_msg = 'ensure chromedriver is installed at {}'.format(
-                            Settings.chromedriver_location)
+                Settings.chromedriver_location)
             return browser, err_msg
 
         # prevent: Message: unknown error: call function result missing 'value'
@@ -127,7 +127,7 @@ def set_selenium_local_session(proxy_address,
                            browser.capabilities['chrome']['chromedriverVersion'])
         if float(matches.groups()[0]) < Settings.chromedriver_min_version:
             err_msg = 'chromedriver {} is not supported, expects {}+'.format(
-                            float(matches.groups()[0]), Settings.chromedriver_min_version)
+                float(matches.groups()[0]), Settings.chromedriver_min_version)
             return browser, err_msg
 
     browser.implicitly_wait(page_delay)
