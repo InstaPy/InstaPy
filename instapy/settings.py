@@ -47,6 +47,9 @@ class Settings:
     # store the parameter for global access
     show_logs = None
 
+    # store what browser the user is using, if they are using firefox it is true, chrome if false.
+    use_firefox = None
+
 
 
 

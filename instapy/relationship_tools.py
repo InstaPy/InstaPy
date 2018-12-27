@@ -51,7 +51,13 @@ def get_followers(browser,
 
     user_data = {}
 
-    graphql_endpoint = 'https://www.instagram.com/graphql/query/'
+    use_firefox = Settings.use_firefox
+
+    if use_firefox:
+        graphql_endpoint = 'view-source:https://www.instagram.com/graphql/query/'
+    else:
+        graphql_endpoint = 'https://www.instagram.com/graphql/query/'
+
     graphql_followers = (
         graphql_endpoint + '?query_hash=37479f2b8209594dde7facb0d904896a')
 
@@ -259,7 +265,13 @@ def get_following(browser,
 
     user_data = {}
 
-    graphql_endpoint = 'https://www.instagram.com/graphql/query/'
+    use_firefox = Settings.use_firefox
+
+    if use_firefox:
+        graphql_endpoint = 'view-source:https://www.instagram.com/graphql/query/'
+    else:
+        graphql_endpoint = 'https://www.instagram.com/graphql/query/'
+
     graphql_following = (
         graphql_endpoint + '?query_hash=58712303d941c6855d4e888c5f0cd22f')
 
