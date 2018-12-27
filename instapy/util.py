@@ -32,15 +32,12 @@ from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import WebDriverException
 from selenium.common.exceptions import TimeoutException
 
-
 default_profile_pic_instagram = [
     "https://instagram.flas1-2.fna.fbcdn.net/vp/a8539c22ed9fec8e1c43b538b1ebfd1d/5C5A1A7A/t51.2885-19/11906329_960233084022564_1448528159_a.jpg",
     "https://scontent-yyz1-1.cdninstagram.com/vp/a8539c22ed9fec8e1c43b538b1ebfd1d/5C5A1A7A/t51.2885-19/11906329_960233084022564_1448528159_a.jpg",
     "https://instagram.faep12-1.fna.fbcdn.net/vp/a8539c22ed9fec8e1c43b538b1ebfd1d/5C5A1A7A/t51.2885-19/11906329_960233084022564_1448528159_a.jpg",
     "https://instagram.fbts2-1.fna.fbcdn.net/vp/a8539c22ed9fec8e1c43b538b1ebfd1d/5C5A1A7A/t51.2885-19/11906329_960233084022564_1448528159_a.jpg",
     "https://scontent-mia3-1.cdninstagram.com/vp/a8539c22ed9fec8e1c43b538b1ebfd1d/5C5A1A7A/t51.2885-19/11906329_960233084022564_1448528159_a.jpg"]
-
-
 
 
 def is_private_profile(browser, logger, following=True):
@@ -134,7 +131,7 @@ def validate_username(browser,
         return False, inap_msg
 
     logfolder = logfolder = '{0}{1}{2}{1}'.format(
-            Settings.log_location, os.path.sep, own_username)
+        Settings.log_location, os.path.sep, own_username)
 
     blacklist_file = "{}blacklist.csv".format(logfolder)
     blacklist_file_exists = os.path.isfile(blacklist_file)
@@ -257,7 +254,9 @@ def validate_username(browser,
         except WebDriverException:
             logger.error("~cannot get the post profile pic url")
             return False, "---> Sorry, couldn't get if user profile pic url\n"
-        if (profile_pic in default_profile_pic_instagram or str(profile_pic).find("11906329_960233084022564_1448528159_a.jpg") > 0) and (random.randint(0, 100) <= skip_no_profile_pic_percentage):
+        if (profile_pic in default_profile_pic_instagram or str(profile_pic).find(
+                "11906329_960233084022564_1448528159_a.jpg") > 0) and (
+                random.randint(0, 100) <= skip_no_profile_pic_percentage):
             return False, "{} has default instagram profile picture\n".format(username)
 
     # skip business
@@ -291,7 +290,6 @@ def validate_username(browser,
 
     # if everything is ok
     return True, "Valid user"
-
 
 
 def getUserData(query,
@@ -447,8 +445,8 @@ def get_active_users(browser, username, posts, boundary, logger):
             except WebDriverException:
                 try:
                     likers_count = (browser.find_element_by_xpath(
-                         "//button[contains(@class, '_8A5w5')]/span").text)
-                    if likers_count:   # prevent an empty string scenarios
+                        "//button[contains(@class, '_8A5w5')]/span").text)
+                    if likers_count:  # prevent an empty string scenarios
                         likers_count = format_number(likers_count)
                     else:
                         logger.info("Failed to get likers count on your post {}  ~empty string".format(count))
@@ -464,7 +462,6 @@ def get_active_users(browser, username, posts, boundary, logger):
             except (IndexError, NoSuchElementException):
                 # Video have no likes button / no posts in page
                 continue
-
 
             dialog = browser.find_element_by_xpath(
                 "//div[text()='Likes']/following-sibling::div")
@@ -630,7 +627,6 @@ def delete_line_from_file(filepath, userToDelete, logger):
         logger.error("delete_line_from_file error {}\n{}".format(str(e).encode("utf-8")))
 
 
-
 def scroll_bottom(browser, element, range_int):
     # put a limit to the scrolling
     if range_int > 50:
@@ -742,10 +738,12 @@ def get_number_of_posts(browser):
     except WebDriverException:
 
         try:
-            num_of_posts_txt = browser.find_element_by_xpath("//section/main/div/header/section/ul/li[1]/span/span").text
+            num_of_posts_txt = browser.find_element_by_xpath(
+                "//section/main/div/header/section/ul/li[1]/span/span").text
 
         except NoSuchElementException:
-            num_of_posts_txt = browser.find_element_by_xpath("//section/div[3]/div/header/section/ul/li[1]/span/span").text
+            num_of_posts_txt = browser.find_element_by_xpath(
+                "//section/div[3]/div/header/section/ul/li[1]/span/span").text
 
         num_of_posts_txt = num_of_posts_txt.replace(" ", "")
         num_of_posts_txt = num_of_posts_txt.replace(",", "")
@@ -789,11 +787,13 @@ def get_relationship_counts(browser, username, logger):
                         followers_count = format_number(topCount_elements[1].text)
 
                     else:
-                        logger.info("Failed to get followers count of '{}'  ~empty list".format(username.encode("utf-8")))
+                        logger.info(
+                            "Failed to get followers count of '{}'  ~empty list".format(username.encode("utf-8")))
                         followers_count = None
 
                 except NoSuchElementException:
-                    logger.error("Error occurred during getting the followers count of '{}'\n".format(username.encode("utf-8")))
+                    logger.error(
+                        "Error occurred during getting the followers count of '{}'\n".format(username.encode("utf-8")))
                     followers_count = None
 
     try:
@@ -824,11 +824,13 @@ def get_relationship_counts(browser, username, logger):
                         following_count = format_number(topCount_elements[2].text)
 
                     else:
-                        logger.info("Failed to get following count of '{}'  ~empty list".format(username.encode("utf-8")))
+                        logger.info(
+                            "Failed to get following count of '{}'  ~empty list".format(username.encode("utf-8")))
                         following_count = None
 
                 except (NoSuchElementException, IndexError) as e:
-                    logger.error("\nError occurred during getting the following count of '{}'\n".format(username.encode("utf-8")))
+                    logger.error("\nError occurred during getting the following count of '{}'\n".format(
+                        username.encode("utf-8")))
                     following_count = None
 
     return followers_count, following_count
@@ -929,9 +931,8 @@ def highlight_print(username=None, message=None, priority=None, level=None, logg
         upper_char = "~"
         lower_char = None
 
-
     if show_logs == True:
-        print("\n{}".format(upper_char * int(ceil(output_len/len(upper_char)))))
+        print("\n{}".format(upper_char * int(ceil(output_len / len(upper_char)))))
 
     if level == "info":
         logger.info(message)
@@ -942,7 +943,6 @@ def highlight_print(username=None, message=None, priority=None, level=None, logg
 
     if lower_char and show_logs == True:
         print("{}".format(lower_char * output_len))
-
 
 
 def remove_duplicates(container, keep_order, logger):
@@ -1113,7 +1113,7 @@ def check_authorization(browser, username, method, logger, notify=True):
         # navigate to owner's profile page only if it is on an unusual page
         current_url = get_current_url(browser)
         if (not current_url or
-            "https://www.instagram.com" not in current_url or
+                "https://www.instagram.com" not in current_url or
                 "https://www.instagram.com/graphql/" in current_url):
             profile_link = 'https://www.instagram.com/{}/'.format(username)
             web_address_navigator(browser, profile_link)
@@ -1287,7 +1287,7 @@ def explicit_wait(browser, track, ec_params, logger, timeout=35, notify=True):
     elif track == "PFL":
         ec_name = "page fully loaded"
         condition = (lambda browser: browser.execute_script("return document.readyState")
-                     in ["complete" or "loaded"])
+                                     in ["complete" or "loaded"])
 
     elif track == "SO":
         ec_name = "staleness of"
@@ -1399,7 +1399,8 @@ def is_page_available(browser, logger):
 
         if any(keyword in page_title for keyword in expected_keywords):
             if "Page Not Found" in page_title:
-                logger.warning("The page isn't available!\t~the link may be broken, or the page may have been removed...")
+                logger.warning(
+                    "The page isn't available!\t~the link may be broken, or the page may have been removed...")
 
             elif "Content Unavailable" in page_title:
                 logger.warning("The page isn't available!\t~the user may have blocked you...")
@@ -1437,7 +1438,6 @@ def smart_run(session):
         session.end()
 
 
-
 def reload_webpage(browser):
     """ Reload the current webpage """
     browser.execute_script("location.reload()")
@@ -1445,7 +1445,6 @@ def reload_webpage(browser):
     sleep(2)
 
     return True
-
 
 
 def get_page_title(browser, logger):
@@ -1472,8 +1471,6 @@ def get_page_title(browser, logger):
     return page_title
 
 
-
-
 def click_visibly(browser, element):
     """ Click as the element become visible """
     if element.is_displayed():
@@ -1493,7 +1490,6 @@ def click_visibly(browser, element):
     return True
 
 
-
 def get_action_delay(action):
     """ Get the delay time to sleep after doing actions """
     defaults = {"like": 2,
@@ -1503,8 +1499,8 @@ def get_action_delay(action):
     config = Settings.action_delays
 
     if (not config or
-        config["enabled"] != True or
-        config[action] is None or
+            config["enabled"] != True or
+            config[action] is None or
             type(config[action]) not in [int, float]):
         return defaults[action]
 
@@ -1513,9 +1509,9 @@ def get_action_delay(action):
 
     # randomize the custom delay in user-defined range
     if (config["randomize"] == True and
-        type(config["random_range"]) == tuple and
-        len(config["random_range"]) == 2 and
-        all((type(i) in [type(None), int, float] for i in config["random_range"])) and
+            type(config["random_range"]) == tuple and
+            len(config["random_range"]) == 2 and
+            all((type(i) in [type(None), int, float] for i in config["random_range"])) and
             any(type(i) is not None for i in config["random_range"])):
         min_range = config["random_range"][0]
         max_range = config["random_range"][1]
@@ -1531,15 +1527,14 @@ def get_action_delay(action):
             min_range = max_range
             max_range = a
 
-        custom_delay = random.uniform(custom_delay*min_range/100,
-                                      custom_delay*max_range/100)
+        custom_delay = random.uniform(custom_delay * min_range / 100,
+                                      custom_delay * max_range / 100)
 
     if (custom_delay < defaults[action] and
             config["safety_match"] != False):
         return defaults[action]
 
     return custom_delay
-
 
 
 def deform_emojis(text):
@@ -1554,13 +1549,13 @@ def deform_emojis(text):
             word_emoji = (emoji.demojize(word)
                           .replace(':', '')
                           .replace('_', ' '))
-            if word_emoji not in emojis_in_text:   # do not add an emoji if already exists in text
+            if word_emoji not in emojis_in_text:  # do not add an emoji if already exists in text
                 emojiless_text += ' '
                 new_text += " ({}) ".format(word_emoji)
                 emojis_in_text.append(word_emoji)
             else:
                 emojiless_text += ' '
-                new_text += ' '   # add a space [instead of an emoji to be duplicated]
+                new_text += ' '  # add a space [instead of an emoji to be duplicated]
 
         else:
             new_text += word
@@ -1572,7 +1567,6 @@ def deform_emojis(text):
     return new_text, emojiless_text
 
 
-
 def extract_text_from_element(elem):
     """ As an element is valid and contains text, extract it and return """
     if elem and hasattr(elem, 'text') and elem.text:
@@ -1581,7 +1575,6 @@ def extract_text_from_element(elem):
         text = None
 
     return text
-
 
 
 def truncate_float(number, precision, round=False):
@@ -1599,46 +1592,41 @@ def truncate_float(number, precision, round=False):
         """
 
     else:
-        operate_on = 1   # returns the absolute number (e.g. 11.0 from 11.456)
+        operate_on = 1  # returns the absolute number (e.g. 11.0 from 11.456)
 
         for i in range(precision):
             operate_on *= 10
 
-        short_float = float(int(number*operate_on)) / operate_on
-
+        short_float = float(int(number * operate_on)) / operate_on
 
     return short_float
-
 
 
 def get_time_until_next_month():
     """ Get total seconds remaining until the next month """
     now = datetime.datetime.now()
     next_month = now.month + 1 if now.month < 12 else 1
-    year = now.year if now.month < 12 else now.year+1
+    year = now.year if now.month < 12 else now.year + 1
     date_of_next_month = datetime.datetime(year, next_month, 1)
 
     remaining_seconds = (date_of_next_month - now).total_seconds()
 
-
     return remaining_seconds
-
 
 
 def remove_extra_spaces(text):
     """ Find and remove redundant spaces more than 1 in text """
     new_text = re.sub(
-                        r" {2,}", ' ', text
-                     )
+        r" {2,}", ' ', text
+    )
 
     return new_text
-
 
 
 def has_any_letters(text):
     """ Check if the text has any letters in it """
     # result = re.search("[A-Za-z]", text)   # works only with english letters
-    result = any(c.isalpha() for c in text)   # works with any letters - english or non-english
+    result = any(c.isalpha() for c in text)  # works with any letters - english or non-english
 
     return result
 
@@ -1653,8 +1641,8 @@ def save_account_progress(browser, username, logger):
         :logger: library to log actions
     """
     logger.info('Saving account progress...')
-    followers, following = get_relationship_counts (browser, username, logger)
-    
+    followers, following = get_relationship_counts(browser, username, logger)
+
     # save profile total posts
     posts = getUserData("graphql.user.edge_owner_to_timeline_media.count", browser)
 
