@@ -13,6 +13,7 @@ from .util import interruption_handler
 from .util import truncate_float
 from .settings import Settings
 
+from selenium.common.exceptions import NoSuchElementException
 
 def get_followers(browser,
                   username,
@@ -120,7 +121,15 @@ def get_followers(browser,
         highest_value = followers_count if grab == "full" else grab
         # fetch all user while still has data
         while has_next_data:
-            pre = browser.find_element_by_tag_name("pre").text
+            try:
+                pre = browser.find_element_by_tag_name("pre").text
+            except NoSuchElementException as exc:
+                logger.info("Encountered an error to find `pre` in page!"
+                            "\t~grabbed {} usernames \n\t{}"
+                            .format(len(set(all_followers)),
+                                    str(exc).encode("utf-8")))
+                return all_followers
+            
             data = json.loads(pre)['data']
 
             # get followers
@@ -329,7 +338,15 @@ def get_following(browser,
         highest_value = following_count if grab == "full" else grab
         # fetch all user while still has data
         while has_next_data:
-            pre = browser.find_element_by_tag_name("pre").text
+            try:
+                pre = browser.find_element_by_tag_name("pre").text
+            except NoSuchElementException as exc:
+                logger.info("Encountered an error to find `pre` in page!"
+                            "\t~grabbed {} usernames \n\t{}"
+                            .format(len(set(all_following)),
+                                    str(exc).encode("utf-8")))
+                return all_following
+
             data = json.loads(pre)['data']
 
             # get following
