@@ -1335,7 +1335,11 @@ def get_username_from_id(browser, user_id, logger):
     post_url = u"{}&variables={}".format(graphql_query_URL, str(json.dumps(variables)))
 
     web_address_navigator(browser, post_url)
-    pre = browser.find_element_by_tag_name("pre").text
+    try:
+        pre = browser.find_element_by_tag_name("pre").text
+    except NoSuchElementException:
+        logger.info("Encountered an error to find `pre` in page, skipping username.")
+        return None
     user_data = json.loads(pre)["data"]["user"]
 
     if user_data:

@@ -133,6 +133,7 @@ class InstaPy:
         self.page_delay = page_delay
         self.switch_language = True
         self.use_firefox = use_firefox
+        Settings.use_firefox = self.use_firefox
         self.browser_profile_path = browser_profile_path
 
         self.do_comment = False
