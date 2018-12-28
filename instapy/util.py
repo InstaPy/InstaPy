@@ -1337,7 +1337,7 @@ def get_username_from_id(browser, user_id, logger):
     web_address_navigator(browser, post_url)
     try:
         pre = browser.find_element_by_tag_name("pre").text
-    except NoSuchElementException as exc:
+    except NoSuchElementException:
         logger.info("Encountered an error to find `pre` in page, skipping username.")
         return None
     user_data = json.loads(pre)["data"]["user"]
