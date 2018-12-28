@@ -12,3 +12,5 @@
 /docker-dev.yml
 /docker-allinone.yml
 /README.md
+
+/bot.py
