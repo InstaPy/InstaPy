@@ -15,26 +15,22 @@ NOTES:
   The second one will unfollow the followers within 24h.
 """
 
-
-#!/usr/bin/python2.7
+# !/usr/bin/python2.7
 import random
 from instapy import InstaPy
 from instapy.util import smart_run
 
-
-
 # get a session!
-session = InstaPy(username='xxx', password='xxx',  proxy_address='xxx', proxy_port='xxxx', headless_browser=True)
-
+session = InstaPy(username='xxx', password='xxx', proxy_address='xxx', proxy_port='xxxx', headless_browser=True)
 
 # let's go! :>
 with smart_run(session):
     hashtags = ['travelcouples', 'travelcommunity', 'passionpassport', 'travelingcouple',
-                'backpackerlife', 'travelguide', 'travelbloggers', 'travelblog','letsgoeverywhere',
-                'travelislife','stayandwander', 'beautifuldestinations', 'moodygrams',
-                'ourplanetdaily', 'travelyoga', 'travelgram', 'sunsetporn','lonelyplanet',
+                'backpackerlife', 'travelguide', 'travelbloggers', 'travelblog', 'letsgoeverywhere',
+                'travelislife', 'stayandwander', 'beautifuldestinations', 'moodygrams',
+                'ourplanetdaily', 'travelyoga', 'travelgram', 'sunsetporn', 'lonelyplanet',
                 'igtravel', 'instapassport', 'travelling', 'instatraveling', 'travelingram',
-                'mytravelgram', 'skyporn', 'traveler', 'sunrise','sunsetlovers', 'travelblog',
+                'mytravelgram', 'skyporn', 'traveler', 'sunrise', 'sunsetlovers', 'travelblog',
                 'sunset_pics', 'visiting', 'ilovetravel', 'photographyoftheday', 'sunsetphotography',
                 'explorenature', 'landscapeporn', 'exploring_shotz', 'landscapehunter', 'colors_of_day',
                 'earthfocus', 'ig_shotz', 'ig_nature', 'discoverearth', 'thegreatoutdoors']
@@ -55,29 +51,29 @@ with smart_run(session):
                           u'I really like the way you captured this. If you have time, check out my photos, too. I bet you will like them. :wink:',
                           u'Great capture!! :smiley: Any feedback for my recent shot? :wink:',
                           u'Great capture!! :smiley: :thumbsup: What do you think of my recent photo?'],
-                            media='Photo')
+                         media='Photo')
     session.set_do_like(True, percentage=70)
     session.set_delimit_liking(enabled=True, max=100, min=0)
     session.set_delimit_commenting(enabled=True, max=20, min=0)
     session.set_relationship_bounds(enabled=True,
-                                     potency_ratio=None,
-                                     delimit_by_numbers=True,
-                                      max_followers=3000,
-                                      max_following=2000,
-                                      min_followers=100,
-                                      min_following=50)
+                                    potency_ratio=None,
+                                    delimit_by_numbers=True,
+                                    max_followers=3000,
+                                    max_following=2000,
+                                    min_followers=100,
+                                    min_following=50)
 
-    session.set_quota_supervisor(enabled=True, sleep_after=["likes", "follows"], sleepyhead=True, stochastic_flow=True, notify_me=True,
-                                  peak_likes=(100, 1000),
-                                   peak_comments=(21, 250),
-                                    peak_follows=(200, None))
+    session.set_quota_supervisor(enabled=True, sleep_after=["likes", "follows"], sleepyhead=True, stochastic_flow=True,
+                                 notify_me=True,
+                                 peak_likes=(100, 1000),
+                                 peak_comments=(21, 250),
+                                 peak_follows=(200, None))
 
     session.set_user_interact(amount=1, randomize=False, percentage=40)
-    
+
     # activity
     session.like_by_tags(my_hashtags, amount=60, media=None)
-    session.unfollow_users(amount=500, InstapyFollowed=(True, "nonfollowers"), style="FIFO", unfollow_after=12*60*60, sleep_delay=501)
-    session.unfollow_users(amount=500, InstapyFollowed=(True, "all"), style="FIFO", unfollow_after=24*60*60, sleep_delay=501) 
-
-
-
+    session.unfollow_users(amount=500, InstapyFollowed=(True, "nonfollowers"), style="FIFO",
+                           unfollow_after=12 * 60 * 60, sleep_delay=501)
+    session.unfollow_users(amount=500, InstapyFollowed=(True, "all"), style="FIFO", unfollow_after=24 * 60 * 60,
+                           sleep_delay=501)

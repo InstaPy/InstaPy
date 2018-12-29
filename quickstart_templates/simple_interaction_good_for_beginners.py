@@ -8,27 +8,23 @@ NOTES:
 - This is used in combination with putting a 40 sec sleep delay after every like the script does. It runs 24/7 at rather slower speed, but without problems (so far).
 """
 
-
 from instapy import InstaPy
 from instapy.util import smart_run
 
-
-
 # get a session!
 session = InstaPy(username='', password='')
-
 
 # let's go! :>
 with smart_run(session):
     # settings
     session.set_user_interact(amount=3, randomize=True, percentage=100, media='Photo')
-    session.set_relationship_bounds (enabled=True,
-                                      potency_ratio=None,
-                                      delimit_by_numbers=True,
-                                       max_followers=3000,
-                                       max_following=900,
-                                       min_followers=50,
-                                       min_following=50)
+    session.set_relationship_bounds(enabled=True,
+                                    potency_ratio=None,
+                                    delimit_by_numbers=True,
+                                    max_followers=3000,
+                                    max_following=900,
+                                    min_followers=50,
+                                    min_following=50)
     session.set_simulation(enabled=False)
     session.set_do_like(enabled=True, percentage=100)
     session.set_ignore_users([])
@@ -40,8 +36,6 @@ with smart_run(session):
 
     # activity
     session.interact_user_followers([], amount=340)
-
-
 
 """
 -- REVIEWS --

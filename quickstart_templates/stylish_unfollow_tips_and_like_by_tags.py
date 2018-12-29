@@ -8,15 +8,11 @@ NOTES:
 - I am an one month old InstaPy user, with a small following. So my numbers in settings are bit conservative.
 """
 
-
 from instapy import InstaPy
 from instapy.util import smart_run
 
-
-
 # get a session!
 session = InstaPy(username='', password='')
-
 
 # let's go! :>
 with smart_run(session):
@@ -35,16 +31,16 @@ with smart_run(session):
         So I relaxed it a bit to -0.50 and 2000 respectively.
     """
     session.set_relationship_bounds(enabled=True,
-                                     potency_ratio=-0.50,
-                                     delimit_by_numbers=True,
-                                       max_followers=2000,
-                                       max_following=3500,
-                                       min_followers=25,
-                                       min_following=25)
+                                    potency_ratio=-0.50,
+                                    delimit_by_numbers=True,
+                                    max_followers=2000,
+                                    max_following=3500,
+                                    min_followers=25,
+                                    min_following=25)
     session.set_do_comment(True, percentage=20)
     session.set_do_follow(enabled=True, percentage=20, times=2)
     session.set_comments(['Amazing!', 'Awesome!!', 'Cool!', 'Good one!',
-                           'Really good one', 'Love this!', 'Like it!', 'Beautiful!', 'Great!'])
+                          'Really good one', 'Love this!', 'Like it!', 'Beautiful!', 'Great!'])
     session.set_sleep_reduce(200)
 
     """ Get the list of non-followers
@@ -55,15 +51,14 @@ with smart_run(session):
 
     # my account is small at the moment, so I keep smaller upper threshold
     session.set_quota_supervisor(enabled=True,
-                                  sleep_after=["likes", "comments_d", "follows", "unfollows", "server_calls_h"],
-                                  sleepyhead=True, stochastic_flow=True, notify_me=True,
-                                   peak_likes=(100, 700),
-                                   peak_comments=(25, 200),
-                                   peak_follows=(48, 125),
-                                   peak_unfollows=(35, 400),
-                                   peak_server_calls=(None, 3000))
+                                 sleep_after=["likes", "comments_d", "follows", "unfollows", "server_calls_h"],
+                                 sleepyhead=True, stochastic_flow=True, notify_me=True,
+                                 peak_likes=(100, 700),
+                                 peak_comments=(25, 200),
+                                 peak_follows=(48, 125),
+                                 peak_unfollows=(35, 400),
+                                 peak_server_calls=(None, 3000))
     """ End of parameter setting """
-
 
     """ Actions start here """
     # Unfollow users
@@ -74,7 +69,6 @@ with smart_run(session):
     session.unfollow_users(amount=25, InstapyFollowed=(True, "nonfollowers"), style="RANDOM",
                            unfollow_after=168 * 60 * 60,
                            sleep_delay=600)
-
 
     # Remove specific users immediately
     """ I use InstaPy only for my personal account, I sometimes use custom list to remove users who fill up my feed
@@ -93,8 +87,6 @@ with smart_run(session):
     """
 
     session.like_by_tags(['tag1', 'tag2', 'tag3', 'tag4'], amount=300)
-
-
 
 """
 -- REVIEWS --
