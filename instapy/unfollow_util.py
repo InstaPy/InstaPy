@@ -340,7 +340,8 @@ def unfollow(browser,
                     person_id = (automatedFollowedPool["all"][person]["id"] if
                                 person in automatedFollowedPool["all"].keys() else False)
 
-                    unfollow_state, msg = unfollow_user(browser,
+                    try:
+                        unfollow_state, msg = unfollow_user(browser,
                                                          "profile",
                                                           username,
                                                           person,
@@ -349,6 +350,8 @@ def unfollow(browser,
                                                              relationship_data,
                                                               logger,
                                                               logfolder)
+                    except BaseException as e:
+                        logger.error("Unfollow loop error:  {}\n".format(str(e)))
 
                     post_unfollow_actions(browser, person, logger)
 
@@ -483,7 +486,8 @@ def unfollow(browser,
                     person_id = (automatedFollowedPool["all"][person]["id"] if
                                 person in automatedFollowedPool["all"].keys() else False)
 
-                    unfollow_state, msg = unfollow_user(browser,
+                    try:
+                        unfollow_state, msg = unfollow_user(browser,
                                                 "dialog",
                                                  username,
                                                  person,
@@ -492,6 +496,9 @@ def unfollow(browser,
                                                     relationship_data,
                                                      logger,
                                                      logfolder)
+                    except Exception as exc:
+                        logger.error("Unfollow loop error:\n\n{}\n\n".format(str(exc).encode('utf-8')))
+            
                     if unfollow_state == True:
                         unfollowNum += 1
                         # reset jump counter after a successful unfollow
