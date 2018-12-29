@@ -9,7 +9,7 @@ def create_proxy_extension(proxy):
     port = int(proxy.split(':')[-1])
     login = proxy.split(':')[0]
     password = proxy.split('@')[0].split(':')[1]
-   
+
     manifest_json = """
         {
             "version": "1.0.0",
@@ -60,10 +60,10 @@ def create_proxy_extension(proxy):
     """ % (ip, port, login, password)
 
     dir_path = 'assets/chrome_extensions'
-    
+
     if not os.path.exists(dir_path):
         os.makedirs(dir_path)
-        
+
     pluginfile = '%s/proxy_auth_%s:%s.zip' % (dir_path, ip, port)
     with zipfile.ZipFile(pluginfile, 'w') as zp:
         zp.writestr("manifest.json", manifest_json)
