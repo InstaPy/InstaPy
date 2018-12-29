@@ -2,9 +2,6 @@ import io
 import os
 from setuptools import setup
 
-
-
-
 __version__ = '0.0.1'
 __author__ = 'Tim Grossmann'
 
@@ -18,8 +15,6 @@ with open("requirements.txt") as f:
 # load README
 with io.open(os.path.join(here, "README.md"), encoding="utf-8") as doc_file:
     documentation = '\n' + doc_file.read()
-
-
 
 setup(
     name='instagram_py',
@@ -59,11 +54,8 @@ setup(
                  "Topic :: Utilities",
                  "Natural Language :: English"],
     install_requires=dependencies,
-    extras_require={"test":["pytest", "tox"]},
+    extras_require={"test": ["pytest", "tox"]},
     include_package_data=True,
     python_requires=">=2.7",
     platforms=["win32", "linux", "linux2", "darwin"]
-    )
-
-
-
+)
