@@ -13,6 +13,7 @@ from .util import interruption_handler
 from .util import truncate_float
 from .settings import Settings
 
+from selenium.common.exceptions import NoSuchElementException
 
 def get_followers(browser,
                   username,
@@ -51,7 +52,13 @@ def get_followers(browser,
 
     user_data = {}
 
-    graphql_endpoint = 'https://www.instagram.com/graphql/query/'
+    use_firefox = Settings.use_firefox
+
+    if use_firefox:
+        graphql_endpoint = 'view-source:https://www.instagram.com/graphql/query/'
+    else:
+        graphql_endpoint = 'https://www.instagram.com/graphql/query/'
+
     graphql_followers = (
             graphql_endpoint + '?query_hash=37479f2b8209594dde7facb0d904896a')
 
@@ -115,7 +122,15 @@ def get_followers(browser,
         highest_value = followers_count if grab == "full" else grab
         # fetch all user while still has data
         while has_next_data:
-            pre = browser.find_element_by_tag_name("pre").text
+            try:
+                pre = browser.find_element_by_tag_name("pre").text
+            except NoSuchElementException as exc:
+                logger.info("Encountered an error to find `pre` in page!"
+                            "\t~grabbed {} usernames \n\t{}"
+                            .format(len(set(all_followers)),
+                                    str(exc).encode("utf-8")))
+                return all_followers
+            
             data = json.loads(pre)['data']
 
             # get followers
@@ -261,7 +276,13 @@ def get_following(browser,
 
     user_data = {}
 
-    graphql_endpoint = 'https://www.instagram.com/graphql/query/'
+    use_firefox = Settings.use_firefox
+
+    if use_firefox:
+        graphql_endpoint = 'view-source:https://www.instagram.com/graphql/query/'
+    else:
+        graphql_endpoint = 'https://www.instagram.com/graphql/query/'
+
     graphql_following = (
             graphql_endpoint + '?query_hash=58712303d941c6855d4e888c5f0cd22f')
 
@@ -319,7 +340,15 @@ def get_following(browser,
         highest_value = following_count if grab == "full" else grab
         # fetch all user while still has data
         while has_next_data:
-            pre = browser.find_element_by_tag_name("pre").text
+            try:
+                pre = browser.find_element_by_tag_name("pre").text
+            except NoSuchElementException as exc:
+                logger.info("Encountered an error to find `pre` in page!"
+                            "\t~grabbed {} usernames \n\t{}"
+                            .format(len(set(all_following)),
+                                    str(exc).encode("utf-8")))
+                return all_following
+
             data = json.loads(pre)['data']
 
             # get following

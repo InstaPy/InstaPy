@@ -1,23 +1,28 @@
-# How to run InstaPy on a RaspberryPi
+# How to run InstaPy on a RaspberryPi with Python 2.7 & Python 3
 
 _NOTE: If you add an empty file named ssh to the boot directory, ssh will be enabled when you first start your RPi (more info on the official website - section 3 - [here](https://www.raspberrypi.org/documentation/remote-access/ssh/)). If you do this, you can connect your RPi via ethernet, ssh in (once you have your ip) and skip right to the update step below (step 7). If you do not want to do this, follow the initial setup instructions to connect peripherals below._
 
 1. connect rpi3 to monitor via HDMI
-1. connect internet via cat5
-1. insert usb for wireless keyboard and mouse (if using)
-1. plug in rpi3 with sd card preloaded with NOOBs
-1. select country & install Raspbian
-1. open terminal --> sudo raspi-config -->interfacing options --> SSH -->enable (allows ssh connection from MacBook); then navigate to VNC --> enable (allows GUI access)
-1. sudo apt-get update && sudo apt-get upgrade
-1. mkdir Projects
-1. cd Projects
-1. git clone https://github.com/timgrossmann/InstaPy.git
-1. cd InstaPy
-1. sudo pip install . (encountered some errors and resulting 3 commands below (13-15), all may not be necessary)
-1. sudo apt-get build-dep python-imaging
-1. sudo apt-get install libjpeg8 libjpeg62-dev libfreetype6 libfreetype6-dev
-1. sudo pip install .
-1. sudo apt-get install tightvncserver (to view GUI from MacBook)
+2. connect internet via cat5
+3. insert usb for wireless keyboard and mouse (if using)
+4. plug in rpi3 with sd card preloaded with NOOBs
+5. select country & install Raspbian
+6. open terminal --> sudo raspi-config -->interfacing options --> SSH -->enable (allows ssh connection from MacBook); then navigate to VNC --> enable (allows GUI access)
+7. sudo apt-get update && sudo apt-get upgrade
+8. mkdir Projects
+8. pip install virtualenv
+10. pip3 install virtualenv
+11. sudo apt-get install python-virtualenv
+12. which python3 -> show's you the directory where to find python3. For Raspberry it should be '/usr/bin/python3'
+13. virtualenv venv36 -p /usr/bin/python3
+14. source venv36/bin/activate
+15. python -V -> if you did everything right you should get something with 'Python 3.x.x'
+16. cd Projects
+17. git clone https://github.com/timgrossmann/InstaPy.git
+18. cd InstaPy
+19. sudo pip3 install . 
+20. pip3 install requests selenium pyvirtualdisplay clarifai emoji regex plyer meaningcloud-python schedule
+21. sudo apt-get install tightvncserver (to view GUI from MacBook)
 
 ## For Chrome
 > This assumes you're using the latest version of raspbian (stretch). Note that this works best running headless.
