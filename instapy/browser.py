@@ -63,7 +63,6 @@ def set_selenium_local_session(proxy_address,
     else:
         chromedriver_location = Settings.chromedriver_location
         chrome_options = Options()
-        # chrome_options.add_argument("--disable-infobars")
         chrome_options.add_argument("--mute-audio")
         chrome_options.add_argument('--dns-prefetch-disable')
         chrome_options.add_argument('--lang=en-US')
