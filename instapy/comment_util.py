@@ -158,7 +158,8 @@ def verify_commenting(browser, max, min, mand_words, logger):
             first_comment = None
 
         if ((post_desc is not None and not any(mand_word.lower() in
-                                               post_desc for mand_word in mand_words)) or
+                                               post_desc for mand_word in
+                                               mand_words)) or
                 (first_comment is not None and not any(
                     mand_word.lower() in first_comment for
                     mand_word in mand_words))):
@@ -196,7 +197,8 @@ def get_comments_on_post(browser,
         return None
 
     # get comments & commenters information
-    comments_block_XPath = "//div/div/h3/../../../.."  # efficient location path
+    comments_block_XPath = "//div/div/h3/../../../.."  # efficient location
+    # path
     like_button_full_XPath = "//div/span/button/span[@aria-label='Like']"
     unlike_button_full_XPath = "//div/span/button/span[@aria-label='Unlike']"
 
