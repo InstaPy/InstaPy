@@ -132,8 +132,10 @@ def inspector(job, peaks):
 
 
 def stochasticity(peaks):
-    """ Generate casually chosen arbitrary peak values based on originals set by the user """
-    # in future, stochasticity percentage can be added to th QS parameters for users to define
+    """ Generate casually chosen arbitrary peak values based on originals
+    set by the user """
+    # in future, stochasticity percentage can be added to th QS parameters
+    # for users to define
     stoch_percent = random.randint(70, 85)  # over 70, below 85 would be good
 
     orig_peaks = configuration["stochasticity"]["original_peaks"]
@@ -144,7 +146,8 @@ def stochasticity(peaks):
 
     # renew peak values at relative range just after an hour
     hourly_cycle = ((realtime - latesttime_h) >= 3750)
-    # about ~one day (most people will not reach 86400 seconds, so, smaller is better)
+    # about ~one day (most people will not reach 86400 seconds, so, smaller
+    # is better)
     daily_cycle = ((realtime - latesttime_d) >= 27144)
 
     if hourly_cycle or daily_cycle:
@@ -156,12 +159,16 @@ def stochasticity(peaks):
             latesttime[interval] = epoch_time.time()
 
             if hourly_cycle:
-                logger.info("Quota Supervisor: just updated hourly peak rates in stochastic probablity!")
+                logger.info(
+                    "Quota Supervisor: just updated hourly peak rates in "
+                    "stochastic probablity!")
                 # turn off hourly cycle to avoid recycling
                 hourly_cycle = False
 
             elif daily_cycle:
-                logger.info("Quota Supervisor: just updated daily peak rates in stochastic probablity!")
+                logger.info(
+                    "Quota Supervisor: just updated daily peak rates in "
+                    "stochastic probablity!")
                 # turn off daily cycle to avoid recycling
                 daily_cycle = False
 
@@ -187,7 +194,8 @@ def stoch_randomizer(value, percent):
 
 
 def remaining_time(sleepyhead, interval):
-    """ Calculate wake up time and return accurate or close-range random sleep seconds """
+    """ Calculate wake up time and return accurate or close-range random
+    sleep seconds """
     extra_sleep_percent = 140  # actually 114 also is not that bad amount
 
     if interval == "hourly":
@@ -222,7 +230,8 @@ def send_message(job, action, interval, nap):
                                          "coffee colombia",
                                          "fruit juice"])
             message = ("Quota Supervisor: hourly {} reached quotient!"
-                       "\t~going to sleep {} minutes long\n\ttake a {} break? :>"
+                       "\t~going to sleep {} minutes long\n\ttake a {} "
+                       "break? :>"
                        .format(job, "%.0f" % (nap / 60), quick_drink))
 
         elif interval == "daily":
@@ -233,18 +242,22 @@ def send_message(job, action, interval, nap):
 
     elif action == "exit":
         message = ("Quota Supervisor: {} {} reached quotient!"
-                   "\t~exiting\n\tfor *non-stop botting use `sleep_after` parameter on the go! ;)"
+                   "\t~exiting\n\tfor *non-stop botting use `sleep_after` "
+                   "parameter on the go! ;)"
                    .format(interval, job))
 
     elif action == "jump":
-        message = ("Quota Supervisor: jumped a {} out of {} quotient!\t~be fair with numbers :]\n"
-                   .format(job[:-1], interval))
+        message = (
+            "Quota Supervisor: jumped a {} out of {} quotient!\t~be fair "
+            "with numbers :]\n"
+            .format(job[:-1], interval))
 
     logger.info(message)
 
 
 def toast_notification(notify, alert, job, interval):
-    """ Send toast notifications about supervising states directly to OS using 'plyer' module """
+    """ Send toast notifications about supervising states directly to OS
+    using 'plyer' module """
     platform_matches = platform.startswith(("win32",
                                             "linux",
                                             "darwin"))
@@ -255,7 +268,8 @@ def toast_notification(notify, alert, job, interval):
 
         expr = ("Yawn! {} filled {} quotient!\t~falling asleep a little bit :>"
                 if alert == "sleep" else
-                "Yikes! {} just woke up from {} quotient bandage!\t~let's chill again wakey ;)"
+                "Yikes! {} just woke up from {} quotient bandage!\t~let's "
+                "chill again wakey ;)"
                 if alert == "wakeup" else
                 "D\'oh! {} finished {} quotient!\t~exiting ~,~")
 
@@ -266,7 +280,8 @@ def toast_notification(notify, alert, job, interval):
                 app_name="InstaPy",
                 app_icon=icons[alert],
                 timeout=delay,
-                ticker="To switch supervising methods, please review quickstart script")
+                ticker="To switch supervising methods, please review "
+                       "quickstart script")
 
         except Exception:
             # TypeError: out of 'plyer' bug in python 2 - INNER EXCEPTION
@@ -332,7 +347,8 @@ def load_records():
                                                "comments": hourly_data[2],
                                                "follows": hourly_data[3],
                                                "unfollows": hourly_data[4],
-                                               "server_calls": hourly_data[5]}})
+                                               "server_calls": hourly_data[
+                                                   5]}})
 
         # load data to the global storage
         records.update(ordered_data)
