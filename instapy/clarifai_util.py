@@ -5,20 +5,18 @@ from clarifai.rest import Workflow
 from selenium.common.exceptions import NoSuchElementException
 
 
-def check_image(
-        browser,
-        clarifai_api_key,
-        img_tags,
-        img_tags_skip_if_contain,
-        logger,
-        clarifai_models,
-        workflow,
-        probability,
-        full_match=False,
-        check_video=False,
-        proxy=None,
-        picture_url=None,
-):
+def check_image(browser,
+                clarifai_api_key,
+                img_tags,
+                img_tags_skip_if_contain,
+                logger,
+                clarifai_models,
+                workflow,
+                probability,
+                full_match=False,
+                check_video=False,
+                proxy=None,
+                picture_url=None):
     try:
         """Uses the link to the image to check for invalid content in the 
         image.
