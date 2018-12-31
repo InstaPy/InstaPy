@@ -19,7 +19,8 @@ from selenium.common.exceptions import WebDriverException
 
 
 def bypass_suspicious_login(browser, bypass_with_mobile):
-    """Bypass suspicious loggin attempt verification. This should be only enabled
+    """Bypass suspicious loggin attempt verification. This should be only
+    enabled
     when there isn't available cookie for the username, otherwise it will and
     shows "Unable to locate email or phone button" message, folollowed by
     CRITICAL - Wrong login data!"""
@@ -162,7 +163,8 @@ def login_user(browser,
     # try to load cookie from username
     try:
         for cookie in pickle.load(open('{0}{1}_cookie.pkl'
-                                               .format(logfolder, username), 'rb')):
+                                               .format(logfolder, username),
+                                       'rb')):
             browser.add_cookie(cookie)
             cookie_loaded = True
     except (WebDriverException, OSError, IOError):
