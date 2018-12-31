@@ -3,7 +3,9 @@ This template is written by @Nuzzo235
 
 What does this quickstart script aim to do?
 - This script is targeting followers of similar accounts and influencers.
-- This is my starting point for a conservative approach: Interact with the audience of influencers in your niche with the help of 'Target-Lists' and 'randomization'.
+- This is my starting point for a conservative approach: Interact with the
+audience of influencers in your niche with the help of 'Target-Lists' and
+'randomization'.
 
 NOTES:
 - For the ease of use most of the relevant data is retrieved in the upper part.
@@ -21,7 +23,8 @@ insta_password = 'password'
 dont_likes = ['#exactmatch', '[startswith', ']endswith', 'broadmatch']
 ignore_users = ['user1', 'user2', 'user3']
 
-""" Prevent commenting on and unfollowing your good friends (the images will still be liked)...
+""" Prevent commenting on and unfollowing your good friends (the images will 
+still be liked)...
 """
 friends = ['friend1', 'friend2', 'friend3']
 
@@ -69,9 +72,11 @@ with smart_run(session):
     session.set_skip_users(skip_private=True,
                            skip_no_profile_pic=True,
                            skip_business=True,
-                           dont_skip_business_categories=[target_business_categories])
+                           dont_skip_business_categories=[
+                               target_business_categories])
 
-    session.set_user_interact(amount=3, randomize=True, percentage=80, media='Photo')
+    session.set_user_interact(amount=3, randomize=True, percentage=80,
+                              media='Photo')
     session.set_do_like(enabled=True, percentage=90)
     session.set_do_comment(enabled=True, percentage=15)
     session.set_comments(comments, media='Photo')
@@ -93,18 +98,24 @@ with smart_run(session):
 
     """ Interact with the chosen targets...
     """
-    session.follow_user_followers(random_targets, amount=random.randint(30, 60), randomize=True, sleep_delay=600,
+    session.follow_user_followers(random_targets,
+                                  amount=random.randint(30, 60),
+                                  randomize=True, sleep_delay=600,
                                   interact=True)
 
     # UNFOLLOW activity
     """ Unfollow nonfollowers after one day...
     """
-    session.unfollow_users(amount=random.randint(75, 100), InstapyFollowed=(True, "nonfollowers"), style="FIFO",
+    session.unfollow_users(amount=random.randint(75, 100),
+                           InstapyFollowed=(True, "nonfollowers"),
+                           style="FIFO",
                            unfollow_after=24 * 60 * 60, sleep_delay=600)
 
-    """ Unfollow all users followed by InstaPy after one week to keep the following-level clean...
+    """ Unfollow all users followed by InstaPy after one week to keep the 
+    following-level clean...
     """
-    session.unfollow_users(amount=random.randint(75, 100), InstapyFollowed=(True, "all"), style="FIFO",
+    session.unfollow_users(amount=random.randint(75, 100),
+                           InstapyFollowed=(True, "all"), style="FIFO",
                            unfollow_after=168 * 60 * 60, sleep_delay=600)
 
 """

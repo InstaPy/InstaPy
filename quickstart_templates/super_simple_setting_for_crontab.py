@@ -2,7 +2,8 @@
 This template is written by @Edhim
 
 What does this quickstart script aim to do?
-- I am using simple settings for my personal account with a crontab each 3H, it's been working since 5 months with no problem.
+- I am using simple settings for my personal account with a crontab each 3H,
+it's been working since 5 months with no problem.
 """
 
 from instapy import InstaPy
@@ -22,8 +23,11 @@ with smart_run(session):
                                     min_followers=45,
                                     min_following=77)
     session.set_do_comment(True, percentage=50)
-    session.set_comments(['aMazing!', 'So cool!!', 'Nice!', 'wow looks nice!', 'this is awesome!'])
+    session.set_comments(['aMazing!', 'So cool!!', 'Nice!', 'wow looks nice!',
+                          'this is awesome!'])
 
     # activity
-    session.like_by_tags(['xxx', 'xxx', 'xxx', 'xxx', 'xxx', 'xxx', 'xxx', 'xxx', 'xxx', 'xxx', 'xxx', 'xxx', 'xxx'],
-                         amount=8, skip_top_posts=True)
+    session.like_by_tags(
+        ['xxx', 'xxx', 'xxx', 'xxx', 'xxx', 'xxx', 'xxx', 'xxx', 'xxx', 'xxx',
+         'xxx', 'xxx', 'xxx'],
+        amount=8, skip_top_posts=True)

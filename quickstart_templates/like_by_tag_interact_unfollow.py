@@ -27,8 +27,10 @@ dont_likes = ['sex', 'nude', 'naked', 'beef', 'pork', 'seafood',
 
 friends = ['list of friends I do not want to interact with']
 
-like_tag_list = ['vegan', 'veganfoodshare', 'veganfood', 'whatveganseat', 'veganfoodie', 'veganism', 'govegan',
-                 'veganism', 'vegansofig', 'veganfoodshare', 'veganfit', 'veggies']
+like_tag_list = ['vegan', 'veganfoodshare', 'veganfood', 'whatveganseat',
+                 'veganfoodie', 'veganism', 'govegan',
+                 'veganism', 'vegansofig', 'veganfoodshare', 'veganfit',
+                 'veggies']
 
 # prevent posts that contain some plantbased meat from being skipped
 ignore_list = ['vegan', 'veggie', 'plantbased']
@@ -54,7 +56,9 @@ with smart_run(session):
     session.set_do_like(enabled=True, percentage=80)
 
     # activity
-    session.like_by_tags(random.sample(like_tag_list, 3), amount=random.randint(50, 100), interact=True)
+    session.like_by_tags(random.sample(like_tag_list, 3),
+                         amount=random.randint(50, 100), interact=True)
 
-    session.unfollow_users(amount=random.randint(75, 150), InstapyFollowed=(True, "all"), style="FIFO",
+    session.unfollow_users(amount=random.randint(75, 150),
+                           InstapyFollowed=(True, "all"), style="FIFO",
                            unfollow_after=90 * 60 * 60, sleep_delay=501)

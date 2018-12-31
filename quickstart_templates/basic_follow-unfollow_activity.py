@@ -5,10 +5,16 @@ What does this quickstart script aim to do?
 - Basic follow/unfollow activity.
 
 NOTES:
-- I don't want to automate comment and too much likes because I want to do this only for post that I really like the content so at the moment I only use the function follow/unfollow.
+- I don't want to automate comment and too much likes because I want to do
+this only for post that I really like the content so at the moment I only
+use the function follow/unfollow.
 - I use two files "quickstart", one for follow and one for unfollow.
-- I noticed that the most important thing is that the account from where I get followers has similar contents to mine in order to be sure that my content could be appreciated. After the following step, I start unfollowing the user that don't followed me back.
-- At the end I clean my account unfollowing all the users followed with InstaPy.
+- I noticed that the most important thing is that the account from where I
+get followers has similar contents to mine in order to be sure that my
+content could be appreciated. After the following step, I start unfollowing
+the user that don't followed me back.
+- At the end I clean my account unfollowing all the users followed with
+InstaPy.
 """
 
 # imports
@@ -39,25 +45,31 @@ with smart_run(session):
 
     # activities
 
-    """ Massive Follow of users followers (I suggest to follow not less than 3500/4000 users for better results)...
+    """ Massive Follow of users followers (I suggest to follow not less than 
+    3500/4000 users for better results)...
     """
-    session.follow_user_followers(['user1', 'user2', 'user3'], amount=800, randomize=False, interact=False)
+    session.follow_user_followers(['user1', 'user2', 'user3'], amount=800,
+                                  randomize=False, interact=False)
 
     """ First step of Unfollow action - Unfollow not follower users...
     """
-    session.unfollow_users(amount=500, InstapyFollowed=(True, "nonfollowers"), style="FIFO",
+    session.unfollow_users(amount=500, InstapyFollowed=(True, "nonfollowers"),
+                           style="FIFO",
                            unfollow_after=12 * 60 * 60, sleep_delay=601)
 
     """ Second step of Massive Follow...
     """
-    session.follow_user_followers(['user1', 'user2', 'user3'], amount=800, randomize=False, interact=False)
+    session.follow_user_followers(['user1', 'user2', 'user3'], amount=800,
+                                  randomize=False, interact=False)
 
     """ Second step of Unfollow action - Unfollow not follower users...
     """
-    session.unfollow_users(amount=500, InstapyFollowed=(True, "nonfollowers"), style="FIFO",
+    session.unfollow_users(amount=500, InstapyFollowed=(True, "nonfollowers"),
+                           style="FIFO",
                            unfollow_after=12 * 60 * 60, sleep_delay=601)
 
     """ Clean all followed user - Unfollow all users followed by InstaPy...
     """
-    session.unfollow_users(amount=500, InstapyFollowed=(True, "all"), style="FIFO", unfollow_after=24 * 60 * 60,
+    session.unfollow_users(amount=500, InstapyFollowed=(True, "all"),
+                           style="FIFO", unfollow_after=24 * 60 * 60,
                            sleep_delay=601)
