@@ -76,7 +76,8 @@ def set_selenium_local_session(proxy_address,
             chrome_options.add_argument('--no-sandbox')
 
             if disable_image_load:
-                chrome_options.add_argument('--blink-settings=imagesEnabled=false')
+                chrome_options.add_argument(
+                    '--blink-settings=imagesEnabled=false')
 
             # replaces browser User Agent from "HeadlessChrome".
             user_agent = "Chrome"
@@ -101,7 +102,8 @@ def set_selenium_local_session(proxy_address,
 
         # using saved profile for chrome
         if browser_profile_path is not None:
-            chrome_options.add_argument('user-data-dir={}'.format(browser_profile_path))
+            chrome_options.add_argument(
+                'user-data-dir={}'.format(browser_profile_path))
 
         chrome_prefs = {
             'intl.accept_languages': 'en-US',
@@ -124,7 +126,8 @@ def set_selenium_local_session(proxy_address,
 
         # prevent: Message: unknown error: call function result missing 'value'
         matches = re.match(r'^(\d+\.\d+)',
-                           browser.capabilities['chrome']['chromedriverVersion'])
+                           browser.capabilities['chrome'][
+                               'chromedriverVersion'])
         if float(matches.groups()[0]) < Settings.chromedriver_min_version:
             err_msg = 'chromedriver {} is not supported, expects {}+'.format(
                 float(matches.groups()[0]), Settings.chromedriver_min_version)
