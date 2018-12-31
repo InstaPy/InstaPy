@@ -27,12 +27,15 @@ setup(
     url='https://github.com/timgrossmann/InstaPy',
     download_url="https://github.com/timgrossmann/InstaPy/archive/master.zip",
     project_urls={"GUI": "https://github.com/ahmadudin/electron-instaPy-GUI",
-                  "How Tos": "https://github.com/timgrossmann/InstaPy/tree/master/docs",
-                  "Examples": "https://github.com/timgrossmann/InstaPy/tree/master/examples"},
+                  "How Tos": "https://github.com/timgrossmann/InstaPy/tree"
+                             "/master/docs",
+                  "Examples": "https://github.com/timgrossmann/InstaPy/tree"
+                              "/master/examples"},
     packages=['instapy'],
     py_modules='instapy',
     license="GPLv3",
-    keywords=["instagram", "automation", "promotion", "marketing", "instapy", "bot"],
+    keywords=["instagram", "automation", "promotion", "marketing", "instapy",
+              "bot"],
     classifiers=["Development Status :: 5 - Production/Stable",
                  "Environment :: Console",
                  "Environment :: Win32 (MS Windows)",
