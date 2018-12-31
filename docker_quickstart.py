@@ -14,7 +14,8 @@ friend_list = ['friend1', 'friend2', 'friend3']
 # username=<your-username-here> and password=<your-password> into InstaPy
 # e.g like so InstaPy(username="instagram", password="test1234")
 
-bot = InstaPy(username=insta_username, password=insta_password, selenium_local_session=False)
+bot = InstaPy(username=insta_username, password=insta_password,
+              selenium_local_session=False)
 bot.set_selenium_remote_session(selenium_url='http://selenium:4444/wd/hub')
 bot.login()
 bot.set_relationship_bounds(enabled=True,
