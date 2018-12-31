@@ -43,7 +43,8 @@ def create_proxy_extension(proxy):
                   bypassList: ["localhost"]
                 }
               };
-        chrome.proxy.settings.set({value: config, scope: "regular"}, function() {});
+        chrome.proxy.settings.set({value: config, scope: "regular"}, 
+        function() {});
         function callbackFn(details) {
             return {
                 authCredentials: {
