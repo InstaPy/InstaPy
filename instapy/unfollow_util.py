@@ -61,6 +61,7 @@ def set_automated_followed_pool(username, unfollow_after, logger, logfolder):
                     datetime ~ user ~ user_id,   # after `user_id` was added
                 """
                 if sz == 1:
+                    time_stamp = None
                     user = entries[0]
 
                 elif sz == 2:
