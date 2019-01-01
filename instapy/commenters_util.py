@@ -1,5 +1,7 @@
 """Methods to extract the data for the given usernames profile"""
-#code created by modification of original code copied from https://github.com/timgrossmann/instagram-profilecrawl/blob/master/util/extractor.py
+# code created by modification of original code copied from
+# https://github.com/timgrossmann/instagram-profilecrawl/blob/master/util
+# /extractor.py
 from time import sleep
 from datetime import datetime, timedelta
 import random
@@ -16,8 +18,6 @@ from .util import username_url_to_username
 from selenium.common.exceptions import NoSuchElementException
 
 
-
-
 def check_exists_by_xpath(browser, xpath):
     try:
         browser.find_element_by_xpath(xpath)
@@ -26,12 +26,10 @@ def check_exists_by_xpath(browser, xpath):
     return True
 
 
-
 def remove_duplicates_preserving_order(seq):
     seen = set()
     seen_add = seen.add
     return [x for x in seq if not (x in seen or seen_add(x))]
-
 
 
 def extract_post_info(browser):
@@ -49,144 +47,161 @@ def extract_post_info(browser):
 
             while (" comments" in comments[1].text):
                 more_comments += 1
-                print ("loading more comments.")
-                load_more_comments_element = browser.find_element_by_xpath("//div/ul/li[2]/button")
+                print("loading more comments.")
+                load_more_comments_element = browser.find_element_by_xpath(
+                    "//div/ul/li[2]/button")
                 click_element(browser, load_more_comments_element)
-                #comment_list = post.find_element_by_tag_name('ul')
+                # comment_list = post.find_element_by_tag_name('ul')
                 comments = comment_list.find_elements_by_tag_name('li')
 
                 if more_comments > 10:
-                    print ("Won't load more than that, moving on..")
+                    print("Won't load more than that, moving on..")
                     break
 
-            #if post autor didnt write description, more comments text is in first comment
+            # if post autor didnt write description, more comments text is
+            # in first comment
             if more_comments == 0:
                 while (" comments" in comments[0].text):
                     more_comments += 1
-                    print ("loading more comments.")
-                    load_more_comments_element = browser.find_element_by_xpath("//div/ul/li[1]/button")
+                    print("loading more comments.")
+                    load_more_comments_element = browser.find_element_by_xpath(
+                        "//div/ul/li[1]/button")
                     click_element(browser, load_more_comments_element)
-                    #comment_list = post.find_element_by_tag_name('ul')
+                    # comment_list = post.find_element_by_tag_name('ul')
                     comments = comment_list.find_elements_by_tag_name('li')
 
                     if more_comments > 10:
-                        print ("Won't load more than that, moving on..")
+                        print("Won't load more than that, moving on..")
                         break
 
-            #adding who commented into user_commented_list
+            # adding who commented into user_commented_list
             try:
                 for comm in comments:
-                    user_commented = comm.find_element_by_tag_name('a').get_attribute("href").split('/')
+                    user_commented = comm.find_element_by_tag_name(
+                        'a').get_attribute("href").split('/')
                     user_commented_list.append(user_commented[3])
 
             except Exception:
-                print ("cant get comments")
+                print("cant get comments")
 
-        print (len(user_commented_list), " comments.")
-    date_time = browser.find_element_by_tag_name('time').get_attribute("datetime")
+        print(len(user_commented_list), " comments.")
+    date_time = browser.find_element_by_tag_name('time').get_attribute(
+        "datetime")
 
     return user_commented_list, date_time
 
 
-
 def extract_information(browser, username, daysold, max_pic):
-
     """Get all the information for the given username"""
-    web_address_navigator(browser,'https://www.instagram.com/' + username)
+    web_address_navigator(browser, 'https://www.instagram.com/' + username)
 
     try:
         num_of_posts = get_number_of_posts(browser)
-        num_of_posts = (min (num_of_posts,max_pic))
-        #we don't need to scroll more than is max number of posts we want to extract
+        num_of_posts = (min(num_of_posts, max_pic))
+        # we don't need to scroll more than is max number of posts we want
+        # to extract
 
     except Exception:
-        print ("\nError: Couldn't get user profile. Moving on..")
+        print("\nError: Couldn't get user profile. Moving on..")
         return []
 
-    #PROFILE SCROLLING AND HARVESTING LINKS
+    # PROFILE SCROLLING AND HARVESTING LINKS
     try:
         body_elem = browser.find_element_by_tag_name('body')
 
         links = []
         links2 = []
         links3 = []
-        #list links contains 30 links from the current view, as that is the maximum Instagram is showing at one time
-        #list links2 contains all the links collected so far without duplicates, in mixed order
-        #list links3 contains all the links collected so far with duplicates in preserved order
+        # list links contains 30 links from the current view, as that is the
+        # maximum Instagram is showing at one time
+        # list links2 contains all the links collected so far without
+        # duplicates, in mixed order
+        # list links3 contains all the links collected so far with
+        # duplicates in preserved order
         previouslen = -1
 
-        #every 60 links we will open picture and check it's date not to scroll endlessly in huge profiles such as natgeo
+        # every 60 links we will open picture and check it's date not to
+        # scroll endlessly in huge profiles such as natgeo
         opened_overlay = 42
         sleep(0.5)
 
-        #cycle that scrolls down the feed and collects links and saving them into links2
+        # cycle that scrolls down the feed and collects links and saving
+        # them into links2
         while (len(links2) < num_of_posts):
             prev_divs = browser.find_elements_by_tag_name('main')
-            #harvesting current img links:
-            links_elems = [div.find_elements_by_tag_name('a') for div in prev_divs]
+            # harvesting current img links:
+            links_elems = [div.find_elements_by_tag_name('a') for div in
+                           prev_divs]
             links = sum([[link_elem.get_attribute('href')
-                for link_elem in elems] for elems in links_elems], [])
-            #saving links for later:
+                          for link_elem in elems] for elems in links_elems],
+                        [])
+            # saving links for later:
             for link in links:
                 if "/p/" in link:
                     links2.append(link)
                     links3.append(link)
-                last_link = link
             links2 = list(set(links2))
-            #if after previous scroll, size of links2 didnt increase, we should finish else we continue
+            # if after previous scroll, size of links2 didnt increase,
+            # we should finish else we continue
             if (len(links2) == previouslen):
-                print ("Cannot scroll, quitting..")
+                print("Cannot scroll, quitting..")
                 sleep(0.5)
                 break
 
             else:
-                print ("Scrolling profile ", len(links2), "/", num_of_posts)
+                print("Scrolling profile ", len(links2), "/", num_of_posts)
 
-                #TRYING TO END SCROLLING IN TIME
-                #check the date of the image once in a 60 to not scroll too much
-                #only do it if we have a lot to images to go
-                if (num_of_posts - len(links2) > 60) and (len(links2) > opened_overlay):
+                # TRYING TO END SCROLLING IN TIME
+                # check the date of the image once in a 60 to not scroll too
+                # much
+                # only do it if we have a lot to images to go
+                if (num_of_posts - len(links2) > 60) and (
+                        len(links2) > opened_overlay):
                     opened_overlay += 60
 
-                    print ("clicking on one photo..")
+                    print("clicking on one photo..")
                     try:
                         one_pic_elem = browser.find_element_by_xpath(
-                                    "//section/main/article/div[1]/div/div[10]/div[3]/a/div")
+                            "//section/main/article/div[1]/div/div[10]/div["
+                            "3]/a/div")
                         click_element(browser, one_pic_elem)
-
                     except Exception:
-                        print ("Error: cant click on the photo..")
+                        print("Error: cant click on the photo..")
                         pass
 
                     sleep(1.5)
 
-                    #following 6 lines give like to opened picture, to use our time effectively and look less suspicious
+                    # following 6 lines give like to opened picture, to use
+                    # our time effectively and look less suspicious
                     try:
-                        like_element = browser.find_elements_by_xpath("//a[@role='button']/span[text()='Like']/..")
+                        like_element = browser.find_elements_by_xpath(
+                            "//a[@role='button']/span[text()='Like']/..")
                         click_element(browser, like_element[0])
-                        print ("clicking like..")
-
+                        print("clicking like..")
                     except Exception:
                         pass
                     sleep(2)
 
-                    pic_date_time = browser.find_element_by_tag_name('time').get_attribute("datetime")
+                    pic_date_time = browser.find_element_by_tag_name(
+                        'time').get_attribute("datetime")
                     pastdate = datetime.now() - timedelta(days=daysold)
-                    date_of_pic = datetime.strptime(pic_date_time, "%Y-%m-%dT%H:%M:%S.%fZ")
+                    date_of_pic = datetime.strptime(pic_date_time,
+                                                    "%Y-%m-%dT%H:%M:%S.%fZ")
 
-                    print ("closing overlay")
-                    close_overlay = browser.find_element_by_xpath("//div/div[@role='dialog']")
+                    print("closing overlay")
+                    close_overlay = browser.find_element_by_xpath(
+                        "//div/div[@role='dialog']")
                     click_element(browser, close_overlay)
 
-                    print ("date of this picture was:", date_of_pic)
+                    print("date of this picture was:", date_of_pic)
 
                     if (date_of_pic < pastdate):
-                        print ("\nFinished scrolling, too old photos")
+                        print("\nFinished scrolling, too old photos")
                         sleep(3)
                         break
-
                     else:
-                        print ("\nPhotos seems to be fresh, continuing scrolling")
+                        print(
+                            "\nPhotos seems to be fresh, continuing scrolling")
                         sleep(2)
 
                 previouslen = len(links2)
@@ -194,81 +209,85 @@ def extract_information(browser, username, daysold, max_pic):
                 sleep(1.5)
 
     except NoSuchElementException as err:
-        print('\n- Something went terribly wrong\n - Stopping everything and moving on with what I have\n')
-        print (err)
+        print(
+            '\n- Something went terribly wrong\n - Stopping everything and '
+            'moving on with what I have\n')
+        print(err)
 
     links4 = remove_duplicates_preserving_order(links3)
-    post_infos = []
 
-    #PICTURES SCRAPPER ONE BY ONE
-    #into user_commented_total_list go all username links who commented on any post of this user
+    # PICTURES SCRAPPER ONE BY ONE
+    # into user_commented_total_list go all username links who commented on
+    # any post of this user
     counter = 1
     user_commented_total_list = []
     for link in links4:
         if max_pic <= 0:
-          break
+            break
         max_pic -= 1
-        print ("\n", counter , " of max ", len(links4), " --- ", max_pic, " to go.")
+        print("\n", counter, " of max ", len(links4), " --- ", max_pic,
+              " to go.")
         counter = counter + 1
-        print ("\nScrapping link: ", link)
+        print("\nScrapping link: ", link)
 
         try:
             web_address_navigator(browser, link)
             user_commented_list, pic_date_time = extract_post_info(browser)
-            user_commented_total_list = user_commented_total_list + user_commented_list
+            user_commented_total_list = user_commented_total_list + \
+                                        user_commented_list
 
-            #stop if date older than daysago
+            # stop if date older than daysago
             pastdate = datetime.now() - timedelta(days=daysold)
-            date_of_pic = datetime.strptime(pic_date_time, "%Y-%m-%dT%H:%M:%S.%fZ")
-            print ("date of pic: ", date_of_pic)
+            date_of_pic = datetime.strptime(pic_date_time,
+                                            "%Y-%m-%dT%H:%M:%S.%fZ")
+            print("date of pic: ", date_of_pic)
             if (date_of_pic > pastdate):
-                print ("Recent pic, continue..")
+                print("Recent pic, continue..")
             else:
-                print ("Old pic, ending getting users who commented.")
+                print("Old pic, ending getting users who commented.")
                 sleep(3)
                 break
             sleep(1)
         except NoSuchElementException:
             print('- Could not get information from post: ' + link)
 
-    #PREPARE THE USER LIST TO EXPORT
-    #sorts the list by frequencies, so users who comment the most are at the top
-    counter=collections.Counter(user_commented_total_list)
-    com = sorted(counter.most_common(), key=itemgetter(1,0), reverse=True)
+    # PREPARE THE USER LIST TO EXPORT
+    # sorts the list by frequencies, so users who comment the most are at
+    # the top
+    counter = collections.Counter(user_commented_total_list)
+    com = sorted(counter.most_common(), key=itemgetter(1, 0), reverse=True)
     com = map(lambda x: [x[0]] * x[1], com)
     user_commented_total_list = [item for sublist in com for item in sublist]
 
-    #remove duplicates preserving order (that's why not using set())
+    # remove duplicates preserving order (that's why not using set())
     user_commented_list = []
     last = ''
     for i in range(len(user_commented_total_list)):
         if username.lower() != user_commented_total_list[i]:
-            if (last != user_commented_total_list[i] and 'p' not in user_commented_total_list[i]):
-               user_commented_list.append(user_commented_total_list[i])
+            if (last != user_commented_total_list[i] and 'p' not in
+                    user_commented_total_list[i]):
+                user_commented_list.append(user_commented_total_list[i])
             last = user_commented_total_list[i]
 
-    print ("\nGetting list of users who commented on this profile finished: ")
-    print (user_commented_list, "\n")
+    print("\nGetting list of users who commented on this profile finished: ")
+    print(user_commented_list, "\n")
     return user_commented_list
 
 
-
-def users_liked (browser, photo_url, amount=100):
+def users_liked(browser, photo_url, amount=100):
     photo_likers = []
     try:
-        web_address_navigator(browser,photo_url)
+        web_address_navigator(browser, photo_url)
         photo_likers = likers_from_photo(browser, amount)
         sleep(2)
     except NoSuchElementException:
-        print('Could not get information from post: ' + photo_url,' nothing to return')
+        print('Could not get information from post: ' + photo_url,
+              ' nothing to return')
 
     return photo_likers
 
 
-
 def likers_from_photo(browser, amount=20):
-
-    user_liked_list = []
     liked_counter_button = "//div/article/div[2]/section[2]/div/div/a"
 
     try:
@@ -287,21 +306,21 @@ def likers_from_photo(browser, amount=20):
                 element_to_click = liked_this[0]
 
             else:
-                print ("Few likes, not guaranteed you don't follow these"
-                       " likers already.\nGot photo likers: {}\n"
-                       .format(likers))
+                print("Few likes, not guaranteed you don't follow these"
+                      " likers already.\nGot photo likers: {}\n"
+                      .format(likers))
                 return likers
 
         else:
-            print ("Couldn't find liked counter button. May be a video.")
-            print ("Moving on..")
+            print("Couldn't find liked counter button. May be a video.")
+            print("Moving on..")
             return []
 
         sleep(1)
         click_element(browser, element_to_click)
-        print ("opening likes")
+        print("opening likes")
         # update server calls
-        #update_activity()
+        # update_activity()
 
         sleep(1)
 
@@ -313,16 +332,17 @@ def likers_from_photo(browser, amount=20):
         previous_len = -1
         follow_buttons = []
         browser.execute_script(
-                "arguments[0].scrollTop = arguments[0].scrollHeight", dialog)
+            "arguments[0].scrollTop = arguments[0].scrollHeight", dialog)
         update_activity()
         sleep(1)
 
         follow_buttons = dialog.find_elements_by_xpath(
             "//div/div/button[text()='Follow']")
 
-        while (len(follow_buttons) != previous_len) and (len(follow_buttons)<amount):
-            if previous_len+10 >= amount:
-                print ("Scrolling finished")
+        while (len(follow_buttons) != previous_len) and (
+                len(follow_buttons) < amount):
+            if previous_len + 10 >= amount:
+                print("Scrolling finished")
                 sleep(1)
                 break
 
@@ -333,13 +353,16 @@ def likers_from_photo(browser, amount=20):
             sleep(1)
 
             follow_buttons = dialog.find_elements_by_xpath(
-            "//div/div/button[text()='Follow']")
-            print ("Scrolling down... ",previous_len,"->", len(follow_buttons) ," / ",amount)
+                "//div/div/button[text()='Follow']")
+            print("Scrolling down... ", previous_len, "->",
+                  len(follow_buttons), " / ", amount)
 
         person_list = []
 
         for person in follow_buttons:
-            username_url = person.find_element_by_xpath("../../../*").find_element_by_tag_name("a").get_attribute('href')
+            username_url = person.find_element_by_xpath(
+                "../../../*").find_element_by_tag_name("a").get_attribute(
+                'href')
             username = username_url_to_username(username_url)
             person_list.append(username)
 
@@ -349,26 +372,30 @@ def likers_from_photo(browser, amount=20):
         try:
             close = browser.find_element_by_xpath("//span[text()='Close']")
             click_element(browser, close)
-            print ("Like window closed")
+            print("Like window closed")
 
         except Exception:
             pass
 
-        print("Got {} likers shuffled randomly whom you can follow:\n{}\n".format(len(person_list), person_list))
+        print(
+            "Got {} likers shuffled randomly whom you can follow:\n{}"
+            "\n".format(
+                len(person_list), person_list))
         return person_list
 
     except Exception as exc:
-        print ("Some problem occred!\n\t{}".format(str(exc).encode("utf-8")))
+        print("Some problem occred!\n\t{}".format(str(exc).encode("utf-8")))
         return []
 
 
-
-def get_photo_urls_from_profile (browser, username, links_to_return_amount=1, randomize=True):
-    #try:
-    #input can be both username or user profile url
+def get_photo_urls_from_profile(browser, username, links_to_return_amount=1,
+                                randomize=True):
+    # try:
+    # input can be both username or user profile url
     username = username_url_to_username(username)
-    print ("\nGetting likers from user: ", username,"\n")
-    web_address_navigator(browser,'https://www.instagram.com/' + username +'/')
+    print("\nGetting likers from user: ", username, "\n")
+    web_address_navigator(browser,
+                          'https://www.instagram.com/' + username + '/')
     sleep(1)
 
     photos_a_elems = browser.find_elements_by_xpath("//div/a")
@@ -376,17 +403,19 @@ def get_photo_urls_from_profile (browser, username, links_to_return_amount=1, ra
     links = []
     for photo_element in photos_a_elems:
         photo_url = photo_element.get_attribute("href")
-        #print ("photo url: ", photo_url)
+        # print ("photo url: ", photo_url)
         if ("/p/" in photo_url):
             links.append(photo_url)
 
-    if randomize == True:
-        print ("shuffling links")
+    if randomize is True:
+        print("shuffling links")
         random.shuffle(links)
-    print ("Got ", len(links), ", returning ", min(links_to_return_amount, len(links)), " links: ", links[:links_to_return_amount])
+    print("Got ", len(links), ", returning ",
+          min(links_to_return_amount, len(links)), " links: ",
+          links[:links_to_return_amount])
     sleep(1)
     return links[:links_to_return_amount]
-    #except:
-    print ("Error: Couldnt get pictures links.")
+    # except:
+    # Code below is unreachable - perhaps get rid of?
+    print("Error: Couldnt get pictures links.")
     return []
-

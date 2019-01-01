@@ -3,7 +3,6 @@ import sqlite3
 
 from .settings import Settings
 
-
 SELECT_FROM_PROFILE_WHERE_NAME = "SELECT * FROM profiles WHERE name = :name"
 
 INSERT_INTO_PROFILE = "INSERT INTO profiles (name) VALUES (?)"
@@ -109,9 +108,7 @@ def validate_database_address():
         address = address if address.endswith(slash) else address + slash
         address += "instapy.db"
         Settings.database_location = address
-
     verify_database_directories(address)
-
     return address
 
 
@@ -128,12 +125,10 @@ def get_profile(name, address, logger):
                 add_profile(conn, cursor, name)
                 # reselect the table after adding data to get the proper `id`
                 profile = select_profile_by_username(cursor, name)
-
     except Exception as exc:
         logger.warning(
             "Heeh! Error occurred while getting a DB profile for '{}':\n\t{}"
             .format(name, str(exc).encode("utf-8")))
-
     finally:
         if conn:
             # close the open connection
@@ -141,7 +136,6 @@ def get_profile(name, address, logger):
 
     profile = dict(profile)
     id = profile["id"]
-
     # assign the id to its child in `Settings` class
     Settings.profile["id"] = id
 
@@ -159,6 +153,3 @@ def select_profile_by_username(cursor, name):
     profile = cursor.fetchone()
 
     return profile
-
-
-
