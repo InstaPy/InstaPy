@@ -45,7 +45,7 @@ with smart_run(session):
 
     # activities
 
-    """ Massive Follow of users followers (I suggest to follow not less than 
+    """ Massive Follow of users followers (I suggest to follow not less than
     3500/4000 users for better results)...
     """
     session.follow_user_followers(['user1', 'user2', 'user3'], amount=800,

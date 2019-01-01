@@ -18,7 +18,7 @@ def check_image(browser,
                 proxy=None,
                 picture_url=None):
     try:
-        """Uses the link to the image to check for invalid content in the 
+        """Uses the link to the image to check for invalid content in the
         image.
         If a workflow has been selected, get list of tags from Clarifai API
         by checking link against models included in the workflow. If a workflow

@@ -112,10 +112,9 @@ def get_links_for_location(browser,
         possible_posts = None
 
     logger.info(
-        "desired amount: {}  |  top posts [{}]: {}  |  possible posts: {}".format(
-            amount, "enabled" if not skip_top_posts else "disabled",
-            len(top_posts),
-            possible_posts))
+        "desired amount: {}  |  top posts [{}]: {}  |  possible posts: "
+        "{}".format(amount, "enabled" if not skip_top_posts else "disabled",
+                    len(top_posts), possible_posts))
 
     if possible_posts is not None:
         possible_posts = possible_posts if not skip_top_posts else \
@@ -276,10 +275,10 @@ def get_links_for_tag(browser,
             possible_posts = None
 
     logger.info(
-        "desired amount: {}  |  top posts [{}]: {}  |  possible posts: {}".format(
-            amount, "enabled" if not skip_top_posts else "disabled",
-            len(top_posts),
-            possible_posts))
+        "desired amount: {}  |  top posts [{}]: {}  |  possible posts: "
+        "{}".format(amount, "enabled" if not skip_top_posts else "disabled",
+                    len(top_posts),
+                    possible_posts))
 
     if possible_posts is not None:
         possible_posts = possible_posts if not skip_top_posts else \
@@ -368,7 +367,7 @@ def get_links_for_tag(browser,
 
     sleep(4)
 
-    if randomize == True:
+    if randomize is True:
         random.shuffle(links)
 
     return links[:amount]
@@ -404,9 +403,6 @@ def get_links_for_username(browser,
     # Check URL of the webpage, if it already is user's profile page,
     # then do not navigate to it again
     web_address_navigator(browser, user_link)
-
-    body_elem = browser.find_element_by_tag_name('body')
-    abort = True
 
     if "Page Not Found" in browser.title:
         logger.error(
@@ -463,7 +459,7 @@ def get_links_for_username(browser,
         else:
             attempt = 0
 
-    if randomize == True:
+    if randomize is True:
         random.shuffle(links)
 
     return links[:amount]
@@ -515,7 +511,7 @@ def check_link(browser, post_link, dont_like, mandatory_words,
             'Unavailable Page: {}'.format(post_link.encode('utf-8')))
         return True, None, None, 'Unavailable Page', "Failure"
 
-    """Gets the description of the post's link and checks for the dont_like 
+    """Gets the description of the post's link and checks for the dont_like
     tags"""
     graphql = 'graphql' in post_page[0]
     if graphql:
@@ -586,7 +582,7 @@ def check_link(browser, post_link, dont_like, mandatory_words,
     logger.info('Link: {}'.format(post_link.encode('utf-8')))
     logger.info('Description: {}'.format(image_text.encode('utf-8')))
 
-    """Check if mandatory character set, before adding the location to the 
+    """Check if mandatory character set, before adding the location to the
     text"""
     if mandatory_language:
         if not check_character_set(image_text):
@@ -594,7 +590,7 @@ def check_link(browser, post_link, dont_like, mandatory_words,
                                               'fulfilled', "Not mandatory " \
                                                            "language"
 
-    """Append location to image_text so we can search through both in one 
+    """Append location to image_text so we can search through both in one
     go."""
     if location_name:
         logger.info('Location: {}'.format(location_name.encode('utf-8')))
@@ -778,13 +774,14 @@ def verify_liking(browser, max, min, logger):
 
     if max is not None and likes_count > max:
         logger.info(
-            "Not liked this post! ~more likes exist off maximum limit at {}".format(
-                likes_count))
+            "Not liked this post! ~more likes exist off maximum limit at "
+            "{}".format(likes_count))
         return False
     elif min is not None and likes_count < min:
         logger.info(
-            "Not liked this post! ~less likes exist off minumum limit at {}".format(
-                likes_count))
+            "Not liked this post! ~less likes exist off minumum limit "
+            "at {}".format(likes_count)
+        )
         return False
 
     return True
@@ -807,7 +804,8 @@ def like_comment(browser, original_comment_text, logger):
                     "button")
                 click_element(browser, comment_like_button)
 
-                # verify if like succeeded by waiting until the like button element goes stale..
+                # verify if like succeeded by waiting until the like button
+                # element goes stale..
                 button_change = explicit_wait(browser, "SO",
                                               [comment_like_button], logger, 7,
                                               False)

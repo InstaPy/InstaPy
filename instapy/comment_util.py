@@ -113,7 +113,7 @@ def verify_commenting(browser, max, min, mand_words, logger):
     """
 
     commenting_state, msg = is_commenting_enabled(browser, logger)
-    if commenting_state != True:
+    if commenting_state is not True:
         disapproval_reason = "--> Not commenting! {}".format(msg)
         return False, disapproval_reason
 
@@ -126,14 +126,14 @@ def verify_commenting(browser, max, min, mand_words, logger):
         disapproval_reason = (
             "Not commented on this post! ~more comments exist"
             " off maximum limit at {}"
-                .format(comments_count))
+            .format(comments_count))
         return False, disapproval_reason
 
     elif min is not None and comments_count < min:
         disapproval_reason = (
             "Not commented on this post! ~less comments exist"
             " off minumum limit at {}"
-                .format(comments_count))
+            .format(comments_count))
         return False, disapproval_reason
 
     if len(mand_words) != 0:
@@ -144,7 +144,7 @@ def verify_commenting(browser, max, min, mand_words, logger):
                 "edge_media_to_caption.edges[0]['node']['text']"
             ).lower()
 
-        except Exception as e:
+        except Exception:
             post_desc = None
 
         try:
@@ -154,7 +154,7 @@ def verify_commenting(browser, max, min, mand_words, logger):
                 "edge_media_to_comment.edges[0]['node']['text']"
             ).lower()
 
-        except Exception as e:
+        except Exception:
             first_comment = None
 
         if ((post_desc is not None and not any(mand_word.lower() in
@@ -181,12 +181,12 @@ def get_comments_on_post(browser,
     web_address_navigator(browser, post_link)
 
     orig_amount = amount
-    if randomize == True:
+    if randomize is True:
         amount = amount * 3
 
     # check if commenting on the post is enabled
     commenting_state, msg = is_commenting_enabled(browser, logger)
-    if commenting_state != True:
+    if commenting_state is not True:
         logger.info(msg)
         return None
 
@@ -254,7 +254,7 @@ def get_comments_on_post(browser,
 
     else:
         comment_data = list(zip(commenters, comments))
-        if randomize == True:
+        if randomize is True:
             random.shuffle(comment_data)
 
         if len(comment_data) < orig_amount:
@@ -289,7 +289,7 @@ def is_commenting_enabled(browser, logger):
                    .format(str(e).encode("utf-8")))
             return False, "Failure"
 
-    if comments_disabled == True:
+    if comments_disabled is True:
         msg = "Comments are disabled for this post."
         return False, msg
 

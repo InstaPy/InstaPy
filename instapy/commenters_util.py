@@ -140,7 +140,6 @@ def extract_information(browser, username, daysold, max_pic):
                 if "/p/" in link:
                     links2.append(link)
                     links3.append(link)
-                last_link = link
             links2 = list(set(links2))
             # if after previous scroll, size of links2 didnt increase,
             # we should finish else we continue
@@ -166,7 +165,6 @@ def extract_information(browser, username, daysold, max_pic):
                             "//section/main/article/div[1]/div/div[10]/div["
                             "3]/a/div")
                         click_element(browser, one_pic_elem)
-
                     except Exception:
                         print("Error: cant click on the photo..")
                         pass
@@ -180,7 +178,6 @@ def extract_information(browser, username, daysold, max_pic):
                             "//a[@role='button']/span[text()='Like']/..")
                         click_element(browser, like_element[0])
                         print("clicking like..")
-
                     except Exception:
                         pass
                     sleep(2)
@@ -202,7 +199,6 @@ def extract_information(browser, username, daysold, max_pic):
                         print("\nFinished scrolling, too old photos")
                         sleep(3)
                         break
-
                     else:
                         print(
                             "\nPhotos seems to be fresh, continuing scrolling")
@@ -219,7 +215,6 @@ def extract_information(browser, username, daysold, max_pic):
         print(err)
 
     links4 = remove_duplicates_preserving_order(links3)
-    post_infos = []
 
     # PICTURES SCRAPPER ONE BY ONE
     # into user_commented_total_list go all username links who commented on
@@ -293,7 +288,6 @@ def users_liked(browser, photo_url, amount=100):
 
 
 def likers_from_photo(browser, amount=20):
-    user_liked_list = []
     liked_counter_button = "//div/article/div[2]/section[2]/div/div/a"
 
     try:
@@ -413,7 +407,7 @@ def get_photo_urls_from_profile(browser, username, links_to_return_amount=1,
         if ("/p/" in photo_url):
             links.append(photo_url)
 
-    if randomize == True:
+    if randomize is True:
         print("shuffling links")
         random.shuffle(links)
     print("Got ", len(links), ", returning ",

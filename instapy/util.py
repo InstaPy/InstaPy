@@ -147,8 +147,7 @@ def validate_username(browser,
 
     if username in ignore_users:
         inap_msg = "---> '{}' is in the `ignore_users` list\t~skipping " \
-                   "user\n".format(
-            username)
+                   "user\n".format(username)
         return False, inap_msg
 
     logfolder = logfolder = '{0}{1}{2}{1}'.format(
@@ -165,10 +164,9 @@ def validate_username(browser,
                         logger.info(
                             'Username in BlackList: {} '.format(username))
                         return False, "---> {} is in blacklist  ~skipping " \
-                                      "user\n".format(
-                            username)
+                                      "user\n".format(username)
 
-    """Checks the potential of target user by relationship status in order 
+    """Checks the potential of target user by relationship status in order
     to delimit actions within the desired boundary"""
     if potency_ratio or delimit_by_numbers and (
             max_followers or max_following or min_followers or min_following):
@@ -346,14 +344,14 @@ def validate_username(browser,
                         return False, "'{}' has a business account\n".format(
                             username)
                     else:
-                        return False, "'{}' has a business account in the " \
-                                      "undesired category of '{}'\n".format(
-                            username, category)
+                        return False, ("'{}' has a business account in the "
+                                       "undesired category of '{}'\n"
+                                       .format(username, category))
             else:
                 if category in skip_business_categories:
-                    return False, "'{}' has a business account in the " \
-                                  "undesired category of '{}'\n".format(
-                        username, category)
+                    return False, ("'{}' has a business account in the "
+                                   "undesired category of '{}'\n"
+                                   .format(username, category))
 
     # if everything is ok
     return True, "Valid user"
@@ -562,7 +560,7 @@ def get_active_users(browser, username, posts, boundary, logger):
             scroll_it = True
             try_again = 0
 
-            while scroll_it != False and boundary != 0:
+            while scroll_it is not False and boundary != 0:
                 scroll_it = browser.execute_script('''
                     var div = arguments[0];
                     if (div.offsetHeight + div.scrollTop < div.scrollHeight) {
@@ -572,7 +570,7 @@ def get_active_users(browser, username, posts, boundary, logger):
                         return false;}
                     ''', dialog)
 
-                if scroll_it == True:
+                if scroll_it is True:
                     update_activity()
 
                 if sc_rolled > 91 or too_many_requests > 1:  # old value 100
@@ -593,7 +591,7 @@ def get_active_users(browser, username, posts, boundary, logger):
                     if len(tmp_list) >= boundary:
                         break
 
-                if (scroll_it == False and
+                if (scroll_it is False and
                         likers_count and
                         likers_count - 1 > len(tmp_list)):
 
@@ -958,11 +956,10 @@ def get_relationship_counts(browser, username, logger):
                                 username.encode("utf-8")))
                         following_count = None
 
-                except (NoSuchElementException, IndexError) as e:
+                except (NoSuchElementException, IndexError):
                     logger.error(
                         "\nError occurred during getting the following count "
-                        "of '{}'\n".format(
-                            username.encode("utf-8")))
+                        "of '{}'\n".format(username.encode("utf-8")))
                     following_count = None
 
     return followers_count, following_count
@@ -1070,7 +1067,7 @@ def highlight_print(username=None, message=None, priority=None, level=None,
         upper_char = "~"
         lower_char = None
 
-    if show_logs == True:
+    if show_logs is True:
         print("\n{}".format(
             upper_char * int(ceil(output_len / len(upper_char)))))
 
@@ -1081,7 +1078,7 @@ def highlight_print(username=None, message=None, priority=None, level=None,
     elif level == "critical":
         logger.critical(message)
 
-    if lower_char and show_logs == True:
+    if lower_char and show_logs is True:
         print("{}".format(lower_char * output_len))
 
 
@@ -1090,7 +1087,7 @@ def remove_duplicates(container, keep_order, logger):
     # add support for data types as needed in future
     # currently only 'list' data type is supported
     if type(container) == list:
-        if keep_order == True:
+        if keep_order is True:
             result = sorted(set(container), key=container.index)
 
         else:
@@ -1188,17 +1185,17 @@ def ping_server(host, logger):
     ping_attempts = 2
     connectivity = None
 
-    while connectivity != True and ping_attempts > 0:
+    while connectivity is not True and ping_attempts > 0:
         connectivity = call(command, shell=need_sh) == 0
 
-        if connectivity == False:
+        if connectivity is False:
             logger.warning(
                 "Pinging the server again!\t~total attempts left: {}"
                 .format(ping_attempts))
             ping_attempts -= 1
             sleep(5)
 
-    if connectivity == False:
+    if connectivity is False:
         logger.critical(
             "There is no connection to the '{}' server!".format(host))
         return False
@@ -1214,13 +1211,13 @@ def emergency_exit(browser, username, logger):
     if not using_proxy:
         server_address = "instagram.com"
         connection_state = ping_server(server_address, logger)
-        if connection_state == False:
+        if connection_state is False:
             return True, "not connected"
 
     # check if the user is logged in
     auth_method = "activity counts"
     login_state = check_authorization(browser, username, auth_method, logger)
-    if login_state == False:
+    if login_state is False:
         return True, "not logged in"
 
     return False, "no emergency"
@@ -1259,7 +1256,7 @@ def load_user_id(username, person, logger, logfolder):
 
 def check_authorization(browser, username, method, logger, notify=True):
     """ Check if user is NOW logged in """
-    if notify == True:
+    if notify is True:
         logger.info("Checking if '{}' is logged in...".format(username))
 
     # different methods can be added in future
@@ -1305,7 +1302,7 @@ def check_authorization(browser, username, method, logger, notify=True):
                 activity_counts_new = None
 
         if activity_counts is None and activity_counts_new is None:
-            if notify == True:
+            if notify is True:
                 logger.critical(
                     "--> '{}' is not logged in!\n".format(username))
             return False
@@ -1466,7 +1463,7 @@ def explicit_wait(browser, track, ec_params, logger, timeout=35, notify=True):
         result = wait.until(condition)
 
     except TimeoutException:
-        if notify == True:
+        if notify is True:
             logger.info(
                 "Timed out with failure while explicitly waiting until {}!\n"
                 .format(ec_name))
@@ -1499,8 +1496,7 @@ def get_username_from_id(browser, user_id, logger):
     query_hash = "42323d64886122307be10013ad2dcc44"  # earlier-
     # "472f257a40c653c64c666ce877d59d2b"
     graphql_query_URL = "https://www.instagram.com/graphql/query/?query_hash" \
-                        "={}".format(
-        query_hash)
+                        "={}".format(query_hash)
     variables = {"id": str(user_id), "first": 1}
     post_url = u"{}&variables={}".format(graphql_query_URL,
                                          str(json.dumps(variables)))
@@ -1544,7 +1540,7 @@ def get_username_from_id(browser, user_id, logger):
         return None
 
     """  method using private API
-    #logger.info("Trying to find the username from the given user ID by a 
+    #logger.info("Trying to find the username from the given user ID by a
     quick API call")
 
     #req = requests.get(u"https://i.instagram.com/api/v1/users/{}/info/"
@@ -1556,7 +1552,7 @@ def get_username_from_id(browser, user_id, logger):
     #        return username
     """
 
-    """ Having a BUG (random log-outs) with the method below, use it only in 
+    """ Having a BUG (random log-outs) with the method below, use it only in
     the external sessions
     # method using graphql 'Follow' endpoint
     logger.info("Trying to find the username from the given user ID "
@@ -1686,7 +1682,7 @@ def get_action_delay(action):
     config = Settings.action_delays
 
     if (not config or
-            config["enabled"] != True or
+            config["enabled"] is not True or
             config[action] is None or
             type(config[action]) not in [int, float]):
         return defaults[action]
@@ -1695,7 +1691,7 @@ def get_action_delay(action):
         custom_delay = config[action]
 
     # randomize the custom delay in user-defined range
-    if (config["randomize"] == True and
+    if (config["randomize"] is True and
             type(config["random_range"]) == tuple and
             len(config["random_range"]) == 2 and
             all((type(i) in [type(None), int, float] for i in
@@ -1719,7 +1715,7 @@ def get_action_delay(action):
                                       custom_delay * max_range / 100)
 
     if (custom_delay < defaults[action] and
-            config["safety_match"] != False):
+            config["safety_match"] is not False):
         return defaults[action]
 
     return custom_delay

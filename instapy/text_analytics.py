@@ -47,17 +47,17 @@ def text_analysis(text, text_type, logger):
     language_of_text = None
     text_is_printed = None
 
-    if (not YANDEX_CONFIG or YANDEX_CONFIG["enabled"] != True or
-            (YANDEX_CONFIG["match_language"] != True and
+    if (not YANDEX_CONFIG or YANDEX_CONFIG["enabled"] is not True or
+            (YANDEX_CONFIG["match_language"] is not True and
              (not MEANINGCLOUD_CONFIG or MEANINGCLOUD_CONFIG[
-                 "enabled"] != True))):
+                 "enabled"] is not True))):
         """ No analysis will be held """
         print('')
         logger.info(
             "{} text: \"{}\"".format(text_type_c, text.encode("utf-8")))
         return None
 
-    if YANDEX_CONFIG["match_language"] == True:
+    if YANDEX_CONFIG["match_language"] is True:
         """ Language detection & match will take place """
         if has_any_letters(emojiless_text):
             language_of_text = detect_language(emojiless_text)
@@ -83,7 +83,7 @@ def text_analysis(text, text_type, logger):
                 "{}\t~language of text couldn't be detected!".format(inap_msg))
             return False
 
-    if MEANINGCLOUD_CONFIG["enabled"] == True:
+    if MEANINGCLOUD_CONFIG["enabled"] is True:
         """ Text language normalization for accuracy & efficiency """
         if not language_of_text:
             if has_any_letters(emojiless_text):
@@ -93,7 +93,7 @@ def text_analysis(text, text_type, logger):
                 language_of_text = "en"
 
             # output the text to be analysed [if not printed above]
-            if text_is_printed != True:
+            if text_is_printed is not True:
                 print('')
                 logger.info("{} text ['{}']: \"{}\"".format(text_type_c,
                                                             language_of_text,
@@ -149,8 +149,9 @@ def text_analysis(text, text_type, logger):
                 if desired_polarity_level > polarity_level:
                     logger.info(
                         "{}\t~polarity of text is '{}' with {}% confidence"
-                            .format(inap_msg, sentiment["score_tag"],
-                                    sentiment["confidence"]))
+                        .format(inap_msg,
+                                sentiment["score_tag"],
+                                sentiment["confidence"]))
                     return False
 
         # agreement verification
@@ -224,7 +225,7 @@ def sentiment_analysis(text, language_of_text, logger):
         )
         # check if there are any errors in the request
         request_state = lift_meaningcloud_request(sentiment_response)
-        if request_state != True:
+        if request_state is not True:
             return None
 
         # get results
@@ -233,6 +234,7 @@ def sentiment_analysis(text, language_of_text, logger):
             "score_tag"]:
             # if text has a question mark & its polarity is neither negative
             # nor none, then label it neutral
+            # @todo: polarity is assigned but never used
             if sentiment["score_tag"] not in ["N", "N+", "NONE"]:
                 if '?' in text:
                     polarity = "NEU"
@@ -247,11 +249,6 @@ def sentiment_analysis(text, language_of_text, logger):
             return None
 
     except (ValueError, ConnectionError) as exc:
-        if isinstance(exc, ValueError):
-            level_info = "there was a value error :<"
-        elif isinstance(exc, ConnectionError):
-            level_info = "there was a connection error :<"
-
         print('')
         logger.exception("{}\t~{}\n{}\n"
                          .format(MEANINGCLOUD_FAILURE_MSG,
@@ -283,7 +280,7 @@ def detect_language(text):
     data = json.loads(req.text)
     # check if there are any errors in the request
     request_state = lift_yandex_request(data)
-    if request_state != True:
+    if request_state is not True:
         return None
 
     # get the result
@@ -368,7 +365,7 @@ def translate_text(translation_direction, text_to_translate):
     data = json.loads(req.text)
     # check if there are any errors in the request
     request_state = lift_yandex_request(data)
-    if request_state != True:
+    if request_state is not True:
         return None
 
     # get the result

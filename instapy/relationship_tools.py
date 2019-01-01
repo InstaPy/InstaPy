@@ -31,7 +31,7 @@ def get_followers(browser,
 
     grab_info = "at \"full\" range" if grab == "full" else "at the range of " \
                                                            "{}".format(grab)
-    tense = "live" if (live_match == True or not relationship_data[username][
+    tense = "live" if (live_match is True or not relationship_data[username][
         "all_followers"]) else "fresh"
 
     logger.info(
@@ -55,7 +55,7 @@ def get_followers(browser,
     # TO-DO: Check if user's account is not private
 
     # sets the amount of usernames to be matched in the next queries
-    match = None if live_match == True else 10 if relationship_data[username][
+    match = None if live_match is True else 10 if relationship_data[username][
         "all_followers"] else None
 
     # if there has been prior graphql query, use that existing data to speed
@@ -127,10 +127,6 @@ def get_followers(browser,
 
                 if query_date not in stored_query_dates:
                     graphql_queries[username][query_date] = {"sc_rolled": 0}
-
-                sc_rolled_all = graphql_queries[username][query_date][
-                    "sc_rolled"]
-
         except Exception as exc:
             logger.info(
                 "Error occurred while getting `scroll` data from "
@@ -212,7 +208,7 @@ def get_followers(browser,
                 sc_rolled += 1
 
                 # dump the current graphql queries data
-                if local_read_failure != True:
+                if local_read_failure is not True:
                     try:
                         with interruption_handler():
                             with open(filename, 'w') as graphql_queries_file:
@@ -243,17 +239,17 @@ def get_followers(browser,
     all_followers = sorted(set(all_followers),
                            key=lambda x: all_followers.index(x))
 
-    if grab_notifier == False:
+    if grab_notifier is False:
         print('\n')
         logger.info("Grabbed {} usernames from `Followers` in {}".format(
             len(all_followers), passed_time))
 
     if len(all_followers) > 0:
-        if (store_locally == True and
+        if (store_locally is True and
                 relationship_data[username]["all_followers"] != all_followers):
             store_followers_data(username, grab, all_followers, logger,
                                  logfolder)
-        elif store_locally == True:
+        elif store_locally is True:
             print('')
             logger.info(
                 "The `Followers` data is identical with the data in previous "
@@ -295,7 +291,7 @@ def get_following(browser,
     grab_info = "at \"full\" range" if grab == "full" else "at the range of " \
                                                            "{}".format(
         grab)
-    tense = "live" if (live_match == True or not relationship_data[username][
+    tense = "live" if (live_match is True or not relationship_data[username][
         "all_following"]) else "fresh"
 
     logger.info(
@@ -319,7 +315,7 @@ def get_following(browser,
     # TO-DO: Check if user's account is not private
 
     # sets the amount of usernames to be matched in the next queries
-    match = None if live_match == True else 10 if relationship_data[username][
+    match = None if live_match is True else 10 if relationship_data[username][
         "all_following"] else None
 
     # if there has been prior graphql query, use that existing data to speed
@@ -387,8 +383,6 @@ def get_following(browser,
                     date for date, score in graphql_queries[username].items())
                 if query_date not in stored_query_dates:
                     graphql_queries[username][query_date] = {"sc_rolled": 0}
-                sc_rolled_all = graphql_queries[username][query_date][
-                    "sc_rolled"]
         except Exception as exc:
             logger.info(
                 "Error occurred while getting `scroll` data from "
@@ -470,7 +464,7 @@ def get_following(browser,
                 sc_rolled += 1
 
                 # dumps the current graphql queries data
-                if local_read_failure != True:
+                if local_read_failure is not True:
                     try:
                         with interruption_handler():
                             with open(filename, 'w') as graphql_queries_file:
@@ -501,17 +495,17 @@ def get_following(browser,
     all_following = sorted(set(all_following),
                            key=lambda x: all_following.index(x))
 
-    if grab_notifier == False:
+    if grab_notifier is False:
         print('\n')
         logger.info("Grabbed {} usernames from `Following` in {}".format(
             len(all_following), passed_time))
 
     if len(all_following) > 0:
-        if (store_locally == True and
+        if (store_locally is True and
                 relationship_data[username]["all_following"] != all_following):
             store_following_data(username, grab, all_following, logger,
                                  logfolder)
-        elif store_locally == True:
+        elif store_locally is True:
             print('')
             logger.info(
                 "The `Following` data is identical with the data in previous "
@@ -607,14 +601,14 @@ def get_unfollowers(browser,
             ":|\n".format(
                 selected_filename, len(all_unfollowers),
                 len(active_unfollowers)))
-        if store_locally == True:
+        if store_locally is True:
             # store all Unfollowers in a local file
             store_all_unfollowers(username, all_unfollowers, logger, logfolder)
             # store active Unfollowers in a local file
             store_active_unfollowers(username, active_unfollowers, logger,
                                      logfolder)
 
-        if print_out == True:
+        if print_out is True:
             logger.info(
                 "Unfollowers of {}:\n\n\tAll Unfollowers: {}\n\n\tActive "
                 "Unfollowers: {}\n".format(
@@ -1194,9 +1188,9 @@ def load_followers_data(username, compare_by, compare_track, logger,
     with open(selected_file) as followers_data_file:
         followers_data = json.load(followers_data_file)
 
-    logger.info(
-        "Took prior `Followers` data file from {} with {} usernames to be compared with live data\n".format(
-            selected_filename, len(followers_data)))
+    logger.info("Took prior `Followers` data file from {} with {} usernames "
+                "to be compared with live data\n".format(selected_filename,
+                                                         len(followers_data)))
 
     # return that file to be compared
     return followers_data, selected_filename
@@ -1243,7 +1237,7 @@ def progress_tracker(current_value, highest_value, initial_time, logger):
                                  progress_container, progress_percent,
                                  elapsed, eta))
 
-        if show_logs == True:
+        if show_logs is True:
             sys.stdout.write(total_message)
             sys.stdout.flush()
 

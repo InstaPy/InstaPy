@@ -163,8 +163,7 @@ def login_user(browser,
     # try to load cookie from username
     try:
         for cookie in pickle.load(open('{0}{1}_cookie.pkl'
-                                               .format(logfolder, username),
-                                       'rb')):
+                                       .format(logfolder, username), 'rb')):
             browser.add_cookie(cookie)
             cookie_loaded = True
     except (WebDriverException, OSError, IOError):
@@ -189,7 +188,7 @@ def login_user(browser,
                                       "activity counts",
                                       logger,
                                       False)
-    if login_state == True:
+    if login_state is True:
         dismiss_notification_offer(browser, logger)
         return True
 

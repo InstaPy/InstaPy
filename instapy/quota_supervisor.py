@@ -26,7 +26,7 @@ def quota_supervisor(job, update=False):
     global configuration
     configuration = Settings.QS_config
 
-    if configuration and configuration["state"] == True:
+    if configuration and configuration["state"] is True:
         # in-file global variables for the QS family
         global records, logger, this_minute, this_hour, today
 
@@ -53,7 +53,7 @@ def controller(job):
     notify = configuration["notify"]
     peaks = configuration["peaks"]
 
-    if configuration["stochasticity"]["enabled"] == True:
+    if configuration["stochasticity"]["enabled"] is True:
         stochasticity(peaks)
 
     # inspect
@@ -207,7 +207,7 @@ def remaining_time(sleepyhead, interval):
         now = datetime.now()
         remaining_seconds = (midnight - now).seconds
 
-    if sleepyhead == True:
+    if sleepyhead is True:
         remaining_seconds = random.randint(
             remaining_seconds,
             int(remaining_seconds *
@@ -261,7 +261,7 @@ def toast_notification(notify, alert, job, interval):
     platform_matches = platform.startswith(("win32",
                                             "linux",
                                             "darwin"))
-    if notify == True and platform_matches:
+    if notify is True and platform_matches:
         icons = get_icons()
         delay = 9 if alert == "exit" else 7
         label = job.replace('_', ' ').capitalize()
