@@ -185,7 +185,7 @@ def close_browser(browser,
                 logger.exception(
                     "Error occurred while deleting cookies "
                     "from web browser!\n\t{}"
-                        .format(str(exc).encode("utf-8")))
+                    .format(str(exc).encode("utf-8")))
 
         # close web browser
         try:
@@ -195,4 +195,4 @@ def close_browser(browser,
                 logger.exception(
                     "Error occurred while "
                     "closing web browser!\n\t{}"
-                        .format(str(exc).encode("utf-8")))
+                    .format(str(exc).encode("utf-8")))
