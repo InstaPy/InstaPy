@@ -203,11 +203,7 @@ def login_user(browser,
         "//article//a[text()='Log in']")
 
     if login_elem is not None:
-        (ActionChains(browser)
-         .move_to_element(login_elem)
-         .click()
-         .perform())
-
+        login_elem.click()
         # update server calls
         update_activity()
 
