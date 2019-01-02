@@ -7,6 +7,10 @@ _The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 ### Fixed
 -  User without timestamp will use the timestamp of previous user
 
+## [Unreleased] - 2019-01-01
+### Changed
+- PEP8 layout changes
+
 ## [Unreleased] - 2018-12-17
 ### Added
 - A new setting - `set_do_reply_to_comments()` to control replying to comments.  
