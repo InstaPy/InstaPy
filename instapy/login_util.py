@@ -16,6 +16,7 @@ from .util import check_authorization
 # import exceptions
 from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import WebDriverException
+from selenium.common.exceptions import MoveTargetOutOfBoundsException
 
 
 def bypass_suspicious_login(browser, bypass_with_mobile):
@@ -203,7 +204,14 @@ def login_user(browser,
         "//article//a[text()='Log in']")
 
     if login_elem is not None:
-        login_elem.click()
+        try:
+            (ActionChains(browser)
+             .move_to_element(login_elem)
+             .click()
+             .perform())
+        except MoveTargetOutOfBoundsException:
+            login_elem.click()
+
         # update server calls
         update_activity()
 
