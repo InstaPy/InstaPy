@@ -89,11 +89,15 @@ def set_selenium_local_session(proxy_address,
         if proxy_address and proxy_port:
             prox = Proxy()
             proxy = ":".join([proxy_address, str(proxy_port)])
-            prox.proxy_type = ProxyType.MANUAL
-            prox.http_proxy = proxy
-            prox.socks_proxy = proxy
-            prox.ssl_proxy = proxy
-            prox.add_to_capabilities(capabilities)
+            if headless_browser:
+                chrome_options.add_argument(
+                    "--proxy-server=http://{}".format(proxy))
+            else:
+                prox.proxy_type = ProxyType.MANUAL
+                prox.http_proxy = proxy
+                prox.socks_proxy = proxy
+                prox.ssl_proxy = proxy
+                prox.add_to_capabilities(capabilities)
 
         # add proxy extension
         if proxy_chrome_extension and not headless_browser:
