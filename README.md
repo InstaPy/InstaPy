@@ -31,8 +31,14 @@ Head over to https://github.com/timgrossmann/InstaPy/wiki/Reporting-An-Issue to 
 
 ### Do you want to support us ?
 
+<a href="https://opencollective.com/instapy/donate" target="_blank">
+  <img src="https://opencollective.com/instapy/contribute/button@2x.png?color=blue" width=300 />
+</a>
+
+<br />
+
 <a href="https://www.paypal.me/supportInstaPy">
-	<img alt="paypalme" src="http://codeinpython.com/tutorials/wp-content/uploads/2017/09/PayPal-ME-300x300.jpg.png" width=150/>
+	<img alt="paypalme" src="http://codeinpython.com/tutorials/wp-content/uploads/2017/09/PayPal-ME-300x300.jpg.png" width=100/>
 </a>
 
 Table of Contents
