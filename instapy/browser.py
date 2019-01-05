@@ -63,7 +63,6 @@ def set_selenium_local_session(proxy_address,
     else:
         chromedriver_location = Settings.chromedriver_location
         chrome_options = Options()
-        #chrome_options.add_argument("--disable-infobars")
         chrome_options.add_argument("--mute-audio")
         chrome_options.add_argument('--dns-prefetch-disable')
         chrome_options.add_argument('--lang=en-US')
@@ -76,7 +75,8 @@ def set_selenium_local_session(proxy_address,
             chrome_options.add_argument('--no-sandbox')
 
             if disable_image_load:
-                chrome_options.add_argument('--blink-settings=imagesEnabled=false')
+                chrome_options.add_argument(
+                    '--blink-settings=imagesEnabled=false')
 
             # replaces browser User Agent from "HeadlessChrome".
             user_agent = "Chrome"
@@ -89,11 +89,15 @@ def set_selenium_local_session(proxy_address,
         if proxy_address and proxy_port:
             prox = Proxy()
             proxy = ":".join([proxy_address, str(proxy_port)])
-            prox.proxy_type = ProxyType.MANUAL
-            prox.http_proxy = proxy
-            prox.socks_proxy = proxy
-            prox.ssl_proxy = proxy
-            prox.add_to_capabilities(capabilities)
+            if headless_browser:
+                chrome_options.add_argument(
+                    "--proxy-server=http://{}".format(proxy))
+            else:
+                prox.proxy_type = ProxyType.MANUAL
+                prox.http_proxy = proxy
+                prox.socks_proxy = proxy
+                prox.ssl_proxy = proxy
+                prox.add_to_capabilities(capabilities)
 
         # add proxy extension
         if proxy_chrome_extension and not headless_browser:
@@ -101,7 +105,8 @@ def set_selenium_local_session(proxy_address,
 
         # using saved profile for chrome
         if browser_profile_path is not None:
-            chrome_options.add_argument('user-data-dir={}'.format(browser_profile_path))
+            chrome_options.add_argument(
+                'user-data-dir={}'.format(browser_profile_path))
 
         chrome_prefs = {
             'intl.accept_languages': 'en-US',
@@ -113,21 +118,22 @@ def set_selenium_local_session(proxy_address,
         chrome_options.add_experimental_option('prefs', chrome_prefs)
         try:
             browser = webdriver.Chrome(chromedriver_location,
-                                            desired_capabilities=capabilities,
-                                            chrome_options=chrome_options)
+                                       desired_capabilities=capabilities,
+                                       chrome_options=chrome_options)
 
         except WebDriverException as exc:
             logger.exception(exc)
             err_msg = 'ensure chromedriver is installed at {}'.format(
-                            Settings.chromedriver_location)
+                Settings.chromedriver_location)
             return browser, err_msg
 
         # prevent: Message: unknown error: call function result missing 'value'
         matches = re.match(r'^(\d+\.\d+)',
-                           browser.capabilities['chrome']['chromedriverVersion'])
+                           browser.capabilities['chrome'][
+                               'chromedriverVersion'])
         if float(matches.groups()[0]) < Settings.chromedriver_min_version:
             err_msg = 'chromedriver {} is not supported, expects {}+'.format(
-                            float(matches.groups()[0]), Settings.chromedriver_min_version)
+                float(matches.groups()[0]), Settings.chromedriver_min_version)
             return browser, err_msg
 
     browser.implicitly_wait(page_delay)
@@ -183,7 +189,7 @@ def close_browser(browser,
                 logger.exception(
                     "Error occurred while deleting cookies "
                     "from web browser!\n\t{}"
-                        .format(str(exc).encode("utf-8")))
+                    .format(str(exc).encode("utf-8")))
 
         # close web browser
         try:
@@ -193,4 +199,4 @@ def close_browser(browser,
                 logger.exception(
                     "Error occurred while "
                     "closing web browser!\n\t{}"
-                        .format(str(exc).encode("utf-8")))
+                    .format(str(exc).encode("utf-8")))

@@ -2,9 +2,6 @@ import io
 import os
 from setuptools import setup
 
-
-
-
 __version__ = '0.0.1'
 __author__ = 'Tim Grossmann'
 
@@ -19,8 +16,6 @@ with open("requirements.txt") as f:
 with io.open(os.path.join(here, "README.md"), encoding="utf-8") as doc_file:
     documentation = '\n' + doc_file.read()
 
-
-
 setup(
     name='instagram_py',
     version=__version__,
@@ -32,12 +27,15 @@ setup(
     url='https://github.com/timgrossmann/InstaPy',
     download_url="https://github.com/timgrossmann/InstaPy/archive/master.zip",
     project_urls={"GUI": "https://github.com/ahmadudin/electron-instaPy-GUI",
-                  "How Tos": "https://github.com/timgrossmann/InstaPy/tree/master/docs",
-                  "Examples": "https://github.com/timgrossmann/InstaPy/tree/master/examples"},
+                  "How Tos": "https://github.com/timgrossmann/InstaPy/tree"
+                             "/master/docs",
+                  "Examples": "https://github.com/timgrossmann/InstaPy/tree"
+                              "/master/examples"},
     packages=['instapy'],
     py_modules='instapy',
     license="GPLv3",
-    keywords=["instagram", "automation", "promotion", "marketing", "instapy", "bot"],
+    keywords=["instagram", "automation", "promotion", "marketing", "instapy",
+              "bot"],
     classifiers=["Development Status :: 5 - Production/Stable",
                  "Environment :: Console",
                  "Environment :: Win32 (MS Windows)",
@@ -59,11 +57,8 @@ setup(
                  "Topic :: Utilities",
                  "Natural Language :: English"],
     install_requires=dependencies,
-    extras_require={"test":["pytest", "tox"]},
+    extras_require={"test": ["pytest", "tox"]},
     include_package_data=True,
     python_requires=">=2.7",
     platforms=["win32", "linux", "linux2", "darwin"]
-    )
-
-
-
+)

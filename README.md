@@ -31,8 +31,14 @@ Head over to https://github.com/timgrossmann/InstaPy/wiki/Reporting-An-Issue to 
 
 ### Do you want to support us ?
 
+<a href="https://opencollective.com/instapy/donate" target="_blank">
+  <img src="https://opencollective.com/instapy/contribute/button@2x.png?color=blue" width=300 />
+</a>
+
+<br />
+
 <a href="https://www.paypal.me/supportInstaPy">
-	<img alt="paypalme" src="http://codeinpython.com/tutorials/wp-content/uploads/2017/09/PayPal-ME-300x300.jpg.png" width=150/>
+	<img alt="paypalme" src="http://codeinpython.com/tutorials/wp-content/uploads/2017/09/PayPal-ME-300x300.jpg.png" width=100/>
 </a>
 
 Table of Contents
@@ -1674,7 +1680,7 @@ You can use InstaPy behind a proxy by specifying server address and port
 session = InstaPy(username=insta_username, password=insta_password, proxy_address='8.8.8.8', proxy_port=8080)
 ```
 
-To use proxy with authentication you should firstly generate proxy chrome extension (works only with Chrome and headless_browser=False).
+To use proxy with authentication you should firstly generate proxy chrome extension (works only with headless_browser=False unless using FF where it works with headless_browser=True).
 
 ```python
 from proxy_extension import create_proxy_extension
