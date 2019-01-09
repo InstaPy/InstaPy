@@ -63,6 +63,7 @@ Table of Contents
   * [Interact on posts at given URLs](#interact-on-posts-at-given-urls)
   * [Interact by Comments](#interact-by-comments)
   * [Unfollowing](#unfollowing)
+  * [Remove outgoing follow requests](#remove-outgoing-follow-requests)
   * [Don't unfollow active users](#dont-unfollow-active-users)
   * [Interactions based on the number of followers and/or following a user has](#interactions-based-on-the-number-of-followers-andor-following-a-user-has)
   * [Interactions based on the number of posts a user has](#interactions-based-on-the-number-of-posts-a-user-has)
@@ -653,6 +654,15 @@ session.unfollow_users(amount=200, allFollowing=True, style="FIFO", unfollow_aft
 ```
 _here the unfollow method- **alFollowing** is used_
 
+
+
+### Remove outgoing follow requests
+
+```python
+# Remove outgoing unapproved follow requests from private accounts
+
+session.remove_follow_requests(amount=200, sleep_delay=600)
+```
 
 
 ### Don't unfollow active users
