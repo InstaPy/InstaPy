@@ -54,6 +54,7 @@ from .unfollow_util import follow_user
 from .unfollow_util import follow_restriction
 from .unfollow_util import dump_follow_restriction
 from .unfollow_util import set_automated_followed_pool
+from .unfollow_util import get_follow_requests
 from .commenters_util import extract_information
 from .commenters_util import users_liked
 from .commenters_util import get_photo_urls_from_profile
@@ -3398,6 +3399,38 @@ class InstaPy:
                 return self
 
         return self
+
+    def remove_follow_requests(self, 
+                              amount=200,
+                              sleep_delay=600):
+        """Remove user unaccepted follow requests"""
+        message = "Starting to get follow requests.."
+        highlight_print(self.username, message,
+                        "feature", "info", self.logger)
+        
+        follow_requests = get_follow_requests(self.browser,
+                                                amount,
+                                                sleep_delay,
+                                                self.logger,
+                                                self.logfolder)
+
+        unfollow_count = 0
+        for person in follow_requests:
+            self.logger.warning(
+                "--> Unfollow {}/{}:"
+                " unfollowing '{}' "
+                .format(unfollow_count + 1, len(follow_requests), person))
+            unfollow_state, msg = unfollow_user(self.browser,
+                                                "profile",
+                                                self.username,
+                                                person,
+                                                None,
+                                                None,
+                                                self.relationship_data,
+                                                self.logger,
+                                                self.logfolder)
+            if unfollow_state is True:
+                unfollow_count += 1
 
     def like_by_feed(self, **kwargs):
         """Like the users feed"""
