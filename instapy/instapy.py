@@ -2730,7 +2730,7 @@ class InstaPy:
             self.logger.info(
                 "Grabbed {} usernames from '{}'s `Followers` to do "
                 "interaction."
-                    .format(len(person_list), user))
+                .format(len(person_list), user))
 
             interacted_personal = 0
 
@@ -2896,7 +2896,7 @@ class InstaPy:
             self.logger.info(
                 "Grabbed {} usernames from '{}'s `Following` to do "
                 "interaction."
-                    .format(len(person_list), user))
+                .format(len(person_list), user))
             interacted_personal = 0
 
             for index, person in enumerate(person_list):
@@ -3131,7 +3131,7 @@ class InstaPy:
                                       delay_random / 60, 2)))
                     self.logger.info(
                         "------=>  Followed {} new users ~sleeping about {}\n"
-                            .format(followed_new, sleep_time))
+                        .format(followed_new, sleep_time))
                     sleep(delay_random)
                     relax_point = random.randint(7, 14)
                     followed_new = 0
@@ -3231,7 +3231,7 @@ class InstaPy:
             print('')
             self.logger.info(
                 "Grabbed {} usernames from '{}'s `Following` to do following\n"
-                    .format(len(person_list), user))
+                .format(len(person_list), user))
 
             followed_personal = 0
             simulated_unfollow = 0
@@ -3302,7 +3302,7 @@ class InstaPy:
                                       delay_random / 60, 2)))
                     self.logger.info(
                         "------=>  Followed {} new users ~sleeping about {}\n"
-                            .format(followed_new, sleep_time))
+                        .format(followed_new, sleep_time))
                     sleep(delay_random)
                     relax_point = random.randint(7, 14)
                     followed_new = 0
@@ -4459,18 +4459,18 @@ class InstaPy:
                 "\t|> INAPPROPRIATE images: {}\n"
                 "\t|> NOT VALID users: {}\n"
                 "\n{}\n{}"
-                    .format(self.liked_img,
-                            self.already_liked,
-                            self.commented,
-                            self.followed,
-                            self.already_followed,
-                            self.unfollowed,
-                            self.liked_comments,
-                            self.replied_to_comments,
-                            self.inap_img,
-                            self.not_valid_users,
-                            owner_relationship_info,
-                            run_time_msg))
+                .format(self.liked_img,
+                        self.already_liked,
+                        self.commented,
+                        self.followed,
+                        self.already_followed,
+                        self.unfollowed,
+                        self.liked_comments,
+                        self.replied_to_comments,
+                        self.inap_img,
+                        self.not_valid_users,
+                        owner_relationship_info,
+                        run_time_msg))
         else:
             self.logger.info("Sessional Live Report:\n"
                              "\t|> No any statistics to show\n"
