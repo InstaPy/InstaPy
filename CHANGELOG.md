@@ -3,6 +3,10 @@ The **goal** of this file is explaining to the users of our project the notable 
 
 _The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html)_.
 
+## [Unreleased] - 2019-01-10
+### Added 
+- Feature to remove outgoing unapproved follow requests from private accounts
+
 ## [Unreleased] - 2019-01-05
 ### Changed
 - Resolve security warning with new pyyaml version, updated pyyaml to version 4.2b1
