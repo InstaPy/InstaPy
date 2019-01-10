@@ -3405,6 +3405,9 @@ class InstaPy:
                                sleep_delay=600):
         """Remove user unaccepted follow requests"""
 
+        if self.aborting:
+            return self
+
         message = "Starting to get follow requests.."
         highlight_print(self.username,
                         message,
@@ -3423,7 +3426,7 @@ class InstaPy:
         for person in follow_requests:
             self.logger.warning(
                 "--> Unfollow {}/{}:"
-                " unfollowing '{}' "
+                " Removing request for: '{}' "
                 .format(unfollow_count + 1, len(follow_requests), person))
 
             unfollow_state, msg = unfollow_user(self.browser,
@@ -3438,6 +3441,9 @@ class InstaPy:
 
             if unfollow_state is True:
                 unfollow_count += 1
+                self.unfollowed += 1
+
+        return self
 
     def like_by_feed(self, **kwargs):
         """Like the users feed"""
