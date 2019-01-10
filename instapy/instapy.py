@@ -1075,7 +1075,7 @@ class InstaPy:
         """Sets the potency ratio and limits to the provide an efficient
         activity between the targeted masses"""
         self.potency_ratio = potency_ratio if enabled is True else None
-        self.delimit_by_numbers = delimit_by_numbers if enabled is True else\
+        self.delimit_by_numbers = delimit_by_numbers if enabled is True else \
             None
 
         self.max_followers = max_followers
@@ -2240,11 +2240,11 @@ class InstaPy:
                                         (self.commenting_approved,
                                          disapproval_reason) = \
                                             verify_commenting(
-                                            self.browser,
-                                            self.max_comments,
-                                            self.min_comments,
-                                            self.comments_mandatory_words,
-                                            self.logger)
+                                                self.browser,
+                                                self.max_comments,
+                                                self.min_comments,
+                                                self.comments_mandatory_words,
+                                                self.logger)
                                     if self.commenting_approved:
                                         # smart commenting
                                         comments = self.fetch_smart_comments(
@@ -2532,11 +2532,11 @@ class InstaPy:
                                         (self.commenting_approved,
                                          disapproval_reason) = \
                                             verify_commenting(
-                                            self.browser,
-                                            self.max_comments,
-                                            self.min_comments,
-                                            self.comments_mandatory_words,
-                                            self.logger)
+                                                self.browser,
+                                                self.max_comments,
+                                                self.min_comments,
+                                                self.comments_mandatory_words,
+                                                self.logger)
                                     if self.commenting_approved:
                                         if temp_comments:
                                             # use clarifai related comments
@@ -2730,7 +2730,7 @@ class InstaPy:
             self.logger.info(
                 "Grabbed {} usernames from '{}'s `Followers` to do "
                 "interaction."
-                    .format(len(person_list), user))
+                .format(len(person_list), user))
 
             interacted_personal = 0
 
@@ -2896,7 +2896,7 @@ class InstaPy:
             self.logger.info(
                 "Grabbed {} usernames from '{}'s `Following` to do "
                 "interaction."
-                    .format(len(person_list), user))
+                .format(len(person_list), user))
             interacted_personal = 0
 
             for index, person in enumerate(person_list):
@@ -3131,7 +3131,7 @@ class InstaPy:
                                       delay_random / 60, 2)))
                     self.logger.info(
                         "------=>  Followed {} new users ~sleeping about {}\n"
-                            .format(followed_new, sleep_time))
+                        .format(followed_new, sleep_time))
                     sleep(delay_random)
                     relax_point = random.randint(7, 14)
                     followed_new = 0
@@ -3231,7 +3231,7 @@ class InstaPy:
             print('')
             self.logger.info(
                 "Grabbed {} usernames from '{}'s `Following` to do following\n"
-                    .format(len(person_list), user))
+                .format(len(person_list), user))
 
             followed_personal = 0
             simulated_unfollow = 0
@@ -3302,7 +3302,7 @@ class InstaPy:
                                       delay_random / 60, 2)))
                     self.logger.info(
                         "------=>  Followed {} new users ~sleeping about {}\n"
-                            .format(followed_new, sleep_time))
+                        .format(followed_new, sleep_time))
                     sleep(delay_random)
                     relax_point = random.randint(7, 14)
                     followed_new = 0
@@ -3400,26 +3400,32 @@ class InstaPy:
 
         return self
 
-    def remove_follow_requests(self, 
-                              amount=200,
-                              sleep_delay=600):
+    def remove_follow_requests(self,
+                               amount=200,
+                               sleep_delay=600):
         """Remove user unaccepted follow requests"""
+
         message = "Starting to get follow requests.."
-        highlight_print(self.username, message,
-                        "feature", "info", self.logger)
-        
+        highlight_print(self.username,
+                        message,
+                        "feature",
+                        "info",
+                        self.logger)
+
         follow_requests = get_follow_requests(self.browser,
-                                                amount,
-                                                sleep_delay,
-                                                self.logger,
-                                                self.logfolder)
+                                              amount,
+                                              sleep_delay,
+                                              self.logger,
+                                              self.logfolder)
 
         unfollow_count = 0
+
         for person in follow_requests:
             self.logger.warning(
                 "--> Unfollow {}/{}:"
                 " unfollowing '{}' "
                 .format(unfollow_count + 1, len(follow_requests), person))
+
             unfollow_state, msg = unfollow_user(self.browser,
                                                 "profile",
                                                 self.username,
@@ -3429,6 +3435,7 @@ class InstaPy:
                                                 self.relationship_data,
                                                 self.logger,
                                                 self.logfolder)
+
             if unfollow_state is True:
                 unfollow_count += 1
 
@@ -3601,18 +3608,18 @@ class InstaPy:
                                             (self.commenting_approved,
                                              disapproval_reason) = \
                                                 verify_commenting(
-                                                self.browser,
-                                                self.max_comments,
-                                                self.min_comments,
-                                                self.comments_mandatory_words,
-                                                self.logger)
+                                                    self.browser,
+                                                    self.max_comments,
+                                                    self.min_comments,
+                                                    self.comments_mandatory_words,
+                                                    self.logger)
 
                                         if self.commenting_approved:
                                             # smart commenting
                                             comments = \
                                                 self.fetch_smart_comments(
-                                                is_video,
-                                                temp_comments)
+                                                    is_video,
+                                                    temp_comments)
                                             if comments:
                                                 comment_state, \
                                                 msg = comment_image(
@@ -4452,18 +4459,18 @@ class InstaPy:
                 "\t|> INAPPROPRIATE images: {}\n"
                 "\t|> NOT VALID users: {}\n"
                 "\n{}\n{}"
-                    .format(self.liked_img,
-                            self.already_liked,
-                            self.commented,
-                            self.followed,
-                            self.already_followed,
-                            self.unfollowed,
-                            self.liked_comments,
-                            self.replied_to_comments,
-                            self.inap_img,
-                            self.not_valid_users,
-                            owner_relationship_info,
-                            run_time_msg))
+                .format(self.liked_img,
+                        self.already_liked,
+                        self.commented,
+                        self.followed,
+                        self.already_followed,
+                        self.unfollowed,
+                        self.liked_comments,
+                        self.replied_to_comments,
+                        self.inap_img,
+                        self.not_valid_users,
+                        owner_relationship_info,
+                        run_time_msg))
         else:
             self.logger.info("Sessional Live Report:\n"
                              "\t|> No any statistics to show\n"
@@ -4909,8 +4916,8 @@ class InstaPy:
             return self.check_letters[uchr]
         except KeyError:
             return self.check_letters.setdefault(uchr,
-                                                 self.mandatory_character in unicodedata.name(
-                                                     uchr))
+                                                 self.mandatory_character in
+                                                 unicodedata.name(uchr))
 
     def run_time(self):
         """ Get the time session lasted in seconds """

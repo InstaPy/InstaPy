@@ -315,7 +315,7 @@ def unfollow(browser,
             logger.info(
                 "Total {} users available to unfollow  ~didn't pass "
                 "`unfollow_after`: {}\n"
-                .format(len(unfollow_list), len(non_eligible)))
+                    .format(len(unfollow_list), len(non_eligible)))
 
         if len(unfollow_list) < 1:
             logger.info("There are no any users available to unfollow")
@@ -344,7 +344,7 @@ def unfollow(browser,
                 if unfollowNum >= amount:
                     logger.warning(
                         "--> Total unfollows reached it's amount given {}\n"
-                        .format(unfollowNum))
+                            .format(unfollowNum))
                     break
 
                 if jumps["consequent"]["unfollows"] >= jumps["limit"][
@@ -374,9 +374,9 @@ def unfollow(browser,
                 if person not in dont_include:
                     logger.info(
                         "Ongoing Unfollow [{}/{}]: now unfollowing '{}'..."
-                        .format(unfollowNum + 1,
-                                amount,
-                                person.encode('utf-8')))
+                            .format(unfollowNum + 1,
+                                    amount,
+                                    person.encode('utf-8')))
 
                     person_id = (automatedFollowedPool["all"][person]["id"] if
                                  person in automatedFollowedPool[
@@ -518,7 +518,7 @@ def unfollow(browser,
                 if unfollowNum >= amount:
                     logger.info(
                         "--> Total unfollowNum reached it's amount given: {}"
-                        .format(unfollowNum))
+                            .format(unfollowNum))
                     break
 
                 if jumps["consequent"]["unfollows"] >= jumps["limit"][
@@ -541,9 +541,9 @@ def unfollow(browser,
                 if person not in dont_include:
                     logger.info(
                         "Ongoing Unfollow [{}/{}]: now unfollowing '{}'..."
-                        .format(unfollowNum + 1,
-                                amount,
-                                person.encode('utf-8')))
+                            .format(unfollowNum + 1,
+                                    amount,
+                                    person.encode('utf-8')))
 
                     person_id = (automatedFollowedPool["all"][person]["id"] if
                                  person in automatedFollowedPool[
@@ -1397,7 +1397,7 @@ def verify_username_by_id(browser, username, person, person_id, logger,
             if person_new != person:
                 logger.info(
                     "User '{}' has changed username and now is called '{}' :S"
-                    .format(person, person_new))
+                        .format(person, person_new))
             return person_new
 
         else:
@@ -1489,24 +1489,27 @@ def post_unfollow_actions(browser, person, logger):
 def get_follow_requests(browser, amount, sleep_delay, logger, logfolder):
     """ Get follow requests from instagram access tool list """
 
-    user_link = "https://www.instagram.com/accounts/access_tool/current_follow_requests"
+    user_link = "https://www.instagram.com/accounts/access_tool" \
+                "/current_follow_requests"
     web_address_navigator(browser, user_link)
 
     list_of_users = []
     view_more_button_exist = True
     view_more_clicks = 0
 
-    while len(list_of_users) < amount and view_more_clicks < 750 and view_more_button_exist:
+    while len(
+            list_of_users) < amount and view_more_clicks < 750 and \
+            view_more_button_exist:
         sleep(4)
         list_of_users = browser.find_elements_by_xpath("//section/div")
+
         if len(list_of_users) == 0:
-            logger.info(
-                "There are not outgoing follow requests"
-            )
+            logger.info("There are not outgoing follow requests")
             break
-     
+
         try:
-            view_more_button = browser.find_element_by_xpath("//button[text()='View More']")
+            view_more_button = browser.find_element_by_xpath(
+                "//button[text()='View More']")
         except NoSuchElementException:
             view_more_button_exist = False
 
@@ -1519,13 +1522,14 @@ def get_follow_requests(browser, amount, sleep_delay, logger, logfolder):
             view_more_clicks += 1
 
     users_to_unfollow = []
+
     for user in list_of_users:
-         users_to_unfollow.append(user.text)
-         if len(users_to_unfollow) == amount:
-             break
+        users_to_unfollow.append(user.text)
+        if len(users_to_unfollow) == amount:
+            break
 
     logger.info(
         "Found '{}' outgoing follow requests '{}'"
-        .format(len(users_to_unfollow), users_to_unfollow)
-    )
+        .format(len(users_to_unfollow), users_to_unfollow))
+
     return users_to_unfollow
