@@ -1531,5 +1531,5 @@ def get_follow_requests(browser, amount, sleep_delay, logger, logfolder):
     logger.info(
         "Found '{}' outgoing follow requests '{}'"
         .format(len(users_to_unfollow), users_to_unfollow))
-    
+
     return users_to_unfollow
