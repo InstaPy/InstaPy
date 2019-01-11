@@ -18,10 +18,11 @@ global_tags = ['']
 mail_recp = 'mail'
 
 ### SETTINGS ###
-#friends = json.load(open(insta_username + '_followings.json'))
+# friends = json.load(open(insta_username + '_followings.json'))
 
 set_comments = {
-    'comments': ['Awesome!', 'Very lovely', 'Love it!', 'Nicey!', 'Great picture :)', 'Dope picture']
+    'comments': ['Awesome!', 'Very lovely', 'Love it!', 'Nicey!',
+                 'Great picture :)', 'Dope picture']
 }
 
 set_do_comment = {
@@ -88,7 +89,7 @@ set_ignore_if_contains = {
 
 set_dont_include = {
     'source': 'file',
-    'dontincludefilename': 'followings.json'
+    'dontincludefilename': 'followings.json',
     'dontincludelist': ['']
 }
 
@@ -102,7 +103,7 @@ follow_by_list = {
     'enabled': False,
     'followlist': [''],
     'times': 1,
-    #'randomize': True,
+    'randomize': True,
     'sleep_delay': 600,
     'interact': False
 }
@@ -139,7 +140,7 @@ follow_likers = {
     'followlist': [''],
     'photos_grab_amount': 2,
     'follow_likers_per_photo': 3,
-    #'randomize': True,
+    'randomize': True,
     'sleep_delay': 600,
     'interact': 600
 }
@@ -150,7 +151,7 @@ follow_commenters = {
     'amount': 10,
     'daysold': 30,
     'max_pic': 100,
-    #'randomize': True,
+    'randomize': True,
     'sleep_delay': 600,
     'interact': False
 }
@@ -217,18 +218,19 @@ like_by_locations = {
 
 unfollow_users = {
     'enabled': False,
-    'method': 'all', # or instapyfollowed or customlist
+    'method': 'all',  # or instapyfollowed or customlist
     'amount': 5,
     'sleep_delay': 600,
-    'style': 'FIFO', # or 'LIFO' or 'RANDOM'
-    'unfollow_after': 60*60*12,
+    'style': 'FIFO',  # or 'LIFO' or 'RANDOM'
+    'unfollow_after': 60 * 60 * 12,
 
-    #'customList': ["user_1", "user_2", "user_49", "user332", "user50921", "user_n"],
-    #'setting': 'all', # or 'nonfollowers
+    # 'customList': ["user_1", "user_2", "user_49", "user332", "user50921",
+    # "user_n"],
+    # 'setting': 'all', # or 'nonfollowers
 
-    'InstaPyFollowed': 'all' # or 'nonfollowers
+    'InstaPyFollowed': 'all'  # or 'nonfollowers
 
-    #'nonFollowers': True,
+    # 'nonFollowers': True,
 
-    #'allFollowing': True
+    # 'allFollowing': True
 }
