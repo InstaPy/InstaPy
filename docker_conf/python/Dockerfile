@@ -1,7 +1,4 @@
 FROM python:3.6
-RUN mkdir /code
-RUN mkdir /config
-WORKDIR /code
-COPY ./requirements.txt /config/
-RUN pip install -r /config/requirements.txt
-COPY ./ /code/ 
+RUN apt-get update && apt-get install -y chromedriver
+COPY ./requirements.txt /
+RUN pip install -r /requirements.txt
