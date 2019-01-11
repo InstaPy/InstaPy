@@ -14,13 +14,13 @@ import csv
 import sqlite3
 import json
 from contextlib import contextmanager
+from tempfile import gettempdir
+import emoji
+from emoji.unicode_codes import UNICODE_EMOJI
 
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as ec
 from selenium.webdriver.common.by import By
-from tempfile import gettempdir
-import emoji
-from emoji.unicode_codes import UNICODE_EMOJI
 
 from .time_util import sleep
 from .time_util import sleep_actual
@@ -101,7 +101,8 @@ def validate_username(browser,
                       skip_business_percentage,
                       skip_business_categories,
                       dont_skip_business_categories,
-                      logger):
+                      logger,
+                      logfolder):
     """Check if we can interact with the user"""
 
     # some features may not provide `username` and in those cases we will
@@ -149,9 +150,6 @@ def validate_username(browser,
         inap_msg = "---> '{}' is in the `ignore_users` list\t~skipping " \
                    "user\n".format(username)
         return False, inap_msg
-
-    logfolder = logfolder = '{0}{1}{2}{1}'.format(
-        Settings.log_location, os.path.sep, own_username)
 
     blacklist_file = "{}blacklist.csv".format(logfolder)
     blacklist_file_exists = os.path.isfile(blacklist_file)
@@ -1031,7 +1029,8 @@ def highlight_print(username=None, message=None, priority=None, level=None,
     # can add other highlighters at other priorities enriching this function
 
     # find the number of chars needed off the length of the logger message
-    output_len = 28 + len(username) + 3 + len(message)
+    output_len = (28 + len(username) + 3 + len(message) if logger
+                  else len(message))
     show_logs = Settings.show_logs
 
     if priority in ["initialization", "end"]:
@@ -1067,19 +1066,41 @@ def highlight_print(username=None, message=None, priority=None, level=None,
         upper_char = "~"
         lower_char = None
 
-    if show_logs is True:
+    elif priority == "workspace":
+        # ._. ._. ._. ._. ._. ._. ._. ._. ._. ._. ._. ._.
+        # E.g.: |> Workspace in use: "C:/Users/El/InstaPy"
+        upper_char = " ._. "
+        lower_char = None
+
+    if (upper_char
+        and (show_logs
+             or priority == "workspace")):
         print("\n{}".format(
             upper_char * int(ceil(output_len / len(upper_char)))))
 
     if level == "info":
-        logger.info(message)
-    elif level == "warning":
-        logger.warning(message)
-    elif level == "critical":
-        logger.critical(message)
+        if logger:
+            logger.info(message)
+        else:
+            print(message)
 
-    if lower_char and show_logs is True:
-        print("{}".format(lower_char * output_len))
+    elif level == "warning":
+        if logger:
+            logger.warning(message)
+        else:
+            print(message)
+
+    elif level == "critical":
+        if logger:
+            logger.critical(message)
+        else:
+            print(message)
+
+    if (lower_char
+        and (show_logs
+             or priority == "workspace")):
+        print("{}".format(
+            lower_char * int(ceil(output_len / len(lower_char)))))
 
 
 def remove_duplicates(container, keep_order, logger):
@@ -1849,3 +1870,4 @@ def save_account_progress(browser, username, logger):
             conn.commit()
     except Exception:
         logger.exception('message')
+
