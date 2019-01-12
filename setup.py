@@ -29,7 +29,7 @@ metadata = dict(
         r"""__([a-z]+)__ = "([^"]+)""", readall("instapy", "__init__.py")))
 
 setup(
-    name="instapy-test-janeleven",
+    name="instapy",
     version=metadata["version"],
     description=summary,
     long_description=documentation,

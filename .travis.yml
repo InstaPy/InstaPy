@@ -1,18 +1,94 @@
+dist: xenial
+sudo: false
 language: python
+python: "3.6"
 cache: pip
-python:
-    - "2.7"
-    - "3.6"
-install:
-    - pip install -r requirements.txt
-    - pip install flake8  # pytest  # add another testing frameworks later
-before_script:
-    # stop the build if there are Python syntax errors or undefined names
-    - flake8 . --count --select=E722,F401,F811,E901,E999,F821,F822,F823 --show-source --statistics
-    # exit-zero treats all errors as warnings.  The GitHub editor is 127 chars wide
-    - flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
-script:
-    - true  # pytest --capture=sys  # add other tests here
+
+branches:
+  except:
+    - legacy
+    - experimental
+
+install: pip install tox tox-venv
+
+script: tox
+
+stages:
+    - name: static analysis
+    - name: test
+    - name: deploy to PyPI
+      if: type = push AND fork = false AND tag =~ ^\d+\.\d+\.\d+
+
+jobs:
+  fast_finish: true
+  allow_failures:
+    - python: "2.7.6"
+  include:
+    - stage: static analysis
+      env: TOXENV=flake8-27
+      python: "2.7"
+
+    - stage: static analysis
+      env: TOXENV=flake8-37
+      python: "3.7"
+
+    - stage: test
+      env: TOXENV=py27
+      dist: trusty
+      python: "2.7.6"
+
+    - stage: test
+      env: TOXENV=py27
+      python: "2.7"
+
+    - stage: test
+      env: TOXENV=py34
+      python: "3.4"
+
+    # - stage: test   # <-- this jobs fails to install googleapis-common-protos
+    #   env: TOXENV=py35
+    #   python: "3.5.2"
+
+    - stage: test
+      env: TOXENV=py36
+      python: "3.6"
+
+    - stage: test
+      env: TOXENV=py37
+      python: "3.7"
+
+    - stage: deploy to PyPI
+      install: true
+      script: skip
+      after_success: true
+      deploy:
+        provider: pypi
+        user: InstaPy
+        password:
+          secure: YksWurLkvurfrbSpOkHFTouFg9NCEcl09GikX3v8lk5jXfY8D8TBIQfakck6dYKVFrjaIOxEPm7sqaYm0//oz91NLiSv4iBZL2mLdQ1n8+aQQ9uctoiKMcfBTMp4dDwdCxNqPV0Aco8NbcB6Se0oNd94H54ohA5Al5Z65ivDe3dka+zabeJMa0TO0SXVqY2KmMgFPLScZUqQqKl4HxxgDyWkw9onPz//T9r2u32C7LpP/x8joHQ1jeUlNZZRwkrMaIuOYmmkUZztkj+zBfPpaV4DPPjMAmjo0G9tGmc2pEIE1joUtw0OSpstpvvnchqI6YeMHZ9nITTIEa3fShoAcYmTsiWEeK5XPnmuMt0qdIvflNOi3Ck5vVo1DWzz/S3QyU9YejTZ8TNBOOGLZlrmyDTHpNyTUJB06Euw5Wos8wVxgtIdKLJ/1wvIC+d+n+0wnnhdESEG0lZo1dCbkGHRdJjfYADnu3sUZyDk/3ZrHQBXa/Qw2zB9bT1GLNQNmE32GkRe8Zr6S0H2LrdXggzoBNMZeyJ7qHXwoahsOtO+CeqHmlpaNYD5kstqXLPxIy9ZfOPFa1F2YQ0Kz7Hgdic42DlUcaLf4749EX80668XPAhs3H7LwRhboZuBj6hWgA7I0YQVDRNwJ/nN53fQBWIfoemJwxQ7PqKFiIpW9bbXyPk=
+        distributions: sdist bdist_wheel
+        on:
+          tags: true
+          repo: timgrossmann/InstaPy
+          branches:
+            only:
+              - master
+
+after_success:
+  - wget https://raw.githubusercontent.com/DiscordHooks/travis-ci-discord-webhook/master/send.sh
+  - chmod +x send.sh
+  - ./send.sh success $DISCORD_WEBHOOK
+
+after_failure:
+  - wget https://raw.githubusercontent.com/DiscordHooks/travis-ci-discord-webhook/master/send.sh
+  - chmod +x send.sh
+  - ./send.sh failure $DISCORD_WEBHOOK
+
 notifications:
+  email:
+    recipients:
+      - contact.timgrossmann@gmail.com
+      - shahriyarguliyev@hotmail.com
+
     on_success: change
-    on_failure: change  # `always` will be the setting once code changes slow down
+    on_failure: always
