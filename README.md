@@ -164,7 +164,7 @@ The best way to install InstaPy is to create a virtual enviornment, install Inst
 
 ##### Windows
 
-```bash
+```cmd
 1. git clone https://github.com/timgrossmann/InstaPy.git
 2. cd InstaPy
 2. python3 -m venv venv
