@@ -148,7 +148,36 @@ or
 
 ### Preferred Installation:
 
-The best way to install InstaPy is to create a virtualenv, install InstaPy there and run it from a separate file:
+The best way to install InstaPy is to create a virtual enviornment, install InstaPy there and run it from a separate file:
+
+#### Python >= 3.6
+
+##### Mac/Linux
+
+```bash
+1. git clone https://github.com/timgrossmann/InstaPy.git
+2. cd InstaPy
+2. python3 -m venv venv
+3. source venv/bin/activate
+3. pip install .
+```
+
+##### Windows
+
+```bash
+1. git clone https://github.com/timgrossmann/InstaPy.git
+2. cd InstaPy
+2. python3 -m venv venv
+3. venv\Scripts\activate.bat
+3. pip install .
+```
+
+If you're not familiar with venv, please [read about it here](https://docs.python.org/3/library/venv.html) and use it to your advantage.
+Running `source venv/bin/activate` will activate the correct Python to run InstaPy. To exit an activated venv run `deactivate`.
+Now, copy/paste the `quickstart.py` Python code below and run your first InstaPy script. Remember to run it with Python from the venv. To make sure which Python is used, run `which python`, it will tell you which Python is 'active'.
+Whenever you run the script, the virtual enviornment must be active.
+
+#### Python < 3.6
 
 ```bash
 1. virtualenv venv
@@ -158,8 +187,8 @@ The best way to install InstaPy is to create a virtualenv, install InstaPy there
 
 If you're not familiar with virtualenv, please [read about it here](https://virtualenv.pypa.io/en/stable/) and use it to your advantage.
 In essence, this is be the _only_ Python library you should install as root (e.g., with sudo). All other Python libraries should be inside a virtualenv.
-Now copy/paste the `quickstart.py` Python code below and run your first InstaPy script. Remember to run it with Python from the virtualenv, so from `venv/bin/python`. To make sure which Python is used, run `which python`, it will tell you which Python is 'active'.
 Running `source venv/bin/activate` will activate the correct Python to run InstaPy. To exit an activated virtualenv run `deactivate'.
+Now, copy/paste the `quickstart.py` Python code below and run your first InstaPy script. Remember to run it with Python from the virtualenv, so from `venv/bin/python`. To make sure which Python is used, run `which python`, it will tell you which Python is 'active'.
 
 ### Set it up yourself with this Basic Setup
 
