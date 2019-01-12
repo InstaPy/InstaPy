@@ -471,7 +471,7 @@ def get_media_edge_comment_string(media):
     for option in options:
         try:
             media[option]
-        except:
+        except KeyError:
             continue
         return option
 
