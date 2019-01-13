@@ -1,7 +1,7 @@
 version: '3'
 services:
   web:
-    command: ["./wait-for-selenium.sh", "http://selenium:4444/wd/hub", "--", "python", "docker_quickstart.py"]
+    command: ["./code/wait-for-selenium.sh", "http://selenium:4444/wd/hub", "--", "python", "code/docker_quickstart.py"]
     environment:
       - PYTHONUNBUFFERED=0
     build:
@@ -10,7 +10,7 @@ services:
     depends_on:
       - selenium
     volumes:
-      - ./logs:/code/logs
+      - ./:/code
   selenium:
     container_name: selenium
     image: selenium/standalone-chrome-debug
