@@ -7,6 +7,10 @@ _The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 ### Fixed
 - Handle A/B-Test for comments (graphql edge)
 
+## [Unreleased] - 2019-01-13
+### Fixed 
+- Adjust docker-compose.yml according to new Dockerfile
+
 ## [Unreleased] - 2019-01-11
 ### Fixed
 - Correctly mount Docker volume, make it work properly with chromedriver installed in assets folder
