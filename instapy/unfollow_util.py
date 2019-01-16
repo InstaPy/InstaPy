@@ -393,7 +393,7 @@ def unfollow(browser,
                             # delay follow-backers to 15 days.
                             time_stamp = (automatedFollowedPool["all"][person]["time_stamp"] if
                                          person in automatedFollowedPool["all"].keys() else False)
-                            if time_stamp:
+                            if time_stamp != "undefined":
                                 try:
                                     time_diff = get_epoch_time_diff(time_stamp)
 
