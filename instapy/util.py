@@ -1924,6 +1924,15 @@ def get_epoch_time_diff(time_stamp):
     return cur_epoch - former_epoch
 
 
+def is_follow_me(browser, person=None):
+    # navigate to profile page if not already in it
+    if person:
+        user_link = "https://www.instagram.com/{}/".format(person)
+        web_address_navigator(browser, user_link)
+
+    return getUserData("graphql.user.follows_viewer", browser)
+
+
 def get_users_from_dialog(old_data, dialog):
     """
     Prepared to work specially with the dynamic data load in the 'Likes'
