@@ -1,6 +1,6 @@
 """ Module which handles the follow features like unfollowing and following """
 import time
-from datetime import datetime
+from datetime import datetime, timedelta
 import os
 import random
 import json
