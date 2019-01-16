@@ -34,6 +34,8 @@ from .relationship_tools import get_followers
 from .relationship_tools import get_nonfollowers
 from .database_engine import get_database
 from .quota_supervisor import quota_supervisor
+from .util import is_follow_me
+from .util import get_epoch_time_diff
 
 from selenium.common.exceptions import WebDriverException
 from selenium.common.exceptions import NoSuchElementException
@@ -384,8 +386,7 @@ def unfollow(browser,
                                      "all"].keys() else False)
 
                     if delay_follow_back:
-                        # TODO: if person follow back we don't want to check it over and over again
-                        # a solution can be to set the follow time in the follow pool for 5 days from now
+                        # we set the follow time in the follow pool for delay_follow_back from now
                         user_link = "https://www.instagram.com/{}/".format(person)
                         web_address_navigator(browser, user_link)
 
