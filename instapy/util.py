@@ -1859,3 +1859,13 @@ def get_epoch_time_diff(time_stamp):
     cur_epoch = (datetime.now() - datetime(1970, 1, 1)).total_seconds()
 
     return cur_epoch - former_epoch
+
+
+def is_follow_me(browser, person=None):
+    # navigate to profile page if not already in it
+    if person:
+        user_link = "https://www.instagram.com/{}/".format(person)
+        web_address_navigator(browser, user_link)
+
+    return getUserData("graphql.user.follows_viewer", browser)
+
