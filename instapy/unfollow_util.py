@@ -737,7 +737,7 @@ def get_users_through_dialog(browser,
     sc_rolled = 0
 
     # find dialog box
-    dialog_address = "//div[3]/div/div/div[2]"
+    dialog_address = "//body/div[2]/div/div/div[2]"
     dialog = browser.find_element_by_xpath(dialog_address)
 
     # scroll to end of follower list to initiate first load which hides the
