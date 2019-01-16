@@ -1849,3 +1849,13 @@ def save_account_progress(browser, username, logger):
             conn.commit()
     except Exception:
         logger.exception('message')
+        
+
+def get_epoch_time_diff(time_stamp):
+    ''' time diff in seconds from input to now'''
+    log_time = datetime.strptime(time_stamp, '%Y-%m-%d %H:%M')
+
+    former_epoch = (log_time - datetime(1970, 1, 1)).total_seconds()
+    cur_epoch = (datetime.now() - datetime(1970, 1, 1)).total_seconds()
+
+    return cur_epoch - former_epoch
