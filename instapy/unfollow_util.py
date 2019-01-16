@@ -44,7 +44,7 @@ def set_automated_followed_pool(username, unfollow_after, logger, logfolder):
     """ Generare a user list based on the InstaPy followed usernames """
     pool_name = "{0}{1}_followedPool.csv".format(logfolder, username)
     automatedFollowedPool = {"all": {}, "eligible": {}}
-    time_stamp = None
+    time_stamp = "undefined"
     user_id = "undefined"  # 'undefined' rather than None is *intentional
 
     try:
@@ -61,7 +61,7 @@ def set_automated_followed_pool(username, unfollow_after, logger, logfolder):
                     datetime ~ user ~ user_id,   # after `user_id` was added
                 """
                 if sz == 1:
-                    time_stamp = None
+                    time_stamp = "undefined"
                     user = entries[0]
 
                 elif sz == 2:
@@ -73,9 +73,9 @@ def set_automated_followed_pool(username, unfollow_after, logger, logfolder):
                     user = entries[1]
                     user_id = entries[2]
 
-                automatedFollowedPool["all"].update({user: {"id": user_id}})
+                automatedFollowedPool["all"].update({user: {"id": user_id, 'time_stamp': time_stamp}})
                 # get eligible list
-                if unfollow_after is not None and time_stamp:
+                if unfollow_after is not None and time_stamp != "undefined":
                     try:
                         log_time = datetime.strptime(time_stamp,
                                                      '%Y-%m-%d %H:%M')
@@ -179,6 +179,7 @@ def unfollow(browser,
              white_list,
              sleep_delay,
              jumps,
+             delay_follow_back,
              logger,
              logfolder):
     """ Unfollows the given amount of users"""
@@ -381,6 +382,32 @@ def unfollow(browser,
                     person_id = (automatedFollowedPool["all"][person]["id"] if
                                  person in automatedFollowedPool[
                                      "all"].keys() else False)
+
+                    if delay_follow_back:
+                        # TODO: if person follow back we don't want to check it over and over again
+                        # a solution can be to set the follow time in the follow pool for 5 days from now
+                        user_link = "https://www.instagram.com/{}/".format(person)
+                        web_address_navigator(browser, user_link)
+
+                        if is_follow_me(browser, person):
+                            # delay follow-backers to 15 days.
+                            time_stamp = (automatedFollowedPool["all"][person]["time_stamp"] if
+                                         person in automatedFollowedPool["all"].keys() else False)
+                            if time_stamp:
+                                try:
+                                    time_diff = get_epoch_time_diff(time_stamp)
+
+                                    if time_diff < delay_follow_back:  # N days in seconds
+                                        refresh_follow_time_in_pool(username,
+                                                                    person,
+                                                                    person_id,
+                                                                    delay_follow_back,
+                                                                    logger,
+                                                                    logfolder)
+                                        continue
+
+                                except ValueError:
+                                    pass
 
                     try:
                         unfollow_state, msg = unfollow_user(browser,
@@ -1533,3 +1560,14 @@ def get_follow_requests(browser, amount, sleep_delay, logger, logfolder):
         .format(len(users_to_unfollow), users_to_unfollow))
 
     return users_to_unfollow
+
+
+def refresh_follow_time_in_pool(username, person, person_id, extra_secs, logger, logfolder):
+    # first we delete the user from pool
+    delete_line_from_file(
+        '{0}{1}_followedPool.csv'.format(logfolder, username), username + ",\n", logger)
+
+    # than reset the time to now
+    logtime = (datetime.now() + timedelta(seconds=extra_secs)).strftime('%Y-%m-%d %H:%M')
+    log_followed_pool(username, person, logger, logfolder, logtime, person_id)
+
