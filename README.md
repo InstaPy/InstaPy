@@ -70,7 +70,7 @@ Table of Contents
   * [Skipping user for private account, no profile picture, business account](#skipping-user-for-private-account-no-profile-picture-business-account)
   * [Liking based on the number of existing likes a post has](#liking-based-on-the-number-of-existing-likes-a-post-has)
   * [Commenting based on the number of existing comments a post has](#commenting-based-on-the-number-of-existing-comments-a-post-has)
-  * [Commenting based on madatory words in the description or first comment](#commenting-based-on-madatory-words-in-the-description-or-first-comment)
+  * [Commenting based on mandatory words in the description or first comment](#commenting-based-on-mandatory-words-in-the-description-or-first-comment)
   * [Comment by Locations](#comment-by-locations)
   * [Like by Locations](#like-by-locations)
   * [Like by Tags](#like-by-tags)
@@ -187,7 +187,7 @@ Whenever you run the script, the virtual enviornment must be active.
 
 If you're not familiar with virtualenv, please [read about it here](https://virtualenv.pypa.io/en/stable/) and use it to your advantage.
 In essence, this is be the _only_ Python library you should install as root (e.g., with sudo). All other Python libraries should be inside a virtualenv.
-Running `source venv/bin/activate` will activate the correct Python to run InstaPy. To exit an activated virtualenv run `deactivate'.
+Running `source venv/bin/activate` will activate the correct Python to run InstaPy. To exit an activated virtualenv run `deactivate`.
 Now, copy/paste the `quickstart.py` Python code below and run your first InstaPy script. Remember to run it with Python from the virtualenv, so from `venv/bin/python`. To make sure which Python is used, run `which python`, it will tell you which Python is 'active'.
 
 ### Set it up yourself with this Basic Setup
