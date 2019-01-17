@@ -70,7 +70,7 @@ Table of Contents
   * [Skipping user for private account, no profile picture, business account](#skipping-user-for-private-account-no-profile-picture-business-account)
   * [Liking based on the number of existing likes a post has](#liking-based-on-the-number-of-existing-likes-a-post-has)
   * [Commenting based on the number of existing comments a post has](#commenting-based-on-the-number-of-existing-comments-a-post-has)
-  * [Commenting based on madatory words in the description or first comment](#commenting-based-on-madatory-words-in-the-description-or-first-comment)
+  * [Commenting based on mandatory words in the description or first comment](#commenting-based-on-mandatory-words-in-the-description-or-first-comment)
   * [Comment by Locations](#comment-by-locations)
   * [Like by Locations](#like-by-locations)
   * [Like by Tags](#like-by-tags)
