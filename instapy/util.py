@@ -1094,6 +1094,9 @@ def remove_duplicates(container, keep_order, logger):
             result = set(container)
 
     else:
+        if not logger:
+            logger = Settings.logger
+
         logger.warning("The given data type- '{}' is not supported "
                        "in `remove_duplicates` function, yet!"
                        .format(type(container)))
