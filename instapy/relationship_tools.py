@@ -1242,5 +1242,8 @@ def progress_tracker(current_value, highest_value, initial_time, logger):
             sys.stdout.flush()
 
     except Exception as exc:
+        if not logger:
+            logger = Settings.logger
+
         logger.info("Error occurred with Progress Tracker:\n{}".format(
             str(exc).encode("utf-8")))

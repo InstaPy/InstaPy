@@ -2,6 +2,7 @@
 # code created by modification of original code copied from
 # https://github.com/timgrossmann/instagram-profilecrawl/blob/master/util
 # /extractor.py
+import time
 from time import sleep
 from datetime import datetime, timedelta
 import random
@@ -14,6 +15,10 @@ from .util import click_element
 from .util import update_activity
 from .util import web_address_navigator
 from .util import username_url_to_username
+from .util import remove_duplicates
+from .util import scroll_bottom
+from .util import extract_text_from_element
+from .relationship_tools import progress_tracker
 
 from selenium.common.exceptions import NoSuchElementException
 
@@ -288,6 +293,8 @@ def users_liked(browser, photo_url, amount=100):
 
 
 def likers_from_photo(browser, amount=20):
+    """ Get the list of users from the 'Likes' dialog of a photo """
+
     liked_counter_button = "//div/article/div[2]/section[2]/div/div/a"
 
     try:
@@ -326,7 +333,7 @@ def likers_from_photo(browser, amount=20):
 
         # find dialog box
         dialog = browser.find_element_by_xpath(
-            "//div[text()='Likes']/following-sibling::div")
+            "//h1[text()='Likes']/../../following-sibling::div/div")
 
         # scroll down the page
         previous_len = -1
@@ -336,37 +343,32 @@ def likers_from_photo(browser, amount=20):
         update_activity()
         sleep(1)
 
-        follow_buttons = dialog.find_elements_by_xpath(
-            "//div/div/button[text()='Follow']")
+        start_time = time.time()
+        user_list = []
 
-        while (len(follow_buttons) != previous_len) and (
-                len(follow_buttons) < amount):
+        while (not user_list
+               or (len(user_list) != previous_len)
+               and (len(user_list) < amount)):
+
             if previous_len + 10 >= amount:
-                print("Scrolling finished")
+                print("\nScrolling finished")
                 sleep(1)
                 break
 
-            previous_len = len(follow_buttons)
-            browser.execute_script(
-                "arguments[0].scrollTop = arguments[0].scrollHeight", dialog)
-            update_activity()
-            sleep(1)
+            previous_len = len(user_list)
+            scroll_bottom(browser, dialog, 2)
 
-            follow_buttons = dialog.find_elements_by_xpath(
-                "//div/div/button[text()='Follow']")
-            print("Scrolling down... ", previous_len, "->",
-                  len(follow_buttons), " / ", amount)
+            user_blocks = dialog.find_elements_by_tag_name('a')
+            loaded_users = [extract_text_from_element(u) for u in user_blocks
+                            if extract_text_from_element(u)]
+            user_list.extend(loaded_users)
+            user_list = remove_duplicates(user_list, True, None)
 
-        person_list = []
+            # write & update records at Progress Tracker
+            progress_tracker(len(user_list), amount, start_time, None)
 
-        for person in follow_buttons:
-            username_url = person.find_element_by_xpath(
-                "../../../*").find_element_by_tag_name("a").get_attribute(
-                'href')
-            username = username_url_to_username(username_url)
-            person_list.append(username)
-
-        random.shuffle(person_list)
+        print('\n')
+        random.shuffle(user_list)
         sleep(1)
 
         try:
@@ -380,11 +382,11 @@ def likers_from_photo(browser, amount=20):
         print(
             "Got {} likers shuffled randomly whom you can follow:\n{}"
             "\n".format(
-                len(person_list), person_list))
-        return person_list
+                len(user_list), user_list))
+        return user_list
 
     except Exception as exc:
-        print("Some problem occred!\n\t{}".format(str(exc).encode("utf-8")))
+        print("Some problem occured!\n\t{}".format(str(exc).encode("utf-8")))
         return []
 
 
@@ -419,3 +421,4 @@ def get_photo_urls_from_profile(browser, username, links_to_return_amount=1,
     # Code below is unreachable - perhaps get rid of?
     print("Error: Couldnt get pictures links.")
     return []
+
