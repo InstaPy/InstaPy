@@ -232,7 +232,7 @@ class InstaPy:
         self.skip_business_percentage = 100
         self.skip_no_profile_pic_percentage = 100
         self.skip_private_percentage = 100
-
+        self.delay_unfollow_followbackers = 864000  # 864000 = 10 days, 0 = don't delay
         self.relationship_data = {
             username: {"all_following": [], "all_followers": []}}
 
@@ -3401,6 +3401,7 @@ class InstaPy:
                                   self.white_list,
                                   sleep_delay,
                                   self.jumps,
+                                  self.delay_unfollow_followbackers,
                                   self.logger,
                                   self.logfolder)
             self.logger.info(
