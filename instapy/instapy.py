@@ -74,13 +74,34 @@ from .browser import close_browser
 from selenium.common.exceptions import NoSuchElementException
 
 
-class InstaPyError(Exception):
-    """General error for InstaPy exceptions"""
+# Python 2 & 3
+class _Singleton(type):
+    """A metaclass that creates a Singleton base class when called."""
+
+    _instances = {}
+
+    def __call__(cls, *args, **kwargs):
+        """Check and Init Instance."""
+        if cls not in cls._instances:
+            cls._instances[cls] = \
+                        super(_Singleton, cls).__call__(*args, **kwargs)
+        return cls._instances[cls]
+
+
+class Singleton(_Singleton('SingletonMeta', (object,), {})):
+    """Singleton Class."""
+
     pass
 
 
-class InstaPy:
-    """Class to be instantiated to use the script"""
+class InstaPyError(Exception):
+    """General error for InstaPy exceptions."""
+
+    pass
+
+
+class InstaPy(Singleton):
+    """Class to be instantiated to use the script."""
 
     def __init__(self,
                  username=None,
