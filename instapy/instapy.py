@@ -1,4 +1,4 @@
-"""OS Modules environ method to get the setup vars from the Environment"""
+"""OS Modules environ method to get the setup vars from the Environment."""
 # import built-in & third-party modules
 import types
 import time
@@ -84,8 +84,8 @@ class _Singleton(type):
     def __call__(cls, *args, **kwargs):
         """Check and Init Instance."""
         if cls not in cls._instances:
-            cls._instances[cls] = \
-                        super(_Singleton, cls).__call__(*args, **kwargs)
+            # flake8: noqa
+            cls._instances[cls] = super(_Singleton, cls).__call__(*args, **kwargs)  # noqa: E501
         return cls._instances[cls]
 
 
@@ -268,8 +268,8 @@ class InstaPy(Singleton):
         # stores the features' name which are being used by other features
         self.internal_usage = {}
 
-        # Extensions
-        self.extensions = None
+        # InstaPy Class Methods Name on Extensions
+        self.extensions = []
 
         if (
                 self.proxy_address and self.proxy_port > 0) or \
@@ -294,52 +294,48 @@ class InstaPy(Singleton):
         Parameters
         ----------
         func : type
-            Function name or Callable Function
+            Function/Extension name or Callable Function
         method_name : str
-            Method name
+            Function/Method name
 
         Returns
         -------
         boolean
             Return
         """
-        cls = None
+        cls = self
 
-        # TODO: Add classes
-
-        # Load Class Method Names on Extensions
-        # TODO: Not use FunctionType
-        # flake8: noqa
-        self.extensions = [x for x, y in cls.__dict__.items() if type(y) == types.MethodType]  # noqa: E721
+        # Load InstaPy Class Methods Name on Extensions
+        if not self.extensions:
+            # flake8: noqa
+            self.extensions = [x for x, y in cls.__dict__.items() if type(y) == types.MethodType]  # noqa: E721
 
         try:
-            cls = self
-
             if not method_name:
                 # if isinstance(func, types.FunctionType):
                 if hasattr(func, '__call__'):
                     method_name = func.__name__
                 else:
-                    # TODO: Search extension in path
-                    method_name = func
+                    # TODO: Search func name in extension path
+                    raise Exception('Need implement!!!')
 
             if method_name not in self.extensions:
-                # TODO: Other method to load extesion
-                # self.extensions[method_name] = self
-                # self.extensions[method_name].__dict__[method_name] =
-                #           types.MethodType(func, self.extesions[method_name])
                 setattr(cls, method_name, types.MethodType(func, cls))
+                self.extensions.append(method_name)
             else:
-                self.logger.warning("Debug Load Extensions")
-                # flake8: noqa
-                import pdb; pdb.set_trace()  # noqa: E702
+                self.logger.warning(
+                    "Load Extesions -> {} already loaded.".format(method_name))
 
-        except Exception:
-            self.logger.warning("Debug Load Extensions - Exception")
+        except Exception as e:
+            self.logger.warning("Load Extensions -> {}".format(e))
             # flake8: noqa
             import pdb; pdb.set_trace()  # noqa: E702
 
         return
+
+    def get_extensions(self):
+        """Get list of extesions."""
+        self.logger.info("Extesions Loaded:\n{}".format(str(self.extensions)))
 
     def get_instapy_logger(self, show_logs):
         """
