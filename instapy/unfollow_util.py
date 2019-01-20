@@ -78,18 +78,9 @@ def set_automated_followed_pool(username, unfollow_after, logger, logfolder):
                 automatedFollowedPool["all"].update({user: {"id": user_id, 'time_stamp': time_stamp}})
                 # get eligible list
                 if unfollow_after is not None and time_stamp != "undefined":
-                    try:
-                        log_time = datetime.strptime(time_stamp,
-                                                     '%Y-%m-%d %H:%M')
-                    except ValueError:
-                        continue
+                    time_diff = get_epoch_time_diff(time_stamp)
 
-                    former_epoch = (log_time - datetime(1970, 1,
-                                                        1)).total_seconds()
-                    cur_epoch = (datetime.now() - datetime(1970, 1,
-                                                           1)).total_seconds()
-
-                    if cur_epoch - former_epoch > unfollow_after:
+                    if time_diff > unfollow_after:
                         automatedFollowedPool["eligible"].update(
                             {user: {"id": user_id}})
 
@@ -394,7 +385,7 @@ def unfollow(browser,
                             # delay follow-backers to 15 days.
                             time_stamp = (automatedFollowedPool["all"][person]["time_stamp"] if
                                          person in automatedFollowedPool["all"].keys() else False)
-                            if time_stamp != "undefined":
+                            if time_stamp not in [False, "undefined"]:
                                 try:
                                     time_diff = get_epoch_time_diff(time_stamp)
 
