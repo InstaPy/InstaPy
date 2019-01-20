@@ -101,7 +101,7 @@ class InstaPyError(Exception):
     pass
 
 
-class InstaPy(Singleton):
+class InstaPy:
     """Class to be instantiated to use the script."""
 
     def __init__(self,
