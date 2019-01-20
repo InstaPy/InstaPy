@@ -1,5 +1,6 @@
 """OS Modules environ method to get the setup vars from the Environment"""
 # import built-in & third-party modules
+import types
 import time
 from math import ceil
 import random
@@ -267,6 +268,9 @@ class InstaPy(Singleton):
         # stores the features' name which are being used by other features
         self.internal_usage = {}
 
+        # Extensions
+        self.extensions = None
+
         if (
                 self.proxy_address and self.proxy_port > 0) or \
                 self.proxy_chrome_extension:
@@ -282,6 +286,60 @@ class InstaPy(Singleton):
 
         if self.selenium_local_session is True:
             self.set_selenium_local_session()
+
+    def load_extensions(self, func, method_name=None):
+        """
+        Load Extensions for InstaPy
+
+        Parameters
+        ----------
+        func : type
+            Function name or Callable Function
+        method_name : str
+            Method name
+
+        Returns
+        -------
+        boolean
+            Return
+        """
+        cls = None
+
+        # TODO: Add classes
+
+        # Load Class Method Names on Extensions
+        # TODO: Not use FunctionType
+        # flake8: noqa
+        self.extensions = [x for x, y in cls.__dict__.items() if type(y) == types.MethodType]  # noqa: E721
+
+        try:
+            cls = self
+
+            if not method_name:
+                # if isinstance(func, types.FunctionType):
+                if hasattr(func, '__call__'):
+                    method_name = func.__name__
+                else:
+                    # TODO: Search extension in path
+                    method_name = func
+
+            if method_name not in self.extensions:
+                # TODO: Other method to load extesion
+                # self.extensions[method_name] = self
+                # self.extensions[method_name].__dict__[method_name] =
+                #           types.MethodType(func, self.extesions[method_name])
+                setattr(cls, method_name, types.MethodType(func, cls))
+            else:
+                self.logger.warning("Debug Load Extensions")
+                # flake8: noqa
+                import pdb; pdb.set_trace()  # noqa: E702
+
+        except Exception:
+            self.logger.warning("Debug Load Extensions - Exception")
+            # flake8: noqa
+            import pdb; pdb.set_trace()  # noqa: E702
+
+        return
 
     def get_instapy_logger(self, show_logs):
         """
