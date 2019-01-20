@@ -1557,7 +1557,7 @@ def get_follow_requests(browser, amount, sleep_delay, logger, logfolder):
 def refresh_follow_time_in_pool(username, person, person_id, extra_secs, logger, logfolder):
     # first we delete the user from pool
     delete_line_from_file(
-        '{0}{1}_followedPool.csv'.format(logfolder, username), username + ",\n", logger)
+        '{0}{1}_followedPool.csv'.format(logfolder, username), person + ",\n", logger)
 
     # than reset the time to now
     logtime = (datetime.now() + timedelta(seconds=extra_secs)).strftime('%Y-%m-%d %H:%M')
