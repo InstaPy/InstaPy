@@ -338,7 +338,6 @@ def likers_from_photo(browser, amount=20):
 
         # scroll down the page
         previous_len = -1
-        follow_buttons = []
         browser.execute_script(
             "arguments[0].scrollTop = arguments[0].scrollHeight", dialog)
         update_activity()
