@@ -1856,6 +1856,24 @@ def save_account_progress(browser, username, logger):
     except Exception:
         logger.exception('message')
 
+
+def get_users_from_dialog(old_data, dialog):
+    """
+    Prepared to work specially with the dynamic data load in the 'Likes'
+    dialog box
+    """
+
+    user_blocks = dialog.find_elements_by_tag_name('a')
+    loaded_users = [
+        extract_text_from_element(u) for u in user_blocks
+        if extract_text_from_element(u)
+    ]
+    new_data = (old_data + loaded_users)
+    new_data = remove_duplicates(new_data, True, None)
+
+    return new_data
+
+
 def progress_tracker(current_value, highest_value, initial_time, logger):
     """ Provide a progress tracker to keep value updated until finishes """
     if (current_value is None or
