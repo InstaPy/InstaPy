@@ -1931,3 +1931,15 @@ def progress_tracker(current_value, highest_value, initial_time, logger):
         logger.info("Error occurred with Progress Tracker:\n{}".format(
             str(exc).encode("utf-8")))
 
+
+def close_dialog_box(browser):
+    """ Click on the close button spec. in the 'Likes' dialog box """
+
+    try:
+        close = browser.find_element_by_xpath(
+            Selectors.likes_dialog_close_xpath)
+        click_element(browser, close)
+
+    except NoSuchElementException as exc:
+        pass
+
