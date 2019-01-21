@@ -60,7 +60,6 @@ jobs:
     - stage: deploy to PyPI
       install: true
       script: skip
-      after_success: true
       deploy:
         provider: pypi
         user: InstaPy
