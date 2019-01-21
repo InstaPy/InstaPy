@@ -20,6 +20,7 @@ from .util import scroll_bottom
 from .util import extract_text_from_element
 from .util import get_users_from_dialog
 from .util import progress_tracker
+from .util import close_dialog_box
 from .settings import Selectors
 
 from selenium.common.exceptions import NoSuchElementException
@@ -368,13 +369,7 @@ def likers_from_photo(browser, amount=20):
         random.shuffle(user_list)
         sleep(1)
 
-        try:
-            close = browser.find_element_by_xpath("//span[text()='Close']")
-            click_element(browser, close)
-            print("Like window closed")
-
-        except Exception:
-            pass
+        close_dialog_box(browser)
 
         print(
             "Got {} likers shuffled randomly whom you can follow:\n{}"
