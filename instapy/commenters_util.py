@@ -18,7 +18,8 @@ from .util import username_url_to_username
 from .util import remove_duplicates
 from .util import scroll_bottom
 from .util import extract_text_from_element
-from .relationship_tools import progress_tracker
+from .util import get_users_from_dialog
+from .util import progress_tracker
 from .settings import Selectors
 
 from selenium.common.exceptions import NoSuchElementException
@@ -358,11 +359,7 @@ def likers_from_photo(browser, amount=20):
             previous_len = len(user_list)
             scroll_bottom(browser, dialog, 2)
 
-            user_blocks = dialog.find_elements_by_tag_name('a')
-            loaded_users = [extract_text_from_element(u) for u in user_blocks
-                            if extract_text_from_element(u)]
-            user_list.extend(loaded_users)
-            user_list = remove_duplicates(user_list, True, None)
+            user_list = get_users_from_dialog(user_list, dialog)
 
             # write & update records at Progress Tracker
             progress_tracker(len(user_list), amount, start_time, None)
