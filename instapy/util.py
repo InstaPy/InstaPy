@@ -562,6 +562,20 @@ def get_active_users(browser, username, posts, boundary, logger):
 
             scroll_it = True
             try_again = 0
+            start_time = time.time()
+            user_list = []
+
+            if likers_count:
+                amount = (
+                    likers_count if boundary is None
+                    else None if boundary == 0
+                    else (
+                        boundary if boundary < likers_count
+                        else likers_count
+                    )
+                )
+            else:
+                amount = None
 
             while scroll_it is not False and boundary != 0:
                 scroll_it = browser.execute_script('''
@@ -577,7 +591,9 @@ def get_active_users(browser, username, posts, boundary, logger):
                     update_activity()
 
                 if sc_rolled > 91 or too_many_requests > 1:  # old value 100
-                    logger.info("Too Many Requests sent! ~will sleep some :>")
+                    print('\n')
+                    logger.info(
+                        "Too Many Requests sent! ~will sleep some :>\n")
                     sleep_actual(600)
                     sc_rolled = 0
                     too_many_requests = 0 if too_many_requests >= 1 else \
@@ -587,28 +603,35 @@ def get_active_users(browser, username, posts, boundary, logger):
                     sleep_actual(1.2)  # old value 5.6
                     sc_rolled += 1
 
-                tmp_list = browser.find_elements_by_xpath(
-                    "//a[contains(@class, 'FPmhX')]")
+                """ Old method 1 """
+                # tmp_list = browser.find_elements_by_xpath(
+                #     "//a[contains(@class, 'FPmhX')]")
+
+                user_list = get_users_from_dialog(user_list, dialog)
+                # print("len(user_list): {}".format(len(user_list)))
+
+                # write & update records at Progress Tracker
+                if amount:
+                    progress_tracker(len(user_list), amount, start_time, None)
 
                 if boundary is not None:
-                    if len(tmp_list) >= boundary:
+                    if len(user_list) >= boundary:
                         break
 
                 if (scroll_it is False and
                         likers_count and
-                        likers_count - 1 > len(tmp_list)):
+                        likers_count - 1 > len(user_list)):
 
-                    if ((
-                            boundary is not None and likers_count - 1 >
-                            boundary) or
-                            boundary is None):
+                    if ((boundary is not None
+                         and likers_count - 1 > boundary)
+                            or boundary is None):
 
-                        if try_again <= 1:  # you can increase the amount of
-                            # tries here
+                        if try_again <= 1:  # can increase the amount of tries
+                            print('\n')
                             logger.info(
-                                "Cor! ~failed to get the desired amount of "
-                                "usernames, "
-                                "trying again!  |  post:{}  |  attempt: {}"
+                                "Cor! Failed to get the desired amount of "
+                                "usernames but trying again.."
+                                "\t|> post:{}  |> attempt: {}\n"
                                 .format(posts, try_again + 1))
                             try_again += 1
                             too_many_requests += 1
@@ -616,34 +639,40 @@ def get_active_users(browser, username, posts, boundary, logger):
                             nap_it = 4 if try_again == 0 else 7
                             sleep_actual(nap_it)
 
-            tmp_list = browser.find_elements_by_xpath(
-                "//a[contains(@class, 'FPmhX')]")
+            print('\n')
+            user_list = get_users_from_dialog(user_list, dialog)
 
-            logger.info("Post {}  |  Likers: found {}, catched {}".format(
-                count, likers_count, len(tmp_list)))
+            logger.info("Post {}  |  Likers: found {}, catched {}\n\n".format(
+                count, likers_count, len(user_list)))
 
-        except NoSuchElementException:
-            try:
-                tmp_list = browser.find_elements_by_xpath(
-                    "//div[contains(@class, '_1xe_U')]/a")
+        except NoSuchElementException as exc:
+            logger.error("Ku-ku! There is an error searching active users"
+                         "~\t{}\n\n".format(str(exc).encode("utf-8")))
 
-                if len(tmp_list) > 0:
-                    logger.info(
-                        "Post {}  |  Likers: found {}, catched {}".format(
-                            count, len(tmp_list), len(tmp_list)))
+            """ Old method 2 """
+            # try:
+            #     tmp_list = browser.find_elements_by_xpath(
+            #         "//div[contains(@class, '_1xe_U')]/a")
 
-            except NoSuchElementException:
-                logger.error('There is some error searching active users')
+            #     if len(tmp_list) > 0:
+            #         logger.info(
+            #             "Post {}  |  Likers: found {}, catched {}".format(
+            #                 count, len(tmp_list), len(tmp_list)))
 
-        if len(tmp_list) is not 0:
-            for user in tmp_list:
-                active_users.append(user.text)
+            # except NoSuchElementException:
+            #     print("Ku-ku")
+
+        for user in user_list:
+            active_users.append(user)
 
         sleep_actual(1)
 
         # if not reached posts(parameter) value, continue
         if count + 1 != posts + 1 and count != 0:
             try:
+                # click close button
+                close_dialog_box(browser)
+
                 # click next button
                 next_button = browser.find_element_by_xpath(
                     "//a[contains(@class, 'HBoOv')]"
@@ -661,7 +690,7 @@ def get_active_users(browser, username, posts, boundary, logger):
     active_users = list(set(active_users))
 
     logger.info(
-        "Gathered total of {} unique active followers from the latest {}"
+        "Gathered total of {} unique active followers from the latest {} "
         "posts in {} minutes and {} seconds".format(len(active_users),
                                                     posts,
                                                     diff_in_minutes,
