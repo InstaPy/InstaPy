@@ -28,6 +28,7 @@ from .time_util import sleep_actual
 from .database_engine import get_database
 from .quota_supervisor import quota_supervisor
 from .settings import Settings
+from .settings import Selectors
 
 from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import WebDriverException
@@ -555,8 +556,9 @@ def get_active_users(browser, username, posts, boundary, logger):
                 # Video have no likes button / no posts in page
                 continue
 
+            # get a reference to the 'Likes' dialog box
             dialog = browser.find_element_by_xpath(
-                "//div[text()='Likes']/following-sibling::div")
+                Selectors.likes_dialog_body_xpath)
 
             scroll_it = True
             try_again = 0
