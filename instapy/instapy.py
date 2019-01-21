@@ -324,7 +324,7 @@ class InstaPy:
                 self.extensions.append(method_name)
             else:
                 self.logger.warning(
-                    "Load Extesions -> {} already loaded.".format(method_name))
+                    "Load Extensions -> {} already loaded.".format(method_name))
 
         except Exception as e:
             self.logger.warning("Load Extensions -> {}".format(e))
@@ -334,8 +334,8 @@ class InstaPy:
         return
 
     def get_extensions(self):
-        """Get list of extesions."""
-        self.logger.info("Extesions Loaded:\n{}".format(str(self.extensions)))
+        """Get list of extensions."""
+        self.logger.info("Extensions Loaded:\n{}".format(str(self.extensions)))
 
     def get_instapy_logger(self, show_logs):
         """
