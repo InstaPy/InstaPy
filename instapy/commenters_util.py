@@ -19,6 +19,7 @@ from .util import remove_duplicates
 from .util import scroll_bottom
 from .util import extract_text_from_element
 from .relationship_tools import progress_tracker
+from .settings import Selectors
 
 from selenium.common.exceptions import NoSuchElementException
 
@@ -331,9 +332,9 @@ def likers_from_photo(browser, amount=20):
 
         sleep(1)
 
-        # find dialog box
+        # get a reference to the 'Likes' dialog box
         dialog = browser.find_element_by_xpath(
-            "//h1[text()='Likes']/../../following-sibling::div/div")
+            Selectors.likes_dialog_body_xpath)
 
         # scroll down the page
         previous_len = -1
