@@ -3,37 +3,59 @@ The **goal** of this file is explaining to the users of our project the notable 
 
 _The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html)_.
 
+
+## [Unreleased] - 2019-01-17
+### Changed
+- Optimizing Dockerfile for smaller docker image
+
+### Fixed
+- Fix "_Unable to locate element: ...xpath","selector":"//div[text()=\'Likes\'..._" error.
+
+
+## [Unreleased] - 2019-01-16
+### Fixed
+- Fix "_Failed to load desired amount of users!_" issue.
+
+
 ## [Unreleased] - 2019-01-15
 ### Fixed
-- Handle A/B-Test for comments (graphql edge)
+- Handle A/B-Test for comments (graphql edge).
+
 
 ## [Unreleased] - 2019-01-13
 ### Fixed 
-- Adjust docker-compose.yml according to new Dockerfile
+- Adjust docker-compose.yml according to new Dockerfile.
+
 
 ## [Unreleased] - 2019-01-11
 ### Fixed
-- Correctly mount Docker volume, make it work properly with chromedriver installed in assets folder
+- Correctly mount Docker volume, make it work properly with chromedriver installed in assets folder.
+
 
 ## [Unreleased] - 2019-01-10
 ### Added 
-- Feature to remove outgoing unapproved follow requests from private accounts
+- Feature to remove outgoing unapproved follow requests from private accounts.
+
 
 ## [Unreleased] - 2019-01-05
 ### Changed
-- Resolve security warning with new pyyaml version, updated pyyaml to version 4.2b1
+- Resolve security warning with new pyyaml version, updated pyyaml to version 4.2b1.
+
 
 ## [Unreleased] - 2019-01-04
 ### Fixed
-- Fix for non-authenticated proxies in chrome headless browser
+- Fix for non-authenticated proxies in chrome headless browser.
+
 
 ## [Unreleased] - 2019-01-02
 ### Fixed
--  User without timestamp will use the timestamp of previous user
+-  User without timestamp will use the timestamp of previous user.
+
 
 ## [Unreleased] - 2019-01-01
 ### Changed
-- PEP8 layout changes
+- PEP8 layout changes.
+
 
 ## [Unreleased] - 2018-12-17
 ### Added
@@ -49,9 +71,11 @@ _The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 - Fix error occured while liking a comment (raised at #3594).
 - Fix Follow-Likers feature which couldn't fetch likers properly (raised at #3573).
 
+
 ## [Unreleased] - 2018-12-16
 ### Added
 - Save account progress information into database adding the possibility for external tools to collect and organize the account progress.
+
 
 ## [Unreleased] - 2018-12-10
 ### Fixed
