@@ -15,7 +15,6 @@ from .util import click_element
 from .util import update_activity
 from .util import web_address_navigator
 from .util import username_url_to_username
-from .util import remove_duplicates
 from .util import scroll_bottom
 from .util import extract_text_from_element
 from .util import get_users_from_dialog
