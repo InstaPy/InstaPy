@@ -56,5 +56,27 @@ class Settings:
 
 class Storage:
     """ Globally accessible standalone storage """
+
     # store realtime record activity data
     record_activity = {}
+
+
+class Selectors:
+    """
+    Store XPath, CSS, and other element selectors to be used at many places
+    """
+
+    likes_dialog_body_xpath = (
+        "//h1[text()='Likes']/../../following-sibling::div/div")
+
+    likes_dialog_close_xpath = "//span[contains(@aria-label, 'Close')]"
+
+
+
+
+
+
+
+
+
+

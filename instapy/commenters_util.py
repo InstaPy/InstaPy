@@ -15,10 +15,11 @@ from .util import click_element
 from .util import update_activity
 from .util import web_address_navigator
 from .util import username_url_to_username
-from .util import remove_duplicates
 from .util import scroll_bottom
-from .util import extract_text_from_element
-from .relationship_tools import progress_tracker
+from .util import get_users_from_dialog
+from .util import progress_tracker
+from .util import close_dialog_box
+from .settings import Selectors
 
 from selenium.common.exceptions import NoSuchElementException
 
@@ -331,13 +332,12 @@ def likers_from_photo(browser, amount=20):
 
         sleep(1)
 
-        # find dialog box
+        # get a reference to the 'Likes' dialog box
         dialog = browser.find_element_by_xpath(
-            "//h1[text()='Likes']/../../following-sibling::div/div")
+            Selectors.likes_dialog_body_xpath)
 
         # scroll down the page
         previous_len = -1
-        follow_buttons = []
         browser.execute_script(
             "arguments[0].scrollTop = arguments[0].scrollHeight", dialog)
         update_activity()
@@ -358,11 +358,7 @@ def likers_from_photo(browser, amount=20):
             previous_len = len(user_list)
             scroll_bottom(browser, dialog, 2)
 
-            user_blocks = dialog.find_elements_by_tag_name('a')
-            loaded_users = [extract_text_from_element(u) for u in user_blocks
-                            if extract_text_from_element(u)]
-            user_list.extend(loaded_users)
-            user_list = remove_duplicates(user_list, True, None)
+            user_list = get_users_from_dialog(user_list, dialog)
 
             # write & update records at Progress Tracker
             progress_tracker(len(user_list), amount, start_time, None)
@@ -371,13 +367,7 @@ def likers_from_photo(browser, amount=20):
         random.shuffle(user_list)
         sleep(1)
 
-        try:
-            close = browser.find_element_by_xpath("//span[text()='Close']")
-            click_element(browser, close)
-            print("Like window closed")
-
-        except Exception:
-            pass
+        close_dialog_box(browser)
 
         print(
             "Got {} likers shuffled randomly whom you can follow:\n{}"

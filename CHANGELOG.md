@@ -10,9 +10,18 @@ _The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 - Enable InstaPy for pip install 
 
 
+
+## [Unreleased] - 2019-01-22
+### Added
+- Now `set_dont_unfollow_active_users()` feature also has a Progress Tracker support.
+
+### Fixed
+- Fix `set_dont_unfollow_active_users()` feature completely.
+
+
 ## [Unreleased] - 2019-01-17
 ### Changed
-- Optimizing Dockerfile for smaller docker image
+- Optimizing Dockerfile for smaller docker image.
 
 ### Fixed
 - Fix "_Unable to locate element: ...xpath","selector":"//div[text()=\'Likes\'..._" error.
