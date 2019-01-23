@@ -3997,6 +3997,114 @@ class InstaPy:
             highlight_print(self.username, message, "end", "info", self.logger)
             print("\n\n")
 
+    def follow_by_locations(self,
+                             locations=None,
+                             amount=50,
+                             media=None,
+                             skip_top_posts=True):
+        if self.aborting:
+            return self
+
+        inap_img = 0
+        followed = 0
+        not_valid_users = 0
+
+        locations = locations or []
+        self.quotient_breach = False
+
+        for index, location in enumerate(locations):
+            if self.quotient_breach:
+                break
+
+            self.logger.info('Location [{}/{}]'.format(index + 1, len(locations)))
+            self.logger.info('--> {}'.format(location.encode('utf-8')))
+
+            try:
+                links = get_links_for_location(self.browser,
+                                               location,
+                                               amount,
+                                               self.logger,
+                                               media,
+                                               skip_top_posts)
+            except NoSuchElementException:
+                self.logger.warning('Too few images, skipping this location')
+                continue
+
+            for i, link in enumerate(links):
+                if (self.jumps["consequent"]["follows"]
+                        >= self.jumps["limit"]["follows"]):
+                    self.logger.warning("--> Follow quotient reached its peak!"
+                                        "\t~leaving Follow-By-Locations activity\n")
+                    self.quotient_breach = True
+                    # reset jump counter after a breach report
+                    self.jumps["consequent"]["follows"] = 0
+                    break
+
+                self.logger.info('[{}/{}]'.format(i + 1, len(links)))
+                self.logger.info(link)
+
+                try:
+                    inappropriate, user_name, is_video, reason, scope = (
+                        check_link(self.browser,
+                                   link,
+                                   self.dont_like,
+                                   self.mandatory_words,
+                                   self.mandatory_language,
+                                   self.is_mandatory_character,
+                                   self.mandatory_character,
+                                   self.check_character_set,
+                                   self.ignore_if_contains,
+                                   self.logger)
+                    )
+
+                    if not inappropriate:
+                        # validate user
+                        validation, details = self.validate_user_call(
+                            user_name)
+                        if validation is not True:
+                            self.logger.info(details)
+                            not_valid_users += 1
+                            continue
+                        else:
+                            web_address_navigator(self.browser, link)
+
+                        # try to follow
+                        follow_state, msg = follow_user(self.browser,
+                                                        "post",
+                                                        self.username,
+                                                        user_name,
+                                                        None,
+                                                        self.blacklist,
+                                                        self.logger,
+                                                        self.logfolder)
+                        if follow_state is True:
+                            followed += 1
+                            # reset jump counter after a successful follow
+                            self.jumps["consequent"]["follows"] = 0
+
+                        elif msg == "jumped":
+                            # will break the loop after certain consecutive
+                            # jumps
+                            self.jumps["consequent"]["follows"] += 1
+
+                    else:
+                        self.logger.info(
+                            '--> User not followed: {}'.format(reason))
+                        inap_img += 1
+
+                except NoSuchElementException as err:
+                    self.logger.error('Invalid Page: {}'.format(err))
+
+        self.logger.info('Followed: {}'.format(followed))
+        self.logger.info('Inappropriate: {}'.format(inap_img))
+        self.logger.info('Not valid users: {}\n'.format(not_valid_users))
+
+        self.followed += followed
+        self.inap_img += inap_img
+        self.not_valid_users += not_valid_users
+
+        return self
+
     def follow_by_tags(self,
                        tags=None,
                        amount=50,
