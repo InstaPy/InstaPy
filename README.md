@@ -6,7 +6,6 @@
 [![built with Python3](https://img.shields.io/badge/built%20with-Python3-red.svg)](https://www.python.org/)
 [![Travis](https://img.shields.io/travis/rust-lang/rust.svg)](https://travis-ci.org/timgrossmann/InstaPy)
 [![Backers on Open Collective](https://opencollective.com/instapy/backers/badge.svg)](#backers)
-[![Sponsors on Open Collective](https://opencollective.com/instapy/sponsors/badge.svg)](#sponsors) 
 
 ### Automation Script for “farming” Likes, Comments and Followers on Instagram
 Implemented in Python using the Selenium module.
