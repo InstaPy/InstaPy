@@ -494,11 +494,11 @@ def get_active_users(browser, username, posts, boundary, logger):
 
     # click latest post
     try:
-        latest_post = browser.find_elements_by_xpath(
+        latest_posts = browser.find_elements_by_xpath(
             "//div[contains(@class, '_9AhH0')]")
         # avoid no posts
-        if latest_post:
-            latest_post = latest_post[0]
+        if latest_posts:
+            latest_post = latest_posts[0]
             click_element(browser, latest_post)
 
     except (NoSuchElementException, WebDriverException):
