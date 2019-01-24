@@ -58,40 +58,11 @@ def bypass_suspicious_login(browser, bypass_with_mobile):
         pass
 
     try:
-        choice = browser.find_element_by_xpath(
-            "//label[@for='choice_1']").text
-
+        send_security_code_button = browser.find_element_by_xpath("//button[text()='Send Security Code']")
     except NoSuchElementException:
-        try:
-            choice = browser.find_element_by_xpath(
-                "//label[@class='_q0nt5']").text
-
-        except Exception:
-            try:
-                choice = browser.find_element_by_xpath(
-                    "//label[@class='_q0nt5 _a7z3k']").text
-
-            except Exception:
-                print("Unable to locate email or phone button, maybe "
-                      "bypass_suspicious_login=True isn't needed anymore.")
-                return False
-
-    if bypass_with_mobile:
-        choice = browser.find_element_by_xpath(
-            "//label[@for='choice_0']").text
-
-        mobile_button = browser.find_element_by_xpath(
-            "//label[@for='choice_0']")
-
-        (ActionChains(browser)
-         .move_to_element(mobile_button)
-         .click()
-         .perform())
-
-        sleep(5)
-
-    send_security_code_button = browser.find_element_by_xpath(
-        "//button[text()='Send Security Code']")
+        print("Unable to locate email or phone button, maybe "
+              "bypass_suspicious_login=True isn't needed anymore.")
+        return False
 
     (ActionChains(browser)
      .move_to_element(send_security_code_button)
@@ -102,7 +73,7 @@ def bypass_suspicious_login(browser, bypass_with_mobile):
     update_activity()
 
     print('Instagram detected an unusual login attempt')
-    print('A security code was sent to your {}'.format(choice))
+    print('A security code was sent to your phone')
     security_code = input('Type the security code here: ')
 
     security_code_field = browser.find_element_by_xpath((
@@ -164,7 +135,7 @@ def login_user(browser,
     # try to load cookie from username
     try:
         for cookie in pickle.load(open('{0}{1}_cookie.pkl'
-                                       .format(logfolder, username), 'rb')):
+                                               .format(logfolder, username), 'rb')):
             browser.add_cookie(cookie)
             cookie_loaded = True
     except (WebDriverException, OSError, IOError):
