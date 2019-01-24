@@ -1,11 +1,15 @@
 """ Quickstart script for InstaPy usage """
 # imports
 from instapy import InstaPy
-from instapy.util import smart_run
+from instapy import smart_run
+from instapy import set_workspace
 
 # login credentials
 insta_username = ''
 insta_password = ''
+
+# set workspace folder at desired location (default is at your home folder)
+set_workspace(path=None)
 
 # get an InstaPy session!
 # set headless_browser=True to run InstaPy in the background

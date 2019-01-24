@@ -5,6 +5,7 @@ import random
 from sys import platform
 import sqlite3
 from plyer import notification
+from pkg_resources import resource_filename as get_pkg_resource_path
 
 from .time_util import sleep_actual
 from .time_util import get_time
@@ -294,18 +295,26 @@ def toast_notification(notify, alert, job, interval):
 
 def get_icons():
     """ Return the locations of icons according to the operating system """
+    # get full location of icons folder inside package
+    icons_path = get_pkg_resource_path("instapy", "icons/")
+
     windows_ico = [
-        "./icons/Windows/qs_sleep_windows.ico",
-        "./icons/Windows/qs_wakeup_windows.ico",
-        "./icons/Windows/qs_exit_windows.ico"]
+        "Windows/qs_sleep_windows.ico",
+        "Windows/qs_wakeup_windows.ico",
+        "Windows/qs_exit_windows.ico"]
     linux_png = [
-        "./icons/Linux/qs_sleep_linux.png",
-        "./icons/Linux/qs_wakeup_linux.png",
-        "./icons/Linux/qs_exit_linux.png"]
+        "Linux/qs_sleep_linux.png",
+        "Linux/qs_wakeup_linux.png",
+        "Linux/qs_exit_linux.png"]
     mac_icns = [
-        "./icons/Mac/qs_sleep_mac.icns",
-        "./icons/Mac/qs_wakeup_mac.icns",
-        "./icons/Mac/qs_exit_mac.icns"]
+        "Mac/qs_sleep_mac.icns",
+        "Mac/qs_wakeup_mac.icns",
+        "Mac/qs_exit_mac.icns"]
+
+    # make it full path now
+    windows_ico = [icons_path + icon for icon in windows_ico]
+    linux_png = [icons_path + icon for icon in linux_png]
+    mac_icns = [icons_path + icon for icon in mac_icns]
 
     (sleep_icon,
      wakeup_icon,
@@ -384,3 +393,4 @@ def update_record(job):
 
     # update records
     records[today][this_hour].update({job: live_rec})
+

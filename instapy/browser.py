@@ -5,14 +5,15 @@ from selenium.webdriver.common.proxy import Proxy, ProxyType
 from selenium.webdriver.firefox.options import Options as Firefox_Options
 from selenium import webdriver
 from selenium.common.exceptions import WebDriverException
-from .util import interruption_handler
 
 # general libs
 import re
 
 # local project
-from .settings import Settings
+from .util import interruption_handler
 from .util import highlight_print
+from .settings import Settings
+from .file_manager import get_chromedriver_location
 
 
 def set_selenium_local_session(proxy_address,
@@ -61,7 +62,7 @@ def set_selenium_local_session(proxy_address,
                                     options=firefox_options)
 
     else:
-        chromedriver_location = Settings.chromedriver_location
+        chromedriver_location = get_chromedriver_location()
         chrome_options = Options()
         chrome_options.add_argument("--mute-audio")
         chrome_options.add_argument('--dns-prefetch-disable')

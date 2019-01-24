@@ -5,7 +5,6 @@ configparser>=3.5.0
 EasyProcess>=0.2.3
 emoji>=0.5.1
 future>=0.17.1
-googleapis-common-protos>=1.5.5
 grpcio>=1.16.1
 idna>=2.7
 jsonschema>=2.6.0

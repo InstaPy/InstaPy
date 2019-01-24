@@ -1,4 +1,5 @@
-recursive-include assets *
-recursive-include db *
 include README.md
 include LICENSE
+include requirements.txt
+
+recursive-include instapy/icons *

@@ -69,14 +69,12 @@ from .text_analytics import text_analysis
 from .text_analytics import yandex_supported_languages
 from .browser import set_selenium_local_session
 from .browser import close_browser
+from .file_manager import get_workspace
+from .file_manager import get_logfolder
 
 # import exceptions
 from selenium.common.exceptions import NoSuchElementException
-
-
-class InstaPyError(Exception):
-    """General error for InstaPy exceptions"""
-    pass
+from .exceptions import InstaPyError
 
 
 class InstaPy:
@@ -100,6 +98,13 @@ class InstaPy:
                  bypass_with_mobile=False,
                  multi_logs=True):
 
+        Settings.InstaPy_is_running = True
+        # workspace must be ready before anything
+        if not get_workspace():
+            raise InstaPyError(
+                "Oh no! I don't have a workspace to work at :'(")
+
+        self.nogui = nogui
         if nogui:
             self.display = Display(visible=0, size=(800, 600))
             self.display.start()
@@ -109,25 +114,15 @@ class InstaPy:
         self.proxy_address = proxy_address
         self.proxy_port = proxy_port
         self.proxy_chrome_extension = proxy_chrome_extension
-        self.multi_logs = multi_logs
         self.selenium_local_session = selenium_local_session
         self.bypass_suspicious_attempt = bypass_suspicious_attempt
         self.bypass_with_mobile = bypass_with_mobile
         self.disable_image_load = disable_image_load
 
-        self.show_logs = show_logs
-        Settings.show_logs = show_logs or None
-
         self.username = username or os.environ.get('INSTA_USER')
         self.password = password or os.environ.get('INSTA_PW')
         Settings.profile["name"] = self.username
-        self.nogui = nogui
-        self.logfolder = Settings.log_location + os.path.sep
-        if self.multi_logs is True:
-            self.logfolder = '{0}{1}{2}{1}'.format(
-                Settings.log_location, os.path.sep, self.username)
-        if not os.path.exists(self.logfolder):
-            os.makedirs(self.logfolder)
+
 
         self.page_delay = page_delay
         self.switch_language = True
@@ -255,6 +250,10 @@ class InstaPy:
         self.start_time = time.time()
 
         # assign logger
+        self.show_logs = show_logs
+        Settings.show_logs = show_logs or None
+        self.multi_logs = multi_logs
+        self.logfolder = get_logfolder(self.username, self.multi_logs)
         self.logger = self.get_instapy_logger(self.show_logs)
 
         get_database(make=True)  # IMPORTANT: think twice before relocating
@@ -1088,7 +1087,7 @@ class InstaPy:
         self.max_posts = max_posts if enabled is True else None
 
     def validate_user_call(self, user_name):
-        """Call the validate_username() function"""
+        """ Short call of validate_username() function """
         validation, details = validate_username(self.browser,
                                                 user_name,
                                                 self.username,
@@ -1110,7 +1109,8 @@ class InstaPy:
                                                 self.skip_business_percentage,
                                                 self.skip_business_categories,
                                                 self.dont_skip_business_categories,
-                                                self.logger)
+                                                self.logger,
+                                                self.logfolder)
         return validation, details
 
     def fetch_smart_comments(self, is_video, temp_comments):
@@ -3971,6 +3971,7 @@ class InstaPy:
     def end(self):
         """Closes the current session"""
 
+        Settings.InstaPy_is_running = False
         close_browser(self.browser, False, self.logger)
 
         with interruption_handler():
@@ -4382,9 +4383,9 @@ class InstaPy:
                              "original_peaks": orig_peaks}
 
             if (platform.startswith("win32") and
-                    python_version().startswith(('2', '3.7'))):
-                # UPDATE ME: remove this block [below] once
-                # plyer>1.3.0 is released to PyPI
+                    python_version() < "2.7.15"):
+                # UPDATE ME: remove this block once plyer is
+                # verified to work on [very] old versions of Python 2
                 notify_me = False
 
             # update QS configuration with the fresh settings
