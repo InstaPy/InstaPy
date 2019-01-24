@@ -366,8 +366,10 @@ In essence,
 Basic setup is a good way to test the tool. At project root folder open `quickstart.py` and update with your _username_ and _password_.
 
 ```python
+""" Quickstart script for InstaPy usage """
+# imports
 from instapy import InstaPy
-from instapy.util import smart_run
+from instapy import smart_run
 
 # login credentials
 insta_username = ''
@@ -381,7 +383,7 @@ session = InstaPy(username=insta_username,
 
 with smart_run(session):
     """ Activity flow """
-    # settings
+    # general settings
     session.set_relationship_bounds(enabled=True,
                                     delimit_by_numbers=True,
                                     max_followers=4590,
@@ -391,7 +393,7 @@ with smart_run(session):
     session.set_dont_include(["friend1", "friend2", "friend3"])
     session.set_dont_like(["pizza", "#store"])
 
-    # actions
+    # activity
     session.like_by_tags(["natgeo"], amount=10)
 ```
 
