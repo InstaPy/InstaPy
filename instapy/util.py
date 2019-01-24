@@ -7,6 +7,7 @@ import re
 import regex
 import signal
 import os
+import sys
 from sys import exit as clean_exit
 from platform import system
 from subprocess import call
@@ -27,6 +28,7 @@ from .time_util import sleep_actual
 from .database_engine import get_database
 from .quota_supervisor import quota_supervisor
 from .settings import Settings
+from .settings import Selectors
 
 from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import WebDriverException
@@ -552,11 +554,26 @@ def get_active_users(browser, username, posts, boundary, logger):
                 # Video have no likes button / no posts in page
                 continue
 
+            # get a reference to the 'Likes' dialog box
             dialog = browser.find_element_by_xpath(
-                "//div[text()='Likes']/following-sibling::div")
+                Selectors.likes_dialog_body_xpath)
 
             scroll_it = True
             try_again = 0
+            start_time = time.time()
+            user_list = []
+
+            if likers_count:
+                amount = (
+                    likers_count if boundary is None
+                    else None if boundary == 0
+                    else (
+                        boundary if boundary < likers_count
+                        else likers_count
+                    )
+                )
+            else:
+                amount = None
 
             while scroll_it is not False and boundary != 0:
                 scroll_it = browser.execute_script('''
@@ -572,7 +589,9 @@ def get_active_users(browser, username, posts, boundary, logger):
                     update_activity()
 
                 if sc_rolled > 91 or too_many_requests > 1:  # old value 100
-                    logger.info("Too Many Requests sent! ~will sleep some :>")
+                    print('\n')
+                    logger.info(
+                        "Too Many Requests sent! ~will sleep some :>\n")
                     sleep_actual(600)
                     sc_rolled = 0
                     too_many_requests = 0 if too_many_requests >= 1 else \
@@ -582,28 +601,35 @@ def get_active_users(browser, username, posts, boundary, logger):
                     sleep_actual(1.2)  # old value 5.6
                     sc_rolled += 1
 
-                tmp_list = browser.find_elements_by_xpath(
-                    "//a[contains(@class, 'FPmhX')]")
+                """ Old method 1 """
+                # tmp_list = browser.find_elements_by_xpath(
+                #     "//a[contains(@class, 'FPmhX')]")
+
+                user_list = get_users_from_dialog(user_list, dialog)
+                # print("len(user_list): {}".format(len(user_list)))
+
+                # write & update records at Progress Tracker
+                if amount:
+                    progress_tracker(len(user_list), amount, start_time, None)
 
                 if boundary is not None:
-                    if len(tmp_list) >= boundary:
+                    if len(user_list) >= boundary:
                         break
 
                 if (scroll_it is False and
                         likers_count and
-                        likers_count - 1 > len(tmp_list)):
+                        likers_count - 1 > len(user_list)):
 
-                    if ((
-                            boundary is not None and likers_count - 1 >
-                            boundary) or
-                            boundary is None):
+                    if ((boundary is not None
+                         and likers_count - 1 > boundary)
+                            or boundary is None):
 
-                        if try_again <= 1:  # you can increase the amount of
-                            # tries here
+                        if try_again <= 1:  # can increase the amount of tries
+                            print('\n')
                             logger.info(
-                                "Cor! ~failed to get the desired amount of "
-                                "usernames, "
-                                "trying again!  |  post:{}  |  attempt: {}"
+                                "Cor! Failed to get the desired amount of "
+                                "usernames but trying again.."
+                                "\t|> post:{}  |> attempt: {}\n"
                                 .format(posts, try_again + 1))
                             try_again += 1
                             too_many_requests += 1
@@ -611,34 +637,40 @@ def get_active_users(browser, username, posts, boundary, logger):
                             nap_it = 4 if try_again == 0 else 7
                             sleep_actual(nap_it)
 
-            tmp_list = browser.find_elements_by_xpath(
-                "//a[contains(@class, 'FPmhX')]")
+            print('\n')
+            user_list = get_users_from_dialog(user_list, dialog)
 
-            logger.info("Post {}  |  Likers: found {}, catched {}".format(
-                count, likers_count, len(tmp_list)))
+            logger.info("Post {}  |  Likers: found {}, catched {}\n\n".format(
+                count, likers_count, len(user_list)))
 
-        except NoSuchElementException:
-            try:
-                tmp_list = browser.find_elements_by_xpath(
-                    "//div[contains(@class, '_1xe_U')]/a")
+        except NoSuchElementException as exc:
+            logger.error("Ku-ku! There is an error searching active users"
+                         "~\t{}\n\n".format(str(exc).encode("utf-8")))
 
-                if len(tmp_list) > 0:
-                    logger.info(
-                        "Post {}  |  Likers: found {}, catched {}".format(
-                            count, len(tmp_list), len(tmp_list)))
+            """ Old method 2 """
+            # try:
+            #     tmp_list = browser.find_elements_by_xpath(
+            #         "//div[contains(@class, '_1xe_U')]/a")
 
-            except NoSuchElementException:
-                logger.error('There is some error searching active users')
+            #     if len(tmp_list) > 0:
+            #         logger.info(
+            #             "Post {}  |  Likers: found {}, catched {}".format(
+            #                 count, len(tmp_list), len(tmp_list)))
 
-        if len(tmp_list) is not 0:
-            for user in tmp_list:
-                active_users.append(user.text)
+            # except NoSuchElementException:
+            #     print("Ku-ku")
+
+        for user in user_list:
+            active_users.append(user)
 
         sleep_actual(1)
 
         # if not reached posts(parameter) value, continue
         if count + 1 != posts + 1 and count != 0:
             try:
+                # click close button
+                close_dialog_box(browser)
+
                 # click next button
                 next_button = browser.find_element_by_xpath(
                     "//a[contains(@class, 'HBoOv')]"
@@ -656,7 +688,7 @@ def get_active_users(browser, username, posts, boundary, logger):
     active_users = list(set(active_users))
 
     logger.info(
-        "Gathered total of {} unique active followers from the latest {}"
+        "Gathered total of {} unique active followers from the latest {} "
         "posts in {} minutes and {} seconds".format(len(active_users),
                                                     posts,
                                                     diff_in_minutes,
@@ -1874,3 +1906,89 @@ def save_account_progress(browser, username, logger):
     except Exception:
         logger.exception('message')
 
+
+def get_users_from_dialog(old_data, dialog):
+    """
+    Prepared to work specially with the dynamic data load in the 'Likes'
+    dialog box
+    """
+
+    user_blocks = dialog.find_elements_by_tag_name('a')
+    loaded_users = [
+        extract_text_from_element(u) for u in user_blocks
+        if extract_text_from_element(u)
+    ]
+    new_data = (old_data + loaded_users)
+    new_data = remove_duplicates(new_data, True, None)
+
+    return new_data
+
+
+def progress_tracker(current_value, highest_value, initial_time, logger):
+    """ Provide a progress tracker to keep value updated until finishes """
+    if (current_value is None or
+        highest_value is None or
+            highest_value == 0):
+        return
+
+    try:
+        real_time = time.time()
+        progress_percent = int((current_value / highest_value) * 100)
+        show_logs = Settings.show_logs
+
+        elapsed_time = real_time - initial_time
+        elapsed_formatted = truncate_float(elapsed_time, 2)
+        elapsed = ("{} seconds".format(
+            elapsed_formatted) if elapsed_formatted < 60 else
+                   "{} minutes".format(
+                       truncate_float(elapsed_formatted / 60, 2)))
+
+        eta_time = abs((elapsed_time * 100) / (
+            progress_percent if progress_percent != 0 else 1) - elapsed_time)
+        eta_formatted = truncate_float(eta_time, 2)
+        eta = ("{} seconds".format(eta_formatted) if eta_formatted < 60 else
+               "{} minutes".format(truncate_float(eta_formatted / 60, 2)))
+
+        tracker_line = "-----------------------------------"
+        filled_index = int(progress_percent / 2.77)
+        progress_container = (
+            "["
+            + tracker_line[:filled_index]
+            + "+"
+            + tracker_line[filled_index:]
+            + "]"
+        )
+        progress_container = (
+            progress_container[:filled_index + 1].replace("-", "=")
+            + progress_container[filled_index + 1:]
+        )
+
+        total_message = ("\r  {}/{} {}  {}%    "
+                         "|> Elapsed: {}    "
+                         "|> ETA: {}      "
+                         .format(current_value, highest_value,
+                                 progress_container, progress_percent,
+                                 elapsed, eta))
+
+        if show_logs is True:
+            sys.stdout.write(total_message)
+            sys.stdout.flush()
+
+    except Exception as exc:
+        if not logger:
+            logger = Settings.logger
+
+        logger.info("Error occurred with Progress Tracker:\n{}".format(
+            str(exc).encode("utf-8")))
+
+
+def close_dialog_box(browser):
+    """ Click on the close button spec. in the 'Likes' dialog box """
+
+    try:
+        close = browser.find_element_by_xpath(
+            Selectors.likes_dialog_close_xpath)
+        click_element(browser, close)
+
+    except NoSuchElementException as exc:
+        pass
