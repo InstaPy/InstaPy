@@ -60,7 +60,7 @@ def bypass_suspicious_login(browser, bypass_with_mobile):
     try:
         send_security_code_button = browser.find_element_by_xpath("//button[text()='Send Security Code']")
     except NoSuchElementException:
-        print("Unable to locate email or phone button, maybe "
+        print("Unable to locate security code button, maybe "
               "bypass_suspicious_login=True isn't needed anymore.")
         return False
 
