@@ -11,6 +11,16 @@ _The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 
 
+## [Unreleased] - UNKNOWN
+### Added
+- **Workspace** folders; Now user's data files will be stored at the **workspace** folder.  
+- _InstaPy_ has been published to _PyPI_; Now, can install/manage it by **pip** as **instapy** package.  
+- _Github_ releases has been initiated; Will be released in-parallel with _PyPI_ deployments.  
+- Add Universal Testing Framework- **tox** with **pytest** & **flake8**.  
+- Upgrade _Travis CI_ usage (_**tox** as build script_).  
+- Send messages to _Discord_ #**status** channel about jobs' build states from _Travis CI_.
+
+
 ## [Unreleased] - 2019-01-22
 ### Added
 - Now `set_dont_unfollow_active_users()` feature also has a Progress Tracker support.
