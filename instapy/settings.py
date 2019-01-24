@@ -1,8 +1,9 @@
 """ Global variables """
 import os
 from sys import platform as p_os
+import sys
 
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+BASE_DIR = sys.path[0]
 OS_ENV = "windows" if p_os == "win32" else "osx" if p_os == "darwin" else \
     "linux"
 
@@ -70,13 +71,3 @@ class Selectors:
         "//h1[text()='Likes']/../../following-sibling::div/div")
 
     likes_dialog_close_xpath = "//span[contains(@aria-label, 'Close')]"
-
-
-
-
-
-
-
-
-
-
