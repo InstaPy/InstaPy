@@ -240,8 +240,9 @@ or
 python setup.py install
 ```
 
-**4**. Download **chromedriver** for your OS [from here](https://sites.google.com/a/chromium.org/chromedriver/downloads).  
-And then, extract the .**zip** file and put it into the **assets** folder [at your **workspace** folder].
+**4**. Download a specific version of **chromedriver** for your OS [from here](https://sites.google.com/a/chromium.org/chromedriver/downloads).  
+And then, extract the .**zip** file and put it into the **assets** folder [at your **workspace** folder].  
+This step is optional and only needed if you want to use your own chromedriver version. InstaPy ships with a chromedriver built in.
 
 
 #### Install into a Virtual Environment
