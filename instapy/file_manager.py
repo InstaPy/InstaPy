@@ -7,6 +7,8 @@ from os.path import isfile as file_exists
 from os.path import sep as native_slash
 from platform import python_version
 
+from instapy_chromedriver import binary_path
+
 from .util import highlight_print
 from .settings import Settings
 from .settings import localize_path
@@ -219,10 +221,14 @@ def get_chromedriver_location():
         assets_path = "{}{}assets".format(workspace_path, native_slash)
         validate_path(assets_path)
 
-        msg = ("Oops! Please, put chromedriver executable to the \"{}\" folder"
-               " and start again :]"
-               .format(assets_path))
-        raise InstaPyError(msg)
+        Settings.chromedriver_location = binary_path
+        CD = binary_path
+        message = "Using built in instapy-chromedriver executable."
+        highlight_print(Settings.profile["name"],
+                        message,
+                        "workspace",
+                        "info",
+                        Settings.logger)
 
     return CD
 
