@@ -221,7 +221,6 @@ def get_chromedriver_location():
         assets_path = "{}{}assets".format(workspace_path, native_slash)
         validate_path(assets_path)
 
-        Settings.chromedriver_location = binary_path
         CD = binary_path
         message = "Using built in instapy-chromedriver executable."
         highlight_print(Settings.profile["name"],
@@ -230,6 +229,8 @@ def get_chromedriver_location():
                         "info",
                         Settings.logger)
 
+    # save updated path into settings
+    Settings.chromedriver_location = CD
     return CD
 
 
