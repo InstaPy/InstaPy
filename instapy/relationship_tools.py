@@ -1,7 +1,6 @@
 import time
 from datetime import datetime
 import os
-import sys
 import glob
 import random
 import json
@@ -11,6 +10,7 @@ from .util import web_address_navigator
 from .util import get_relationship_counts
 from .util import interruption_handler
 from .util import truncate_float
+from .util import progress_tracker
 from .settings import Settings
 
 from selenium.common.exceptions import NoSuchElementException
@@ -1195,52 +1195,3 @@ def load_followers_data(username, compare_by, compare_track, logger,
     # return that file to be compared
     return followers_data, selected_filename
 
-
-def progress_tracker(current_value, highest_value, initial_time, logger):
-    """ Provide a progress tracker to keep value updated until finishes """
-    if (current_value is None or
-            highest_value is None or
-            highest_value == 0):
-        return
-
-    try:
-        real_time = time.time()
-        progress_percent = int((current_value / highest_value) * 100)
-        show_logs = Settings.show_logs
-
-        elapsed_time = real_time - initial_time
-        elapsed_formatted = truncate_float(elapsed_time, 2)
-        elapsed = ("{} seconds".format(
-            elapsed_formatted) if elapsed_formatted < 60 else
-                   "{} minutes".format(
-                       truncate_float(elapsed_formatted / 60, 2)))
-
-        eta_time = abs((elapsed_time * 100) / (
-            progress_percent if progress_percent != 0 else 1) - elapsed_time)
-        eta_formatted = truncate_float(eta_time, 2)
-        eta = ("{} seconds".format(eta_formatted) if eta_formatted < 60 else
-               "{} minutes".format(truncate_float(eta_formatted / 60, 2)))
-
-        tracker_line = "-----------------------------------"
-        filled_index = int(progress_percent / 2.77)
-        progress_container = "[" + tracker_line[
-                                   :filled_index] + "+" + tracker_line[
-                                                          filled_index:] + "]"
-        progress_container = progress_container[:filled_index + 1].replace("-",
-                                                                           "=") + progress_container[
-                                                                                  filled_index + 1:]
-
-        total_message = ("\r  {}/{} {}  {}%    "
-                         "|> Elapsed: {}    "
-                         "|> ETA: {}      "
-                         .format(current_value, highest_value,
-                                 progress_container, progress_percent,
-                                 elapsed, eta))
-
-        if show_logs is True:
-            sys.stdout.write(total_message)
-            sys.stdout.flush()
-
-    except Exception as exc:
-        logger.info("Error occurred with Progress Tracker:\n{}".format(
-            str(exc).encode("utf-8")))
