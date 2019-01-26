@@ -99,7 +99,7 @@ class InstaPy:
                  bypass_suspicious_attempt=False,
                  bypass_with_mobile=False,
                  multi_logs=True,
-                 delay_unfollow_followbackers=0)
+                 delay_unfollow_followbackers=0):
 
         if nogui:
             self.display = Display(visible=0, size=(800, 600))

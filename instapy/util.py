@@ -1972,7 +1972,7 @@ def close_dialog_box(browser):
     except NoSuchElementException as exc:
         pass
 
-    
+
 def get_epoch_time_diff(time_stamp):
     ''' time diff in seconds from input to now'''
     log_time = datetime.strptime(time_stamp, '%Y-%m-%d %H:%M')
