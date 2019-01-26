@@ -402,6 +402,8 @@ def unfollow(browser,
                                         continue
 
                                 except ValueError:
+                                    logger.error(
+                                        "time_diff reading for user {} failed \n".format(person))
                                     pass
 
                     try:
