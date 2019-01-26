@@ -98,7 +98,7 @@ class InstaPy:
                  bypass_suspicious_attempt=False,
                  bypass_with_mobile=False,
                  multi_logs=True,
-                 delay_unfollow_followbackers=0)
+                 delay_unfollow_followbackers=0):
 
         cli_args = parse_cli_args()
         username = cli_args.username or username
