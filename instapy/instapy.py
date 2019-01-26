@@ -98,7 +98,8 @@ class InstaPy:
                  disable_image_load=False,
                  bypass_suspicious_attempt=False,
                  bypass_with_mobile=False,
-                 multi_logs=True):
+                 multi_logs=True,
+                 delay_unfollow_followbackers=0)
 
         if nogui:
             self.display = Display(visible=0, size=(800, 600))
@@ -223,7 +224,7 @@ class InstaPy:
         self.skip_business_percentage = 100
         self.skip_no_profile_pic_percentage = 100
         self.skip_private_percentage = 100
-        self.delay_unfollow_followbackers = 864000  # 864000 = 10 days, 0 = don't delay
+        self.delay_unfollow_followbackers = delay_unfollow_followbackers  # 864000 = 10 days, 0 = don't delay
         self.relationship_data = {
             username: {"all_following": [], "all_followers": []}}
 
