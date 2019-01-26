@@ -46,7 +46,7 @@ def set_automated_followed_pool(username, unfollow_after, logger, logfolder):
     """ Generare a user list based on the InstaPy followed usernames """
     pool_name = "{0}{1}_followedPool.csv".format(logfolder, username)
     automatedFollowedPool = {"all": {}, "eligible": {}}
-    time_stamp = "undefined"
+    time_stamp = None
     user_id = "undefined"  # 'undefined' rather than None is *intentional
 
     try:
@@ -63,7 +63,7 @@ def set_automated_followed_pool(username, unfollow_after, logger, logfolder):
                     datetime ~ user ~ user_id,   # after `user_id` was added
                 """
                 if sz == 1:
-                    time_stamp = "undefined"
+                    time_stamp = None
                     user = entries[0]
 
                 elif sz == 2:
@@ -77,7 +77,7 @@ def set_automated_followed_pool(username, unfollow_after, logger, logfolder):
 
                 automatedFollowedPool["all"].update({user: {"id": user_id, 'time_stamp': time_stamp}})
                 # get eligible list
-                if unfollow_after is not None and time_stamp != "undefined":
+                if unfollow_after is not None and time_stamp != None:
                     time_diff = get_epoch_time_diff(time_stamp)
 
                     if time_diff > unfollow_after:
@@ -376,16 +376,17 @@ def unfollow(browser,
                                  person in automatedFollowedPool[
                                      "all"].keys() else False)
 
-                    if delay_follow_back:
+                    # delay unfollowing of follow-backers
+                    if delay_follow_back and customList[2] != "nonfollowers":
                         # we set the follow time in the follow pool for delay_follow_back from now
                         user_link = "https://www.instagram.com/{}/".format(person)
                         web_address_navigator(browser, user_link)
 
                         if is_follow_me(browser, person):
-                            # delay follow-backers to 15 days.
+                            # delay follow-backers in delay_follow_back.
                             time_stamp = (automatedFollowedPool["all"][person]["time_stamp"] if
                                          person in automatedFollowedPool["all"].keys() else False)
-                            if time_stamp not in [False, "undefined"]:
+                            if time_stamp not in [False, None]:
                                 try:
                                     time_diff = get_epoch_time_diff(time_stamp)
 
