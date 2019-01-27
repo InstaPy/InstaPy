@@ -1,6 +1,7 @@
 """ A file management utility """
 
 import os
+import pkg_resources
 from os.path import expanduser
 from os.path import exists as path_exists
 from os.path import isfile as file_exists
@@ -222,7 +223,8 @@ def get_chromedriver_location():
         validate_path(assets_path)
 
         CD = binary_path
-        message = "Using built in instapy-chromedriver executable."
+        chrome_version = pkg_resources.get_distribution("instapy_chromedriver").version
+        message = f"Using built in instapy-chromedriver executable (version {chrome_version})"
         highlight_print(Settings.profile["name"],
                         message,
                         "workspace",
