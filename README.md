@@ -67,6 +67,7 @@ Table of Contents
   * [Unfollowing](#unfollowing)
   * [Remove outgoing follow requests](#remove-outgoing-follow-requests)
   * [Don't unfollow active users](#dont-unfollow-active-users)
+  * [Retrieve last posts likers](#retrieve-last-posts-likers)
   * [Interactions based on the number of followers and/or following a user has](#interactions-based-on-the-number-of-followers-andor-following-a-user-has)
   * [Interactions based on the number of posts a user has](#interactions-based-on-the-number-of-posts-a-user-has)
   * [Skipping user for private account, no profile picture, business account](#skipping-user-for-private-account-no-profile-picture-business-account)
@@ -703,6 +704,39 @@ session.remove_follow_requests(amount=200, sleep_delay=600)
 
 session.set_dont_unfollow_active_users(enabled=True, posts=5)
 ```
+
+
+### Retrieve last posts likers
+
+You can retrieve the most active users or ghost followers by analysing who liked your last posts.
+
+```python
+# this retrieves the last 5 posts likers
+session.grab_posts_likers(posts=5)
+```
+
+A simple list of tuples is returned:
+
+```python
+[
+('http://instagram.com/last_post_url', ['user1', 'user2', ...]),
+('http://instagram.com/second_to_last_post_url', ['user3', 'user4', ...])
+]
+```
+
+By using this list you can rank the most active users, determine ghost followers and much more.
+The URL helps identifying which post the likers list is referred to (for example to save the list of likers to retrieve later on).
+
+`skip_posts` argument can be used to specify which post you want to start analysing. For example
+
+```python
+likers_posts_1_and_2 = session.grab_posts_likers(posts=2)
+likers_posts_3_and_4_and_5 = session.grab_posts_likers(posts=3, skip_posts=2)
+likers_post_6 = session.grab_posts_likers(posts=1, skip_posts=5)
+```
+
+This parameter allows you to do this long analysis even in different days. Or retrieve and merge data again to update  information from recent posts.
+
 
 ### Interactions based on the number of followers and/or following a user has
 
