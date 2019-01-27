@@ -224,7 +224,7 @@ def get_chromedriver_location():
 
         CD = binary_path
         chrome_version = pkg_resources.get_distribution("instapy_chromedriver").version
-        message = f"Using built in instapy-chromedriver executable (version {chrome_version})"
+        message = "Using built in instapy-chromedriver executable (version {})".format(chrome_version)
         highlight_print(Settings.profile["name"],
                         message,
                         "workspace",
