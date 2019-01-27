@@ -28,7 +28,7 @@ from . import appdirs
 
 
 def _get_default_datadir():
-    # REVIEW: Use a directory product_name for default path
+    # REVIEW: Use product_name like directory for default path
     home = os.path.expanduser('~')
 
     if os.path.isdir(home):
@@ -43,6 +43,7 @@ def _get_default_datadir():
 
 
 class configmanager(object):
+    """Config Manager Class."""
 
     def __init__(self, fname=None):
         """Constructor.
@@ -50,30 +51,13 @@ class configmanager(object):
         :param fname: a shortcut allowing to instantiate :class:`configmanager`
                       from Python code without resorting to environment
                       variable
-
-         # username=None,
-         # password=None,
-         # nogui=False,
-         # selenium_local_session=True,
-         # use_firefox=False,
-         # browser_profile_path=None,
-         # page_delay=25,
-         # show_logs=True,
-         # headless_browser=False,
-         # proxy_address=None,
-         # proxy_chrome_extension=None,
-         # proxy_port=None,
-         # disable_image_load=False,
-         # bypass_suspicious_attempt=False,
-         # bypass_with_mobile=False,
-         # multi_logs=True):
         """
         # Section [instapy]
         self.instapy = {
             'root_path': None,
             'dev_mode': "pdb",
-            'data_dir': _get_default_datadir() or \
-                os.environ.get('INSTAPY_DATA_DIR'),
+            'data_dir': _get_default_datadir() or os.environ.get(
+                                                'INSTAPY_DATA_DIR'),
             'assets_dir': None,
             'db_dir': None,
             'logs_dir': None,
@@ -128,6 +112,9 @@ class configmanager(object):
         self._parse_config()
 
     def _parse_config(self, args=None, **kwargs):
+        """
+        Parse Config (Internal use).
+        """
 
         def notice(cond, msg):
             if cond:
@@ -155,7 +142,7 @@ class configmanager(object):
         else:
             config_store = None or os.environ.get('INSTAPY_CONFIG_STORE')
 
-        notice(not config_store and config_file and \
+        notice(not config_store and config_file and
             not os.access(config_file, os.R_OK),
             "The config file '%s' doesn't exist or is not readable, "\
             "use config_store=True if you want to generate it."% config_file)
@@ -186,7 +173,8 @@ class configmanager(object):
                 os.path.join(os.path.dirname(__file__), '..'))))
 
         if not self.instapy['extensions_path'] or \
-            self.instapy['extensions_path']=='None':
+                self.instapy['extensions_path'] == 'None':
+
             default_extensions = []
 
             # InstaPy Extensions Path
@@ -216,8 +204,9 @@ class configmanager(object):
             # TODO: Fix it
             self.instapy['extensions_path'] = ",".join(
                     os.path.abspath(os.path.expanduser(
-                        os.path.expandvars(x.strip())))
-                      for x in self.instapy['extensions_path'].split(','))
+                        os.path.expandvars(
+                            x.strip()))
+                        ) for x in self.instapy['extensions_path'].split(','))
 
         if script_dir:
             self.instapy['data_dir'] = os.path.abspath(
@@ -243,7 +232,6 @@ class configmanager(object):
         if not os.path.isfile(self.rcfile) and len(self.account) == 0:
             self.account.setdefault("ig_default", self.ig_default)
 
-        # REVIEW: Fix it
         conf.extensions_paths = self.instapy['extensions_path'].split(',')
 
     def parse_config(self, args=None, **kwargs):
@@ -263,36 +251,39 @@ class configmanager(object):
         """
 
         self._parse_config(args, **kwargs)
-        # REVIEW: Implement init paths, only with direct parse,
+
+        # TODO: Implement init paths, only with direct parse,
         #         if used on extension with external config file
 
     def load(self):
+        """Load Config File."""
+
         p = ConfigParser.RawConfigParser()
 
         try:
             p.read([self.rcfile])
 
-            for (name,value) in p.items('instapy'):
+            for (name, value) in p.items('instapy'):
                 # OPTIMIZE: int, list, boolean, etc....
-                if value=='True' or value=='true':
+                if value == 'True' or value == 'true':
                     value = True
-                if value=='False' or value=='false':
+                if value == 'False' or value == 'false':
                     value = False
-                if value=='None' or value=='none':
+                if value == 'None' or value == 'none':
                     value = None
                 if "ig_" in name and isinstance(
-                    set(sorted(ast.literal_eval(value))), set):
+                            set(sorted(ast.literal_eval(value))), set):
                     value = set(sorted(ast.literal_eval(value)))
 
                 self.instapy[name] = value
 
-            for (name,value) in p.items('selenium'):
+            for (name, value) in p.items('selenium'):
                 # OPTIMIZE: int, list, boolean, etc....
-                if value=='True' or value=='true':
+                if value == 'True' or value == 'true':
                     value = True
-                if value=='False' or value=='false':
+                if value == 'False' or value == 'false':
                     value = False
-                if value=='None' or value=='none':
+                if value == 'None' or value == 'none':
                     value = None
                 self.selenium[name] = value
 
@@ -311,11 +302,11 @@ class configmanager(object):
                             self.account.setdefault(user_sec, {})
                             for (name, value) in p.items(user_sec):
                                 # OPTIMIZE: int, list, boolean, etc....
-                                if value=='True' or value=='true':
+                                if value == 'True' or value == 'true':
                                     value = True
-                                if value=='False' or value=='false':
+                                if value == 'False' or value == 'false':
                                     value = False
-                                if value=='None' or value=='none':
+                                if value == 'None' or value == 'none':
                                     value = None
                                 self.account[user_sec][name] = value
                 else:
@@ -324,22 +315,25 @@ class configmanager(object):
 
                     for (name, value) in p.items(sec):
                         # OPTIMIZE: int, list, boolean, etc....
-                        if value=='True' or value=='true':
+                        if value == 'True' or value == 'true':
                             value = True
-                        if value=='False' or value=='false':
+                        if value == 'False' or value == 'false':
                             value = False
-                        if value=='None' or value=='none':
+                        if value == 'None' or value == 'none':
                             value = None
                         self.misc[sec][name] = value
+
         except IOError:
-            # TODO: Add Debugger tools/debugger
+            """TODO: Add Debugger tools/debugger."""
             pass
 
         except ConfigParser.NoSectionError:
-            # TODO: Add Debugger tools/debugger
+            """TODO: Add Debugger tools/debugger."""
             pass
 
     def save(self):
+        """Save Config File."""
+
         p = ConfigParser.RawConfigParser()
 
         p.add_section('instapy')
@@ -371,26 +365,27 @@ class configmanager(object):
         for sec in sorted(self.misc):
             p.add_section(sec)
             for opt in sorted(self.misc[sec]):
-                p.set(sec,opt,self.misc[sec][opt])
+                p.set(sec, opt, self.misc[sec][opt])
 
         # try to create the directories and write the file
         try:
             rc_exists = os.path.exists(self.rcfile)
             if not rc_exists and not os.path.exists(
-                os.path.dirname(self.rcfile)):
+                    os.path.dirname(self.rcfile)):
                 os.makedirs(os.path.dirname(self.rcfile))
             try:
                 p.write(open(self.rcfile, 'w'))
                 if not rc_exists:
                     os.chmod(self.rcfile, 0o600)
+
             except IOError:
                 sys.stderr.write("ERROR: couldn't write the config file\n")
-                # TODO: Add Debugger tools/debugger
+                """TODO: Add Debugger tools/debugger."""
 
         except OSError:
             # what to do if impossible?
             sys.stderr.write("ERROR: couldn't create the config directory\n")
-            # TODO: Add Debugger tools/debugger
+            """TODO: Add Debugger tools/debugger."""
 
     def get(self, key, default=None):
         return self.instapy.get(key, default)
@@ -413,10 +408,11 @@ class configmanager(object):
 
         if not stored_account:
             return False
-        if not account_name in enabled_account:
+        if account_name not in enabled_account:
             return False
 
         return True
+
 
 # Self Init configmanger
 config = configmanager()
