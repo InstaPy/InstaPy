@@ -3,6 +3,13 @@ The **goal** of this file is explaining to the users of our project the notable 
 
 _The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html)_.
 
+## [Unreleased] - 2019-01-27
+### Changed
+- Add track post/profile
+- Avoid prints for only one user
+
+### Fixed
+- No posts exception when scraping likes
 
 
 ## [Unreleased] - 2019-01-22
