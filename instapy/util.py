@@ -777,24 +777,26 @@ def scroll_bottom(browser, element, range_int):
 
 
 def click_element(browser, element, tryNum=0):
-    # There are three (maybe more) different ways to "click" an element/button.
-    # 1. element.click()
-    # 2. element.send_keys("\n")
-    # 3. browser.execute_script("document.getElementsByClassName('" +
-    # element.get_attribute("class") + "')[0].click()")
+    """
+    There are three (maybe more) different ways to "click" an element/button.
+    1. element.click()
+    2. element.send_keys("\n")
+    3. browser.execute_script("document.getElementsByClassName('" +
+    element.get_attribute("class") + "')[0].click()")
 
-    # I'm guessing all three have their advantages/disadvantages
-    # Before committing over this code, you MUST justify your change
-    # and potentially adding an 'if' statement that applies to your
-    # specific case. See the following issue for more details
-    # https://github.com/timgrossmann/InstaPy/issues/1232
+    I'm guessing all three have their advantages/disadvantages
+    Before committing over this code, you MUST justify your change
+    and potentially adding an 'if' statement that applies to your
+    specific case. See the following issue for more details
+    https://github.com/timgrossmann/InstaPy/issues/1232
 
-    # explaination of the following recursive function:
-    #   we will attempt to click the element given, if an error is thrown
-    #   we know something is wrong (element not in view, element doesn't
-    #   exist, ...). on each attempt try and move the screen around in
-    #   various ways. if all else fails, programmically click the button
-    #   using `execute_script` in the browser.
+    explaination of the following recursive function:
+      we will attempt to click the element given, if an error is thrown
+      we know something is wrong (element not in view, element doesn't
+      exist, ...). on each attempt try and move the screen around in
+      various ways. if all else fails, programmically click the button
+      using `execute_script` in the browser.
+      """
 
     try:
         # use Selenium's built in click function

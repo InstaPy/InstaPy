@@ -1,11 +1,14 @@
 """ A file management utility """
 
 import os
+import pkg_resources
 from os.path import expanduser
 from os.path import exists as path_exists
 from os.path import isfile as file_exists
 from os.path import sep as native_slash
 from platform import python_version
+
+from instapy_chromedriver import binary_path
 
 from .util import highlight_print
 from .settings import Settings
@@ -219,11 +222,17 @@ def get_chromedriver_location():
         assets_path = "{}{}assets".format(workspace_path, native_slash)
         validate_path(assets_path)
 
-        msg = ("Oops! Please, put chromedriver executable to the \"{}\" folder"
-               " and start again :]"
-               .format(assets_path))
-        raise InstaPyError(msg)
+        CD = binary_path
+        chrome_version = pkg_resources.get_distribution("instapy_chromedriver").version
+        message = "Using built in instapy-chromedriver executable (version {})".format(chrome_version)
+        highlight_print(Settings.profile["name"],
+                        message,
+                        "workspace",
+                        "info",
+                        Settings.logger)
 
+    # save updated path into settings
+    Settings.chromedriver_location = CD
     return CD
 
 
