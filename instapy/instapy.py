@@ -39,6 +39,7 @@ from .print_log_writer import log_following_num
 from .time_util import sleep
 from .time_util import set_sleep_percentage
 from .util import get_active_users
+from .util import get_posts_likers
 from .util import validate_username
 from .util import web_address_navigator
 from .util import interruption_handler
@@ -3788,6 +3789,23 @@ class InstaPy:
         # except:
         except Exception:
             self.logger.info('Campaign {} first run'.format(campaign))
+
+    def grab_posts_likers(self,
+                    posts=3,
+                    skip_posts=0,
+                    boundary=None,
+                    username=None):
+
+        if username is None:
+            username = self.username
+        
+        # return list of users who liked posts
+        return get_posts_likers(self.browser,
+                                username,
+                                posts,
+                                skip_posts,
+                                boundary,
+                                self.logger)
 
     def grab_followers(self,
                        username=None,

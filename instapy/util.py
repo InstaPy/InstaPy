@@ -454,9 +454,9 @@ def add_user_to_blacklist(username, campaign, action, logger, logfolder):
     logger.info('--> {} added to blacklist for {} campaign (action: {})'
                 .format(username, campaign, action))
 
-
-def get_active_users(browser, username, posts, boundary, logger):
-    """Returns a list with usernames who liked the latest n posts"""
+def get_posts_likers(browser, username, posts, skip_posts, boundary, logger):
+    """Returns for each post a tuple (post_url, likers_array)
+       It starts from the last post and analyses {posts} posts."""
 
     user_link = 'https://www.instagram.com/{}/'.format(username)
 
@@ -478,9 +478,8 @@ def get_active_users(browser, username, posts, boundary, logger):
                 total_posts = format_number(topCount_elements[0].text)
 
             else:
-                logger.info(
-                    "Failed to get posts count on your profile!  ~empty "
-                    "string")
+                logger.info("Failed to get posts count on your profile! "
+                            " ~empty string")
                 total_posts = None
 
         except NoSuchElementException:
@@ -488,9 +487,8 @@ def get_active_users(browser, username, posts, boundary, logger):
             total_posts = None
 
     # if posts > total user posts, assume total posts
-    posts = posts if total_posts is None else total_posts if posts > \
-                                                             total_posts \
-        else posts
+    if total_posts is not None and posts + skip_posts > total_posts:
+        posts = total_posts - skip_posts
 
     # click latest post
     try:
@@ -499,11 +497,11 @@ def get_active_users(browser, username, posts, boundary, logger):
         click_element(browser, latest_post)
 
     except (NoSuchElementException, WebDriverException):
-        logger.warning(
-            "Failed to click on the latest post to grab active likers!\n")
+        logger.warning("Failed to click on the latest post "
+                       "to grab active likers!\n")
         return []
 
-    active_users = []
+    result = []
     sc_rolled = 0
     start_time = time.time()
     too_many_requests = 0  # helps to prevent misbehaviours when requests
@@ -515,160 +513,161 @@ def get_active_users(browser, username, posts, boundary, logger):
         "~collecting only the visible usernames from posts without scrolling "
         "at the boundary of zero..\n" if boundary == 0 else
         "~collecting the usernames from posts with the boundary of {}"
-        "\n".format(
-            boundary))
+        "\n".format(boundary))
     # posts argument is the number of posts to collect usernames
-    logger.info(
-        "Getting active users who liked the latest {} posts:\n  {}".format(
+    logger.info("Getting users who liked the latest {} posts:\n  {}".format(
             posts, message))
 
-    for count in range(1, posts + 1):
-        try:
-            sleep_actual(2)
+    posts_to_skip = skip_posts
+    for count in range(1, posts + skip_posts + 1):
+        sleep_actual(2)
+
+        if posts_to_skip == 0:
             try:
-                likers_count = browser.execute_script(
-                    "return window._sharedData.entry_data."
-                    "PostPage["
-                    "0].graphql.shortcode_media.edge_media_preview_like.count")
-            except WebDriverException:
                 try:
-                    likers_count = (browser.find_element_by_xpath(
-                        "//button[contains(@class, '_8A5w5')]/span").text)
-                    if likers_count:  # prevent an empty string scenarios
-                        likers_count = format_number(likers_count)
-                    else:
+                    likers_count = browser.execute_script(
+                        "return window._sharedData.entry_data."
+                        "PostPage["
+                        "0].graphql.shortcode_media.edge_media_preview_like.count")
+                except WebDriverException:
+                    try:
+                        likers_count = (browser.find_element_by_xpath(
+                            "//button[contains(@class, '_8A5w5')]/span").text)
+                        if likers_count:  # prevent an empty string scenarios
+                            likers_count = format_number(likers_count)
+                        else:
+                            logger.info(
+                                "Failed to get likers count on your post {}  "
+                                "~empty string".format(
+                                    count))
+                            likers_count = None
+                    except NoSuchElementException:
                         logger.info(
-                            "Failed to get likers count on your post {}  "
-                            "~empty string".format(
+                            "Failed to get likers count on your post {}".format(
                                 count))
                         likers_count = None
-                except NoSuchElementException:
-                    logger.info(
-                        "Failed to get likers count on your post {}".format(
-                            count))
-                    likers_count = None
-            try:
-                likes_button = browser.find_elements_by_xpath(
-                    "//button[contains(@class, '_8A5w5')]")[1]
-                click_element(browser, likes_button)
-                sleep_actual(5)
-            except (IndexError, NoSuchElementException):
-                # Video have no likes button / no posts in page
-                continue
+                try:
+                    likes_button = browser.find_elements_by_xpath(
+                        "//button[contains(@class, '_8A5w5')]")[1]
+                    click_element(browser, likes_button)
+                    sleep_actual(5)
+                except (IndexError, NoSuchElementException):
+                    # Video have no likes button / no posts in page
+                    continue
 
-            # get a reference to the 'Likes' dialog box
-            dialog = browser.find_element_by_xpath(
-                Selectors.likes_dialog_body_xpath)
+                # get a reference to the 'Likes' dialog box
+                dialog = browser.find_element_by_xpath(
+                    Selectors.likes_dialog_body_xpath)
 
-            scroll_it = True
-            try_again = 0
-            start_time = time.time()
-            user_list = []
+                scroll_it = True
+                try_again = 0
+                start_time = time.time()
+                user_list = []
 
-            if likers_count:
-                amount = (
-                    likers_count if boundary is None
-                    else None if boundary == 0
-                    else (
-                        boundary if boundary < likers_count
-                        else likers_count
+                if likers_count:
+                    amount = (
+                        likers_count if boundary is None
+                        else None if boundary == 0
+                        else (
+                            boundary if boundary < likers_count
+                            else likers_count
+                        )
                     )
-                )
-            else:
-                amount = None
-
-            while scroll_it is not False and boundary != 0:
-                scroll_it = browser.execute_script('''
-                    var div = arguments[0];
-                    if (div.offsetHeight + div.scrollTop < div.scrollHeight) {
-                        div.scrollTop = div.scrollHeight;
-                        return true;}
-                    else {
-                        return false;}
-                    ''', dialog)
-
-                if scroll_it is True:
-                    update_activity()
-
-                if sc_rolled > 91 or too_many_requests > 1:  # old value 100
-                    print('\n')
-                    logger.info(
-                        "Too Many Requests sent! ~will sleep some :>\n")
-                    sleep_actual(600)
-                    sc_rolled = 0
-                    too_many_requests = 0 if too_many_requests >= 1 else \
-                        too_many_requests
-
                 else:
-                    sleep_actual(1.2)  # old value 5.6
-                    sc_rolled += 1
+                    amount = None
 
-                """ Old method 1 """
-                # tmp_list = browser.find_elements_by_xpath(
-                #     "//a[contains(@class, 'FPmhX')]")
+                while scroll_it is not False and boundary != 0:
+                    scroll_it = browser.execute_script('''
+                        var div = arguments[0];
+                        if (div.offsetHeight + div.scrollTop < div.scrollHeight) {
+                            div.scrollTop = div.scrollHeight;
+                            return true;}
+                        else {
+                            return false;}
+                        ''', dialog)
 
+                    if scroll_it is True:
+                        update_activity()
+
+                    if sc_rolled > 91 or too_many_requests > 1:  # old value 100
+                        print('\n')
+                        logger.info("Too Many Requests sent! ~will sleep some :>\n")
+                        sleep_actual(600)
+                        sc_rolled = 0
+                        if too_many_requests >= 1: too_many_requests = 0
+                    else:
+                        sleep_actual(1.2)  # old value 5.6
+                        sc_rolled += 1
+
+                    """ Old method 1 """
+                    # tmp_list = browser.find_elements_by_xpath(
+                    #     "//a[contains(@class, 'FPmhX')]")
+
+                    user_list = get_users_from_dialog(user_list, dialog)
+                    # print("len(user_list): {}".format(len(user_list)))
+
+                    # write & update records at Progress Tracker
+                    if amount:
+                        progress_tracker(len(user_list), amount, start_time, None)
+
+                    if boundary is not None:
+                        if len(user_list) >= boundary:
+                            break
+
+                    if (scroll_it is False and
+                            likers_count and
+                            likers_count - 1 > len(user_list)):
+
+                        if ((boundary is not None
+                            and likers_count - 1 > boundary)
+                                or boundary is None):
+
+                            if try_again <= 1:  # can increase the amount of tries
+                                print('\n')
+                                logger.info("Cor! Failed to get the desired amount"
+                                " of usernames but trying again..\t|> post:{}  |> "
+                                "attempt: {}\n".format(posts, try_again + 1))
+                                try_again += 1
+                                too_many_requests += 1
+                                scroll_it = True
+                                nap_it = 4 if try_again == 0 else 7
+                                sleep_actual(nap_it)
+
+                print('\n')
                 user_list = get_users_from_dialog(user_list, dialog)
-                # print("len(user_list): {}".format(len(user_list)))
 
-                # write & update records at Progress Tracker
-                if amount:
-                    progress_tracker(len(user_list), amount, start_time, None)
+                logger.info("Post {}  |  Likers: found {}, catched {}\n\n".format(
+                    count, likers_count, len(user_list)))
 
-                if boundary is not None:
-                    if len(user_list) >= boundary:
-                        break
+            except NoSuchElementException as exc:
+                logger.error("Ku-ku! There is an error searching active users"
+                            "~\t{}\n\n".format(str(exc).encode("utf-8")))
 
-                if (scroll_it is False and
-                        likers_count and
-                        likers_count - 1 > len(user_list)):
+                """ Old method 2 """
+                # try:
+                #     tmp_list = browser.find_elements_by_xpath(
+                #         "//div[contains(@class, '_1xe_U')]/a")
 
-                    if ((boundary is not None
-                         and likers_count - 1 > boundary)
-                            or boundary is None):
+                #     if len(tmp_list) > 0:
+                #         logger.info(
+                #             "Post {}  |  Likers: found {}, catched {}".format(
+                #                 count, len(tmp_list), len(tmp_list)))
 
-                        if try_again <= 1:  # can increase the amount of tries
-                            print('\n')
-                            logger.info(
-                                "Cor! Failed to get the desired amount of "
-                                "usernames but trying again.."
-                                "\t|> post:{}  |> attempt: {}\n"
-                                .format(posts, try_again + 1))
-                            try_again += 1
-                            too_many_requests += 1
-                            scroll_it = True
-                            nap_it = 4 if try_again == 0 else 7
-                            sleep_actual(nap_it)
+                # except NoSuchElementException:
+                #     print("Ku-ku")
 
-            print('\n')
-            user_list = get_users_from_dialog(user_list, dialog)
+            post_url = get_current_url(browser)
+            if post_url.endswith('/'): post_url = post_url[:-1]
 
-            logger.info("Post {}  |  Likers: found {}, catched {}\n\n".format(
-                count, likers_count, len(user_list)))
-
-        except NoSuchElementException as exc:
-            logger.error("Ku-ku! There is an error searching active users"
-                         "~\t{}\n\n".format(str(exc).encode("utf-8")))
-
-            """ Old method 2 """
-            # try:
-            #     tmp_list = browser.find_elements_by_xpath(
-            #         "//div[contains(@class, '_1xe_U')]/a")
-
-            #     if len(tmp_list) > 0:
-            #         logger.info(
-            #             "Post {}  |  Likers: found {}, catched {}".format(
-            #                 count, len(tmp_list), len(tmp_list)))
-
-            # except NoSuchElementException:
-            #     print("Ku-ku")
-
-        for user in user_list:
-            active_users.append(user)
+            result.append((post_url, user_list))
+        else:
+            logger.info("Skipping post...")
+            posts_to_skip -= 1
 
         sleep_actual(1)
 
         # if not reached posts(parameter) value, continue
-        if count + 1 != posts + 1 and count != 0:
+        if count + 1 != posts + skip_posts + 1 and count != 0:
             try:
                 # click close button
                 close_dialog_box(browser)
@@ -686,15 +685,24 @@ def get_active_users(browser, username, posts, boundary, logger):
     diff_in_minutes = int((real_time - start_time) / 60)
     diff_in_seconds = int((real_time - start_time) % 60)
 
+    logger.info("Gathered likers from {} posts in {} minutes" 
+        "and {} seconds".format(posts, diff_in_minutes, diff_in_seconds))
+
+    return result
+
+def get_active_users(browser, username, posts, boundary, logger):
+    """Returns a list with usernames who liked the latest n posts"""
+
+    posts_likers = get_posts_likers(browser, username, posts, 0, boundary, logger)
+
+    # merge all likers from all retrieved posts
+    active_users = [user for post_likers in posts_likers for user in post_likers[1]]
+
     # delete duplicated users
     active_users = list(set(active_users))
 
-    logger.info(
-        "Gathered total of {} unique active followers from the latest {} "
-        "posts in {} minutes and {} seconds".format(len(active_users),
-                                                    posts,
-                                                    diff_in_minutes,
-                                                    diff_in_seconds))
+    logger.info("Gathered total of {} unique active followers from the "
+        "latest {} posts".format(len(active_users), posts))
 
     return active_users
 
