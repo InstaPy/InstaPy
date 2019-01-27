@@ -3,13 +3,6 @@ The **goal** of this file is explaining to the users of our project the notable 
 
 _The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html)_.
 
-## [0.1.1] - 2019-01-19
-### Updated
-- Restructure InstaPy as library
-- Remove assets, logs, db from core -> will be created on first run at workspace location 
-- Enable InstaPy for pip install 
-
-
 
 ## [Unreleased] - UNKNOWN
 ### Added
@@ -19,6 +12,7 @@ _The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 - Add Universal Testing Framework- **tox** with **pytest** & **flake8**.  
 - Upgrade _Travis CI_ usage (_**tox** as build script_).  
 - Send messages to _Discord_ #**status** channel about jobs' build states from _Travis CI_.
+- Add instapy-chromedriver package if no chromedriver is in path
 
 
 ## [Unreleased] - 2019-01-22
