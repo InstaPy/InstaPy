@@ -17,6 +17,9 @@ from contextlib import contextmanager
 from copy import deepcopy
 import unicodedata
 
+# from . import conf
+from . import tools
+
 # import InstaPy modules
 from .clarifai_util import check_image
 from .comment_util import comment_image
@@ -99,6 +102,8 @@ class InstaPy:
                  multi_logs=True):
 
         Settings.InstaPy_is_running = True
+        # TODO: If you use ConfigManager no need use Workspace
+        self.config = tools.config
         # workspace must be ready before anything
         if not get_workspace():
             raise InstaPyError(

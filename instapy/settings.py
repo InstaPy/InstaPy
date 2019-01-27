@@ -3,6 +3,8 @@ Global variables
 
 By design, import no any other local module inside this file.
 Vice verse, it'd produce circular dependent imports.
+
+TODO: for global parameters use instapy/conf/__ init__.py
 """
 
 from sys import platform
