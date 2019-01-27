@@ -115,6 +115,7 @@ Table of Contents
   * [Schedule](#schedule)
 * [Workspace folders](#workspace-folders)
 * [Extra Information](#extra-information)
+  * [Custom chromedriver version](#custom-chromedriver-version)
   * [Using one of the templates](#using-one-of-the-templates)
   * [How not to be banned](#how-not-to-be-banned)
   * [Simulation](#simulation)
@@ -239,11 +240,6 @@ or
 ```erlang
 python setup.py install
 ```
-
-**4**. Download a specific version of **chromedriver** for your OS [from here](https://sites.google.com/a/chromium.org/chromedriver/downloads).  
-And then, extract the .**zip** file and put it into the **assets** folder [at your **workspace** folder].  
-This step is optional and only needed if you want to use your own chromedriver version. InstaPy ships with a chromedriver built in.
-
 
 #### Install into a Virtual Environment
 
@@ -2452,6 +2448,14 @@ Why it is so difficult in those 👆🏼 regards?
 
 
 ## Extra Information
+
+### Custom chromedriver version
+By default, InstaPy downloads the latest version of the chromedriver.
+Unless you need a specific version of the chromdriver, you're ready to go.
+
+You have two options to install the version you want to have:
+1. You can get the desired version of chromedriver binary by installing the same version of instapy-chromedriver package by pip [per their python version].
+1. You can manually download and put the chromedriver binary into the assets folder [at their workspace] and then InstaPy will always use it. You can find the specific versions of **chromedriver** for your OS [here](https://sites.google.com/a/chromium.org/chromedriver/downloads). Extract the .**zip** file and put it into the **assets** folder [at your **workspace** folder].
 
 ### Using one of the templates
 
