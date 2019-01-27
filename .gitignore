@@ -100,6 +100,7 @@ ENV/
 # Storage
 instapy.db
 logs/
+.instapy
 
 # Editors
 .idea
