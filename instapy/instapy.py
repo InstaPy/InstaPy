@@ -463,7 +463,7 @@ class InstaPy:
             return self
 
         self.do_like = enabled
-        self.like_percentage = percentage
+        self.like_percentage = min(percentage,100)
 
         return self
 
@@ -2096,6 +2096,7 @@ class InstaPy:
                     not_valid_users += 1
                     continue
 
+            track = 'profile'
             # decision making
             # static conditions
             not_dont_include = username not in self.dont_include
@@ -2121,12 +2122,14 @@ class InstaPy:
                 # if we have only one image to like/comment
                 if commenting and not liking and amount == 1:
                     continue
+
                 if following or commenting or liking:
                     self.logger.info(
                         'username actions: following={} commenting={} '
                         'liking={}'.format(
                             following, commenting, liking))
                     break
+
                 # if for some reason we have no actions on this user
                 if counter > 5:
                     self.logger.info(
@@ -2187,6 +2190,7 @@ class InstaPy:
                                    self.check_character_set,
                                    self.ignore_if_contains,
                                    self.logger))
+                    track = "post"
 
                     if not inappropriate:
                         # after first image we roll again
@@ -2290,7 +2294,7 @@ class InstaPy:
 
                 follow_state, msg = follow_user(
                     self.browser,
-                    "post",
+                    track,
                     self.username,
                     username,
                     None,
@@ -2312,20 +2316,21 @@ class InstaPy:
                 self.logger.info("--> Given amount not fullfilled, image pool "
                                  "reached its end\n")
 
-        # final words
-        interacted_media_size = (len(usernames) * amount - inap_img)
-        self.logger.info(
-            "Finished interacting on total of {} images from {} users! xD\n"
-            .format(interacted_media_size, len(usernames)))
+        if len(usernames) > 1:
+            # final words
+            interacted_media_size = (len(usernames) * amount - inap_img)
+            self.logger.info(
+                "Finished interacting on total of {} images from {} users! xD\n"
+                .format(interacted_media_size, len(usernames)))
 
-        # print results
-        self.logger.info('Liked: {}'.format(total_liked_img))
-        self.logger.info('Already Liked: {}'.format(already_liked))
-        self.logger.info('Commented: {}'.format(commented))
-        self.logger.info('Followed: {}'.format(followed))
-        self.logger.info('Already Followed: {}'.format(already_followed))
-        self.logger.info('Inappropriate: {}'.format(inap_img))
-        self.logger.info('Not valid users: {}\n'.format(not_valid_users))
+            # print results
+            self.logger.info('Liked: {}'.format(total_liked_img))
+            self.logger.info('Already Liked: {}'.format(already_liked))
+            self.logger.info('Commented: {}'.format(commented))
+            self.logger.info('Followed: {}'.format(followed))
+            self.logger.info('Already Followed: {}'.format(already_followed))
+            self.logger.info('Inappropriate: {}'.format(inap_img))
+            self.logger.info('Not valid users: {}\n'.format(not_valid_users))
 
         self.liked_img += total_liked_img
         self.already_liked += already_liked
