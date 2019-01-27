@@ -17,7 +17,7 @@ from contextlib import contextmanager
 from copy import deepcopy
 import unicodedata
 
-# from . import conf
+from . import conf
 from . import tools
 
 # import InstaPy modules
@@ -35,7 +35,7 @@ from .like_util import like_image
 from .like_util import get_links_for_username
 from .like_util import like_comment
 from .login_util import login_user
-from .settings import Settings
+
 from .print_log_writer import log_follower_num
 from .print_log_writer import log_following_num
 
@@ -72,7 +72,7 @@ from .text_analytics import text_analysis
 from .text_analytics import yandex_supported_languages
 from .browser import set_selenium_local_session
 from .browser import close_browser
-from .file_manager import get_workspace
+
 from .file_manager import get_logfolder
 
 # import exceptions
@@ -83,57 +83,52 @@ from .exceptions import InstaPyError
 class InstaPy:
     """Class to be instantiated to use the script"""
 
-    def __init__(self,
-                 username=None,
-                 password=None,
-                 nogui=False,
-                 selenium_local_session=True,
-                 use_firefox=False,
-                 browser_profile_path=None,
-                 page_delay=25,
-                 show_logs=True,
-                 headless_browser=False,
-                 proxy_address=None,
-                 proxy_chrome_extension=None,
-                 proxy_port=None,
-                 disable_image_load=False,
-                 bypass_suspicious_attempt=False,
-                 bypass_with_mobile=False,
-                 multi_logs=True):
+    def __init__(self, script_dir=False, config_file=None, config_store=None):
 
-        Settings.InstaPy_is_running = True
-        # TODO: If you use ConfigManager no need use Workspace
+        conf.InstaPy_is_running = True
+
+        # Load user config file
+        tools.config.parse_config(
+            script_dir=script_dir,
+            config_file=config_file, config_store=config_store)
+        # Instance of Config Manager
         self.config = tools.config
-        # workspace must be ready before anything
-        if not get_workspace():
-            raise InstaPyError(
-                "Oh no! I don't have a workspace to work at :'(")
 
-        self.nogui = nogui
-        if nogui:
+
+    def init_account(self, username=None):
+        """Load all parameters from config file by ig_<your_username>."""
+
+        if not self.config.verify_account(username):
+            raise InstaPyError(
+                "Oh no! Your username is not enabled :'(")
+
+        ig_username = "ig_{}".format(username)
+
+        self.nogui = self.config.instapy['nogui']
+        if self.nogui:
             self.display = Display(visible=0, size=(800, 600))
             self.display.start()
 
         self.browser = None
-        self.headless_browser = headless_browser
-        self.proxy_address = proxy_address
-        self.proxy_port = proxy_port
-        self.proxy_chrome_extension = proxy_chrome_extension
-        self.selenium_local_session = selenium_local_session
-        self.bypass_suspicious_attempt = bypass_suspicious_attempt
-        self.bypass_with_mobile = bypass_with_mobile
-        self.disable_image_load = disable_image_load
+        self.headless_browser = self.config.selenium['headless_browser']
+        self.proxy_address = self.config.account[ig_username]['proxy_address']
+        self.proxy_port = int(self.config.account[ig_username]['proxy_port'])
+        self.proxy_chrome_extension = self.config.selenium['proxy_chrome_extension']
+        self.selenium_local_session = self.config.selenium['selenium_local_session']
+        self.bypass_suspicious_attempt = self.config.account[ig_username]['bypass_suspicious_attempt']
+        self.bypass_with_mobile = self.config.account[ig_username]['bypass_with_mobile']
+        self.disable_image_load = self.config.selenium['disable_image_load']
 
-        self.username = username or os.environ.get('INSTA_USER')
-        self.password = password or os.environ.get('INSTA_PW')
-        Settings.profile["name"] = self.username
+        self.username = self.config.account[ig_username]['username']
+        self.password = self.config.account[ig_username]['password']
+        conf.profile["name"] = self.username
 
 
-        self.page_delay = page_delay
+        self.page_delay = self.config.account[ig_username]['page_delay']
         self.switch_language = True
-        self.use_firefox = use_firefox
-        Settings.use_firefox = self.use_firefox
-        self.browser_profile_path = browser_profile_path
+        self.use_firefox = self.config.selenium['use_firefox']
+        conf.use_firefox = self.use_firefox
+        self.browser_profile_path = self.config.selenium['browser_profile_path']
 
         self.do_comment = False
         self.comment_percentage = 0
@@ -225,7 +220,7 @@ class InstaPy:
         self.skip_private_percentage = 100
 
         self.relationship_data = {
-            username: {"all_following": [], "all_followers": []}}
+            self.config.account[ig_username]['username']: {"all_following": [], "all_followers": []}}
 
         self.simulation = {"enabled": True, "percentage": 100}
 
@@ -249,15 +244,25 @@ class InstaPy:
         if (
                 self.proxy_address and self.proxy_port > 0) or \
                 self.proxy_chrome_extension:
-            Settings.connection_type = "proxy"
+            conf.connection_type = "proxy"
 
         self.aborting = False
         self.start_time = time.time()
 
+        # TODO: Fix it to conf
+        conf.log_location = self.config.instapy['logs_dir']
+        conf.database_location = os.path.join(self.config.instapy['db_dir'], 'instapy.db')
+
         # assign logger
-        self.show_logs = show_logs
-        Settings.show_logs = show_logs or None
-        self.multi_logs = multi_logs
+        # TODO: changed with console_logs (need fix it for dynamic logger)
+        #       See files (Remove Settings and use conf/__init__.py)
+        #       instapy/conf/__ init__.py
+        #       instapy/tools/config.py
+        # TODO: Next Move All to ConfigManager
+        self.show_logs = self.config.instapy['console_logs']
+        conf.show_logs = self.config.instapy['console_logs']
+        # TODO: need change multi_logs with account save_logs (default True)
+        self.multi_logs = True
         self.logfolder = get_logfolder(self.username, self.multi_logs)
         self.logger = self.get_instapy_logger(self.show_logs)
 
@@ -272,7 +277,7 @@ class InstaPy:
         re-instantiation.
         """
 
-        existing_logger = Settings.loggers.get(self.username)
+        existing_logger = conf.loggers.get(self.username)
         if existing_logger is not None:
             return existing_logger
         else:
@@ -297,8 +302,8 @@ class InstaPy:
 
             logger = logging.LoggerAdapter(logger, extra)
 
-            Settings.loggers[self.username] = logger
-            Settings.logger = logger
+            conf.loggers[self.username] = logger
+            conf.logger = logger
             return logger
 
     def set_selenium_local_session(self):
@@ -410,7 +415,7 @@ class InstaPy:
                           random_range=(None, None),
                           safety_match=True):
         """ Set custom sleep delay after actions """
-        Settings.action_delays.update({"enabled": enabled,
+        conf.action_delays.update({"enabled": enabled,
                                        "like": like,
                                        "comment": comment,
                                        "follow": follow,
@@ -3976,7 +3981,7 @@ class InstaPy:
     def end(self):
         """Closes the current session"""
 
-        Settings.InstaPy_is_running = False
+        conf.InstaPy_is_running = False
         close_browser(self.browser, False, self.logger)
 
         with interruption_handler():
@@ -4340,7 +4345,7 @@ class InstaPy:
         """
 
         # take a reference of the global configuration
-        configuration = Settings.QS_config
+        configuration = conf.QS_config
 
         # strong type checking on peaks entered
         peak_values_combined = [peak_likes, peak_comments, peak_follows,
@@ -4544,7 +4549,7 @@ class InstaPy:
             polarity = None
 
         if enabled and license_key and polarity:
-            Settings.meaningcloud_config.update(
+            conf.meaningcloud_config.update(
                 enabled=enabled,
                 license_key=license_key,
                 score_tag=polarity.upper(),
@@ -4555,7 +4560,7 @@ class InstaPy:
         else:
             # turn off MeaningCloud service if not enabled or wrongly
             # configured
-            Settings.meaningcloud_config.update(enabled=False)
+            conf.meaningcloud_config.update(enabled=False)
 
     def set_use_yandex(self,
                        enabled=False,
@@ -4568,7 +4573,7 @@ class InstaPy:
             API_key = os.environ.get("YANDEX_API_KEY")
 
         if enabled and API_key:
-            Settings.yandex_config.update(
+            conf.yandex_config.update(
                 enabled=enabled,
                 API_key=API_key)
 
@@ -4587,13 +4592,13 @@ class InstaPy:
                                      .format(msg))
                     match_language = False
 
-            Settings.yandex_config.update(
+            conf.yandex_config.update(
                 match_language=match_language if language_code else False,
                 language_code=language_code.lower() if language_code else None)
 
         else:
             # turn off Yandex service if not enabled or wrongly configured
-            Settings.yandex_config.update(enabled=False)
+            conf.yandex_config.update(enabled=False)
 
     def interact_by_comments(self,
                              usernames=None,

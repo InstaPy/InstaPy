@@ -1,7 +1,7 @@
 import os
 import sqlite3
 
-from .settings import Settings
+from . import conf
 
 SELECT_FROM_PROFILE_WHERE_NAME = "SELECT * FROM profiles WHERE name = :name"
 
@@ -41,9 +41,9 @@ SQL_CREATE_ACCOUNTS_PROGRESS_TABLE = """
 
 
 def get_database(make=False):
-    address = Settings.database_location
-    logger = Settings.logger
-    credentials = Settings.profile
+    address = conf.database_location
+    logger = conf.logger
+    credentials = conf.profile
 
     id, name = credentials["id"], credentials['name']
     address = validate_database_address()
@@ -102,12 +102,12 @@ def verify_database_directories(address):
 
 
 def validate_database_address():
-    address = Settings.database_location
+    address = conf.database_location
     if not address.endswith(".db"):
         slash = "\\" if "\\" in address else "/"
         address = address if address.endswith(slash) else address + slash
         address += "instapy.db"
-        Settings.database_location = address
+        conf.database_location = address
     verify_database_directories(address)
     return address
 
@@ -137,7 +137,7 @@ def get_profile(name, address, logger):
     profile = dict(profile)
     id = profile["id"]
     # assign the id to its child in `Settings` class
-    Settings.profile["id"] = id
+    conf.profile["id"] = id
 
     return id
 

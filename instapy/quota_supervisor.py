@@ -10,7 +10,8 @@ from pkg_resources import resource_filename as get_pkg_resource_path
 from .time_util import sleep_actual
 from .time_util import get_time
 from .database_engine import get_database
-from .settings import Settings
+from . import conf
+from . import release
 from .settings import Storage
 
 
@@ -25,14 +26,14 @@ def quota_supervisor(job, update=False):
     # ----------------------------------------------------------------- #
 
     global configuration
-    configuration = Settings.QS_config
+    configuration = conf.QS_config
 
     if configuration and configuration["state"] is True:
         # in-file global variables for the QS family
         global records, logger, this_minute, this_hour, today
 
         records = Storage.record_activity
-        logger = Settings.logger
+        logger = conf.logger
         this_minute, this_hour, today = get_time(["this_minute",
                                                   "this_hour",
                                                   "today"])
@@ -278,7 +279,7 @@ def toast_notification(notify, alert, job, interval):
             notification.notify(
                 title="Quota Supervisor",
                 message=expr.format(label, interval),
-                app_name="InstaPy",
+                app_name=release.product_name,
                 app_icon=icons[alert],
                 timeout=delay,
                 ticker="To switch supervising methods, please review "
@@ -393,4 +394,3 @@ def update_record(job):
 
     # update records
     records[today][this_hour].update({job: live_rec})
-

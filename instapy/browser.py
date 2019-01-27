@@ -12,7 +12,7 @@ import re
 # local project
 from .util import interruption_handler
 from .util import highlight_print
-from .settings import Settings
+from . import conf
 from .file_manager import get_chromedriver_location
 
 
@@ -125,16 +125,16 @@ def set_selenium_local_session(proxy_address,
         except WebDriverException as exc:
             logger.exception(exc)
             err_msg = 'ensure chromedriver is installed at {}'.format(
-                Settings.chromedriver_location)
+                conf.chromedriver_location)
             return browser, err_msg
 
         # prevent: Message: unknown error: call function result missing 'value'
         matches = re.match(r'^(\d+\.\d+)',
                            browser.capabilities['chrome'][
                                'chromedriverVersion'])
-        if float(matches.groups()[0]) < Settings.chromedriver_min_version:
+        if float(matches.groups()[0]) < conf.chromedriver_min_version:
             err_msg = 'chromedriver {} is not supported, expects {}+'.format(
-                float(matches.groups()[0]), Settings.chromedriver_min_version)
+                float(matches.groups()[0]), conf.chromedriver_min_version)
             return browser, err_msg
 
     browser.implicitly_wait(page_delay)

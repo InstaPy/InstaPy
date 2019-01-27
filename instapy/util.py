@@ -27,7 +27,7 @@ from .time_util import sleep
 from .time_util import sleep_actual
 from .database_engine import get_database
 from .quota_supervisor import quota_supervisor
-from .settings import Settings
+from . import conf
 from .settings import Selectors
 
 from selenium.common.exceptions import NoSuchElementException
@@ -1063,7 +1063,7 @@ def highlight_print(username=None, message=None, priority=None, level=None,
     # find the number of chars needed off the length of the logger message
     output_len = (28 + len(username) + 3 + len(message) if logger
                   else len(message))
-    show_logs = Settings.show_logs
+    show_logs = conf.show_logs
 
     if priority in ["initialization", "end"]:
         # OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
@@ -1148,7 +1148,7 @@ def remove_duplicates(container, keep_order, logger):
 
     else:
         if not logger:
-            logger = Settings.logger
+            logger = conf.logger
 
         logger.warning("The given data type- '{}' is not supported "
                        "in `remove_duplicates` function, yet!"
@@ -1262,7 +1262,7 @@ def ping_server(host, logger):
 def emergency_exit(browser, username, logger):
     """ Raise emergency if the is no connection to server OR if user is not
     logged in """
-    using_proxy = True if Settings.connection_type == "proxy" else False
+    using_proxy = True if conf.connection_type == "proxy" else False
     # ping the server only if connected directly rather than through a proxy
     if not using_proxy:
         server_address = "instagram.com"
@@ -1735,7 +1735,7 @@ def get_action_delay(action):
                 "comment": 2,
                 "follow": 3,
                 "unfollow": 10}
-    config = Settings.action_delays
+    config = conf.action_delays
 
     if (not config or
             config["enabled"] is not True or
@@ -1934,7 +1934,7 @@ def progress_tracker(current_value, highest_value, initial_time, logger):
     try:
         real_time = time.time()
         progress_percent = int((current_value / highest_value) * 100)
-        show_logs = Settings.show_logs
+        show_logs = conf.show_logs
 
         elapsed_time = real_time - initial_time
         elapsed_formatted = truncate_float(elapsed_time, 2)
@@ -1976,7 +1976,7 @@ def progress_tracker(current_value, highest_value, initial_time, logger):
 
     except Exception as exc:
         if not logger:
-            logger = Settings.logger
+            logger = conf.logger
 
         logger.info("Error occurred with Progress Tracker:\n{}".format(
             str(exc).encode("utf-8")))

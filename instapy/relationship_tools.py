@@ -11,7 +11,8 @@ from .util import get_relationship_counts
 from .util import interruption_handler
 from .util import truncate_float
 from .util import progress_tracker
-from .settings import Settings
+
+from . import conf
 
 from selenium.common.exceptions import NoSuchElementException
 
@@ -65,7 +66,7 @@ def get_followers(browser,
 
     user_data = {}
 
-    use_firefox = Settings.use_firefox
+    use_firefox = conf.use_firefox
 
     if use_firefox:
         graphql_endpoint = 'view-source:https://www.instagram.com/graphql' \
@@ -325,7 +326,7 @@ def get_following(browser,
 
     user_data = {}
 
-    use_firefox = Settings.use_firefox
+    use_firefox = conf.use_firefox
 
     if use_firefox:
         graphql_endpoint = 'view-source:https://www.instagram.com/graphql' \
@@ -1194,4 +1195,3 @@ def load_followers_data(username, compare_by, compare_track, logger,
 
     # return that file to be compared
     return followers_data, selected_filename
-

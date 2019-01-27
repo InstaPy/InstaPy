@@ -12,11 +12,6 @@ from . import tools
 # flake8: noqa
 from .instapy import InstaPy
 from .util import smart_run
-from .settings import Settings
-
-# TODO: No never need if use ConfigManager
-from .file_manager import set_workspace
-from .file_manager import get_workspace
 
 # TODO: See instapy/release.py
 # __variables__ with double-quoted values will be available in setup.py

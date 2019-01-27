@@ -14,7 +14,7 @@ from .util import deform_emojis
 from .util import has_any_letters
 from .util import get_time_until_next_month
 from .util import truncate_float
-from .settings import Settings
+from . import conf
 from .time_util import sleep
 
 from requests.exceptions import SSLError
@@ -23,8 +23,8 @@ from requests.exceptions import ConnectionError
 YANDEX_API_VERSION = "v1.5"
 YANDEX_HOST = "https://translate.yandex.net"
 
-YANDEX_CONFIG = Settings.yandex_config
-MEANINGCLOUD_CONFIG = Settings.meaningcloud_config
+YANDEX_CONFIG = conf.yandex_config
+MEANINGCLOUD_CONFIG = conf.meaningcloud_config
 
 YANDEX_FAILURE_MSG = "Oh no! Yandex Translate failed :/"
 MEANINGCLOUD_FAILURE_MSG = "Oh no! MeaningCloud Sentiment Analysis failed :/"
@@ -266,7 +266,7 @@ def detect_language(text):
 
     POST = "/api/{}/tr.json/detect?key={}&text={}".format(
         YANDEX_API_VERSION, YANDEX_CONFIG["API_key"], text)
-    logger = Settings.logger
+    logger = conf.logger
 
     try:
         req = requests.get(YANDEX_HOST + POST)
@@ -305,7 +305,7 @@ def yandex_supported_languages(language_code="en"):
 
     POST = "/api/{}/tr.json/getLangs?key={}&ui={}".format(
         YANDEX_API_VERSION, YANDEX_CONFIG["API_key"], language_code)
-    logger = Settings.logger
+    logger = conf.logger
 
     try:
         req = requests.get(YANDEX_HOST + POST)
@@ -351,7 +351,7 @@ def translate_text(translation_direction, text_to_translate):
     POST = "/api/{}/tr.json/translate?key={}&text={}&lang={}".format(
         YANDEX_API_VERSION, YANDEX_CONFIG["API_key"],
         text_to_translate, translation_direction)
-    logger = Settings.logger
+    logger = conf.logger
 
     try:
         req = requests.get(YANDEX_HOST + POST)
@@ -386,7 +386,7 @@ def lift_yandex_request(request):
     """
 
     status_code = request["code"]
-    logger = Settings.logger
+    logger = conf.logger
 
     # handle per status code
     if status_code in [401, 402, 404]:
@@ -435,7 +435,7 @@ def lift_meaningcloud_request(request):
     """
 
     status_code = request.getStatusCode()
-    logger = Settings.logger
+    logger = conf.logger
 
     # handle per status code
     if status_code == '0':
