@@ -6,7 +6,7 @@ from sys import platform
 
 from os.path import exists as path_exists
 
-from .exceptions import InstaPyError
+from ..exceptions import InstaPyError
 
 OS_ENV = ("windows" if platform == "win32"
           else "osx" if platform == "darwin"
