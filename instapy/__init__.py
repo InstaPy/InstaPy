@@ -4,10 +4,6 @@
 
 """InstaPy Core Library."""
 
-# TODO: See instapy/release.py
-# __variables__ with double-quoted values will be available in setup.py
-__version__ = "0.1.1"
-
 # ----------------------------------------------------------
 # namespace package for instapy.extensions
 # https://packaging.python.org/guides/packaging-namespace-packages/

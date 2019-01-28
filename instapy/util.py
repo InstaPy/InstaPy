@@ -492,9 +492,12 @@ def get_active_users(browser, username, posts, boundary, logger):
 
     # click latest post
     try:
-        latest_post = browser.find_elements_by_xpath(
-            "//div[contains(@class, '_9AhH0')]")[0]
-        click_element(browser, latest_post)
+        latest_posts = browser.find_elements_by_xpath(
+            "//div[contains(@class, '_9AhH0')]")
+        # avoid no posts
+        if latest_posts:
+            latest_post = latest_posts[0]
+            click_element(browser, latest_post)
 
     except (NoSuchElementException, WebDriverException):
         logger.warning(
@@ -783,11 +786,13 @@ def click_element(browser, element, tryNum=0):
     2. element.send_keys("\n")
     3. browser.execute_script("document.getElementsByClassName('" +
     element.get_attribute("class") + "')[0].click()")
+
     I'm guessing all three have their advantages/disadvantages
     Before committing over this code, you MUST justify your change
     and potentially adding an 'if' statement that applies to your
     specific case. See the following issue for more details
     https://github.com/timgrossmann/InstaPy/issues/1232
+
     explaination of the following recursive function:
       we will attempt to click the element given, if an error is thrown
       we know something is wrong (element not in view, element doesn't
