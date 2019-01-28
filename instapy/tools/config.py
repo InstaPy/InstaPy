@@ -232,7 +232,12 @@ class configmanager(object):
         if not os.path.isfile(self.rcfile) and len(self.account) == 0:
             self.account.setdefault("ig_default", self.ig_default)
 
+        # Update all conf variables
         conf.extensions_paths = self.instapy['extensions_path'].split(',')
+        conf.log_location = self.instapy['logs_dir']
+        conf.database_location = os.path.join(
+            self.instapy['db_dir'], 'instapy.db')
+        # Chromelocation is fixed from PR #3829 leave at None
 
     def parse_config(self, args=None, **kwargs):
         """ Parse the configuration file (if any).
@@ -394,7 +399,7 @@ class configmanager(object):
         return self.instapy.pop(key, default)
 
     def get_misc(self, sect, key, default=None):
-        return self.misc.get(sect,{}).get(key, default)
+        return self.misc.get(sect, {}).get(key, default)
 
     def __setitem__(self, key, value):
         self.instapy[key] = value
@@ -412,6 +417,12 @@ class configmanager(object):
             return False
 
         return True
+
+    def validate_path(self, path):
+        pass
+
+    def get_chromedriver_location(self):
+        pass
 
 
 # Self Init configmanger

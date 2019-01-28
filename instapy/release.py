@@ -17,5 +17,8 @@ version = '.'.join(str(s) for s in version_info[:2]) + RELEASE_LEVELS_DISPLAY[ve
 series = serie = major_version = '.'.join(str(s) for s in version_info[:2])
 
 product_name = 'InstaPy'
+summary = "Tool for automated Instagram interactions"
 url = 'https://github.com/timgrossmann/InstaPy'
-author = 'timgrossmann'
+author = u"Tim Großmann"
+author_email = "contact.timgrossmann@gmail.com"
+license = "GPLv3"

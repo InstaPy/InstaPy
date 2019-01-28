@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 # This Python file uses the following encoding: utf-8
 
 from setuptools import setup
@@ -9,9 +12,11 @@ from os import path
 from io import open as io_open
 import re
 
+# TODO: Move this on release
+# Load release variables
+exec(open(path.join(path.dirname(__file__),
+                        'instapy', 'release.py'), 'rb').read())
 
-summary = "Tool for automated Instagram interactions"
-project_homepage = "https://github.com/timgrossmann/InstaPy"
 here = path.abspath(path.dirname(__file__))
 
 
@@ -30,23 +35,23 @@ metadata = dict(
 
 setup(
     name="instapy",
-    version=metadata["version"],
+    version=version,
     description=summary,
     long_description=documentation,
     long_description_content_type="text/markdown",
-    author=u"Tim Großmann",
-    author_email="contact.timgrossmann@gmail.com",
+    author=author,
+    author_email=author_email,
     maintainer="InstaPy Community at Github",
-    license="GPLv3",
-    url=project_homepage,
-    download_url=(project_homepage + "/archive/master.zip"),
+    license=license,
+    url=url,
+    download_url=(url + "/archive/master.zip"),
     project_urls={
-        "How Tos": (project_homepage + "/tree/master/docs"),
-        "Examples": (project_homepage + "/tree/master/quickstart_templates"),
-        "Bug Reports": (project_homepage + "/issues"),
+        "How Tos": (url + "/tree/master/docs"),
+        "Examples": (url + "/tree/master/quickstart_templates"),
+        "Bug Reports": (url + "/issues"),
         "Funding": "https://www.paypal.me/supportInstaPy",
         "Say Thanks!": "http://saythanks.io/to/uluQulu",
-        "Source": (project_homepage + "/tree/master/instapy")
+        "Source": (url + "/tree/master/instapy")
     },
     packages=["instapy"],
     # include_package_data=True,  # <- packs every data file in the package

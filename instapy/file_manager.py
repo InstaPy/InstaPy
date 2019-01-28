@@ -1,11 +1,14 @@
 """ A file management utility """
 
 import os
+import pkg_resources
 from os.path import expanduser
 from os.path import exists as path_exists
 from os.path import isfile as file_exists
 from os.path import sep as native_slash
 from platform import python_version
+
+from instapy_chromedriver import binary_path
 
 from .util import highlight_print
 
@@ -20,32 +23,6 @@ def move_workspace(old_path, new_path):
     """ Find data files in old workspace folder and move to new location """
     # write in future
     # TODO: Feature added to migration, review from bitbucket and pull it to github
-
-
-def update_locations():
-    """
-    As workspace has changed, locations also should be updated
-
-    If the user already has set a location, do not alter it
-    """
-
-    configmanager = config
-
-    # update logs location
-    if not conf.log_location:
-        conf.log_location = configmanager.instapy['logs_dir']
-
-    # update database location
-    if not conf.database_location:
-        conf.database_location = os.path.join(configmanager.instapy['db_dir'], 'instapy.db')
-
-    # update chromedriver location
-    if not conf.chromedriver_location:
-        conf.chromedriver_location = os.path.join(configmanager.instapy['assets_dir'], conf.specific_chromedriver)
-
-        if (not conf.chromedriver_location
-                or not path_exists(conf.chromedriver_location)):
-            conf.chromedriver_location = os.path.join(configmanager.instapy['assets_dir'], "chromedriver")
 
 
 def validate_path(path):
@@ -71,8 +48,6 @@ def get_chromedriver_location():
 
     # TODO: Move to configmanager
 
-    update_locations()
-
     CD = conf.chromedriver_location
 
     if osutil.OS_ENV == "windows":
@@ -80,11 +55,19 @@ def get_chromedriver_location():
             CD += ".exe"
 
     if not file_exists(CD):
-        msg = ("Oops! Please, put chromedriver executable to the \"{}\" folder"
-               " and start again :]"
-               .format(CD))
-        raise InstaPyError(msg)
+        CD = binary_path
+        chrome_version = pkg_resources.get_distribution(
+                                    "instapy_chromedriver").version
+        message = "Using built in instapy-chromedriver"\
+                  " executable (version {})".format(chrome_version)
+        highlight_print(conf.profile["name"],
+                        message,
+                        "workspace",
+                        "info",
+                        conf.logger)
 
+    # save updated path into settings
+    conf.chromedriver_location = CD
     return CD
 
 
