@@ -1,3 +1,5 @@
+> **Disclaimer**: Please Note that this is a research project. I am by no means responsible for any usage of this tool. Use on your own behalf. I'm also not responsible if your accounts get banned due to extensive use of this tool.
+
 <img src="https://i.imgur.com/sJzfZsL.jpg" width="150" align="right">
 
 # InstaPy
@@ -7,19 +9,59 @@
 [![Travis](https://img.shields.io/travis/rust-lang/rust.svg)](https://travis-ci.org/timgrossmann/InstaPy)
 [![Backers on Open Collective](https://opencollective.com/instapy/backers/badge.svg)](#backers)
 
-### Automation Script for “farming” Likes, Comments and Followers on Instagram
+### Tooling that automates your social media interactions to “farm” Likes, Comments, and Followers on Instagram
 Implemented in Python using the Selenium module.
 
-**Think this tool is worth supporting?**
-Head over to https://github.com/timgrossmann/InstaPy/wiki/How-to-Contribute to find out how you can help.
-**Become a part of InstaPy!**
-
 **Have an issue?**
-Head over to https://github.com/timgrossmann/InstaPy/wiki/Reporting-An-Issue to find out how to report this to us and get help.
-
-**Disclaimer**: Please Note that this is a research project. I am by no means responsible for any usage of this tool. Use on your own behalf. I'm also not responsible if your accounts get banned due to extensive use of this tool.
+If you should encounter any issue, please first [search for similar issues](https://github.com/timgrossmann/InstaPy/issues) and only if you can't find any, create a new issue or use the [discord channel](https://discord.gg/FDETsht) for help.
 
 #### Newsletter: [SignUp for the Newsletter here!](http://eepurl.com/cZbV_v)
+
+
+## **Installation**
+```elm
+pip install instapy
+```
+It is done 🍫☕
+
+Yeah, now all you need is a **quickstart** script to start _InstaPy_ 🥳  
+
+<details>
+  <summary>
+    <h5>
+      Choose a <b>quickstart</b> script of your choice from the <a href="https://github.com/InstaPy/instapy-quickstart">instapy-quickstart</a> repository to get started 🔎  
+    </h5>
+  </summary>
+
+- Here is the easiest **quickstart** script you can use - [quickstart.py](https://github.com/InstaPy/instapy-quickstart/blob/master/quickstart.py)  
+- And here you can find lots of _sophisticated **quickstart** templates_ shared by the community! - [quickstart templates 📂](https://github.com/InstaPy/instapy-quickstart/tree/master/quickstart_templates)  
+
+After downloading a **quickstart** script into your computer, you can run it in the command prompt as,
+```elm
+python quickstart.py
+```
+
+</details>
+
+
+#### **Update**
+```elm
+
+pip install instapy -U
+
+```
+
+#### **Install** a _**specific** version_
+```elm
+pip install instapy==0.1.1
+```
+
+#### **Uninstall**
+```elm
+pip uninstall instapy
+```
+
+--- 
 
 ### Social
 
@@ -42,14 +84,30 @@ Head over to https://github.com/timgrossmann/InstaPy/wiki/Reporting-An-Issue to 
 	<img alt="paypalme" src="http://codeinpython.com/tutorials/wp-content/uploads/2017/09/PayPal-ME-300x300.jpg.png" width=100/>
 </a>
 
+**Do you want to help build InstaPy?**      
+Head over to https://github.com/timgrossmann/InstaPy/wiki/How-to-Contribute to find out how you can help.
+
+### Guides
+
+#### Video tutorials:
+**[Setting up InstaPy for MacOS using Firefox](https://www.youtube.com/watch?v=A1a8J_IjSPs)**
+
+**[Setting up InstaPy at Digital Ocean (for Debian)](https://www.youtube.com/watch?v=2Ci-hXU1IEY)**
+
+**[Setting up InstaPy for Windows](https://www.youtube.com/watch?v=AOUraeus-XA)**
+
+#### Written Guides:
+**[How to Ubuntu (64-Bit)](./docs/How_To_DO_Ubuntu_on_Digital_Ocean.md) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**
+
+**[How to RaspberryPi](./docs/How_to_Raspberry.md) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**
+
+**[How to Windows](./docs/How_to_Windows.md)**
 
 
-Table of Contents
-=================
+# Documentation
 
-* [Getting Started](#getting-started)
-  * [Easy Installation](#easy-installation)
-  * [Advanced Installation](#advanced-installation)
+### Table of Contents
+* [Advanced Installation](#advanced-installation)
 * [InstaPy Available Features](#instapy-available-features)
   * [Commenting](#commenting)
   * [Following](#following)
@@ -126,68 +184,7 @@ Table of Contents
   * [How to avoid _python_ & **pip** confusion](#how-to-avoid-python--pip-confusion)
 
 
-
-## Getting started
-
-### Video tutorials:
-**[Setting up InstaPy for MacOS using Firefox](https://www.youtube.com/watch?v=A1a8J_IjSPs)**
-
-**[Setting up InstaPy at Digital Ocean (for Debian)](https://www.youtube.com/watch?v=2Ci-hXU1IEY)**
-
-**[Setting up InstaPy for Windows](https://www.youtube.com/watch?v=AOUraeus-XA)**
-
-### Guides:
-**[How to Ubuntu (64-Bit)](./docs/How_To_DO_Ubuntu_on_Digital_Ocean.md) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**
-
-**[How to RaspberryPi](./docs/How_to_Raspberry.md) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**
-
-**[How to Windows](./docs/How_to_Windows.md)**
-
-### Easy installation
-After _InstaPy_ has been published to _PyPI_ as _**instapy**_ package, you are able to easily get it by **pip**!  
-
-#### **Install**
-```erlang
-pip install instapy
-```
-It is done 🍫☕
-
-Yeah, now all you need is a **quickstart** script to start _InstaPy_ 🥳  
-
-<details>
-  <summary>
-    <h5>
-      Choose a <b>quickstart</b> script of your choice from the <a href="https://github.com/InstaPy/instapy-quickstart">instapy-quickstart</a> repository to get started 🔎  
-    </h5>
-  </summary>
-
-- Here is the easiest **quickstart** script you can use - [quickstart.py](https://github.com/InstaPy/instapy-quickstart/blob/master/quickstart.py)  
-- And here you can find lots of _sophisticated **quickstart** templates_ shared by the community! - [quickstart templates 📂](https://github.com/InstaPy/instapy-quickstart/tree/master/quickstart_templates)  
-
-After downloading a **quickstart** script into your computer, you can run it in the command prompt as,
-```erlang
-python quickstart.py
-```
-
-</details>
-
-
-#### **Update**
-```erlang
-pip install instapy -U
-```
-
-#### **Install** a _**specific** version_
-```erlang
-pip install instapy==0.1.1
-```
-
-#### **Uninstall**
-```erlang
-pip uninstall instapy
-```
-
-
+### Advanced Installation
 #### Install or update to the unreleased version  
 For example, there is a **bug** and its **fix** is _merged to the repo_ but a newer version of _InstaPy_ [_containing_ that **fix**] is not yet released to _PyPI_ to be able to be _installed_ or _updated_ by **pip**.  
 
@@ -219,8 +216,8 @@ That's why you will be able to install the actual state of the repo using the `-
   Read the section - [How to avoid _python_ & **pip** confusion](#how-to-avoid-python--pip-confusion) 😄
 
 
-### Advanced Installation
-###### Install manually and manage using advanced git commands
+
+#### Install manually and manage using advanced git commands
 
 **1**. Clone _InstaPy_ repository into your computer
 ```erlang
