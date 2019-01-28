@@ -15,7 +15,7 @@ import re
 # TODO: Move this on release
 # Load release variables
 exec(open(path.join(path.dirname(__file__),
-                        'instapy', 'release.py'), 'rb').read())
+                    'instapy', 'release.py'), 'rb').read())
 
 here = path.abspath(path.dirname(__file__))
 
@@ -58,7 +58,10 @@ setup(
     package_data={   # we need only the files below:
         "instapy": ["icons/Windows/*.ico",
                     "icons/Linux/*.png",
-                    "icons/Mac/*.icns"]
+                    "icons/Mac/*.icns",
+                    "conf/*.py",
+                    "tools/*.py",
+                    "extensions/*.py"]
     },
     keywords=(
         "instapy python instagram automation \

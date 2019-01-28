@@ -6,6 +6,7 @@ import random
 import re
 import regex
 import signal
+import threading
 import os
 import sys
 from sys import exit as clean_exit
@@ -1049,15 +1050,19 @@ def interruption_handler(threaded=False, SIG_type=signal.SIGINT,
     if notify is not None and logger is not None:
         logger.warning(notify)
 
-    if not threaded:
-        original_handler = signal.signal(SIG_type, handler)
-
-    try:
-        yield
-
-    finally:
+    # TODO: is bad hack but working with schedule and multiple threads
+    if isinstance(threading.current_thread(), threading._MainThread):
         if not threaded:
-            signal.signal(SIG_type, original_handler)
+            original_handler = signal.signal(SIG_type, handler)
+
+        try:
+            yield
+
+        finally:
+            if not threaded:
+                signal.signal(SIG_type, original_handler)
+    else:
+        yield
 
 
 def highlight_print(username=None, message=None, priority=None, level=None,

@@ -1,6 +1,5 @@
-from instapy import Settings
+from instapy import conf
 
 
 def test_settings():
-    assert Settings.log_location == None
-
+    assert conf.log_location == None
