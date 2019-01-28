@@ -1,9 +1,7 @@
 """ A file management utility """
 
-import os
 import pkg_resources
 
-from os.path import exists as path_exists
 from os.path import isfile as file_exists
 from os.path import sep as native_slash
 
@@ -21,24 +19,6 @@ def move_workspace(old_path, new_path):
     """ Find data files in old workspace folder and move to new location """
     # write in future
     # TODO: Feature added to migration, review from bitbucket and pull it to github
-
-
-def validate_path(path):
-    """ Make sure the given path exists """
-
-    # TODO: Move to tools/osutil.py
-
-    if not path_exists(path):
-        try:
-            os.makedirs(path)
-
-        except OSError as exc:
-            exc_name = type(exc).__name__
-            msg = ("{} occured while making \"{}\" path!"
-                   "\n\t{}".format(exc_name,
-                                   path,
-                                   str(exc).encode("utf-8")))
-            raise InstaPyError(msg)
 
 
 def get_chromedriver_location():
@@ -78,5 +58,5 @@ def get_logfolder(username, multi_logs):
     else:
         logfolder = (conf.log_location + native_slash)
 
-    validate_path(logfolder)
+    osutil.validate_path(logfolder)
     return logfolder
