@@ -2,18 +2,16 @@
 
 import os
 import pkg_resources
-from os.path import expanduser
+
 from os.path import exists as path_exists
 from os.path import isfile as file_exists
 from os.path import sep as native_slash
-from platform import python_version
 
 from instapy_chromedriver import binary_path
 
 from .util import highlight_print
 
 from . import conf
-from .tools import config
 from .tools import osutil
 
 from .exceptions import InstaPyError
