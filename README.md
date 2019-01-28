@@ -22,26 +22,24 @@ If you should encounter any issue, please first [search for similar issues](http
 ```elm
 pip install instapy
 ```
-It is done 🍫☕
+That's it 🍫☕
 
-Yeah, now all you need is a **quickstart** script to start _InstaPy_ 🥳  
+Now all you need is a **quickstart** script to start _InstaPy_ 🥳  
 
 <details>
-  <summary>
-    <h5>
-      Choose a <b>quickstart</b> script of your choice from the <a href="https://github.com/InstaPy/instapy-quickstart">instapy-quickstart</a> repository to get started 🔎  
-    </h5>
-  </summary>
+  <summary> <b>Choose a <b>quickstart</b> script of your choice from the <a href="https://github.com/InstaPy/instapy-quickstart">instapy-quickstart</a> repository to get started 🔎</b></summary>
 
 - Here is the easiest **quickstart** script you can use - [quickstart.py](https://github.com/InstaPy/instapy-quickstart/blob/master/quickstart.py)  
 - And here you can find lots of _sophisticated **quickstart** templates_ shared by the community! - [quickstart templates 📂](https://github.com/InstaPy/instapy-quickstart/tree/master/quickstart_templates)  
+
+</details>
+
+<br />
 
 After downloading a **quickstart** script into your computer, you can run it in the command prompt as,
 ```elm
 python quickstart.py
 ```
-
-</details>
 
 
 #### **Update**
@@ -87,7 +85,7 @@ pip uninstall instapy
 **Help build InstaPy?**      
 Head over to https://github.com/timgrossmann/InstaPy/wiki/How-to-Contribute to find out how you can help.
 
-
+---
 
 ### Guides
 
@@ -1009,7 +1007,7 @@ session.set_delimit_commenting(enabled=True, max=70, min=5)
 _**Now**, if a post has more comments than the maximum value of `70`, then it will not comment on that post,
 **similarly**, if that post has less comments than the minimum value of `5`, then it will not comment on that post..._
 
-### Commenting based on madatory words in the description or first comment
+### Commenting based on mandatory words in the description or first comment
 
 ##### This is used to check the description of the post and the first comment of the post (some users only put tags in the comments instead of the post description) for the occurence of mandatory words before commenting. If none of the mandatory words is present, the post will not be commented.
 
