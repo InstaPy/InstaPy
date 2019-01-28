@@ -65,7 +65,7 @@ pip uninstall instapy
 
 ### Social
 
-#### [InstaPy Twitter](https://twitter.com/InstaPy) | [My Twitter](https://twitter.com/timigrossmann) | [How it works (Medium)](https://medium.freecodecamp.com/my-open-source-instagram-bot-got-me-2-500-real-followers-for-5-in-server-costs-e40491358340) |   
+#### [Twitter of InstaPy](https://twitter.com/InstaPy) | [Twitter of Tim](https://twitter.com/timigrossmann) | [How it works (Medium)](https://medium.freecodecamp.com/my-open-source-instagram-bot-got-me-2-500-real-followers-for-5-in-server-costs-e40491358340) |   
 [Talk about automating your Instagram](https://youtu.be/4TmKFZy-ioQ) | [Talk about doing Open-Source work](https://www.youtube.com/watch?v=A_UtST302Og&t=0s&list=PLa4P1NPX9hthXV-wko0xyxFpbhYZFkW7o) | [Listen to the "Talk Python to me"-Episode](https://talkpython.fm/episodes/show/142/automating-the-web-with-selenium-and-instapy)
 
 ### Do you need help ?
@@ -84,8 +84,10 @@ pip uninstall instapy
 	<img alt="paypalme" src="http://codeinpython.com/tutorials/wp-content/uploads/2017/09/PayPal-ME-300x300.jpg.png" width=100/>
 </a>
 
-**Do you want to help build InstaPy?**      
+**Help build InstaPy?**      
 Head over to https://github.com/timgrossmann/InstaPy/wiki/How-to-Contribute to find out how you can help.
+
+
 
 ### Guides
 
@@ -214,7 +216,6 @@ That's why you will be able to install the actual state of the repo using the `-
 
 >**PRO** Tip:  
   Read the section - [How to avoid _python_ & **pip** confusion](#how-to-avoid-python--pip-confusion) 😄
-
 
 
 #### Install manually and manage using advanced git commands
@@ -352,51 +353,6 @@ In essence,
  - To make sure which _python_ is used, run `which python` which would tell you the active version of _python_.
 
 </details>
-
-
-
-### Set it up yourself with this Basic Setup
-
-Basic setup is a good way to test the tool. At project root folder open `quickstart.py` and update with your _username_ and _password_.
-
-```python
-""" Quickstart script for InstaPy usage """
-# imports
-from instapy import InstaPy
-from instapy import smart_run
-
-# login credentials
-insta_username = ''
-insta_password = ''
-
-# get an InstaPy session!
-# set headless_browser=True to run InstaPy in the background
-session = InstaPy(username=insta_username,
-                  password=insta_password,
-                  headless_browser=False)
-
-with smart_run(session):
-    """ Activity flow """
-    # general settings
-    session.set_relationship_bounds(enabled=True,
-                                    delimit_by_numbers=True,
-                                    max_followers=4590,
-                                    min_followers=45,
-                                    min_following=77)
-
-    session.set_dont_include(["friend1", "friend2", "friend3"])
-    session.set_dont_like(["pizza", "#store"])
-
-    # activity
-    session.like_by_tags(["natgeo"], amount=10)
-```
-
-Execute it:
-
-```bash
-$ python quickstart.py
-```
-
 
 
 ### Extensions
