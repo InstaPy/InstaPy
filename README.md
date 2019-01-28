@@ -174,6 +174,7 @@ Head over to https://github.com/timgrossmann/InstaPy/wiki/How-to-Contribute to f
   * [cron](#cron)
   * [Schedule](#schedule)
 * [Workspace folders](#workspace-folders)
+* [Extensions](#extensions)
 * [Extra Information](#extra-information)
   * [Custom chromedriver version](#custom-chromedriver-version)
   * [Using one of the templates](#using-one-of-the-templates)
@@ -353,12 +354,6 @@ In essence,
  - To make sure which _python_ is used, run `which python` which would tell you the active version of _python_.
 
 </details>
-
-
-### Extensions
-
-[1. Session scheduling with Telegram](https://github.com/Tkd-Alex/Telegram-InstaPy-Scheduling)
-
 
 
 
@@ -2398,7 +2393,8 @@ Why it is so difficult in those 👆🏼 regards?
 
 </details>
 
-
+## Extensions
+[1. Session scheduling with Telegram](https://github.com/Tkd-Alex/Telegram-InstaPy-Scheduling)
 
 ## Extra Information
 
