@@ -2296,15 +2296,15 @@ while True:
 ###### _InstaPy_ stores user's data files inside the **workspace** folder.
 
 By default, it is gonna be the **InstaPy** folder at your home folder.  
-Such as, let's assume that your home folder is - `C:\\Users\\Cherry\\`.  
-Then, your _InstaPy_ **workspace** folder will be - `C:\\Users\\Cherry\\InstaPy\\`.
+Such as, if your username is `Cherry`, let's show where your InstaPy folder would be,
 
-Home folder on:
-- **Windows**: `C:\\Users\\<your username>\\`
-- **MacOS**: `/Users/<your username>/`
-- **Linux**: `/home/<your username>`
+|   OS    |       home folder     | _InstaPy_ **workspace** folder |  
+| ------- | --------------------- | ------------------------------ |
+| Windows | `C:\\Users\\Cherry\\` | `C:\\Users\\Cherry\\InstaPy\\` |
+|   Mac   |    `/Users/Cherry/`   |    `/Users/Cherry/InstaPy/`    |
+|  Linux  |    `/home/Cherry/`    |    `/home/Cherry/InstaPy/`     |
 
-> If you're working with Linux, your path might be different. You can find all the possible home directories for the different distros [here](https://en.wikipedia.org/wiki/Home_directory).
+Note that, at the start of each run, it shows you the **workspace** folder in use.
 
 <br /> 
 
