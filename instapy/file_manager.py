@@ -12,8 +12,6 @@ from .util import highlight_print
 from . import conf
 from .tools import osutil
 
-from .exceptions import InstaPyError
-
 
 def move_workspace(old_path, new_path):
     """ Find data files in old workspace folder and move to new location """
