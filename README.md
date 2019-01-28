@@ -43,6 +43,8 @@ After downloading a **quickstart** script into your computer, you can run it in 
 python quickstart.py
 ```
 
+> If you've used InstaPy before installing it with `pip`, you have to move your old data to the new workspace folder once.
+[Read how to do this here](#migrating-your-data-to-the-workspace-folder).
 
 #### **Update**
 ```elm
@@ -2262,6 +2264,15 @@ By default, it is gonna be the **InstaPy** folder at your home folder.
 Such as, let's assume that your home folder is - `C:\\Users\\Cherry\\`.  
 Then, your _InstaPy_ **workspace** folder will be - `C:\\Users\\Cherry\\InstaPy\\`.
 
+Home folder on:
+- **Windows**: `C:\\Users\\<your username>\\`
+- **MacOS**: `/Users/<your username>/`
+- **Linux**: `/home/<your username>`
+
+> If you're working with Linux, your path might be different. You can find all the possible home directories for the different distros [here](https://en.wikipedia.org/wiki/Home_directory).
+
+<br /> 
+
 <details>
   <summary>
     <b>
@@ -2278,6 +2289,14 @@ Such as,
 
 </details>
 
+
+### Migrating your data to the workspace folder
+After installing InstaPy with pip, you have to run it once by calling `python quickstart.py`. Once the web browser opens, you can abort the session by closing the browser or your terminal. 
+
+You will now find an `InstaPy` folder located at the above mentioned home folder.
+Simply copy and paste the content of your logs folder into that workspace folder in order to assure that all your data is migrated.
+
+> Please note that you only have to do this once. After that, you can get rid of your old, downloaded version of this repository since the InstaPy folder in your home folder will now be the default location for your data.
 
 ### Set a _custom_ workspace folder
 You can use `set_workspace()` function to set a custom **workspace** folder,
