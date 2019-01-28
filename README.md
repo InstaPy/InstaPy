@@ -34,11 +34,46 @@ Now all you need is a **quickstart** script to start _InstaPy_ 🥳
 - Here is the easiest **quickstart** script you can use - [quickstart.py](https://github.com/InstaPy/instapy-quickstart/blob/master/quickstart.py)  
 - And here you can find lots of _sophisticated **quickstart** templates_ shared by the community! - [quickstart templates 📂](https://github.com/InstaPy/instapy-quickstart/tree/master/quickstart_templates)  
 
+<br /> 
+
+You can also copy and paste this basic quickstart into a new text file and save it as `.py` file.
+```python		
+ """ Quickstart script for InstaPy usage """		
+ # imports		
+ from instapy import InstaPy		
+ from instapy import smart_run		
+		
+ # login credentials		
+ insta_username = ''		
+ insta_password = ''		
+		
+ # get an InstaPy session!		
+ # set headless_browser=True to run InstaPy in the background		
+ session = InstaPy(username=insta_username,		
+                   password=insta_password,		
+                   headless_browser=False)		
+		
+ with smart_run(session):		
+     """ Activity flow """		
+     # general settings		
+     session.set_relationship_bounds(enabled=True,		
+                                     delimit_by_numbers=True,		
+                                     max_followers=4590,		
+                                     min_followers=45,		
+                                     min_following=77)		
+		
+     session.set_dont_include(["friend1", "friend2", "friend3"])		
+     session.set_dont_like(["pizza", "#store"])		
+		
+     # activity		
+     session.like_by_tags(["natgeo"], amount=10)		
+ ```
+
 </details>
 
 <br />
 
-After downloading a **quickstart** script into your computer, you can run it in the command prompt as,
+After downloading a **quickstart** script to your computer, you can run it in the command prompt as:
 ```elm
 python quickstart.py
 ```
