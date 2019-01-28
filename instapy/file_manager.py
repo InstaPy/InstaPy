@@ -52,7 +52,7 @@ def get_chromedriver_location():
         if not CD.endswith(".exe"):
             CD += ".exe"
 
-    if not file_exists(CD):
+    if not CD or not file_exists(CD):
         CD = binary_path
         chrome_version = pkg_resources.get_distribution(
                                     "instapy_chromedriver").version

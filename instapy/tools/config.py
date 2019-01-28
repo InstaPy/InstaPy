@@ -11,11 +11,11 @@ import os
 import sys
 import ast
 
-import errno
+# import errno
 # import logging
 
 from .. import release, conf
-from . import appdirs
+import appdirs
 
 # TODO: integrate highlight_print
 # from ..util import highlight_print
