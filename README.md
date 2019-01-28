@@ -1,3 +1,5 @@
+> **Disclaimer**: Please Note that this is a research project. I am by no means responsible for any usage of this tool. Use on your own behalf. I'm also not responsible if your accounts get banned due to extensive use of this tool.
+
 <img src="https://i.imgur.com/sJzfZsL.jpg" width="150" align="right">
 
 # InstaPy
@@ -7,23 +9,100 @@
 [![Travis](https://img.shields.io/travis/rust-lang/rust.svg)](https://travis-ci.org/timgrossmann/InstaPy)
 [![Backers on Open Collective](https://opencollective.com/instapy/backers/badge.svg)](#backers)
 
-### Automation Script for “farming” Likes, Comments and Followers on Instagram
+### Tooling that automates your social media interactions to “farm” Likes, Comments, and Followers on Instagram
 Implemented in Python using the Selenium module.
 
-**Think this tool is worth supporting?**
-Head over to https://github.com/timgrossmann/InstaPy/wiki/How-to-Contribute to find out how you can help.
-**Become a part of InstaPy!**
-
 **Have an issue?**
-Head over to https://github.com/timgrossmann/InstaPy/wiki/Reporting-An-Issue to find out how to report this to us and get help.
-
-**Disclaimer**: Please Note that this is a research project. I am by no means responsible for any usage of this tool. Use on your own behalf. I'm also not responsible if your accounts get banned due to extensive use of this tool.
+If you should encounter any issue, please first [search for similar issues](https://github.com/timgrossmann/InstaPy/issues) and only if you can't find any, create a new issue or use the [discord channel](https://discord.gg/FDETsht) for help.
 
 #### Newsletter: [SignUp for the Newsletter here!](http://eepurl.com/cZbV_v)
 
+
+## **Installation**
+```elm
+pip install instapy
+```
+That's it 🍫☕
+
+<br />
+
+Now all you need is a **quickstart** script to start _InstaPy_ 🥳  
+
+<details>
+  <summary> <b>Choose a <b>quickstart</b> script of your choice from the <a href="https://github.com/InstaPy/instapy-quickstart">instapy-quickstart</a> repository to get started 🔎</b></summary>
+
+- Here is the easiest **quickstart** script you can use - [quickstart.py](https://github.com/InstaPy/instapy-quickstart/blob/master/quickstart.py)  
+- And here you can find lots of _sophisticated **quickstart** templates_ shared by the community! - [quickstart templates 📂](https://github.com/InstaPy/instapy-quickstart/tree/master/quickstart_templates)  
+
+<br /> 
+
+You can also copy and paste this basic quickstart into a new text file and save it as `.py` file.
+```python		
+ """ Quickstart script for InstaPy usage """		
+ # imports		
+ from instapy import InstaPy		
+ from instapy import smart_run		
+		
+ # login credentials		
+ insta_username = ''		
+ insta_password = ''		
+		
+ # get an InstaPy session!		
+ # set headless_browser=True to run InstaPy in the background		
+ session = InstaPy(username=insta_username,		
+                   password=insta_password,		
+                   headless_browser=False)		
+		
+ with smart_run(session):		
+     """ Activity flow """		
+     # general settings		
+     session.set_relationship_bounds(enabled=True,		
+                                     delimit_by_numbers=True,		
+                                     max_followers=4590,		
+                                     min_followers=45,		
+                                     min_following=77)		
+		
+     session.set_dont_include(["friend1", "friend2", "friend3"])		
+     session.set_dont_like(["pizza", "#store"])		
+		
+     # activity		
+     session.like_by_tags(["natgeo"], amount=10)		
+ ```
+
+</details>
+
+<br />
+
+After downloading a **quickstart** script to your computer, you can run it in the command prompt as:
+```elm
+python quickstart.py
+```
+
+> If you've used InstaPy before installing it with `pip`, you have to move your old data to the new workspace folder once.
+[Read how to do this here](#migrating-your-data-to-the-workspace-folder).
+
+#### **Update**
+```elm
+
+pip install instapy -U
+
+```
+
+#### **Install** a _**specific** version_
+```elm
+pip install instapy==0.1.1
+```
+
+#### **Uninstall**
+```elm
+pip uninstall instapy
+```
+
+--- 
+
 ### Social
 
-#### [InstaPy Twitter](https://twitter.com/InstaPy) | [My Twitter](https://twitter.com/timigrossmann) | [How it works (Medium)](https://medium.freecodecamp.com/my-open-source-instagram-bot-got-me-2-500-real-followers-for-5-in-server-costs-e40491358340) |   
+#### [Twitter of InstaPy](https://twitter.com/InstaPy) | [Twitter of Tim](https://twitter.com/timigrossmann) | [How it works (Medium)](https://medium.freecodecamp.com/my-open-source-instagram-bot-got-me-2-500-real-followers-for-5-in-server-costs-e40491358340) |   
 [Talk about automating your Instagram](https://youtu.be/4TmKFZy-ioQ) | [Talk about doing Open-Source work](https://www.youtube.com/watch?v=A_UtST302Og&t=0s&list=PLa4P1NPX9hthXV-wko0xyxFpbhYZFkW7o) | [Listen to the "Talk Python to me"-Episode](https://talkpython.fm/episodes/show/142/automating-the-web-with-selenium-and-instapy)
 
 ### Do you need help ?
@@ -42,14 +121,32 @@ Head over to https://github.com/timgrossmann/InstaPy/wiki/Reporting-An-Issue to 
 	<img alt="paypalme" src="http://codeinpython.com/tutorials/wp-content/uploads/2017/09/PayPal-ME-300x300.jpg.png" width=100/>
 </a>
 
+**Help build InstaPy!**      
+Head over to https://github.com/timgrossmann/InstaPy/wiki/How-to-Contribute to find out how you can help.
+
+---
+
+### Guides
+
+#### Video tutorials:
+**[Setting up InstaPy for MacOS using Firefox](https://www.youtube.com/watch?v=A1a8J_IjSPs)**
+
+**[Setting up InstaPy at Digital Ocean (for Debian)](https://www.youtube.com/watch?v=2Ci-hXU1IEY)**
+
+**[Setting up InstaPy for Windows](https://www.youtube.com/watch?v=AOUraeus-XA)**
+
+#### Written Guides:
+**[How to Ubuntu (64-Bit)](./docs/How_To_DO_Ubuntu_on_Digital_Ocean.md) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**
+
+**[How to RaspberryPi](./docs/How_to_Raspberry.md) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**
+
+**[How to Windows](./docs/How_to_Windows.md)**
 
 
-Table of Contents
-=================
+# Documentation
 
-* [Getting Started](#getting-started)
-  * [Easy Installation](#easy-installation)
-  * [Advanced Installation](#advanced-installation)
+### Table of Contents
+* [Advanced Installation](#advanced-installation)
 * [InstaPy Available Features](#instapy-available-features)
   * [Commenting](#commenting)
   * [Following](#following)
@@ -114,7 +211,9 @@ Table of Contents
   * [cron](#cron)
   * [Schedule](#schedule)
 * [Workspace folders](#workspace-folders)
+* [Extensions](#extensions)
 * [Extra Information](#extra-information)
+  * [Custom chromedriver version](#custom-chromedriver-version)
   * [Using one of the templates](#using-one-of-the-templates)
   * [How not to be banned](#how-not-to-be-banned)
   * [Simulation](#simulation)
@@ -125,68 +224,7 @@ Table of Contents
   * [How to avoid _python_ & **pip** confusion](#how-to-avoid-python--pip-confusion)
 
 
-
-## Getting started
-
-### Video tutorials:
-**[Setting up InstaPy for MacOS using Firefox](https://www.youtube.com/watch?v=A1a8J_IjSPs)**
-
-**[Setting up InstaPy at Digital Ocean (for Debian)](https://www.youtube.com/watch?v=2Ci-hXU1IEY)**
-
-**[Setting up InstaPy for Windows](https://www.youtube.com/watch?v=AOUraeus-XA)**
-
-### Guides:
-**[How to Ubuntu (64-Bit)](./docs/How_To_DO_Ubuntu_on_Digital_Ocean.md) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**
-
-**[How to RaspberryPi](./docs/How_to_Raspberry.md) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**
-
-**[How to Windows](./docs/How_to_Windows.md)**
-
-### Easy installation
-After _InstaPy_ has been published to _PyPI_ as _**instapy**_ package, you are able to easily get it by **pip**!  
-
-#### **Install**
-```erlang
-pip install instapy
-```
-It is done 🍫☕
-
-Yeah, now all you need is a **quickstart** script to start _InstaPy_ 🥳  
-
-<details>
-  <summary>
-    <h5>
-      Choose a <b>quickstart</b> script of your choice from the <a href="https://github.com/InstaPy/instapy-quickstart">instapy-quickstart</a> repository to get started 🔎  
-    </h5>
-  </summary>
-
-- Here is the easiest **quickstart** script you can use - [quickstart.py](https://github.com/InstaPy/instapy-quickstart/blob/master/quickstart.py)  
-- And here you can find lots of _sophisticated **quickstart** templates_ shared by the community! - [quickstart templates 📂](https://github.com/InstaPy/instapy-quickstart/tree/master/quickstart_templates)  
-
-After downloading a **quickstart** script into your computer, you can run it in the command prompt as,
-```erlang
-python quickstart.py
-```
-
-</details>
-
-
-#### **Update**
-```erlang
-pip install instapy -U
-```
-
-#### **Install** a _**specific** version_
-```erlang
-pip install instapy==0.1.1
-```
-
-#### **Uninstall**
-```erlang
-pip uninstall instapy
-```
-
-
+### Advanced Installation
 #### Install or update to the unreleased version  
 For example, there is a **bug** and its **fix** is _merged to the repo_ but a newer version of _InstaPy_ [_containing_ that **fix**] is not yet released to _PyPI_ to be able to be _installed_ or _updated_ by **pip**.  
 
@@ -200,9 +238,9 @@ Worths to note that, this installation option does not require _Git_ to be insta
 
 <details>
   <summary>
-    <h5>
+    <b>
       Learn why <code>-I</code> flag is required 🔎
-    </h5>
+    </b>
   </summary>
 
 Since _InstaPy_'s version is not yet being incremented which is the reason you're installing it from a _zipball_, then if you don't use the `-I` flag, **pip** will complain saying,  
@@ -213,13 +251,13 @@ That's why you will be able to install the actual state of the repo using the `-
 
 </details>
 
+<br />
 
 >**PRO** Tip:  
   Read the section - [How to avoid _python_ & **pip** confusion](#how-to-avoid-python--pip-confusion) 😄
 
 
-### Advanced Installation
-###### Install manually and manage using advanced git commands
+#### Install manually and manage using advanced git commands
 
 **1**. Clone _InstaPy_ repository into your computer
 ```erlang
@@ -240,19 +278,15 @@ or
 python setup.py install
 ```
 
-**4**. Download **chromedriver** for your OS [from here](https://sites.google.com/a/chromium.org/chromedriver/downloads).  
-And then, extract the .**zip** file and put it into the **assets** folder [at your **workspace** folder].
-
-
 #### Install into a Virtual Environment
 
 ###### The best way to install _InstaPy_ is to create a virtual environment and install _InstaPy_ there, then, run it from a separate file
 
 <details>
   <summary>
-    <h5>
+    <b>
       Guide for <b>Pythons</b> >= 3.6 🔎
-    </h5>
+    </b>
   </summary>
 
 ##### Mac/Linux
@@ -325,9 +359,9 @@ If you're not _familiar_ with **venv**, please [read about it here](https://docs
 
 <details>
   <summary>
-    <h5>
+    <b>
       Guide for <b>Pythons</b> < 3.6 🔎
-    </h5>
+    </b>
   </summary>
 
 **1**. Make a virtual environment
@@ -358,57 +392,6 @@ In essence,
  - To make sure which _python_ is used, run `which python` which would tell you the active version of _python_.
 
 </details>
-
-
-
-### Set it up yourself with this Basic Setup
-
-Basic setup is a good way to test the tool. At project root folder open `quickstart.py` and update with your _username_ and _password_.
-
-```python
-""" Quickstart script for InstaPy usage """
-# imports
-from instapy import InstaPy
-from instapy import smart_run
-
-# login credentials
-insta_username = ''
-insta_password = ''
-
-# get an InstaPy session!
-# set headless_browser=True to run InstaPy in the background
-session = InstaPy(username=insta_username,
-                  password=insta_password,
-                  headless_browser=False)
-
-with smart_run(session):
-    """ Activity flow """
-    # general settings
-    session.set_relationship_bounds(enabled=True,
-                                    delimit_by_numbers=True,
-                                    max_followers=4590,
-                                    min_followers=45,
-                                    min_following=77)
-
-    session.set_dont_include(["friend1", "friend2", "friend3"])
-    session.set_dont_like(["pizza", "#store"])
-
-    # activity
-    session.like_by_tags(["natgeo"], amount=10)
-```
-
-Execute it:
-
-```bash
-$ python quickstart.py
-```
-
-
-
-### Extensions
-
-[1. Session scheduling with Telegram](https://github.com/Tkd-Alex/Telegram-InstaPy-Scheduling)
-
 
 
 
@@ -1064,7 +1047,7 @@ session.set_delimit_commenting(enabled=True, max=70, min=5)
 _**Now**, if a post has more comments than the maximum value of `70`, then it will not comment on that post,
 **similarly**, if that post has less comments than the minimum value of `5`, then it will not comment on that post..._
 
-### Commenting based on madatory words in the description or first comment
+### Commenting based on mandatory words in the description or first comment
 
 ##### This is used to check the description of the post and the first comment of the post (some users only put tags in the comments instead of the post description) for the occurence of mandatory words before commenting. If none of the mandatory words is present, the post will not be commented.
 
@@ -2313,14 +2296,23 @@ while True:
 ###### _InstaPy_ stores user's data files inside the **workspace** folder.
 
 By default, it is gonna be the **InstaPy** folder at your home folder.  
-Such as, let's assume that your home folder is - `C:\\Users\\Cherry\\`.  
-Then, your _InstaPy_ **workspace** folder will be - `C:\\Users\\Cherry\\InstaPy\\`.
+Such as, if your username is `Cherry`, let's show where your InstaPy folder would be,
+
+|   OS    |       home folder     | _InstaPy_ **workspace** folder |  
+| ------- | --------------------- | ------------------------------ |
+| Windows | `C:\\Users\\Cherry\\` | `C:\\Users\\Cherry\\InstaPy\\` |
+|   Mac   |    `/Users/Cherry/`   |    `/Users/Cherry/InstaPy/`    |
+|  Linux  |    `/home/Cherry/`    |    `/home/Cherry/InstaPy/`     |
+
+Note that, at the start of each run, it shows you the **workspace** folder in use.
+
+<br /> 
 
 <details>
   <summary>
-    <h4>
+    <b>
       What will be stored at the <b>workspace</b> folder? 🔍
-    </h4>
+    </b>
   </summary>
 
 Anything that is _user's **data file**_ will be stored in there.  
@@ -2332,6 +2324,14 @@ Such as,
 
 </details>
 
+
+### Migrating your data to the workspace folder
+After installing InstaPy with pip, you have to run it once by calling `python quickstart.py`. Once the web browser opens, you can abort the session by closing the browser or your terminal. 
+
+You will now find an `InstaPy` folder located at the above mentioned home folder.
+Simply copy and paste the content of your logs folder into that workspace folder in order to assure that all your data is migrated.
+
+> Please note that you only have to do this once. After that, you can get rid of your old, downloaded version of this repository since the InstaPy folder in your home folder will now be the default location for your data.
 
 ### Set a _custom_ workspace folder
 You can use `set_workspace()` function to set a custom **workspace** folder,
@@ -2346,9 +2346,9 @@ session = InstaPy(...)
 
 <details>
   <summary>
-    <h4>
+    <b>
       Rules 🔎
-    </h4>
+    </b>
   </summary>
 
 **1**-) You have to set your custom **workspace** folder before instantiates _InstaPy_.  
@@ -2418,9 +2418,9 @@ session = InstaPy(...)
 
 <details>
   <summary>
-    <h4>
+    <b>
       Restrictions 🔎
-    </h4>
+    </b>
   </summary>
 
 **a**-) You cannot set a custom **workspace** folder after _InstaPy_ has been instantiated;  
@@ -2448,9 +2448,18 @@ Why it is so difficult in those 👆🏼 regards?
 
 </details>
 
-
+## Extensions
+[1. Session scheduling with Telegram](https://github.com/Tkd-Alex/Telegram-InstaPy-Scheduling)
 
 ## Extra Information
+
+### Custom chromedriver version
+By default, InstaPy downloads the latest version of the chromedriver.
+Unless you need a specific version of the chromdriver, you're ready to go.
+
+You have two options to install the version you want to have:
+1. You can get the desired version of chromedriver binary by installing the same version of instapy-chromedriver package by pip [per their python version].
+1. You can manually download and put the chromedriver binary into the assets folder [at their workspace] and then InstaPy will always use it. You can find the specific versions of **chromedriver** for your OS [here](https://sites.google.com/a/chromium.org/chromedriver/downloads). Extract the .**zip** file and put it into the **assets** folder [at your **workspace** folder].
 
 ### Using one of the templates
 
