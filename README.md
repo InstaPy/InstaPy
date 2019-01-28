@@ -24,6 +24,8 @@ pip install instapy
 ```
 That's it 🍫☕
 
+<br />
+
 Now all you need is a **quickstart** script to start _InstaPy_ 🥳  
 
 <details>
@@ -82,7 +84,7 @@ pip uninstall instapy
 	<img alt="paypalme" src="http://codeinpython.com/tutorials/wp-content/uploads/2017/09/PayPal-ME-300x300.jpg.png" width=100/>
 </a>
 
-**Help build InstaPy?**      
+**Help build InstaPy!**      
 Head over to https://github.com/timgrossmann/InstaPy/wiki/How-to-Contribute to find out how you can help.
 
 ---
@@ -199,9 +201,9 @@ Worths to note that, this installation option does not require _Git_ to be insta
 
 <details>
   <summary>
-    <h5>
+    <b>
       Learn why <code>-I</code> flag is required 🔎
-    </h5>
+    </b>
   </summary>
 
 Since _InstaPy_'s version is not yet being incremented which is the reason you're installing it from a _zipball_, then if you don't use the `-I` flag, **pip** will complain saying,  
@@ -212,6 +214,7 @@ That's why you will be able to install the actual state of the repo using the `-
 
 </details>
 
+<br />
 
 >**PRO** Tip:  
   Read the section - [How to avoid _python_ & **pip** confusion](#how-to-avoid-python--pip-confusion) 😄
@@ -244,9 +247,9 @@ python setup.py install
 
 <details>
   <summary>
-    <h5>
+    <b>
       Guide for <b>Pythons</b> >= 3.6 🔎
-    </h5>
+    </b>
   </summary>
 
 ##### Mac/Linux
@@ -319,9 +322,9 @@ If you're not _familiar_ with **venv**, please [read about it here](https://docs
 
 <details>
   <summary>
-    <h5>
+    <b>
       Guide for <b>Pythons</b> < 3.6 🔎
-    </h5>
+    </b>
   </summary>
 
 **1**. Make a virtual environment
@@ -2261,9 +2264,9 @@ Then, your _InstaPy_ **workspace** folder will be - `C:\\Users\\Cherry\\InstaPy\
 
 <details>
   <summary>
-    <h4>
+    <b>
       What will be stored at the <b>workspace</b> folder? 🔍
-    </h4>
+    </b>
   </summary>
 
 Anything that is _user's **data file**_ will be stored in there.  
@@ -2289,9 +2292,9 @@ session = InstaPy(...)
 
 <details>
   <summary>
-    <h4>
+    <b>
       Rules 🔎
-    </h4>
+    </b>
   </summary>
 
 **1**-) You have to set your custom **workspace** folder before instantiates _InstaPy_.  
@@ -2361,9 +2364,9 @@ session = InstaPy(...)
 
 <details>
   <summary>
-    <h4>
+    <b>
       Restrictions 🔎
-    </h4>
+    </b>
   </summary>
 
 **a**-) You cannot set a custom **workspace** folder after _InstaPy_ has been instantiated;  
