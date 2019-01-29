@@ -55,7 +55,7 @@ NOTE: _If you add an empty file named ssh to the boot directory, ssh will be ena
 4. ```python3 -m venv /home/pi/Projects/venv37```
 5. ```git clone https://github.com/timgrossmann/InstaPy.git```
 6. ```cd InstaPy```
-7. ```python -m pip install --user .```
+7. ```python3 -m pip install --user .```
 
 NOTE: _the last step (7.) takes quite a while!_
 
