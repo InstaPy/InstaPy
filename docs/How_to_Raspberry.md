@@ -1,4 +1,4 @@
-# Tutorial for InstaPy with Python 3.7 and venv
+# Tutorial for Raspberry Pi3b: Install InstaPy with Python 3.7 and venv
 
 ## Basic Raspbian Configuration
 NOTE: _If you add an empty file named ssh to the boot directory, ssh will be enabled when you first start your RPi (more info on the official website - section 3 - [here](https://www.raspberrypi.org/documentation/remote-access/ssh/)). If you do this, you can connect your RPi via ethernet, ssh in (once you have your ip) and skip right to the update step below (step 7). If you do not want to do this, follow the initial setup instructions to connect peripherals below._
@@ -6,8 +6,8 @@ NOTE: _If you add an empty file named ssh to the boot directory, ssh will be ena
 1. connect rpi3 to monitor via HDMI
 2. connect internet via cat5
 3. insert usb for wireless keyboard and mouse (if using)
-4. plug in rpi3 with sd card preloaded with NOOBs
-5. select country & install Raspbian
+4. plug in rpi3 with sd card installed with Raspbian Stretch with desktop
+5. select country & configure Raspbian
 6. open terminal --> ```sudo raspi-config``` -->interfacing options --> SSH -->enable (allows ssh connection from MacBook); then navigate to VNC --> enable (allows GUI access)
 7. ```sudo apt-get update && sudo apt-get upgrade```
 
@@ -53,9 +53,10 @@ NOTE: _If you add an empty file named ssh to the boot directory, ssh will be ena
 2. ```mkdir Projects```
 3. ```cd Projects```
 4. ```python3 -m venv /home/pi/Projects/venv37```
-5. ```git clone https://github.com/timgrossmann/InstaPy.git```
-6. ```cd InstaPy```
-7. ```python -m pip install --user .```
+5. ```source venv37/bin/activate```
+6. ```git clone https://github.com/timgrossmann/InstaPy.git```
+7. ```cd InstaPy```
+8. ```python3 -m pip install --user .```
 
 NOTE: _the last step (7.) takes quite a while!_
 
@@ -64,11 +65,11 @@ NOTE: _the last step (7.) takes quite a while!_
 
 _Navigate to the assets folder:_
 
-8. ```wget https://github.com/electron/electron/releases/download/v3.0.0-beta.5/chromedriver-v3.0.0-beta.5-linux-armv7l.zip```
-9. ```unzip chromedriver-v3.0.0-beta.5-linux-armv7l.zip```
-10. ```chmod 755 chromedriver```
-11. ```chmod +x chromedriver```
-12. ```sudo apt-get remove chromium```
+9. ```wget https://github.com/electron/electron/releases/download/v3.0.0-beta.5/chromedriver-v3.0.0-beta.5-linux-armv7l.zip```
+10. ```unzip chromedriver-v3.0.0-beta.5-linux-armv7l.zip```
+11. ```chmod 755 chromedriver```
+12. ```chmod +x chromedriver```
+13. ```sudo apt-get remove chromium```
 
 
 ## For Firefox
