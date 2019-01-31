@@ -1,4 +1,4 @@
-# Tutorial for InstaPy with Python 3.7 and venv
+# Tutorial for Raspberry Pi3b: Install InstaPy with Python 3.7 and venv
 
 ## Basic Raspbian Configuration
 NOTE: _If you add an empty file named ssh to the boot directory, ssh will be enabled when you first start your RPi (more info on the official website - section 3 - [here](https://www.raspberrypi.org/documentation/remote-access/ssh/)). If you do this, you can connect your RPi via ethernet, ssh in (once you have your ip) and skip right to the update step below (step 7). If you do not want to do this, follow the initial setup instructions to connect peripherals below._
@@ -6,8 +6,8 @@ NOTE: _If you add an empty file named ssh to the boot directory, ssh will be ena
 1. connect rpi3 to monitor via HDMI
 2. connect internet via cat5
 3. insert usb for wireless keyboard and mouse (if using)
-4. plug in rpi3 with sd card preloaded with NOOBs
-5. select country & install Raspbian
+4. plug in rpi3 with sd card installed with Raspbian Stretch with desktop
+5. select country & configure Raspbian
 6. open terminal --> ```sudo raspi-config``` -->interfacing options --> SSH -->enable (allows ssh connection from MacBook); then navigate to VNC --> enable (allows GUI access)
 7. ```sudo apt-get update && sudo apt-get upgrade```
 
