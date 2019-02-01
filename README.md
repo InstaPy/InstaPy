@@ -2146,8 +2146,9 @@ That's it.
 
 
 ### How not to be banned
-- Built-in delays prevent your account from getting banned. (Just make sure you don't like 1000s of post/day)
-- Use the Quota Supervisor feature to set some fixed limits for the bot for maximum safety.
+Built-in delays prevent your account from getting banned. 
+However, excessive use of this tool may result in action blocks or permanent bans.
+Use the Quota Supervisor feature to set some fixed limits for the bot for maximum safety.
 
 
 ### Chrome Browser
