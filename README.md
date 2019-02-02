@@ -2734,9 +2734,9 @@ python quickstart.py --use-firefox
 
 <details>
 <summary>
-  <h4>
+  <b>
     Advanced 🔎
-  </h4>
+  </b>
 </summary> 
 
 You can **pass** and then **parse** the **_custom_** CLI arguments you like right inside the **quickstart** script.  
