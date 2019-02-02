@@ -18,6 +18,7 @@ from contextlib import contextmanager
 from tempfile import gettempdir
 import emoji
 from emoji.unicode_codes import UNICODE_EMOJI
+import argparse
 
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as ec
@@ -1997,3 +1998,69 @@ def close_dialog_box(browser):
 
     except NoSuchElementException as exc:
         pass
+
+
+def parse_cli_args():
+    """ Parse arguments passed by command line interface """
+
+    parser = argparse.ArgumentParser(
+        prog="InstaPy",
+        description="Parse InstaPy constructor's arguments",
+        epilog="And that's how you'd pass arguments by CLI..",
+        conflict_handler='resolve')
+
+    """ Flags that REQUIRE a value once added
+    ```python quickstart.py --username abc```
+    """
+    parser.add_argument(
+        "-u", "--username", help="Username", type=str, metavar="abc")
+    parser.add_argument(
+        "-p", "--password", help="Password", type=str, metavar="123")
+    parser.add_argument(
+        "-pd", "--page-delay", help="Implicit wait", type=int, metavar="25")
+    parser.add_argument(
+        "-pa", "--proxy-address", help="Proxy address",
+        type=str, metavar="192.168.1.1")
+    parser.add_argument(
+        "-pp", "--proxy-port", help="Proxy port", type=str, metavar="8080")
+
+    """ Auto-booleans: adding these flags ENABLE themselves automatically
+    ```python quickstart.py --use-firefox```
+    """
+    parser.add_argument(
+        "-uf", "--use-firefox", help="Use Firefox",
+        action="store_true", default=None)
+    parser.add_argument(
+        "-hb", "--headless-browser", help="Headless browser",
+        action="store_true", default=None)
+    parser.add_argument(
+        "-dil", "--disable-image-load", help="Disable image load",
+        action="store_true", default=None)
+    parser.add_argument(
+        "-bsa", "--bypass-suspicious-attempt",
+        help="Bypass suspicious attempt", action="store_true", default=None)
+    parser.add_argument(
+        "-bwm", "--bypass-with-mobile", help="Bypass with mobile phone",
+        action="store_true", default=None)
+
+    """ Style below can convert strings into booleans:
+    ```parser.add_argument("--is-debug",
+                           default=False,
+                           type=lambda x: (str(x).capitalize() == "True"))```
+
+    So that, you can pass bool values explicitly from CLI,
+    ```python quickstart.py --is-debug True```
+
+    NOTE: This style is the easiest of it and currently not being used.
+    """
+
+    args, args_unknown = parser.parse_known_args()
+    """ Once added custom arguments if you use a reserved name of core flags
+    and don't parse it, e.g.,
+    `-ufa` will misbehave cos it has `-uf` reserved flag in it.
+
+    But if you parse it, it's okay.
+    """
+
+    return args
+
