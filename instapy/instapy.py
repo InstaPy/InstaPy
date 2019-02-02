@@ -46,6 +46,7 @@ from .util import highlight_print
 from .util import dump_record_activity
 from .util import truncate_float
 from .util import save_account_progress
+from .util import parse_cli_args
 from .unfollow_util import get_given_user_followers
 from .unfollow_util import get_given_user_following
 from .unfollow_util import unfollow
@@ -97,6 +98,19 @@ class InstaPy:
                  bypass_suspicious_attempt=False,
                  bypass_with_mobile=False,
                  multi_logs=True):
+
+        cli_args = parse_cli_args()
+        username = cli_args.username or username
+        password = cli_args.password or password
+        use_firefox = cli_args.use_firefox or use_firefox
+        page_delay = cli_args.page_delay or page_delay
+        headless_browser = cli_args.headless_browser or headless_browser
+        proxy_address = cli_args.proxy_address or proxy_address
+        proxy_port = cli_args.proxy_port or proxy_port
+        disable_image_load = cli_args.disable_image_load or disable_image_load
+        bypass_suspicious_attempt = (
+            cli_args.bypass_suspicious_attempt or bypass_suspicious_attempt)
+        bypass_with_mobile = cli_args.bypass_with_mobile or bypass_with_mobile
 
         Settings.InstaPy_is_running = True
         # workspace must be ready before anything
