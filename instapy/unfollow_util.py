@@ -80,7 +80,9 @@ def set_automated_followed_pool(username, unfollow_after, logger, logfolder):
                 automatedFollowedPool["all"].update({user: {"id": user_id, 'time_stamp': time_stamp}})
                 # get eligible list
                 if unfollow_after is not None and time_stamp != None:
-                    time_diff = get_epoch_time_diff(time_stamp)
+                    time_diff = get_epoch_time_diff(time_stamp, logger)
+                    if time_diff is None:
+                        continue
 
                     if time_diff > unfollow_after:
                         automatedFollowedPool["eligible"].update(
@@ -390,7 +392,9 @@ def unfollow(browser,
                                          person in automatedFollowedPool["all"].keys() else False)
                             if time_stamp not in [False, None]:
                                 try:
-                                    time_diff = get_epoch_time_diff(time_stamp)
+                                    time_diff = get_epoch_time_diff(time_stamp, logger)
+                                    if time_diff is None:
+                                        continue
 
                                     if time_diff < delay_follow_back:  # N days in seconds
                                         refresh_follow_time_in_pool(username,
