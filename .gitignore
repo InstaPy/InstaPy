@@ -114,3 +114,6 @@ Pipfile
 
 # Instances
 z_*
+
+# Custom User Settings
+settings.json

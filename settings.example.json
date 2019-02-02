@@ -1,0 +1,9 @@
+{
+  "credentials": {
+    "username": "",
+    "password": ""
+  },
+  "clarifai": {
+    "api_key": ""
+  }
+}
