@@ -204,13 +204,13 @@ class InstaPy:
         self.clarifai_check_video = False
         self.clarifai_proxy = None
 
-        self.potency_ratio = 1.3466
-        self.delimit_by_numbers = True
+        self.potency_ratio = None   # 1.3466
+        self.delimit_by_numbers = None
 
-        self.max_followers = 90000
-        self.max_following = 66834
-        self.min_followers = 35
-        self.min_following = 27
+        self.max_followers = None   # 90000
+        self.max_following = None   # 66834
+        self.min_followers = None   # 35
+        self.min_following = None   # 27
 
         self.delimit_liking = False
         self.liking_approved = True
@@ -1087,6 +1087,7 @@ class InstaPy:
                                 min_following=None):
         """Sets the potency ratio and limits to the provide an efficient
         activity between the targeted masses"""
+
         self.potency_ratio = potency_ratio if enabled is True else None
         self.delimit_by_numbers = delimit_by_numbers if enabled is True else \
             None
