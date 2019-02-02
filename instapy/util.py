@@ -10,6 +10,7 @@ import os
 import sys
 from sys import exit as clean_exit
 from platform import system
+from platform import python_version
 from subprocess import call
 import csv
 import sqlite3
@@ -18,7 +19,7 @@ from contextlib import contextmanager
 from tempfile import gettempdir
 import emoji
 from emoji.unicode_codes import UNICODE_EMOJI
-import argparse
+from argparse import ArgumentParser
 
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as ec
@@ -2003,11 +2004,15 @@ def close_dialog_box(browser):
 def parse_cli_args():
     """ Parse arguments passed by command line interface """
 
-    parser = argparse.ArgumentParser(
-        prog="InstaPy",
-        description="Parse InstaPy constructor's arguments",
-        epilog="And that's how you'd pass arguments by CLI..",
-        conflict_handler='resolve')
+    AP_kwargs = dict(prog="InstaPy",
+                     description="Parse InstaPy constructor's arguments",
+                     epilog="And that's how you'd pass arguments by CLI..",
+                     conflict_handler="resolve")
+    if python_version() < "3.5":
+        parser = CustomizedArgumentParser(**AP_kwargs)
+    else:
+        AP_kwargs.update(allow_abbrev=False)
+        parser = ArgumentParser(**AP_kwargs)
 
     """ Flags that REQUIRE a value once added
     ```python quickstart.py --username abc```
@@ -2063,4 +2068,28 @@ def parse_cli_args():
     """
 
     return args
+
+
+class CustomizedArgumentParser(ArgumentParser):
+    """
+     Subclass ArgumentParser in order to turn off
+    the abbreviation matching on older pythons.
+
+    `allow_abbrev` parameter was added by Python 3.5 to do it.
+    Thanks to @paul.j3 - https://bugs.python.org/msg204678 for this solution.
+    """
+
+    def _get_option_tuples(self, option_string):
+        """
+         Default of this method searches through all possible prefixes
+        of the option string and all actions in the parser for possible
+        interpretations.
+
+        To view the original source of this method, running,
+        ```
+        import inspect; import argparse; inspect.getsourcefile(argparse)
+        ```
+        will give the location of the 'argparse.py' file that have this method.
+        """
+        return []
 
