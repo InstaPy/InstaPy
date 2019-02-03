@@ -1060,39 +1060,12 @@ def load_followers_data(username, compare_by, compare_track, logger,
     structured_entries = {}
 
     for entry in sorted_filenames:
-        entry_year = entry[-4:]
-        entry_month = entry[-7:5]
-        entry_day = entry[:2]
+        entry_day, entry_month, entry_year = entry.split('-')
 
-        if not structured_entries:
-            structured_entries = {
-                "years": {entry_year: {"months": {entry_month: {
-                    "days": {entry_day: {"entries": [entry]}}}}}}}
-            continue
-
-        existing_years = list(
-            year for year, month in structured_entries["years"].items())
-        existing_months = list(month for month, day in
-                               structured_entries["years"][entry_year][
-                                   "months"].items())
-        existing_days = list(
-            day for day, entry in
-            structured_entries["years"][entry_year]["months"][entry_month][
-                "days"].items())
-
-        if entry_year not in existing_years:
-            structured_entries["years"][entry_year] = {
-                "months": {
-                    entry_month: {"days": {entry_day: {"entries": [entry]}}}}}
-        elif entry_month not in existing_months:
-            structured_entries["years"][entry_year]["months"][entry_month] = {
-                "days": {entry_day: {"entries": [entry]}}}
-        elif entry_day not in existing_days:
-            structured_entries["years"][entry_year]["months"][entry_month][
-                "days"][entry_day] = {"entries": [entry]}
-        else:
-            structured_entries["years"][entry_year]["months"][entry_month][
-                "days"][entry_day]["entries"].append(entry)
+        structured_entries.setdefault("years", {}).setdefault(entry_year, {}).\
+            setdefault("months", {}).setdefault(entry_month, {}).\
+            setdefault("days", {}).setdefault(entry_day, {}).\
+            setdefault("entries", []).append(entry)
 
     if compare_by == "latest":
         selected_filename = sorted_filenames[-1]
