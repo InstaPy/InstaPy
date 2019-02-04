@@ -33,14 +33,8 @@ $ sudo rm google-chrome-stable_current_amd64.deb
 ### InstaPy
 
 ```bash
-$ git clone https://github.com/timgrossmann/InstaPy.git
-$ latest_version=$(wget https://chromedriver.storage.googleapis.com/LATEST_RELEASE -O -)
-$ wget https://chromedriver.storage.googleapis.com/${latest_version}/chromedriver_linux64.zip
-$ unzip chromedriver_linux64
-$ mv chromedriver InstaPy/assets/chromedriver
-$ chmod +x InstaPy/assets/chromedriver
-$ chmod 755 InstaPy/assets/chromedriver
-$ rm chromedriver_linux64.zip
-$ cd InstaPy
-$ pip install .
+$ pip install instapy
 ```
+
+> If you see an error telling you that something can't be uninstalled due to it being part of distutils, simply do  
+`pip install instapy --ignore-installed`
