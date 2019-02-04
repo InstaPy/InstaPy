@@ -1,29 +1,48 @@
-""" Global variables """
-import os
-from sys import platform as p_os
+"""
+Global variables
 
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-OS_ENV = "windows" if p_os == "win32" else "osx" if p_os == "darwin" else \
-    "linux"
+By design, import no any other local module inside this file.
+Vice verse, it'd produce circular dependent imports.
+"""
+
+from sys import platform
+from os import environ as environmental_variables
+from os.path import join as join_path
+from os.path import exists as path_exists
+
+
+WORKSPACE = {"name": "InstaPy",
+             "path": environmental_variables.get("INSTAPY_WORKSPACE")}
+OS_ENV = ("windows" if platform == "win32"
+          else "osx" if platform == "darwin"
+          else "linux")
+
+
+def localize_path(*args):
+    """ Join given locations as an OS path """
+
+    if WORKSPACE["path"]:
+        path = join_path(WORKSPACE["path"], *args)
+        return path
+
+    else:
+        return None
 
 
 class Settings:
     """ Globally accessible settings throughout whole project """
-    log_location = os.path.join(BASE_DIR, 'logs')
-    database_location = os.path.join(BASE_DIR, 'db', 'instapy.db')
 
-    # chromedriver-specific settings
-    chromedriver_min_version = 2.36
-
+    # locations
+    log_location = localize_path("logs")
+    database_location = localize_path("db", "instapy.db")
     specific_chromedriver = "chromedriver_{}".format(OS_ENV)
-    chromedriver_location = os.path.join(BASE_DIR,
-                                         'assets',
-                                         specific_chromedriver)
+    chromedriver_location = localize_path("assets", specific_chromedriver)
+    if (not chromedriver_location
+            or not path_exists(chromedriver_location)):
+        chromedriver_location = localize_path("assets", "chromedriver")
 
-    if not os.path.exists(chromedriver_location):
-        chromedriver_location = os.path.join(BASE_DIR,
-                                             'assets',
-                                             'chromedriver')
+    # minimum supported version of chromedriver
+    chromedriver_min_version = 2.36
 
     # set a logger cache outside the InstaPy object to avoid
     # re-instantiation issues
@@ -53,6 +72,9 @@ class Settings:
     # true, chrome if false.
     use_firefox = None
 
+    # state of instantiation of InstaPy
+    InstaPy_is_running = False
+
 
 class Storage:
     """ Globally accessible standalone storage """
@@ -70,13 +92,3 @@ class Selectors:
         "//h1[text()='Likes']/../../following-sibling::div/div")
 
     likes_dialog_close_xpath = "//span[contains(@aria-label, 'Close')]"
-
-
-
-
-
-
-
-
-
-

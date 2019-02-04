@@ -3,6 +3,21 @@ The **goal** of this file is explaining to the users of our project the notable 
 
 _The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html)_.
 
+
+## [0.1.1] - 2019-02-04
+### Added
+- **Workspace** folders; Now user's data files will be stored at the **workspace** folder.  
+- _InstaPy_ has been published to _PyPI_; Now, can install/manage it by **pip** as **instapy** package.  
+- _Github_ releases has been initiated; Will be released in-parallel with _PyPI_ deployments.  
+- Add Universal Testing Framework- **tox** with **pytest** & **flake8**.  
+- Upgrade _Travis CI_ usage (_**tox** as build script_).  
+- Send messages to _Discord_ #**status** channel about jobs' build states from _Travis CI_.
+- Add instapy-chromedriver package if no chromedriver is in path.
+- Add _argparsing_ feature. Users are now able to provide credentials (_and more_) through CLI args.
+- Turn off verification based on _relationship bounds_ **by default**, completely (_see #757815f commit_).
+- Simplify the default **quickstart** script much more.
+
+
 ## [Unreleased] - 2019-01-27
 ### Changed
 - Add track post/profile
