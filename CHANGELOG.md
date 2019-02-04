@@ -12,8 +12,10 @@ _The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 - Add Universal Testing Framework- **tox** with **pytest** & **flake8**.  
 - Upgrade _Travis CI_ usage (_**tox** as build script_).  
 - Send messages to _Discord_ #**status** channel about jobs' build states from _Travis CI_.
-- Add instapy-chromedriver package if no chromedriver is in path
-- Add argparse feature. Users are now able to provide credentials (and more) through CLI args
+- Add instapy-chromedriver package if no chromedriver is in path.
+- Add _argparsing_ feature. Users are now able to provide credentials (_and more_) through CLI args.
+- Turn off verification based on _relationship bounds_ **by default**, completely (_see #757815f commit_).
+- Simplify the default **quickstart** script much more.
 
 
 ## [Unreleased] - 2019-01-27
