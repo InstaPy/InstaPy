@@ -10,6 +10,7 @@ import os
 import sys
 from sys import exit as clean_exit
 from platform import system
+from platform import python_version
 from subprocess import call
 import csv
 import sqlite3
@@ -18,6 +19,7 @@ from contextlib import contextmanager
 from tempfile import gettempdir
 import emoji
 from emoji.unicode_codes import UNICODE_EMOJI
+from argparse import ArgumentParser
 
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as ec
@@ -1997,3 +1999,97 @@ def close_dialog_box(browser):
 
     except NoSuchElementException as exc:
         pass
+
+
+def parse_cli_args():
+    """ Parse arguments passed by command line interface """
+
+    AP_kwargs = dict(prog="InstaPy",
+                     description="Parse InstaPy constructor's arguments",
+                     epilog="And that's how you'd pass arguments by CLI..",
+                     conflict_handler="resolve")
+    if python_version() < "3.5":
+        parser = CustomizedArgumentParser(**AP_kwargs)
+    else:
+        AP_kwargs.update(allow_abbrev=False)
+        parser = ArgumentParser(**AP_kwargs)
+
+    """ Flags that REQUIRE a value once added
+    ```python quickstart.py --username abc```
+    """
+    parser.add_argument(
+        "-u", "--username", help="Username", type=str, metavar="abc")
+    parser.add_argument(
+        "-p", "--password", help="Password", type=str, metavar="123")
+    parser.add_argument(
+        "-pd", "--page-delay", help="Implicit wait", type=int, metavar="25")
+    parser.add_argument(
+        "-pa", "--proxy-address", help="Proxy address",
+        type=str, metavar="192.168.1.1")
+    parser.add_argument(
+        "-pp", "--proxy-port", help="Proxy port", type=str, metavar="8080")
+
+    """ Auto-booleans: adding these flags ENABLE themselves automatically
+    ```python quickstart.py --use-firefox```
+    """
+    parser.add_argument(
+        "-uf", "--use-firefox", help="Use Firefox",
+        action="store_true", default=None)
+    parser.add_argument(
+        "-hb", "--headless-browser", help="Headless browser",
+        action="store_true", default=None)
+    parser.add_argument(
+        "-dil", "--disable-image-load", help="Disable image load",
+        action="store_true", default=None)
+    parser.add_argument(
+        "-bsa", "--bypass-suspicious-attempt",
+        help="Bypass suspicious attempt", action="store_true", default=None)
+    parser.add_argument(
+        "-bwm", "--bypass-with-mobile", help="Bypass with mobile phone",
+        action="store_true", default=None)
+
+    """ Style below can convert strings into booleans:
+    ```parser.add_argument("--is-debug",
+                           default=False,
+                           type=lambda x: (str(x).capitalize() == "True"))```
+
+    So that, you can pass bool values explicitly from CLI,
+    ```python quickstart.py --is-debug True```
+
+    NOTE: This style is the easiest of it and currently not being used.
+    """
+
+    args, args_unknown = parser.parse_known_args()
+    """ Once added custom arguments if you use a reserved name of core flags
+    and don't parse it, e.g.,
+    `-ufa` will misbehave cos it has `-uf` reserved flag in it.
+
+    But if you parse it, it's okay.
+    """
+
+    return args
+
+
+class CustomizedArgumentParser(ArgumentParser):
+    """
+     Subclass ArgumentParser in order to turn off
+    the abbreviation matching on older pythons.
+
+    `allow_abbrev` parameter was added by Python 3.5 to do it.
+    Thanks to @paul.j3 - https://bugs.python.org/msg204678 for this solution.
+    """
+
+    def _get_option_tuples(self, option_string):
+        """
+         Default of this method searches through all possible prefixes
+        of the option string and all actions in the parser for possible
+        interpretations.
+
+        To view the original source of this method, running,
+        ```
+        import inspect; import argparse; inspect.getsourcefile(argparse)
+        ```
+        will give the location of the 'argparse.py' file that have this method.
+        """
+        return []
+

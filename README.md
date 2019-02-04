@@ -15,7 +15,7 @@ Implemented in Python using the Selenium module.
 **Have an issue?**
 If you should encounter any issue, please first [search for similar issues](https://github.com/timgrossmann/InstaPy/issues) and only if you can't find any, create a new issue or use the [discord channel](https://discord.gg/FDETsht) for help.
 
-#### Newsletter: [SignUp for the Newsletter here!](http://eepurl.com/cZbV_v)
+#### Newsletter: [Sign Up for the Newsletter here!](http://eepurl.com/cZbV_v)
 
 
 ## **Installation**
@@ -36,50 +36,67 @@ Now all you need is a **quickstart** script to start _InstaPy_ 🥳
 
 <br /> 
 
-You can also copy and paste this basic quickstart into a new text file and save it as `.py` file.
+You can also copy and paste this basic **quickstart** into a new text file and save it as `.py` file.
 ```python		
 """ Quickstart script for InstaPy usage """		
 # imports		
 from instapy import InstaPy		
 from instapy import smart_run		
 	
-# login credentials		
-insta_username = ''		
-insta_password = ''		
-	
 # get an InstaPy session!		
-# set headless_browser=True to run InstaPy in the background		
-session = InstaPy(username=insta_username,		
-                  password=insta_password,		
-                  headless_browser=False)		
+session = InstaPy()		
 	
 with smart_run(session):		
     """ Activity flow """		
     # general settings		
-    session.set_relationship_bounds(enabled=True,		
-                                    delimit_by_numbers=True,		
-                                    max_followers=4590,		
-                                    min_followers=45,		
-                                    min_following=77)		
-	
     session.set_dont_include(["friend1", "friend2", "friend3"])		
-    session.set_dont_like(["pizza", "#store"])		
 	
     # activity		
     session.like_by_tags(["natgeo"], amount=10)		
- ```
+```
 
 </details>
 
 <br />
 
-After downloading a **quickstart** script to your computer, you can run it in the command prompt as:
+🛰 As you've downloaded a **quickstart** script into your computer, go ahead and run it in the command prompt as:
 ```elm
-python quickstart.py
+python quickstart.py --username abc --password 123
+```
+>**PRO**:  
+Read more about passing arguments from the command line interface in the section - [Pass arguments by CLI](#pass-arguments-by-cli).
+
+<br />
+
+##### 🚁 You can provide _username_ & _password_ inside the **quickstart** script, too!
+```python
+# inside quickstart script
+
+session = InstaPy(username="abc",    
+                  password="123")   
 ```
 
-> If you've used InstaPy before installing it with `pip`, you have to move your old data to the new workspace folder once.
+<br />
+
+🛸 Also, if you like to run _InstaPy_ in **background**, just enable the **headless** mode!
+```erlang
+python quickstart.py -u abc -p 123 --headless-browser
+```
+Or do it right inside the **quickstart** script.
+```python
+# inside quickstart script
+
+session = InstaPy(username="abc",    
+                  password="123",
+                  headless_browser=True)  
+```
+_Until you enable the **headless** mode, InstaPy will run in the **graphical** mode where you can watch the ongoing automation in your web browser_.
+
+
+> If you've used _InstaPy_ before installing it by **pip**, you have to move your _old_ data to the new **workspace** folder for once.
 [Read how to do this here](#migrating-your-data-to-the-workspace-folder).
+
+<br />
 
 #### **Update**
 ```elm
@@ -98,6 +115,8 @@ pip install instapy==0.1.1
 pip uninstall instapy
 ```
 
+<br />
+
 --- 
 
 ### Social
@@ -107,18 +126,18 @@ pip uninstall instapy
 
 ### Do you need help ?
 
-<a href="https://discord.gg/FDETsht"><img alt="Discord channel" src="https://camo.githubusercontent.com/e4a739df27356a78e9cae2e2dda642d118567e7c/68747470733a2f2f737465616d63646e2d612e616b616d616968642e6e65742f737465616d636f6d6d756e6974792f7075626c69632f696d616765732f636c616e732f32373039303534312f386464356339303766326130656563623733646336613437373666633961323538373865626364642e706e67" width=250/></a>
+<a href="https://discord.gg/FDETsht">
+  <img hspace="3" alt="Discord channel" src="https://camo.githubusercontent.com/e4a739df27356a78e9cae2e2dda642d118567e7c/68747470733a2f2f737465616d63646e2d612e616b616d616968642e6e65742f737465616d636f6d6d756e6974792f7075626c69632f696d616765732f636c616e732f32373039303534312f386464356339303766326130656563623733646336613437373666633961323538373865626364642e706e67" width=214/>
+</a>
 
 ### Do you want to support us ?
 
 <a href="https://opencollective.com/instapy/donate" target="_blank">
-  <img src="https://opencollective.com/instapy/contribute/button@2x.png?color=blue" width=300 />
+  <img align="left" hspace="10" src="https://opencollective.com/instapy/contribute/button@2x.png?color=blue" width=300 />
 </a>
 
-<br />
-
 <a href="https://www.paypal.me/supportInstaPy">
-	<img alt="paypalme" src="http://codeinpython.com/tutorials/wp-content/uploads/2017/09/PayPal-ME-300x300.jpg.png" width=100/>
+  <img hspace="14" alt="paypalme" src="http://codeinpython.com/tutorials/wp-content/uploads/2017/09/PayPal-ME-300x300.jpg.png" width=100 />
 </a>
 
 **Help build InstaPy!**      
@@ -222,10 +241,11 @@ Head over to https://github.com/timgrossmann/InstaPy/wiki/How-to-Contribute to f
   * [Changing DB or Chromedriver locations](#changing-db-or-chromedriver-locations)
   * [Custom action delays](#custom-action-delays)
   * [How to avoid _python_ & **pip** confusion](#how-to-avoid-python--pip-confusion)
+  * [Pass arguments by CLI](#pass-arguments-by-cli)
 
 
 ### Advanced Installation
-#### Install or update to the unreleased version  
+#### 🛠 Install or update to the unreleased version  
 For example, there is a **bug** and its **fix** is _merged to the repo_ but a newer version of _InstaPy_ [_containing_ that **fix**] is not yet released to _PyPI_ to be able to be _installed_ or _updated_ by **pip**.  
 
 Then, you can do this to install the **actual state** of the _repo_ 😋
@@ -256,8 +276,10 @@ That's why you will be able to install the actual state of the repo using the `-
 >**PRO** Tip:  
   Read the section - [How to avoid _python_ & **pip** confusion](#how-to-avoid-python--pip-confusion) 😄
 
+<br />
 
-#### Install manually and manage using advanced git commands
+#### ⚗ Install manually and manage using advanced git commands
+###### For those who want to tweak or enhance _InstaPy_.
 
 **1**. Clone _InstaPy_ repository into your computer
 ```erlang
@@ -271,16 +293,32 @@ cd InstaPy
 
 **3**. Install the _local_ **instapy** package
 ```erlang
-pip install .
+pip install -e .
 ```
+<details>
+  <summary>
+    <b>
+      Learn why <code>-e</code> flag is required 🔎
+    </b>
+  </summary>
+
+Since you're gonna install the local version of _InstaPy_ you'll probably change its code per your need which is the reason you do an advanced installation from a _Git_ source, then if you don't use the `-e` flag, you'll have to install that local package by **pip** every time after making a change.  
+
+But fortunately, `-e` flag comes to help;  
+`-e` means _editable_ install, so that after editing files you don't need to re-install the package again since it will always refer to the edited files cos with the _editable_ install, it just **links** the project's location to **pip**'s install location _rather than_ adding them to **pip** location separately..
+<br />
+</details>
 or
+
 ```erlang
 python setup.py install
 ```
 
-#### Install into a Virtual Environment
+<br />
 
-###### The best way to install _InstaPy_ is to create a virtual environment and install _InstaPy_ there, then, run it from a separate file
+#### ⛑ Install into a Virtual Environment
+
+###### The best way to install _InstaPy_ is to create a virtual environment and install _InstaPy_ there, then, run it from a separate file.
 
 <details>
   <summary>
@@ -313,7 +351,7 @@ source venv/bin/activate
 
 **5**. Install the _local_ **instapy** package
 ```erlang
-pip install .
+pip install -e .
 ```
 
 
@@ -342,7 +380,7 @@ venv\Scripts\activate.bat
 
 **5**. Install the _local_ **instapy** package
 ```erlang
-pip install .
+pip install -e .
 ```
 
 
@@ -393,7 +431,7 @@ In essence,
 
 </details>
 
-
+<br />
 
 ## InstaPy Available Features
 
@@ -2504,7 +2542,7 @@ To do this simply pass the `disable_image_load=True` parameter in the InstaPy co
 session = InstaPy(username=insta_username,
                   password=insta_password,
                   headless_browser=False,
-		  disable_image_load=True,
+		              disable_image_load=True,
                   multi_logs=True)
 ```
 
@@ -2621,6 +2659,140 @@ python -m pip show instapy
 
 Using this style, you will never have to worry about what is the correct alias of the **pip** for you specific _python_ installation and all you have to know is just the _python_'s alias you use.  
 
+
+
+### Pass arguments by CLI
+###### It is recommended to pass your credentials from command line interface rather than storing them inside quickstart scripts.  
+
+Note that, arguments passed from the CLI has higher priorities than the arguments inside a **quickstart** script.  
+E.g., let's assume you have,
+```python
+# inside quickstart script
+
+session = InstaPy(username="abc")
+```
+and you start that **quickstart** script as,
+```erlang
+python quickstart.py -u abcdef -p 12345678
+```
+Then, your _username_ will be set as `abcdef` rather than `abc`.  
+_And obviously, if you don't pass the flag, it'll try to get that argument from the **quickstart** script [if any]_.
+
+#### Currently these _flags_ are supported:
+  🚩 `-u` abc, `--username` abc
+   - Sets your username.
+
+  🚩 `-p` 123, `--password` 123
+   - Sets your password.
+
+  🚩 `-pd` 25, `--page-delay` 25
+   - Sets the implicit wait.
+
+  🚩 `-pa` 192.168.1.1, `--proxy-address` 192.168.1.1
+   - Sets the proxy address.
+
+  🚩 `-pp` 8080, `--proxy-port` 8080
+   - Sets the proxy port.
+
+  🚩 `-uf`, `--use-firefox`
+   - Enables Firefox.
+
+  🚩 `-hb`, `--headless-browser`
+   - Enables headless mode.
+
+  🚩 `-dil`, `--disable-image-load`
+   - Disables image load.
+
+  🚩 `-bsa`, `--bypass-suspicious-attempt`
+   - Bypasses suspicious attempt.
+
+  🚩 `-bwm`, `--bypass-with-mobile`
+   - Bypasses with mobile phone.
+
+To get the list of available commands, you can type,
+```erlang
+python quickstart.py -h
+# or
+python quickstart.py --help
+```
+
+#### Examples
+⚽ Let's quickly set your username and password right by CLI,   
+```erlang
+python quickstart.py -u Toto.Lin8  -p 4X27_Tibor
+# or
+python quickstart.py --username Toto.Lin8  --password 4X27_Tibor
+# or
+python quickstart.py -u "Toto.Lin8"  -p "4X27_Tibor"
+```
+
+⚽ Enable Firefox,
+```erlang
+python quickstart.py -uf
+# or
+python quickstart.py --use-firefox
+```
+
+<details>
+<summary>
+  <b>
+    Advanced 🔎
+  </b>
+</summary> 
+
+You can **pass** and then **parse** the **_custom_** CLI arguments you like right inside the **quickstart** script.  
+To do it, open up your **quickstart** script and add these lines,
+```python
+# inside quickstart script
+
+import argparse
+
+my_parser = argparse.ArgumentParser()
+# add the arguments as you like WHICH you will pass
+# e.g., here is the simplest example you can see,
+my_parser.add_argument("--my-data-files-name")
+args, args_unknown = my_parser.parse_known_args()
+
+filename = args.my_data_files_name
+
+# now you can print it
+print(filename)
+
+# or open that file
+with open(filename, 'r') as f:
+    my_data = f.read()
+```
+After adding your custom arguments to the **quickstart** script, you can now **pass** them by CLI, comfortably,
+```erlang
+python quickstart.py --my-data-files-name "C:\\Users\\Anita\\Desktop\\data_file.txt"
+```
+>**NOTE**:  
+Use **dash** in flag and parse them with **underscores**;  
+E.g., we have used the flag as **`--my-data-files-name`** and parsed it as `args.`**`my_data_files_name`** ...
+
+>**PRO**:
+See `parse_cli_args()` function [used internally] inside the **util.py** file to write & parse more advanced flags.  
+You can also import that function into your **quickstart** script and parse the **formal** flags into there to be used, as well.
+
+```python
+# inside quickstart script
+
+from instapy.util import parse_cli_args
+
+
+cli_args = parse_cli_args()
+username = cli_args.username
+
+print(username)
+```
+👆🏼👉🏼 as you will pass the _username_ like,
+```erlang
+python quickstart.py -u abc
+```
+
+</details>
+
+<br />
 
 
 ---
