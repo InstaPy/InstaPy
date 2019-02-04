@@ -3,15 +3,8 @@ The **goal** of this file is explaining to the users of our project the notable 
 
 _The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html)_.
 
-## [Unreleased] - 2019-01-27
-### Changed
-- Add track post/profile
-- Avoid prints for only one user
 
-### Fixed
-- No posts exception when scraping likes
-
-## [Unreleased] - UNKNOWN
+## [0.1.1] - UNKNOWN
 ### Added
 - **Workspace** folders; Now user's data files will be stored at the **workspace** folder.  
 - _InstaPy_ has been published to _PyPI_; Now, can install/manage it by **pip** as **instapy** package.  
@@ -20,6 +13,16 @@ _The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 - Upgrade _Travis CI_ usage (_**tox** as build script_).  
 - Send messages to _Discord_ #**status** channel about jobs' build states from _Travis CI_.
 - Add instapy-chromedriver package if no chromedriver is in path
+- Add argparse feature. Users are now able to provide credentials (and more) through CLI args
+
+
+## [Unreleased] - 2019-01-27
+### Changed
+- Add track post/profile
+- Avoid prints for only one user
+
+### Fixed
+- No posts exception when scraping likes
 
 
 ## [Unreleased] - 2019-01-22
