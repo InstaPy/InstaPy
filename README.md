@@ -141,7 +141,7 @@ pip uninstall instapy
 </a>
 
 **Help build InstaPy!**      
-Head over to https://github.com/timgrossmann/InstaPy/wiki/How-to-Contribute to find out how you can help.
+Check out this short guide on [how to start contributing!](https://github.com/InstaPy/instapy-wiki/blob/master/CONTRIBUTORS.md).
 
 ---
 
