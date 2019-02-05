@@ -1,4 +1,5 @@
 """ Module which handles the follow features like unfollowing and following """
+import time
 from datetime import datetime
 import os
 import random
@@ -26,6 +27,7 @@ from .util import reload_webpage
 from .util import click_visibly
 from .util import get_action_delay
 from .util import truncate_float
+from .util import progress_tracker
 from .print_log_writer import log_followed_pool
 from .print_log_writer import log_uncertain_unfollowed_pool
 from .print_log_writer import log_record_all_unfollowed
@@ -737,7 +739,6 @@ def get_users_through_dialog(browser,
     sc_rolled = 0
 
     # find dialog box
-    dialog_address = "//body/div[2]/div"
     dialog_address = "//body/div[2]/div/div[2]"
     dialog = browser.find_element_by_xpath(dialog_address)
 
@@ -752,6 +753,8 @@ def get_users_through_dialog(browser,
     total_list = len(buttons)
     simulated_list = []
     simulator_counter = 0
+    start_time = time.time()
+    pts_printed = False
 
     # scroll down if the generated list of user to follow is not enough to
     # follow amount set
@@ -761,16 +764,19 @@ def get_users_through_dialog(browser,
             scroll_bottom(browser, dialog, 2)
             sc_rolled += 1
             simulator_counter += 1
+            buttons = get_buttons_from_dialog(dialog, channel)
+            total_list = len(buttons)
+            progress_tracker(total_list, amount, start_time, logger)
 
-        buttons = get_buttons_from_dialog(dialog, channel)
-        total_list = len(buttons)
         abort = (before_scroll == total_list)
         if abort:
             if total_list < real_amount:
+                print('')
                 logger.info("Failed to load desired amount of users!\n")
 
         if sc_rolled > 85:  # you may want to use up to 100
             if total_list < amount:
+                print('')
                 logger.info(
                     "Too many requests sent!  attempt: {}  |  gathered "
                     "links: {}"
@@ -798,6 +804,11 @@ def get_users_through_dialog(browser,
                 quick_username = dialog_username_extractor(quick_button)
 
                 if quick_username and quick_username[0] not in simulated_list:
+                    if not pts_printed:
+                        print('\n')
+                        if total_list >= amount:
+                            pts_printed = True
+
                     logger.info("Simulated follow : {}".format(
                         len(simulated_list) + 1))
 
@@ -812,11 +823,16 @@ def get_users_through_dialog(browser,
                                                          jumps,
                                                          logger,
                                                          logfolder)
-                    print('')
+                    if ((quick_amount == 1
+                        or i != (quick_amount - 1))
+                        and (not pts_printed
+                             or not abort)):
+                        print('')
                     simulated_list.extend(quick_follow)
 
             simulator_counter = 0
 
+    print('')
     person_list = dialog_username_extractor(buttons)
 
     if randomize:
