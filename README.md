@@ -159,8 +159,6 @@ Head over to https://github.com/timgrossmann/InstaPy/wiki/How-to-Contribute to f
 
 **[How to RaspberryPi](./docs/How_to_Raspberry.md) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**
 
-**[How to Windows](./docs/How_to_Windows.md)**
-
 
 # Documentation
 
