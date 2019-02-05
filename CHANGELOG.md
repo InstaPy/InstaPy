@@ -3,9 +3,19 @@ The **goal** of this file is explaining to the users of our project the notable 
 
 _The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html)_.
 
+
+## [0.1.3] - UNKNOWN
+### Fixed
+- Fix "_Failed to load desired amount of users!_" issue.
+
+### Added
+- Add _Progress Tracker_ to `get_users_through_dialog()` function.
+
+
 ## [0.1.2] - 2019-02-04
 ### Fixed
-- Fix for scrollIntoView error
+- Fix for scrollIntoView error.
+
 
 ## [0.1.1] - 2019-02-04
 ### Added
