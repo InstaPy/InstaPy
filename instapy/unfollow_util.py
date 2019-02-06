@@ -176,7 +176,7 @@ def unfollow(browser,
              white_list,
              sleep_delay,
              jumps,
-             delay_follow_back,
+             delay_unfollow_followbackers,
              logger,
              logfolder):
     """ Unfollows the given amount of users"""
@@ -381,7 +381,7 @@ def unfollow(browser,
                                      "all"].keys() else False)
 
                     # delay unfollowing of follow-backers
-                    if delay_follow_back and customList[2] != "nonfollowers":
+                    if delay_unfollow_followbackers and customList[2] != "nonfollowers":
                         # we set the follow time in the follow pool for delay_follow_back from now
                         user_link = "https://www.instagram.com/{}/".format(person)
                         web_address_navigator(browser, user_link)
@@ -396,11 +396,11 @@ def unfollow(browser,
                                     if time_diff is None:
                                         continue
 
-                                    if time_diff < delay_follow_back:  # N days in seconds
+                                    if time_diff < delay_unfollow_followbackers:  # N days in seconds
                                         refresh_follow_time_in_pool(username,
                                                                     person,
                                                                     person_id,
-                                                                    delay_follow_back,
+                                                                    delay_unfollow_followbackers,
                                                                     logger,
                                                                     logfolder)
                                         continue
@@ -1579,11 +1579,13 @@ def get_follow_requests(browser, amount, sleep_delay, logger, logfolder):
 
 
 def refresh_follow_time_in_pool(username, person, person_id, extra_secs, logger, logfolder):
+    # set the new time to now plus extra delay
+    logtime = (datetime.now() + timedelta(seconds=extra_secs)).strftime('%Y-%m-%d %H:%M')
+
     # first we delete the user from pool
     delete_line_from_file(
         '{0}{1}_followedPool.csv'.format(logfolder, username), person, logger)
 
-    # than reset the time to now
-    logtime = (datetime.now() + timedelta(seconds=extra_secs)).strftime('%Y-%m-%d %H:%M')
+    # return the username with new timestamp
     log_followed_pool(username, person, logger, logfolder, logtime, person_id)
 
