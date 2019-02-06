@@ -98,8 +98,7 @@ class InstaPy:
                  disable_image_load=False,
                  bypass_suspicious_attempt=False,
                  bypass_with_mobile=False,
-                 multi_logs=True,
-                 delay_unfollow_followbackers=0):
+                 multi_logs=True):
 
         if nogui:
             self.display = Display(visible=0, size=(800, 600))
@@ -224,7 +223,6 @@ class InstaPy:
         self.skip_business_percentage = 100
         self.skip_no_profile_pic_percentage = 100
         self.skip_private_percentage = 100
-        self.delay_unfollow_followbackers = delay_unfollow_followbackers  # 864000 = 10 days, 0 = don't delay
         self.relationship_data = {
             username: {"all_following": [], "all_followers": []}}
 
@@ -465,7 +463,7 @@ class InstaPy:
             return self
 
         self.do_like = enabled
-        self.like_percentage = percentage
+        self.like_percentage = min(percentage,100)
 
         return self
 
@@ -3344,6 +3342,7 @@ class InstaPy:
                        allFollowing=False,
                        style="FIFO",
                        unfollow_after=None,
+                       delay_unfollow_followbackers=0,  # 864000 = 10 days, 0 = don't delay
                        sleep_delay=600):
         """Unfollows (default) 10 users from your following list"""
 
@@ -3382,7 +3381,7 @@ class InstaPy:
                                   self.white_list,
                                   sleep_delay,
                                   self.jumps,
-                                  self.delay_unfollow_followbackers,
+                                  delay_unfollow_followbackers,
                                   self.logger,
                                   self.logfolder)
             self.logger.info(
