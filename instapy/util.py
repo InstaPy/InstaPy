@@ -10,18 +10,20 @@ import os
 import sys
 from sys import exit as clean_exit
 from platform import system
+from platform import python_version
 from subprocess import call
 import csv
 import sqlite3
 import json
 from contextlib import contextmanager
+from tempfile import gettempdir
+import emoji
+from emoji.unicode_codes import UNICODE_EMOJI
+from argparse import ArgumentParser
 
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as ec
 from selenium.webdriver.common.by import By
-from tempfile import gettempdir
-import emoji
-from emoji.unicode_codes import UNICODE_EMOJI
 
 from .time_util import sleep
 from .time_util import sleep_actual
@@ -103,7 +105,8 @@ def validate_username(browser,
                       skip_business_percentage,
                       skip_business_categories,
                       dont_skip_business_categories,
-                      logger):
+                      logger,
+                      logfolder):
     """Check if we can interact with the user"""
 
     # some features may not provide `username` and in those cases we will
@@ -151,9 +154,6 @@ def validate_username(browser,
         inap_msg = "---> '{}' is in the `ignore_users` list\t~skipping " \
                    "user\n".format(username)
         return False, inap_msg
-
-    logfolder = logfolder = '{0}{1}{2}{1}'.format(
-        Settings.log_location, os.path.sep, own_username)
 
     blacklist_file = "{}blacklist.csv".format(logfolder)
     blacklist_file_exists = os.path.isfile(blacklist_file)
@@ -494,9 +494,12 @@ def get_active_users(browser, username, posts, boundary, logger):
 
     # click latest post
     try:
-        latest_post = browser.find_elements_by_xpath(
-            "//div[contains(@class, '_9AhH0')]")[0]
-        click_element(browser, latest_post)
+        latest_posts = browser.find_elements_by_xpath(
+            "//div[contains(@class, '_9AhH0')]")
+        # avoid no posts
+        if latest_posts:
+            latest_post = latest_posts[0]
+            click_element(browser, latest_post)
 
     except (NoSuchElementException, WebDriverException):
         logger.warning(
@@ -779,24 +782,26 @@ def scroll_bottom(browser, element, range_int):
 
 
 def click_element(browser, element, tryNum=0):
-    # There are three (maybe more) different ways to "click" an element/button.
-    # 1. element.click()
-    # 2. element.send_keys("\n")
-    # 3. browser.execute_script("document.getElementsByClassName('" +
-    # element.get_attribute("class") + "')[0].click()")
+    """
+    There are three (maybe more) different ways to "click" an element/button.
+    1. element.click()
+    2. element.send_keys("\n")
+    3. browser.execute_script("document.getElementsByClassName('" +
+    element.get_attribute("class") + "')[0].click()")
 
-    # I'm guessing all three have their advantages/disadvantages
-    # Before committing over this code, you MUST justify your change
-    # and potentially adding an 'if' statement that applies to your
-    # specific case. See the following issue for more details
-    # https://github.com/timgrossmann/InstaPy/issues/1232
+    I'm guessing all three have their advantages/disadvantages
+    Before committing over this code, you MUST justify your change
+    and potentially adding an 'if' statement that applies to your
+    specific case. See the following issue for more details
+    https://github.com/timgrossmann/InstaPy/issues/1232
 
-    # explaination of the following recursive function:
-    #   we will attempt to click the element given, if an error is thrown
-    #   we know something is wrong (element not in view, element doesn't
-    #   exist, ...). on each attempt try and move the screen around in
-    #   various ways. if all else fails, programmically click the button
-    #   using `execute_script` in the browser.
+    explaination of the following recursive function:
+      we will attempt to click the element given, if an error is thrown
+      we know something is wrong (element not in view, element doesn't
+      exist, ...). on each attempt try and move the screen around in
+      various ways. if all else fails, programmically click the button
+      using `execute_script` in the browser.
+      """
 
     try:
         # use Selenium's built in click function
@@ -1063,7 +1068,8 @@ def highlight_print(username=None, message=None, priority=None, level=None,
     # can add other highlighters at other priorities enriching this function
 
     # find the number of chars needed off the length of the logger message
-    output_len = 28 + len(username) + 3 + len(message)
+    output_len = (28 + len(username) + 3 + len(message) if logger
+                  else len(message))
     show_logs = Settings.show_logs
 
     if priority in ["initialization", "end"]:
@@ -1099,19 +1105,41 @@ def highlight_print(username=None, message=None, priority=None, level=None,
         upper_char = "~"
         lower_char = None
 
-    if show_logs is True:
+    elif priority == "workspace":
+        # ._. ._. ._. ._. ._. ._. ._. ._. ._. ._. ._. ._.
+        # E.g.: |> Workspace in use: "C:/Users/El/InstaPy"
+        upper_char = " ._. "
+        lower_char = None
+
+    if (upper_char
+        and (show_logs
+             or priority == "workspace")):
         print("\n{}".format(
             upper_char * int(ceil(output_len / len(upper_char)))))
 
     if level == "info":
-        logger.info(message)
-    elif level == "warning":
-        logger.warning(message)
-    elif level == "critical":
-        logger.critical(message)
+        if logger:
+            logger.info(message)
+        else:
+            print(message)
 
-    if lower_char and show_logs is True:
-        print("{}".format(lower_char * output_len))
+    elif level == "warning":
+        if logger:
+            logger.warning(message)
+        else:
+            print(message)
+
+    elif level == "critical":
+        if logger:
+            logger.critical(message)
+        else:
+            print(message)
+
+    if (lower_char
+        and (show_logs
+             or priority == "workspace")):
+        print("{}".format(
+            lower_char * int(ceil(output_len / len(lower_char)))))
 
 
 def remove_duplicates(container, keep_order, logger):
@@ -1995,3 +2023,97 @@ def is_follow_me(browser, person=None):
         web_address_navigator(browser, user_link)
 
     return getUserData("graphql.user.follows_viewer", browser)
+
+
+def parse_cli_args():
+    """ Parse arguments passed by command line interface """
+
+    AP_kwargs = dict(prog="InstaPy",
+                     description="Parse InstaPy constructor's arguments",
+                     epilog="And that's how you'd pass arguments by CLI..",
+                     conflict_handler="resolve")
+    if python_version() < "3.5":
+        parser = CustomizedArgumentParser(**AP_kwargs)
+    else:
+        AP_kwargs.update(allow_abbrev=False)
+        parser = ArgumentParser(**AP_kwargs)
+
+    """ Flags that REQUIRE a value once added
+    ```python quickstart.py --username abc```
+    """
+    parser.add_argument(
+        "-u", "--username", help="Username", type=str, metavar="abc")
+    parser.add_argument(
+        "-p", "--password", help="Password", type=str, metavar="123")
+    parser.add_argument(
+        "-pd", "--page-delay", help="Implicit wait", type=int, metavar="25")
+    parser.add_argument(
+        "-pa", "--proxy-address", help="Proxy address",
+        type=str, metavar="192.168.1.1")
+    parser.add_argument(
+        "-pp", "--proxy-port", help="Proxy port", type=str, metavar="8080")
+
+    """ Auto-booleans: adding these flags ENABLE themselves automatically
+    ```python quickstart.py --use-firefox```
+    """
+    parser.add_argument(
+        "-uf", "--use-firefox", help="Use Firefox",
+        action="store_true", default=None)
+    parser.add_argument(
+        "-hb", "--headless-browser", help="Headless browser",
+        action="store_true", default=None)
+    parser.add_argument(
+        "-dil", "--disable-image-load", help="Disable image load",
+        action="store_true", default=None)
+    parser.add_argument(
+        "-bsa", "--bypass-suspicious-attempt",
+        help="Bypass suspicious attempt", action="store_true", default=None)
+    parser.add_argument(
+        "-bwm", "--bypass-with-mobile", help="Bypass with mobile phone",
+        action="store_true", default=None)
+
+    """ Style below can convert strings into booleans:
+    ```parser.add_argument("--is-debug",
+                           default=False,
+                           type=lambda x: (str(x).capitalize() == "True"))```
+
+    So that, you can pass bool values explicitly from CLI,
+    ```python quickstart.py --is-debug True```
+
+    NOTE: This style is the easiest of it and currently not being used.
+    """
+
+    args, args_unknown = parser.parse_known_args()
+    """ Once added custom arguments if you use a reserved name of core flags
+    and don't parse it, e.g.,
+    `-ufa` will misbehave cos it has `-uf` reserved flag in it.
+
+    But if you parse it, it's okay.
+    """
+
+    return args
+
+
+class CustomizedArgumentParser(ArgumentParser):
+    """
+     Subclass ArgumentParser in order to turn off
+    the abbreviation matching on older pythons.
+
+    `allow_abbrev` parameter was added by Python 3.5 to do it.
+    Thanks to @paul.j3 - https://bugs.python.org/msg204678 for this solution.
+    """
+
+    def _get_option_tuples(self, option_string):
+        """
+         Default of this method searches through all possible prefixes
+        of the option string and all actions in the parser for possible
+        interpretations.
+
+        To view the original source of this method, running,
+        ```
+        import inspect; import argparse; inspect.getsourcefile(argparse)
+        ```
+        will give the location of the 'argparse.py' file that have this method.
+        """
+        return []
+
