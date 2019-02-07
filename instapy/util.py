@@ -2093,3 +2093,29 @@ class CustomizedArgumentParser(ArgumentParser):
         """
         return []
 
+def wait_for_valid_connection(browser, username, logger):
+    while True:
+        sirens_wailing, emergency_state = emergency_exit(browser, username, logger)
+        if sirens_wailing and emergency_state == "not connected":
+            logger.warning('there is no valid connection')
+            sleep(60)
+        else:
+            break
+
+
+def wait_for_valid_authorization(browser, username, logger):
+    # save current page
+    current_url = get_current_url(browser)
+
+    # stuck on invalid auth
+    auth_method = "activity counts"
+    while True:
+        login_state = check_authorization(browser, username, auth_method, logger)
+        if login_state is False:
+            logger.warning('not logged in')
+            sleep(60)
+        else:
+            break
+
+    # return to original page
+    web_address_navigator(browser, current_url)

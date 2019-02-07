@@ -14,6 +14,8 @@ from .util import get_number_of_posts
 from .util import get_action_delay
 from .util import explicit_wait
 from .util import extract_text_from_element
+from .util import wait_for_valid_connection
+from .util import wait_for_valid_authorization
 from .quota_supervisor import quota_supervisor
 from .unfollow_util import get_following_status
 
@@ -411,14 +413,24 @@ def get_links_for_username(browser,
         return False
 
     # if private user, we can get links only if we following
-    following, follow_button = get_following_status(browser, 'profile',
+    following_state, follow_button = get_following_status(browser, 'profile',
                                                     username, person, None,
                                                     logger, logfolder)
-    if following == 'Following':
+
+    if following_state is None:
+        wait_for_valid_connection(browser, username, logger)
+    elif following_state == 'Follow':
+        wait_for_valid_authorization(browser, username, logger)
+
+    if following_state == 'Following':
         following = True
+    else:
+        following = False
     is_private = is_private_profile(browser, logger, following)
-    if (is_private is None) or (is_private is True and not following) or (
-            following == 'Blocked'):
+    if (is_private is None
+            or (is_private is True and following_state not in ['Following', True])
+            or (following_state == 'Blocked')):
+        logger.info('This user is private and we are not following')
         return False
 
     # Get links
