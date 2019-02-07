@@ -422,11 +422,7 @@ def get_links_for_username(browser,
     elif following_state == 'Follow':
         wait_for_valid_authorization(browser, username, logger)
 
-    if following_state == 'Following':
-        following = True
-    else:
-        following = False
-    is_private = is_private_profile(browser, logger, following)
+    is_private = is_private_profile(browser, logger, following_state == 'Following')
     if (is_private is None
             or (is_private is True and following_state not in ['Following', True])
             or (following_state == 'Blocked')):
