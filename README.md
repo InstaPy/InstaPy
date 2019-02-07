@@ -880,7 +880,12 @@ session.unfollow_users(amount=200, allFollowing=True, style="FIFO", unfollow_aft
 ```
 _here the unfollow method- **alFollowing** is used_
 
-
+`delay_unfollow_followbackers`  
+delay the unfollow for users that follows you, the dalay is in seconds and will delay from the moment that we "checked" to unfollow the user,
+with an extra delay_unfollow_followbackers seconds.
+examples:
+0 seconds == disable
+864000 seconds = 10 days delay
 
 ### Remove outgoing follow requests
 
