@@ -10,9 +10,6 @@ _The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 ### Fixed
 - Only import instapy-chromedriver package when needed
 
-### Added
-- Add delay for unfollow of follow backers
-
 
 ## [0.1.3] - 2019-02-05
 ### Fixed
