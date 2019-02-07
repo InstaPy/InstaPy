@@ -2291,6 +2291,8 @@ crontab -e
 45 */4 * * * cd /home/user/InstaPy && /usr/bin/python ./quickstart.py
 ```
 
+Note while scheduling via crontab there can be an issue of earlier job run not being completed when the next is triggered, check [this](https://github.com/timgrossmann/InstaPy/tree/master/scripts/run_once_instapy.sh) script for help.
+
 ### [Schedule](https://github.com/dbader/schedule)
 
 > Schedule is an in-process scheduler for periodic jobs that uses the builder pattern for configuration. Schedule lets you run Python functions periodically at pre-determined intervals using a simple, human-friendly syntax.
