@@ -406,7 +406,7 @@ def get_links_for_username(browser,
 
     if "Page Not Found" in browser.title:
         logger.error(
-            'Intagram error: The link you followed may be broken, or the '
+            'Instagram error: The link you followed may be broken, or the '
             'page may have been removed...')
         return False
 
