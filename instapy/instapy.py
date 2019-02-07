@@ -3362,7 +3362,7 @@ class InstaPy:
                        allFollowing=False,
                        style="FIFO",
                        unfollow_after=None,
-                       delay_unfollow_followbackers=0,  # 864000 = 10 days, 0 = don't delay
+                       delay_followbackers=0,  # 864000 = 10 days, 0 = don't delay
                        sleep_delay=600):
         """Unfollows (default) 10 users from your following list"""
 
@@ -3401,7 +3401,7 @@ class InstaPy:
                                   self.white_list,
                                   sleep_delay,
                                   self.jumps,
-                                  delay_unfollow_followbackers,
+                                  delay_followbackers,
                                   self.logger,
                                   self.logfolder)
             self.logger.info(

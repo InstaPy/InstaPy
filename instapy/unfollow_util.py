@@ -176,7 +176,7 @@ def unfollow(browser,
              white_list,
              sleep_delay,
              jumps,
-             delay_unfollow_followbackers,
+             delay_followbackers,
              logger,
              logfolder):
     """ Unfollows the given amount of users"""
@@ -381,7 +381,7 @@ def unfollow(browser,
                                      "all"].keys() else False)
 
                     # delay unfollowing of follow-backers
-                    if delay_unfollow_followbackers and customList[2] != "nonfollowers":
+                    if delay_followbackers and customList[2] != "nonfollowers":
                         # we set the follow time in the follow pool for delay_follow_back from now
                         user_link = "https://www.instagram.com/{}/".format(person)
                         web_address_navigator(browser, user_link)
@@ -396,11 +396,11 @@ def unfollow(browser,
                                     if time_diff is None:
                                         continue
 
-                                    if time_diff < delay_unfollow_followbackers:  # N days in seconds
+                                    if time_diff < delay_followbackers:  # N days in seconds
                                         refresh_follow_time_in_pool(username,
                                                                     person,
                                                                     person_id,
-                                                                    delay_unfollow_followbackers,
+                                                                    delay_followbackers,
                                                                     logger,
                                                                     logfolder)
                                         continue
