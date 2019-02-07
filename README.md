@@ -881,11 +881,15 @@ session.unfollow_users(amount=200, allFollowing=True, style="FIFO", unfollow_aft
 _here the unfollow method- **alFollowing** is used_
 
 `delay_unfollow_followbackers`  
-delay the unfollow for users that follows you, the dalay is in seconds and will delay from the moment that we "checked" to unfollow the user,
-with an extra delay_unfollow_followbackers seconds.
-examples:
-0 seconds == disable
-864000 seconds = 10 days delay
+Delay the unfollow for users that follows you, the delay is in seconds and will delay from the moment that we "checked" to unfollow the user.
+It will add the delay_unfollow_followbackers seconds on top of that.   
+0 seconds == disabled   
+864000 (or `240*60*60`) = 10 days delay  
+
+```python
+session.unfollow_users(amount=60, InstapyFollowed=(True, "all"), style="FIFO", unfollow_after=48*60*60, delay_unfollow_followbackers=240*60*60)
+```
+This will unfollow all users that are not following you back after **2 days**. The unfollowing for users that are following you back will be **delayed by an additional 10 days** (12 days to unfollow in total).
 
 ### Remove outgoing follow requests
 
