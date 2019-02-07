@@ -423,7 +423,6 @@ def get_links_for_username(browser,
 
     # Get links
     links = []
-    main_elem = browser.find_element_by_tag_name('article')
     elem_expresstion = "browser.find_element_by_tag_name('article')"
     main_elem = eval(elem_expresstion)
     posts_count = get_number_of_posts(browser)
