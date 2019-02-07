@@ -404,7 +404,7 @@ def get_links_for_username(browser,
     # then do not navigate to it again
     web_address_navigator(browser, user_link)
 
-    if "Page Not Found" in browser.title:
+    if not is_page_available(browser, logger):
         logger.error(
             'Intagram error: The link you followed may be broken, or the '
             'page may have been removed...')
@@ -424,6 +424,8 @@ def get_links_for_username(browser,
     # Get links
     links = []
     main_elem = browser.find_element_by_tag_name('article')
+    elem_expresstion = "browser.find_element_by_tag_name('article')"
+    main_elem = eval(elem_expresstion)
     posts_count = get_number_of_posts(browser)
     attempt = 0
 
@@ -444,7 +446,7 @@ def get_links_for_username(browser,
 
         # using `extend`  or `+=` results reference stay alive which affects
         # previous assignment (can use `copy()` for it)
-        links = links + get_links(browser, person, logger, media, main_elem)
+        links = links + get_links(browser, person, logger, media, main_elem, elem_expresstion)
         links = sorted(set(links), key=links.index)
 
         if len(links) == len(initial_links):
@@ -733,9 +735,20 @@ def get_tags(browser, url):
     return tags
 
 
-def get_links(browser, page, logger, media, element):
+def get_links(browser, page, logger, media, element, elem_expression=None):
     # Get image links in scope from hashtag, location and other pages
-    link_elems = element.find_elements_by_tag_name('a')
+    for i in range(2):
+        try:
+            link_elems = element.find_elements_by_tag_name('a')
+            break
+        except StaleElementReferenceException:
+            # notifiy
+            logger.error("link_elems StaleElementReferenceException")
+            # handle
+            if elem_expression:
+                reload_webpage(browser)
+                element = eval(elem_expression)
+
     sleep(2)
     links = []
     try:
