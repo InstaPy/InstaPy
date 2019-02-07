@@ -2020,30 +2020,6 @@ def close_dialog_box(browser):
         pass
 
 
-def get_epoch_time_diff(time_stamp, logger):
-    try:
-        ''' time diff in seconds from input to now'''
-        log_time = datetime.datetime.strptime(time_stamp, '%Y-%m-%d %H:%M')
-
-        former_epoch = (log_time - datetime.datetime(1970, 1, 1)).total_seconds()
-        cur_epoch = (datetime.datetime.now() - datetime.datetime(1970, 1, 1)).total_seconds()
-
-        return cur_epoch - former_epoch
-    except ValueError:
-        logger.error(
-            "Error occurred while reading timestamp value from database")
-        return None
-
-
-def is_follow_me(browser, person=None):
-    # navigate to profile page if not already in it
-    if person:
-        user_link = "https://www.instagram.com/{}/".format(person)
-        web_address_navigator(browser, user_link)
-
-    return getUserData("graphql.user.follows_viewer", browser)
-
-
 def parse_cli_args():
     """ Parse arguments passed by command line interface """
 
