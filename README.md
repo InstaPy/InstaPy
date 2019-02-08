@@ -148,11 +148,9 @@ Check out this short guide on [how to start contributing!](https://github.com/In
 ### Guides
 
 #### Video tutorials:
-**[Setting up InstaPy for MacOS using Firefox](https://www.youtube.com/watch?v=A1a8J_IjSPs)**
 
-**[Setting up InstaPy at Digital Ocean (for Debian)](https://www.youtube.com/watch?v=2Ci-hXU1IEY)**
-
-**[Setting up InstaPy for Windows](https://www.youtube.com/watch?v=AOUraeus-XA)**
+> The currently available video tutorials all still use the old version of InstaPy, please use the documentation until we released new videos for the up to date installation instructions
+Sorry for the inconveniences
 
 #### Written Guides:
 **[How to Ubuntu (64-Bit)](./docs/How_To_DO_Ubuntu_on_Digital_Ocean.md) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**
