@@ -91,8 +91,10 @@ class InstaPy:
                  page_delay=25,
                  show_logs=True,
                  headless_browser=False,
-                 proxy_address=None,
                  proxy_chrome_extension=None,
+                 proxy_username=None,
+                 proxy_password=None,
+                 proxy_address=None,
                  proxy_port=None,
                  disable_image_load=False,
                  bypass_suspicious_attempt=False,
@@ -125,6 +127,8 @@ class InstaPy:
 
         self.browser = None
         self.headless_browser = headless_browser
+        self.proxy_username = proxy_username
+        self.proxy_password = proxy_password
         self.proxy_address = proxy_address
         self.proxy_port = proxy_port
         self.proxy_chrome_extension = proxy_chrome_extension
@@ -136,7 +140,6 @@ class InstaPy:
         self.username = username or os.environ.get('INSTA_USER')
         self.password = password or os.environ.get('INSTA_PW')
         Settings.profile["name"] = self.username
-
 
         self.page_delay = page_delay
         self.switch_language = True
@@ -370,7 +373,9 @@ class InstaPy:
                           self.logfolder,
                           self.switch_language,
                           self.bypass_suspicious_attempt,
-                          self.bypass_with_mobile):
+                          self.bypass_with_mobile,
+                          self.proxy_username,
+                          self.proxy_password):
             message = "Wrong login data!"
             highlight_print(self.username,
                             message,
