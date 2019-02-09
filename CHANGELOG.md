@@ -6,6 +6,7 @@ _The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 ## [0.1.4] - INSERT MERGING DATE HERE
 ### Fixed
 - Only import instapy-chromedriver package when needed
+- fixed get_active_users wrong behavior on videos
 
 
 ## [0.1.3] - 2019-02-05
