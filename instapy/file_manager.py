@@ -8,8 +8,6 @@ from os.path import isfile as file_exists
 from os.path import sep as native_slash
 from platform import python_version
 
-from instapy_chromedriver import binary_path
-
 from .util import highlight_print
 from .settings import Settings
 from .settings import localize_path
@@ -221,6 +219,9 @@ def get_chromedriver_location():
         workspace_path = slashen(WORKSPACE["path"], "native")
         assets_path = "{}{}assets".format(workspace_path, native_slash)
         validate_path(assets_path)
+
+        # only import from this package when necessary
+        from instapy_chromedriver import binary_path
 
         CD = binary_path
         chrome_version = pkg_resources.get_distribution("instapy_chromedriver").version
