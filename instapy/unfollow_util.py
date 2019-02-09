@@ -1029,7 +1029,7 @@ def get_given_user_following(browser,
                              jumps,
                              logger,
                              logfolder):
-    user_name = user_name.strip()
+    user_name = user_name.strip().lower()
 
     user_link = "https://www.instagram.com/{}/".format(user_name)
     web_address_navigator(browser, user_link)
