@@ -4,7 +4,12 @@ The **goal** of this file is explaining to the users of our project the notable 
 _The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html)_.
 
 
-## [0.1.3] - UNKNOWN
+## [Unreleased] - 2019-02-09
+### Fixed
+- Bug in _CLI_ **argparsing** - `proxy_port` & `page_delay` are integers and not strings.
+
+
+## [0.1.3] - 2019-02-06
 ### Fixed
 - Fix "_Failed to load desired amount of users!_" issue.
 
