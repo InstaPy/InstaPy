@@ -963,7 +963,7 @@ def get_given_user_followers(browser,
     :param logfolder: the logger folder
     :return: list of user's followers also followed
     """
-    user_name = user_name.strip()
+    user_name = user_name.strip().lower()
 
     user_link = "https://www.instagram.com/{}/".format(user_name)
     web_address_navigator(browser, user_link)
