@@ -2036,12 +2036,12 @@ def parse_cli_args():
     parser.add_argument(
         "-p", "--password", help="Password", type=str, metavar="123")
     parser.add_argument(
-        "-pd", "--page-delay", help="Implicit wait", type=int, metavar="25")
+        "-pd", "--page-delay", help="Implicit wait", type=int, metavar=25)
     parser.add_argument(
         "-pa", "--proxy-address", help="Proxy address",
         type=str, metavar="192.168.1.1")
     parser.add_argument(
-        "-pp", "--proxy-port", help="Proxy port", type=str, metavar="8080")
+        "-pp", "--proxy-port", help="Proxy port", type=int, metavar=8080)
 
     """ Auto-booleans: adding these flags ENABLE themselves automatically
     ```python quickstart.py --use-firefox```
