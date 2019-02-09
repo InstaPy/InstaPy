@@ -3,13 +3,13 @@ The **goal** of this file is explaining to the users of our project the notable 
 
 _The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html)_.
 
-
 ## [0.1.4] - INSERT MERGING DATE HERE
 ### Fixed
-- avoid user errors providing user names with caps
+- Only import instapy-chromedriver package when needed
+- Avoid user errors providing user names with caps
 
 
-## [0.1.3] - UNKNOWN
+## [0.1.3] - 2019-02-05
 ### Fixed
 - Fix "_Failed to load desired amount of users!_" issue.
 
