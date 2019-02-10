@@ -233,6 +233,10 @@ def retry(max_retry_count = 3, start_page = None):
                 print('not able to find browser in parameters!')
                 return org_func(*args, **kwargs)
 
+            if max_retry_count == 0:
+                print('max retry count is set to 0, this function is useless right now')
+                return org_func(*args, **kwargs)
+
             # get current page if none is given
             if not start_page:
                 start_page = browser.current_url
