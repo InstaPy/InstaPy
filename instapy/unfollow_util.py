@@ -36,7 +36,6 @@ from .relationship_tools import get_followers
 from .relationship_tools import get_nonfollowers
 from .database_engine import get_database
 from .quota_supervisor import quota_supervisor
-from .settings import Settings
 
 from selenium.common.exceptions import WebDriverException
 from selenium.common.exceptions import NoSuchElementException
@@ -112,7 +111,7 @@ def get_following_status(browser, track, username, person, person_id, logger,
                          logfolder):
     """ Verify if you are following the user in the loaded page """
 
-    if username == Settings.profile["name"]:
+    if person == username:
         return "OWNER", None
 
     if track == "profile":
