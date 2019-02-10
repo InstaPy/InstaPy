@@ -75,7 +75,7 @@ def is_private_profile(browser, logger, following=True):
 
     # double check with xpath that should work only when we not follwoing a
     # user
-    if is_private is True and not following:
+    if is_private and not following:
         logger.info("Is private account you're not following.")
         body_elem = browser.find_element_by_tag_name('body')
         is_private = body_elem.find_element_by_xpath(
