@@ -24,6 +24,7 @@ INSTAGRAM_QUERY_URL = 'https://www.instagram.com/query/'
 INSTAGRAM_CDN_URL = 'https://scontent.cdninstagram.com/'
 ACCOUNT_JSON_PRIVATE_INFO_BY_ID = 'https://i.instagram.com/api/v1/users/{userId}/info/'
 ACCOUNT_MEDIAS2 = 'https://www.instagram.com/graphql/query/?query_id=17880160963012870&id={{accountId}}&first=10&after='
+APPROVE_URL = 'https://www.instagram.com/web/friendships/{{accountId}}/approve/'
 
 # look alike?
 URL_SIMILAR = 'https://www.instagram.com/graphql/query/?query_id=17845312237175864&id=4663052'

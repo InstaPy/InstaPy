@@ -4962,3 +4962,39 @@ class InstaPy:
         return all(self.is_mandatory_character(uchr)
                    for uchr in unistr
                    if uchr.isalpha())
+
+    def accept_follow_requests(self,
+                               page_limit=10,
+                               sleep_delay=1):
+        """Accept pending follow requests from activity feed"""
+
+        if self.aborting:
+            return self
+
+        message = "Starting to get follow requests.."
+        highlight_print(self.username,
+                        message,
+                        "feature",
+                        "info",
+                        self.logger)
+
+        current_page = 0
+        while current_page < page_limit:
+
+            current_page += 1
+            feed_link = "https://www.instagram.com/accounts/activity/?followRequests=1"
+            web_address_navigator(self.browser, feed_link)
+
+            requests_to_confirm = self.browser.find_elements_by_xpath("//button[text()='Confirm']")
+
+            if len(requests_to_confirm) == 0:
+                self.logger.info("There are not follow requests in activity feed")
+                break
+
+            for request in requests_to_confirm:
+                self.logger.info("Accepting {}".format(request.find_elements_by_xpath("./../../../../div[2]")[0]
+                                                       .text.split("\n")[0]))
+                request.click()
+                sleep(sleep_delay)
+
+        return self
