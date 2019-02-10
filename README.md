@@ -8,6 +8,7 @@
 [![built with Python3](https://img.shields.io/badge/built%20with-Python3-red.svg)](https://www.python.org/)
 [![Travis](https://img.shields.io/travis/rust-lang/rust.svg)](https://travis-ci.org/timgrossmann/InstaPy)
 [![Backers on Open Collective](https://opencollective.com/instapy/backers/badge.svg)](#backers)
+[![Sponsors on Open Collective](https://opencollective.com/instapy/sponsors/badge.svg)](#sponsors)
 
 ### Tooling that automates your social media interactions to “farm” Likes, Comments, and Followers on Instagram
 Implemented in Python using the Selenium module.
@@ -2299,29 +2300,33 @@ pip install schedule
 
 ```python
 from instapy import InstaPy
+from instapy import smart_run
+from instapy import set_workspace
 import schedule
 import time
 
+#your login credentials
+insta_username=''
+insta_password=''
+
+#path to your workspace
+set_workspace(path=None)
+
 def job():
-    try:
-        session = InstaPy(selenium_local_session=False) # Assuming running in Compose
-        session.set_selenium_remote_session(selenium_url='http://selenium:4444/wd/hub')
-        session.login()
-        session.set_do_comment(enabled=True, percentage=20)
-        session.set_comments(['Well done!'])
-        session.set_do_follow(enabled=True, percentage=5, times=2)
-        session.like_by_tags(['love'], amount=100, media='Photo')
-        session.end()
-    except:
-        import traceback
-        print(traceback.format_exc())
+  session = InstaPy(username=insta_username, password=insta_password)
+  with smart_run(session):
+    session.set_do_comment(enabled=True, percentage=20)
+    session.set_comments(['Well done!'])
+    session.set_do_follow(enabled=True, percentage=5, times=2)
+    session.like_by_tags(['love'], amount=100, media='Photo')
+
 
 schedule.every().day.at("6:35").do(job)
 schedule.every().day.at("16:22").do(job)
 
 while True:
-    schedule.run_pending()
-    time.sleep(1)
+  schedule.run_pending()
+  time.sleep(10)
 ```
 
 
