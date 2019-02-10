@@ -59,13 +59,13 @@ def set_selenium_local_session(proxy_address,
             firefox_profile.set_preference('network.proxy.ssl_port',
                                            proxy_port)
 
-        browser = webdriver.Firefox(firefox_profile=firefox_profile,
+        browser = get_firefox_browser(firefox_profile=firefox_profile,
                                     options=firefox_options)
 
     else:
         chromedriver_location = get_chromedriver_location()
         chrome_options = Options()
-        chrome_options.add_argument("--mute-audio")
+        chrome_options.add_argument('--mute-audio')
         chrome_options.add_argument('--dns-prefetch-disable')
         chrome_options.add_argument('--lang=en-US')
         chrome_options.add_argument('--disable-setuid-sandbox')
@@ -93,7 +93,7 @@ def set_selenium_local_session(proxy_address,
             proxy = ":".join([proxy_address, str(proxy_port)])
             if headless_browser:
                 chrome_options.add_argument(
-                    "--proxy-server=http://{}".format(proxy))
+                    '--proxy-server=http://{}'.format(proxy))
             else:
                 prox.proxy_type = ProxyType.MANUAL
                 prox.http_proxy = proxy
@@ -119,7 +119,7 @@ def set_selenium_local_session(proxy_address,
 
         chrome_options.add_experimental_option('prefs', chrome_prefs)
         try:
-            browser = webdriver.Chrome(chromedriver_location,
+            browser = get_chrome_browser(chromedriver_location,
                                        desired_capabilities=capabilities,
                                        chrome_options=chrome_options)
 
@@ -160,17 +160,15 @@ def set_selenium_remote_session(use_firefox,
     :param selenium_driver: selenium WebDriver
     :return: self
     """
+
     if selenium_driver:
-        browser = selenium_driver
+        browser = convert_selenium_browser(selenium_driver)
     else:
-        if use_firefox:
-            browser = webdriver.Remote(
-                command_executor=selenium_url,
-                desired_capabilities=DesiredCapabilities.FIREFOX)
-        else:
-            browser = webdriver.Remote(
-                command_executor=selenium_url,
-                desired_capabilities=DesiredCapabilities.CHROME)
+        desired_caps = DesiredCapabilities.FIREFOX if use_firefox else DesiredCapabilities.CHROME
+        browser = get_remote_browser(
+            command_executor = selenium_url,
+            desired_capabilities=desired_caps
+        )
 
     message = "Session started!"
     highlight_print('browser', message, "initialization", "info", logger)
@@ -263,3 +261,47 @@ def retry(max_retry_count = 3, start_page = None):
             return rv;
         return wrapper
     return real_decorator
+
+
+
+class custom_browser(Remote):
+    """Custom browser instance for manupulation later on"""
+
+    def find_element_by_xpath(self, *args, **kwargs):
+        print('yeeeah this line gets printed out on EVERY get element by xpath without changing any code !!')
+        rv = super(custom_browser, self).find_element_by_xpath(*args, **kwargs)
+        return rv
+
+
+
+
+def get_chrome_browser(chromedriver_location, desired_capabilities, chrome_options):
+    browser = webdriver.Chrome(chromedriver_location,
+                               desired_capabilities=desired_capabilities,
+                               chrome_options=chrome_options)
+
+    return convert_selenium_browser(browser)
+
+
+
+def get_firefox_browser(firefox_profile, options):
+    browser = webdriver.Firefox(firefox_profile=firefox_profile,
+                                options=options)
+
+    return convert_selenium_browser(browser)
+
+
+
+def get_remote_browser(command_executor, desired_capabilities):
+    browser = webdriver.Remote(
+        command_executor=command_executor,
+        desired_capabilities=desired_capabilities)
+
+    return convert_selenium_browser(browser)
+
+
+
+def convert_selenium_browser(driver):
+    """Changed the class to our custom class"""
+    driver.__class__ = custom_browser
+    return driver
