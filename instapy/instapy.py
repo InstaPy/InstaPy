@@ -3384,7 +3384,8 @@ class InstaPy:
             self.username,
             unfollow_after,
             self.logger,
-            self.logfolder)
+            self.logfolder,
+            delay_followbackers,
 
         try:
             unfollowed = unfollow(self.browser,

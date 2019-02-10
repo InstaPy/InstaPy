@@ -44,18 +44,23 @@ from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import ElementNotVisibleException
 
 
-def set_automated_followed_pool(username, unfollow_after, logger, logfolder):
+def set_automated_followed_pool(username, unfollow_after, logger, logfolder, delay_followbackers, pool='followedPool'):
     """ Generare a user list based on the InstaPy followed usernames """
-    pool_name = "{0}{1}_followedPool.csv".format(logfolder, username)
+    pool_name = '{0}{1}_{2}.csv'.format(logfolder, username, pool)
     automatedFollowedPool = {"all": {}, "eligible": {}}
     time_stamp = None
-    user_id = "undefined"  # 'undefined' rather than None is *intentional
 
     try:
         with open(pool_name, 'r+') as followedPoolFile:
             reader = csv.reader(followedPoolFile)
 
             for row in reader:
+
+                # init
+                followedback = None
+                user_id = "undefined"  # 'undefined' rather than None is *intentional
+                eligle = True  # 'undefined' rather than None is *intentional
+
                 entries = row[0].split(' ~ ')
                 sz = len(entries)
                 """
@@ -77,18 +82,41 @@ def set_automated_followed_pool(username, unfollow_after, logger, logfolder):
                     user = entries[1]
                     user_id = entries[2]
 
-                automatedFollowedPool["all"].update({user: {"id": user_id, 'time_stamp': time_stamp}})
+                elif sz == 4:
+                    time_stamp = entries[0]
+                    user = entries[1]
+                    user_id = entries[2]
+                    followedback = True if entries[3] == "true" else None
+
+                automatedFollowedPool["all"].update({user: {"id": user_id,
+                                                            'time_stamp': time_stamp,
+                                                            'followedback': followedback
+                                                            }})
                 # get eligible list
-                if unfollow_after is not None and time_stamp != None:
-                    time_diff = get_epoch_time_diff(time_stamp, logger)
-                    if time_diff is None:
-                        continue
+                if time_stamp is not None:
+                    # filter the eligible users by
+                    # unfollow_after seconds
+                    # or by delay_followbackers seconds
+                    delay_unfollow = True
 
-                    if time_diff > unfollow_after:
-                        automatedFollowedPool["eligible"].update(
-                            {user: {"id": user_id}})
+                    if followedback is True and delay_followbackers:
+                        # delay length is for follow backers
+                        unfollow_after_eligible = delay_followbackers
+                    elif unfollow_after is not None:
+                        # delay length is set by admin
+                        unfollow_after_eligible = unfollow_after
+                    else:
+                        delay_unfollow = False
 
-                else:
+                    if delay_unfollow:
+                        time_diff = get_epoch_time_diff(time_stamp, logger)
+                        if time_diff is None:
+                            continue
+
+                        if time_diff < unfollow_after_eligible:
+                            eligle = False
+
+                if eligle:
                     automatedFollowedPool["eligible"].update(
                         {user: {"id": user_id}})
 
@@ -381,34 +409,41 @@ def unfollow(browser,
                                      "all"].keys() else False)
 
                     # delay unfollowing of follow-backers
-                    if delay_followbackers and customList[2] != "nonfollowers":
-                        # we set the follow time in the follow pool for delay_follow_back from now
-                        user_link = "https://www.instagram.com/{}/".format(person)
-                        web_address_navigator(browser, user_link)
+                    if delay_followbackers and unfollow_track != "nonfollowers":
 
-                        if is_follow_me(browser, person):
-                            # delay follow-backers in delay_follow_back.
-                            time_stamp = (automatedFollowedPool["all"][person]["time_stamp"] if
-                                         person in automatedFollowedPool["all"].keys() else False)
-                            if time_stamp not in [False, None]:
-                                try:
-                                    time_diff = get_epoch_time_diff(time_stamp, logger)
-                                    if time_diff is None:
-                                        continue
+                        followedback_status = automatedFollowedPool["all"][person]["followedback"]
+                        # if once before we set that flag to true
+                        # now it is time to unfollow since
+                        # time filter pass, user is now eligble to unfollow
+                        if followedback_status is not True:
+                            
+                            user_link = "https://www.instagram.com/{}/".format(person)
+                            web_address_navigator(browser, user_link)
 
-                                    if time_diff < delay_followbackers:  # N days in seconds
-                                        refresh_follow_time_in_pool(username,
-                                                                    person,
-                                                                    person_id,
-                                                                    delay_followbackers,
-                                                                    logger,
-                                                                    logfolder)
-                                        continue
+                            if is_follow_me(browser, person):
+                                # delay follow-backers with delay_follow_back.
+                                time_stamp = (automatedFollowedPool["all"][person]["time_stamp"] if
+                                             person in automatedFollowedPool["all"].keys() else False)
+                                if time_stamp not in [False, None]:
+                                    try:
+                                        time_diff = get_epoch_time_diff(time_stamp, logger)
+                                        if time_diff is None:
+                                            continue
 
-                                except ValueError:
-                                    logger.error(
-                                        "time_diff reading for user {} failed \n".format(person))
-                                    pass
+                                        if time_diff < delay_followbackers:  # N days in seconds
+                                            set_followback_in_pool(username,
+                                                                   person,
+                                                                   person_id,
+                                                                   time_stamp,  # stay with original timestamp
+                                                                   logger,
+                                                                   logfolder)
+                                            # don't unfollow (for now) this follow backer !
+                                            continue
+
+                                    except ValueError:
+                                        logger.error(
+                                            "time_diff reading for user {} failed \n".format(person))
+                                        pass
 
                     try:
                         unfollow_state, msg = unfollow_user(browser,
@@ -1578,6 +1613,15 @@ def get_follow_requests(browser, amount, sleep_delay, logger, logfolder):
     return users_to_unfollow
 
 
+def set_followback_in_pool(username, person, person_id, logtime, logger, logfolder):
+    # first we delete the user from pool
+    delete_line_from_file(
+        '{0}{1}_followedPool.csv'.format(logfolder, username), person, logger)
+
+    # return the username with new timestamp
+    log_followed_pool(username, person, logger, logfolder, logtime, person_id, "true")
+
+
 def refresh_follow_time_in_pool(username, person, person_id, extra_secs, logger, logfolder):
     # set the new time to now plus extra delay
     logtime = (datetime.now() + timedelta(seconds=extra_secs)).strftime('%Y-%m-%d %H:%M')
@@ -1587,5 +1631,5 @@ def refresh_follow_time_in_pool(username, person, person_id, extra_secs, logger,
         '{0}{1}_followedPool.csv'.format(logfolder, username), person, logger)
 
     # return the username with new timestamp
-    log_followed_pool(username, person, logger, logfolder, logtime, person_id)
+    log_followed_pool(username, person, logger, logfolder, logtime, person_id, "unknown")
 
