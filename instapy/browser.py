@@ -5,6 +5,7 @@ from selenium.webdriver.common.proxy import Proxy, ProxyType
 from selenium.webdriver.firefox.options import Options as Firefox_Options
 from selenium import webdriver
 from selenium.common.exceptions import WebDriverException
+from selenium.webdriver import Remote
 
 # general libs
 import re
@@ -201,3 +202,60 @@ def close_browser(browser,
                     "Error occurred while "
                     "closing web browser!\n\t{}"
                     .format(str(exc).encode("utf-8")))
+
+
+
+
+def retry(max_retry_count = 3, start_page = None):
+    """Decorator which refreshes the page and tries to execute the function again.
+    Use it like that: @retry() => the '()' are important because its a decorator with params."""
+
+    def real_decorator(org_func):
+        def wrapper(*args, **kwargs):
+            browser = None
+
+            # try to find instance of a browser in the arguments
+            # all webdriver classes (chrome, firefox, ...) inherit from Remote class
+            for arg in args:
+                if not isinstance(arg, Remote): continue
+
+                browser = arg
+                break
+
+            else:
+                for _, value in kwargs.items():
+                    if not isinstance(value, Remote): continue
+
+                    browser = value
+                    break
+
+            if not browser:
+                print('not able to find browser in parameters!')
+                return org_func(*args, **kwargs)
+
+            # get current page if none is given
+            if not start_page:
+                start_page = browser.current_url
+
+            rv = None
+            retry_count = 0
+            while True:
+                try:
+                    rv = org_func(*args, **kwargs)
+                    break
+                except Exception as e:
+                    # TODO: maybe handle only certain exceptions here
+                    retry_count += 1
+
+                    # if above max retries => throw original exception
+                    if retry_count > max_retry_count:
+                        raise e
+
+                    rv = None
+
+                    # refresh page
+                    browser.get(start_page)
+
+            return rv;
+        return wrapper
+    return real_decorator
