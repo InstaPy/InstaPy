@@ -88,16 +88,17 @@ def get_links_for_location(browser,
     sleep(1)
 
     if skip_top_posts:
-        main_elem = browser.find_element_by_xpath('//main/article/div[2]')
+        elem_expression = '''browser.find_element_by_xpath('//main/article/div[2]')'''
     else:
-        main_elem = browser.find_element_by_tag_name('main')
+        elem_expression = '''browser.find_element_by_tag_name('main')'''
 
+    main_elem = eval(elem_expression)
     link_elems = main_elem.find_elements_by_tag_name('a')
     sleep(1)
 
-    if not link_elems:  # this location does not have `Top Posts` or it
-        # really is empty..
-        main_elem = browser.find_element_by_xpath('//main/article/div[1]')
+    if not link_elems:  # this location does not have `Top Posts` or it really is empty..
+        elem_expression = '''browser.find_element_by_xpath('//main/article/div[1]')'''
+        main_elem = eval(elem_expression)
         top_posts = []
     sleep(2)
 
@@ -128,7 +129,7 @@ def get_links_for_location(browser,
         # keeps counted for the location
 
     # Get links
-    links = get_links(browser, location, logger, media, main_elem)
+    links = get_links(browser, location, logger, media, main_elem, elem_expression)
     filtered_links = len(links)
     try_again = 0
     sc_rolled = 0
@@ -153,7 +154,7 @@ def get_links_for_location(browser,
 
             sleep(3)
             links.extend(
-                get_links(browser, location, logger, media, main_elem))
+                get_links(browser, location, logger, media, main_elem, elem_expression))
 
             links_all = links  # uniqify links while preserving order
             s = set()
@@ -185,12 +186,13 @@ def get_links_for_location(browser,
                         try_again = 0
                         sleep(10)
 
-                        main_elem = (browser.find_element_by_xpath(
+                        elem_expression = '''(browser.find_element_by_xpath(
                             '//main/article/div[1]') if not link_elems else
                                      browser.find_element_by_xpath(
                                          '//main/article/div[2]') if
                                      skip_top_posts else
-                                     browser.find_element_by_tag_name('main'))
+                                     browser.find_element_by_tag_name('main'))'''
+                        main_elem = eval(elem_expression)
                     else:
                         logger.info(
                             "'{}' location POSSIBLY has less images than "
@@ -239,15 +241,18 @@ def get_links_for_tag(browser,
     sleep(1)
 
     if skip_top_posts:
-        main_elem = browser.find_element_by_xpath('//main/article/div[2]')
+        elem_expression = '''browser.find_element_by_xpath('//main/article/div[2]')'''
     else:
-        main_elem = browser.find_element_by_tag_name('main')
+        elem_expression = '''browser.find_element_by_tag_name('main')'''
+
+    main_elem = eval(elem_expression)
     link_elems = main_elem.find_elements_by_tag_name('a')
     sleep(1)
 
     if not link_elems:  # this tag does not have `Top Posts` or it really is
         # empty..
-        main_elem = browser.find_element_by_xpath('//main/article/div[1]')
+        elem_expression = '''browser.find_element_by_xpath('//main/article/div[1]')'''
+        main_elem = eval(elem_expression)
         top_posts = []
     sleep(2)
 
@@ -292,7 +297,7 @@ def get_links_for_tag(browser,
     # counted for the tag
 
     # Get links
-    links = get_links(browser, tag, logger, media, main_elem)
+    links = get_links(browser, tag, logger, media, main_elem, elem_expression)
     filtered_links = len(links)
     try_again = 0
     sc_rolled = 0
@@ -316,7 +321,7 @@ def get_links_for_tag(browser,
                 # you sent scoll command...
 
             sleep(3)
-            links.extend(get_links(browser, tag, logger, media, main_elem))
+            links.extend(get_links(browser, tag, logger, media, main_elem, elem_expression))
 
             links_all = links  # uniqify links while preserving order
             s = set()
@@ -348,12 +353,13 @@ def get_links_for_tag(browser,
                         try_again = 0
                         sleep(10)
 
-                        main_elem = (browser.find_element_by_xpath(
+                        elem_expression = '''(browser.find_element_by_xpath(
                             '//main/article/div[1]') if not link_elems else
                                      browser.find_element_by_xpath(
                                          '//main/article/div[2]') if
                                      skip_top_posts else
-                                     browser.find_element_by_tag_name('main'))
+                                     browser.find_element_by_tag_name('main'))'''
+                        main_elem = eval(elem_expression)
                     else:
                         logger.info(
                             "'{}' tag POSSIBLY has less images than "
@@ -420,7 +426,7 @@ def get_links_for_username(browser,
     if following_state is None:
         wait_for_valid_connection(browser, username, logger)
     elif following_state == 'Follow':
-        wait_for_valid_authorization(browser, username, logger)
+        wait_for_valid_authorization(browser, username, logger, notify=False)
 
     is_private = is_private_profile(browser, logger, following_state == 'Following')
     if (is_private is None
