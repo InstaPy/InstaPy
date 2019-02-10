@@ -2309,7 +2309,7 @@ insta_username=''
 insta_password=''
 
 #path to your workspace
-set_workspace=(path=None)
+set_workspace(path=None)
 
 def job():
   session = InstaPy(username=insta_username, password=insta_password)
