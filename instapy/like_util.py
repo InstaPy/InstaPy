@@ -813,9 +813,16 @@ def like_comment(browser, original_comment_text, logger):
             comment = extract_text_from_element(comment_elem)
 
             if comment and (comment == original_comment_text):
+                # find "Like" span (a direct child of Like button)
+                span_like_selectors = comment_line.find_elements_by_css_selector(
+                    "span[aria-label=Like]")
+                if not span_like_selectors:
+                    # this is most likely a liked comment
+                    return True, "success"
+
                 # like the given comment
-                comment_like_button = comment_line.find_element_by_tag_name(
-                    "button")
+                span_like = span_like_selectors[0]
+                comment_like_button = span_like.find_element_by_xpath('..')
                 click_element(browser, comment_like_button)
 
                 # verify if like succeeded by waiting until the like button
