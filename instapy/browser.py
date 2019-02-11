@@ -59,8 +59,11 @@ def set_selenium_local_session(proxy_address,
             firefox_profile.set_preference('network.proxy.ssl_port',
                                            proxy_port)
 
-        browser = get_firefox_browser(firefox_profile=firefox_profile,
+        browser = webdriver.Firefox(firefox_profile=firefox_profile,
                                     options=firefox_options)
+
+        # converts to custom browser
+        browser = convert_selenium_browser(browser)
 
     else:
         chromedriver_location = get_chromedriver_location()
@@ -119,9 +122,12 @@ def set_selenium_local_session(proxy_address,
 
         chrome_options.add_experimental_option('prefs', chrome_prefs)
         try:
-            browser = get_chrome_browser(chromedriver_location,
+            browser = webdriver.Chrome(chromedriver_location,
                                        desired_capabilities=capabilities,
                                        chrome_options=chrome_options)
+
+            # gets custom instance
+            browser = convert_selenium_browser(browser)
 
         except WebDriverException as exc:
             logger.exception(exc)
@@ -271,24 +277,6 @@ class custom_browser(Remote):
         print('yeeeah this line gets printed out on EVERY get element by xpath without changing any code !!')
         rv = super(custom_browser, self).find_element_by_xpath(*args, **kwargs)
         return rv
-
-
-
-
-def get_chrome_browser(chromedriver_location, desired_capabilities, chrome_options):
-    browser = webdriver.Chrome(chromedriver_location,
-                               desired_capabilities=desired_capabilities,
-                               chrome_options=chrome_options)
-
-    return convert_selenium_browser(browser)
-
-
-
-def get_firefox_browser(firefox_profile, options):
-    browser = webdriver.Firefox(firefox_profile=firefox_profile,
-                                options=options)
-
-    return convert_selenium_browser(browser)
 
 
 
