@@ -10,6 +10,7 @@ from selenium.webdriver.firefox.options import Options as Firefox_Options
 
 # general libs
 import re
+from time import sleep
 
 # local project
 from .util import interruption_handler
@@ -195,10 +196,14 @@ def proxy_authentication(browser,
                          proxy_password):
     """ Authenticate proxy using popup alert window """
     try:
-        import ipdb
-        ipdb.set_trace()
+        # sleep(1) is enough, sleep(2) is to make sure we
+        # give time to the popup windows
+        sleep(2)
         alert_popup = browser.switch_to_alert()
-        alert_popup.send_keys('{username}{tab}{password}{tab}'.format(username=proxy_username,tab=Keys.TAB,password=proxy_password))
+        alert_popup.send_keys('{username}{tab}{password}{tab}'
+                              .format(username=proxy_username,
+                                      tab=Keys.TAB,
+                                      password=proxy_password))
         alert_popup.accept()
     except Exception:
         logger.warn('Unable to proxy authenticate')

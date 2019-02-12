@@ -375,9 +375,7 @@ class InstaPy:
                           self.logfolder,
                           self.switch_language,
                           self.bypass_suspicious_attempt,
-                          self.bypass_with_mobile,
-                          self.proxy_username,
-                          self.proxy_password):
+                          self.bypass_with_mobile):
             message = "Wrong login data!"
             highlight_print(self.username,
                             message,
