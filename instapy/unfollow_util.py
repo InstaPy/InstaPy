@@ -110,6 +110,10 @@ def set_automated_followed_pool(username, unfollow_after, logger, logfolder):
 def get_following_status(browser, track, username, person, person_id, logger,
                          logfolder):
     """ Verify if you are following the user in the loaded page """
+
+    if person == username:
+        return "OWNER", None
+
     if track == "profile":
         ig_homepage = "https://www.instagram.com/"
         web_address_navigator(browser, ig_homepage + person)
