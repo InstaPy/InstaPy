@@ -10,6 +10,7 @@ _The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 - Avoid user errors providing user names with caps
 - Fix get_active_users wrong behavior on videos
 - Bug in _CLI_ **argparsing** - `proxy_port` & `page_delay` are integers and not strings.
+- Selectors for finding comments and liking comments on posts
 
 ### Changed
 - Enable users interact by the comments of their own profiles.
