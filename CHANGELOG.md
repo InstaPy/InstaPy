@@ -17,6 +17,7 @@ _The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 ### Added
 - Add _Progress Tracker_ to `get_users_through_dialog()` function.
+- Add Proxy Authentication for Firefox
 
 
 ## [0.1.2] - 2019-02-04
