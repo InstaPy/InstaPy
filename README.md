@@ -142,7 +142,7 @@ pip uninstall instapy
 </a>
 
 **Help build InstaPy!**      
-Check out this short guide on [how to start contributing!](https://github.com/InstaPy/instapy-wiki/blob/master/CONTRIBUTORS.md).
+Check out this short guide on [how to start contributing!](https://github.com/InstaPy/instapy-docs/blob/master/CONTRIBUTORS.md).
 
 ---
 
@@ -154,9 +154,9 @@ Check out this short guide on [how to start contributing!](https://github.com/In
 Sorry for the inconveniences
 
 #### Written Guides:
-**[How to Ubuntu (64-Bit)](./docs/How_To_DO_Ubuntu_on_Digital_Ocean.md) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**
+**[How to Ubuntu (64-Bit)](https://github.com/InstaPy/instapy-docs/blob/master/How_Tos/How_To_DO_Ubuntu_on_Digital_Ocean.md) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**
 
-**[How to RaspberryPi](./docs/How_to_Raspberry.md) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**
+**[How to RaspberryPi](https://github.com/InstaPy/instapy-docs/blob/master/How_Tos/How_to_Raspberry.md) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**
 
 
 # Documentation
@@ -1033,7 +1033,7 @@ session.set_skip_users(skip_private=True,
 This will skip all business accounts except the ones that have a category that matches one item in the list of _dont_skip_business_categories_
 **N.B.** If both _dont_skip_business_categories_ and _skip_business_categories_, InstaPy will skip only business accounts in the list given from _skip_business_categories_.
 
-> [A list of all availlable business categories can be found here](./assets/business_categories.md)
+> [A list of all availlable business categories can be found here](https://github.com/InstaPy/instapy-docs/blob/master/BUSINESS_CATEGORIES.md)
 
 ### Liking based on the number of existing likes a post has
 
