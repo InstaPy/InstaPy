@@ -1031,7 +1031,7 @@ session.set_skip_users(skip_private=True,
 This will skip all business accounts except the ones that have a category that matches one item in the list of _dont_skip_business_categories_
 **N.B.** If both _dont_skip_business_categories_ and _skip_business_categories_, InstaPy will skip only business accounts in the list given from _skip_business_categories_.
 
-> [A list of all availlable business categories can be found here](./assets/business_categories.md)
+> [A list of all availlable business categories can be found here](https://github.com/InstaPy/instapy-docs/blob/master/BUSINESS_CATEGORIES.md)
 
 ### Liking based on the number of existing likes a post has
 
