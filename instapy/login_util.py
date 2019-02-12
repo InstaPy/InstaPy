@@ -17,7 +17,6 @@ from .util import check_authorization
 from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import WebDriverException
 from selenium.common.exceptions import MoveTargetOutOfBoundsException
-from selenium.webdriver.common.keys import Keys
 
 
 def bypass_suspicious_login(browser, bypass_with_mobile):
@@ -153,9 +152,7 @@ def login_user(browser,
                logfolder,
                switch_language=True,
                bypass_suspicious_attempt=False,
-               bypass_with_mobile=False,
-               proxy_username=None,
-               proxy_password=None):
+               bypass_with_mobile=False):
     """Logins the user with the given username and password"""
     assert username, 'Username not provided'
     assert password, 'Password not provided'
@@ -163,13 +160,6 @@ def login_user(browser,
     ig_homepage = "https://www.instagram.com"
     web_address_navigator(browser, ig_homepage)
     cookie_loaded = False
-
-    # authenticate with popup alert window
-    if (proxy_username and proxy_password):
-        proxy_authentication(browser,
-                             logger,
-                             proxy_username,
-                             proxy_password)
 
     # try to load cookie from username
     try:
@@ -325,19 +315,3 @@ def dismiss_notification_offer(browser, logger):
     if offer_loaded:
         dismiss_elem = browser.find_element_by_xpath(dismiss_elem_loc)
         click_element(browser, dismiss_elem)
-
-
-def proxy_authentication(browser,
-                         logger,
-                         proxy_username,
-                         proxy_password):
-    """ Authenticate proxy using popup alert window """
-    try:
-        alert_popup = browser.switch_to_alert()
-        alert_popup.send_keys('{username}{tab}{password}{tab}'
-                              .format(username=proxy_username,
-                                      tab=Keys.TAB,
-                                      password=proxy_password))
-        alert_popup.accept()
-    except Exception:
-        logger.warn('Unable to proxy authenticate')
