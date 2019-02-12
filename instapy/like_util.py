@@ -411,15 +411,15 @@ def get_links_for_username(browser,
         return False
 
     # if private user, we can get links only if we following
-    following, follow_button = get_following_status(browser, 'profile',
-                                                    username, person, None,
-                                                    logger, logfolder)
-    if following == 'Following':
-        following = True
-    is_private = is_private_profile(browser, logger, following)
-    if (is_private is None) or (is_private is True and not following) or (
-            following == 'Blocked'):
-        return False
+    following_status, follow_button = get_following_status(
+        browser, "profile", username, person, None, logger, logfolder)
+
+    if following_status != "OWNER":
+        is_private = is_private_profile(browser, logger, following_status)
+        if (is_private is None
+            or (is_private and not following_status)
+                or following_status == "Blocked"):
+            return False
 
     # Get links
     links = []

@@ -75,7 +75,7 @@ def is_private_profile(browser, logger, following=True):
 
     # double check with xpath that should work only when we not follwoing a
     # user
-    if is_private is True and not following:
+    if is_private and not following:
         logger.info("Is private account you're not following.")
         body_elem = browser.find_element_by_tag_name('body')
         is_private = body_elem.find_element_by_xpath(
@@ -525,8 +525,11 @@ def get_active_users(browser, username, posts, boundary, logger):
         "Getting active users who liked the latest {} posts:\n  {}".format(
             posts, message))
 
-    for count in range(1, posts + 1):
+    count = 1
+    checked_posts = 0
+    while count <= posts:
         try:
+            checked_posts +=1
             sleep_actual(2)
             try:
                 likers_count = browser.execute_script(
@@ -552,11 +555,39 @@ def get_active_users(browser, username, posts, boundary, logger):
                     likers_count = None
             try:
                 likes_button = browser.find_elements_by_xpath(
-                    "//button[contains(@class, '_8A5w5')]")[1]
-                click_element(browser, likes_button)
-                sleep_actual(5)
+                    "//button[contains(@class, '_8A5w5')]")
+                '''
+                    Len(likes_button) = 3 when user is followed and it's a post,
+                    but when user is followed and it's a video it is 2, so we avoid this
+                    and empty case.
+                '''
+                if len(likes_button) == 3 or len(likes_button) == 1:
+                    likes_button = likes_button[-1]
+                    click_element(browser, likes_button)
+                    sleep_actual(3)
+                else:
+                    raise NoSuchElementException
+                    
             except (IndexError, NoSuchElementException):
                 # Video have no likes button / no posts in page
+                logger.info("video found, try next post until we run out of posts")
+                
+                # edge case of account having only videos,  or last post is a video.
+                if checked_posts >= total_posts:
+                    break
+                # if not reached posts(parameter) value, continue (but load next post)
+                if count != posts+1:
+                    try:
+                        # click close button
+                        close_dialog_box(browser)
+        
+                        # click next button
+                        next_button = browser.find_element_by_xpath(
+                            "//a[contains(@class, 'HBoOv')]"
+                            "[text()='Next']")
+                        click_element(browser, next_button)
+                    except Exception:
+                        logger.error('Unable to go to next profile post')
                 continue
 
             # get a reference to the 'Likes' dialog box
@@ -579,7 +610,7 @@ def get_active_users(browser, username, posts, boundary, logger):
                 )
             else:
                 amount = None
-
+                
             while scroll_it is not False and boundary != 0:
                 scroll_it = browser.execute_script('''
                     var div = arguments[0];
@@ -606,12 +637,7 @@ def get_active_users(browser, username, posts, boundary, logger):
                     sleep_actual(1.2)  # old value 5.6
                     sc_rolled += 1
 
-                """ Old method 1 """
-                # tmp_list = browser.find_elements_by_xpath(
-                #     "//a[contains(@class, 'FPmhX')]")
-
                 user_list = get_users_from_dialog(user_list, dialog)
-                # print("len(user_list): {}".format(len(user_list)))
 
                 # write & update records at Progress Tracker
                 if amount:
@@ -652,26 +678,13 @@ def get_active_users(browser, username, posts, boundary, logger):
             logger.error("Ku-ku! There is an error searching active users"
                          "~\t{}\n\n".format(str(exc).encode("utf-8")))
 
-            """ Old method 2 """
-            # try:
-            #     tmp_list = browser.find_elements_by_xpath(
-            #         "//div[contains(@class, '_1xe_U')]/a")
-
-            #     if len(tmp_list) > 0:
-            #         logger.info(
-            #             "Post {}  |  Likers: found {}, catched {}".format(
-            #                 count, len(tmp_list), len(tmp_list)))
-
-            # except NoSuchElementException:
-            #     print("Ku-ku")
-
         for user in user_list:
             active_users.append(user)
 
         sleep_actual(1)
 
         # if not reached posts(parameter) value, continue
-        if count + 1 != posts + 1 and count != 0:
+        if count != posts + 1:
             try:
                 # click close button
                 close_dialog_box(browser)
@@ -684,6 +697,7 @@ def get_active_users(browser, username, posts, boundary, logger):
 
             except Exception:
                 logger.error('Unable to go to next profile post')
+        count += 1
 
     real_time = time.time()
     diff_in_minutes = int((real_time - start_time) / 60)
@@ -2022,12 +2036,12 @@ def parse_cli_args():
     parser.add_argument(
         "-p", "--password", help="Password", type=str, metavar="123")
     parser.add_argument(
-        "-pd", "--page-delay", help="Implicit wait", type=int, metavar="25")
+        "-pd", "--page-delay", help="Implicit wait", type=int, metavar=25)
     parser.add_argument(
         "-pa", "--proxy-address", help="Proxy address",
         type=str, metavar="192.168.1.1")
     parser.add_argument(
-        "-pp", "--proxy-port", help="Proxy port", type=str, metavar="8080")
+        "-pp", "--proxy-port", help="Proxy port", type=int, metavar=8080)
 
     """ Auto-booleans: adding these flags ENABLE themselves automatically
     ```python quickstart.py --use-firefox```

@@ -8,6 +8,7 @@
 [![built with Python3](https://img.shields.io/badge/built%20with-Python3-red.svg)](https://www.python.org/)
 [![Travis](https://img.shields.io/travis/rust-lang/rust.svg)](https://travis-ci.org/timgrossmann/InstaPy)
 [![Backers on Open Collective](https://opencollective.com/instapy/backers/badge.svg)](#backers)
+[![Sponsors on Open Collective](https://opencollective.com/instapy/sponsors/badge.svg)](#sponsors)
 
 ### Tooling that automates your social media interactions to “farm” Likes, Comments, and Followers on Instagram
 Implemented in Python using the Selenium module.
@@ -211,7 +212,8 @@ Sorry for the inconveniences
 * [Text Analytics](#text-analytics)
   *  [Yandex Translate API](#yandex-translate-api)
   *  [MeaningCloud Sentiment Analysis API](#meaningcloud-sentiment-analysis-api)
-* [Use a proxy](#use-a-proxy)
+* [Use a proxy (Chrome)](#use-a-proxy-chrome)
+* [Use a proxy (Firefox)](#use-a-proxy-firefox)
 * [Switching to Firefox](#switching-to-firefox)
 * [Emoji Support](#emoji-support)
 * [Clarifai ImageAPI](#clarifai-imageapi)
@@ -1906,16 +1908,18 @@ This project uses MeaningCloud™ (http://www.meaningcloud.com) for Text Analyti
 
 
 
-### Use a proxy
+### Use a proxy (Chrome)
 
 You can use InstaPy behind a proxy by specifying server address and port
 
+Simple proxy setup example:
 ```python
 session = InstaPy(username=insta_username, password=insta_password, proxy_address='8.8.8.8', proxy_port=8080)
 ```
 
-To use proxy with authentication you should firstly generate proxy chrome extension (works only with headless_browser=False unless using FF where it works with headless_browser=True).
+To use proxy with authentication you should firstly import proxy chrome extension to you configuration file (the one with your Instagram username and password).
 
+Proxy setup using authentication example:
 ```python
 from proxy_extension import create_proxy_extension
 
@@ -1923,6 +1927,31 @@ proxy = 'login:password@ip:port'
 proxy_chrome_extension = create_proxy_extension(proxy)
 
 session = InstaPy(username=insta_username, password=insta_password, proxy_chrome_extension=proxy_chrome_extension, nogui=True)
+```
+
+### Use a proxy (Firefox)
+
+You can use InstaPy behind a proxy by specifying server address, port and/or proxy authentication credentials. It works with and without ```headless_browser``` option.
+
+Simple proxy setup example:
+```python
+session = InstaPy(username=insta_username, 
+                  password=insta_password,
+		  use_firefox=True,
+		  proxy_address='8.8.8.8', 
+		  proxy_port=8080)
+
+```
+
+Proxy setup with authentication example:
+```python
+session = InstaPy(username=insta_username,
+                  password=insta_password,
+                  proxy_username='',
+                  proxy_password='',
+                  proxy_address='8.8.8.8',
+                  proxy_port=4444,
+                  use_firefox=True)
 ```
 
 ### Switching to Firefox
