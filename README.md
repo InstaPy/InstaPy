@@ -1934,7 +1934,11 @@ You can use InstaPy behind a proxy by specifying server address, port and/or pro
 
 Simple proxy setup example:
 ```python
-session = InstaPy(username=insta_username, password=insta_password, proxy_address='8.8.8.8', proxy_port=8080)
+session = InstaPy(username=insta_username, 
+                  password=insta_password,
+		  use_firefox=True,
+		  proxy_address='8.8.8.8', 
+		  proxy_port=8080)
 
 ```
 
