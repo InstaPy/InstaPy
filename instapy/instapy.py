@@ -1,80 +1,81 @@
 """OS Modules environ method to get the setup vars from the Environment"""
-import csv
-import json
-import logging
-import os
-import random
 # import built-in & third-party modules
 import time
-import unicodedata
+from math import ceil
+import random
+from sys import platform
+from platform import python_version
+import os
+import csv
+import json
+import requests
+from selenium import webdriver
+from selenium.webdriver import DesiredCapabilities
+from pyvirtualdisplay import Display
+import logging
 from contextlib import contextmanager
 from copy import deepcopy
-from math import ceil
-from platform import python_version
-from sys import platform
+import unicodedata
 
-import requests
-from pyvirtualdisplay import Display
-from selenium import webdriver
-# import exceptions
-from selenium.common.exceptions import NoSuchElementException
-from selenium.webdriver import DesiredCapabilities
-
-from .browser import close_browser
-from .browser import set_selenium_local_session
 # import InstaPy modules
 from .clarifai_util import check_image
 from .comment_util import comment_image
-from .comment_util import get_comments_on_post
 from .comment_util import verify_commenting
-from .commenters_util import extract_information
-from .commenters_util import get_photo_urls_from_profile
-from .commenters_util import users_liked
-from .database_engine import get_database
-from .exceptions import InstaPyError
-from .file_manager import get_logfolder
-from .file_manager import get_workspace
+from .comment_util import get_comments_on_post
 from .like_util import check_link
-from .like_util import get_links_for_location
+from .like_util import verify_liking
 from .like_util import get_links_for_tag
-from .like_util import get_links_for_username
 from .like_util import get_links_from_feed
 from .like_util import get_tags
-from .like_util import like_comment
+from .like_util import get_links_for_location
 from .like_util import like_image
-from .like_util import verify_liking
+from .like_util import get_links_for_username
+from .like_util import like_comment
 from .login_util import login_user
+from .settings import Settings
 from .print_log_writer import log_follower_num
 from .print_log_writer import log_following_num
-from .relationship_tools import get_fans
-from .relationship_tools import get_followers
-from .relationship_tools import get_following
-from .relationship_tools import get_mutual_following
-from .relationship_tools import get_nonfollowers
-from .relationship_tools import get_unfollowers
-from .settings import Settings
-from .text_analytics import text_analysis
-from .text_analytics import yandex_supported_languages
-from .time_util import set_sleep_percentage
+
 from .time_util import sleep
-from .unfollow_util import dump_follow_restriction
-from .unfollow_util import follow_restriction
-from .unfollow_util import follow_user
-from .unfollow_util import get_follow_requests
-from .unfollow_util import get_given_user_followers
-from .unfollow_util import get_given_user_following
-from .unfollow_util import set_automated_followed_pool
-from .unfollow_util import unfollow
-from .unfollow_util import unfollow_user
-from .util import dump_record_activity
+from .time_util import set_sleep_percentage
 from .util import get_active_users
-from .util import highlight_print
-from .util import interruption_handler
-from .util import parse_cli_args
-from .util import save_account_progress
-from .util import truncate_float
 from .util import validate_username
 from .util import web_address_navigator
+from .util import interruption_handler
+from .util import highlight_print
+from .util import dump_record_activity
+from .util import truncate_float
+from .util import save_account_progress
+from .util import parse_cli_args
+from .unfollow_util import get_given_user_followers
+from .unfollow_util import get_given_user_following
+from .unfollow_util import unfollow
+from .unfollow_util import unfollow_user
+from .unfollow_util import follow_user
+from .unfollow_util import follow_restriction
+from .unfollow_util import dump_follow_restriction
+from .unfollow_util import set_automated_followed_pool
+from .unfollow_util import get_follow_requests
+from .commenters_util import extract_information
+from .commenters_util import users_liked
+from .commenters_util import get_photo_urls_from_profile
+from .relationship_tools import get_following
+from .relationship_tools import get_followers
+from .relationship_tools import get_unfollowers
+from .relationship_tools import get_nonfollowers
+from .relationship_tools import get_fans
+from .relationship_tools import get_mutual_following
+from .database_engine import get_database
+from .text_analytics import text_analysis
+from .text_analytics import yandex_supported_languages
+from .browser import set_selenium_local_session
+from .browser import close_browser
+from .file_manager import get_workspace
+from .file_manager import get_logfolder
+
+# import exceptions
+from selenium.common.exceptions import NoSuchElementException
+from .exceptions import InstaPyError
 
 
 class InstaPy:
@@ -4963,7 +4964,7 @@ class InstaPy:
                    if uchr.isalpha())
 
     def accept_follow_requests(self,
-                               accounts_limit=10,
+                               page_limit=10,
                                sleep_delay=1):
         """Accept pending follow requests from activity feed"""
 
@@ -4977,23 +4978,23 @@ class InstaPy:
                         "info",
                         self.logger)
 
-        feed_link = "https://www.instagram.com/accounts/activity/?followRequests=1"
-        web_address_navigator(self.browser, feed_link)
+        current_page = 0
+        while current_page < page_limit:
 
-        requests_to_confirm = self.browser.find_elements_by_xpath("//button[text()='Confirm']")
+            current_page += 1
+            feed_link = "https://www.instagram.com/accounts/activity/?followRequests=1"
+            web_address_navigator(self.browser, feed_link)
 
-        if len(requests_to_confirm) == 0:
-            self.logger.info("There are not follow requests in activity feed")
+            requests_to_confirm = self.browser.find_elements_by_xpath("//button[text()='Confirm']")
 
-        accepted = 0
-        for request in requests_to_confirm:
-            self.logger.info("Accepting {}".format(request.find_elements_by_xpath("./../../../../div[2]")[0]
-                                                   .text.split("\n")[0]))
-            request.click()
-            sleep(sleep_delay)
-            accepted += 1
-            if accepted >= accounts_limit:
-                self.logger.info("Reached accounts limit {}".format(accounts_limit))
+            if len(requests_to_confirm) == 0:
+                self.logger.info("There are not follow requests in activity feed")
                 break
+
+            for request in requests_to_confirm:
+                self.logger.info("Accepting {}".format(request.find_elements_by_xpath("./../../../../div[2]")[0]
+                                                       .text.split("\n")[0]))
+                request.click()
+                sleep(sleep_delay)
 
         return self
