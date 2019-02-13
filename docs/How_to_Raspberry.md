@@ -13,6 +13,8 @@ NOTE: _If you add an empty file named ssh to the boot directory, ssh will be ena
 
 
 ## Python 3.7 install guide
+If you installed the newest version of Raspian, skip to `Install InstaPy`
+
 **STEP 1:** _First install the dependencies needed to build._
 
 1. ```sudo apt-get update```
@@ -54,24 +56,20 @@ NOTE: _If you add an empty file named ssh to the boot directory, ssh will be ena
 3. ```cd Projects```
 4. ```python3 -m venv /home/pi/Projects/venv37```
 5. ```source venv37/bin/activate```
-6. ```git clone https://github.com/timgrossmann/InstaPy.git```
-7. ```cd InstaPy```
-8. ```python3 -m pip install --user .```
+6. ```python3 -m pip install instapy -u```
 
-NOTE: _the last step (7.) takes quite a while!_
+NOTE: _the last step (6.) takes quite a while!_
 
 
 ## For Chrome
 
-_Navigate to the assets folder:_
+_Navigate to the assets folder in your Workspace:_
 
-9. ```wget https://github.com/electron/electron/releases/download/v3.0.0-beta.5/chromedriver-v3.0.0-beta.5-linux-armv7l.zip```
-10. ```unzip chromedriver-v3.0.0-beta.5-linux-armv7l.zip```
-11. ```chmod 755 chromedriver```
-12. ```chmod +x chromedriver```
-13. ```sudo apt-get remove chromium```
+7. ```cd InstaPy/assets``` <-- or wherever your workspace is (note: you may have to run `python quickstart.py` before)
+8. ```wget https://github.com/electron/electron/releases/download/v3.0.0-beta.5/chromedriver-v3.0.0-beta.5-linux-armv7l.zip```
+9. ```unzip chromedriver-v3.0.0-beta.5-linux-armv7l.zip```
 
-
+NOTE: _use `headless_browser=True` if you get an error running `python quickstart.py`!_
 ## For Firefox
 
 _Remove any versions of Firefox as it will conflict with the correct one installed below:_
@@ -120,3 +118,28 @@ _New releases can be found in:_ https://github.com/mozilla/geckodriver/releases
 2. ```tar -xvzf geckodriver-v*```
 3. ```chmod +x geckodriver```
 4. ```sudo cp geckodriver /usr/local/bin/```
+
+## Start script on boot
+
+If you've installed globally you can start quickstart on boot
+
+1. ```sudo systemctl edit --force --full instapy.service```
+2. Edit the file and save with: 
+```[Unit]
+Description=InstaPy
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=simple
+User=pi
+WorkingDirectory=/home/pi
+ExecStart=/usr/bin/python3 /home/pi/quickstart.py
+
+[Install]
+WantedBy=multi-user.target
+```
+Note: change `ExecStart` to wherever your quickstart.py is, and also note its specifying python3 here
+3. ```systemctl enable instapy.service```
+
+You can check the most recent log lines with `systemctl status instapy.service`
