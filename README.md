@@ -32,10 +32,8 @@ That's it 🍫☕! You've just installed InstaPy globally on your machine. In st
 ### Step 2 - Define how InstaPy should run
 Download a **[quickstart](https://github.com/InstaPy/instapy-quickstart)** script of your choice to your machine. The quickstart script file tells InstaPy how it should run, and this is the file you'll be working on when changing how InstaPy works.
 
-<details>
 - Here is the easiest **quickstart** script you can use - [quickstart.py](https://github.com/InstaPy/instapy-quickstart/blob/master/quickstart.py)  
 - And here you can find lots of _sophisticated **quickstart** templates_ shared by the community! - [quickstart templates 📂](https://github.com/InstaPy/instapy-quickstart/tree/master/quickstart_templates)  
-</details>
 
 Because you installed InstaPy globally in step 1, you can put your **[quickstart](https://github.com/InstaPy/instapy-quickstart)** file anywhere on your machine.
 
