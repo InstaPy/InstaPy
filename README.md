@@ -55,11 +55,12 @@ InstaPy will now open a browser window and start working.
 
 If you prefer that InstaPy works in the background rather than opening a browser window, run **headless** mode by passing the `--headless-browser` option when running from the CLI, or by baking it into your **quickstart** script from step 2 by passing the `headless_browser=True` parameter to the `InstaPy()` function, like so: `InstaPy(headless_browser=True)`.
 
-### Step 4 - Profit
-?!
+### Step 4 - Profit!
+:)
 
+---
 #### Looking for a _**specific** version_ of InstaPy?
-Try running in your CLI:
+In your CLI, run the `install` command and pass a version number:
 ```elm
 pip install instapy==0.1.1
 ```
