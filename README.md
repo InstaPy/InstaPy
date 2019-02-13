@@ -12,125 +12,85 @@
 ### Tooling that automates your social media interactions to “farm” Likes, Comments, and Followers on Instagram
 Implemented in Python using the Selenium module.
 
-**Have an issue?**
-If you should encounter any issue, please first [search for similar issues](https://github.com/timgrossmann/InstaPy/issues) and only if you can't find any, create a new issue or use the [discord channel](https://discord.gg/FDETsht) for help.
+[Twitter of InstaPy](https://twitter.com/InstaPy) | [Twitter of Tim](https://twitter.com/timigrossmann) | [How it works (Medium)](https://medium.freecodecamp.com/my-open-source-instagram-bot-got-me-2-500-real-followers-for-5-in-server-costs-e40491358340) |   
+[Talk about automating your Instagram](https://youtu.be/4TmKFZy-ioQ) | [Talk about doing Open-Source work](https://www.youtube.com/watch?v=A_UtST302Og&t=0s&list=PLa4P1NPX9hthXV-wko0xyxFpbhYZFkW7o) | [Listen to the "Talk Python to me"-Episode](https://talkpython.fm/episodes/show/142/automating-the-web-with-selenium-and-instapy)
 
 #### Newsletter: [Sign Up for the Newsletter here!](http://eepurl.com/cZbV_v)
 
-
 ## **Installation**
+### Step 1 - Determine your enviorment and download InstaPy
+You'll first need to install InstaPy on your machine.
+
+If you're on Ubuntu, read the specific guide on [Installing on Ubuntu (64-Bit)](./docs/How_To_DO_Ubuntu_on_Digital_Ocean.md). If you're on a Raspberry Pi, read the [Installing on RaspberryPi](./docs/How_to_Raspberry.md) guide instead.
+
+If you're not on Ubuntu or a Raspberry Pi, go ahead and install InstaPy on your machine with `pip`.
 ```elm
 pip install instapy
 ```
-That's it 🍫☕
+That's it 🍫☕! You've just installed InstaPy globally on your machine. In step 2 you'll set up the parameters for InstaPy by creating a script that InstaPy will follow.
 
-<br />
-
-Now all you need is a **quickstart** script to start _InstaPy_ 🥳  
+### Step 2 - Define how InstaPy should run
+Download a **[quickstart](https://github.com/InstaPy/instapy-quickstart)** script of your choice to your machine. The quickstart script file tells InstaPy how it should run, and this is the file you'll be working on when changing how InstaPy works.
 
 <details>
-  <summary> <b>Choose a <b>quickstart</b> script of your choice from the <a href="https://github.com/InstaPy/instapy-quickstart">instapy-quickstart</a> repository to get started 🔎</b></summary>
-
 - Here is the easiest **quickstart** script you can use - [quickstart.py](https://github.com/InstaPy/instapy-quickstart/blob/master/quickstart.py)  
 - And here you can find lots of _sophisticated **quickstart** templates_ shared by the community! - [quickstart templates 📂](https://github.com/InstaPy/instapy-quickstart/tree/master/quickstart_templates)  
-
-<br /> 
-
-You can also copy and paste this basic **quickstart** into a new text file and save it as `.py` file.
-```python		
-""" Quickstart script for InstaPy usage """		
-# imports		
-from instapy import InstaPy		
-from instapy import smart_run		
-	
-# get an InstaPy session!		
-session = InstaPy()		
-	
-with smart_run(session):		
-    """ Activity flow """		
-    # general settings		
-    session.set_dont_include(["friend1", "friend2", "friend3"])		
-	
-    # activity		
-    session.like_by_tags(["natgeo"], amount=10)		
-```
-
 </details>
 
-<br />
+Because you installed InstaPy globally in step 1, you can put your **[quickstart](https://github.com/InstaPy/instapy-quickstart)** file anywhere on your machine.
 
-🛰 As you've downloaded a **quickstart** script into your computer, go ahead and run it in the command prompt as:
+You can put in your account details now with `InstaPy(username="abc", password="123")`, or, you can [pass them using the Command Line Interface (CLI)](#pass-arguments-by-cli).
+
+In step 3, you'll learn how to actually start InstaPy. You'll notice that we opted for the [CLI](#pass-arguments-by-cli) to pass account details, but neither option is bettar than the other.
+
+### Step 3 - Run InstaPy
+Make sure to `cd` to where your quickstart file is.
+
+To run InstaPy, you'll need to run the **[quickstart](https://github.com/InstaPy/instapy-quickstart)** script you downloaded in step 2 using Python.
+
 ```elm
+cd ~/path/to/quickstart-script
 python quickstart.py --username abc --password 123
 ```
->**PRO**:  
-Read more about passing arguments from the command line interface in the section - [Pass arguments by CLI](#pass-arguments-by-cli).
 
-<br />
+InstaPy will now open a browser window and start working.
 
-##### 🚁 You can provide _username_ & _password_ inside the **quickstart** script, too!
-```python
-# inside quickstart script
+If you prefer that InstaPy works in the background rather than opening a browser window, run **headless** mode by passing the `--headless-browser` option when running from the CLI, or by baking it into your **quickstart** script from step 2 by passing the `headless_browser=True` parameter to the `InstaPy()` function, like so: `InstaPy(headless_browser=True)`.
 
-session = InstaPy(username="abc",    
-                  password="123")   
-```
+### Step 4 - Profit
+?!
 
-<br />
-
-🛸 Also, if you like to run _InstaPy_ in **background**, just enable the **headless** mode!
-```erlang
-python quickstart.py -u abc -p 123 --headless-browser
-```
-Or do it right inside the **quickstart** script.
-```python
-# inside quickstart script
-
-session = InstaPy(username="abc",    
-                  password="123",
-                  headless_browser=True)  
-```
-_Until you enable the **headless** mode, InstaPy will run in the **graphical** mode where you can watch the ongoing automation in your web browser_.
-
-
-> If you've used _InstaPy_ before installing it by **pip**, you have to move your _old_ data to the new **workspace** folder for once.
-[Read how to do this here](#migrating-your-data-to-the-workspace-folder).
-
-<br />
-
-#### **Update**
-```elm
-
-pip install instapy -U
-
-```
-
-#### **Install** a _**specific** version_
+#### Looking for a _**specific** version_ of InstaPy?
+Try running in your CLI:
 ```elm
 pip install instapy==0.1.1
 ```
 
-#### **Uninstall**
+#### Need some help?
+If you should encounter any issues, please first [search for similar issues](https://github.com/timgrossmann/InstaPy/issues) and only if you can't find any, create a new issue.
+
+You can also find us on <a href="https://discord.gg/FDETsht">
+  <img hspace="3" alt="Discord channel" src="https://camo.githubusercontent.com/e4a739df27356a78e9cae2e2dda642d118567e7c/68747470733a2f2f737465616d63646e2d612e616b616d616968642e6e65742f737465616d636f6d6d756e6974792f7075626c69632f696d616765732f636c616e732f32373039303534312f386464356339303766326130656563623733646336613437373666633961323538373865626364642e706e67" width=114/>
+</a>.
+
+## Updating InstaPy
+To update InstaPy, in your CLI, just run:
+```elm
+pip install instapy -U
+```
+
+### Haven't updated InstaPy since the 10th of February? Quick migration tip
+InstaPy now uses **workspaces**. You have to move your _old_ data to the new **workspace** folder for once.
+[Read how to do this here](#migrating-your-data-to-the-workspace-folder).
+
+
+## Uninstalling InstaPy
+Uninstall InstaPy by simply running:
 ```elm
 pip uninstall instapy
 ```
 
-<br />
-
---- 
-
-### Social
-
-#### [Twitter of InstaPy](https://twitter.com/InstaPy) | [Twitter of Tim](https://twitter.com/timigrossmann) | [How it works (Medium)](https://medium.freecodecamp.com/my-open-source-instagram-bot-got-me-2-500-real-followers-for-5-in-server-costs-e40491358340) |   
-[Talk about automating your Instagram](https://youtu.be/4TmKFZy-ioQ) | [Talk about doing Open-Source work](https://www.youtube.com/watch?v=A_UtST302Og&t=0s&list=PLa4P1NPX9hthXV-wko0xyxFpbhYZFkW7o) | [Listen to the "Talk Python to me"-Episode](https://talkpython.fm/episodes/show/142/automating-the-web-with-selenium-and-instapy)
-
-### Do you need help ?
-
-<a href="https://discord.gg/FDETsht">
-  <img hspace="3" alt="Discord channel" src="https://camo.githubusercontent.com/e4a739df27356a78e9cae2e2dda642d118567e7c/68747470733a2f2f737465616d63646e2d612e616b616d616968642e6e65742f737465616d636f6d6d756e6974792f7075626c69632f696d616765732f636c616e732f32373039303534312f386464356339303766326130656563623733646336613437373666633961323538373865626364642e706e67" width=214/>
-</a>
-
-### Do you want to support us ?
+## Support us!
 
 <a href="https://opencollective.com/instapy/donate" target="_blank">
   <img align="left" hspace="10" src="https://opencollective.com/instapy/contribute/button@2x.png?color=blue" width=300 />
