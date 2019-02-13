@@ -33,11 +33,11 @@ That's it 🍫☕! You've just installed InstaPy globally on your machine. In st
 Download a **[quickstart](https://github.com/InstaPy/instapy-quickstart)** script of your choice to your machine. The quickstart script file tells InstaPy how it should run, and this is the file you'll be working on when changing how InstaPy works.
 
 - Here is the easiest **quickstart** script you can use - [quickstart.py](https://github.com/InstaPy/instapy-quickstart/blob/master/quickstart.py)  
-- And here you can find lots of _sophisticated **quickstart** templates_ shared by the community! - [quickstart templates 📂](https://github.com/InstaPy/instapy-quickstart/tree/master/quickstart_templates)  
+- And here you can find lots of sophisticated **quickstart** templates shared by the community! - [quickstart templates 📂](https://github.com/InstaPy/instapy-quickstart/tree/master/quickstart_templates)  
 
 Because you installed InstaPy globally in step 1, you can put your **[quickstart](https://github.com/InstaPy/instapy-quickstart)** file anywhere on your machine.
 
-You can put in your account details now with `InstaPy(username="abc", password="123")`, or, you can [pass them using the Command Line Interface (CLI)](#pass-arguments-by-cli).
+You can put in your account details now by passing the username and password parameters to the `InstaPy()` function in your **quickstart** script, like so: `InstaPy(username="abc", password="123")`, or, you can [pass them using the Command Line Interface (CLI)](#pass-arguments-by-cli).
 
 In step 3, you'll learn how to actually start InstaPy. You'll notice that we opted for the [CLI](#pass-arguments-by-cli) to pass account details, but neither option is bettar than the other.
 
