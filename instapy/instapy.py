@@ -4964,7 +4964,7 @@ class InstaPy:
                    if uchr.isalpha())
 
     def accept_follow_requests(self,
-                               page_limit=10,
+                               accounts_limit=100,
                                sleep_delay=1):
         """Accept pending follow requests from activity feed"""
 
@@ -4978,23 +4978,26 @@ class InstaPy:
                         "info",
                         self.logger)
 
-        current_page = 0
-        while current_page < page_limit:
+        accepted = 0
+        while accepted < accounts_limit:
 
-            current_page += 1
             feed_link = "https://www.instagram.com/accounts/activity/?followRequests=1"
             web_address_navigator(self.browser, feed_link)
 
             requests_to_confirm = self.browser.find_elements_by_xpath("//button[text()='Confirm']")
 
             if len(requests_to_confirm) == 0:
-                self.logger.info("There are not follow requests in activity feed")
+                self.logger.info("There are no follow requests in activity feed")
                 break
 
             for request in requests_to_confirm:
-                self.logger.info("Accepting {}".format(request.find_elements_by_xpath("./../../../../div[2]")[0]
-                                                       .text.split("\n")[0]))
                 request.click()
                 sleep(sleep_delay)
+                accepted += 1
+                if accepted >= accounts_limit:
+                    self.logger.info("Reached accepted accounts limit of {} requests".format(accounts_limit))
+                    break
+
+        self.logger.info("Accepted {} follow requests".format(accepted))
 
         return self
