@@ -178,6 +178,7 @@ Sorry for the inconveniences
   * [Interact on posts at given URLs](#interact-on-posts-at-given-urls)
   * [Interact by Comments](#interact-by-comments)
   * [Unfollowing](#unfollowing)
+  * [Accept pending follow requests](#accept-pending-follow-requests)
   * [Remove outgoing follow requests](#remove-outgoing-follow-requests)
   * [Don't unfollow active users](#dont-unfollow-active-users)
   * [Interactions based on the number of followers and/or following a user has](#interactions-based-on-the-number-of-followers-andor-following-a-user-has)
@@ -878,7 +879,13 @@ session.unfollow_users(amount=200, allFollowing=True, style="FIFO", unfollow_aft
 ```
 _here the unfollow method- **alFollowing** is used_
 
+### Accept pending follow requests
 
+```python
+session.accept_follow_requests(accounts_limit=100,sleep_delay=1)
+```
+`sleep_delay`  
+Sleep delay _sets_ the time it will sleep **after** every accepted request (_default delay is ~ `1` second).
 
 ### Remove outgoing follow requests
 
