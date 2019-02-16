@@ -4964,7 +4964,7 @@ class InstaPy:
                    if uchr.isalpha())
 
     def accept_follow_requests(self,
-                               accounts_limit=100,
+                               amount=100,
                                sleep_delay=1):
         """Accept pending follow requests from activity feed"""
 
@@ -4979,7 +4979,7 @@ class InstaPy:
                         self.logger)
 
         accepted = 0
-        while accepted < accounts_limit:
+        while accepted < amount:
 
             feed_link = "https://www.instagram.com/accounts/activity/?followRequests=1"
             web_address_navigator(self.browser, feed_link)
@@ -4994,8 +4994,8 @@ class InstaPy:
                 request.click()
                 sleep(sleep_delay)
                 accepted += 1
-                if accepted >= accounts_limit:
-                    self.logger.info("Reached accepted accounts limit of {} requests".format(accounts_limit))
+                if accepted >= amount:
+                    self.logger.info("Reached accepted accounts limit of {} requests".format(amount))
                     break
 
         self.logger.info("Accepted {} follow requests".format(accepted))
