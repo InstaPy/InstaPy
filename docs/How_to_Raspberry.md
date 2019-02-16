@@ -69,7 +69,7 @@ _Navigate to the assets folder:_
 10. ```unzip chromedriver-v3.0.0-beta.5-linux-armv7l.zip```
 11. ```chmod 755 chromedriver```
 12. ```chmod +x chromedriver```
-13. ```sudo apt-get remove chromium```
+13. ```rm chromedriver-v3.0.0-beta.5-linux-armv7l.zip```
 
 
 ## For Firefox
