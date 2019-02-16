@@ -884,8 +884,12 @@ _here the unfollow method- **alFollowing** is used_
 ### Accept pending follow requests
 
 ```python
-session.accept_follow_requests(accounts_limit=100,sleep_delay=1)
+session.accept_follow_requests(amount=100, sleep_delay=1)
 ```
+
+`amount`   
+The maximum amount of follow requests that will be accepted.
+
 `sleep_delay`  
 Sleep delay _sets_ the time it will sleep **after** every accepted request (_default delay is ~ `1` second).
 
