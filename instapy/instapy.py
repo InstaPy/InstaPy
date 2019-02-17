@@ -46,6 +46,7 @@ from .util import highlight_print
 from .util import dump_record_activity
 from .util import truncate_float
 from .util import save_account_progress
+from .util import parse_cli_args
 from .unfollow_util import get_given_user_followers
 from .unfollow_util import get_given_user_following
 from .unfollow_util import unfollow
@@ -69,14 +70,12 @@ from .text_analytics import text_analysis
 from .text_analytics import yandex_supported_languages
 from .browser import set_selenium_local_session
 from .browser import close_browser
+from .file_manager import get_workspace
+from .file_manager import get_logfolder
 
 # import exceptions
 from selenium.common.exceptions import NoSuchElementException
-
-
-class InstaPyError(Exception):
-    """General error for InstaPy exceptions"""
-    pass
+from .exceptions import InstaPyError
 
 
 class InstaPy:
@@ -92,42 +91,55 @@ class InstaPy:
                  page_delay=25,
                  show_logs=True,
                  headless_browser=False,
-                 proxy_address=None,
                  proxy_chrome_extension=None,
+                 proxy_username=None,
+                 proxy_password=None,
+                 proxy_address=None,
                  proxy_port=None,
                  disable_image_load=False,
                  bypass_suspicious_attempt=False,
                  bypass_with_mobile=False,
                  multi_logs=True):
 
+        cli_args = parse_cli_args()
+        username = cli_args.username or username
+        password = cli_args.password or password
+        use_firefox = cli_args.use_firefox or use_firefox
+        page_delay = cli_args.page_delay or page_delay
+        headless_browser = cli_args.headless_browser or headless_browser
+        proxy_address = cli_args.proxy_address or proxy_address
+        proxy_port = cli_args.proxy_port or proxy_port
+        disable_image_load = cli_args.disable_image_load or disable_image_load
+        bypass_suspicious_attempt = (
+            cli_args.bypass_suspicious_attempt or bypass_suspicious_attempt)
+        bypass_with_mobile = cli_args.bypass_with_mobile or bypass_with_mobile
+
+        Settings.InstaPy_is_running = True
+        # workspace must be ready before anything
+        if not get_workspace():
+            raise InstaPyError(
+                "Oh no! I don't have a workspace to work at :'(")
+
+        self.nogui = nogui
         if nogui:
             self.display = Display(visible=0, size=(800, 600))
             self.display.start()
 
         self.browser = None
         self.headless_browser = headless_browser
+        self.proxy_username = proxy_username
+        self.proxy_password = proxy_password
         self.proxy_address = proxy_address
         self.proxy_port = proxy_port
         self.proxy_chrome_extension = proxy_chrome_extension
-        self.multi_logs = multi_logs
         self.selenium_local_session = selenium_local_session
         self.bypass_suspicious_attempt = bypass_suspicious_attempt
         self.bypass_with_mobile = bypass_with_mobile
         self.disable_image_load = disable_image_load
 
-        self.show_logs = show_logs
-        Settings.show_logs = show_logs or None
-
         self.username = username or os.environ.get('INSTA_USER')
         self.password = password or os.environ.get('INSTA_PW')
         Settings.profile["name"] = self.username
-        self.nogui = nogui
-        self.logfolder = Settings.log_location + os.path.sep
-        if self.multi_logs is True:
-            self.logfolder = '{0}{1}{2}{1}'.format(
-                Settings.log_location, os.path.sep, self.username)
-        if not os.path.exists(self.logfolder):
-            os.makedirs(self.logfolder)
 
         self.page_delay = page_delay
         self.switch_language = True
@@ -195,13 +207,13 @@ class InstaPy:
         self.clarifai_check_video = False
         self.clarifai_proxy = None
 
-        self.potency_ratio = 1.3466
-        self.delimit_by_numbers = True
+        self.potency_ratio = None   # 1.3466
+        self.delimit_by_numbers = None
 
-        self.max_followers = 90000
-        self.max_following = 66834
-        self.min_followers = 35
-        self.min_following = 27
+        self.max_followers = None   # 90000
+        self.max_following = None   # 66834
+        self.min_followers = None   # 35
+        self.min_following = None   # 27
 
         self.delimit_liking = False
         self.liking_approved = True
@@ -255,6 +267,10 @@ class InstaPy:
         self.start_time = time.time()
 
         # assign logger
+        self.show_logs = show_logs
+        Settings.show_logs = show_logs or None
+        self.multi_logs = multi_logs
+        self.logfolder = get_logfolder(self.username, self.multi_logs)
         self.logger = self.get_instapy_logger(self.show_logs)
 
         get_database(make=True)  # IMPORTANT: think twice before relocating
@@ -300,6 +316,8 @@ class InstaPy:
     def set_selenium_local_session(self):
         self.browser, err_msg = set_selenium_local_session(self.proxy_address,
                                                            self.proxy_port,
+                                                           self.proxy_username,
+                                                           self.proxy_password,
                                                            self.proxy_chrome_extension,
                                                            self.headless_browser,
                                                            self.use_firefox,
@@ -464,7 +482,7 @@ class InstaPy:
             return self
 
         self.do_like = enabled
-        self.like_percentage = percentage
+        self.like_percentage = min(percentage,100)
 
         return self
 
@@ -1074,6 +1092,7 @@ class InstaPy:
                                 min_following=None):
         """Sets the potency ratio and limits to the provide an efficient
         activity between the targeted masses"""
+
         self.potency_ratio = potency_ratio if enabled is True else None
         self.delimit_by_numbers = delimit_by_numbers if enabled is True else \
             None
@@ -1088,7 +1107,7 @@ class InstaPy:
         self.max_posts = max_posts if enabled is True else None
 
     def validate_user_call(self, user_name):
-        """Call the validate_username() function"""
+        """ Short call of validate_username() function """
         validation, details = validate_username(self.browser,
                                                 user_name,
                                                 self.username,
@@ -1110,7 +1129,8 @@ class InstaPy:
                                                 self.skip_business_percentage,
                                                 self.skip_business_categories,
                                                 self.dont_skip_business_categories,
-                                                self.logger)
+                                                self.logger,
+                                                self.logfolder)
         return validation, details
 
     def fetch_smart_comments(self, is_video, temp_comments):
@@ -2096,6 +2116,7 @@ class InstaPy:
                     not_valid_users += 1
                     continue
 
+            track = 'profile'
             # decision making
             # static conditions
             not_dont_include = username not in self.dont_include
@@ -2121,12 +2142,14 @@ class InstaPy:
                 # if we have only one image to like/comment
                 if commenting and not liking and amount == 1:
                     continue
+
                 if following or commenting or liking:
                     self.logger.info(
                         'username actions: following={} commenting={} '
                         'liking={}'.format(
                             following, commenting, liking))
                     break
+
                 # if for some reason we have no actions on this user
                 if counter > 5:
                     self.logger.info(
@@ -2187,6 +2210,7 @@ class InstaPy:
                                    self.check_character_set,
                                    self.ignore_if_contains,
                                    self.logger))
+                    track = "post"
 
                     if not inappropriate:
                         # after first image we roll again
@@ -2290,7 +2314,7 @@ class InstaPy:
 
                 follow_state, msg = follow_user(
                     self.browser,
-                    "post",
+                    track,
                     self.username,
                     username,
                     None,
@@ -2312,20 +2336,21 @@ class InstaPy:
                 self.logger.info("--> Given amount not fullfilled, image pool "
                                  "reached its end\n")
 
-        # final words
-        interacted_media_size = (len(usernames) * amount - inap_img)
-        self.logger.info(
-            "Finished interacting on total of {} images from {} users! xD\n"
-            .format(interacted_media_size, len(usernames)))
+        if len(usernames) > 1:
+            # final words
+            interacted_media_size = (len(usernames) * amount - inap_img)
+            self.logger.info(
+                "Finished interacting on total of {} images from {} users! xD\n"
+                .format(interacted_media_size, len(usernames)))
 
-        # print results
-        self.logger.info('Liked: {}'.format(total_liked_img))
-        self.logger.info('Already Liked: {}'.format(already_liked))
-        self.logger.info('Commented: {}'.format(commented))
-        self.logger.info('Followed: {}'.format(followed))
-        self.logger.info('Already Followed: {}'.format(already_followed))
-        self.logger.info('Inappropriate: {}'.format(inap_img))
-        self.logger.info('Not valid users: {}\n'.format(not_valid_users))
+            # print results
+            self.logger.info('Liked: {}'.format(total_liked_img))
+            self.logger.info('Already Liked: {}'.format(already_liked))
+            self.logger.info('Commented: {}'.format(commented))
+            self.logger.info('Followed: {}'.format(followed))
+            self.logger.info('Already Followed: {}'.format(already_followed))
+            self.logger.info('Inappropriate: {}'.format(inap_img))
+            self.logger.info('Not valid users: {}\n'.format(not_valid_users))
 
         self.liked_img += total_liked_img
         self.already_liked += already_liked
@@ -3971,6 +3996,7 @@ class InstaPy:
     def end(self):
         """Closes the current session"""
 
+        Settings.InstaPy_is_running = False
         close_browser(self.browser, False, self.logger)
 
         with interruption_handler():
@@ -4490,9 +4516,9 @@ class InstaPy:
                              "original_peaks": orig_peaks}
 
             if (platform.startswith("win32") and
-                    python_version().startswith(('2', '3.7'))):
-                # UPDATE ME: remove this block [below] once
-                # plyer>1.3.0 is released to PyPI
+                    python_version() < "2.7.15"):
+                # UPDATE ME: remove this block once plyer is
+                # verified to work on [very] old versions of Python 2
                 notify_me = False
 
             # update QS configuration with the fresh settings
@@ -4751,12 +4777,13 @@ class InstaPy:
             highlight_print(
                 self.username, message, "user iteration", "info", self.logger)
 
-            validation, details = self.validate_user_call(username)
-            if validation is not True:
-                self.logger.info("--> Not a valid user: {}"
-                                 .format(details))
-                self.not_valid_users += 1
-                continue
+            if username != self.username:
+                validation, details = self.validate_user_call(username)
+                if validation is not True:
+                    self.logger.info("--> Not a valid user: {}"
+                                     .format(details))
+                    self.not_valid_users += 1
+                    continue
 
             per_user_liked_comments = 0
             per_user_replied_to_comments = 0
@@ -5049,3 +5076,42 @@ class InstaPy:
         return all(self.is_mandatory_character(uchr)
                    for uchr in unistr
                    if uchr.isalpha())
+
+    def accept_follow_requests(self,
+                               amount=100,
+                               sleep_delay=1):
+        """Accept pending follow requests from activity feed"""
+
+        if self.aborting:
+            return self
+
+        message = "Starting to get follow requests.."
+        highlight_print(self.username,
+                        message,
+                        "feature",
+                        "info",
+                        self.logger)
+
+        accepted = 0
+        while accepted < amount:
+
+            feed_link = "https://www.instagram.com/accounts/activity/?followRequests=1"
+            web_address_navigator(self.browser, feed_link)
+
+            requests_to_confirm = self.browser.find_elements_by_xpath("//button[text()='Confirm']")
+
+            if len(requests_to_confirm) == 0:
+                self.logger.info("There are no follow requests in activity feed")
+                break
+
+            for request in requests_to_confirm:
+                request.click()
+                sleep(sleep_delay)
+                accepted += 1
+                if accepted >= amount:
+                    self.logger.info("Reached accepted accounts limit of {} requests".format(amount))
+                    break
+
+        self.logger.info("Accepted {} follow requests".format(accepted))
+
+        return self
