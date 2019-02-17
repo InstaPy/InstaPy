@@ -4,6 +4,59 @@ The **goal** of this file is explaining to the users of our project the notable 
 _The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html)_.
 
 
+## [0.1.4] - INSERT MERGING DATE HERE
+### Added
+- Accept pending follow requests for private account
+- Feature to `follow_by_locations`
+
+### Fixed
+- Only import instapy-chromedriver package when needed
+- Avoid user errors providing user names with caps
+- Fix get_active_users wrong behavior on videos
+- Bug in _CLI_ **argparsing** - `proxy_port` & `page_delay` are integers and not strings.
+- Selectors for finding comments and liking comments on posts
+
+### Changed
+- Enable users interact by the comments of their own profiles.
+- Moved elements from docs folder to instapy-docs and instapy-research repositories
+
+
+## [0.1.3] - 2019-02-05
+### Fixed
+- Fix "_Failed to load desired amount of users!_" issue.
+
+### Added
+- Add _Progress Tracker_ to `get_users_through_dialog()` function.
+- Add Proxy Authentication for Firefox
+
+
+## [0.1.2] - 2019-02-04
+### Fixed
+- Fix for scrollIntoView error.
+
+
+## [0.1.1] - 2019-02-04
+### Added
+- **Workspace** folders; Now user's data files will be stored at the **workspace** folder.  
+- _InstaPy_ has been published to _PyPI_; Now, can install/manage it by **pip** as **instapy** package.  
+- _Github_ releases has been initiated; Will be released in-parallel with _PyPI_ deployments.  
+- Add Universal Testing Framework- **tox** with **pytest** & **flake8**.  
+- Upgrade _Travis CI_ usage (_**tox** as build script_).  
+- Send messages to _Discord_ #**status** channel about jobs' build states from _Travis CI_.
+- Add instapy-chromedriver package if no chromedriver is in path.
+- Add _argparsing_ feature. Users are now able to provide credentials (_and more_) through CLI args.
+- Turn off verification based on _relationship bounds_ **by default**, completely (_see #757815f commit_).
+- Simplify the default **quickstart** script much more.
+
+
+## [Unreleased] - 2019-01-27
+### Changed
+- Add track post/profile
+- Avoid prints for only one user
+
+### Fixed
+- No posts exception when scraping likes
+
 
 ## [Unreleased] - 2019-01-22
 ### Added
