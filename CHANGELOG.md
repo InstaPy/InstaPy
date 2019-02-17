@@ -4,7 +4,24 @@ The **goal** of this file is explaining to the users of our project the notable 
 _The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html)_.
 
 
-## [0.1.3] - UNKNOWN
+## [0.1.4] - INSERT MERGING DATE HERE
+### Added
+- Accept pending follow requests for private account
+- Allowing `follow_by_tags` to interact with the user
+
+### Fixed
+- Only import instapy-chromedriver package when needed
+- Avoid user errors providing user names with caps
+- Fix get_active_users wrong behavior on videos
+- Bug in _CLI_ **argparsing** - `proxy_port` & `page_delay` are integers and not strings.
+- Selectors for finding comments and liking comments on posts
+
+### Changed
+- Enable users interact by the comments of their own profiles.
+- Moved elements from docs folder to instapy-docs and instapy-research repositories
+
+
+## [0.1.3] - 2019-02-05
 ### Fixed
 - Fix "_Failed to load desired amount of users!_" issue.
 
