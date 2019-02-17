@@ -91,8 +91,10 @@ class InstaPy:
                  page_delay=25,
                  show_logs=True,
                  headless_browser=False,
-                 proxy_address=None,
                  proxy_chrome_extension=None,
+                 proxy_username=None,
+                 proxy_password=None,
+                 proxy_address=None,
                  proxy_port=None,
                  disable_image_load=False,
                  bypass_suspicious_attempt=False,
@@ -125,6 +127,8 @@ class InstaPy:
 
         self.browser = None
         self.headless_browser = headless_browser
+        self.proxy_username = proxy_username
+        self.proxy_password = proxy_password
         self.proxy_address = proxy_address
         self.proxy_port = proxy_port
         self.proxy_chrome_extension = proxy_chrome_extension
@@ -136,7 +140,6 @@ class InstaPy:
         self.username = username or os.environ.get('INSTA_USER')
         self.password = password or os.environ.get('INSTA_PW')
         Settings.profile["name"] = self.username
-
 
         self.page_delay = page_delay
         self.switch_language = True
@@ -313,6 +316,8 @@ class InstaPy:
     def set_selenium_local_session(self):
         self.browser, err_msg = set_selenium_local_session(self.proxy_address,
                                                            self.proxy_port,
+                                                           self.proxy_username,
+                                                           self.proxy_password,
                                                            self.proxy_chrome_extension,
                                                            self.headless_browser,
                                                            self.use_firefox,
@@ -4686,12 +4691,13 @@ class InstaPy:
             highlight_print(
                 self.username, message, "user iteration", "info", self.logger)
 
-            validation, details = self.validate_user_call(username)
-            if validation is not True:
-                self.logger.info("--> Not a valid user: {}"
-                                 .format(details))
-                self.not_valid_users += 1
-                continue
+            if username != self.username:
+                validation, details = self.validate_user_call(username)
+                if validation is not True:
+                    self.logger.info("--> Not a valid user: {}"
+                                     .format(details))
+                    self.not_valid_users += 1
+                    continue
 
             per_user_liked_comments = 0
             per_user_replied_to_comments = 0
@@ -4984,3 +4990,42 @@ class InstaPy:
         return all(self.is_mandatory_character(uchr)
                    for uchr in unistr
                    if uchr.isalpha())
+
+    def accept_follow_requests(self,
+                               amount=100,
+                               sleep_delay=1):
+        """Accept pending follow requests from activity feed"""
+
+        if self.aborting:
+            return self
+
+        message = "Starting to get follow requests.."
+        highlight_print(self.username,
+                        message,
+                        "feature",
+                        "info",
+                        self.logger)
+
+        accepted = 0
+        while accepted < amount:
+
+            feed_link = "https://www.instagram.com/accounts/activity/?followRequests=1"
+            web_address_navigator(self.browser, feed_link)
+
+            requests_to_confirm = self.browser.find_elements_by_xpath("//button[text()='Confirm']")
+
+            if len(requests_to_confirm) == 0:
+                self.logger.info("There are no follow requests in activity feed")
+                break
+
+            for request in requests_to_confirm:
+                request.click()
+                sleep(sleep_delay)
+                accepted += 1
+                if accepted >= amount:
+                    self.logger.info("Reached accepted accounts limit of {} requests".format(amount))
+                    break
+
+        self.logger.info("Accepted {} follow requests".format(accepted))
+
+        return self
