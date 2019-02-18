@@ -1024,9 +1024,11 @@ class InstaPy:
                                       self.user_interact_percentage
                         # Do interactions if any
                         if do_interact and self.user_interact_amount > 0:
-                            original_do_follow = self.do_follow  # store the
+                            original_do_follow = self.do_follow
+                            # store the
                             # original value of `self.do_follow`
-                            self.do_follow = False  # disable following
+                            self.do_follow = False
+                            # disable following
                             # temporarily cos the user is already followed
                             # above
                             # disable revalidating user in interact_by_users
@@ -1035,7 +1037,8 @@ class InstaPy:
                                                        self.user_interact_amount,
                                                        self.user_interact_random,
                                                        self.user_interact_media)
-                            self.do_follow = original_do_follow  # revert
+                            self.do_follow = original_do_follow
+                            # revert
                             # back original `self.do_follow` value (either
                             # it was `False` or `True`)
 
