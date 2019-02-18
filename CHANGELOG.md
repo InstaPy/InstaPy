@@ -14,6 +14,7 @@ _The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 - Fix get_active_users wrong behavior on videos
 - Bug in _CLI_ **argparsing** - `proxy_port` & `page_delay` are integers and not strings.
 - Selectors for finding comments and liking comments on posts
+- Temporarily turn off follow for `like_by_tags` interaction
 
 ### Changed
 - Enable users interact by the comments of their own profiles.
