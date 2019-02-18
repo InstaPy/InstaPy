@@ -1804,17 +1804,17 @@ class InstaPy:
                                     .format(user_name))
                                 # store original value of `self.do_follow`
                                 original_do_follow = self.do_follow
-
-                                self.do_follow = False
                                 # disable following temporarily 
                                 # cos the user is already followed
+                                self.do_follow = False
+                                
                                 self.like_by_users(user_name,
                                                    self.user_interact_amount,
                                                    self.user_interact_random,
                                                    self.user_interact_media)
                                 
+                                # back to original `self.do_follow` value
                                 self.do_follow = original_do_follow
-                                # revert back original `self.do_follow` value
 
                         elif msg == "already liked":
                             already_liked += 1
