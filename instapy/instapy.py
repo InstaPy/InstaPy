@@ -4024,10 +4024,10 @@ class InstaPy:
             print("\n\n")
 
     def follow_by_locations(self,
-                             locations=None,
-                             amount=50,
-                             media=None,
-                             skip_top_posts=True):
+                            locations=None,
+                            amount=50,
+                            media=None,
+                            skip_top_posts=True):
         if self.aborting:
             return self
 
