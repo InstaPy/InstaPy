@@ -7,6 +7,7 @@ _The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 ## [0.1.4] - INSERT MERGING DATE HERE
 ### Added
 - Accept pending follow requests for private account
+- Feature to `follow_by_locations`
 
 ### Fixed
 - Only import instapy-chromedriver package when needed
