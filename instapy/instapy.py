@@ -1034,7 +1034,8 @@ class InstaPy:
                                                    self.user_interact_amount,
                                                    self.user_interact_random,
                                                    self.user_interact_media)
-                            self.do_follow = original_do_follow  # revert
+                            self.do_follow = original_do_follow 
+                            # revert
                             # back original `self.do_follow` value (either
                             # it was `False` or `True`)
 
@@ -1813,7 +1814,8 @@ class InstaPy:
                                                    self.user_interact_amount,
                                                    self.user_interact_random,
                                                    self.user_interact_media)
-                                self.do_follow = original_do_follow  # revert
+                                self.do_follow = original_do_follow  
+                                # revert
                                 # back original `self.do_follow` value (either
                                 # it was `False` or `True`)
 
