@@ -462,7 +462,7 @@ class InstaPy:
                                        "random_range": random_range,
                                        "safety_match": safety_match})
 
-    def set_do_comment(self, enabled=False, percentage=0):
+    def set_do_comment(self, enabled: bool = False, percentage: int = 0):
         """
          Defines if images should be commented or not.
         E.g. percentage=25 means every ~4th picture will be commented.
@@ -476,7 +476,7 @@ class InstaPy:
 
         return self
 
-    def set_comments(self, comments=None, media=None):
+    def set_comments(self, comments: list = [], media: str = None):
         """Changes the possible comments"""
         if self.aborting:
             return self
@@ -485,7 +485,7 @@ class InstaPy:
             self.logger.warning('Unkown media type! Treating as "any".')
             media = None
 
-        self.comments = comments or []
+        self.comments = comments
 
         if media is None:
             self.comments = comments
@@ -495,7 +495,7 @@ class InstaPy:
 
         return self
 
-    def set_do_follow(self, enabled=False, percentage=0, times=1):
+    def set_do_follow(self, enabled: bool = False, percentage: int = 0, times: int = 1):
         """Defines if the user of the liked image should be followed"""
         if self.aborting:
             return self
@@ -506,7 +506,7 @@ class InstaPy:
 
         return self
 
-    def set_do_like(self, enabled=False, percentage=0):
+    def set_do_like(self, enabled: bool = False, percentage: int = 0):
         if self.aborting:
             return self
 
@@ -515,7 +515,7 @@ class InstaPy:
 
         return self
 
-    def set_dont_like(self, tags=None):
+    def set_dont_like(self, tags: list = []):
         """Changes the possible restriction tags, if one of this
          words is in the description, the image won't be liked but user
          still might be unfollowed"""
@@ -527,11 +527,11 @@ class InstaPy:
                                 'configuration!')
             self.aborting = True
 
-        self.dont_like = tags or []
+        self.dont_like = tags
 
         return self
 
-    def set_mandatory_words(self, tags=None):
+    def set_mandatory_words(self, tags: list = []):
         """Changes the possible restriction tags, if all of this
          hashtags is in the description, the image will be liked"""
         if self.aborting:
@@ -542,15 +542,15 @@ class InstaPy:
                                 'configuration!')
             self.aborting = True
 
-        self.mandatory_words = tags or []
+        self.mandatory_words = tags
 
         return self
 
     def set_user_interact(self,
-                          amount=10,
-                          percentage=100,
-                          randomize=False,
-                          media=None):
+                          amount: int = 10,
+                          percentage: int = 100,
+                          randomize: bool = False,
+                          media: str = None):
         """Define if posts of given user should be interacted"""
         if self.aborting:
             return self
@@ -562,27 +562,27 @@ class InstaPy:
 
         return self
 
-    def set_ignore_users(self, users=None):
+    def set_ignore_users(self, users: list = []):
         """Changes the possible restriction to users, if a user who posts
         is one of these, the image won't be liked"""
         if self.aborting:
             return self
 
-        self.ignore_users = users or []
+        self.ignore_users = users
 
         return self
 
-    def set_ignore_if_contains(self, words=None):
+    def set_ignore_if_contains(self, words: list = []):
         """Ignores the don't likes if the description contains
         one of the given words"""
         if self.aborting:
             return self
 
-        self.ignore_if_contains = words or []
+        self.ignore_if_contains = words
 
         return self
 
-    def set_dont_include(self, friends=None):
+    def set_dont_include(self, friends: list = None):
         """Defines which accounts should not be unfollowed"""
         if self.aborting:
             return self
@@ -591,6 +591,14 @@ class InstaPy:
         self.white_list = set(friends) or set()
 
         return self
+
+
+
+    def set_switch_language(self, option: bool = True):
+        self.switch_language = option
+        return self
+
+
 
     def set_use_clarifai(self,
                          enabled=False,
