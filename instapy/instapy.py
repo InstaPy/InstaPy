@@ -1802,10 +1802,18 @@ class InstaPy:
                                     "--> User gonna be interacted: '{}'"
                                     .format(user_name))
 
+                                original_do_follow = self.do_follow  # store the
+                                # original value of `self.do_follow`
+                                self.do_follow = False  # disable following
+                                # temporarily cos the user is already followed
+                                # above
                                 self.like_by_users(user_name,
                                                    self.user_interact_amount,
                                                    self.user_interact_random,
                                                    self.user_interact_media)
+                                self.do_follow = original_do_follow  # revert
+                                # back original `self.do_follow` value (either
+                                # it was `False` or `True`)
 
                         elif msg == "already liked":
                             already_liked += 1
