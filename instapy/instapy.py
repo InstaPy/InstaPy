@@ -91,8 +91,10 @@ class InstaPy:
                  page_delay=25,
                  show_logs=True,
                  headless_browser=False,
-                 proxy_address=None,
                  proxy_chrome_extension=None,
+                 proxy_username=None,
+                 proxy_password=None,
+                 proxy_address=None,
                  proxy_port=None,
                  disable_image_load=False,
                  bypass_suspicious_attempt=False,
@@ -125,6 +127,8 @@ class InstaPy:
 
         self.browser = None
         self.headless_browser = headless_browser
+        self.proxy_username = proxy_username
+        self.proxy_password = proxy_password
         self.proxy_address = proxy_address
         self.proxy_port = proxy_port
         self.proxy_chrome_extension = proxy_chrome_extension
@@ -136,7 +140,6 @@ class InstaPy:
         self.username = username or os.environ.get('INSTA_USER')
         self.password = password or os.environ.get('INSTA_PW')
         Settings.profile["name"] = self.username
-
 
         self.page_delay = page_delay
         self.switch_language = True
@@ -313,6 +316,8 @@ class InstaPy:
     def set_selenium_local_session(self):
         self.browser, err_msg = set_selenium_local_session(self.proxy_address,
                                                            self.proxy_port,
+                                                           self.proxy_username,
+                                                           self.proxy_password,
                                                            self.proxy_chrome_extension,
                                                            self.headless_browser,
                                                            self.use_firefox,
@@ -1024,18 +1029,19 @@ class InstaPy:
                                       self.user_interact_percentage
                         # Do interactions if any
                         if do_interact and self.user_interact_amount > 0:
-                            original_do_follow = self.do_follow  # store the
-                            # original value of `self.do_follow`
-                            self.do_follow = False  # disable following
-                            # temporarily cos the user is already followed
-                            # above
+                            # store original value of `self.do_follow`
+                            original_do_follow = self.do_follow
+                            # disable following temporarily 
+                            # cos user is already followed
+                            self.do_follow = False
+                            
                             self.interact_by_users(acc_to_follow,
                                                    self.user_interact_amount,
                                                    self.user_interact_random,
                                                    self.user_interact_media)
-                            self.do_follow = original_do_follow  # revert
-                            # back original `self.do_follow` value (either
-                            # it was `False` or `True`)
+                            
+                            # back to original `self.do_follow`
+                            self.do_follow = original_do_follow 
 
                 elif msg == "already followed":
                     already_followed += 1
@@ -1801,11 +1807,19 @@ class InstaPy:
                                 self.logger.info(
                                     "--> User gonna be interacted: '{}'"
                                     .format(user_name))
-
+                                # store original value of `self.do_follow`
+                                original_do_follow = self.do_follow
+                                # disable following temporarily 
+                                # cos the user is already followed
+                                self.do_follow = False
+                                
                                 self.like_by_users(user_name,
                                                    self.user_interact_amount,
                                                    self.user_interact_random,
                                                    self.user_interact_media)
+                                
+                                # back to original `self.do_follow` value
+                                self.do_follow = original_do_follow
 
                         elif msg == "already liked":
                             already_liked += 1
@@ -4018,6 +4032,114 @@ class InstaPy:
             highlight_print(self.username, message, "end", "info", self.logger)
             print("\n\n")
 
+    def follow_by_locations(self,
+                            locations=None,
+                            amount=50,
+                            media=None,
+                            skip_top_posts=True):
+        if self.aborting:
+            return self
+
+        inap_img = 0
+        followed = 0
+        not_valid_users = 0
+
+        locations = locations or []
+        self.quotient_breach = False
+
+        for index, location in enumerate(locations):
+            if self.quotient_breach:
+                break
+
+            self.logger.info('Location [{}/{}]'.format(index + 1, len(locations)))
+            self.logger.info('--> {}'.format(location.encode('utf-8')))
+
+            try:
+                links = get_links_for_location(self.browser,
+                                               location,
+                                               amount,
+                                               self.logger,
+                                               media,
+                                               skip_top_posts)
+            except NoSuchElementException:
+                self.logger.warning('Too few images, skipping this location')
+                continue
+
+            for i, link in enumerate(links):
+                if (self.jumps["consequent"]["follows"]
+                        >= self.jumps["limit"]["follows"]):
+                    self.logger.warning("--> Follow quotient reached its peak!"
+                                        "\t~leaving Follow-By-Locations activity\n")
+                    self.quotient_breach = True
+                    # reset jump counter after a breach report
+                    self.jumps["consequent"]["follows"] = 0
+                    break
+
+                self.logger.info('[{}/{}]'.format(i + 1, len(links)))
+                self.logger.info(link)
+
+                try:
+                    inappropriate, user_name, is_video, reason, scope = (
+                        check_link(self.browser,
+                                   link,
+                                   self.dont_like,
+                                   self.mandatory_words,
+                                   self.mandatory_language,
+                                   self.is_mandatory_character,
+                                   self.mandatory_character,
+                                   self.check_character_set,
+                                   self.ignore_if_contains,
+                                   self.logger)
+                    )
+
+                    if not inappropriate:
+                        # validate user
+                        validation, details = self.validate_user_call(
+                            user_name)
+                        if validation is not True:
+                            self.logger.info(details)
+                            not_valid_users += 1
+                            continue
+                        else:
+                            web_address_navigator(self.browser, link)
+
+                        # try to follow
+                        follow_state, msg = follow_user(self.browser,
+                                                        "post",
+                                                        self.username,
+                                                        user_name,
+                                                        None,
+                                                        self.blacklist,
+                                                        self.logger,
+                                                        self.logfolder)
+                        if follow_state is True:
+                            followed += 1
+                            # reset jump counter after a successful follow
+                            self.jumps["consequent"]["follows"] = 0
+
+                        elif msg == "jumped":
+                            # will break the loop after certain consecutive
+                            # jumps
+                            self.jumps["consequent"]["follows"] += 1
+
+                    else:
+                        self.logger.info(
+                            '--> User not followed: {}'.format(reason))
+                        inap_img += 1
+
+                except NoSuchElementException as err:
+                    self.logger.error('Invalid Page: {}'.format(err))
+
+        self.logger.info('Followed: {}'.format(followed))
+        self.logger.info('Inappropriate: {}'.format(inap_img))
+        self.logger.info('Not valid users: {}\n'.format(not_valid_users))
+
+        self.followed += followed
+        self.inap_img += inap_img
+        self.not_valid_users += not_valid_users
+
+        return self
+
     def follow_by_tags(self,
                        tags=None,
                        amount=50,
@@ -4664,12 +4786,13 @@ class InstaPy:
             highlight_print(
                 self.username, message, "user iteration", "info", self.logger)
 
-            validation, details = self.validate_user_call(username)
-            if validation is not True:
-                self.logger.info("--> Not a valid user: {}"
-                                 .format(details))
-                self.not_valid_users += 1
-                continue
+            if username != self.username:
+                validation, details = self.validate_user_call(username)
+                if validation is not True:
+                    self.logger.info("--> Not a valid user: {}"
+                                     .format(details))
+                    self.not_valid_users += 1
+                    continue
 
             per_user_liked_comments = 0
             per_user_replied_to_comments = 0
@@ -4962,3 +5085,42 @@ class InstaPy:
         return all(self.is_mandatory_character(uchr)
                    for uchr in unistr
                    if uchr.isalpha())
+
+    def accept_follow_requests(self,
+                               amount=100,
+                               sleep_delay=1):
+        """Accept pending follow requests from activity feed"""
+
+        if self.aborting:
+            return self
+
+        message = "Starting to get follow requests.."
+        highlight_print(self.username,
+                        message,
+                        "feature",
+                        "info",
+                        self.logger)
+
+        accepted = 0
+        while accepted < amount:
+
+            feed_link = "https://www.instagram.com/accounts/activity/?followRequests=1"
+            web_address_navigator(self.browser, feed_link)
+
+            requests_to_confirm = self.browser.find_elements_by_xpath("//button[text()='Confirm']")
+
+            if len(requests_to_confirm) == 0:
+                self.logger.info("There are no follow requests in activity feed")
+                break
+
+            for request in requests_to_confirm:
+                request.click()
+                sleep(sleep_delay)
+                accepted += 1
+                if accepted >= amount:
+                    self.logger.info("Reached accepted accounts limit of {} requests".format(amount))
+                    break
+
+        self.logger.info("Accepted {} follow requests".format(accepted))
+
+        return self
