@@ -1026,7 +1026,8 @@ class InstaPy:
                         if do_interact and self.user_interact_amount > 0:
                             original_do_follow = self.do_follow  # store the
                             # original value of `self.do_follow`
-                            self.do_follow = False  # disable following
+                            self.do_follow = False 
+                            # disable following
                             # temporarily cos the user is already followed
                             # above
                             self.interact_by_users(acc_to_follow,
@@ -1804,7 +1805,8 @@ class InstaPy:
 
                                 original_do_follow = self.do_follow  # store the
                                 # original value of `self.do_follow`
-                                self.do_follow = False  # disable following
+                                self.do_follow = False  
+                                # disable following
                                 # temporarily cos the user is already followed
                                 # above
                                 self.like_by_users(user_name,
