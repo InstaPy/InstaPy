@@ -187,6 +187,7 @@ Sorry for the inconveniences
   * [Commenting based on the number of existing comments a post has](#commenting-based-on-the-number-of-existing-comments-a-post-has)
   * [Commenting based on mandatory words in the description or first comment](#commenting-based-on-mandatory-words-in-the-description-or-first-comment)
   * [Comment by Locations](#comment-by-locations)
+  * [Follow by Locations](#follow-by-locations)
   * [Like by Locations](#like-by-locations)
   * [Like by Tags](#like-by-tags)
   * [Like by Feeds](#like-by-feeds)
@@ -1106,6 +1107,18 @@ session.comment_by_locations(['224442573'], amount=5, skip_top_posts=False)
 This method allows commenting by locations, without liking posts. To get locations follow instructions in 'Like by Locations'
 
 
+### Follow by Locations
+
+```python
+session.follow_by_locations(['224442573/salton-sea/'], amount=100)
+# or
+session.follow_by_locations(['224442573'], amount=100)
+# or include media entities from top posts section
+
+session.follow_by_locations(['224442573'], amount=5, skip_top_posts=False)
+```
+This method allows following by locations, without liking or commenting posts. To get locations follow instructions in 'Like by Locations'
+
 
 ### Like by Locations
 
@@ -1117,6 +1130,7 @@ session.like_by_locations(['224442573'], amount=100)
 
 session.like_by_locations(['224442573'], amount=5, skip_top_posts=False)
 ```
+
 
 You can find locations for the `like_by_locations` function by:
 - Browsing https://www.instagram.com/explore/locations/
