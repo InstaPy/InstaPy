@@ -106,7 +106,7 @@ _Until you enable the **headless** mode, InstaPy will run in the **graphical** m
 > If you've used _InstaPy_ before installing it by **pip**, you have to move your _old_ data to the new **workspace** folder for once.
 [Read how to do this here](#migrating-your-data-to-the-workspace-folder).
 
-**Update**
+#### Updating InstaPy
 ```elm
 
 pip install instapy -U
