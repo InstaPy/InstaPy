@@ -6,7 +6,7 @@ _The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 ## [0.3.0] - ADD DATE HERE
 ### Added
-- `follow_by_tags` to interact with the user
+- Allowing `follow_by_tags` to interact with the user
 
 
 ## [0.2.0] - 2019-02-18
