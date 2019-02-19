@@ -192,6 +192,7 @@ Sorry for the inconveniences
   * [Follow by Locations](#follow-by-locations)
   * [Like by Locations](#like-by-locations)
   * [Like by Tags](#like-by-tags)
+  * [Follow by Tags](#follow-by-tags)
   * [Like by Feeds](#like-by-feeds)
   * [Mandatory Words](#mandatory-words)
   * [Mandatory Language](#mandatory-language)
