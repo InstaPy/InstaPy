@@ -43,9 +43,9 @@ If you're on Ubuntu, read the specific guide on [Installing on Ubuntu (64-Bit)](
 Download a **[quickstart](https://github.com/InstaPy/instapy-quickstart)** script of your choice to your machine. It tells InstaPy how it should run, and this is the file you'll be working on when changing how InstaPy works.
 
 - [Here is the easiest **quickstart** script you can use](https://github.com/InstaPy/instapy-quickstart/blob/master/quickstart.py)  
-- [And here you can find lots of sophisticated **quickstart** templates shared by the community!](https://github.com/InstaPy/instapy-quickstart/tree/master/quickstart_templates) 
 
 <details>
+	<summary>   </summary>
 
 You can also copy and paste this basic **quickstart** into a new text file and save it as `.py` file.
 ```python		
@@ -67,6 +67,9 @@ with smart_run(session):
 ```
 
 </details>
+
+- [And here you can find lots of sophisticated **quickstart** templates shared by the community!](https://github.com/InstaPy/instapy-quickstart/tree/master/quickstart_templates) 
+
 
 You can put in your account details now by passing the username and password parameters to the `InstaPy()` function in your **quickstart** script, like so: 
 ```python
