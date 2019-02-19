@@ -37,17 +37,15 @@ Implemented in Python using the Selenium module.<p>
 ```elm
 pip install instapy
 ```
-That's it 🍫☕
+**That's it! 🚀**   
+If you're on Ubuntu, read the specific guide on [Installing on Ubuntu (64-Bit)](https://github.com/InstaPy/instapy-docs/blob/master/How_Tos/How_To_DO_Ubuntu_on_Digital_Ocean.md). If you're on a Raspberry Pi, read the [Installing on RaspberryPi](https://github.com/InstaPy/instapy-docs/blob/master/How_Tos/How_to_Raspberry.md) guide instead.
 
+Download a **[quickstart](https://github.com/InstaPy/instapy-quickstart)** script of your choice to your machine. It tells InstaPy how it should run, and this is the file you'll be working on when changing how InstaPy works.
 
-Now all you need is a **quickstart** script to start _InstaPy_ 🥳  
+- [Here is the easiest **quickstart** script you can use](https://github.com/InstaPy/instapy-quickstart/blob/master/quickstart.py)  
+- [And here you can find lots of sophisticated **quickstart** templates shared by the community!](https://github.com/InstaPy/instapy-quickstart/tree/master/quickstart_templates) 
 
 <details>
-  <summary> <b>Choose a <b>quickstart</b> script of your choice from the <a href="https://github.com/InstaPy/instapy-quickstart">instapy-quickstart</a> repository to get started 🔎</b></summary>
-
-- Here is the easiest **quickstart** script you can use - [quickstart.py](https://github.com/InstaPy/instapy-quickstart/blob/master/quickstart.py)  
-- And here you can find lots of _sophisticated **quickstart** templates_ shared by the community! - [quickstart templates 📂](https://github.com/InstaPy/instapy-quickstart/tree/master/quickstart_templates)  
-
 
 You can also copy and paste this basic **quickstart** into a new text file and save it as `.py` file.
 ```python		
@@ -70,41 +68,15 @@ with smart_run(session):
 
 </details>
 
-
-🛰 As you've downloaded a **quickstart** script into your computer, go ahead and run it in the command prompt as:
-```elm
-python quickstart.py --username abc --password 123
-```
->**PRO**:  
-Read more about passing arguments from the command line interface in the section - [Pass arguments by CLI](#pass-arguments-by-cli).
-
-
-##### 🚁 You can provide _username_ & _password_ inside the **quickstart** script, too!
+You can put in your account details now by passing the username and password parameters to the `InstaPy()` function in your **quickstart** script, like so: 
 ```python
-# inside quickstart script
-
-session = InstaPy(username="abc",    
-                  password="123")   
+InstaPy(username="abc", 
+        password="123")
 ```
-
-
-🛸 Also, if you like to run _InstaPy_ in **background**, just enable the **headless** mode!
-```erlang
-python quickstart.py -u abc -p 123 --headless-browser
-```
-Or do it right inside the **quickstart** script.
-```python
-# inside quickstart script
-
-session = InstaPy(username="abc",    
-                  password="123",
-                  headless_browser=True)  
-```
-_Until you enable the **headless** mode, InstaPy will run in the **graphical** mode where you can watch the ongoing automation in your web browser_.
-
+Or you can [pass them using the Command Line Interface (CLI)](#pass-arguments-by-cli).
 
 > If you've used _InstaPy_ before installing it by **pip**, you have to move your _old_ data to the new **workspace** folder for once.
-[Read how to do this here](#migrating-your-data-to-the-workspace-folder).
+[Read how to do this here](./DOCUMENTATION.md#migrating-your-data-to-the-workspace-folder).
 
 #### Updating InstaPy
 ```elm
