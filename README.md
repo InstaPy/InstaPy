@@ -126,8 +126,8 @@ Sorry for the inconveniences
 **[How to RaspberryPi](https://github.com/InstaPy/instapy-docs/blob/master/How_Tos/How_to_Raspberry.md) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**
 
 
-## [Documentation](./DOCUMENTATION.md)
-A list of all features of InstaPy can be found [here](./DOCUMENTATION.md). 
+## Documentation
+A list of **all features** of InstaPy [can be found here](./DOCUMENTATION.md). 
 
 ## Support
 
