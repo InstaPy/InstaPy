@@ -66,7 +66,8 @@ python quickstart.py --username abc --password 123
 
 InstaPy will now open a browser window and start working.
 
-> If want InstaPy to run in the background pass the `--headless-browser` option when running from the CLI, or add the `headless_browser=True` parameter to the `InstaPy(headless_browser=True)` constructor.
+> If want InstaPy to run in the background pass the `--headless-browser` option when running from the CLI   
+Or add the `headless_browser=True` parameter to the `InstaPy(headless_browser=True)` constructor.
 
 #### Updating InstaPy
 ```elm
