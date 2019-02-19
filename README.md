@@ -1,17 +1,31 @@
 > **Disclaimer**: Please Note that this is a research project. I am by no means responsible for any usage of this tool. Use on your own behalf. I'm also not responsible if your accounts get banned due to extensive use of this tool.
 
-<img src="https://i.imgur.com/sJzfZsL.jpg" width="150" align="right">
-
-# InstaPy
-[![MIT license](https://img.shields.io/badge/license-GPLv3-blue.svg)](https://github.com/timgrossmann/InstaPy/blob/master/LICENSE)
-[![built with Selenium](https://img.shields.io/badge/built%20with-Selenium-yellow.svg)](https://github.com/SeleniumHQ/selenium)
-[![built with Python3](https://img.shields.io/badge/built%20with-Python3-red.svg)](https://www.python.org/)
-[![Travis](https://img.shields.io/travis/rust-lang/rust.svg)](https://travis-ci.org/timgrossmann/InstaPy)
-[![Backers on Open Collective](https://opencollective.com/instapy/backers/badge.svg)](#backers)
-[![Sponsors on Open Collective](https://opencollective.com/instapy/sponsors/badge.svg)](#sponsors)
-
-### Tooling that automates your social media interactions to “farm” Likes, Comments, and Followers on Instagram
-Implemented in Python using the Selenium module.
+<p align="center">
+  <img src="https://i.imgur.com/sJzfZsL.jpg" width="150">
+  <h1 align="center">InstaPy</h1>
+  <p align="center">Tooling that <b>automates</b> your social media interactions to “farm” Likes, Comments, and Followers on Instagram
+Implemented in Python using the Selenium module.<p>
+  <p align="center">
+    <a href="https://github.com/timgrossmann/InstaPy/blob/master/LICENSE">
+      <img src="https://img.shields.io/badge/license-GPLv3-blue.svg" />
+    </a>
+    <a href="https://github.com/SeleniumHQ/selenium">
+      <img src="https://img.shields.io/badge/built%20with-Selenium-yellow.svg" />
+    </a>
+    <a href="https://www.python.org/">
+    	<img src="https://img.shields.io/badge/built%20with-Python3-red.svg" />
+    </a>
+    <a href="https://travis-ci.org/timgrossmann/InstaPy">
+	<img src="https://img.shields.io/travis/rust-lang/rust.svg">
+    </a>
+    <a href="https://www.github.com/timgrossmann/InstaPy#backer">
+	<img src="https://opencollective.com/instapy/backers/badge.svg">
+    </a>
+    <a href="https://www.github.com/timgrossmann/InstaPy#sponsors">
+	<img src="https://opencollective.com/instapy/sponsors/badge.svg">
+    </a>
+  </p>
+</p>
 
 **Have an issue?**
 If you should encounter any issue, please first [search for similar issues](https://github.com/timgrossmann/InstaPy/issues) and only if you can't find any, create a new issue or use the [discord channel](https://discord.gg/FDETsht) for help.
