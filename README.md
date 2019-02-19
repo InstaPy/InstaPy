@@ -1,5 +1,3 @@
-> **Disclaimer**: Please Note that this is a research project. I am by no means responsible for any usage of this tool. Use on your own behalf. I'm also not responsible if your accounts get banned due to extensive use of this tool.
-
 <p align="center">
   <img src="https://i.imgur.com/sJzfZsL.jpg" width="150">
   <h1 align="center">InstaPy</h1>
@@ -27,8 +25,10 @@ Implemented in Python using the Selenium module.<p>
   </p>
 </p>
 
-**Have an issue?**
-If you should encounter any issue, please first [search for similar issues](https://github.com/timgrossmann/InstaPy/issues) and only if you can't find any, create a new issue or use the [discord channel](https://discord.gg/FDETsht) for help.
+## Social
+[Twitter of InstaPy](https://twitter.com/InstaPy) | [Twitter of Tim](https://twitter.com/timigrossmann) | [Discord Channel](https://discord.gg/FDETsht) | [How it works (Medium)](https://medium.freecodecamp.com/my-open-source-instagram-bot-got-me-2-500-real-followers-for-5-in-server-costs-e40491358340) |   
+[Talk about automating your Instagram](https://youtu.be/4TmKFZy-ioQ) | [Talk about doing Open-Source work](https://www.youtube.com/watch?v=A_UtST302Og&t=0s&list=PLa4P1NPX9hthXV-wko0xyxFpbhYZFkW7o) | [Listen to the "Talk Python to me"-Episode](https://talkpython.fm/episodes/show/142/automating-the-web-with-selenium-and-instapy)
+
 
 #### Newsletter: [Sign Up for the Newsletter here!](http://eepurl.com/cZbV_v)
 
@@ -120,26 +120,24 @@ pip install instapy -U
 
 ```
 
-#### **Install** a _**specific** version_
-```elm
-pip install instapy==0.1.1
-```
-
-#### **Uninstall**
-```elm
-pip uninstall instapy
-```
-
-<br />
-
 --- 
 
-### Social
+### Guides
 
-#### [Twitter of InstaPy](https://twitter.com/InstaPy) | [Twitter of Tim](https://twitter.com/timigrossmann) | [How it works (Medium)](https://medium.freecodecamp.com/my-open-source-instagram-bot-got-me-2-500-real-followers-for-5-in-server-costs-e40491358340) |   
-[Talk about automating your Instagram](https://youtu.be/4TmKFZy-ioQ) | [Talk about doing Open-Source work](https://www.youtube.com/watch?v=A_UtST302Og&t=0s&list=PLa4P1NPX9hthXV-wko0xyxFpbhYZFkW7o) | [Listen to the "Talk Python to me"-Episode](https://talkpython.fm/episodes/show/142/automating-the-web-with-selenium-and-instapy)
+#### Video tutorials:
+
+> The currently available video tutorials all still use the old version of InstaPy, please use the documentation until we released new videos for the up to date installation instructions
+Sorry for the inconveniences
+
+#### Written Guides:
+**[How to Ubuntu (64-Bit)](https://github.com/InstaPy/instapy-docs/blob/master/How_Tos/How_To_DO_Ubuntu_on_Digital_Ocean.md) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**
+
+**[How to RaspberryPi](https://github.com/InstaPy/instapy-docs/blob/master/How_Tos/How_to_Raspberry.md) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**
+
+---
 
 ### Do you need help ?
+If you should encounter any issue, please first [search for similar issues](https://github.com/timgrossmann/InstaPy/issues) and only if you can't find any, create a new issue or use the [discord channel](https://discord.gg/FDETsht) for help.
 
 <a href="https://discord.gg/FDETsht">
   <img hspace="3" alt="Discord channel" src="https://camo.githubusercontent.com/e4a739df27356a78e9cae2e2dda642d118567e7c/68747470733a2f2f737465616d63646e2d612e616b616d616968642e6e65742f737465616d636f6d6d756e6974792f7075626c69632f696d616765732f636c616e732f32373039303534312f386464356339303766326130656563623733646336613437373666633961323538373865626364642e706e67" width=214/>
@@ -158,19 +156,10 @@ pip uninstall instapy
 **Help build InstaPy!**      
 Check out this short guide on [how to start contributing!](https://github.com/InstaPy/instapy-docs/blob/master/CONTRIBUTORS.md).
 
+
 ---
 
-### Guides
-
-#### Video tutorials:
-
-> The currently available video tutorials all still use the old version of InstaPy, please use the documentation until we released new videos for the up to date installation instructions
-Sorry for the inconveniences
-
-#### Written Guides:
-**[How to Ubuntu (64-Bit)](https://github.com/InstaPy/instapy-docs/blob/master/How_Tos/How_To_DO_Ubuntu_on_Digital_Ocean.md) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**
-
-**[How to RaspberryPi](https://github.com/InstaPy/instapy-docs/blob/master/How_Tos/How_to_Raspberry.md) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**
+> **Disclaimer**: Please Note that this is a research project. I am by no means responsible for any usage of this tool. Use on your own behalf. I'm also not responsible if your accounts get banned due to extensive use of this tool.
 
 
 # Documentation
@@ -446,6 +435,19 @@ In essence,
 </details>
 
 <br />
+
+#### **Install** a _**specific** version_
+```elm
+pip install instapy==0.1.1
+```
+
+#### **Uninstall**
+```elm
+pip uninstall instapy
+```
+
+<br />
+
 
 ## InstaPy Available Features
 
