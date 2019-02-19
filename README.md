@@ -44,32 +44,7 @@ Download a **[quickstart](https://github.com/InstaPy/instapy-quickstart)** scrip
 
 - [Here is the easiest **quickstart** script you can use](https://github.com/InstaPy/instapy-quickstart/blob/master/quickstart.py)  
 
-<details>
-	<summary>   </summary>
-
-You can also copy and paste this basic **quickstart** into a new text file and save it as `.py` file.
-```python		
-""" Quickstart script for InstaPy usage """		
-# imports		
-from instapy import InstaPy		
-from instapy import smart_run		
-	
-# get an InstaPy session!		
-session = InstaPy()		
-	
-with smart_run(session):		
-    """ Activity flow """		
-    # general settings		
-    session.set_dont_include(["friend1", "friend2", "friend3"])		
-	
-    # activity		
-    session.like_by_tags(["natgeo"], amount=10)		
-```
-
-</details>
-
 - [And here you can find lots of sophisticated **quickstart** templates shared by the community!](https://github.com/InstaPy/instapy-quickstart/tree/master/quickstart_templates) 
-
 
 You can put in your account details now by passing the username and password parameters to the `InstaPy()` function in your **quickstart** script, like so: 
 ```python
