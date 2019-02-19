@@ -56,11 +56,21 @@ Or you can [pass them using the Command Line Interface (CLI)](#pass-arguments-by
 > If you've used _InstaPy_ before installing it by **pip**, you have to move your _old_ data to the new **workspace** folder for once.
 [Read how to do this here](./DOCUMENTATION.md#migrating-your-data-to-the-workspace-folder).
 
+To run InstaPy, you'll need to run the **[quickstart](https://github.com/InstaPy/instapy-quickstart)** script you've just downloaded.
+
+```elm
+python quickstart.py
+-- or
+python quickstart.py --username abc --password 123
+```
+
+InstaPy will now open a browser window and start working.
+
+> If want InstaPy to run in the background pass the `--headless-browser` option when running from the CLI, or add the `headless_browser=True` parameter to the `InstaPy(headless_browser=True)` constructor.
+
 #### Updating InstaPy
 ```elm
-
 pip install instapy -U
-
 ```
 
 ## Guides
