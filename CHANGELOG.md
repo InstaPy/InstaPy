@@ -13,7 +13,6 @@ _The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 ### Added
 - Accept pending follow requests for private account
 - Feature to `follow_by_locations`
-- Allowing `follow_by_tags` to interact with the user
 
 ### Fixed
 - Only import instapy-chromedriver package when needed
