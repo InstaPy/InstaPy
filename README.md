@@ -39,7 +39,6 @@ pip install instapy
 ```
 That's it 🍫☕
 
-<br />
 
 Now all you need is a **quickstart** script to start _InstaPy_ 🥳  
 
@@ -49,7 +48,6 @@ Now all you need is a **quickstart** script to start _InstaPy_ 🥳
 - Here is the easiest **quickstart** script you can use - [quickstart.py](https://github.com/InstaPy/instapy-quickstart/blob/master/quickstart.py)  
 - And here you can find lots of _sophisticated **quickstart** templates_ shared by the community! - [quickstart templates 📂](https://github.com/InstaPy/instapy-quickstart/tree/master/quickstart_templates)  
 
-<br /> 
 
 You can also copy and paste this basic **quickstart** into a new text file and save it as `.py` file.
 ```python		
@@ -72,7 +70,6 @@ with smart_run(session):
 
 </details>
 
-<br />
 
 🛰 As you've downloaded a **quickstart** script into your computer, go ahead and run it in the command prompt as:
 ```elm
@@ -81,7 +78,6 @@ python quickstart.py --username abc --password 123
 >**PRO**:  
 Read more about passing arguments from the command line interface in the section - [Pass arguments by CLI](#pass-arguments-by-cli).
 
-<br />
 
 ##### 🚁 You can provide _username_ & _password_ inside the **quickstart** script, too!
 ```python
@@ -91,7 +87,6 @@ session = InstaPy(username="abc",
                   password="123")   
 ```
 
-<br />
 
 🛸 Also, if you like to run _InstaPy_ in **background**, just enable the **headless** mode!
 ```erlang
@@ -111,9 +106,7 @@ _Until you enable the **headless** mode, InstaPy will run in the **graphical** m
 > If you've used _InstaPy_ before installing it by **pip**, you have to move your _old_ data to the new **workspace** folder for once.
 [Read how to do this here](#migrating-your-data-to-the-workspace-folder).
 
-<br />
-
-#### **Update**
+**Update**
 ```elm
 
 pip install instapy -U
