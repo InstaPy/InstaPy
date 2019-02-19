@@ -4146,7 +4146,8 @@ class InstaPy:
                        skip_top_posts=True,
                        use_smart_hashtags=False,
                        randomize=False,
-                       media=None):
+                       media=None,
+                       interact=False):
         if self.aborting:
             return self
 
@@ -4235,6 +4236,23 @@ class InstaPy:
                             # reset jump counter after a successful follow
                             self.jumps["consequent"]["follows"] = 0
 
+                            # Check if interaction is expected
+                            if interact and self.do_like:
+                                do_interact = random.randint(0,100) <= \
+                                              self.user_interact_percentage
+                                # Do interactions if any
+                                if do_interact and \
+                                        self.user_interact_amount > 0:
+                                    # store the original value
+                                    original_do_follow = self.do_follow
+                                    # disable following temporarily
+                                    self.do_follow = False
+                                    self.interact_by_users(user_name,
+                                                   self.user_interact_amount,
+                                                   self.user_interact_random,
+                                                   self.user_interact_media)
+                                    # back original `self.do_follow` value
+                                    self.do_follow = original_do_follow
                         elif msg == "jumped":
                             # will break the loop after certain consecutive
                             # jumps
