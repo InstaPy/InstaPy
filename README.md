@@ -120,9 +120,7 @@ pip install instapy -U
 
 ```
 
---- 
-
-### Guides
+## Guides
 
 #### Video tutorials:
 
@@ -134,7 +132,8 @@ Sorry for the inconveniences
 
 **[How to RaspberryPi](https://github.com/InstaPy/instapy-docs/blob/master/How_Tos/How_to_Raspberry.md) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**
 
----
+
+## Support
 
 ### Do you need help ?
 If you should encounter any issue, please first [search for similar issues](https://github.com/timgrossmann/InstaPy/issues) and only if you can't find any, create a new issue or use the [discord channel](https://discord.gg/FDETsht) for help.
@@ -157,13 +156,7 @@ If you should encounter any issue, please first [search for similar issues](http
 Check out this short guide on [how to start contributing!](https://github.com/InstaPy/instapy-docs/blob/master/CONTRIBUTORS.md).
 
 
----
-
-> **Disclaimer**: Please Note that this is a research project. I am by no means responsible for any usage of this tool. Use on your own behalf. I'm also not responsible if your accounts get banned due to extensive use of this tool.
-
----
-
-### Credits
+## Credits
 
 ### Contributors
 
@@ -185,3 +178,7 @@ Support this project by becoming a sponsor. Your logo will show up here with a l
 <a href="https://www.chancetheapp.com" target="_blank">
 	<img src="https://user-images.githubusercontent.com/16529337/52699787-dbb17f80-2f76-11e9-9657-c103d4e89d88.png" height=75 />
 </a>
+
+---
+
+> **Disclaimer**: Please Note that this is a research project. I am by no means responsible for any usage of this tool. Use on your own behalf. I'm also not responsible if your accounts get banned due to extensive use of this tool.
