@@ -30,7 +30,8 @@ Implemented in Python using the Selenium module.<p>
 [Talk about automating your Instagram](https://youtu.be/4TmKFZy-ioQ) | [Talk about doing Open-Source work](https://www.youtube.com/watch?v=A_UtST302Og&t=0s&list=PLa4P1NPX9hthXV-wko0xyxFpbhYZFkW7o) | [Listen to the "Talk Python to me"-Episode](https://talkpython.fm/episodes/show/142/automating-the-web-with-selenium-and-instapy)
 
 
-#### Newsletter: [Sign Up for the Newsletter here!](http://eepurl.com/cZbV_v)
+**Newsletter: [Sign Up for the Newsletter here!](http://eepurl.com/cZbV_v)**   
+**Offical Video Guide: [Get it here!](https://www.udemy.com/instapy-guide/?couponCode=INSTAPY_OFFICIAL)**
 
 
 ## **Installation**
@@ -77,9 +78,15 @@ pip install instapy -U
 ## Guides
 
 #### Video tutorials:
+**[Official InstaPy Guide on Udemy](https://www.udemy.com/instapy-guide/?couponCode=INSTAPY_OFFICIAL)**
 
-> The currently available video tutorials all still use the old version of InstaPy, please use the documentation until we released new videos for the up to date installation instructions
-Sorry for the inconveniences
+**[Installation on Windows](https://www.youtube.com/watch?v=9DkEl2MrFQk&list=PLa4P1NPX9hthXV-wko0xyxFpbhYZFkW7o&index=11&t=40s)**
+
+**[Installation on MacOS](https://www.youtube.com/watch?v=TqQWM63Hhh4&t=11s&list=PLa4P1NPX9hthXV-wko0xyxFpbhYZFkW7o&index=12)**
+
+**[Installation on Linux](https://www.youtube.com/watch?v=sZ-SFy9vKHg&list=PLa4P1NPX9hthXV-wko0xyxFpbhYZFkW7o&index=10&t=28s)**
+
+**[Installation on DigitalOcean Server](https://www.youtube.com/watch?v=my0FM5hra_s&t=14s&list=PLa4P1NPX9hthXV-wko0xyxFpbhYZFkW7o&index=9)**
 
 #### Written Guides:
 **[How to Ubuntu (64-Bit)](https://github.com/InstaPy/instapy-docs/blob/master/How_Tos/How_To_DO_Ubuntu_on_Digital_Ocean.md) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**
