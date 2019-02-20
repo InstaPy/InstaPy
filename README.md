@@ -17,7 +17,7 @@ Implemented in Python using the Selenium module.
 If you should encounter any issue, please first [search for similar issues](https://github.com/timgrossmann/InstaPy/issues) and only if you can't find any, create a new issue or use the [discord channel](https://discord.gg/FDETsht) for help.
 
 #### Newsletter: [Sign Up for the Newsletter here!](http://eepurl.com/cZbV_v)
-
+#### Get the Offical Video Guide: [Get it here!](https://www.udemy.com/instapy-guide/?couponCode=INSTAPY_OFFICIAL)
 
 ## **Installation**
 ```elm
