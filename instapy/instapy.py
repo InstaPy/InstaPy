@@ -1032,16 +1032,18 @@ class InstaPy:
                             # store original value of `self.do_follow`
                             original_do_follow = self.do_follow
                             # disable following temporarily 
-                            # cos user is already followed
+                            # cos the user is already followed
                             self.do_follow = False
                             
-                            self.interact_by_users(acc_to_follow,
-                                                   self.user_interact_amount,
-                                                   self.user_interact_random,
-                                                   self.user_interact_media)
+                            # disable revalidating user in interact_by_users
+                            with self.feature_in_feature("interact_by_users", False):
+                                self.interact_by_users(acc_to_follow,
+                                                       self.user_interact_amount,
+                                                       self.user_interact_random,
+                                                       self.user_interact_media)
                             
-                            # back to original `self.do_follow`
-                            self.do_follow = original_do_follow 
+                            # revert back to original `self.do_follow` value
+                            self.do_follow = original_do_follow
 
                 elif msg == "already followed":
                     already_followed += 1
@@ -1807,19 +1809,13 @@ class InstaPy:
                                 self.logger.info(
                                     "--> User gonna be interacted: '{}'"
                                     .format(user_name))
-                                # store original value of `self.do_follow`
-                                original_do_follow = self.do_follow
-                                # disable following temporarily 
-                                # cos the user is already followed
-                                self.do_follow = False
-                                
-                                self.like_by_users(user_name,
-                                                   self.user_interact_amount,
-                                                   self.user_interact_random,
-                                                   self.user_interact_media)
-                                
-                                # back to original `self.do_follow` value
-                                self.do_follow = original_do_follow
+
+                                # disable revalidating user in like_by_users
+                                with self.feature_in_feature("like_by_users", False):
+                                    self.like_by_users(user_name,
+                                                       self.user_interact_amount,
+                                                       self.user_interact_random,
+                                                       self.user_interact_media)
 
                         elif msg == "already liked":
                             already_liked += 1
@@ -1863,6 +1859,13 @@ class InstaPy:
         if not isinstance(usernames, list):
             usernames = [usernames]
 
+        # standalone means this feature is started by the user
+        standalone = True if "like_by_users" not in \
+                             self.internal_usage.keys() else False
+        # skip validation in case of it is already accomplished
+        users_validated = True if not standalone and not \
+        self.internal_usage["like_by_users"]["validate"] else False
+
         liked_img = 0
         total_liked_img = 0
         already_liked = 0
@@ -1885,11 +1888,12 @@ class InstaPy:
 
             following = random.randint(0, 100) <= self.follow_percentage
 
-            validation, details = self.validate_user_call(username)
-            if not validation:
-                self.logger.info("--> Not a valid user: {}".format(details))
-                not_valid_users += 1
-                continue
+            if not users_validated:
+                validation, details = self.validate_user_call(username)
+                if not validation:
+                    self.logger.info("--> Not a valid user: {}".format(details))
+                    not_valid_users += 1
+                    continue
 
             try:
                 links = get_links_for_username(
