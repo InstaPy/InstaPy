@@ -1103,631 +1103,6 @@ session.remove_follow_requests(amount=200, sleep_delay=600)
 ---
 
 ## Third Party Features
-
-
-
-### Bypass Suspicious Login Attempt
-
-If you're having issues with the "we detected an unusual login attempt" message,
-you can bypass it setting InstaPy in this way:
-
-```python
-session = InstaPy(username=insta_username, password=insta_password, bypass_suspicious_attempt=True)
-```
-
-```bypass_suspicious_attempt=True``` will send the verification code to your
-email, and you will be prompted to enter the security code sent to your email.
-It will login to your account, now you can set bypass_suspicious_attempt to False
-```bypass_suspicious_attempt=False``` and InstaPy will quickly login using cookies.
-
-If you want to bypass suspicious login attempt with your phone number, set `bypass_with_mobile` to `True`
-
-```python
-InstaPy(username=insta_username, password=insta_password, bypass_suspicious_attempt=True, bypass_with_mobile=True)
-```
-
-
-
-
-## Relationship tools
-
-
-### Grab Followers of a user  
-###### Gets and returns `followers` of the given user in desired amount, also can save locally  
-```python
-popeye_followers = session.grab_followers(username="Popeye", amount="full", live_match=True, store_locally=True)
-##now, `popeye_followers` variable which is a list- holds the `Followers` data of "Popeye" at requested time
-```  
-#### Parameters:  
-`username`:  
-A desired username to grab its followers  
-* It can be your `own` username **OR** a _username of some `non-private` account._
-
-`amount`:  
-Defines the desired amount of usernames to grab from the given account
-* `amount="full"`:
-    + Grabs followers **entirely**
-* `amount=3089`:
-    * Grabs `3089` usernames **if exist**, _if not_, grabs **available** amount
-
-`live_match`:  
-Defines the method of grabbing `Followers` data
-> **Knowledge Base**:  
-Every time you grab `Followers` data in `"full"` range of **any** user, it is also gonna be _stored in some corner_ of `InstaPy` **for that session**.
-
-+ `live_match=False`:
-    + If the user **already do have** a `Followers` data loaded _earlier_ in the **same** session, it will run a _smart_ `data-matching` _algorithm_.  
-    And **there**, it will **load only the new data** _from the server_ and then **return a compact result** of _current data_.  
-    The _algorithm_ **works like**: _load the usernames **until hits the** ones from the **previous query** at certain amount_.  
-    + **Also if** the `live_match` is `False` and the user has **no any** _sessional_ `Followers` data, **then** it will load `live` data at _requested range_.
-    + As a **result**, `live_match=False` saves lots of `precious time` and `server requests`.  
-+ `live_match=True`:  
-    + It will **always** load `live` data from the server at _requested range_.
-
-`store_locally`:  
-Gives the _option_ to `save` the loaded `Followers` data in a **local storage**  
-The files will be saved _into_ your **logs folder**, `~/InstaPy/logs/YourOwnUsername/relationship_data/Popeye/followers/` directory.  
-Sample **filename** `14-06-2018~full~6874.json`:  
-+ `14-06-2018` means the **time** of the data acquisition.
-+ `"full"` means the **range** of the data acquisition;  
-_If the data is requested at the range **else than** `"full"`, it will write **that** range_.
-+ `6874` means the **count** of the usernames retrieved.
-+ `json` is the **filetype** and the data is stored as a `list` in it.
-
-
-There are **several** `use cases` of this tool for **various purposes**.  
-_E.g._, inside your **quickstart** script, you can **do** _something like this_:
-```python
-#get followers of "Popeye" and "Cinderella"
-popeye_followers = session.grab_followers(username="Popeye", amount="full", live_match=True, store_locally=True)
-sleep(600)
-cinderella_followers = session.grab_followers(username="Cinderella", amount="full", live_match=True, store_locally=True)
-
-#find the users following "Popeye" WHO also follow "Cinderella" :D
-popeye_cinderella_followers = [follower for follower in popeye_followers if follower in cinderella_followers]
-```
-
-#### `PRO`s:
-You can **use** this tool to take a **backup** of _your_ **or** _any other user's_ **current** followers.
-
-
-
-### Grab Following of a user  
-###### Gets and returns `following` of the given user in desired amount, also can save locally  
-```python
-lazySmurf_following = session.grab_following(username="lazy.smurf", amount="full", live_match=True, store_locally=True)
-##now, `lazySmurf_following` variable which is a list- holds the `Following` data of "lazy.smurf" at requested time
-```  
-#### Parameters:  
-`username`:  
-A desired username to grab its following  
-* It can be your `own` username **OR** a _username of some `non-private` account._
-
-`amount`:  
-Defines the desired amount of usernames to grab from the given account
-* `amount="full"`:
-    + Grabs following **entirely**
-* `amount=3089`:
-    * Grabs `3089` usernames **if exist**, _if not_, grabs **available** amount
-
-`live_match`:  
-Defines the method of grabbing `Following` data
-> **Knowledge Base**:  
-Every time you grab `Following` data in `"full"` range of **any** user, it is also gonna be _stored in some corner_ of `InstaPy` **for that session**.
-
-+ `live_match=False`:
-    + If the user **already do have** a `Following` data loaded _earlier_ in the **same** session, it will run a _smart_ `data-matching` _algorithm_.  
-    And **there**, it will **load only the new data** _from the server_ and then **return a compact result** of _current data_.
-    The _algorithm_ **works like**: _load the usernames **until hits the** ones from the **previous query** at certain amount_.  
-    + **Also if** the `live_match` is `False` and the user has **no any** _sessional_ `Following` data, **then** it will load `live` data at _requested range_.
-    + As a **result**, `live_match=False` saves lots of `precious time` and `server requests`.  
-+ `live_match=True`:  
-    + It will **always** load `live` data from the server at _requested range_.
-
-`store_locally`:  
-Gives the _option_ to `save` the loaded `Following` data in a **local storage**  
-The files will be saved _into_ your **logs folder**, `~/InstaPy/logs/YourOwnUsername/relationship_data/lazy.smurf/following/` directory.  
-Sample **filename** `15-06-2018~full~2409.json`:  
-+ `15-06-2018` means the **time** of the data acquisition.
-+ `"full"` means the **range** of the data acquisition;  
-_If the data is requested at the range **else than** `"full"`, it will write **that** range_.
-+ `2409` means the **count** of the usernames retrieved.
-+ `json` is the **filetype** and the data is stored as a `list` in it.
-
-
-There are **several** `use cases` of this tool for **various purposes**.  
-_E.g._, inside your **quickstart** script, you can **do** _something like this_:
-```python
-##as we know that all lazy Smurf care is to take some good rest, so by mistake, he can follow somebody WHOM Gargamel also follow!
-#so let's find it out to save Smurfs from troubles! :D
-
-#get following of "lazy.smurf" and "Gargamel"
-lazySmurf_following = session.grab_following(username="lazy.smurf", amount="full", live_match=True, store_locally=True)
-sleep(600)
-gargamel_following = session.grab_following(username="Gargamel", amount="full", live_match=True, store_locally=True)
-
-#find the users "lazy.smurf" is following WHOM "Gargamel" also follow :D
-lazySmurf_gargamel_following = [following for following in lazySmurf_following if following in gargamel_following]
-```
-
-#### `PRO`s:
-You can **use** this tool to take a **backup** of _your_ **or** _any other user's_ **current** following.
-
-
-
-### Pick Unfollowers of a user
-###### Compares the `followers` stored in a local storage against current followers and returns absent followers
-```python
-all_unfollowers, active_unfollowers = session.pick_unfollowers(username="Bernard_bear", compare_by="month", compare_track="first", live_match=True, store_locally=True, print_out=True)
-##now, `all_unfollowers` and `all_unfollowers` variables which are lists- hold the `Unfollowers` data of "Bernard_bear" at requested time
-#`all_unfollowers` holds all of the unfollowers WHILST `active_unfollowers` holds the unfollowers WHOM "Bernard_bear" is still following
-```
-#### Parameters:  
-`username`:  
-A desired username to pick its unfollowers  
-* It can be your `own` username **OR** a _username of some `non-private` account._
-
-`compare_by`:
-Defines the `compare point` to pick unfollowers
-+ Available **value**s are:
-    + `"latest"` chooses the very latest record from the existing records in the local folder
-    + `"earliest"` chooses the very earliest record from the existing records in the local folder
-
-    The compare points below needs a **compare track** defined, too:
-    + `"day"` chooses from the existing records of today in the local folder
-    + `"month"` chooses from the existing records of this month in the local folder
-    + `"year"` chooses from the existing records of this year in the local folder
-
-`compare_track`:
-Defines the track to choose a file to compare for `"day"`, `"month"` and `"year"` compare points
-+ Available **value**s are:
-    + `"first"` selects the first record from the given `day`, `month` or `year`
-    + `"median"` selects the median (_the one in the middle_) record from the given `day`, `month` or `year`
-    + `"last"` selects the last record from the given `day`, `month` or `year`
-
-`live_match`:  
-Defines the method of grabbing **new** `Followers` data to compare with **existing** data
-> **Knowledge Base**:  
-Every time you grab `Followers` data in `"full"` range of **any** user, it is also gonna be _stored in some corner_ of `InstaPy` **for that session**.
-
-+ `live_match=False`:
-    + If the user **already do have** a `Followers` data loaded _earlier_ in the **same** session, it will run a _smart_ `data-matching` _algorithm_.  
-    And **there**, it will **load only the new data** _from the server_ and then **return a compact result** of _current data_.  
-    The _algorithm_ **works like**: _load the usernames **until hits the** ones from the **previous query** at certain amount_.  
-    + **Also if** the `live_match` is `False` and the user has **no any** _sessional_ `Followers` data, **then** it will load `live` data at _requested range_.
-    + As a **result**, `live_match=False` saves lots of `precious time` and `server requests`.  
-+ `live_match=True`:  
-    + It will **always** load `live` data from the server at _requested range_.
-
-`store_locally`:  
-Gives the _option_ to `save` the loaded `Unfollowers` data in a **local storage**  
-There will be 2 files saved in their own directory:  
-+ `all_unfollowers`:  
-    + Will store all of the unfollowers in there  
-    + Its files will be saved at **logs folder**, `~/InstaPy/logs/YourOwnUsername/relationship_data/Bernard_bear/unfollowers/all_unfollowers/` directory.    
-+ `active_unfollowers`:    
-    + Will store only the unfollowers WHOM you are currently following.  
-    + Its files will be saved at **logs folder**, `~/InstaPy/logs/YourOwnUsername/relationship_data/Bernard_bear/unfollowers/active_unfollowers/` directory.    
-
-Sample **filename** `03-06-2018~all~75.json`:  
-+ `03-06-2018` means the **time** of the data acquisition.
-+ `"all"` means that it is all of the unfollowers data;  
-_*`"active"` unfollowers files will have `"active"` written in there_.
-+ `75` means the **count** of the unfollowers retrieved.
-+ `json` is the **filetype** and the data is stored as a `list` in it.
-
-`print_out`:  
-Use this parameter if you would like the `see` those unfollowers **printed** into the **console output** _right after finding them_.    
-
-There are **several** `use cases` of this tool for **various purposes**.  
-+ You can the get the unfollowers you have had from the **start of the** _year_, or from the **middle of the** _year_ or from the start of the **month**, etc.  
-And then, e.g. do some `useful` **analysis** with that _generated unfollowers data_.
-+ _And_ you can also **find** the unfollowers to `block` them **all**.
-+ Also, you can **unfollow back** those `active unfollowers` _right away_:
-```python
-#find all of the active unfollowers of Bernard bear
-all_unfollowers, active_unfollowers = session.pick_unfollowers(username="Bernard_bear", compare_by="earliest", compare_track="first", live_match=True, store_locally=True, print_out=True)
-sleep(200)
-#let's unfollow them immediately cos Bernard will be angry if heards about those unfollowers! :D
-session.unfollow_users(amount=len(active_unfollowers), customList=(True, active_unfollowers, "all"), style="RANDOM", unfollow_after=None, sleep_delay=600)
-```
-
-
-
-### Pick Nonfollowers of a user
-###### Compares the `Followers` data against `Following` data of a user and returns the `Nonfollowers` data
-```python
-scoobyDoo_nonfollowers = session.pick_nonfollowers(username="ScoobyDoo", live_match=True, store_locally=True)
-#now, `scoobyDoo_nonfollowers` variable which is a list- holds the `Nonfollowers` data of "ScoobyDoo" at requested time
-```
-#### Parameters:  
-`username`:  
-A desired username to pick its nonfollowers  
-* It can be your `own` username **OR** a _username of some `non-private` account._
-
-`live_match`:  
-Defines the method of grabbing `Followers` and `Following` data to compare with each other to find **nonfollowers**
-> **Knowledge Base**:  
-Every time you grab `Followers` and/or `Following` data in `"full"` range of **any** user, it is also gonna be _stored in some corner_ of `InstaPy` **for that session**.
-
-+ `live_match=False`:
-    + If the user **already do have** a `Followers` and/or `Following` data loaded _earlier_ in the **same** session, it will run a _smart_ `data-matching` _algorithm_.  
-    And **there**, it will **load only the new data** _from the server_ and then **return a compact result** of _current data_.  
-    The _algorithm_ **works like**: _load the usernames **until hits the** ones from the **previous query** at certain amount_.  
-    + **Also if** the `live_match` is `False` and the user has **no any** _sessional_ `Followers` and/or `Following` data, **then** it will load `live` data at _requested range_.
-    + As a **result**, `live_match=False` saves lots of `precious time` and `server requests`.  
-+ `live_match=True`:  
-    + It will **always** load `live` data from the server at _requested range_.
-
-`store_locally`:  
-Gives the _option_ to `save` the loaded `Nonfollowers` data in a **local storage**  
-The files will be saved _into_ your **logs folder**, `~/InstaPy/logs/YourOwnUsername/relationship_data/ScoobyDoo/nonfollowers/` directory.  
-Sample **filename** `01-06-2018~[5886-3575]~2465.json`:  
-+ `01-06-2018` means the **time** of the data acquisition.
-+ `5886` means the **count** of the followers retrieved.
-+ `3575` means the **count** of the following retrieved.
-+ `2465` means the **count** of the nonfollowers picked.
-+ `json` is the **filetype** and the data is stored as a `list` in it.
-
-
-There are **several** `use cases` of this tool for **various purposes**.  
-+ You can get the nonfollowers of several users and then do analysis.  
-    + _e.g., in this example Scooby Do used it like this_:  
-    ```python
-    ##Scooby Doo always wonders a lot and this time he wonders if there are people Shaggy is following WHO do not follow him back...
-    shaggy_nonfollowers = session.pick_nonfollowers(username="Shaggy", live_match=True, store_locally=True)
-
-    #now Scooby Doo will tell his friend Shaggy about this, who knows, maybe Shaggy will unfollow them all or even add to block :D
-    ```  
-
-
-
-### Pick Fans of a user
-###### Returns Fans data- all of the accounts who do follow the user WHOM user itself do not follow back
-```python
-smurfette_fans = session.pick_fans(username="Smurfette", live_match=True, store_locally=True)
-#now, `smurfette_fans` variable which is a list- holds the `Fans` data of "Smurfette" at requested time
-```
-#### Parameters:  
-`username`:  
-A desired username to pick its fans  
-* It can be your `own` username **OR** a _username of some `non-private` account._
-
-`live_match`:  
-Defines the method of grabbing `Followers` and `Following` data to compare with each other to find **fans**
-> **Knowledge Base**:  
-Every time you grab `Followers` and/or `Following` data in `"full"` range of **any** user, it is also gonna be _stored in some corner_ of `InstaPy` **for that session**.
-
-+ `live_match=False`:
-    + If the user **already do have** a `Followers` and/or `Following` data loaded _earlier_ in the **same** session, it will run a _smart_ `data-matching` _algorithm_.  
-    And **there**, it will **load only the new data** _from the server_ and then **return a compact result** of _current data_.  
-    The _algorithm_ **works like**: _load the usernames **until hits the** ones from the **previous query** at certain amount_.  
-    + **Also if** the `live_match` is `False` and the user has **no any** _sessional_ `Followers` and/or `Following` data, **then** it will load `live` data at _requested range_.
-    + As a **result**, `live_match=False` saves lots of `precious time` and `server requests`.  
-+ `live_match=True`:  
-    + It will **always** load `live` data from the server at _requested range_.
-
-`store_locally`:  
-Gives the _option_ to `save` the loaded `Fans` data in a **local storage**  
-The files will be saved _into_ your **logs folder**, `~/InstaPy/logs/YourOwnUsername/relationship_data/Smurfette/fans/` directory.  
-Sample **filename** `05-06-2018~[4591-2575]~3477.json`:  
-+ `05-06-2018` means the **time** of the data acquisition.
-+ `4591` means the **count** of the followers retrieved.
-+ `2575` means the **count** of the following retrieved.
-+ `3477` means the **count** of the fans picked.
-+ `json` is the **filetype** and the data is stored as a `list` in it.
-
-
-There are **several** `use cases` of this tool for **various purposes**.  
-+ You can get the fans of several users and then do analysis.  
-    + _e.g., in this example Smurfette used it like this_:  
-    ```python
-    ##Smurfette is so famous in the place and she wonders which smurfs is following her WHOM she doesn't even know of :D
-    smurfette_fans = session.pick_fans(username="Smurfette", live_match=True, store_locally=True)
-    #and now, maybe she will follow back some of the smurfs whom she may know :P
-    ```  
-
-
-
-### Pick Mutual Following of a user
-###### Returns `Mutual Following` data- all of the accounts who do follow the user WHOM user itself **also** do follow back
-```python
-Winnie_mutualFollowing = session.pick_mutual_following(username="WinnieThePooh", live_match=True, store_locally=True)
-#now, `Winnie_mutualFollowing` variable which is a list- holds the `Mutual Following` data of "WinnieThePooh" at requested time
-```
-#### Parameters:  
-`username`:  
-A desired username to pick its mutual following  
-* It can be your `own` username **OR** a _username of some `non-private` account._
-
-`live_match`:  
-Defines the method of grabbing `Followers` and `Following` data to compare with each other to find **mutual following**
-> **Knowledge Base**:  
-Every time you grab `Followers` and/or `Following` data in `"full"` range of **any** user, it is also gonna be _stored in some corner_ of `InstaPy` **for that session**.
-
-+ `live_match=False`:
-    + If the user **already do have** a `Followers` and/or `Following` data loaded _earlier_ in the **same** session, it will run a _smart_ `data-matching` _algorithm_.  
-    And **there**, it will **load only the new data** _from the server_ and then **return a compact result** of _current data_.  
-    The _algorithm_ **works like**: _load the usernames **until hits the** ones from the **previous query** at certain amount_.  
-    + **Also if** the `live_match` is `False` and the user has **no any** _sessional_ `Followers` and/or `Following` data, **then** it will load `live` data at _requested range_.
-    + As a **result**, `live_match=False` saves lots of `precious time` and `server requests`.  
-+ `live_match=True`:  
-    + It will **always** load `live` data from the server at _requested range_.
-
-`store_locally`:  
-Gives the _option_ to `save` the loaded `Mutual Following` data in a **local storage**  
-The files will be saved _into_ your **logs folder**, `~/InstaPy/logs/YourOwnUsername/relationship_data/WinnieThePooh/mutual_following/` directory.  
-Sample **filename** `11-06-2018~[3872-2571]~1120.json`:  
-+ `11-06-2018` means the **time** of the data acquisition.
-+ `3872` means the **count** of the followers retrieved.
-+ `2571` means the **count** of the following retrieved.
-+ `1120` means the **count** of the mutual following picked.
-+ `json` is the **filetype** and the data is stored as a `list` in it.
-
-
-There are **several** `use cases` of this tool for **various purposes**.  
-+ You can get the mutual following of several users and then do analysis.  
-    + _e.g., in this example Winnie The Pooh used it like this_:  
-    ```python
-    #Winnie The Pooh is a very friendly guy and almost everybody follows him back, but he wants to be sure about it :D
-    Winnie_mutual_following = session.pick_mutual_following(username="WinnieThePooh", live_match=True, store_locally=True)
-    ##now, he will write a message to his mutual followers to help him get a new honey pot :>
-    ```  
-
-
-
-## Text Analytics
-
-
-### Yandex Translate API
-
-<img src="https://yastatic.net/www/_/Q/r/sx-Y7-1azG3UMxG55avAdgwbM.svg" width="196" align="right">
-
-<img src="https://yastatic.net/s3/home/logos/services/1/translate.svg" width="66" align="left">
-
-###### Offers excellent language detection and synchronized translation for over 95 languages 😎 worldwide
-
-_This service currently is supported only by the [Interact by Comments](#interact-by-comments) feature_.
-
-#### Usage
-Go [**sign up**](https://translate.yandex.com/developers/keys) on [_translate.yandex.com_](https://translate.yandex.com) and get a _free_ `API_key`;  
-_Then configure its usage at your **quickstart** script_,
-```python
-session.set_use_yandex(enabled=True,
-                       API_key='',
-                       match_language=True,
-                       language_code="en")
-```
-
-
-#### Parameters
-`enabled`
-: Put `True` to **activate** or `False` to **deactivate** the service usage;  
-
-`API_key`
-: The _key_ which is **required** to authenticate `HTTP` _requests_ to the **API**;  
-
-`match_language`
-: **Enable** if you would like to match the language of the text;
-
-`language_code`
-: **Set** your desired language's code to **match language** (_if it's enabled_);
->You can get the list of all supported languages and their codes at [_tech.yandex.com_](https://tech.yandex.com/translate/doc/dg/concepts/api-overview-docpage/#api-overview__languages).
-
-
-#### Rate Limits
-In its _free_ plan, the **daily** request _limit_ is `1,000,000` characters and the **monthly** _limit_ is `10,000,000` characters.
->To increase the request limit, you can **switch** to the `fee-based` version of the service (_$`15`/million chars_)..
-
-
-#### Examples
-
-**1**-) Matching language;
-```python
-session.set_use_yandex(enabled=True, API_key='', match_language=True, language_code="az")
-```
-Target text
-: "_your technique encourages📸 me_"  
-
-_Now that text is gonna be labeled **inappropriate** COS its language is `english` rather than the desired `azerbaijani`_..    
-
-**2**-) Enabling the **Yandex** service _but NOT_ matching language;
-Since **Yandex** Translate is being used [internally] by the **MeaningCloud** service, you can just provide the API key of **Yandex** and enable it without enabling the `match_language` parameter what will be sufficient for the **MeaningCloud** to work..
-```python
-session.set_use_yandex(enabled=True, API_key='', match_language=False)
-```
->And yes, you can enable **Yandex** service to make it be available for **MeaningCloud** and then also _match language_ if you like, in the same setup just by turning the `match_language` parameter on..
-
-
-#### Legal Notice
-[Powered by Yandex.Translate](http://translate.yandex.com/)
-
-
-
-### MeaningCloud Sentiment Analysis API
-
-<img src="https://www.meaningcloud.com/developer/img/LogoMeaningCloud210x85.png" width="210" align="right">
-
-###### Offers a detailed, multilingual analysis of all kind of unstructured content determining its sentiment ⚖
-_This service currently is supported only by the [Interact by Comments](#interact-by-comments) feature_.
-
-Determines if text displays _positive_, _negative_, or _neutral_ sentiment - or is _not possible_ to detect.  
-Phrases are identified with the _relationship between_ them evaluated which identifies a _global polarity_ value of the text.
-
-
-#### Usage
-**1**-) Go [**sign up**](https://www.meaningcloud.com/developer/login) (_offers **sign in** with_ 😎 _**Github**_) on [_meaningcloud.com_](https://www.meaningcloud.com) and get a _free_ `license_key`;  
-_Then configure its usage at your **quickstart** script_,
-```python
-session.set_use_meaningcloud(enabled=True,
-                             license_key='',
-                             polarity="P",
-                             agreement="AGREEMENT",
-                             subjectivity="SUBJECTIVE",
-                             confidence=94)
-```
-**2**-) Install its _package_ for **python** by `pip`;
-```powershell
-pip install MeaningCloud-python
-```
-**3**-) Turn on **Yandex** _Translate_ service which is a **requirement** for the language _detection_ & _translation_ at request;  
-_To have it configured, read its [documentation](#yandex-translate-api)_.
-
-
-#### Parameters  
-`enabled`
-: Put `True` to **activate** or `False` to **deactivate** the service usage;  
-
-`license_key`
-: The license key is **required** to do _calls_ to the API;  
-
-`polarity`
-: It indicates the polarity found (_or not found_) in the text and applies to the **global** polarity of the text;  
-_It's a **graduated** polarity - rates from **very** negative to **very** positive_.
-
-| `score_tag` |                   definition                    |  
-| ----------- | ----------------------------------------------- |    
-|    `"P+"`   |       match if text is _**strong** positive_    |  
-|    `"P"`    |       match if text is _positive_ or above      |   
-|    `"NEU"`  |       match if text is _neutral_ or above       |  
-|    `"N"`    |       match if text is _negative_ or above      |
-|    `"N+"`   | match if text is _**strong** negative_ or above |  
-|    `None`   |     do not match per _polarity_ found, at all   |  
-
-  > By "_or above_" it means- _e.g._, if you set `polarity` to `"P"`, and text is `"P+"` then it'll also be appropriate (_as it always leans towards positivity_) ..
-
-`agreement`
-: Identifies **opposing** opinions - _contradictory_, _ambiguous_;  
-_It marks the agreement **between** the sentiments detected in the text, the sentence or the segment it refers to_.
-
-|    `agreement`   |                            definition                                     |  
-| ---------------- | ------------------------------------------------------------------------- |    
-|   `"AGREEMENT"`  |       match if the different elements have **the same** polarity          |  
-| `"DISAGREEMENT"` | match if there is _disagreement_ between the different elements' polarity |   
-|      `None`      |              do not match per _agreement_ found, at all                   |    
-
-
-`subjectivity`
-: Identification of _opinions_ and _facts_ - **distinguishes** between _objective_ and _subjective_;  
-_It marks the subjectivity of the text_.
-
-| `subjectivity` |                          definition                           |  
-| -------------- | ------------------------------------------------------------- |    
-| `"SUBJECTIVE"` |           match if text that has _subjective_ marks           |  
-| `"OBJECTIVE"`  | match if text that does not have **any** _subjectivity_ marks |   
-|     `None`     |         do not match per _subjectivity_ found, at all         |    
-
-`confidence`
-: It represents the _confidence_ associated with the sentiment analysis **performed on the** text and takes an integer number in the _range of_ `(0, 100]`;  
->If you **don't want to** match per _confidence_ found, at all, use the value of `None`.
-
-
-#### Rate Limits
-It gives you `20 000` single API calls per each month (_starting from the date you have **signed up**_).  
-It has _no daily limit_ but if you hit the limit set for number of requests can be carried out concurrently (_per second_) it'll return with error code of `104` rather than the result 😉
-
-
-#### Language Support
-**MeaningCloud** currently supports a generic sentiment model (_called general_) in these languages: _english_, _spanish_, _french_, _italian_, _catalan_, and _portuguese_.  
->You can define your own sentiment models using the user sentiment models console and work with them in the same way as with the sentiment models it provides.  
-
-But **no need to worry** IF your _language_ or _target audience's language_ is NONE of those **officially** supported.  
-Cos, to **increase the coverage** and support **all other** languages, as well, **Yandex** _Translate_ service comes to rescue!  
-It detects the text's langugage before passing it to **MeaningCloud**, and, if its language is not supported by **MeaningCloud**, it translates it into english and only then passes it to **MeaningCloud** _Sentiment Analysis_..
-
-
-#### Examples
-**a** -) Match **ONLY** per `polarity` and `agreement`
-```python
-session.set_use_meaningcloud(enabled=True, license_key='', polarity="P", agreement="AGREEMENT")
-```
-Target text
-: "_I appreciate your innovative thinking that results, brilliant images_"  
-
-_Sentiment Analysis_ results for the text:
-
-| `score_tag` |  `agreement`  | `subjectivity` | `confidence` |
-| ----------- | ------------- | -------------- | ------------ |
-|   `"P+"`    | `"AGREEMENT"` | `"SUBJECTIVE"` |     `100`    |
-
-_Now that text is gonna be labeled **appropriate** COS its polarity is `"P+"` which is more positive than `"P"` and `agreement` values also do match_..  
-
-**b** -) Match **FULLY**
-```python
-session.set_use_meaningcloud(enabled=True, license_key='', polarity="P+", agreement="AGREEMENT", subjectivity="SUBJECTIVE", confidence=98)
-```
-Target text
-: "_truly fantastic but it looks sad!_"  
-
-_Sentiment Analysis_ results for the text:
-
-| `score_tag` |    `agreement`   | `subjectivity` | `confidence` |
-| ----------- | ---------------- | -------------- | ------------ |
-|    `"P"`    | `"DISAGREEMENT"` | `"SUBJECTIVE"` |     `92`    |
-
-_Now that text is gonna be labeled **inappropriate** COS its polarity is `"P"` which is less positive than `"P+"` and also, `agreement` values also **do NOT** match, and **lastly**, `confidence` is **below** user-defined `98`_..    
-
-
-#### Legal Notice
-This project uses MeaningCloud™ (http://www.meaningcloud.com) for Text Analytics.
-
-
-
-### Use a proxy (Chrome)
-
-You can use InstaPy behind a proxy by specifying server address and port
-
-Simple proxy setup example:
-```python
-session = InstaPy(username=insta_username, password=insta_password, proxy_address='8.8.8.8', proxy_port=8080)
-```
-
-To use proxy with authentication you should firstly import proxy chrome extension to you configuration file (the one with your Instagram username and password).
-
-Proxy setup using authentication example:
-```python
-from proxy_extension import create_proxy_extension
-
-proxy = 'login:password@ip:port'
-proxy_chrome_extension = create_proxy_extension(proxy)
-
-session = InstaPy(username=insta_username, password=insta_password, proxy_chrome_extension=proxy_chrome_extension, nogui=True)
-```
-
-### Use a proxy (Firefox)
-
-You can use InstaPy behind a proxy by specifying server address, port and/or proxy authentication credentials. It works with and without ```headless_browser``` option.
-
-Simple proxy setup example:
-```python
-session = InstaPy(username=insta_username, 
-                  password=insta_password,
-		  use_firefox=True,
-		  proxy_address='8.8.8.8', 
-		  proxy_port=8080)
-
-```
-
-Proxy setup with authentication example:
-```python
-session = InstaPy(username=insta_username,
-                  password=insta_password,
-                  proxy_username='',
-                  proxy_password='',
-                  proxy_address='8.8.8.8',
-                  proxy_port=4444,
-                  use_firefox=True)
-```
-
-### Switching to Firefox
-
-Chrome is the default browser, but InstaPy provides support for Firefox as well.
-
-```python
-session = InstaPy(username=insta_username, password=insta_password, use_firefox=True)
-```
-
-
 ## Clarifai ImageAPI
 
 <img src="https://clarifai.com/cms-assets/20180311184054/Clarifai_Pos.svg" width="200" align="right">
@@ -1922,18 +1297,628 @@ Be aware that you cannot check video using a `workflow` and that only a select n
 
 ##### Check out [https://clarifai.com/demo](https://clarifai.com/demo) to see some of the available tags.</h6>
 
+
+## Text Analytics
+### Yandex Translate API
+
+<img src="https://yastatic.net/www/_/Q/r/sx-Y7-1azG3UMxG55avAdgwbM.svg" width="196" align="right">
+
+<img src="https://yastatic.net/s3/home/logos/services/1/translate.svg" width="66" align="left">
+
+###### Offers excellent language detection and synchronized translation for over 95 languages 😎 worldwide
+
+_This service currently is supported only by the [Interact by Comments](#interact-by-comments) feature_.
+
+#### Usage
+Go [**sign up**](https://translate.yandex.com/developers/keys) on [_translate.yandex.com_](https://translate.yandex.com) and get a _free_ `API_key`;  
+_Then configure its usage at your **quickstart** script_,
+```python
+session.set_use_yandex(enabled=True,
+                       API_key='',
+                       match_language=True,
+                       language_code="en")
+```
+
+
+#### Parameters
+`enabled`
+: Put `True` to **activate** or `False` to **deactivate** the service usage;  
+
+`API_key`
+: The _key_ which is **required** to authenticate `HTTP` _requests_ to the **API**;  
+
+`match_language`
+: **Enable** if you would like to match the language of the text;
+
+`language_code`
+: **Set** your desired language's code to **match language** (_if it's enabled_);
+>You can get the list of all supported languages and their codes at [_tech.yandex.com_](https://tech.yandex.com/translate/doc/dg/concepts/api-overview-docpage/#api-overview__languages).
+
+
+#### Rate Limits
+In its _free_ plan, the **daily** request _limit_ is `1,000,000` characters and the **monthly** _limit_ is `10,000,000` characters.
+>To increase the request limit, you can **switch** to the `fee-based` version of the service (_$`15`/million chars_)..
+
+
+#### Examples
+
+**1**-) Matching language;
+```python
+session.set_use_yandex(enabled=True, API_key='', match_language=True, language_code="az")
+```
+Target text
+: "_your technique encourages📸 me_"  
+
+_Now that text is gonna be labeled **inappropriate** COS its language is `english` rather than the desired `azerbaijani`_..    
+
+**2**-) Enabling the **Yandex** service _but NOT_ matching language;
+Since **Yandex** Translate is being used [internally] by the **MeaningCloud** service, you can just provide the API key of **Yandex** and enable it without enabling the `match_language` parameter what will be sufficient for the **MeaningCloud** to work..
+```python
+session.set_use_yandex(enabled=True, API_key='', match_language=False)
+```
+>And yes, you can enable **Yandex** service to make it be available for **MeaningCloud** and then also _match language_ if you like, in the same setup just by turning the `match_language` parameter on..
+
+
+#### Legal Notice
+[Powered by Yandex.Translate](http://translate.yandex.com/)
+
+
+### MeaningCloud Sentiment Analysis API
+<img src="https://www.meaningcloud.com/developer/img/LogoMeaningCloud210x85.png" width="210" align="right">
+
+###### Offers a detailed, multilingual analysis of all kind of unstructured content determining its sentiment ⚖
+_This service currently is supported only by the [Interact by Comments](#interact-by-comments) feature_.
+
+Determines if text displays _positive_, _negative_, or _neutral_ sentiment - or is _not possible_ to detect.  
+Phrases are identified with the _relationship between_ them evaluated which identifies a _global polarity_ value of the text.
+
+
+#### Usage
+**1**-) Go [**sign up**](https://www.meaningcloud.com/developer/login) (_offers **sign in** with_ 😎 _**Github**_) on [_meaningcloud.com_](https://www.meaningcloud.com) and get a _free_ `license_key`;  
+_Then configure its usage at your **quickstart** script_,
+```python
+session.set_use_meaningcloud(enabled=True,
+                             license_key='',
+                             polarity="P",
+                             agreement="AGREEMENT",
+                             subjectivity="SUBJECTIVE",
+                             confidence=94)
+```
+**2**-) Install its _package_ for **python** by `pip`;
+```powershell
+pip install MeaningCloud-python
+```
+**3**-) Turn on **Yandex** _Translate_ service which is a **requirement** for the language _detection_ & _translation_ at request;  
+_To have it configured, read its [documentation](#yandex-translate-api)_.
+
+
+#### Parameters  
+`enabled`
+: Put `True` to **activate** or `False` to **deactivate** the service usage;  
+
+`license_key`
+: The license key is **required** to do _calls_ to the API;  
+
+`polarity`
+: It indicates the polarity found (_or not found_) in the text and applies to the **global** polarity of the text;  
+_It's a **graduated** polarity - rates from **very** negative to **very** positive_.
+
+| `score_tag` |                   definition                    |  
+| ----------- | ----------------------------------------------- |    
+|    `"P+"`   |       match if text is _**strong** positive_    |  
+|    `"P"`    |       match if text is _positive_ or above      |   
+|    `"NEU"`  |       match if text is _neutral_ or above       |  
+|    `"N"`    |       match if text is _negative_ or above      |
+|    `"N+"`   | match if text is _**strong** negative_ or above |  
+|    `None`   |     do not match per _polarity_ found, at all   |  
+
+  > By "_or above_" it means- _e.g._, if you set `polarity` to `"P"`, and text is `"P+"` then it'll also be appropriate (_as it always leans towards positivity_) ..
+
+`agreement`
+: Identifies **opposing** opinions - _contradictory_, _ambiguous_;  
+_It marks the agreement **between** the sentiments detected in the text, the sentence or the segment it refers to_.
+
+|    `agreement`   |                            definition                                     |  
+| ---------------- | ------------------------------------------------------------------------- |    
+|   `"AGREEMENT"`  |       match if the different elements have **the same** polarity          |  
+| `"DISAGREEMENT"` | match if there is _disagreement_ between the different elements' polarity |   
+|      `None`      |              do not match per _agreement_ found, at all                   |    
+
+
+`subjectivity`
+: Identification of _opinions_ and _facts_ - **distinguishes** between _objective_ and _subjective_;  
+_It marks the subjectivity of the text_.
+
+| `subjectivity` |                          definition                           |  
+| -------------- | ------------------------------------------------------------- |    
+| `"SUBJECTIVE"` |           match if text that has _subjective_ marks           |  
+| `"OBJECTIVE"`  | match if text that does not have **any** _subjectivity_ marks |   
+|     `None`     |         do not match per _subjectivity_ found, at all         |    
+
+`confidence`
+: It represents the _confidence_ associated with the sentiment analysis **performed on the** text and takes an integer number in the _range of_ `(0, 100]`;  
+>If you **don't want to** match per _confidence_ found, at all, use the value of `None`.
+
+
+#### Rate Limits
+It gives you `20 000` single API calls per each month (_starting from the date you have **signed up**_).  
+It has _no daily limit_ but if you hit the limit set for number of requests can be carried out concurrently (_per second_) it'll return with error code of `104` rather than the result 😉
+
+
+#### Language Support
+**MeaningCloud** currently supports a generic sentiment model (_called general_) in these languages: _english_, _spanish_, _french_, _italian_, _catalan_, and _portuguese_.  
+>You can define your own sentiment models using the user sentiment models console and work with them in the same way as with the sentiment models it provides.  
+
+But **no need to worry** IF your _language_ or _target audience's language_ is NONE of those **officially** supported.  
+Cos, to **increase the coverage** and support **all other** languages, as well, **Yandex** _Translate_ service comes to rescue!  
+It detects the text's langugage before passing it to **MeaningCloud**, and, if its language is not supported by **MeaningCloud**, it translates it into english and only then passes it to **MeaningCloud** _Sentiment Analysis_..
+
+
+#### Examples
+**a** -) Match **ONLY** per `polarity` and `agreement`
+```python
+session.set_use_meaningcloud(enabled=True, license_key='', polarity="P", agreement="AGREEMENT")
+```
+Target text
+: "_I appreciate your innovative thinking that results, brilliant images_"  
+
+_Sentiment Analysis_ results for the text:
+
+| `score_tag` |  `agreement`  | `subjectivity` | `confidence` |
+| ----------- | ------------- | -------------- | ------------ |
+|   `"P+"`    | `"AGREEMENT"` | `"SUBJECTIVE"` |     `100`    |
+
+_Now that text is gonna be labeled **appropriate** COS its polarity is `"P+"` which is more positive than `"P"` and `agreement` values also do match_..  
+
+**b** -) Match **FULLY**
+```python
+session.set_use_meaningcloud(enabled=True, license_key='', polarity="P+", agreement="AGREEMENT", subjectivity="SUBJECTIVE", confidence=98)
+```
+Target text
+: "_truly fantastic but it looks sad!_"  
+
+_Sentiment Analysis_ results for the text:
+
+| `score_tag` |    `agreement`   | `subjectivity` | `confidence` |
+| ----------- | ---------------- | -------------- | ------------ |
+|    `"P"`    | `"DISAGREEMENT"` | `"SUBJECTIVE"` |     `92`    |
+
+_Now that text is gonna be labeled **inappropriate** COS its polarity is `"P"` which is less positive than `"P+"` and also, `agreement` values also **do NOT** match, and **lastly**, `confidence` is **below** user-defined `98`_..    
+
+
+#### Legal Notice
+This project uses MeaningCloud™ (http://www.meaningcloud.com) for Text Analytics.
+
+---
+
+## Instance Settings 
 ## Running on a Headless Browser
-
-**Note:** Chrome only! Must use chromedriver v2.9+
-
 Use `headless_browser` parameter to run the bot via the CLI. Works great if running the scripts locally, or to deploy on a server. No GUI, less CPU intensive. [Example](http://g.recordit.co/BhEgXANLhJ.gif)
 
 ```
 session = InstaPy(username='test', password='test', headless_browser=True)
 ```
 
-## Automate InstaPy
 
+### Bypass Suspicious Login Attempt
+
+If you're having issues with the "we detected an unusual login attempt" message,
+you can bypass it setting InstaPy in this way:
+
+```python
+session = InstaPy(username=insta_username, password=insta_password, bypass_suspicious_attempt=True)
+```
+
+```bypass_suspicious_attempt=True``` will send the verification code to your
+email, and you will be prompted to enter the security code sent to your email.
+It will login to your account, now you can set bypass_suspicious_attempt to False
+```bypass_suspicious_attempt=False``` and InstaPy will quickly login using cookies.
+
+If you want to bypass suspicious login attempt with your phone number, set `bypass_with_mobile` to `True`
+
+```python
+InstaPy(username=insta_username, password=insta_password, bypass_suspicious_attempt=True, bypass_with_mobile=True)
+```
+
+
+### Use a proxy (Chrome)
+
+You can use InstaPy behind a proxy by specifying server address and port
+
+Simple proxy setup example:
+```python
+session = InstaPy(username=insta_username, password=insta_password, proxy_address='8.8.8.8', proxy_port=8080)
+```
+
+To use proxy with authentication you should firstly import proxy chrome extension to you configuration file (the one with your Instagram username and password).
+
+Proxy setup using authentication example:
+```python
+from proxy_extension import create_proxy_extension
+
+proxy = 'login:password@ip:port'
+proxy_chrome_extension = create_proxy_extension(proxy)
+
+session = InstaPy(username=insta_username, password=insta_password, proxy_chrome_extension=proxy_chrome_extension, nogui=True)
+```
+
+
+### Switching to Firefox
+Chrome is the default browser, but InstaPy provides support for Firefox as well.
+
+```python
+session = InstaPy(username=insta_username, password=insta_password, use_firefox=True)
+```
+
+
+### Use a proxy (Firefox)
+
+You can use InstaPy behind a proxy by specifying server address, port and/or proxy authentication credentials. It works with and without ```headless_browser``` option.
+
+Simple proxy setup example:
+```python
+session = InstaPy(username=insta_username, 
+                  password=insta_password,
+		  use_firefox=True,
+		  proxy_address='8.8.8.8', 
+		  proxy_port=8080)
+
+```
+
+Proxy setup with authentication example:
+```python
+session = InstaPy(username=insta_username,
+                  password=insta_password,
+                  proxy_username='',
+                  proxy_password='',
+                  proxy_address='8.8.8.8',
+                  proxy_port=4444,
+                  use_firefox=True)
+```
+
+---
+
+## Relationship tools
+### Grab Followers of a user  
+###### Gets and returns `followers` of the given user in desired amount, also can save locally  
+```python
+popeye_followers = session.grab_followers(username="Popeye", amount="full", live_match=True, store_locally=True)
+##now, `popeye_followers` variable which is a list- holds the `Followers` data of "Popeye" at requested time
+```  
+#### Parameters:  
+`username`:  
+A desired username to grab its followers  
+* It can be your `own` username **OR** a _username of some `non-private` account._
+
+`amount`:  
+Defines the desired amount of usernames to grab from the given account
+* `amount="full"`:
+    + Grabs followers **entirely**
+* `amount=3089`:
+    * Grabs `3089` usernames **if exist**, _if not_, grabs **available** amount
+
+`live_match`:  
+Defines the method of grabbing `Followers` data
+> **Knowledge Base**:  
+Every time you grab `Followers` data in `"full"` range of **any** user, it is also gonna be _stored in some corner_ of `InstaPy` **for that session**.
+
++ `live_match=False`:
+    + If the user **already do have** a `Followers` data loaded _earlier_ in the **same** session, it will run a _smart_ `data-matching` _algorithm_.  
+    And **there**, it will **load only the new data** _from the server_ and then **return a compact result** of _current data_.  
+    The _algorithm_ **works like**: _load the usernames **until hits the** ones from the **previous query** at certain amount_.  
+    + **Also if** the `live_match` is `False` and the user has **no any** _sessional_ `Followers` data, **then** it will load `live` data at _requested range_.
+    + As a **result**, `live_match=False` saves lots of `precious time` and `server requests`.  
++ `live_match=True`:  
+    + It will **always** load `live` data from the server at _requested range_.
+
+`store_locally`:  
+Gives the _option_ to `save` the loaded `Followers` data in a **local storage**  
+The files will be saved _into_ your **logs folder**, `~/InstaPy/logs/YourOwnUsername/relationship_data/Popeye/followers/` directory.  
+Sample **filename** `14-06-2018~full~6874.json`:  
++ `14-06-2018` means the **time** of the data acquisition.
++ `"full"` means the **range** of the data acquisition;  
+_If the data is requested at the range **else than** `"full"`, it will write **that** range_.
++ `6874` means the **count** of the usernames retrieved.
++ `json` is the **filetype** and the data is stored as a `list` in it.
+
+
+There are **several** `use cases` of this tool for **various purposes**.  
+_E.g._, inside your **quickstart** script, you can **do** _something like this_:
+```python
+#get followers of "Popeye" and "Cinderella"
+popeye_followers = session.grab_followers(username="Popeye", amount="full", live_match=True, store_locally=True)
+sleep(600)
+cinderella_followers = session.grab_followers(username="Cinderella", amount="full", live_match=True, store_locally=True)
+
+#find the users following "Popeye" WHO also follow "Cinderella" :D
+popeye_cinderella_followers = [follower for follower in popeye_followers if follower in cinderella_followers]
+```
+
+#### `PRO`s:
+You can **use** this tool to take a **backup** of _your_ **or** _any other user's_ **current** followers.
+
+
+### Grab Following of a user  
+###### Gets and returns `following` of the given user in desired amount, also can save locally  
+```python
+lazySmurf_following = session.grab_following(username="lazy.smurf", amount="full", live_match=True, store_locally=True)
+##now, `lazySmurf_following` variable which is a list- holds the `Following` data of "lazy.smurf" at requested time
+```  
+#### Parameters:  
+`username`:  
+A desired username to grab its following  
+* It can be your `own` username **OR** a _username of some `non-private` account._
+
+`amount`:  
+Defines the desired amount of usernames to grab from the given account
+* `amount="full"`:
+    + Grabs following **entirely**
+* `amount=3089`:
+    * Grabs `3089` usernames **if exist**, _if not_, grabs **available** amount
+
+`live_match`:  
+Defines the method of grabbing `Following` data
+> **Knowledge Base**:  
+Every time you grab `Following` data in `"full"` range of **any** user, it is also gonna be _stored in some corner_ of `InstaPy` **for that session**.
+
++ `live_match=False`:
+    + If the user **already do have** a `Following` data loaded _earlier_ in the **same** session, it will run a _smart_ `data-matching` _algorithm_.  
+    And **there**, it will **load only the new data** _from the server_ and then **return a compact result** of _current data_.
+    The _algorithm_ **works like**: _load the usernames **until hits the** ones from the **previous query** at certain amount_.  
+    + **Also if** the `live_match` is `False` and the user has **no any** _sessional_ `Following` data, **then** it will load `live` data at _requested range_.
+    + As a **result**, `live_match=False` saves lots of `precious time` and `server requests`.  
++ `live_match=True`:  
+    + It will **always** load `live` data from the server at _requested range_.
+
+`store_locally`:  
+Gives the _option_ to `save` the loaded `Following` data in a **local storage**  
+The files will be saved _into_ your **logs folder**, `~/InstaPy/logs/YourOwnUsername/relationship_data/lazy.smurf/following/` directory.  
+Sample **filename** `15-06-2018~full~2409.json`:  
++ `15-06-2018` means the **time** of the data acquisition.
++ `"full"` means the **range** of the data acquisition;  
+_If the data is requested at the range **else than** `"full"`, it will write **that** range_.
++ `2409` means the **count** of the usernames retrieved.
++ `json` is the **filetype** and the data is stored as a `list` in it.
+
+
+There are **several** `use cases` of this tool for **various purposes**.  
+_E.g._, inside your **quickstart** script, you can **do** _something like this_:
+```python
+##as we know that all lazy Smurf care is to take some good rest, so by mistake, he can follow somebody WHOM Gargamel also follow!
+#so let's find it out to save Smurfs from troubles! :D
+
+#get following of "lazy.smurf" and "Gargamel"
+lazySmurf_following = session.grab_following(username="lazy.smurf", amount="full", live_match=True, store_locally=True)
+sleep(600)
+gargamel_following = session.grab_following(username="Gargamel", amount="full", live_match=True, store_locally=True)
+
+#find the users "lazy.smurf" is following WHOM "Gargamel" also follow :D
+lazySmurf_gargamel_following = [following for following in lazySmurf_following if following in gargamel_following]
+```
+
+#### `PRO`s:
+You can **use** this tool to take a **backup** of _your_ **or** _any other user's_ **current** following.
+
+
+### Pick Unfollowers of a user
+###### Compares the `followers` stored in a local storage against current followers and returns absent followers
+```python
+all_unfollowers, active_unfollowers = session.pick_unfollowers(username="Bernard_bear", compare_by="month", compare_track="first", live_match=True, store_locally=True, print_out=True)
+##now, `all_unfollowers` and `all_unfollowers` variables which are lists- hold the `Unfollowers` data of "Bernard_bear" at requested time
+#`all_unfollowers` holds all of the unfollowers WHILST `active_unfollowers` holds the unfollowers WHOM "Bernard_bear" is still following
+```
+#### Parameters:  
+`username`:  
+A desired username to pick its unfollowers  
+* It can be your `own` username **OR** a _username of some `non-private` account._
+
+`compare_by`:
+Defines the `compare point` to pick unfollowers
++ Available **value**s are:
+    + `"latest"` chooses the very latest record from the existing records in the local folder
+    + `"earliest"` chooses the very earliest record from the existing records in the local folder
+
+    The compare points below needs a **compare track** defined, too:
+    + `"day"` chooses from the existing records of today in the local folder
+    + `"month"` chooses from the existing records of this month in the local folder
+    + `"year"` chooses from the existing records of this year in the local folder
+
+`compare_track`:
+Defines the track to choose a file to compare for `"day"`, `"month"` and `"year"` compare points
++ Available **value**s are:
+    + `"first"` selects the first record from the given `day`, `month` or `year`
+    + `"median"` selects the median (_the one in the middle_) record from the given `day`, `month` or `year`
+    + `"last"` selects the last record from the given `day`, `month` or `year`
+
+`live_match`:  
+Defines the method of grabbing **new** `Followers` data to compare with **existing** data
+> **Knowledge Base**:  
+Every time you grab `Followers` data in `"full"` range of **any** user, it is also gonna be _stored in some corner_ of `InstaPy` **for that session**.
+
++ `live_match=False`:
+    + If the user **already do have** a `Followers` data loaded _earlier_ in the **same** session, it will run a _smart_ `data-matching` _algorithm_.  
+    And **there**, it will **load only the new data** _from the server_ and then **return a compact result** of _current data_.  
+    The _algorithm_ **works like**: _load the usernames **until hits the** ones from the **previous query** at certain amount_.  
+    + **Also if** the `live_match` is `False` and the user has **no any** _sessional_ `Followers` data, **then** it will load `live` data at _requested range_.
+    + As a **result**, `live_match=False` saves lots of `precious time` and `server requests`.  
++ `live_match=True`:  
+    + It will **always** load `live` data from the server at _requested range_.
+
+`store_locally`:  
+Gives the _option_ to `save` the loaded `Unfollowers` data in a **local storage**  
+There will be 2 files saved in their own directory:  
++ `all_unfollowers`:  
+    + Will store all of the unfollowers in there  
+    + Its files will be saved at **logs folder**, `~/InstaPy/logs/YourOwnUsername/relationship_data/Bernard_bear/unfollowers/all_unfollowers/` directory.    
++ `active_unfollowers`:    
+    + Will store only the unfollowers WHOM you are currently following.  
+    + Its files will be saved at **logs folder**, `~/InstaPy/logs/YourOwnUsername/relationship_data/Bernard_bear/unfollowers/active_unfollowers/` directory.    
+
+Sample **filename** `03-06-2018~all~75.json`:  
++ `03-06-2018` means the **time** of the data acquisition.
++ `"all"` means that it is all of the unfollowers data;  
+_*`"active"` unfollowers files will have `"active"` written in there_.
++ `75` means the **count** of the unfollowers retrieved.
++ `json` is the **filetype** and the data is stored as a `list` in it.
+
+`print_out`:  
+Use this parameter if you would like the `see` those unfollowers **printed** into the **console output** _right after finding them_.    
+
+There are **several** `use cases` of this tool for **various purposes**.  
++ You can the get the unfollowers you have had from the **start of the** _year_, or from the **middle of the** _year_ or from the start of the **month**, etc.  
+And then, e.g. do some `useful` **analysis** with that _generated unfollowers data_.
++ _And_ you can also **find** the unfollowers to `block` them **all**.
++ Also, you can **unfollow back** those `active unfollowers` _right away_:
+```python
+#find all of the active unfollowers of Bernard bear
+all_unfollowers, active_unfollowers = session.pick_unfollowers(username="Bernard_bear", compare_by="earliest", compare_track="first", live_match=True, store_locally=True, print_out=True)
+sleep(200)
+#let's unfollow them immediately cos Bernard will be angry if heards about those unfollowers! :D
+session.unfollow_users(amount=len(active_unfollowers), customList=(True, active_unfollowers, "all"), style="RANDOM", unfollow_after=None, sleep_delay=600)
+```
+
+
+### Pick Nonfollowers of a user
+###### Compares the `Followers` data against `Following` data of a user and returns the `Nonfollowers` data
+```python
+scoobyDoo_nonfollowers = session.pick_nonfollowers(username="ScoobyDoo", live_match=True, store_locally=True)
+#now, `scoobyDoo_nonfollowers` variable which is a list- holds the `Nonfollowers` data of "ScoobyDoo" at requested time
+```
+#### Parameters:  
+`username`:  
+A desired username to pick its nonfollowers  
+* It can be your `own` username **OR** a _username of some `non-private` account._
+
+`live_match`:  
+Defines the method of grabbing `Followers` and `Following` data to compare with each other to find **nonfollowers**
+> **Knowledge Base**:  
+Every time you grab `Followers` and/or `Following` data in `"full"` range of **any** user, it is also gonna be _stored in some corner_ of `InstaPy` **for that session**.
+
++ `live_match=False`:
+    + If the user **already do have** a `Followers` and/or `Following` data loaded _earlier_ in the **same** session, it will run a _smart_ `data-matching` _algorithm_.  
+    And **there**, it will **load only the new data** _from the server_ and then **return a compact result** of _current data_.  
+    The _algorithm_ **works like**: _load the usernames **until hits the** ones from the **previous query** at certain amount_.  
+    + **Also if** the `live_match` is `False` and the user has **no any** _sessional_ `Followers` and/or `Following` data, **then** it will load `live` data at _requested range_.
+    + As a **result**, `live_match=False` saves lots of `precious time` and `server requests`.  
++ `live_match=True`:  
+    + It will **always** load `live` data from the server at _requested range_.
+
+`store_locally`:  
+Gives the _option_ to `save` the loaded `Nonfollowers` data in a **local storage**  
+The files will be saved _into_ your **logs folder**, `~/InstaPy/logs/YourOwnUsername/relationship_data/ScoobyDoo/nonfollowers/` directory.  
+Sample **filename** `01-06-2018~[5886-3575]~2465.json`:  
++ `01-06-2018` means the **time** of the data acquisition.
++ `5886` means the **count** of the followers retrieved.
++ `3575` means the **count** of the following retrieved.
++ `2465` means the **count** of the nonfollowers picked.
++ `json` is the **filetype** and the data is stored as a `list` in it.
+
+
+There are **several** `use cases` of this tool for **various purposes**.  
++ You can get the nonfollowers of several users and then do analysis.  
+    + _e.g., in this example Scooby Do used it like this_:  
+    ```python
+    ##Scooby Doo always wonders a lot and this time he wonders if there are people Shaggy is following WHO do not follow him back...
+    shaggy_nonfollowers = session.pick_nonfollowers(username="Shaggy", live_match=True, store_locally=True)
+
+    #now Scooby Doo will tell his friend Shaggy about this, who knows, maybe Shaggy will unfollow them all or even add to block :D
+    ```  
+
+
+### Pick Fans of a user
+###### Returns Fans data- all of the accounts who do follow the user WHOM user itself do not follow back
+```python
+smurfette_fans = session.pick_fans(username="Smurfette", live_match=True, store_locally=True)
+#now, `smurfette_fans` variable which is a list- holds the `Fans` data of "Smurfette" at requested time
+```
+#### Parameters:  
+`username`:  
+A desired username to pick its fans  
+* It can be your `own` username **OR** a _username of some `non-private` account._
+
+`live_match`:  
+Defines the method of grabbing `Followers` and `Following` data to compare with each other to find **fans**
+> **Knowledge Base**:  
+Every time you grab `Followers` and/or `Following` data in `"full"` range of **any** user, it is also gonna be _stored in some corner_ of `InstaPy` **for that session**.
+
++ `live_match=False`:
+    + If the user **already do have** a `Followers` and/or `Following` data loaded _earlier_ in the **same** session, it will run a _smart_ `data-matching` _algorithm_.  
+    And **there**, it will **load only the new data** _from the server_ and then **return a compact result** of _current data_.  
+    The _algorithm_ **works like**: _load the usernames **until hits the** ones from the **previous query** at certain amount_.  
+    + **Also if** the `live_match` is `False` and the user has **no any** _sessional_ `Followers` and/or `Following` data, **then** it will load `live` data at _requested range_.
+    + As a **result**, `live_match=False` saves lots of `precious time` and `server requests`.  
++ `live_match=True`:  
+    + It will **always** load `live` data from the server at _requested range_.
+
+`store_locally`:  
+Gives the _option_ to `save` the loaded `Fans` data in a **local storage**  
+The files will be saved _into_ your **logs folder**, `~/InstaPy/logs/YourOwnUsername/relationship_data/Smurfette/fans/` directory.  
+Sample **filename** `05-06-2018~[4591-2575]~3477.json`:  
++ `05-06-2018` means the **time** of the data acquisition.
++ `4591` means the **count** of the followers retrieved.
++ `2575` means the **count** of the following retrieved.
++ `3477` means the **count** of the fans picked.
++ `json` is the **filetype** and the data is stored as a `list` in it.
+
+
+There are **several** `use cases` of this tool for **various purposes**.  
++ You can get the fans of several users and then do analysis.  
+    + _e.g., in this example Smurfette used it like this_:  
+    ```python
+    ##Smurfette is so famous in the place and she wonders which smurfs is following her WHOM she doesn't even know of :D
+    smurfette_fans = session.pick_fans(username="Smurfette", live_match=True, store_locally=True)
+    #and now, maybe she will follow back some of the smurfs whom she may know :P
+    ```  
+
+
+### Pick Mutual Following of a user
+###### Returns `Mutual Following` data- all of the accounts who do follow the user WHOM user itself **also** do follow back
+```python
+Winnie_mutualFollowing = session.pick_mutual_following(username="WinnieThePooh", live_match=True, store_locally=True)
+#now, `Winnie_mutualFollowing` variable which is a list- holds the `Mutual Following` data of "WinnieThePooh" at requested time
+```
+#### Parameters:  
+`username`:  
+A desired username to pick its mutual following  
+* It can be your `own` username **OR** a _username of some `non-private` account._
+
+`live_match`:  
+Defines the method of grabbing `Followers` and `Following` data to compare with each other to find **mutual following**
+> **Knowledge Base**:  
+Every time you grab `Followers` and/or `Following` data in `"full"` range of **any** user, it is also gonna be _stored in some corner_ of `InstaPy` **for that session**.
+
++ `live_match=False`:
+    + If the user **already do have** a `Followers` and/or `Following` data loaded _earlier_ in the **same** session, it will run a _smart_ `data-matching` _algorithm_.  
+    And **there**, it will **load only the new data** _from the server_ and then **return a compact result** of _current data_.  
+    The _algorithm_ **works like**: _load the usernames **until hits the** ones from the **previous query** at certain amount_.  
+    + **Also if** the `live_match` is `False` and the user has **no any** _sessional_ `Followers` and/or `Following` data, **then** it will load `live` data at _requested range_.
+    + As a **result**, `live_match=False` saves lots of `precious time` and `server requests`.  
++ `live_match=True`:  
+    + It will **always** load `live` data from the server at _requested range_.
+
+`store_locally`:  
+Gives the _option_ to `save` the loaded `Mutual Following` data in a **local storage**  
+The files will be saved _into_ your **logs folder**, `~/InstaPy/logs/YourOwnUsername/relationship_data/WinnieThePooh/mutual_following/` directory.  
+Sample **filename** `11-06-2018~[3872-2571]~1120.json`:  
++ `11-06-2018` means the **time** of the data acquisition.
++ `3872` means the **count** of the followers retrieved.
++ `2571` means the **count** of the following retrieved.
++ `1120` means the **count** of the mutual following picked.
++ `json` is the **filetype** and the data is stored as a `list` in it.
+
+
+There are **several** `use cases` of this tool for **various purposes**.  
++ You can get the mutual following of several users and then do analysis.  
+    + _e.g., in this example Winnie The Pooh used it like this_:  
+    ```python
+    #Winnie The Pooh is a very friendly guy and almost everybody follows him back, but he wants to be sure about it :D
+    Winnie_mutual_following = session.pick_mutual_following(username="WinnieThePooh", live_match=True, store_locally=True)
+    ##now, he will write a message to his mutual followers to help him get a new honey pot :>
+    ```  
+
+---
+
+## Automate InstaPy
 ### [Windows Task Scheduler](https://msdn.microsoft.com/en-us/library/windows/desktop/aa383614(v=vs.85).aspx)
 
 You can use Window's built in Task Scheduler to automate InstaPy, using a variety of trigger types: time, login, computer idles, etc. To schedule a simple daily run of an Instapy script follow the below directions
@@ -1949,9 +1934,7 @@ You can use Window's built in Task Scheduler to automate InstaPy, using a variet
 10. To finish the process, hit "Finish"
 
 
-
 ### `cron`
-
 You can add InstaPy to your crontab, so that the script will be executed regularly. This is especially useful for servers, but be sure not to break Instagrams follow and like limits.
 
 ```
@@ -1964,8 +1947,8 @@ crontab -e
 45 */4 * * * cd /home/user/InstaPy && /usr/bin/python ./quickstart.py
 ```
 
-### [Schedule](https://github.com/dbader/schedule)
 
+### [Schedule](https://github.com/dbader/schedule)
 > Schedule is an in-process scheduler for periodic jobs that uses the builder pattern for configuration. Schedule lets you run Python functions periodically at pre-determined intervals using a simple, human-friendly syntax.
 
 ```shell
@@ -2004,416 +1987,7 @@ while True:
 ```
 
 
-
-## Workspace folders
-###### _InstaPy_ stores user's data files inside the **workspace** folder.
-
-By default, it is gonna be the **InstaPy** folder at your home folder.  
-Such as, if your username is `Cherry`, let's show where your InstaPy folder would be,
-
-|   OS    |       home folder     | _InstaPy_ **workspace** folder |  
-| ------- | --------------------- | ------------------------------ |
-| Windows | `C:\\Users\\Cherry\\` | `C:\\Users\\Cherry\\InstaPy\\` |
-|   Mac   |    `/Users/Cherry/`   |    `/Users/Cherry/InstaPy/`    |
-|  Linux  |    `/home/Cherry/`    |    `/home/Cherry/InstaPy/`     |
-
-Note that, at the start of each run, it shows you the **workspace** folder in use.
-
-<br /> 
-
-<details>
-  <summary>
-    <b>
-      What will be stored at the <b>workspace</b> folder? 🔍
-    </b>
-  </summary>
-
-Anything that is _user's **data file**_ will be stored in there.  
-Such as,  
-- **logs** folder - _log and other storage files_  
-- **assets** folder - _e.g. user chosen chromedriver executable(s)_  
-- **db** folder - _databases_  
-- etc.  
-
-</details>
-
-
-### Migrating your data to the workspace folder
-After installing InstaPy with pip, you have to run it once by calling `python quickstart.py`. Once the web browser opens, you can abort the session by closing the browser or your terminal. 
-
-You will now find an `InstaPy` folder located at the above mentioned home folder.
-Simply copy and paste the content of your logs folder into that workspace folder in order to assure that all your data is migrated.
-
-> Please note that you only have to do this once. After that, you can get rid of your old, downloaded version of this repository since the InstaPy folder in your home folder will now be the default location for your data.
-
-### Set a _custom_ workspace folder
-You can use `set_workspace()` function to set a custom **workspace** folder,
-```python
-from instapy import InstaPy
-from instapy import set_workspace
-
-set_workspace("C:\\My\\Custom\\Path\\InstaPy\\")
-
-session = InstaPy(...)
-```
-
-<details>
-  <summary>
-    <b>
-      Rules 🔎
-    </b>
-  </summary>
-
-**1**-) You have to set your custom **workspace** folder before instantiates _InstaPy_.  
-**2**-) Your custom **workspace** folder must have `InstaPy` (*_case sensitive_) word in its name.  
-+ If your path does not have it,  
-`set_workspace("C:\\Other\\Path\\InstaPie\\")`  
-then your **workspace** folder will be named and made as,  
-`"C:\\Other\\Path\\InstaPie\\InstaPy\\"`  
-👆🏼 `InstaPy` directory will be added as a new subdirectory in there, and be your **workspace** folder.
-
-+ If your custom **workspace** folder name has a case-insensitive default name in it- `Instapy`, `instapy`, `instaPY`, etc.,  
-`set_workspace("C:\\Other\\Path\\instapy2\\")`  
-then your **workspace** folder will be,   
-`"C:\\Other\\Path\\InstaPy2\\"`  
-as you can see, it normalizes name and sets the **workspace** folder.
-
-
-##### _Why naming is so important?_
- - It will help to easily adapt to the flexible _InstaPy_ usage with that default formal name.
-
-</details>
-
-
-### Set a custom **workspace** folder _permanently_ with ease
-If you want to set your custom **workspace** folder permanently and more easily, add a new environmental variable named `INSTAPY_WORKSPACE` with the value of the path of the desired **workspace** folder to your operating system.  
-Then that will be the default **workspace** folder in all sessions [unless you change it using `set_workspace()` or so].
-
-
-### _Get_ the location of the workspace folder in use
-If you ever want to **get** the _location_ of your **workspace** folder, you can use
-the `get_workspace()` function,
-```python
-from instapy import InstaPy
-from instapy import smart_run
-from instapy import set_workspace
-from isntapy import get_workspace
-
-set_workspace(path="C:\\Custom\\Path\\InstaPy_super\\")
-
-session = InstaPy(username="abc", password="123")
-
-with smart_run(session):
-    # lots of code
-    workspace_in_use = get_workspace()
-    print(workspace_in_use["path"])
-    # code code
-```
-Note that, `get_workspace()` is a function used _internally_ and makes a **workspace** folder [by default at home folder] if not exists.  
-It means, you must use only the `set_workspace()` feature to set a custom **workspace** folder and not try to use `get_workspace()` for that purpose..
-
-
-### Set a custom _location_ 
-You can set any of the **custom** _locations_ you like, **any time**!  
-E.g. setting the _location_ of the **database** file,  
-```python
-from instapy import InstaPy
-from instapy import set_workspace
-
-
-set_workspace(...)   # if you will set a custom workspace, set it before anything
-Settings.db_location = "C:\\New\\Place\\DB\\instapy.db"
-
-session = InstaPy(...)
-# code code
-```
-
-
-<details>
-  <summary>
-    <b>
-      Restrictions 🔎
-    </b>
-  </summary>
-
-**a**-) You cannot set a custom **workspace** folder after _InstaPy_ has been instantiated;  
-_E.g. while instantiating _InstaPy_, you make a logger at that given location and trying to change the_ `log_location` _really needs to restart the LOGGER adapter and make another logger instance, but it can be achieved in future_.
-
-**b**-) If you set a custom **workspace** once and then set it again then your data locations will still use the previous locations:
-```python
-from instapy import InstaPy
-from instapy import set_workspace
-
-# first time settings custom workspace folder
-set_workspace("C:\\Users\\MMega\\Desktop\\My_InstaPy\\")
-# second time settings custom workspace folder
-set_workspace("C:\\Users\\MMega\\Documents\\My_InstaPy\\")
-
-# locations of data files, e.g. chromedriver executable, logfolder, db will use first custom workspace locations.
-# if you still want to change their location to second one, then do this one by one:
-Settings.log_location = "C:\\Users\\MMega\\Documents\\My_InstaPy\\logs\\"
-Settings.database_location = "C:\\Users\\MMega\\Documents\\My_InstaPy\\db\\instapy.db"
-Settings.chromedriver_location = "C:\\Users\\MMega\\Documents\\My_InstaPy\\logs\\chromedriver.exe"
-```
-As you can see, you have to use `set_workspace()` only once.  
-Why it is so difficult in those 👆🏼 regards?  
- - It's to preserve custom location assignments alive (`Settings.*`) cos otherwise setting another **workspace** would override any previously _manually_ assigned location(s). 
-
-</details>
-
-## Extensions
-[1. Session scheduling with Telegram](https://github.com/Tkd-Alex/Telegram-InstaPy-Scheduling)
-
 ## Additional Information
-
-### Custom chromedriver version
-By default, InstaPy downloads the latest version of the chromedriver.
-Unless you need a specific version of the chromdriver, you're ready to go.
-
-You have two options to install the version you want to have:
-1. You can get the desired version of chromedriver binary by installing the same version of instapy-chromedriver package by pip [per their python version].
-1. You can manually download and put the chromedriver binary into the assets folder [at their workspace] and then InstaPy will always use it. You can find the specific versions of **chromedriver** for your OS [here](https://sites.google.com/a/chromium.org/chromedriver/downloads). Extract the .**zip** file and put it into the **assets** folder [at your **workspace** folder].
-
-### Using one of the templates
-
-If you're interested in what other users setup looks like, feel free to check out the `quickstart_templates` folder which includes several working setups with different features.
-
-In order to use them, just copy the desired file and put it next to the `quickstart.py` file in the, what is called root, directory.
-
-Finally simply adjust the username and any tags or firend lists before executing it.
-That's it.
-
-
-### How not to be banned
-Built-in delays prevent your account from getting banned. 
-However, excessive use of this tool may result in action blocks or permanent bans.
-Use the Quota Supervisor feature to set some fixed limits for the bot for maximum safety.
-
-
-### Chrome Browser
-
-64-bit system is a requirement for current versions of chrome browser.
-
-
-
-
-### Disable Image Loading
-If you want to save some bandwidth, you can simply disable the image/video loading. This will lead to, if you watch InstaPy running, not downloading and displaying any more images and videos.
-
-> Note: This can save a tremendous amount of data. This is turned off by default (`False`).
-
-To do this simply pass the `disable_image_load=True` parameter in the InstaPy constructor like so:
-```python
-session = InstaPy(username=insta_username,
-                  password=insta_password,
-                  headless_browser=False,
-		              disable_image_load=True,
-                  multi_logs=True)
-```
-
-
-### Using Multiple Chromedrivers
-If you need multiple os versions of chromedriver just rename it like:
-```bash
-chromedriver_linux
-chromedriver_osx
-chromedriver_windows
-```
-
-
-### Changing DB or Chromedriver locations
-If you want to change the location/path of either the DB or the chromedriver, simply head into the `instapy/settings.py` file and change the following lines.
-Set these in instapy/settings.py if you're locating the library in the /usr/lib/pythonX.X/ directory.
-```
-Settings.database_location = '/path/to/instapy.db'
-Settings.chromedriver_location = '/path/to/chromedriver'
-```
-
-
-
-### How to avoid _python_ & **pip** confusion
-
-Sometimes you have **multiple** _python_ installations in your system.  
-Then you'll obviously have crazy aliases linked to _python_ and **pip** commands.  
-
-For example, let's assume you have _python_ 2.7 & _python_ 3.7 installed in your system,  
-
-| _python_ version | _python_ alias | **pip** alias |  
-| ---------------- | -------------- | ------------- |
-|       2.7        |     `py2`      |     `pip`     |
-|       3.7        |    `python`    |     `pip3`    |
-
-And once you install a package by the `pip` command and try to run it with `python` command, it will confuse you.  
-
-Why? - cos,  
-- `pip` command is for _python_ 2.7  
-- `python` command is for _python_ 3.7  
-
-To solve that confusion, use this **style** to install packages by **pip**,
-```powershell
-# install "instapy" package into python 3.7
-python -m pip install instapy
-
-# install "instapy" package into python 2.7
-py2 -m pip install instapy
-```
-
-As you can see, it is,  
-`python -m pip ...`  
-rather than,  
-`pip ...`
-
-Other **pip** commands can be accomplished the same way, too.  
-Such as,
-```powershell
-# update "instapy" package
-python -m pip install instapy -U
-
-# uninstall "instapy" package
-python -m pip uninstall instapy
-
-# show details of the "instapy" package installed by pip
-python -m pip show instapy
-```
-
-Using this style, you will never have to worry about what is the correct alias of the **pip** for you specific _python_ installation and all you have to know is just the _python_'s alias you use.  
-
-
-
-### Pass arguments by CLI
-###### It is recommended to pass your credentials from command line interface rather than storing them inside quickstart scripts.  
-
-Note that, arguments passed from the CLI has higher priorities than the arguments inside a **quickstart** script.  
-E.g., let's assume you have,
-```python
-# inside quickstart script
-
-session = InstaPy(username="abc")
-```
-and you start that **quickstart** script as,
-```erlang
-python quickstart.py -u abcdef -p 12345678
-```
-Then, your _username_ will be set as `abcdef` rather than `abc`.  
-_And obviously, if you don't pass the flag, it'll try to get that argument from the **quickstart** script [if any]_.
-
-#### Currently these _flags_ are supported:
-  🚩 `-u` abc, `--username` abc
-   - Sets your username.
-
-  🚩 `-p` 123, `--password` 123
-   - Sets your password.
-
-  🚩 `-pd` 25, `--page-delay` 25
-   - Sets the implicit wait.
-
-  🚩 `-pa` 192.168.1.1, `--proxy-address` 192.168.1.1
-   - Sets the proxy address.
-
-  🚩 `-pp` 8080, `--proxy-port` 8080
-   - Sets the proxy port.
-
-  🚩 `-uf`, `--use-firefox`
-   - Enables Firefox.
-
-  🚩 `-hb`, `--headless-browser`
-   - Enables headless mode.
-
-  🚩 `-dil`, `--disable-image-load`
-   - Disables image load.
-
-  🚩 `-bsa`, `--bypass-suspicious-attempt`
-   - Bypasses suspicious attempt.
-
-  🚩 `-bwm`, `--bypass-with-mobile`
-   - Bypasses with mobile phone.
-
-To get the list of available commands, you can type,
-```erlang
-python quickstart.py -h
-# or
-python quickstart.py --help
-```
-
-#### Examples
-⚽ Let's quickly set your username and password right by CLI,   
-```erlang
-python quickstart.py -u Toto.Lin8  -p 4X27_Tibor
-# or
-python quickstart.py --username Toto.Lin8  --password 4X27_Tibor
-# or
-python quickstart.py -u "Toto.Lin8"  -p "4X27_Tibor"
-```
-
-⚽ Enable Firefox,
-```erlang
-python quickstart.py -uf
-# or
-python quickstart.py --use-firefox
-```
-
-<details>
-<summary>
-  <b>
-    Advanced 🔎
-  </b>
-</summary> 
-
-You can **pass** and then **parse** the **_custom_** CLI arguments you like right inside the **quickstart** script.  
-To do it, open up your **quickstart** script and add these lines,
-```python
-# inside quickstart script
-
-import argparse
-
-my_parser = argparse.ArgumentParser()
-# add the arguments as you like WHICH you will pass
-# e.g., here is the simplest example you can see,
-my_parser.add_argument("--my-data-files-name")
-args, args_unknown = my_parser.parse_known_args()
-
-filename = args.my_data_files_name
-
-# now you can print it
-print(filename)
-
-# or open that file
-with open(filename, 'r') as f:
-    my_data = f.read()
-```
-After adding your custom arguments to the **quickstart** script, you can now **pass** them by CLI, comfortably,
-```erlang
-python quickstart.py --my-data-files-name "C:\\Users\\Anita\\Desktop\\data_file.txt"
-```
->**NOTE**:  
-Use **dash** in flag and parse them with **underscores**;  
-E.g., we have used the flag as **`--my-data-files-name`** and parsed it as `args.`**`my_data_files_name`** ...
-
->**PRO**:
-See `parse_cli_args()` function [used internally] inside the **util.py** file to write & parse more advanced flags.  
-You can also import that function into your **quickstart** script and parse the **formal** flags into there to be used, as well.
-
-```python
-# inside quickstart script
-
-from instapy.util import parse_cli_args
-
-
-cli_args = parse_cli_args()
-username = cli_args.username
-
-print(username)
-```
-👆🏼👉🏼 as you will pass the _username_ like,
-```erlang
-python quickstart.py -u abc
-```
-
-</details>
-
-<br />
-
-
 ### Advanced Installation
 #### 🛠 Install or update to the unreleased version  
 For example, there is a **bug** and its **fix** is _merged to the repo_ but a newer version of _InstaPy_ [_containing_ that **fix**] is not yet released to _PyPI_ to be able to be _installed_ or _updated_ by **pip**.  
@@ -2614,6 +2188,404 @@ pip uninstall instapy
 ```
 
 
+## Workspace folders
+### Migrating your data to the workspace folder
+After installing InstaPy with pip, you have to run it once by calling `python quickstart.py`. Once the web browser opens, you can abort the session by closing the browser or your terminal. 
+
+You will now find an `InstaPy` folder located at the above mentioned home folder.
+Simply copy and paste the content of your logs folder into that workspace folder in order to assure that all your data is migrated.
+
+> Please note that you only have to do this once. After that, you can get rid of your old, downloaded version of this repository since the InstaPy folder in your home folder will now be the default location for your data.
+
+
+###### _InstaPy_ stores user's data files inside the **workspace** folder.
+
+By default, it is gonna be the **InstaPy** folder at your home folder.  
+Such as, if your username is `Cherry`, let's show where your InstaPy folder would be,
+
+|   OS    |       home folder     | _InstaPy_ **workspace** folder |  
+| ------- | --------------------- | ------------------------------ |
+| Windows | `C:\\Users\\Cherry\\` | `C:\\Users\\Cherry\\InstaPy\\` |
+|   Mac   |    `/Users/Cherry/`   |    `/Users/Cherry/InstaPy/`    |
+|  Linux  |    `/home/Cherry/`    |    `/home/Cherry/InstaPy/`     |
+
+Note that, at the start of each run, it shows you the **workspace** folder in use.
+
+<br /> 
+
+<details>
+  <summary>
+    <b>
+      What will be stored at the <b>workspace</b> folder? 🔍
+    </b>
+  </summary>
+
+Anything that is _user's **data file**_ will be stored in there.  
+Such as,  
+- **logs** folder - _log and other storage files_  
+- **assets** folder - _e.g. user chosen chromedriver executable(s)_  
+- **db** folder - _databases_  
+- etc.  
+
+</details>
+
+
+### Set a _custom_ workspace folder
+You can use `set_workspace()` function to set a custom **workspace** folder,
+```python
+from instapy import InstaPy
+from instapy import set_workspace
+
+set_workspace("C:\\My\\Custom\\Path\\InstaPy\\")
+
+session = InstaPy(...)
+```
+
+<details>
+  <summary>
+    <b>
+      Rules 🔎
+    </b>
+  </summary>
+
+**1**-) You have to set your custom **workspace** folder before instantiates _InstaPy_.  
+**2**-) Your custom **workspace** folder must have `InstaPy` (*_case sensitive_) word in its name.  
++ If your path does not have it,  
+`set_workspace("C:\\Other\\Path\\InstaPie\\")`  
+then your **workspace** folder will be named and made as,  
+`"C:\\Other\\Path\\InstaPie\\InstaPy\\"`  
+👆🏼 `InstaPy` directory will be added as a new subdirectory in there, and be your **workspace** folder.
+
++ If your custom **workspace** folder name has a case-insensitive default name in it- `Instapy`, `instapy`, `instaPY`, etc.,  
+`set_workspace("C:\\Other\\Path\\instapy2\\")`  
+then your **workspace** folder will be,   
+`"C:\\Other\\Path\\InstaPy2\\"`  
+as you can see, it normalizes name and sets the **workspace** folder.
+
+
+##### _Why naming is so important?_
+ - It will help to easily adapt to the flexible _InstaPy_ usage with that default formal name.
+
+</details>
+
+
+### Set a custom **workspace** folder _permanently_ with ease
+If you want to set your custom **workspace** folder permanently and more easily, add a new environmental variable named `INSTAPY_WORKSPACE` with the value of the path of the desired **workspace** folder to your operating system.  
+Then that will be the default **workspace** folder in all sessions [unless you change it using `set_workspace()` or so].
+
+
+### _Get_ the location of the workspace folder in use
+If you ever want to **get** the _location_ of your **workspace** folder, you can use
+the `get_workspace()` function,
+```python
+from instapy import InstaPy
+from instapy import smart_run
+from instapy import set_workspace
+from isntapy import get_workspace
+
+set_workspace(path="C:\\Custom\\Path\\InstaPy_super\\")
+
+session = InstaPy(username="abc", password="123")
+
+with smart_run(session):
+    # lots of code
+    workspace_in_use = get_workspace()
+    print(workspace_in_use["path"])
+    # code code
+```
+Note that, `get_workspace()` is a function used _internally_ and makes a **workspace** folder [by default at home folder] if not exists.  
+It means, you must use only the `set_workspace()` feature to set a custom **workspace** folder and not try to use `get_workspace()` for that purpose..
+
+
+### Set a custom _location_ 
+You can set any of the **custom** _locations_ you like, **any time**!  
+E.g. setting the _location_ of the **database** file,  
+```python
+from instapy import InstaPy
+from instapy import set_workspace
+
+
+set_workspace(...)   # if you will set a custom workspace, set it before anything
+Settings.db_location = "C:\\New\\Place\\DB\\instapy.db"
+
+session = InstaPy(...)
+# code code
+```
+
+
+<details>
+  <summary>
+    <b>
+      Restrictions 🔎
+    </b>
+  </summary>
+
+**a**-) You cannot set a custom **workspace** folder after _InstaPy_ has been instantiated;  
+_E.g. while instantiating _InstaPy_, you make a logger at that given location and trying to change the_ `log_location` _really needs to restart the LOGGER adapter and make another logger instance, but it can be achieved in future_.
+
+**b**-) If you set a custom **workspace** once and then set it again then your data locations will still use the previous locations:
+```python
+from instapy import InstaPy
+from instapy import set_workspace
+
+# first time settings custom workspace folder
+set_workspace("C:\\Users\\MMega\\Desktop\\My_InstaPy\\")
+# second time settings custom workspace folder
+set_workspace("C:\\Users\\MMega\\Documents\\My_InstaPy\\")
+
+# locations of data files, e.g. chromedriver executable, logfolder, db will use first custom workspace locations.
+# if you still want to change their location to second one, then do this one by one:
+Settings.log_location = "C:\\Users\\MMega\\Documents\\My_InstaPy\\logs\\"
+Settings.database_location = "C:\\Users\\MMega\\Documents\\My_InstaPy\\db\\instapy.db"
+Settings.chromedriver_location = "C:\\Users\\MMega\\Documents\\My_InstaPy\\logs\\chromedriver.exe"
+```
+As you can see, you have to use `set_workspace()` only once.  
+Why it is so difficult in those 👆🏼 regards?  
+ - It's to preserve custom location assignments alive (`Settings.*`) cos otherwise setting another **workspace** would override any previously _manually_ assigned location(s). 
+
+</details>
+
+
+### Pass arguments by CLI
+###### It is recommended to pass your credentials from command line interface rather than storing them inside quickstart scripts.  
+
+Note that, arguments passed from the CLI has higher priorities than the arguments inside a **quickstart** script.  
+E.g., let's assume you have,
+```python
+# inside quickstart script
+
+session = InstaPy(username="abc")
+```
+and you start that **quickstart** script as,
+```erlang
+python quickstart.py -u abcdef -p 12345678
+```
+Then, your _username_ will be set as `abcdef` rather than `abc`.  
+_And obviously, if you don't pass the flag, it'll try to get that argument from the **quickstart** script [if any]_.
+
+#### Currently these _flags_ are supported:
+  🚩 `-u` abc, `--username` abc
+   - Sets your username.
+
+  🚩 `-p` 123, `--password` 123
+   - Sets your password.
+
+  🚩 `-pd` 25, `--page-delay` 25
+   - Sets the implicit wait.
+
+  🚩 `-pa` 192.168.1.1, `--proxy-address` 192.168.1.1
+   - Sets the proxy address.
+
+  🚩 `-pp` 8080, `--proxy-port` 8080
+   - Sets the proxy port.
+
+  🚩 `-uf`, `--use-firefox`
+   - Enables Firefox.
+
+  🚩 `-hb`, `--headless-browser`
+   - Enables headless mode.
+
+  🚩 `-dil`, `--disable-image-load`
+   - Disables image load.
+
+  🚩 `-bsa`, `--bypass-suspicious-attempt`
+   - Bypasses suspicious attempt.
+
+  🚩 `-bwm`, `--bypass-with-mobile`
+   - Bypasses with mobile phone.
+
+To get the list of available commands, you can type,
+```erlang
+python quickstart.py -h
+# or
+python quickstart.py --help
+```
+
+#### Examples
+⚽ Let's quickly set your username and password right by CLI,   
+```erlang
+python quickstart.py -u Toto.Lin8  -p 4X27_Tibor
+# or
+python quickstart.py --username Toto.Lin8  --password 4X27_Tibor
+# or
+python quickstart.py -u "Toto.Lin8"  -p "4X27_Tibor"
+```
+
+⚽ Enable Firefox,
+```erlang
+python quickstart.py -uf
+# or
+python quickstart.py --use-firefox
+```
+
+<details>
+<summary>
+  <b>
+    Advanced 🔎
+  </b>
+</summary> 
+
+You can **pass** and then **parse** the **_custom_** CLI arguments you like right inside the **quickstart** script.  
+To do it, open up your **quickstart** script and add these lines,
+```python
+# inside quickstart script
+
+import argparse
+
+my_parser = argparse.ArgumentParser()
+# add the arguments as you like WHICH you will pass
+# e.g., here is the simplest example you can see,
+my_parser.add_argument("--my-data-files-name")
+args, args_unknown = my_parser.parse_known_args()
+
+filename = args.my_data_files_name
+
+# now you can print it
+print(filename)
+
+# or open that file
+with open(filename, 'r') as f:
+    my_data = f.read()
+```
+After adding your custom arguments to the **quickstart** script, you can now **pass** them by CLI, comfortably,
+```erlang
+python quickstart.py --my-data-files-name "C:\\Users\\Anita\\Desktop\\data_file.txt"
+```
+>**NOTE**:  
+Use **dash** in flag and parse them with **underscores**;  
+E.g., we have used the flag as **`--my-data-files-name`** and parsed it as `args.`**`my_data_files_name`** ...
+
+>**PRO**:
+See `parse_cli_args()` function [used internally] inside the **util.py** file to write & parse more advanced flags.  
+You can also import that function into your **quickstart** script and parse the **formal** flags into there to be used, as well.
+
+```python
+# inside quickstart script
+
+from instapy.util import parse_cli_args
+
+
+cli_args = parse_cli_args()
+username = cli_args.username
+
+print(username)
+```
+👆🏼👉🏼 as you will pass the _username_ like,
+```erlang
+python quickstart.py -u abc
+```
+
+</details>
+
+
+## Extensions
+[1. Session scheduling with Telegram](https://github.com/Tkd-Alex/Telegram-InstaPy-Scheduling)
+
+
+### Custom chromedriver version
+By default, InstaPy downloads the latest version of the chromedriver.
+Unless you need a specific version of the chromdriver, you're ready to go.
+
+You have two options to install the version you want to have:
+1. You can get the desired version of chromedriver binary by installing the same version of instapy-chromedriver package by pip [per their python version].
+1. You can manually download and put the chromedriver binary into the assets folder [at their workspace] and then InstaPy will always use it. You can find the specific versions of **chromedriver** for your OS [here](https://sites.google.com/a/chromium.org/chromedriver/downloads). Extract the .**zip** file and put it into the **assets** folder [at your **workspace** folder].
+
+### Using one of the templates
+
+If you're interested in what other users setup looks like, feel free to check out the `quickstart_templates` folder which includes several working setups with different features.
+
+In order to use them, just copy the desired file and put it next to the `quickstart.py` file in the, what is called root, directory.
+
+Finally simply adjust the username and any tags or firend lists before executing it.
+That's it.
+
+
+### How not to be banned
+Built-in delays prevent your account from getting banned. 
+However, excessive use of this tool may result in action blocks or permanent bans.
+Use the Quota Supervisor feature to set some fixed limits for the bot for maximum safety.
+
+
+### Disable Image Loading
+If you want to save some bandwidth, you can simply disable the image/video loading. This will lead to, if you watch InstaPy running, not downloading and displaying any more images and videos.
+
+> Note: This can save a tremendous amount of data. This is turned off by default (`False`).
+
+To do this simply pass the `disable_image_load=True` parameter in the InstaPy constructor like so:
+```python
+session = InstaPy(username=insta_username,
+                  password=insta_password,
+                  headless_browser=False,
+		              disable_image_load=True,
+                  multi_logs=True)
+```
+
+
+### Using Multiple Chromedrivers
+If you need multiple os versions of chromedriver just rename it like:
+```bash
+chromedriver_linux
+chromedriver_osx
+chromedriver_windows
+```
+
+
+### Changing DB or Chromedriver locations
+If you want to change the location/path of either the DB or the chromedriver, simply head into the `instapy/settings.py` file and change the following lines.
+Set these in instapy/settings.py if you're locating the library in the /usr/lib/pythonX.X/ directory.
+```
+Settings.database_location = '/path/to/instapy.db'
+Settings.chromedriver_location = '/path/to/chromedriver'
+```
+
+
+### How to avoid _python_ & **pip** confusion
+
+Sometimes you have **multiple** _python_ installations in your system.  
+Then you'll obviously have crazy aliases linked to _python_ and **pip** commands.  
+
+For example, let's assume you have _python_ 2.7 & _python_ 3.7 installed in your system,  
+
+| _python_ version | _python_ alias | **pip** alias |  
+| ---------------- | -------------- | ------------- |
+|       2.7        |     `py2`      |     `pip`     |
+|       3.7        |    `python`    |     `pip3`    |
+
+And once you install a package by the `pip` command and try to run it with `python` command, it will confuse you.  
+
+Why? - cos,  
+- `pip` command is for _python_ 2.7  
+- `python` command is for _python_ 3.7  
+
+To solve that confusion, use this **style** to install packages by **pip**,
+```powershell
+# install "instapy" package into python 3.7
+python -m pip install instapy
+
+# install "instapy" package into python 2.7
+py2 -m pip install instapy
+```
+
+As you can see, it is,  
+`python -m pip ...`  
+rather than,  
+`pip ...`
+
+Other **pip** commands can be accomplished the same way, too.  
+Such as,
+```powershell
+# update "instapy" package
+python -m pip install instapy -U
+
+# uninstall "instapy" package
+python -m pip uninstall instapy
+
+# show details of the "instapy" package installed by pip
+python -m pip show instapy
+```
+
+Using this style, you will never have to worry about what is the correct alias of the **pip** for you specific _python_ installation and all you have to know is just the _python_'s alias you use.  
+
 ---
+
 ###### Have Fun & Feel Free to report any issues  
----
