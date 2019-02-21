@@ -19,3 +19,4 @@ regex>=2018.11.22
 MeaningCloud-python>=1.1.1
 PyYAML>=3.13
 instapy-chromedriver==2.44
+influxdb>=5.2.1
