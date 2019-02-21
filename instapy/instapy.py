@@ -410,19 +410,19 @@ class InstaPy:
 
         return self
 
-    def set_sleep_reduce(self, percentage):
+    def set_sleep_reduce(self, percentage: int):
         set_sleep_percentage(percentage)
         return self
 
     def set_action_delays(self,
-                          enabled=False,
+                          enabled: bool = False,
                           like=None,
                           comment=None,
                           follow=None,
                           unfollow=None,
-                          randomize=False,
+                          randomize: bool = False,
                           random_range=(None, None),
-                          safety_match=True):
+                          safety_match: bool = True):
         """ Set custom sleep delay after actions """
         Settings.action_delays.update({"enabled": enabled,
                                        "like": like,
