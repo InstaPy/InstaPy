@@ -4,6 +4,20 @@ The **goal** of this file is explaining to the users of our project the notable 
 _The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html)_.
 
 
+## [0.3.0] - ADD DATE HERE
+### Added
+- Allowing `follow_by_tags` to interact with the user
+- Context manager to interaction calls in `like_by_tags` and `follow_likers`
+
+### Fixed
+- `follow_likers` always fetches zero likers
+
+
+## [0.2.1] - 2019-02-21
+### Fixed
+- xPath for Log In button
+
+
 ## [0.2.0] - 2019-02-18
 ### Added
 - Accept pending follow requests for private account
