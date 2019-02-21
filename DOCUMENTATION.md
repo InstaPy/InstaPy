@@ -136,7 +136,7 @@ session.set_comments(['Nice shot! @{}'], media='Photo')
 ### Emoji Support
 To use an emoji just add an `u` in front of the opening apostrophe:
 
-```
+```python
 session.set_comments([u'This post is 🔥',u'More emojis are always better 💯',u'I love your posts 😍😍😍']);
 # or
 session.set_comments([u'Emoji text codes are also supported :100: :thumbsup: :thumbs_up: \u2764 💯💯']);
@@ -446,7 +446,7 @@ session.set_delimit_liking(enabled=True, max=242, min=None)
 _at this configuration above, it **will not** check number of the existing likes against **minimum** value_
 
 * **_Example_**:  
-```
+```python
 session.set_delimit_liking(enabled=True, max=500, min=7)
 ```
 _**Now**, if a post has more existing likes than maximum value of `500`, then it will not like that post,
@@ -470,7 +470,7 @@ session.set_delimit_commenting(enabled=True, max=None, min=4)
 _at this configuration above, it **will not** check number of the existing comments against **maximum** value_
 
 * **_Example_**:  
-```
+```python
 session.set_delimit_commenting(enabled=True, max=70, min=5)
 ```
 _**Now**, if a post has more comments than the maximum value of `70`, then it will not comment on that post,
