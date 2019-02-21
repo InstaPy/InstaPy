@@ -1,13 +1,16 @@
 # selenium
-from selenium.webdriver.chrome.options import Options
-from selenium.webdriver import DesiredCapabilities
-from selenium.webdriver.common.proxy import Proxy, ProxyType
-from selenium.webdriver.firefox.options import Options as Firefox_Options
 from selenium import webdriver
 from selenium.common.exceptions import WebDriverException
+from selenium.webdriver import DesiredCapabilities
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.common.proxy import Proxy, ProxyType
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.firefox.options import Options as Firefox_Options
+
 
 # general libs
 import re
+from time import sleep
 
 # local project
 from .util import interruption_handler
@@ -18,6 +21,8 @@ from .file_manager import get_chromedriver_location
 
 def set_selenium_local_session(proxy_address,
                                proxy_port,
+                               proxy_username,
+                               proxy_password,
                                proxy_chrome_extension,
                                headless_browser,
                                use_firefox,
@@ -60,6 +65,13 @@ def set_selenium_local_session(proxy_address,
 
         browser = webdriver.Firefox(firefox_profile=firefox_profile,
                                     options=firefox_options)
+
+        # authenticate with popup alert window
+        if (proxy_username and proxy_password):
+            proxy_authentication(browser,
+                                 logger,
+                                 proxy_username,
+                                 proxy_password)
 
     else:
         chromedriver_location = get_chromedriver_location()
@@ -176,6 +188,25 @@ def set_selenium_remote_session(use_firefox,
     print('')
 
     return browser
+
+
+def proxy_authentication(browser,
+                         logger,
+                         proxy_username,
+                         proxy_password):
+    """ Authenticate proxy using popup alert window """
+    try:
+        # sleep(1) is enough, sleep(2) is to make sure we
+        # give time to the popup windows
+        sleep(2)
+        alert_popup = browser.switch_to_alert()
+        alert_popup.send_keys('{username}{tab}{password}{tab}'
+                              .format(username=proxy_username,
+                                      tab=Keys.TAB,
+                                      password=proxy_password))
+        alert_popup.accept()
+    except Exception:
+        logger.warn('Unable to proxy authenticate')
 
 
 def close_browser(browser,
