@@ -3761,7 +3761,8 @@ class InstaPy:
                                             None,
                                             self.blacklist,
                                             self.logger,
-                                            self.logfolder)
+                                            self.logfolder,
+                                            self.client_influxDB)
                                         if follow_state is True:
                                             followed += 1
                                     else:
@@ -4175,7 +4176,8 @@ class InstaPy:
                                                         None,
                                                         self.blacklist,
                                                         self.logger,
-                                                        self.logfolder)
+                                                        self.logfolder,
+                                                        self.client_influxDB)
                         if follow_state is True:
                             followed += 1
                             # reset jump counter after a successful follow
@@ -4293,7 +4295,8 @@ class InstaPy:
                                                         None,
                                                         self.blacklist,
                                                         self.logger,
-                                                        self.logfolder)
+                                                        self.logfolder,
+                                                        self.client_influxDB)
                         if follow_state is True:
                             followed += 1
                             # reset jump counter after a successful follow
@@ -4475,7 +4478,8 @@ class InstaPy:
                                 None,
                                 self.blacklist,
                                 self.logger,
-                                self.logfolder)
+                                self.logfolder,
+                                self.client_influxDB)
 
                             if follow_state is True:
                                 followed += 1
