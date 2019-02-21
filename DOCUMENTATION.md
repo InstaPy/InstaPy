@@ -1,87 +1,91 @@
 # Documentation
 
 ### Table of Contents
-* [Advanced Installation](#advanced-installation)
-* [InstaPy Available Features](#instapy-available-features)
-  * [Commenting](#commenting)
-  * [Following](#following)
-  * [Following by a list](#following-by-a-list)
-  * [Follow someone else's followers](#follow-someone-elses-followers)
-  * [Follow users that someone else is following](#follow-users-that-someone-else-is-following)
-  * [Follow someone else's followers/following](#follow-someone-elses-followersfollowing)  
-  * [Follow the likers of photos of users](#follow-the-likers-of-photos-of-users)  
-  * [Follow the commenters of photos of users](#follow-the-commenters-of-photos-of-users)  
-  * [Interact with specific users](#interact-with-specific-users)
-  * [Interact with specific users' tagged posts](#interact-with-specific-users-tagged-posts)
-  * [Interact with users that someone else is following](#interact-with-users-that-someone-else-is-following)
-  * [Interact with someone else's followers](#interact-with-someone-elses-followers)
-  * [Interact on posts at given URLs](#interact-on-posts-at-given-urls)
-  * [Interact by Comments](#interact-by-comments)
-  * [Unfollowing](#unfollowing)
-  * [Accept pending follow requests](#accept-pending-follow-requests)
-  * [Remove outgoing follow requests](#remove-outgoing-follow-requests)
-  * [Don't unfollow active users](#dont-unfollow-active-users)
-  * [Interactions based on the number of followers and/or following a user has](#interactions-based-on-the-number-of-followers-andor-following-a-user-has)
-  * [Interactions based on the number of posts a user has](#interactions-based-on-the-number-of-posts-a-user-has)
-  * [Skipping user for private account, no profile picture, business account](#skipping-user-for-private-account-no-profile-picture-business-account)
-  * [Liking based on the number of existing likes a post has](#liking-based-on-the-number-of-existing-likes-a-post-has)
-  * [Commenting based on the number of existing comments a post has](#commenting-based-on-the-number-of-existing-comments-a-post-has)
-  * [Commenting based on mandatory words in the description or first comment](#commenting-based-on-mandatory-words-in-the-description-or-first-comment)
-  * [Comment by Locations](#comment-by-locations)
-  * [Follow by Locations](#follow-by-locations)
-  * [Like by Locations](#like-by-locations)
-  * [Like by Tags](#like-by-tags)
-  * [Like by Feeds](#like-by-feeds)
-  * [Mandatory Words](#mandatory-words)
-  * [Mandatory Language](#mandatory-language)
-  * [Restricting Likes](#restricting-likes)
-  * [Ignoring Users](#ignoring-users)
-  * [Ignoring Restrictions](#ignoring-restrictions)
-  * [Excluding friends](#excluding-friends)
-  * [Blacklist Campaign](#blacklist-campaign)
-  * [Smart Hashtags](#smart-hashtags)
-  * [Follow/Unfollow/exclude not working?](#followunfollowexclude-not-working)
-  * [Bypass Suspicious Login Attempt](#bypass-suspicious-login-attempt)
-  * [Quota Supervisor](#quota-supervisor)
-* [Relationship tools](#relationship-tools)
-  * [Grab Followers of a user](#grab-followers-of-a-user)
-  * [Grab Following of a user](#grab-following-of-a-user)
-  * [Pick Unfollowers of a user](#pick-unfollowers-of-a-user)
-  * [Pick Nonfollowers of a user](#pick-nonfollowers-of-a-user)
-  * [Pick Fans of a user](#pick-fans-of-a-user)
-  * [Pick Mutual Following of a user](#pick-mutual-following-of-a-user)
-* [Text Analytics](#text-analytics)
-  *  [Yandex Translate API](#yandex-translate-api)
-  *  [MeaningCloud Sentiment Analysis API](#meaningcloud-sentiment-analysis-api)
-* [Use a proxy (Chrome)](#use-a-proxy-chrome)
-* [Use a proxy (Firefox)](#use-a-proxy-firefox)
-* [Switching to Firefox](#switching-to-firefox)
-* [Emoji Support](#emoji-support)
-* [Clarifai ImageAPI](#clarifai-imageapi)
-* [Running on a Server](#running-on-a-server)
-* [Running on a Headless Browser](#running-on-a-headless-browser)
-* [Running Multiple Accounts](#running-multiple-accounts)
-* [Running with Docker microservices manual](#running-with-docker-microservices-manual)
-* [Running all-in-one with Docker (legacy)](#running-all-in-one-with-docker-legacy)
-* [Running all with Docker Compose using config file](./docs/How_to_Docker_Compose.md)
-* [Automate InstaPy](#automate-instapy)
-  * [Windows Task Scheduler](#windows-task-scheduler)
-  * [cron](#cron)
-  * [Schedule](#schedule)
-* [Workspace folders](#workspace-folders)
-* [Extensions](#extensions)
-* [Extra Information](#extra-information)
-  * [Custom chromedriver version](#custom-chromedriver-version)
-  * [Using one of the templates](#using-one-of-the-templates)
-  * [How not to be banned](#how-not-to-be-banned)
-  * [Simulation](#simulation)
-  * [Disable Image Loading](#disable-image-loading)
-  * [Using Multiple Chromedrivers](#using-multiple-chromedrivers)
-  * [Changing DB or Chromedriver locations](#changing-db-or-chromedriver-locations)
-  * [Custom action delays](#custom-action-delays)
-  * [How to avoid _python_ & **pip** confusion](#how-to-avoid-python--pip-confusion)
-  * [Pass arguments by CLI](#pass-arguments-by-cli)
+- [Settings](#settings)
+  - [Commenting](#commenting)
+  - [Emoji Support](#emoji-support)
+  - [Following](#following)
+  - [Smart Hashtags](#smart-hashtags)
+  - [Quota Supervisor](#quota-supervisor)
+  - [Restricting Likes](#restricting-likes)
+  - [Ignoring Users](#ignoring-users)
+  - [Ignoring Restrictions](#ignoring-restrictions)
+  - [Excluding friends](#excluding-friends)
+  - [Mandatory Words](#mandatory-words)
+  - [Mandatory Language](#mandatory-language)
+  - [Don't unfollow active users](#dont-unfollow-active-users)
+  - [Blacklist Campaign](#blacklist-campaign)
+  - [Simulation](#simulation)
+  - [Skipping user for private account, no profile picture, business account](#skipping-user-for-private-account-no-profile-picture-business-account)
+  - [Liking based on the number of existing likes a post has](#liking-based-on-the-number-of-existing-likes-a-post-has)
+  - [Commenting based on the number of existing comments a post has](#commenting-based-on-the-number-of-existing-comments-a-post-has)
+  - [Commenting based on mandatory words in the description or first comment](#commenting-based-on-mandatory-words-in-the-description-or-first-comment)
+  - [Interactions based on the number of followers and/or following a user has](#interactions-based-on-the-number-of-followers-andor-following-a-user-has)
+  - [Interactions based on the number of posts a user has](#interactions-based-on-the-number-of-posts-a-user-has)
+  - [Custom action delays](#custom-action-delays)
+  
+- [Actions](#actions)
+  - [Like by Tags](#like-by-tags)
+  - [Like by Feeds](#like-by-feeds)
+  - [Like by Locations](#like-by-locations)
+  - [Comment by Locations](#comment-by-locations)
+  - [Follow by Locations](#follow-by-locations)
+  - [Following by a list](#following-by-a-list)
+  - [Follow someone else's followers](#follow-someone-elses-followers)
+  - [Follow users that someone else is following](#follow-users-that-someone-else-is-following)
+  - [Follow someone else's followers/following](#follow-someone-elses-followersfollowing)  
+  - [Follow the likers of photos of users](#follow-the-likers-of-photos-of-users)  
+  - [Follow the commenters of photos of users](#follow-the-commenters-of-photos-of-users)  
+  - [Unfollowing](#unfollowing)
+  - [Interact on posts at given URLs](#interact-on-posts-at-given-urls)
+  - [Interact with specific users](#interact-with-specific-users)
+  - [Interact with specific users' tagged posts](#interact-with-specific-users-tagged-posts)
+  - [Interact with someone else's followers](#interact-with-someone-elses-followers)
+  - [Interact with users that someone else is following](#interact-with-users-that-someone-else-is-following)
+  - [Interact by Comments](#interact-by-comments)
+  - [Accept pending follow requests](#accept-pending-follow-requests)
+  - [Remove outgoing follow requests](#remove-outgoing-follow-requests)
+  
+- [Third Party features](#third-party-features)
+  - [Clarifai ImageAPI](#clarifai-imageapi)
+  - [Text Analytics](#text-analytics)
+    - [Yandex Translate API](#yandex-translate-api)
+    - [MeaningCloud Sentiment Analysis API](#meaningcloud-sentiment-analysis-api)
 
+- [Instance Settings](#instance-settings)
+  - [Running on a Headless Browser](#running-on-a-headless-browser)
+  - [Bypass Suspicious Login Attempt](#bypass-suspicious-login-attempt)
+  - [Use a proxy (Chrome)](#use-a-proxy-chrome)
+  - [Switching to Firefox](#switching-to-firefox)
+  - [Use a proxy (Firefox)](#use-a-proxy-firefox)
+  
+- [Relationship tools](#relationship-tools)
+  - [Grab Followers of a user](#grab-followers-of-a-user)
+  - [Grab Following of a user](#grab-following-of-a-user)
+  - [Pick Unfollowers of a user](#pick-unfollowers-of-a-user)
+  - [Pick Nonfollowers of a user](#pick-nonfollowers-of-a-user)
+  - [Pick Fans of a user](#pick-fans-of-a-user)
+  - [Pick Mutual Following of a user](#pick-mutual-following-of-a-user)
+
+- [Automate InstaPy](#automate-instapy)
+  - [Windows Task Scheduler](#windows-task-scheduler)
+  - [cron](#cron)
+  - [Schedule](#schedule)  
+  
+- [Additional Information](#additional-information)
+  - [Advanced Installation](#advanced-installation)
+  - [Workspace folders](#workspace-folders)
+  - [Pass arguments by CLI](#pass-arguments-by-cli)
+  - [Extensions](#extensions)
+  - [Custom chromedriver version](#custom-chromedriver-version)
+  - [Using one of the templates](#using-one-of-the-templates)
+  - [How not to be banned](#how-not-to-be-banned)
+  - [Disable Image Loading](#disable-image-loading)
+  - [Using Multiple Chromedrivers](#using-multiple-chromedrivers)
+  - [Changing DB or Chromedriver locations](#changing-db-or-chromedriver-locations)
+  - [How to avoid _python_ & **pip** confusion](#how-to-avoid-python--pip-confusion)
+
+---
 
 ### Advanced Installation
 #### 🛠 Install or update to the unreleased version  
@@ -1126,14 +1130,6 @@ session.set_ignore_if_contains(['glutenfree', 'french', 'tasty'])
 session.set_dont_include(['friend1', 'friend2', 'friend3'])
 ```
 
-### Follow/Unfollow/exclude not working?
-If you notice that one or more of the above functionalities are not working as expected - e.g. you have specified:
-```python
-session.set_do_follow(enabled=True, percentage=10, times=2)
-```
-but none of the profiles are being followed - or any such functionality is misbehaving - then one thing you should check is the position/order of such methods in your script. Essentially, all the ```set_*``` methods have to be before ```like_by_tags``` or ```like_by_locations``` or ```unfollow```. This is also implicit in all the exmples and quickstart.py
-
-
 
 ### Bypass Suspicious Login Attempt
 
@@ -2051,14 +2047,6 @@ Be aware that you cannot check video using a `workflow` and that only a select n
 
 ##### Check out [https://clarifai.com/demo](https://clarifai.com/demo) to see some of the available tags.</h6>
 
-## Running on a Server
-
-Use the `nogui` parameter to interact with virtual display
-
-```
-session = InstaPy(username='test', password='test', nogui=True)
-```
-
 ## Running on a Headless Browser
 
 **Note:** Chrome only! Must use chromedriver v2.9+
@@ -2067,100 +2055,6 @@ Use `headless_browser` parameter to run the bot via the CLI. Works great if runn
 
 ```
 session = InstaPy(username='test', password='test', headless_browser=True)
-```
-
-## Running Multiple Accounts
-
-Use the multi_logs parameter if you are going to use multiple accounts and want the log files stored per account.
-```
-session = InstaPy(username='test', password='test', multi_logs=True)
-```
-
-## Running with Docker microservices manual
-
-Docker allows very easy and fast run of the instapy bot without any pain and tears.
-
-### 0. Preparations
-
-Install docker from the official website [https://www.docker.com/](https://www.docker.com/)
-
-Install VNC viewer if you do not have one. For windows, a good program is  [http://www.tightvnc.com/](http://www.tightvnc.com/)
-
-### 1. Set your instagram login and password
-
-Open `docker_quickstart.py` and fill the quotes after insta_username and insta_password with your credentials.
-
-Don't forget to make other changes for the file as you want to. Read the documentation above for info.
-
-### 2. Run and build containers with docker-compose
-
-First you need to open your terminal, move to the root folder (usually with the `cd` command) of instapy project and then type:
-```bash
-docker-compose up -d --build
-```
-
-That's all! At this step, you are already successfully running your personal bot!
-
-### 3. See what your bot can do right now
-
-Run your VNC viewer, and type address and port `localhost:5900`. The password is `secret`.
-
-### 4. Stop your instapy bot
-
-Use your terminal again, type in the same window:
-```bash
-docker-compose down
-```
-
-Your bot is stopped!
-
-### 5. Further steps
-
-Those are just basic steps to run instapy bot on your PC with docker. There are other docker-compose settings file in the root of project.
-
-#### Development environment to run, test and debug by SSH
-
-Use it to help us with development and test instapy! `docker-dev.yml` file.
-
-```bash
-docker-compose -f docker-dev.yml up -d
-```
-
-After striking this command, you can access your bot by VNC on the adress  `localhost:5901`, the password is `secret`.
-
-But there is more! There is a fully accessible bash console with all code mounted at the path `/code`. When you hack some files they are dynamically updated inside your container.
-
-To access yor container console to run bot type `localhost:22` in your favorite ssh client. The User is `root` and the password is `root` also.
-
-#### Run in production without opened VNC port
-
- Suitable to run in a remote server. Attention! You can not view what happened through VNC on this configuration `docker-prod.yml` file.
-
-```bash
-docker-compose -f docker-prod.yml up -d
-```
-
-## Running all-in-one with Docker (legacy)
-
-### 1. Build the Image
-
-First you need to build the image by running this in the Terminal:
-```bash
-docker build -t instapy ./docker_conf/all_in_one
-```
-
-Make sure to use the `nogui` feature:
-```python
-# you can use the nogui parameter to use a virtual display
-
-session = InstaPy(username='test', password='test', nogui=True)
-```
-
-### 2. Run in a Container
-
-After the build succeeds, you can simply run the container with:
-```bash
-docker run --name=instapy -e INSTA_USER=<your-user> -e INSTA_PW=<your-pw> -d --rm instapy
 ```
 
 ## Automate InstaPy
@@ -2395,7 +2289,7 @@ Why it is so difficult in those 👆🏼 regards?
 ## Extensions
 [1. Session scheduling with Telegram](https://github.com/Tkd-Alex/Telegram-InstaPy-Scheduling)
 
-## Extra Information
+## Additional Information
 
 ### Custom chromedriver version
 By default, InstaPy downloads the latest version of the chromedriver.
