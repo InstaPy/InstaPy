@@ -14,7 +14,7 @@ Implemented in Python using the Selenium module.<p>
     	<img src="https://img.shields.io/badge/built%20with-Python3-red.svg" />
     </a>
     <a href="https://travis-ci.org/timgrossmann/InstaPy">
-	<img src="https://img.shields.io/travis/rust-lang/rust.svg">
+	<img src="https://travis-ci.org/timgrossmann/InstaPy.svg?branch=master">
     </a>
     <a href="https://www.github.com/timgrossmann/InstaPy#backer">
 	<img src="https://opencollective.com/instapy/backers/badge.svg">
