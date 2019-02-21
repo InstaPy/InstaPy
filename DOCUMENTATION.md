@@ -31,11 +31,12 @@
   - [Like by Feeds](#like-by-feeds)
   - [Like by Locations](#like-by-locations)
   - [Comment by Locations](#comment-by-locations)
+  - [Follow by Tags](#follow-by-tags)
   - [Follow by Locations](#follow-by-locations)
   - [Following by a list](#following-by-a-list)
   - [Follow someone else's followers](#follow-someone-elses-followers)
   - [Follow users that someone else is following](#follow-users-that-someone-else-is-following)
-  - [Follow someone else's followers/following](#follow-someone-elses-followersfollowing)  
+  - [Follow and interact someone else's followers/following](#follow-and-interact-someone-elses-followersfollowing)  
   - [Follow the likers of photos of users](#follow-the-likers-of-photos-of-users)  
   - [Follow the commenters of photos of users](#follow-the-commenters-of-photos-of-users)  
   - [Unfollowing](#unfollowing)
@@ -584,228 +585,99 @@ session.set_action_delays(enabled=True, like=0.15, safety_match=False)
 ```
 _It has been held due to safety considerations. Cos sleeping a respective time after doing actions- for example ~`10` seconds after an unfollow, is very important to avoid possible temporary blocks and if you might enter e.g. `3` seconds for that without realizing the outcome..._
 
+---
 
 ## Actions
+### Like by Tags
 
-
-
-
-
-
-
-
-
-
-
-### Advanced Installation
-#### 🛠 Install or update to the unreleased version  
-For example, there is a **bug** and its **fix** is _merged to the repo_ but a newer version of _InstaPy_ [_containing_ that **fix**] is not yet released to _PyPI_ to be able to be _installed_ or _updated_ by **pip**.  
-
-Then, you can do this to install the **actual state** of the _repo_ 😋
-```erlang
-pip install -I https://github.com/timgrossmann/InstaPy/zipball/master
+```python
+# Like posts based on hashtags
+session.like_by_tags(['natgeo', 'world'], amount=10)
 ```
 
-Worths to note that, this installation option does not require _Git_ to be installed, too.  
-`-I` flag in there is used to _ignore the installed_ packages and _reinstall_ them instead.  
+#### Like by Tags and interact with user
 
-<details>
-  <summary>
-    <b>
-      Learn why <code>-I</code> flag is required 🔎
-    </b>
-  </summary>
-
-Since _InstaPy_'s version is not yet being incremented which is the reason you're installing it from a _zipball_, then if you don't use the `-I` flag, **pip** will complain saying,  
-- "_Hey, I have already installed the x.y.z version! Skipping installation..._"  
-
-But obviously, even though the version is the same, _zipball_ has the current state of the repository.  
-That's why you will be able to install the actual state of the repo using the `-I` flag.
-
-</details>
-
-<br />
-
->**PRO** Tip:  
-  Read the section - [How to avoid _python_ & **pip** confusion](#how-to-avoid-python--pip-confusion) 😄
-
-<br />
-
-#### ⚗ Install manually and manage using advanced git commands
-###### For those who want to tweak or enhance _InstaPy_.
-
-**1**. Clone _InstaPy_ repository into your computer
-```erlang
-git clone https://github.com/timgrossmann/InstaPy.git
-```
-
-**2**. Navigate to the _InstaPy_ project root directory
-```erlang
-cd InstaPy
-```
-
-**3**. Install the _local_ **instapy** package
-```erlang
-pip install -e .
-```
-<details>
-  <summary>
-    <b>
-      Learn why <code>-e</code> flag is required 🔎
-    </b>
-  </summary>
-
-Since you're gonna install the local version of _InstaPy_ you'll probably change its code per your need which is the reason you do an advanced installation from a _Git_ source, then if you don't use the `-e` flag, you'll have to install that local package by **pip** every time after making a change.  
-
-But fortunately, `-e` flag comes to help;  
-`-e` means _editable_ install, so that after editing files you don't need to re-install the package again since it will always refer to the edited files cos with the _editable_ install, it just **links** the project's location to **pip**'s install location _rather than_ adding them to **pip** location separately..
-<br />
-</details>
-or
-
-```erlang
-python setup.py install
-```
-
-<br />
-
-#### ⛑ Install into a Virtual Environment
-
-###### The best way to install _InstaPy_ is to create a virtual environment and install _InstaPy_ there, then, run it from a separate file.
-
-<details>
-  <summary>
-    <b>
-      Guide for <b>Pythons</b> >= 3.6 🔎
-    </b>
-  </summary>
-
-##### Mac/Linux
-
-**1**. Clone _InstaPy_ repository into your computer
-```erlang
-git clone https://github.com/timgrossmann/InstaPy.git
-```
-
-**2**. Navigate to the _InstaPy_ project root directory
-```erlang
-cd InstaPy
-```
-
-**3**. Make a virtual environment
-```erlang
-python3 -m venv venv
-```
-
-**4**. Activate the virtual environment
-```erlang
-source venv/bin/activate
-```
-
-**5**. Install the _local_ **instapy** package
-```erlang
-pip install -e .
+```python
+# Like posts based on hashtags and like 3 posts of its poster
+session.set_user_interact(amount=3, randomize=True, percentage=100, media='Photo')
+session.like_by_tags(['natgeo', 'world'], amount=10, interact=True)
 ```
 
 
+### Like by Feeds
 
-##### Windows
+```python
+# This is used to perform likes on your own feeds
+# amount=100  specifies how many total likes you want to perform
+# randomize=True randomly skips posts to be liked on your feed
+# unfollow=True unfollows the author of a post which was considered
+# inappropriate interact=True visits the author's profile page of a
+# certain post and likes a given number of his pictures, then returns to feed
 
-**1**. Clone _InstaPy_ repository into your computer
-```erlang
-git clone https://github.com/timgrossmann/InstaPy.git
-```
-
-**2**. Navigate to the _InstaPy_ project root directory
-```erlang
-cd InstaPy
-```
-
-**3**. Make a virtual environment
-```erlang
-python3 -m venv venv
-```
-
-**4**. Activate the virtual environment
-```erlang
-venv\Scripts\activate.bat
-```
-
-**5**. Install the _local_ **instapy** package
-```erlang
-pip install -e .
+session.like_by_feed(amount=100, randomize=True, unfollow=True, interact=True)
 ```
 
 
-If you're not _familiar_ with **venv**, please [read about it here](https://docs.python.org/3/library/venv.html) and use it to your advantage;    
+### Like by Locations
 
-- Running `source venv/bin/activate` will _activate_ the correct _python_ to run _InstaPy_. To exit an activated **venv** run `deactivate`.  
-- Now, copy & paste the **quickstart.py** _python_ code below and then run your first _InstaPy_ script.  
-  Remember to run it with _python_ from the **venv**.  
-- To make sure which _python_ is used, run `which python` which will tell you the active version of _python_.  
-- Whenever you run the script, the virtual environment must be _active_.
+```python
+session.like_by_locations(['224442573/salton-sea/'], amount=100)
+# or
+session.like_by_locations(['224442573'], amount=100)
+# or include media entities from top posts section
 
-</details>
-
-
-<details>
-  <summary>
-    <b>
-      Guide for <b>Pythons</b> < 3.6 🔎
-    </b>
-  </summary>
-
-**1**. Make a virtual environment
-```erlang
-virtualenv venv
-```
-
-**2**. Activate the virtual environment
-```erlang
-source venv/bin/activate
-```
-
-**3**. Install the **instapy** package from _Git_ by using **pip**
-```erlang
-pip install git+https://github.com/timgrossmann/InstaPy.git
+session.like_by_locations(['224442573'], amount=5, skip_top_posts=False)
 ```
 
 
-If you're not _familiar_ with **virtualenv**, please [read about it here](https://virtualenv.pypa.io/en/stable/) and use it to your advantage;  
+You can find locations for the `like_by_locations` function by:
+- Browsing https://www.instagram.com/explore/locations/
+- Regular instagram search.
 
-In essence,    
- - This is be the **only** _python_ library you should install as `root` (_e.g., with `sudo`_).  
- - All other _python_ libraries should be inside a **virtualenv**.  
- - Running `source venv/bin/activate` will activate the correct _python_ to run _InstaPy_.  
-  And to exit an activated **virtualenv** run `deactivate`.  
- - Now, copy & paste the **quickstart.py** _python_ code below and run your first _InstaPy_ script.  
- Remember to run it with _python_ from the **virtualenv**, so from **venv/bin/python**.  
- - To make sure which _python_ is used, run `which python` which would tell you the active version of _python_.
+Example:
+* Search 'Salton Sea' and select the result with a location icon
+* The url is: https://www.instagram.com/explore/locations/224442573/salton-sea/
+* Use everything after 'locations/' or just the number
 
-</details>
 
-<br />
+### Comment by Locations
 
-#### **Install** a _**specific** version_
-```elm
-pip install instapy==0.1.1
+```python
+session.comment_by_locations(['224442573/salton-sea/'], amount=100)
+# or
+session.comment_by_locations(['224442573'], amount=100)
+# or include media entities from top posts section
+
+session.comment_by_locations(['224442573'], amount=5, skip_top_posts=False)
 ```
 
-#### **Uninstall**
-```elm
-pip uninstall instapy
+This method allows commenting by locations, without liking posts. To get locations follow instructions in 'Like by Locations'
+
+
+### Follow by Tags
+
+```python
+# Follow user based on hashtags (without liking the image)
+
+session.follow_by_tags(['tag1', 'tag2'], amount=10)
 ```
 
-<br />
 
+### Follow by Locations
 
-## InstaPy Available Features
+```python
+session.follow_by_locations(['224442573/salton-sea/'], amount=100)
+# or
+session.follow_by_locations(['224442573'], amount=100)
+# or include media entities from top posts section
+
+session.follow_by_locations(['224442573'], amount=5, skip_top_posts=False)
+```
+This method allows following by locations, without liking or commenting posts. To get locations follow instructions in 'Like by Locations'
 
 
 
 ### Following by a list
-
-
 ##### This will follow each account from a list of instagram nicknames
 ```python
 follow_by_list(followlist=['samantha3', 'larry_ok'], times=1, sleep_delay=600, interact=False)
@@ -865,7 +737,7 @@ session.follow_user_following(['friend1', 'friend2', 'friend3'], amount=10, rand
 
 
 
-### Follow someone else's followers/following
+### Follow and interact someone else's followers/following
 
 ```python
 # For 50% of the 30 newly followed, move to their profile
@@ -878,19 +750,7 @@ session.follow_user_followers(['friend1', 'friend2', 'friend3'], amount=10, rand
 ```
 
 
-
-### Follow by Tags
-
-```python
-# Follow user based on hashtags (without liking the image)
-
-session.follow_by_tags(['tag1', 'tag2'], amount=10)
-```
-
-
-
 ### Follow the likers of photos of users
-
 ##### This will follow the people those liked photos of given list of users   
 ```python
 session.follow_likers(['user1' , 'user2'], photos_grab_amount = 2, follow_likers_per_photo = 3, randomize=True, sleep_delay=600, interact=False)
@@ -912,9 +772,7 @@ session.follow_likers(['user1' , 'user2'], photos_grab_amount = 2, follow_likers
 ```
 
 
-
 ### Follow the commenters of photos of users
-
 ##### This will follow the people those commented on photos of given list of users
 ```python
 session.follow_commenters(['user1', 'user2', 'user3'], amount=100, daysold=365, max_pic = 100, sleep_delay=600, interact=False)
@@ -935,65 +793,83 @@ session.set_user_interact(amount=3,
 session.follow_commenters(['user1', 'user2', 'user3'], amount=100, daysold=365, max_pic = 100, sleep_delay=600, interact=True)
 ```
 
-### Interact with specific users
 
+### Unfollowing
+###### Unfollows the accounts you're following  
+_It will unfollow ~`10` accounts and sleep for ~`10` minutes and then will continue to unfollow..._
+
+##### There are `4` _Unfollow methods_ available to use:
+`|>` **customList**  `|>` **InstapyFollowed**  `|>` **nonFollowers**  `|>` **allFollowing**
+
+**1** - Unfollow **specific users** from a _CUSTOM_ list (_has `2` **track**s- `"all"` and `"nonfollowers"`_):  
+_when **track** is `"all"`, it will unfollow **all of the users** in a given list_;
 ```python
-# Interact with specific users
-# set_do_like, set_do_comment, set_do_follow are applicable
+custom_list = ["user_1", "user_2", "user_49", "user332", "user50921", "user_n"]
+session.unfollow_users(amount=84, customList=(True, custom_list, "all"), style="RANDOM", unfollow_after=55*60*60, sleep_delay=600)
+```
+_if **track** is `"nonfollowers"`, it will unfollow all of the users in a given list **WHO are not following you back**_;
+```python
+custom_list = ["user_1", "user_2", "user_49", "user332", "user50921", "user_n"]
+session.unfollow_users(amount=84, customList=(True, custom_list, "nonfollowers"), style="RANDOM", unfollow_after=55*60*60, sleep_delay=600)
+```
+* **PRO**: `customList` method can take any kind of _iterable container_, such as `list`, `tuple` or `set`.
 
-session.set_do_follow(enabled=False, percentage=50)
-session.set_comments(["Cool", "Super!"])
-session.set_do_comment(enabled=True, percentage=80)
-session.set_do_like(True, percentage=70)
-session.interact_by_users(['user1', 'user2', 'user3'], amount=5, randomize=True, media='Photo')
+**2** - Unfollow the users **WHO** was _followed by `InstaPy`_ (_has `2` **track**s- `"all"` and `"nonfollowers"`_):  
+_again, if you like to unfollow **all of the users** followed by InstaPy, use the **track**- `"all"`_;
+```python
+session.unfollow_users(amount=60, InstapyFollowed=(True, "all"), style="FIFO", unfollow_after=90*60*60, sleep_delay=501)
+```
+_but if you like you unfollow only the users followed by InstaPy **WHO do not follow you back**, use the **track**- `"nonfollowers"`_;
+```python
+session.unfollow_users(amount=60, InstapyFollowed=(True, "nonfollowers"), style="FIFO", unfollow_after=90*60*60, sleep_delay=501)
 ```
 
-### Interact with specific users' tagged posts
-
+**3** - Unfollow the users **WHO** `do not` _follow you back_:
 ```python
-# Interact with specific users' tagged posts
-# set_do_like, set_do_comment, set_do_follow are applicable
-
-session.set_do_follow(enabled=False, percentage=50)
-session.set_comments(["Cool", "Super!"])
-session.set_do_comment(enabled=True, percentage=80)
-session.set_do_like(True, percentage=70)
-session.interact_by_users_tagged_posts(['user1', 'user2', 'user3'], amount=5, randomize=True, media='Photo')
+session.unfollow_users(amount=126, nonFollowers=True, style="RANDOM", unfollow_after=42*60*60, sleep_delay=655)
 ```
 
-
-### Interact with users that someone else is following
-
+**4** - `Just` unfollow, **regardless of** a user _follows you or not_:
 ```python
-# Interact with the people that a given user is following
-# set_do_comment, set_do_follow and set_do_like are applicable
-
-session.set_user_interact(amount=5, randomize=True, percentage=50, media='Photo')
-session.set_do_follow(enabled=False, percentage=70)
-session.set_do_like(enabled=False, percentage=70)
-session.set_comments(["Cool", "Super!"])
-session.set_do_comment(enabled=True, percentage=80)
-session.interact_user_following(['natgeo'], amount=10, randomize=True)
+session.unfollow_users(amount=40, allFollowing=True, style="LIFO", unfollow_after=3*60*60, sleep_delay=450)
 ```
-> **Note**: [simulation](#simulation) takes place while running this feature.
+
+#### Parameters (_all of these parameters apply to all of the 4 methods available_):
+
+`style`  
+You can choose _unfollow style_ as `"FIFO"` (_First-Input-First-Output_) **OR** `"LIFO"` (_Last-Input-First-Output_) **OR** `"RANDOM"`.  
+* with `"FIFO"`, it will unfollow users _in the **exact** order they are loaded_ (_`"FIFO"` is the default style unless you **change** it_);  
+* with `"LIFO`" it will unfollow users _in the **reverse** order they were loaded_;  
+* with `"RANDOM"` it will unfollow users _in the **shuffled** order_;
 
 
-
-### Interact with someone else's followers
-
+`unfollow_after`  
+By using this, you can unfollow users **only after** following them certain amount of time.  
+_it will help to provide **seamless** unfollow activity without the notice of the target user_   
+To use it, just add `unfollow_after` parameter with the _desired time interval_, _e.g._,
 ```python
-# Interact with the people that a given user is followed by
-# set_do_comment, set_do_follow and set_do_like are applicable
-
-session.set_user_interact(amount=5, randomize=True, percentage=50, media='Photo')
-session.set_do_follow(enabled=False, percentage=70)
-session.set_do_like(enabled=False, percentage=70)
-session.set_comments(["Cool", "Super!"])
-session.set_do_comment(enabled=True, percentage=80)
-session.interact_user_followers(['natgeo'], amount=10, randomize=True)
+session.unfollow_users(amount=94, InstapyFollowed=(True, "all"), style="RANDOM", unfollow_after=48*60*60, sleep_delay=600)
 ```
-> **Note**: [simulation](#simulation) takes place while running this feature.
+_will unfollow users **only after following them** `48` hours (`2` days)_.  
+* Since `unfollow_after`s value is in _seconds_, you can simply give it `unfollow_after=3600` to unfollow after `3600` seconds.  
+_Yeah, values kind of `1*60*60`- which is also equal to `1` hour or `3600` seconds, is much more easier to use_.  
 
+**Sure** if you like to not use it, give the value of `None`- `unfollow_after=None`.
+
+`sleep_delay`  
+Sleep delay _sets_ the time it will sleep **after** every ~`10` unfollows (_default delay is ~`10` minutes_).
+
+> **NOTE**: You should know that, _in one RUN_, `unfollow_users` feature can take only one method from all `4` above.  
+That's why, **it is best** to **disable** other `3` methods _while using a one_:
+```python
+session.unfollow_users(amount=200, customList=(True, ["user1", "user2", "user88", "user200"], "all"), InstapyFollowed=(False, "all"), nonFollowers=False, allFollowing=False, style="FIFO", unfollow_after=22*60*60, sleep_delay=600)
+```
+_here the unfollow method- **customList** is used_  
+**OR** just keep the method you want to use and remove other 3 methods from the feature
+```python
+session.unfollow_users(amount=200, allFollowing=True, style="FIFO", unfollow_after=22*60*60, sleep_delay=600)
+```
+_here the unfollow method- **alFollowing** is used_
 
 
 ### Interact on posts at given URLs
@@ -1030,6 +906,65 @@ Shuffles the **order** of the _URLs_ in the given list _before starts to interac
 `interact`:  
 Use it if you like to also _interact the post owner_ **after** doing interactions on the **post itself**.  
 
+
+
+### Interact with specific users
+
+```python
+# Interact with specific users
+# set_do_like, set_do_comment, set_do_follow are applicable
+
+session.set_do_follow(enabled=False, percentage=50)
+session.set_comments(["Cool", "Super!"])
+session.set_do_comment(enabled=True, percentage=80)
+session.set_do_like(True, percentage=70)
+session.interact_by_users(['user1', 'user2', 'user3'], amount=5, randomize=True, media='Photo')
+```
+
+### Interact with specific users' tagged posts
+
+```python
+# Interact with specific users' tagged posts
+# set_do_like, set_do_comment, set_do_follow are applicable
+
+session.set_do_follow(enabled=False, percentage=50)
+session.set_comments(["Cool", "Super!"])
+session.set_do_comment(enabled=True, percentage=80)
+session.set_do_like(True, percentage=70)
+session.interact_by_users_tagged_posts(['user1', 'user2', 'user3'], amount=5, randomize=True, media='Photo')
+```
+
+
+### Interact with someone else's followers
+
+```python
+# Interact with the people that a given user is followed by
+# set_do_comment, set_do_follow and set_do_like are applicable
+
+session.set_user_interact(amount=5, randomize=True, percentage=50, media='Photo')
+session.set_do_follow(enabled=False, percentage=70)
+session.set_do_like(enabled=False, percentage=70)
+session.set_comments(["Cool", "Super!"])
+session.set_do_comment(enabled=True, percentage=80)
+session.interact_user_followers(['natgeo'], amount=10, randomize=True)
+```
+> **Note**: [simulation](#simulation) takes place while running this feature.
+
+
+### Interact with users that someone else is following
+
+```python
+# Interact with the people that a given user is following
+# set_do_comment, set_do_follow and set_do_like are applicable
+
+session.set_user_interact(amount=5, randomize=True, percentage=50, media='Photo')
+session.set_do_follow(enabled=False, percentage=70)
+session.set_do_like(enabled=False, percentage=70)
+session.set_comments(["Cool", "Super!"])
+session.set_do_comment(enabled=True, percentage=80)
+session.interact_user_following(['natgeo'], amount=10, randomize=True)
+```
+> **Note**: [simulation](#simulation) takes place while running this feature.
 
 
 ### Interact by Comments
@@ -1144,84 +1079,6 @@ session.interact_by_comments(usernames=["somebody", "other.buddy"], posts_amount
 + using auto-reply capability of this feature can result in unwanted miscommunication between you and the commenter IN CASE OF you do not make an efficient use of text analytics;  
 
 
-
-### Unfollowing
-###### Unfollows the accounts you're following  
-_It will unfollow ~`10` accounts and sleep for ~`10` minutes and then will continue to unfollow..._
-
-##### There are `4` _Unfollow methods_ available to use:
-`|>` **customList**  `|>` **InstapyFollowed**  `|>` **nonFollowers**  `|>` **allFollowing**
-
-**1** - Unfollow **specific users** from a _CUSTOM_ list (_has `2` **track**s- `"all"` and `"nonfollowers"`_):  
-_when **track** is `"all"`, it will unfollow **all of the users** in a given list_;
-```python
-custom_list = ["user_1", "user_2", "user_49", "user332", "user50921", "user_n"]
-session.unfollow_users(amount=84, customList=(True, custom_list, "all"), style="RANDOM", unfollow_after=55*60*60, sleep_delay=600)
-```
-_if **track** is `"nonfollowers"`, it will unfollow all of the users in a given list **WHO are not following you back**_;
-```python
-custom_list = ["user_1", "user_2", "user_49", "user332", "user50921", "user_n"]
-session.unfollow_users(amount=84, customList=(True, custom_list, "nonfollowers"), style="RANDOM", unfollow_after=55*60*60, sleep_delay=600)
-```
-* **PRO**: `customList` method can take any kind of _iterable container_, such as `list`, `tuple` or `set`.
-
-**2** - Unfollow the users **WHO** was _followed by `InstaPy`_ (_has `2` **track**s- `"all"` and `"nonfollowers"`_):  
-_again, if you like to unfollow **all of the users** followed by InstaPy, use the **track**- `"all"`_;
-```python
-session.unfollow_users(amount=60, InstapyFollowed=(True, "all"), style="FIFO", unfollow_after=90*60*60, sleep_delay=501)
-```
-_but if you like you unfollow only the users followed by InstaPy **WHO do not follow you back**, use the **track**- `"nonfollowers"`_;
-```python
-session.unfollow_users(amount=60, InstapyFollowed=(True, "nonfollowers"), style="FIFO", unfollow_after=90*60*60, sleep_delay=501)
-```
-
-**3** - Unfollow the users **WHO** `do not` _follow you back_:
-```python
-session.unfollow_users(amount=126, nonFollowers=True, style="RANDOM", unfollow_after=42*60*60, sleep_delay=655)
-```
-
-**4** - `Just` unfollow, **regardless of** a user _follows you or not_:
-```python
-session.unfollow_users(amount=40, allFollowing=True, style="LIFO", unfollow_after=3*60*60, sleep_delay=450)
-```
-
-#### Parameters (_all of these parameters apply to all of the 4 methods available_):
-
-`style`  
-You can choose _unfollow style_ as `"FIFO"` (_First-Input-First-Output_) **OR** `"LIFO"` (_Last-Input-First-Output_) **OR** `"RANDOM"`.  
-* with `"FIFO"`, it will unfollow users _in the **exact** order they are loaded_ (_`"FIFO"` is the default style unless you **change** it_);  
-* with `"LIFO`" it will unfollow users _in the **reverse** order they were loaded_;  
-* with `"RANDOM"` it will unfollow users _in the **shuffled** order_;
-
-
-`unfollow_after`  
-By using this, you can unfollow users **only after** following them certain amount of time.  
-_it will help to provide **seamless** unfollow activity without the notice of the target user_   
-To use it, just add `unfollow_after` parameter with the _desired time interval_, _e.g._,
-```python
-session.unfollow_users(amount=94, InstapyFollowed=(True, "all"), style="RANDOM", unfollow_after=48*60*60, sleep_delay=600)
-```
-_will unfollow users **only after following them** `48` hours (`2` days)_.  
-* Since `unfollow_after`s value is in _seconds_, you can simply give it `unfollow_after=3600` to unfollow after `3600` seconds.  
-_Yeah, values kind of `1*60*60`- which is also equal to `1` hour or `3600` seconds, is much more easier to use_.  
-
-**Sure** if you like to not use it, give the value of `None`- `unfollow_after=None`.
-
-`sleep_delay`  
-Sleep delay _sets_ the time it will sleep **after** every ~`10` unfollows (_default delay is ~`10` minutes_).
-
-> **NOTE**: You should know that, _in one RUN_, `unfollow_users` feature can take only one method from all `4` above.  
-That's why, **it is best** to **disable** other `3` methods _while using a one_:
-```python
-session.unfollow_users(amount=200, customList=(True, ["user1", "user2", "user88", "user200"], "all"), InstapyFollowed=(False, "all"), nonFollowers=False, allFollowing=False, style="FIFO", unfollow_after=22*60*60, sleep_delay=600)
-```
-_here the unfollow method- **customList** is used_  
-**OR** just keep the method you want to use and remove other 3 methods from the feature
-```python
-session.unfollow_users(amount=200, allFollowing=True, style="FIFO", unfollow_after=22*60*60, sleep_delay=600)
-```
-_here the unfollow method- **alFollowing** is used_
-
 ### Accept pending follow requests
 
 ```python
@@ -1234,6 +1091,7 @@ The maximum amount of follow requests that will be accepted.
 `sleep_delay`  
 Sleep delay _sets_ the time it will sleep **after** every accepted request (_default delay is ~ `1` second).
 
+
 ### Remove outgoing follow requests
 
 ```python
@@ -1242,87 +1100,9 @@ Sleep delay _sets_ the time it will sleep **after** every accepted request (_def
 session.remove_follow_requests(amount=200, sleep_delay=600)
 ```
 
+---
 
-
-
-### Comment by Locations
-
-```python
-session.comment_by_locations(['224442573/salton-sea/'], amount=100)
-# or
-session.comment_by_locations(['224442573'], amount=100)
-# or include media entities from top posts section
-
-session.comment_by_locations(['224442573'], amount=5, skip_top_posts=False)
-```
-
-This method allows commenting by locations, without liking posts. To get locations follow instructions in 'Like by Locations'
-
-
-### Follow by Locations
-
-```python
-session.follow_by_locations(['224442573/salton-sea/'], amount=100)
-# or
-session.follow_by_locations(['224442573'], amount=100)
-# or include media entities from top posts section
-
-session.follow_by_locations(['224442573'], amount=5, skip_top_posts=False)
-```
-This method allows following by locations, without liking or commenting posts. To get locations follow instructions in 'Like by Locations'
-
-
-### Like by Locations
-
-```python
-session.like_by_locations(['224442573/salton-sea/'], amount=100)
-# or
-session.like_by_locations(['224442573'], amount=100)
-# or include media entities from top posts section
-
-session.like_by_locations(['224442573'], amount=5, skip_top_posts=False)
-```
-
-
-You can find locations for the `like_by_locations` function by:
-- Browsing https://www.instagram.com/explore/locations/
-- Regular instagram search.
-
-Example:
-* Search 'Salton Sea' and select the result with a location icon
-* The url is: https://www.instagram.com/explore/locations/224442573/salton-sea/
-* Use everything after 'locations/' or just the number
-
-
-### Like by Tags
-
-```python
-# Like posts based on hashtags
-session.like_by_tags(['natgeo', 'world'], amount=10)
-```
-
-### Like by Tags and interact with user
-
-```python
-# Like posts based on hashtags and like 3 posts of its poster
-session.set_user_interact(amount=3, randomize=True, percentage=100, media='Photo')
-session.like_by_tags(['natgeo', 'world'], amount=10, interact=True)
-```
-
-### Like by Feeds
-
-```python
-# This is used to perform likes on your own feeds
-# amount=100  specifies how many total likes you want to perform
-# randomize=True randomly skips posts to be liked on your feed
-# unfollow=True unfollows the author of a post which was considered
-# inappropriate interact=True visits the author's profile page of a
-# certain post and likes a given number of his pictures, then returns to feed
-
-session.like_by_feed(amount=100, randomize=True, unfollow=True, interact=True)
-```
-
-
+## Third Party Features
 
 
 
@@ -2632,6 +2412,206 @@ python quickstart.py -u abc
 </details>
 
 <br />
+
+
+### Advanced Installation
+#### 🛠 Install or update to the unreleased version  
+For example, there is a **bug** and its **fix** is _merged to the repo_ but a newer version of _InstaPy_ [_containing_ that **fix**] is not yet released to _PyPI_ to be able to be _installed_ or _updated_ by **pip**.  
+
+Then, you can do this to install the **actual state** of the _repo_ 😋
+```erlang
+pip install -I https://github.com/timgrossmann/InstaPy/zipball/master
+```
+
+Worths to note that, this installation option does not require _Git_ to be installed, too.  
+`-I` flag in there is used to _ignore the installed_ packages and _reinstall_ them instead.  
+
+<details>
+  <summary>
+    <b>
+      Learn why <code>-I</code> flag is required 🔎
+    </b>
+  </summary>
+
+Since _InstaPy_'s version is not yet being incremented which is the reason you're installing it from a _zipball_, then if you don't use the `-I` flag, **pip** will complain saying,  
+- "_Hey, I have already installed the x.y.z version! Skipping installation..._"  
+
+But obviously, even though the version is the same, _zipball_ has the current state of the repository.  
+That's why you will be able to install the actual state of the repo using the `-I` flag.
+
+</details>
+
+<br />
+
+>**PRO** Tip:  
+  Read the section - [How to avoid _python_ & **pip** confusion](#how-to-avoid-python--pip-confusion) 😄
+
+<br />
+
+#### ⚗ Install manually and manage using advanced git commands
+###### For those who want to tweak or enhance _InstaPy_.
+
+**1**. Clone _InstaPy_ repository into your computer
+```erlang
+git clone https://github.com/timgrossmann/InstaPy.git
+```
+
+**2**. Navigate to the _InstaPy_ project root directory
+```erlang
+cd InstaPy
+```
+
+**3**. Install the _local_ **instapy** package
+```erlang
+pip install -e .
+```
+<details>
+  <summary>
+    <b>
+      Learn why <code>-e</code> flag is required 🔎
+    </b>
+  </summary>
+
+Since you're gonna install the local version of _InstaPy_ you'll probably change its code per your need which is the reason you do an advanced installation from a _Git_ source, then if you don't use the `-e` flag, you'll have to install that local package by **pip** every time after making a change.  
+
+But fortunately, `-e` flag comes to help;  
+`-e` means _editable_ install, so that after editing files you don't need to re-install the package again since it will always refer to the edited files cos with the _editable_ install, it just **links** the project's location to **pip**'s install location _rather than_ adding them to **pip** location separately..
+<br />
+</details>
+or
+
+```erlang
+python setup.py install
+```
+
+<br />
+
+#### ⛑ Install into a Virtual Environment
+
+###### The best way to install _InstaPy_ is to create a virtual environment and install _InstaPy_ there, then, run it from a separate file.
+
+<details>
+  <summary>
+    <b>
+      Guide for <b>Pythons</b> >= 3.6 🔎
+    </b>
+  </summary>
+
+##### Mac/Linux
+
+**1**. Clone _InstaPy_ repository into your computer
+```erlang
+git clone https://github.com/timgrossmann/InstaPy.git
+```
+
+**2**. Navigate to the _InstaPy_ project root directory
+```erlang
+cd InstaPy
+```
+
+**3**. Make a virtual environment
+```erlang
+python3 -m venv venv
+```
+
+**4**. Activate the virtual environment
+```erlang
+source venv/bin/activate
+```
+
+**5**. Install the _local_ **instapy** package
+```erlang
+pip install -e .
+```
+
+
+
+##### Windows
+
+**1**. Clone _InstaPy_ repository into your computer
+```erlang
+git clone https://github.com/timgrossmann/InstaPy.git
+```
+
+**2**. Navigate to the _InstaPy_ project root directory
+```erlang
+cd InstaPy
+```
+
+**3**. Make a virtual environment
+```erlang
+python3 -m venv venv
+```
+
+**4**. Activate the virtual environment
+```erlang
+venv\Scripts\activate.bat
+```
+
+**5**. Install the _local_ **instapy** package
+```erlang
+pip install -e .
+```
+
+
+If you're not _familiar_ with **venv**, please [read about it here](https://docs.python.org/3/library/venv.html) and use it to your advantage;    
+
+- Running `source venv/bin/activate` will _activate_ the correct _python_ to run _InstaPy_. To exit an activated **venv** run `deactivate`.  
+- Now, copy & paste the **quickstart.py** _python_ code below and then run your first _InstaPy_ script.  
+  Remember to run it with _python_ from the **venv**.  
+- To make sure which _python_ is used, run `which python` which will tell you the active version of _python_.  
+- Whenever you run the script, the virtual environment must be _active_.
+
+</details>
+
+
+<details>
+  <summary>
+    <b>
+      Guide for <b>Pythons</b> < 3.6 🔎
+    </b>
+  </summary>
+
+**1**. Make a virtual environment
+```erlang
+virtualenv venv
+```
+
+**2**. Activate the virtual environment
+```erlang
+source venv/bin/activate
+```
+
+**3**. Install the **instapy** package from _Git_ by using **pip**
+```erlang
+pip install git+https://github.com/timgrossmann/InstaPy.git
+```
+
+
+If you're not _familiar_ with **virtualenv**, please [read about it here](https://virtualenv.pypa.io/en/stable/) and use it to your advantage;  
+
+In essence,    
+ - This is be the **only** _python_ library you should install as `root` (_e.g., with `sudo`_).  
+ - All other _python_ libraries should be inside a **virtualenv**.  
+ - Running `source venv/bin/activate` will activate the correct _python_ to run _InstaPy_.  
+  And to exit an activated **virtualenv** run `deactivate`.  
+ - Now, copy & paste the **quickstart.py** _python_ code below and run your first _InstaPy_ script.  
+ Remember to run it with _python_ from the **virtualenv**, so from **venv/bin/python**.  
+ - To make sure which _python_ is used, run `which python` which would tell you the active version of _python_.
+
+</details>
+
+<br />
+
+#### **Install** a _**specific** version_
+```elm
+pip install instapy==0.1.1
+```
+
+#### **Uninstall**
+```elm
+pip uninstall instapy
+```
 
 
 ---
