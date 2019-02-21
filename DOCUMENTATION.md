@@ -1,7 +1,7 @@
 # Documentation
 
 ### Table of Contents
-- [Settings](#settings)
+- **[Settings](#settings)**
   - [Commenting](#commenting)
   - [Emoji Support](#emoji-support)
   - [Following](#following)
@@ -24,7 +24,9 @@
   - [Interactions based on the number of posts a user has](#interactions-based-on-the-number-of-posts-a-user-has)
   - [Custom action delays](#custom-action-delays)
   
-- [Actions](#actions)
+ <br />
+  
+- **[Actions](#actions)**
   - [Like by Tags](#like-by-tags)
   - [Like by Feeds](#like-by-feeds)
   - [Like by Locations](#like-by-locations)
@@ -46,20 +48,26 @@
   - [Accept pending follow requests](#accept-pending-follow-requests)
   - [Remove outgoing follow requests](#remove-outgoing-follow-requests)
   
-- [Third Party features](#third-party-features)
+ <br />
+  
+- **[Third Party features](#third-party-features)**
   - [Clarifai ImageAPI](#clarifai-imageapi)
   - [Text Analytics](#text-analytics)
     - [Yandex Translate API](#yandex-translate-api)
     - [MeaningCloud Sentiment Analysis API](#meaningcloud-sentiment-analysis-api)
 
-- [Instance Settings](#instance-settings)
+ <br />
+
+- **[Instance Settings](#instance-settings)**
   - [Running on a Headless Browser](#running-on-a-headless-browser)
   - [Bypass Suspicious Login Attempt](#bypass-suspicious-login-attempt)
   - [Use a proxy (Chrome)](#use-a-proxy-chrome)
   - [Switching to Firefox](#switching-to-firefox)
   - [Use a proxy (Firefox)](#use-a-proxy-firefox)
   
-- [Relationship tools](#relationship-tools)
+ <br />
+  
+- **[Relationship tools](#relationship-tools)**
   - [Grab Followers of a user](#grab-followers-of-a-user)
   - [Grab Following of a user](#grab-following-of-a-user)
   - [Pick Unfollowers of a user](#pick-unfollowers-of-a-user)
@@ -67,12 +75,16 @@
   - [Pick Fans of a user](#pick-fans-of-a-user)
   - [Pick Mutual Following of a user](#pick-mutual-following-of-a-user)
 
-- [Automate InstaPy](#automate-instapy)
+ <br />
+
+- **[Automate InstaPy](#automate-instapy)**
   - [Windows Task Scheduler](#windows-task-scheduler)
   - [cron](#cron)
   - [Schedule](#schedule)  
   
-- [Additional Information](#additional-information)
+ <br />
+  
+- **[Additional Information](#additional-information)**
   - [Advanced Installation](#advanced-installation)
   - [Workspace folders](#workspace-folders)
   - [Pass arguments by CLI](#pass-arguments-by-cli)
@@ -83,7 +95,7 @@
   - [Disable Image Loading](#disable-image-loading)
   - [Using Multiple Chromedrivers](#using-multiple-chromedrivers)
   - [Changing DB or Chromedriver locations](#changing-db-or-chromedriver-locations)
-  - [How to avoid _python_ & **pip** confusion](#how-to-avoid-python--pip-confusion)
+  - [How to avoid _python_ & pip confusion](#how-to-avoid-python--pip-confusion)
 
 ---
 
