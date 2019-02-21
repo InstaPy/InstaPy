@@ -297,18 +297,8 @@ class InstaPy:
 
         # Creates database 
         self.client_influxDB = None
-        print("Connecting to DB")
-        print("Connecting to DB")
-        print("Connecting to DB")
-        print("Connecting to DB")
-        print(self.host_influx )
-        print(self.port_influx)
-        print(self.user_influx)
+        
         if (self.host_influx is not None and self.port_influx is not None and self.user_influx is not None and self.password_influx is not None and self.db_influx is not None):
-            print("Connecting to DB")
-            print("Connecting to DB")
-            print("Connecting to DB")
-            print("Connecting to DB")
             self.client_influxDB = InfluxDBClient(self.host_influx,
                                                   self.port_influx,
                                                   self.user_influx,
