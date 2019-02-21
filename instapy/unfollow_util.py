@@ -186,7 +186,8 @@ def unfollow(browser,
              sleep_delay,
              jumps,
              logger,
-             logfolder):
+             logfolder,
+             client_influxDB):
     """ Unfollows the given amount of users"""
 
     if (customList is not None and
@@ -397,7 +398,8 @@ def unfollow(browser,
                                                             None,
                                                             relationship_data,
                                                             logger,
-                                                            logfolder)
+                                                            logfolder,
+                                                            client_influxDB)
                     except BaseException as e:
                         logger.error(
                             "Unfollow loop error:  {}\n".format(str(e)))
@@ -463,7 +465,7 @@ def unfollow(browser,
         get_users_through_dialog(browser, None, username, amount,
                                  allfollowing, False, None, None,
                                  None, {"enabled": False, "percentage": 0},
-                                 "Unfollow", jumps, logger, logfolder)
+                                 "Unfollow", jumps, logger, logfolder, client_influxDB)
 
         # find dialog box
         dialog = browser.find_element_by_xpath(
@@ -564,7 +566,8 @@ def unfollow(browser,
                                                             button,
                                                             relationship_data,
                                                             logger,
-                                                            logfolder)
+                                                            logfolder,
+                                                            client_influxDB)
                     except Exception as exc:
                         logger.error("Unfollow loop error:\n\n{}\n\n".format(
                             str(exc).encode('utf-8')))
@@ -611,7 +614,7 @@ def unfollow(browser,
 
 
 def follow_user(browser, track, login, user_name, button, blacklist, logger,
-                logfolder):
+                logfolder, client_influxDB):
     """ Follow a user either from the profile page or post page or dialog
     box """
     # list of available tracks to follow in: ["profile", "post" "dialog"]
@@ -681,12 +684,28 @@ def follow_user(browser, track, login, user_name, button, blacklist, logger,
         click_element(browser, button)
         sleep(3)
 
+    # get user ID to record alongside username
+    user_id = get_user_id(browser, track, user_name, logger)
+
     # general tasks after a successful follow
+    if (client_influxDB is not None):
+        json_body = [
+        {
+            "measurement": "Follow",
+            "tags": {
+                "username": login,
+            },
+            "fields": {
+                "person": user_name,
+                "person_id": user_id
+            }
+        }]
+        client_influxDB.write_points(json_body)
+
     logger.info("--> Followed '{}'!".format(user_name.encode("utf-8")))
     update_activity('follows')
 
-    # get user ID to record alongside username
-    user_id = get_user_id(browser, track, user_name, logger)
+   
 
     logtime = datetime.now().strftime('%Y-%m-%d %H:%M')
     log_followed_pool(login, user_name, logger, logfolder, logtime, user_id)
@@ -728,7 +747,8 @@ def get_users_through_dialog(browser,
                              channel,
                              jumps,
                              logger,
-                             logfolder):
+                             logfolder,
+                             client_influxDB):
     sleep(2)
     real_amount = amount
     if randomize and amount >= 3:
@@ -826,7 +846,8 @@ def get_users_through_dialog(browser,
                                                          follow_times,
                                                          jumps,
                                                          logger,
-                                                         logfolder)
+                                                         logfolder,
+                                                         client_influxDB)
                     if ((quick_amount == 1
                         or i != (quick_amount - 1))
                         and (not pts_printed
@@ -881,7 +902,8 @@ def follow_through_dialog(browser,
                           follow_times,
                           jumps,
                           logger,
-                          logfolder):
+                          logfolder,
+                          client_influxDB):
     """ Will follow username directly inside a dialog box """
     if not isinstance(person_list, list):
         person_list = [person_list]
@@ -915,7 +937,8 @@ def follow_through_dialog(browser,
                                                 button,
                                                 blacklist,
                                                 logger,
-                                                logfolder)
+                                                logfolder,
+                                                client_influxDB)
                 if follow_state is True:
                     # register this session's followed user for further
                     # interaction
@@ -951,7 +974,8 @@ def get_given_user_followers(browser,
                              simulation,
                              jumps,
                              logger,
-                             logfolder):
+                             logfolder,
+                             client_influxDB):
     """
     For the given username, follow their followers.
 
@@ -1016,7 +1040,8 @@ def get_given_user_followers(browser,
                                                            follow_times,
                                                            simulation,
                                                            channel, jumps,
-                                                           logger, logfolder)
+                                                           logger, logfolder,
+                                                           client_influxDB)
 
     return person_list, simulated_list
 
@@ -1032,7 +1057,8 @@ def get_given_user_following(browser,
                              simulation,
                              jumps,
                              logger,
-                             logfolder):
+                             logfolder,
+                             client_influxDB):
     user_name = user_name.strip().lower()
 
     user_link = "https://www.instagram.com/{}/".format(user_name)
@@ -1120,7 +1146,8 @@ def get_given_user_following(browser,
                                                            follow_times,
                                                            simulation,
                                                            channel, jumps,
-                                                           logger, logfolder)
+                                                           logger, logfolder,
+                                                           client_influxDB)
 
     return person_list, simulated_list
 
@@ -1235,7 +1262,7 @@ def follow_restriction(operation, username, limit, logger):
 
 
 def unfollow_user(browser, track, username, person, person_id, button,
-                  relationship_data, logger, logfolder):
+                  relationship_data, logger, logfolder, client_influxDB):
     """ Unfollow a user either from the profile or post page or dialog box """
     # list of available tracks to unfollow in: ["profile", "post" "dialog"]
 
@@ -1311,6 +1338,20 @@ def unfollow_user(browser, track, username, person, person_id, button,
         confirm_unfollow(browser)
 
     # general tasks after a successful unfollow
+    if (client_influxDB is not None):
+        json_body = [
+        {
+            "measurement": "Unfollow",
+            "tags": {
+                "username": username,
+            },
+            "fields": {
+                "person": person,
+                "person_id": person_id
+            }
+        }]
+        client_influxDB.write_points(json_body)
+
     logger.info("--> Unfollowed '{}'!".format(person))
     update_activity('unfollows')
     post_unfollow_cleanup("successful", username, person, relationship_data,

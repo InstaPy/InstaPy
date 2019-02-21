@@ -49,7 +49,7 @@ def open_comment_section(browser, logger):
         logger.warning(missing_comment_elem_warning)
 
 
-def comment_image(browser, username, comments, blacklist, logger, logfolder):
+def comment_image(browser, username, comments, blacklist, logger, logfolder, client_influxDB):
     """Checks if it should comment on the image"""
     # check action availability
     if quota_supervisor('comments') == 'jump':
@@ -98,6 +98,18 @@ def comment_image(browser, username, comments, blacklist, logger, logfolder):
         return False, "invalid element state"
 
     logger.info("--> Commented: {}".format(rand_comment.encode('utf-8')))
+    if (client_influxDB is not None):
+                json_body = [
+                {
+                    "measurement": "Commented",
+                    "tags": {
+                        "username": username,
+                    },
+                    "fields": {
+                        "comment": rand_comment,   
+                    }
+                }]
+                client_influxDB.write_points(json_body)
 
     # get the post-comment delay time to sleep
     naply = get_action_delay("comment")

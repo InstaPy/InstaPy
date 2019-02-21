@@ -16,6 +16,7 @@ import logging
 from contextlib import contextmanager
 from copy import deepcopy
 import unicodedata
+from influxdb import InfluxDBClient
 
 # import InstaPy modules
 from .clarifai_util import check_image
@@ -99,6 +100,11 @@ class InstaPy:
                  disable_image_load=False,
                  bypass_suspicious_attempt=False,
                  bypass_with_mobile=False,
+                 user_influx=None,
+                 password_influx=None,
+                 db_influx=None,
+                 host_influx=None,
+                 port_influx=None,
                  multi_logs=True):
 
         cli_args = parse_cli_args()
@@ -113,6 +119,11 @@ class InstaPy:
         bypass_suspicious_attempt = (
             cli_args.bypass_suspicious_attempt or bypass_suspicious_attempt)
         bypass_with_mobile = cli_args.bypass_with_mobile or bypass_with_mobile
+        user_influx = user_influx
+        password_influx = password_influx
+        db_influx = db_influx
+        host_influx = host_influx
+        port_influx = port_influx
 
         Settings.InstaPy_is_running = True
         # workspace must be ready before anything
@@ -140,6 +151,12 @@ class InstaPy:
         self.username = username or os.environ.get('INSTA_USER')
         self.password = password or os.environ.get('INSTA_PW')
         Settings.profile["name"] = self.username
+
+        self.user_influx = user_influx
+        self.password_influx = password_influx
+        self.db_influx = db_influx
+        self.host_influx = host_influx
+        self.port_influx = port_influx
 
         self.page_delay = page_delay
         self.switch_language = True
@@ -278,6 +295,27 @@ class InstaPy:
         if self.selenium_local_session is True:
             self.set_selenium_local_session()
 
+        # Creates database 
+        self.client_influxDB = None
+        print("Connecting to DB")
+        print("Connecting to DB")
+        print("Connecting to DB")
+        print("Connecting to DB")
+        print(self.host_influx )
+        print(self.port_influx)
+        print(self.user_influx)
+        if (self.host_influx is not None and self.port_influx is not None and self.user_influx is not None and self.password_influx is not None and self.db_influx is not None):
+            print("Connecting to DB")
+            print("Connecting to DB")
+            print("Connecting to DB")
+            print("Connecting to DB")
+            self.client_influxDB = InfluxDBClient(self.host_influx,
+                                                  self.port_influx,
+                                                  self.user_influx,
+                                                  self.password_influx,
+                                                  self.db_influx)
+            self.client_influxDB.switch_database(self.db_influx)
+
     def get_instapy_logger(self, show_logs):
         """
         Handles the creation and retrieval of loggers to avoid
@@ -294,7 +332,12 @@ class InstaPy:
             file_handler = logging.FileHandler(
                 '{}general.log'.format(self.logfolder))
             file_handler.setLevel(logging.DEBUG)
-            extra = {"username": self.username}
+            extra = {"username": self.username,
+                     "host_influx": self.host_influx,
+                     "port_influx": self.port_influx,
+                     "user_influx" : self.user_influx,
+                     "password_influx": self.password_influx,
+                     "db_influx": self.db_influx}
             logger_formatter = logging.Formatter(
                 '%(levelname)s [%(asctime)s] [%(username)s]  %(message)s',
                 datefmt='%Y-%m-%d %H:%M:%S')
@@ -1008,7 +1051,8 @@ class InstaPy:
                                                 None,
                                                 self.blacklist,
                                                 self.logger,
-                                                self.logfolder)
+                                                self.logfolder,
+                                                self.client_influxDB)
                 sleep(random.randint(1, 3))
 
                 if follow_state is True:
@@ -1308,7 +1352,8 @@ class InstaPy:
                                                      user_name,
                                                      self.blacklist,
                                                      self.logger,
-                                                     self.logfolder)
+                                                     self.logfolder,
+                                                     self.client_influxDB)
 
                         if like_state is True:
                             liked_img += 1
@@ -1359,7 +1404,8 @@ class InstaPy:
                                             comments,
                                             self.blacklist,
                                             self.logger,
-                                            self.logfolder)
+                                            self.logfolder,
+                                            self.client_influxDB)
                                         if comment_state is True:
                                             commented += 1
 
@@ -1386,7 +1432,8 @@ class InstaPy:
                                                                 None,
                                                                 self.blacklist,
                                                                 self.logger,
-                                                                self.logfolder)
+                                                                self.logfolder,
+                                                                self.client_influxDB)
                                 if follow_state is True:
                                     followed += 1
 
@@ -1551,7 +1598,8 @@ class InstaPy:
                                         comments,
                                         self.blacklist,
                                         self.logger,
-                                        self.logfolder)
+                                        self.logfolder,
+                                        self.client_influxDB)
                                     if comment_state is True:
                                         commented += 1
                                         # reset jump counter after a
@@ -1578,7 +1626,8 @@ class InstaPy:
                                                 None,
                                                 self.blacklist,
                                                 self.logger,
-                                                self.logfolder)
+                                                self.logfolder,
+                                                self.client_influxDB)
                                             if follow_state is True:
                                                 followed += 1
 
@@ -1717,7 +1766,8 @@ class InstaPy:
                                                      user_name,
                                                      self.blacklist,
                                                      self.logger,
-                                                     self.logfolder)
+                                                     self.logfolder,
+                                                     self.client_influxDB)
 
                         if like_state is True:
                             liked_img += 1
@@ -1768,7 +1818,8 @@ class InstaPy:
                                             comments,
                                             self.blacklist,
                                             self.logger,
-                                            self.logfolder)
+                                            self.logfolder,
+                                            self.client_influxDB)
                                         if comment_state is True:
                                             commented += 1
 
@@ -1795,7 +1846,8 @@ class InstaPy:
                                                                 None,
                                                                 self.blacklist,
                                                                 self.logger,
-                                                                self.logfolder)
+                                                                self.logfolder,
+                                                                self.client_influxDB)
                                 if follow_state is True:
                                     followed += 1
                             else:
@@ -1920,7 +1972,8 @@ class InstaPy:
                                                 None,
                                                 self.blacklist,
                                                 self.logger,
-                                                self.logfolder)
+                                                self.logfolder,
+                                                self.client_influxDB)
                 if follow_state is True:
                     followed += 1
             else:
@@ -1978,7 +2031,8 @@ class InstaPy:
                                                      user_name,
                                                      self.blacklist,
                                                      self.logger,
-                                                     self.logfolder)
+                                                     self.logfolder,
+                                                     self.client_influxDB)
                         if like_state is True:
                             total_liked_img += 1
                             liked_img += 1
@@ -2026,7 +2080,8 @@ class InstaPy:
                                             comments,
                                             self.blacklist,
                                             self.logger,
-                                            self.logfolder)
+                                            self.logfolder,
+                                            self.client_influxDB)
                                         if comment_state is True:
                                             commented += 1
 
@@ -2245,7 +2300,8 @@ class InstaPy:
                                                          user_name,
                                                          self.blacklist,
                                                          self.logger,
-                                                         self.logfolder)
+                                                         self.logfolder,
+                                                         self.client_influxDB)
                             if like_state is True:
                                 total_liked_img += 1
                                 liked_img += 1
@@ -2290,7 +2346,8 @@ class InstaPy:
                                                 comments,
                                                 self.blacklist,
                                                 self.logger,
-                                                self.logfolder)
+                                                self.logfolder,
+                                                self.client_influxDB)
                                             if comment_state is True:
                                                 commented += 1
 
@@ -2329,7 +2386,8 @@ class InstaPy:
                     None,
                     self.blacklist,
                     self.logger,
-                    self.logfolder)
+                    self.logfolder,
+                    self.client_influxDB)
                 if follow_state is True:
                     followed += 1
 
@@ -2539,7 +2597,8 @@ class InstaPy:
                                                          user_name,
                                                          self.blacklist,
                                                          self.logger,
-                                                         self.logfolder)
+                                                         self.logfolder,
+                                                         self.client_influxDB)
                             if like_state is True:
                                 total_liked_img += 1
                                 liked_img += 1
@@ -2591,7 +2650,8 @@ class InstaPy:
                                             comments,
                                             self.blacklist,
                                             self.logger,
-                                            self.logfolder)
+                                            self.logfolder,
+                                            self.client_influxDB)
                                         if comment_state is True:
                                             commented += 1
 
@@ -2630,7 +2690,8 @@ class InstaPy:
                     None,
                     self.blacklist,
                     self.logger,
-                    self.logfolder)
+                    self.logfolder,
+                    self.client_influxDB)
                 if follow_state is True:
                     followed += 1
 
@@ -2746,7 +2807,8 @@ class InstaPy:
                     self.simulation,
                     self.jumps,
                     self.logger,
-                    self.logfolder)
+                    self.logfolder,
+                    self.client_influxDB)
 
             except (TypeError, RuntimeWarning) as err:
                 if isinstance(err, RuntimeWarning):
@@ -2798,7 +2860,8 @@ class InstaPy:
                                                             None,
                                                             self.relationship_data,
                                                             self.logger,
-                                                            self.logfolder)
+                                                            self.logfolder,
+                                                            self.client_influxDB)
                         if unfollow_state is True:
                             simulated_unfollow += 1
 
@@ -2912,7 +2975,8 @@ class InstaPy:
                     self.simulation,
                     self.jumps,
                     self.logger,
-                    self.logfolder)
+                    self.logfolder,
+                    self.client_influxDB)
 
             except (TypeError, RuntimeWarning) as err:
                 if isinstance(err, RuntimeWarning):
@@ -2965,7 +3029,8 @@ class InstaPy:
                             None,
                             self.relationship_data,
                             self.logger,
-                            self.logfolder)
+                            self.logfolder,
+                            self.client_influxDB)
                         if unfollow_state is True:
                             simulated_unfollow += 1
 
@@ -3079,7 +3144,8 @@ class InstaPy:
                     self.simulation,
                     self.jumps,
                     self.logger,
-                    self.logfolder)
+                    self.logfolder,
+                    self.client_influxDB)
 
             except (TypeError, RuntimeWarning) as err:
                 if isinstance(err, RuntimeWarning):
@@ -3132,7 +3198,8 @@ class InstaPy:
                             None,
                             self.relationship_data,
                             self.logger,
-                            self.logfolder)
+                            self.logfolder,
+                            self.client_influxDB)
                         if unfollow_state is True:
                             simulated_unfollow += 1
                     # skip this [non-validated] user
@@ -3248,7 +3315,8 @@ class InstaPy:
                     self.simulation,
                     self.jumps,
                     self.logger,
-                    self.logfolder)
+                    self.logfolder,
+                    self.client_influxDB)
 
             except (TypeError, RuntimeWarning) as err:
                 if isinstance(err, RuntimeWarning):
@@ -3303,7 +3371,8 @@ class InstaPy:
                             None,
                             self.relationship_data,
                             self.logger,
-                            self.logfolder)
+                            self.logfolder,
+                            self.client_influxDB)
                         if unfollow_state is True:
                             simulated_unfollow += 1
                     # skip the [non-validated] user
@@ -3416,7 +3485,8 @@ class InstaPy:
                                   sleep_delay,
                                   self.jumps,
                                   self.logger,
-                                  self.logfolder)
+                                  self.logfolder,
+                                  self.client_influxDB)
             self.logger.info(
                 "--> Total people unfollowed : {}\n".format(unfollowed))
             self.unfollowed += unfollowed
@@ -3471,7 +3541,8 @@ class InstaPy:
                                                 None,
                                                 self.relationship_data,
                                                 self.logger,
-                                                self.logfolder)
+                                                self.logfolder,
+                                                self.client_influxDB)
 
             if unfollow_state is True:
                 unfollow_count += 1
@@ -3609,7 +3680,8 @@ class InstaPy:
                                                              user_name,
                                                              self.blacklist,
                                                              self.logger,
-                                                             self.logfolder)
+                                                             self.logfolder,
+                                                             self.client_influxDB)
 
                                 if like_state is True:
                                     liked_img += 1
@@ -3668,7 +3740,8 @@ class InstaPy:
                                                     comments,
                                                     self.blacklist,
                                                     self.logger,
-                                                    self.logfolder)
+                                                    self.logfolder,
+                                                    self.client_influxDB)
                                             if comment_state is True:
                                                 commented += 1
 
@@ -3750,7 +3823,8 @@ class InstaPy:
                                         None,
                                         self.relationship_data,
                                         self.logger,
-                                        self.logfolder)
+                                        self.logfolder,
+                                        self.client_influxDB)
 
                                     if unfollow_state is True:
                                         inap_unfollow += 1
@@ -4334,7 +4408,8 @@ class InstaPy:
                                                  user_name,
                                                  self.blacklist,
                                                  self.logger,
-                                                 self.logfolder)
+                                                 self.logfolder,
+                                                 self.client_influxDB)
 
                     if like_state is True:
                         liked_img += 1
@@ -4383,7 +4458,8 @@ class InstaPy:
                                         comments,
                                         self.blacklist,
                                         self.logger,
-                                        self.logfolder)
+                                        self.logfolder,
+                                        self.client_influxDB)
 
                                     if comment_state is True:
                                         commented += 1
@@ -4891,7 +4967,8 @@ class InstaPy:
                                                    user_name,
                                                    self.blacklist,
                                                    self.logger,
-                                                   self.logfolder)
+                                                   self.logfolder,
+                                                   self.client_influxDB)
                 if image_like_state is True:
                     like_failures_tracker["consequent"]["post_likes"] = 0
                     self.liked_img += 1
@@ -4977,7 +5054,8 @@ class InstaPy:
                                     reply_msg,
                                     self.blacklist,
                                     self.logger,
-                                    self.logfolder)
+                                    self.logfolder,
+                                    self.client_influxDB)
 
                                 if reply_to_comment_state is True:
                                     per_user_used_replies.extend(chosen_reply)

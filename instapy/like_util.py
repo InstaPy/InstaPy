@@ -659,7 +659,7 @@ def check_link(browser, post_link, dont_like, mandatory_words,
     return False, user_name, is_video, 'None', "Success"
 
 
-def like_image(browser, username, blacklist, logger, logfolder):
+def like_image(browser, username, blacklist, logger, logfolder, client_influxDB):
     """Likes the browser opened image"""
     # check action availability
     if quota_supervisor("likes") == "jump":
@@ -681,6 +681,19 @@ def like_image(browser, username, blacklist, logger, logfolder):
         if len(liked_elem) == 1:
             logger.info('--> Image Liked!')
             update_activity('likes')
+            if (client_influxDB is not None):
+                json_body = [
+                {
+                    "measurement": "Liked",
+                    "tags": {
+                        "username": username,
+                    },
+                    "fields": {
+                        "liked": True,
+                        
+                    }
+                }]
+                client_influxDB.write_points(json_body)
 
             if blacklist['enabled'] is True:
                 action = 'liked'
