@@ -99,6 +99,10 @@
   - [How to avoid _python_ & pip confusion](#how-to-avoid-python--pip-confusion)
 
 ---
+
+<br /> 
+<br />
+
 ## Settings
 ### Commenting
 
@@ -586,6 +590,9 @@ session.set_action_delays(enabled=True, like=0.15, safety_match=False)
 _It has been held due to safety considerations. Cos sleeping a respective time after doing actions- for example ~`10` seconds after an unfollow, is very important to avoid possible temporary blocks and if you might enter e.g. `3` seconds for that without realizing the outcome..._
 
 ---
+
+<br /> 
+<br />
 
 ## Actions
 ### Like by Tags
@@ -1102,9 +1109,11 @@ session.remove_follow_requests(amount=200, sleep_delay=600)
 
 ---
 
-## Third Party Features
-## Clarifai ImageAPI
+<br /> 
+<br />
 
+## Third Party Features
+### Clarifai ImageAPI
 <img src="https://clarifai.com/cms-assets/20180311184054/Clarifai_Pos.svg" width="200" align="right">
 
 ###### Note: Head over to [https://developer.clarifai.com/signup/](https://developer.clarifai.com/signup/) and create a free account, once you're logged in go to [https://developer.clarifai.com/account/applications/](https://developer.clarifai.com/account/applications/) and create a new application. You can find the client ID and Secret there. You get 5000 API-calls free/month.
@@ -1114,7 +1123,7 @@ If you want the script to get your CLARIFAI_API_KEY for your environment, you ca
 ```
 export CLARIFAI_API_KEY="<API KEY>"
 ```
-### Example with Imagecontent handling
+#### Example with Imagecontent handling
 
 ```python
 session.set_do_comment(True, percentage=10)
@@ -1125,7 +1134,7 @@ session.clarifai_check_img_for(['food', 'lunch', 'dinner'], comment=True, commen
 
 session.end()
 ```
-### Enabling Imagechecking
+#### Enabling Imagechecking
 
 ```python
 # default enabled=False , enables the checking with the Clarifai API (image
@@ -1135,7 +1144,7 @@ session.end()
 session.set_use_clarifai(enabled=True, api_key='xxx')
 ```
 
-### Using Clarifai Public Models and Custom Models
+#### Using Clarifai Public Models and Custom Models
 If not specified by setting the `models=['model_name1']` in `session.set_use_clarifai`, `models` will be set to `general` by default.
 
 If you wish to check against a specific model or multiple models (see Support for Compound Model Queries below), you can specify the models to be checked as shown below.
@@ -1188,7 +1197,7 @@ session.set_use_clarifai(enabled=True, api_key='xxx', models=['weddings'])
 session.set_use_clarifai(enabled=True, api_key='xxx', models=['your-model-name'])
 ```
 
-### Filtering Inappropriate Images
+#### Filtering Inappropriate Images
 
 ```python
 # uses the clarifai api to check if the image contains nsfw content
@@ -1216,7 +1225,7 @@ session.set_use_clarifai(enabled=True, api_key='xxx', probability= 0.15, models=
 session.clarifai_check_img_for(['nsfw'])
 ```
 
-### Filtering by Keyword
+#### Filtering by Keyword
 
 ```python
 # uses the clarifai api to check if the image concepts contain the keyword(s)
@@ -1224,7 +1233,7 @@ session.clarifai_check_img_for(['nsfw'])
 
 session.clarifai_check_img_for(['building'])
 ```
-### Specialized Comments for Images with Specific Content
+#### Specialized Comments for Images with Specific Content
 
 ```python
 # checks the image for keywords food and lunch. To check for both, set full_match in
@@ -1242,7 +1251,7 @@ session.set_use_clarifai(enabled=True, api_key='xxx', probability=0.90, full_mat
 session.clarifai_check_img_for(['food', 'lunch'], comment=True, comments=['Tasty!', 'Yum!'])
 ```
 
-### Querying Multiple Models with Workflow (Single API Call)
+#### Querying Multiple Models with Workflow (Single API Call)
 You can query multiple Clarifai models with a single API call by setting up a custom workflow.  Using a `workflow` is the recommended way to query multiple models. Alternatively, it is possible to query multiple models separately (see Querying Multiple Models (Multiple API Calls) below).
 
 To setup a workflow, see the [Workflow Documentation](https://www.clarifai.com/developer/guide/workflow#workflow).
@@ -1261,7 +1270,7 @@ session.clarifai_check_img_for(['woman', 'man'], ['nsfw', 'explicit', 'suggestiv
 If Clarifai's response includes the concepts of either `woman` or `man` but also includes at least `nsfw`, `explicit`, or `suggestive`, InstaPy will not comment. On the other hand, if Clarifai's response includes the concepts of either `woman` or `man` but does not include any of the concepts `nsfw`, `explicit`, or `suggestive`, InstaPy will add the comment `Great shot!`
 
 
-### Querying Multiple Models (Multiple API Calls)
+#### Querying Multiple Models (Multiple API Calls)
 In the event that you do not want to set up a workflow, you can also query multiple models using multiple API calls.
 
 **WARNING**: If you are using a free account with Clarifiai, be mindful that the using compound API queries could greatly increase your chances of exceeding your allotment of free 5000 operations per month. The number of Clarifai billable operations per image check equals the number of models selected. For example, if you check 100 images against `models=['general', 'nsfw', 'moderation']`, the total number of billable operations will be 300.
@@ -1280,7 +1289,7 @@ We have 3 options:
 2. user:pass@ip:port
 3. None
 
-### Checking Video
+#### Checking Video
 **WARNING**: Clarifai checks one frame of video for content for every second of video. **That is, in a 60 second video, 60 billable operations would be run for every model that the video is being checked against.** Running checks on video should only be used if you have special needs and are prepared to use a large number of billable operations.
 
 To have Clarifai run a predict on video posts, you can set the `check_video` argument in `session.set_use_clarifai` to `True`. By default, this argument is set to `False`. Even if you do not choose to check the entire video, Clarifai will still check the video's keyframe for content.
@@ -1298,8 +1307,8 @@ Be aware that you cannot check video using a `workflow` and that only a select n
 ##### Check out [https://clarifai.com/demo](https://clarifai.com/demo) to see some of the available tags.</h6>
 
 
-## Text Analytics
-### Yandex Translate API
+### Text Analytics
+#### Yandex Translate API
 
 <img src="https://yastatic.net/www/_/Q/r/sx-Y7-1azG3UMxG55avAdgwbM.svg" width="196" align="right">
 
@@ -1309,7 +1318,7 @@ Be aware that you cannot check video using a `workflow` and that only a select n
 
 _This service currently is supported only by the [Interact by Comments](#interact-by-comments) feature_.
 
-#### Usage
+##### Usage
 Go [**sign up**](https://translate.yandex.com/developers/keys) on [_translate.yandex.com_](https://translate.yandex.com) and get a _free_ `API_key`;  
 _Then configure its usage at your **quickstart** script_,
 ```python
@@ -1320,7 +1329,7 @@ session.set_use_yandex(enabled=True,
 ```
 
 
-#### Parameters
+##### Parameters
 `enabled`
 : Put `True` to **activate** or `False` to **deactivate** the service usage;  
 
@@ -1335,12 +1344,12 @@ session.set_use_yandex(enabled=True,
 >You can get the list of all supported languages and their codes at [_tech.yandex.com_](https://tech.yandex.com/translate/doc/dg/concepts/api-overview-docpage/#api-overview__languages).
 
 
-#### Rate Limits
+##### Rate Limits
 In its _free_ plan, the **daily** request _limit_ is `1,000,000` characters and the **monthly** _limit_ is `10,000,000` characters.
 >To increase the request limit, you can **switch** to the `fee-based` version of the service (_$`15`/million chars_)..
 
 
-#### Examples
+##### Examples
 
 **1**-) Matching language;
 ```python
@@ -1359,11 +1368,11 @@ session.set_use_yandex(enabled=True, API_key='', match_language=False)
 >And yes, you can enable **Yandex** service to make it be available for **MeaningCloud** and then also _match language_ if you like, in the same setup just by turning the `match_language` parameter on..
 
 
-#### Legal Notice
+##### Legal Notice
 [Powered by Yandex.Translate](http://translate.yandex.com/)
 
 
-### MeaningCloud Sentiment Analysis API
+#### MeaningCloud Sentiment Analysis API
 <img src="https://www.meaningcloud.com/developer/img/LogoMeaningCloud210x85.png" width="210" align="right">
 
 ###### Offers a detailed, multilingual analysis of all kind of unstructured content determining its sentiment ⚖
@@ -1373,7 +1382,7 @@ Determines if text displays _positive_, _negative_, or _neutral_ sentiment - or 
 Phrases are identified with the _relationship between_ them evaluated which identifies a _global polarity_ value of the text.
 
 
-#### Usage
+##### Usage
 **1**-) Go [**sign up**](https://www.meaningcloud.com/developer/login) (_offers **sign in** with_ 😎 _**Github**_) on [_meaningcloud.com_](https://www.meaningcloud.com) and get a _free_ `license_key`;  
 _Then configure its usage at your **quickstart** script_,
 ```python
@@ -1392,7 +1401,7 @@ pip install MeaningCloud-python
 _To have it configured, read its [documentation](#yandex-translate-api)_.
 
 
-#### Parameters  
+##### Parameters  
 `enabled`
 : Put `True` to **activate** or `False` to **deactivate** the service usage;  
 
@@ -1440,12 +1449,12 @@ _It marks the subjectivity of the text_.
 >If you **don't want to** match per _confidence_ found, at all, use the value of `None`.
 
 
-#### Rate Limits
+##### Rate Limits
 It gives you `20 000` single API calls per each month (_starting from the date you have **signed up**_).  
 It has _no daily limit_ but if you hit the limit set for number of requests can be carried out concurrently (_per second_) it'll return with error code of `104` rather than the result 😉
 
 
-#### Language Support
+##### Language Support
 **MeaningCloud** currently supports a generic sentiment model (_called general_) in these languages: _english_, _spanish_, _french_, _italian_, _catalan_, and _portuguese_.  
 >You can define your own sentiment models using the user sentiment models console and work with them in the same way as with the sentiment models it provides.  
 
@@ -1454,7 +1463,7 @@ Cos, to **increase the coverage** and support **all other** languages, as well, 
 It detects the text's langugage before passing it to **MeaningCloud**, and, if its language is not supported by **MeaningCloud**, it translates it into english and only then passes it to **MeaningCloud** _Sentiment Analysis_..
 
 
-#### Examples
+##### Examples
 **a** -) Match **ONLY** per `polarity` and `agreement`
 ```python
 session.set_use_meaningcloud(enabled=True, license_key='', polarity="P", agreement="AGREEMENT")
@@ -1486,13 +1495,16 @@ _Sentiment Analysis_ results for the text:
 _Now that text is gonna be labeled **inappropriate** COS its polarity is `"P"` which is less positive than `"P+"` and also, `agreement` values also **do NOT** match, and **lastly**, `confidence` is **below** user-defined `98`_..    
 
 
-#### Legal Notice
+##### Legal Notice
 This project uses MeaningCloud™ (http://www.meaningcloud.com) for Text Analytics.
 
 ---
 
+<br /> 
+<br />
+
 ## Instance Settings 
-## Running on a Headless Browser
+### Running on a Headless Browser
 Use `headless_browser` parameter to run the bot via the CLI. Works great if running the scripts locally, or to deploy on a server. No GUI, less CPU intensive. [Example](http://g.recordit.co/BhEgXANLhJ.gif)
 
 ```
@@ -1577,6 +1589,9 @@ session = InstaPy(username=insta_username,
 ```
 
 ---
+
+<br /> 
+<br />
 
 ## Relationship tools
 ### Grab Followers of a user  
@@ -1917,6 +1932,9 @@ There are **several** `use cases` of this tool for **various purposes**.
     ```  
 
 ---
+
+<br /> 
+<br />
 
 ## Automate InstaPy
 ### [Windows Task Scheduler](https://msdn.microsoft.com/en-us/library/windows/desktop/aa383614(v=vs.85).aspx)
