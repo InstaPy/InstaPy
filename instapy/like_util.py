@@ -684,12 +684,12 @@ def like_image(browser, username, blacklist, logger, logfolder, client_influxDB)
             if (client_influxDB is not None):
                 json_body = [
                 {
-                    "measurement": "Liked",
+                    "measurement": "Like",
                     "tags": {
-                        "username": username,
                     },
                     "fields": {
-                        "liked": True,
+                        "liked": 1,
+                         "username": username,
                         
                     }
                 }]

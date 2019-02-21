@@ -693,9 +693,9 @@ def follow_user(browser, track, login, user_name, button, blacklist, logger,
         {
             "measurement": "Follow",
             "tags": {
-                "username": login,
             },
             "fields": {
+                "username": login,
                 "person": user_name,
                 "person_id": user_id
             }
@@ -1343,9 +1343,9 @@ def unfollow_user(browser, track, username, person, person_id, button,
         {
             "measurement": "Unfollow",
             "tags": {
-                "username": username,
             },
             "fields": {
+                "username": username,
                 "person": person,
                 "person_id": person_id
             }

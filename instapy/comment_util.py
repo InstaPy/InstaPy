@@ -101,12 +101,13 @@ def comment_image(browser, username, comments, blacklist, logger, logfolder, cli
     if (client_influxDB is not None):
                 json_body = [
                 {
-                    "measurement": "Commented",
+                    "measurement": "Comment",
                     "tags": {
-                        "username": username,
+                        
                     },
                     "fields": {
-                        "comment": rand_comment,   
+                        "comment": rand_comment,
+                        "username": username   
                     }
                 }]
                 client_influxDB.write_points(json_body)
