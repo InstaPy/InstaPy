@@ -2,6 +2,7 @@
 
 ### Table of Contents
 - **[Settings](#settings)**
+  - [Liking](#liking)
   - [Commenting](#commenting)
   - [Emoji Support](#emoji-support)
   - [Following](#following)
@@ -104,6 +105,15 @@
 <br />
 
 ## Settings
+### Liking
+This method is only needed for the `interact_by_...` actions.   
+Posts will liked by default when using `like_by_...` actions.
+
+```python
+session.set_do_like(enabled=True, percentage=70)
+```
+
+
 ### Commenting
 
 ```python
@@ -2004,6 +2014,10 @@ while True:
   time.sleep(10)
 ```
 
+---
+
+<br /> 
+<br />
 
 ## Additional Information
 ### Advanced Installation
