@@ -73,8 +73,8 @@ from .browser import set_selenium_local_session
 from .browser import close_browser
 from .file_manager import get_workspace
 from .file_manager import get_logfolder
-from .pods_util import get_recent_posts_from_pod
-from .pods_util import share_my_post_with_pod
+from .pods_util import get_recent_posts_from_pods
+from .pods_util import share_my_post_with_pods
 
 # import exceptions
 from selenium.common.exceptions import NoSuchElementException
