@@ -17,6 +17,7 @@ from .util import explicit_wait
 from .util import extract_text_from_element
 from .quota_supervisor import quota_supervisor
 from .unfollow_util import get_following_status
+from .settings import InfluxDBLog
 
 from selenium.common.exceptions import WebDriverException
 from selenium.common.exceptions import NoSuchElementException
@@ -686,6 +687,7 @@ def like_image(browser, username, blacklist, logger, logfolder, total_liked_img)
         if len(liked_elem) == 1:
             logger.info('--> Image Liked!')
             update_activity('likes')
+            InfluxDBLog().addEntry("Like", "Liked Image", 1, "username", username, "count", 1 )
 
             if blacklist['enabled'] is True:
                 action = 'liked'

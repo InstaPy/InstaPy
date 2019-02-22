@@ -38,6 +38,7 @@ from .like_util import like_comment
 from .login_util import login_user
 from .settings import Settings
 from .settings import localize_path
+from .settings import InfluxDBLog
 from .print_log_writer import log_follower_num
 from .print_log_writer import log_following_num
 
@@ -157,6 +158,20 @@ class InstaPy:
         self.bypass_suspicious_attempt = bypass_suspicious_attempt
         self.bypass_with_mobile = bypass_with_mobile
         self.disable_image_load = disable_image_load
+
+
+        self.user_influx = user_influx
+        Settings.user_influx = user_influx
+        self.password_influx = password_influx
+        Settings.password_influx = password_influx
+        self.db_influx = db_influx
+        Settings.db_influx = db_influx
+        self.host_influx = host_influx
+        Settings.host_influx = host_influx
+        self.port_influx = port_influx
+        Settings.port_influx = port_influx
+        """ Create InfluxDB Singleton"""
+        InfluxDBLog()
 
         self.username = username or os.environ.get('INSTA_USER')
         self.password = password or os.environ.get('INSTA_PW')

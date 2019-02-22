@@ -16,6 +16,7 @@ from .util import web_address_navigator
 from .like_util import get_media_edge_comment_string
 
 from .quota_supervisor import quota_supervisor
+from .settings import InfluxDBLog
 
 from selenium.common.exceptions import WebDriverException
 from selenium.common.exceptions import InvalidElementStateException
@@ -102,6 +103,7 @@ def comment_image(browser, username, comments, blacklist, logger, logfolder):
         return False, "invalid element state"
 
     logger.info("--> Commented: {}".format(rand_comment.encode('utf-8')))
+    InfluxDBLog().addEntry("Comment", "Commented Image", 1, "username", username, "count", 1 )
 
     # get the post-comment delay time to sleep
     naply = get_action_delay("comment")
