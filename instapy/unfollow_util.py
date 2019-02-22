@@ -1314,7 +1314,7 @@ def unfollow_user(browser, track, username, person, person_id, button,
 
     # general tasks after a successful unfollow
     logger.info("--> Unfollowed '{}'!".format(person))
-    InfluxDBLog().addEntry("Unfollowed", "Unollowed User", 1, "username", person, "count", 1 )
+    InfluxDBLog().addEntry("Unfollow", "Unfollowed User", 1, "username", person, "count", 1 )
     update_activity('unfollows')
     post_unfollow_cleanup("successful", username, person, relationship_data,
                           person_id, logger, logfolder)
