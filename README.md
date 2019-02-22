@@ -119,9 +119,7 @@ If you should encounter any issue, please first [search for similar issues](http
 **Help build InstaPy!**      
 Check out this short guide on [how to start contributing!](https://github.com/InstaPy/instapy-docs/blob/master/CONTRIBUTORS.md).
 
-
 ## Credits
-
 ### Contributors
 
 This project exists thanks to all the people who contribute. [[Contribute](https://github.com/timgrossmann/InstaPy/wiki/How-to-Contribute)].
