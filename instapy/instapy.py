@@ -1,6 +1,7 @@
 """OS Modules environ method to get the setup vars from the Environment"""
 # import built-in & third-party modules
 import time
+from datetime import datetime, timedelta
 from math import ceil
 import random
 from sys import platform
@@ -72,6 +73,8 @@ from .browser import set_selenium_local_session
 from .browser import close_browser
 from .file_manager import get_workspace
 from .file_manager import get_logfolder
+from .pods_util import get_recent_posts_from_pod
+from .pods_util import share_my_post_with_pod
 
 # import exceptions
 from selenium.common.exceptions import NoSuchElementException
@@ -5122,5 +5125,91 @@ class InstaPy:
                     break
 
         self.logger.info("Accepted {} follow requests".format(accepted))
+
+        return self
+
+    def join_pods(self):
+        """ Join pods """
+        user_link = 'https://www.instagram.com/{}/'.format(self.username)
+        web_address_navigator(self.browser, user_link)
+        try:
+            post_links = []
+            potential_post_links = self.browser.find_elements_by_xpath("//div/div/div/div/a")
+            for potential_post_link in potential_post_links:
+                try:
+                    href = potential_post_link.get_attribute('href')
+                    if 'www.instagram.com/p/' in href:
+                        post_links.append(href)
+                except Exception as e:
+                    self.logger.error(e)
+
+            for post_link in post_links:
+                web_address_navigator(self.browser, post_link)
+                time_element = self.browser.find_element_by_xpath("//div/div/article/div[2]/div/a/time")
+                post_datetime_str = time_element.get_attribute('datetime')
+                post_datetime = datetime.strptime(post_datetime_str, "%Y-%m-%dT%H:%M:%S.%fZ")
+                self.logger.info(post_datetime)
+                if datetime.now() - post_datetime < timedelta(days=30, hours=1, minutes=30):
+                    postid = post_link.split('/')[4]
+                    share_my_post_with_pods(postid, self.logger)
+
+            pod_post_ids = get_recent_posts_from_pods(self.logger)
+
+            for pod_post_id in pod_post_ids:
+                post_link = "https://www.instagram.com/p/{}".format(pod_post_id)
+                web_address_navigator(self.browser, post_link)
+
+                inappropriate, user_name, is_video, reason, scope = (
+                    check_link(self.browser,
+                                post_link,
+                                self.dont_like,
+                                self.mandatory_words,
+                                self.mandatory_language,
+                                self.is_mandatory_character,
+                                self.mandatory_character,
+                                self.check_character_set,
+                                self.ignore_if_contains,
+                                self.logger))
+
+                if user_name != self.username:
+                    follow_state, msg = follow_user(self.browser,
+                                                    "post",
+                                                    self.username,
+                                                    user_name,
+                                                    None,
+                                                    self.blacklist,
+                                                    self.logger,
+                                                    self.logfolder)
+                    
+                    self.dont_include.add(user_name)
+
+                if not inappropriate and user_name != self.username:
+                    pods_like_percent = max(80, min(100, self.like_percentage))
+                    pods_comment_percentage = max(80, min(100, self.comment_percentage))
+                    liking = (random.randint(0, 100) <= pods_like_percent)
+                    commenting = (random.randint(0, 100) <= pods_comment_percentage)
+
+                    if liking:
+                        like_state, msg = like_image(self.browser,
+                                                        user_name,
+                                                        self.blacklist,
+                                                        self.logger,
+                                                        self.logfolder)
+
+                    if commenting:
+                        comments = self.fetch_smart_comments(
+                                                        is_video,
+                                                        temp_comments=[])
+
+                        comment_state, msg = comment_image(
+                                                        self.browser,
+                                                        user_name,
+                                                        comments,
+                                                        self.blacklist,
+                                                        self.logger,
+                                                        self.logfolder)
+
+        except Exception as err:
+            self.logger.error(err)
 
         return self

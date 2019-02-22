@@ -248,6 +248,7 @@ Check out this short guide on [how to start contributing!](https://github.com/In
   * [Custom action delays](#custom-action-delays)
   * [How to avoid _python_ & **pip** confusion](#how-to-avoid-python--pip-confusion)
   * [Pass arguments by CLI](#pass-arguments-by-cli)
+  * [Pods](#pods)
 
 
 ### Advanced Installation
@@ -2737,6 +2738,26 @@ python quickstart.py -u abcdef -p 12345678
 ```
 Then, your _username_ will be set as `abcdef` rather than `abc`.  
 _And obviously, if you don't pass the flag, it'll try to get that argument from the **quickstart** script [if any]_.
+
+
+### Pods
+
+In case you are unfamiliar with the concept do read a little. Here's a blog to learn more about Pods(https://blog.hubspot.com/marketing/instagram-pods)
+
+```python
+
+photo_comments = ['Nice shot! @{}',
+            'I love your profile! @{}']
+
+session = InstaPy()
+
+with smart_run(session):
+    session.set_comments(photo_comments, media='Photo')
+    session.join_pods()
+
+```
+
+It needs a Server code backed by a cloud database. Server Repo is here [InstaPyPodsServer](https://github.com/ishandutta2007/InstaPyPodsServer)
 
 #### Currently these _flags_ are supported:
   🚩 `-u` abc, `--username` abc
