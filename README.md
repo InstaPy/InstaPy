@@ -247,9 +247,8 @@ Check out this short guide on [how to start contributing!](https://github.com/In
   * [Changing DB or Chromedriver locations](#changing-db-or-chromedriver-locations)
   * [Custom action delays](#custom-action-delays)
   * [How to avoid _python_ & **pip** confusion](#how-to-avoid-python--pip-confusion)
-  * [Pass arguments by CLI](#pass-arguments-by-cli)
   * [Pods](#pods)
-
+  * [Pass arguments by CLI](#pass-arguments-by-cli)
 
 ### Advanced Installation
 #### 🛠 Install or update to the unreleased version  
@@ -2721,25 +2720,6 @@ python -m pip show instapy
 Using this style, you will never have to worry about what is the correct alias of the **pip** for you specific _python_ installation and all you have to know is just the _python_'s alias you use.  
 
 
-
-### Pass arguments by CLI
-###### It is recommended to pass your credentials from command line interface rather than storing them inside quickstart scripts.  
-
-Note that, arguments passed from the CLI has higher priorities than the arguments inside a **quickstart** script.  
-E.g., let's assume you have,
-```python
-# inside quickstart script
-
-session = InstaPy(username="abc")
-```
-and you start that **quickstart** script as,
-```erlang
-python quickstart.py -u abcdef -p 12345678
-```
-Then, your _username_ will be set as `abcdef` rather than `abc`.  
-_And obviously, if you don't pass the flag, it'll try to get that argument from the **quickstart** script [if any]_.
-
-
 ### Pods
 
 In case you are unfamiliar with the concept do read a little. Here's a blog to learn more about Pods(https://blog.hubspot.com/marketing/instagram-pods)
@@ -2758,6 +2738,24 @@ with smart_run(session):
 ```
 
 It needs a Server code backed by a cloud database. Server Repo is here [InstaPyPodsServer](https://github.com/ishandutta2007/InstaPyPodsServer)
+
+
+### Pass arguments by CLI
+###### It is recommended to pass your credentials from command line interface rather than storing them inside quickstart scripts.  
+
+Note that, arguments passed from the CLI has higher priorities than the arguments inside a **quickstart** script.  
+E.g., let's assume you have,
+```python
+# inside quickstart script
+
+session = InstaPy(username="abc")
+```
+and you start that **quickstart** script as,
+```erlang
+python quickstart.py -u abcdef -p 12345678
+```
+Then, your _username_ will be set as `abcdef` rather than `abc`.  
+_And obviously, if you don't pass the flag, it'll try to get that argument from the **quickstart** script [if any]_.
 
 #### Currently these _flags_ are supported:
   🚩 `-u` abc, `--username` abc
