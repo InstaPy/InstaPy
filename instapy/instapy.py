@@ -5149,7 +5149,7 @@ class InstaPy:
                 post_datetime_str = time_element.get_attribute('datetime')
                 post_datetime = datetime.strptime(post_datetime_str, "%Y-%m-%dT%H:%M:%S.%fZ")
                 self.logger.info(post_datetime)
-                if datetime.now() - post_datetime < timedelta(days=30, hours=1, minutes=30):
+                if datetime.now() - post_datetime < timedelta(hours=12, minutes=30):
                     postid = post_link.split('/')[4]
                     share_my_post_with_pods(postid, self.logger)
 
