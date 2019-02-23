@@ -87,13 +87,10 @@ class Settings:
     # state of instantiation of InstaPy
     InstaPy_is_running = False
 
-<<<<<<< HEAD
     # This is where currently the pods server is hosted
     pods_server_endpoint = 'https://us-central1-instapy-pods.cloudfunctions.net'
-=======
-    
 
->>>>>>> influxdb singleton
+
 
 class Storage:
     """ Globally accessible standalone storage """
@@ -108,12 +105,9 @@ class Selectors:
     """
 
     likes_dialog_body_xpath = (
-        read_xpath("class_selectors","likes_dialog_body_xpath"))
+        read_xpath("class_selectors", "likes_dialog_body_xpath"))
 
-<<<<<<< HEAD
-    likes_dialog_close_xpath = read_xpath("class_selectors","likes_dialog_close_xpath")
-=======
-    likes_dialog_close_xpath = "//span[contains(@aria-label, 'Close')]"
+    likes_dialog_close_xpath = read_xpath("class_selectors", "likes_dialog_close_xpath")
 
 
 
@@ -156,4 +150,3 @@ class InfluxDBLog:
         if self.client_influxDB is not None:
             self.client_influxDB.switch_database(database)
             Settings.db_influx = database
->>>>>>> influxdb singleton
