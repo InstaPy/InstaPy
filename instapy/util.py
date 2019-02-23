@@ -185,6 +185,10 @@ def validate_username(browser,
             potency_ratio *= -1
             reverse_relationship = True
 
+        # division by zero is bad
+        followers_count = 1 if followers_count == 0 else followers_count
+        following_count = 1 if following_count == 0 else following_count
+
         if followers_count and following_count:
             relationship_ratio = (
                 float(followers_count) / float(following_count)
@@ -567,11 +571,11 @@ def get_active_users(browser, username, posts, boundary, logger):
                     sleep_actual(3)
                 else:
                     raise NoSuchElementException
-                    
+
             except (IndexError, NoSuchElementException):
                 # Video have no likes button / no posts in page
                 logger.info("video found, try next post until we run out of posts")
-                
+
                 # edge case of account having only videos,  or last post is a video.
                 if checked_posts >= total_posts:
                     break
@@ -580,7 +584,7 @@ def get_active_users(browser, username, posts, boundary, logger):
                     try:
                         # click close button
                         close_dialog_box(browser)
-        
+
                         # click next button
                         next_button = browser.find_element_by_xpath(
                             "//a[contains(@class, 'HBoOv')]"
@@ -610,7 +614,7 @@ def get_active_users(browser, username, posts, boundary, logger):
                 )
             else:
                 amount = None
-                
+
             while scroll_it is not False and boundary != 0:
                 scroll_it = browser.execute_script('''
                     var div = arguments[0];
