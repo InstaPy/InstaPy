@@ -13,6 +13,7 @@ from selenium import webdriver
 from selenium.webdriver import DesiredCapabilities
 from pyvirtualdisplay import Display
 import logging
+import logging.handlers
 from contextlib import contextmanager
 from copy import deepcopy
 import unicodedata
@@ -99,7 +100,8 @@ class InstaPy:
                  disable_image_load=False,
                  bypass_suspicious_attempt=False,
                  bypass_with_mobile=False,
-                 multi_logs=True):
+                 multi_logs=True,
+                 log_handler=None):
 
         cli_args = parse_cli_args()
         username = cli_args.username or username
@@ -137,8 +139,10 @@ class InstaPy:
         self.bypass_with_mobile = bypass_with_mobile
         self.disable_image_load = disable_image_load
 
-        self.username = username or os.environ.get('INSTA_USER')
-        self.password = password or os.environ.get('INSTA_PW')
+        # choose environment over static typed credentials
+        self.username = os.environ.get('INSTA_USER') or username
+        self.password = os.environ.get('INSTA_PW') or password
+
         Settings.profile["name"] = self.username
 
         self.page_delay = page_delay
@@ -271,14 +275,14 @@ class InstaPy:
         Settings.show_logs = show_logs or None
         self.multi_logs = multi_logs
         self.logfolder = get_logfolder(self.username, self.multi_logs)
-        self.logger = self.get_instapy_logger(self.show_logs)
+        self.logger = self.get_instapy_logger(self.show_logs, log_handler)
 
         get_database(make=True)  # IMPORTANT: think twice before relocating
 
         if self.selenium_local_session is True:
             self.set_selenium_local_session()
 
-    def get_instapy_logger(self, show_logs):
+    def get_instapy_logger(self, show_logs: bool, log_handler = None):
         """
         Handles the creation and retrieval of loggers to avoid
         re-instantiation.
@@ -300,6 +304,10 @@ class InstaPy:
                 datefmt='%Y-%m-%d %H:%M:%S')
             file_handler.setFormatter(logger_formatter)
             logger.addHandler(file_handler)
+
+            # add custom user handler if given
+            if log_handler:
+                logger.addHandler(log_handler)
 
             if show_logs is True:
                 console_handler = logging.StreamHandler()
