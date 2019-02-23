@@ -2,7 +2,7 @@ import requests
 from .settings import Settings
 
 def get_recent_posts_from_pods(logger):
-    params = {'catagory' : 'general'}
+    params = {'category' : 'general'}
     r = requests.get(Settings.pods_server_endpoint + '/getRecentPosts', params=params)
     try:
         logger.info("Downloaded postids from Pods:")
@@ -15,7 +15,7 @@ def get_recent_posts_from_pods(logger):
 def share_my_post_with_pods(postid, logger):
     """ share_my_post_with_pod """
     logger.info("Publishing to Pods {}".format(postid))
-    params = {'postid' : postid, 'catagory' : 'general'}
+    params = {'postid' : postid, 'category' : 'general'}
     r = requests.get(Settings.pods_server_endpoint + '/publishMyLatestPost', params=params)
     try:
         logger.info(r)
