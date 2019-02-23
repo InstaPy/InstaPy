@@ -5135,12 +5135,14 @@ class InstaPy:
     def join_pods(self, topic='general'):
         """ Join pods """
         if topic not in self.allowed_pod_topics:
-            self.logger.error("You have entered an invalid topic for pods, exiting...")
+            self.logger.error("You have entered an invalid topic for pods, allowed topics are : {}. Exiting...".format(self.allowed_pod_topics))
             return self
 
         user_link = 'https://www.instagram.com/{}/'.format(self.username)
         web_address_navigator(self.browser, user_link)
         try:
+            pod_post_ids = get_recent_posts_from_pods(topic, self.logger)
+
             post_links = []
             potential_post_links = self.browser.find_elements_by_xpath("//div/div/div/div/a")
             for potential_post_link in potential_post_links:
@@ -5152,6 +5154,7 @@ class InstaPy:
                     self.logger.error(e)
 
             post_links = list(set(post_links))
+            my_recent_post_ids = []
             for post_link in post_links:
                 web_address_navigator(self.browser, post_link)
                 time_element = self.browser.find_element_by_xpath("//div/div/article/div[2]/div/a/time")
@@ -5163,10 +5166,21 @@ class InstaPy:
                                         self.share_times,
                                         self.logger)
                 if datetime.now() - post_datetime < timedelta(hours=12, minutes=30) and not share_restricted:
+                    my_recent_post_ids.append(postid)
                     if share_my_post_with_pods(postid, topic, self.logger):
                         share_with_pods_restriction("write", postid, None, self.logger)
 
-            pod_post_ids = get_recent_posts_from_pods(topic, self.logger)
+            if len(my_recent_post_ids) > 0:
+                self.logger.info("I have recent post(s), so I will now help pod members actively.")
+                nposts = 200
+            else:
+                self.logger.info("I don't have any recent post(s), so I will just help a few pod posts and move on.")
+                nposts = 40
+
+            if len(pod_post_ids) <= nposts:
+                pod_post_ids = pod_post_ids
+            else:
+                pod_post_ids = random.sample(pod_post_ids, nposts)
 
             for pod_post_id in pod_post_ids:
                 post_link = "https://www.instagram.com/p/{}".format(pod_post_id)
