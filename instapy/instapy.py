@@ -101,7 +101,8 @@ class InstaPy:
                  bypass_suspicious_attempt=False,
                  bypass_with_mobile=False,
                  multi_logs=True,
-                 log_handler=None):
+                 log_handler=None,
+                 browser_binary_path=None):
 
         cli_args = parse_cli_args()
         username = cli_args.username or username
@@ -150,6 +151,7 @@ class InstaPy:
         self.use_firefox = use_firefox
         Settings.use_firefox = self.use_firefox
         self.browser_profile_path = browser_profile_path
+        self.browser_binary_path = browser_binary_path
 
         self.do_comment = False
         self.comment_percentage = 0
@@ -336,7 +338,8 @@ class InstaPy:
                                                            # "HeadlessChrome".
                                                            self.disable_image_load,
                                                            self.page_delay,
-                                                           self.logger)
+                                                           self.logger,
+                                                           self.browser_binary_path)
         if len(err_msg) > 0:
             raise InstaPyError(err_msg)
 
