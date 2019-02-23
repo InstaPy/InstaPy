@@ -11,6 +11,7 @@ _The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 ### Fixed
 - `follow_likers` always fetches zero likers
+- Prevent division by zero in `validate_username`
 
 
 ## [0.2.2] - 2019-02-21
