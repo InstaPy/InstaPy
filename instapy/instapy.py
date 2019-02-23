@@ -260,6 +260,8 @@ class InstaPy:
                       "limit": {"likes": 7, "comments": 3, "follows": 5,
                                 "unfollows": 4}}
 
+        self.allowed_pod_topics = ['general', 'beauty', 'food', 'travel', 'sports', 'entertainment']
+
         # stores the features' name which are being used by other features
         self.internal_usage = {}
 
@@ -5130,8 +5132,12 @@ class InstaPy:
 
         return self
 
-    def join_pods(self):
+    def join_pods(self, topic='general'):
         """ Join pods """
+        if topic not in self.allowed_pod_topics:
+            self.logger.error("You have entered an invalid topic for pods, exiting...")
+            return self
+
         user_link = 'https://www.instagram.com/{}/'.format(self.username)
         web_address_navigator(self.browser, user_link)
         try:
@@ -5145,21 +5151,22 @@ class InstaPy:
                 except Exception as e:
                     self.logger.error(e)
 
+            post_links = list(set(post_links))
             for post_link in post_links:
                 web_address_navigator(self.browser, post_link)
                 time_element = self.browser.find_element_by_xpath("//div/div/article/div[2]/div/a/time")
                 post_datetime_str = time_element.get_attribute('datetime')
                 post_datetime = datetime.strptime(post_datetime_str, "%Y-%m-%dT%H:%M:%S.%fZ")
                 postid = post_link.split('/')[4]
-                self.logger.info("Post: {}, uploaded at: {}".format(postid, post_datetime))
+                self.logger.info("Post: {}, Instaposted at: {}".format(postid, post_datetime))
                 share_restricted = share_with_pods_restriction("read", postid,
                                         self.share_times,
                                         self.logger)
                 if datetime.now() - post_datetime < timedelta(hours=12, minutes=30) and not share_restricted:
-                    share_my_post_with_pods(postid, self.logger)
-                    share_with_pods_restriction("write", postid, None, self.logger)
+                    if share_my_post_with_pods(postid, topic, self.logger):
+                        share_with_pods_restriction("write", postid, None, self.logger)
 
-            pod_post_ids = get_recent_posts_from_pods(self.logger)
+            pod_post_ids = get_recent_posts_from_pods(topic, self.logger)
 
             for pod_post_id in pod_post_ids:
                 post_link = "https://www.instagram.com/p/{}".format(pod_post_id)

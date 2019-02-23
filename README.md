@@ -2722,7 +2722,7 @@ Using this style, you will never have to worry about what is the correct alias o
 
 ### Pods
 
-In case you are unfamiliar with the concept do read a little. Here's a blog to learn more about Pods(https://blog.hubspot.com/marketing/instagram-pods)
+In case you are unfamiliar with the concept do read a little. Here's a blog to learn more about [Pods](https://blog.hubspot.com/marketing/instagram-pods)
 
 ```python
 
@@ -2733,9 +2733,10 @@ session = InstaPy()
 
 with smart_run(session):
     session.set_comments(photo_comments, media='Photo')
-    session.join_pods()
-
+    session.join_pods(topic='general')
 ```
+
+Note :  Topics allowed are {'general', 'beauty', 'food', 'travel', 'sports', 'entertainment'}. But it is highly recomended to use 'general' till we gain sufficient users in each of the topics.
 
 It needs a Server code backed by a cloud database. Server Repo is here [InstaPyPodsServer](https://github.com/ishandutta2007/InstaPyPodsServer)
 
