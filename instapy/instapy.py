@@ -13,6 +13,7 @@ from selenium import webdriver
 from selenium.webdriver import DesiredCapabilities
 from pyvirtualdisplay import Display
 import logging
+import logging.handlers
 from contextlib import contextmanager
 from copy import deepcopy
 import unicodedata
@@ -105,7 +106,9 @@ class InstaPy:
                  db_influx=None,
                  host_influx=None,
                  port_influx=None,
-                 multi_logs=True):
+                 multi_logs=True,
+                 multi_logs=True,
+                 log_handler=None):
 
         cli_args = parse_cli_args()
         username = cli_args.username or username
@@ -148,7 +151,6 @@ class InstaPy:
         self.bypass_with_mobile = bypass_with_mobile
         self.disable_image_load = disable_image_load
 
-
         self.user_influx = user_influx
         Settings.user_influx = user_influx
         self.password_influx = password_influx
@@ -159,11 +161,18 @@ class InstaPy:
         Settings.host_influx = host_influx
         self.port_influx = port_influx
         Settings.port_influx = port_influx
+        
+        
         """ Create InfluxDB Singleton"""
         InfluxDBLog()
-
         self.username = username or os.environ.get('INSTA_USER')
         self.password = password or os.environ.get('INSTA_PW')
+        
+        
+        # choose environment over static typed credentials
+        self.username = os.environ.get('INSTA_USER') or username
+        self.password = os.environ.get('INSTA_PW') or password
+
         Settings.profile["name"] = self.username
 
         self.page_delay = page_delay
@@ -296,14 +305,14 @@ class InstaPy:
         Settings.show_logs = show_logs or None
         self.multi_logs = multi_logs
         self.logfolder = get_logfolder(self.username, self.multi_logs)
-        self.logger = self.get_instapy_logger(self.show_logs)
+        self.logger = self.get_instapy_logger(self.show_logs, log_handler)
 
         get_database(make=True)  # IMPORTANT: think twice before relocating
 
         if self.selenium_local_session is True:
             self.set_selenium_local_session()
 
-    def get_instapy_logger(self, show_logs):
+    def get_instapy_logger(self, show_logs: bool, log_handler = None):
         """
         Handles the creation and retrieval of loggers to avoid
         re-instantiation.
@@ -325,6 +334,10 @@ class InstaPy:
                 datefmt='%Y-%m-%d %H:%M:%S')
             file_handler.setFormatter(logger_formatter)
             logger.addHandler(file_handler)
+
+            # add custom user handler if given
+            if log_handler:
+                logger.addHandler(log_handler)
 
             if show_logs is True:
                 console_handler = logging.StreamHandler()
@@ -435,19 +448,19 @@ class InstaPy:
 
         return self
 
-    def set_sleep_reduce(self, percentage):
+    def set_sleep_reduce(self, percentage: int):
         set_sleep_percentage(percentage)
         return self
 
     def set_action_delays(self,
-                          enabled=False,
+                          enabled: bool = False,
                           like=None,
                           comment=None,
                           follow=None,
                           unfollow=None,
-                          randomize=False,
+                          randomize: bool = False,
                           random_range=(None, None),
-                          safety_match=True):
+                          safety_match: bool = True):
         """ Set custom sleep delay after actions """
         Settings.action_delays.update({"enabled": enabled,
                                        "like": like,
@@ -458,7 +471,7 @@ class InstaPy:
                                        "random_range": random_range,
                                        "safety_match": safety_match})
 
-    def set_do_comment(self, enabled=False, percentage=0):
+    def set_do_comment(self, enabled: bool = False, percentage: int = 0):
         """
          Defines if images should be commented or not.
         E.g. percentage=25 means every ~4th picture will be commented.
@@ -472,7 +485,7 @@ class InstaPy:
 
         return self
 
-    def set_comments(self, comments=None, media=None):
+    def set_comments(self, comments: list = [], media: str = None):
         """Changes the possible comments"""
         if self.aborting:
             return self
@@ -481,7 +494,7 @@ class InstaPy:
             self.logger.warning('Unkown media type! Treating as "any".')
             media = None
 
-        self.comments = comments or []
+        self.comments = comments
 
         if media is None:
             self.comments = comments
@@ -491,7 +504,7 @@ class InstaPy:
 
         return self
 
-    def set_do_follow(self, enabled=False, percentage=0, times=1):
+    def set_do_follow(self, enabled: bool = False, percentage: int = 0, times: int = 1):
         """Defines if the user of the liked image should be followed"""
         if self.aborting:
             return self
@@ -502,7 +515,7 @@ class InstaPy:
 
         return self
 
-    def set_do_like(self, enabled=False, percentage=0):
+    def set_do_like(self, enabled: bool = False, percentage: int = 0):
         if self.aborting:
             return self
 
@@ -511,7 +524,7 @@ class InstaPy:
 
         return self
 
-    def set_dont_like(self, tags=None):
+    def set_dont_like(self, tags: list = []):
         """Changes the possible restriction tags, if one of this
          words is in the description, the image won't be liked but user
          still might be unfollowed"""
@@ -523,11 +536,11 @@ class InstaPy:
                                 'configuration!')
             self.aborting = True
 
-        self.dont_like = tags or []
+        self.dont_like = tags
 
         return self
 
-    def set_mandatory_words(self, tags=None):
+    def set_mandatory_words(self, tags: list = []):
         """Changes the possible restriction tags, if all of this
          hashtags is in the description, the image will be liked"""
         if self.aborting:
@@ -538,15 +551,15 @@ class InstaPy:
                                 'configuration!')
             self.aborting = True
 
-        self.mandatory_words = tags or []
+        self.mandatory_words = tags
 
         return self
 
     def set_user_interact(self,
-                          amount=10,
-                          percentage=100,
-                          randomize=False,
-                          media=None):
+                          amount: int = 10,
+                          percentage: int = 100,
+                          randomize: bool = False,
+                          media: str = None):
         """Define if posts of given user should be interacted"""
         if self.aborting:
             return self
@@ -558,27 +571,27 @@ class InstaPy:
 
         return self
 
-    def set_ignore_users(self, users=None):
+    def set_ignore_users(self, users: list = []):
         """Changes the possible restriction to users, if a user who posts
         is one of these, the image won't be liked"""
         if self.aborting:
             return self
 
-        self.ignore_users = users or []
+        self.ignore_users = users
 
         return self
 
-    def set_ignore_if_contains(self, words=None):
+    def set_ignore_if_contains(self, words: list = []):
         """Ignores the don't likes if the description contains
         one of the given words"""
         if self.aborting:
             return self
 
-        self.ignore_if_contains = words or []
+        self.ignore_if_contains = words
 
         return self
 
-    def set_dont_include(self, friends=None):
+    def set_dont_include(self, friends: list = None):
         """Defines which accounts should not be unfollowed"""
         if self.aborting:
             return self
@@ -588,19 +601,19 @@ class InstaPy:
 
         return self
 
-    def set_switch_language(self, option=True):
+    def set_switch_language(self, option: bool = True):
         self.switch_language = option
         return self
 
     def set_use_clarifai(self,
-                         enabled=False,
-                         api_key=None,
-                         models=None,
-                         workflow=None,
-                         probability=0.50,
-                         full_match=False,
-                         check_video=False,
-                         proxy=None):
+                         enabled: bool = False,
+                         api_key: str = None,
+                         models: list = ['general'],
+                         workflow: list = [],
+                         probability: float = 0.50,
+                         full_match: bool = False,
+                         check_video: bool = False,
+                         proxy: str = None):
         """
         Defines if the clarifai img api should be used
         Which 'project' will be used (only 5000 calls per month)
@@ -621,8 +634,8 @@ class InstaPy:
         elif api_key is not None:
             self.clarifai_api_key = api_key
 
-        self.clarifai_models = models or ['general']
-        self.clarifai_workflow = workflow or []
+        self.clarifai_models = models
+        self.clarifai_workflow = workflow
         self.clarifai_probability = probability
         self.clarifai_full_match = full_match
         self.clarifai_check_video = check_video
@@ -633,10 +646,10 @@ class InstaPy:
         return self
 
     def set_smart_hashtags(self,
-                           tags=None,
-                           limit=3,
-                           sort='top',
-                           log_tags=True):
+                           tags: list = None,
+                           limit: int = 3,
+                           sort: str = 'top',
+                           log_tags: bool = True):
         """Generate smart hashtags based on https://displaypurposes.com/"""
         """ranking, banned and spammy tags are filtered out."""
 
@@ -674,7 +687,7 @@ class InstaPy:
         self.smart_hashtags = list(set(self.smart_hashtags))
         return self
 
-    def set_mandatory_language(self, enabled=False, character_set='LATIN'):
+    def set_mandatory_language(self, enabled: bool = False, character_set: str = 'LATIN'):
         """Restrict the description of the image to a character set"""
         if self.aborting:
             return self
@@ -715,8 +728,8 @@ class InstaPy:
                            self.clarifai_full_match, self.clarifai_check_video,
                            proxy=self.clarifai_proxy)
 
-    def follow_commenters(self, usernames, amount=10, daysold=365, max_pic=50,
-                          sleep_delay=600, interact=False):
+    def follow_commenters(self, usernames: list, amount: int = 10, daysold: int = 365, max_pic: int = 50,
+                          sleep_delay: int = 600, interact: bool = False):
         """ Follows users' commenters """
 
         if self.aborting:
@@ -829,10 +842,10 @@ class InstaPy:
 
         return self
 
-    def follow_likers(self, usernames, photos_grab_amount=3,
-                      follow_likers_per_photo=3, randomize=True,
-                      sleep_delay=600,
-                      interact=False):
+    def follow_likers(self, usernames: list, photos_grab_amount: int = 3,
+                      follow_likers_per_photo: int = 3, randomize: bool = True,
+                      sleep_delay: int = 600,
+                      interact: bool = False):
         """ Follows users' likers """
         if self.aborting:
             return self
@@ -946,8 +959,8 @@ class InstaPy:
 
         return self
 
-    def follow_by_list(self, followlist, times=1, sleep_delay=600,
-                       interact=False):
+    def follow_by_list(self, followlist: list, times: int = 1, sleep_delay: int = 600,
+                       interact: bool = False):
         """Allows to follow by any scrapped list"""
         if not isinstance(followlist, list):
             followlist = [followlist]
@@ -1107,7 +1120,7 @@ class InstaPy:
         return followed_all
 
     def set_relationship_bounds(self,
-                                enabled=None,
+                                enabled: bool = False,
                                 potency_ratio=None,
                                 delimit_by_numbers=None,
                                 min_posts=None,
@@ -1173,14 +1186,14 @@ class InstaPy:
         return comments
 
     def set_skip_users(self,
-                       skip_private=True,
-                       private_percentage=100,
-                       skip_no_profile_pic=False,
-                       no_profile_pic_percentage=100,
-                       skip_business=False,
-                       business_percentage=100,
-                       skip_business_categories=[],
-                       dont_skip_business_categories=[]):
+                       skip_private: bool = True,
+                       private_percentage: int = 100,
+                       skip_no_profile_pic: bool = False,
+                       no_profile_pic_percentage: int = 100,
+                       skip_business: bool = False,
+                       business_percentage: int = 100,
+                       skip_business_categories: list = [],
+                       dont_skip_business_categories: list = []):
 
         self.skip_business = skip_business
         self.skip_private = skip_private
@@ -1205,19 +1218,19 @@ class InstaPy:
                     # in init
 
     def set_delimit_liking(self,
-                           enabled=None,
-                           max=None,
-                           min=None):
+                           enabled: bool = False,
+                           max: int = None,
+                           min: int = None):
 
         self.delimit_liking = True if enabled is True else False
         self.max_likes = max
         self.min_likes = min
 
     def set_delimit_commenting(self,
-                               enabled=False,
-                               max=None,
-                               min=None,
-                               comments_mandatory_words=[]):
+                               enabled: bool = False,
+                               max: int = None,
+                               min: int = None,
+                               comments_mandatory_words: list = []):
 
         self.delimit_commenting = True if enabled is True else False
         self.max_comments = max
@@ -1227,7 +1240,7 @@ class InstaPy:
         # those words
         self.comments_mandatory_words = comments_mandatory_words
 
-    def set_simulation(self, enabled=True, percentage=100):
+    def set_simulation(self, enabled: bool = True, percentage: int = 100):
         """ Sets aside simulation parameters """
         if enabled not in [True, False]:
             self.logger.info(
@@ -2100,10 +2113,10 @@ class InstaPy:
         return self
 
     def interact_by_users(self,
-                          usernames,
-                          amount=10,
-                          randomize=False,
-                          media=None):
+                          usernames: list,
+                          amount: int = 10,
+                          randomize: bool = False,
+                          media: str = None):
         """Likes some amounts of images for each usernames"""
         if self.aborting:
             return self
@@ -2397,10 +2410,10 @@ class InstaPy:
         return self
 
     def interact_by_users_tagged_posts(self,
-                                       usernames,
-                                       amount=10,
-                                       randomize=False,
-                                       media=None):
+                                       usernames: list,
+                                       amount: int = 10,
+                                       randomize: bool = False,
+                                       media: str = None):
         """Likes some amounts of tagged images for each usernames"""
         if self.aborting:
             return self
@@ -2717,7 +2730,7 @@ class InstaPy:
 
         return self
 
-    def interact_user_followers(self, usernames, amount=10, randomize=False):
+    def interact_user_followers(self, usernames: list, amount: int = 10, randomize: bool = False):
 
         if self.aborting:
             return self
@@ -2884,7 +2897,7 @@ class InstaPy:
 
         return self
 
-    def interact_user_following(self, usernames, amount=10, randomize=False):
+    def interact_user_following(self, usernames: list, amount: int = 10, randomize: bool = False):
 
         if self.aborting:
             return self
@@ -3053,11 +3066,11 @@ class InstaPy:
         return self
 
     def follow_user_followers(self,
-                              usernames,
-                              amount=10,
-                              randomize=False,
-                              interact=False,
-                              sleep_delay=600):
+                              usernames: list,
+                              amount: int = 10,
+                              randomize: bool = False,
+                              interact: bool = False,
+                              sleep_delay: int = 600):
         """ Follow the `Followers` of given users """
         if self.aborting:
             return self
@@ -3223,11 +3236,11 @@ class InstaPy:
         return self
 
     def follow_user_following(self,
-                              usernames,
-                              amount=10,
-                              randomize=False,
-                              interact=False,
-                              sleep_delay=600):
+                              usernames: list,
+                              amount: int = 10,
+                              randomize: bool = False,
+                              interact: bool = False,
+                              sleep_delay: int = 600):
         """ Follow the `Following` of given users """
         if self.aborting:
             return self
@@ -4058,10 +4071,10 @@ class InstaPy:
             print("\n\n")
 
     def follow_by_locations(self,
-                            locations=None,
-                            amount=50,
-                            media=None,
-                            skip_top_posts=True):
+                            locations: list = [],
+                            amount: int = 50,
+                            media: str = None,
+                            skip_top_posts: bool = True):
         if self.aborting:
             return self
 
@@ -4069,7 +4082,7 @@ class InstaPy:
         followed = 0
         not_valid_users = 0
 
-        locations = locations or []
+        locations = locations
         self.quotient_breach = False
 
         for index, location in enumerate(locations):
@@ -4166,12 +4179,12 @@ class InstaPy:
         return self
 
     def follow_by_tags(self,
-                       tags=None,
-                       amount=50,
-                       skip_top_posts=True,
-                       use_smart_hashtags=False,
-                       randomize=False,
-                       media=None):
+                       tags: list = [],
+                       amount: int = 50,
+                       skip_top_posts: bool = True,
+                       use_smart_hashtags: bool = False,
+                       randomize: bool = False,
+                       media: str = None):
         if self.aborting:
             return self
 
@@ -4186,7 +4199,7 @@ class InstaPy:
 
         # deletes white spaces in tags
         tags = [tag.strip() for tag in tags]
-        tags = tags or []
+        tags = tags
         self.quotient_breach = False
 
         for index, tag in enumerate(tags):
@@ -4284,9 +4297,9 @@ class InstaPy:
         return self
 
     def interact_by_URL(self,
-                        urls=[],
-                        randomize=False,
-                        interact=False):
+                        urls: list = [],
+                        randomize: bool = False,
+                        interact: bool = False):
         """ Interact on posts at given URLs """
 
         if self.aborting:
@@ -4653,8 +4666,8 @@ class InstaPy:
                                      run_time_msg))
 
     def set_do_reply_to_comments(self,
-                                 enabled=False,
-                                 percentage=0):
+                                 enabled: bool = False,
+                                 percentage: int = 0):
         """ Define if the comments on posts should be replied """
 
         self.do_reply_to_comments = enabled
@@ -4663,8 +4676,8 @@ class InstaPy:
         return self
 
     def set_comment_replies(self,
-                            replies=[],
-                            media=None):
+                            replies: list = [],
+                            media: str = None):
         """ Set the replies to comments """
 
         if not replies:
@@ -4688,12 +4701,12 @@ class InstaPy:
             self.comment_replies = replies
 
     def set_use_meaningcloud(self,
-                             enabled=False,
-                             license_key=None,
-                             polarity="P",
-                             agreement=None,
-                             subjectivity=None,
-                             confidence=100):
+                             enabled: bool = False,
+                             license_key: str = None,
+                             polarity: str = 'P',
+                             agreement:str = None,
+                             subjectivity: str = None,
+                             confidence: bool = 100):
         """ Set MeaningCloud Sentiment Analysis API configuration """
 
         if license_key is None:
@@ -4720,10 +4733,10 @@ class InstaPy:
             Settings.meaningcloud_config.update(enabled=False)
 
     def set_use_yandex(self,
-                       enabled=False,
-                       API_key=None,
-                       match_language=False,
-                       language_code="en"):
+                       enabled: bool = False,
+                       API_key: str = None,
+                       match_language: bool = False,
+                       language_code: str = 'en'):
         """ Set Yandex Translate API configuration """
 
         if API_key is None:
@@ -4758,13 +4771,13 @@ class InstaPy:
             Settings.yandex_config.update(enabled=False)
 
     def interact_by_comments(self,
-                             usernames=None,
-                             posts_amount=10,
-                             comments_per_post=1,
-                             reply=False,
-                             interact=False,
-                             randomize=False,
-                             media=None):
+                             usernames: list = None,
+                             posts_amount: int = 10,
+                             comments_per_post: int = 1,
+                             reply: bool = False,
+                             interact: bool = False,
+                             randomize: bool = False,
+                             media: str = None):
         """
          Like comments of people on posts, reply to them
         and also interact with those commenters
