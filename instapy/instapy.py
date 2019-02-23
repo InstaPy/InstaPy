@@ -75,6 +75,7 @@ from .file_manager import get_workspace
 from .file_manager import get_logfolder
 from .pods_util import get_recent_posts_from_pods
 from .pods_util import share_my_post_with_pods
+from .pods_util import share_with_pods_restriction
 
 # import exceptions
 from selenium.common.exceptions import NoSuchElementException
@@ -178,6 +179,7 @@ class InstaPy:
         self.already_Visited = 0
 
         self.follow_times = 1
+        self.share_times = 1
         self.do_follow = False
         self.follow_percentage = 0
         self.dont_include = set()
@@ -5148,10 +5150,14 @@ class InstaPy:
                 time_element = self.browser.find_element_by_xpath("//div/div/article/div[2]/div/a/time")
                 post_datetime_str = time_element.get_attribute('datetime')
                 post_datetime = datetime.strptime(post_datetime_str, "%Y-%m-%dT%H:%M:%S.%fZ")
-                self.logger.info(post_datetime)
-                if datetime.now() - post_datetime < timedelta(hours=12, minutes=30):
-                    postid = post_link.split('/')[4]
+                postid = post_link.split('/')[4]
+                self.logger.info("Post: {}, uploaded at: {}".format(postid, post_datetime))
+                share_restricted = share_with_pods_restriction("read", postid,
+                                        self.share_times,
+                                        self.logger)
+                if datetime.now() - post_datetime < timedelta(hours=12, minutes=30) and not share_restricted:
                     share_my_post_with_pods(postid, self.logger)
+                    share_with_pods_restriction("write", postid, None, self.logger)
 
             pod_post_ids = get_recent_posts_from_pods(self.logger)
 
