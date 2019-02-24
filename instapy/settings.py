@@ -75,11 +75,11 @@ class Settings:
 
 
     #inluxdb Settings
-    host_influx = None
-    port_influx = None
-    user_influx = None
-    password_influx = None
-    db_influx  = None
+    host_influx = "localhost"
+    port_influx = 8086
+    user_influx = "instapy"
+    password_influx = "password"
+    db_influx  = "instapy"
 
 
     # state of instantiation of InstaPy

@@ -101,11 +101,7 @@ class InstaPy:
                  disable_image_load=False,
                  bypass_suspicious_attempt=False,
                  bypass_with_mobile=False,
-                 user_influx=None,
-                 password_influx=None,
-                 db_influx=None,
-                 host_influx=None,
-                 port_influx=None,
+                 influx=False,
                  multi_logs=True,
                  log_handler=None,
                  browser_binary_path=None):
@@ -122,11 +118,8 @@ class InstaPy:
         bypass_suspicious_attempt = (
             cli_args.bypass_suspicious_attempt or bypass_suspicious_attempt)
         bypass_with_mobile = cli_args.bypass_with_mobile or bypass_with_mobile
-        user_influx = user_influx
-        password_influx = password_influx
-        db_influx = db_influx
-        host_influx = host_influx
-        port_influx = port_influx
+        influx = False
+        
 
         Settings.InstaPy_is_running = True
         # workspace must be ready before anything
@@ -151,20 +144,12 @@ class InstaPy:
         self.bypass_with_mobile = bypass_with_mobile
         self.disable_image_load = disable_image_load
 
-        self.user_influx = user_influx
-        Settings.user_influx = user_influx
-        self.password_influx = password_influx
-        Settings.password_influx = password_influx
-        self.db_influx = db_influx
-        Settings.db_influx = db_influx
-        self.host_influx = host_influx
-        Settings.host_influx = host_influx
-        self.port_influx = port_influx
-        Settings.port_influx = port_influx
+        self.influx = influx
         
         
         """ Create InfluxDB Singleton"""
-        InfluxDBLog()
+        if (self.influx):
+            InfluxDBLog()
         self.username = username or os.environ.get('INSTA_USER')
         self.password = password or os.environ.get('INSTA_PW')
         
