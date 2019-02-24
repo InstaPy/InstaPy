@@ -203,6 +203,10 @@ def login_user(browser,
     login_elem = browser.find_element_by_xpath(
         "//article//a[text()='Log in']")
 
+    if login_elem is None:
+        login_elem = browser.find_element_by_xpath(
+            "//article//a[text()='Log In']")
+
     if login_elem is not None:
         try:
             (ActionChains(browser)
@@ -260,6 +264,10 @@ def login_user(browser,
 
     login_button = browser.find_element_by_xpath(
         "//button//div[text()='Log in']")
+
+    if login_button is None:
+        login_elem = browser.find_element_by_xpath(
+            "//article//a[text()='Log In']")
 
     (ActionChains(browser)
      .move_to_element(login_button)
