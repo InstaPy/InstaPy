@@ -116,9 +116,14 @@ class InstaPy:
                  disable_image_load=False,
                  bypass_suspicious_attempt=False,
                  bypass_with_mobile=False,
+                 user_influx=None,
+                 password_influx=None,
+                 db_influx=None,
+                 host_influx=None,
+                 port_influx=None,
                  multi_logs=True,
-                 split_db=False,
                  log_handler=None,
+                 split_db=False,
                  browser_binary_path=None):
 
         cli_args = parse_cli_args()
