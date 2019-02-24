@@ -5207,7 +5207,7 @@ class InstaPy:
                                                     self.blacklist,
                                                     self.logger,
                                                     self.logfolder)
-                    
+
                     self.dont_include.add(user_name)
 
                 if not inappropriate and user_name != self.username:
