@@ -107,7 +107,6 @@ class InstaPy:
                  host_influx=None,
                  port_influx=None,
                  multi_logs=True,
-                 multi_logs=True,
                  log_handler=None):
 
         cli_args = parse_cli_args()
