@@ -2733,10 +2733,14 @@ session = InstaPy()
 
 with smart_run(session):
     session.set_comments(photo_comments, media='Photo')
-    session.join_pods(topic='general')
+    session.join_pods()
 ```
 
-Note :  Topics allowed are {'general', 'beauty', 'food', 'travel', 'sports', 'entertainment'}. But it is highly recomended to use 'general' till we gain sufficient users in each of the topics.
+#### Parameters:  
+`topic`:  
+Topic of the posts to be interacted with. `general` by default.
+
+> Note :  Topics allowed are {'general', 'beauty', 'food', 'travel', 'sports', 'entertainment'}. But it is highly recomended to use 'general' till we gain sufficient users in each of the topics.
 
 It needs a Server code backed by a cloud database. Server Repo is here [InstaPyPodsServer](https://github.com/ishandutta2007/InstaPyPodsServer)
 
