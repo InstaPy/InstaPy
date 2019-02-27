@@ -75,7 +75,6 @@ class Settings:
     # true, chrome if false.
     use_firefox = None
 
-
     #inluxdb Settings
     host_influx = None
     port_influx = None
@@ -122,31 +121,48 @@ class InfluxDBLog:
         return cls.singleton  
    
     def __init__(self):
-        if (self.client_influxDB is None and Settings.host_influx is not None and Settings.port_influx is not None and Settings.user_influx is not None and Settings.password_influx is not None and Settings.db_influx is not None):
-            self.client_influxDB = InfluxDBClient(Settings.host_influx,
-                                                    Settings.port_influx,
-                                                    Settings.user_influx,
-                                                    Settings.password_influx,
-                                                    Settings.db_influx)
+        if (self.client_influxDB or
+                not Settings.host_influx or
+                not Settings.port_influx or
+                not Settings.user_influx or
+                not Settings.password_influx or
+                not Settings.db_influx
+            ): return
+
+        try:
+            self.client_influxDB = InfluxDBClient(host = Settings.host_influx,
+                                                    port = Settings.port_influx,
+                                                    username = Settings.user_influx,
+                                                    password = Settings.password_influx,
+                                                    database = Settings.db_influx)
             self.client_influxDB.switch_database(Settings.db_influx)
+
+            version = self.client_influxDB.ping()
+            print('Using InfluxDB version: ' + str(version))
+        except Exception as e:
+            self.client_influxDB = None
+            # TODO throw some exception ?
+            pass
     
     
     def addEntry(self, measurement, tag_name, tag_value, field1_name, field1_value, field2_name, field2_value):
-        if self.client_influxDB is not None:
-            json_body = [
-                    {
-                        "measurement": measurement,
-                        "tags": {
-                            tag_name: tag_value
-                        },
-                        "fields": {
-                            field1_name: field1_value,
-                            field2_name: field2_value   
-                        }
-                    }]
-            self.client_influxDB.write_points(json_body)
+        if not self.client_influxDB: return
+
+        json_body = [
+                {
+                    "measurement": measurement,
+                    "tags": {
+                        tag_name: tag_value
+                    },
+                    "fields": {
+                        field1_name: field1_value,
+                        field2_name: field2_value   
+                    }
+                }]
+        self.client_influxDB.write_points(json_body)
     
     def switchDatabase(self, database):
-        if self.client_influxDB is not None:
-            self.client_influxDB.switch_database(database)
-            Settings.db_influx = database
+        if not self.client_influxDB: return
+
+        self.client_influxDB.switch_database(database)
+        Settings.db_influx = database
