@@ -2100,7 +2100,7 @@ def get_cord_location(location):
     return lat, lon
 
 
-def get_bounding_box(latitude_in_degrees, longitude_in_degrees, half_side_in_miles, logger):
+def get_bounding_box(latitude_in_degrees, longitude_in_degrees, half_side_in_miles):
     if half_side_in_miles > 0:
         if -90.0 <= latitude_in_degrees <= 90.0:
             if -180.0 <= longitude_in_degrees <= 180.0:
