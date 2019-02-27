@@ -198,11 +198,11 @@ def validate_username(browser,
         logger.info(
             "User: '{}'  |> followers: {}  |> following: {}  |> relationship "
             "ratio: {}"
-            .format(username,
-                    followers_count if followers_count else 'unknown',
-                    following_count if following_count else 'unknown',
-                    truncate_float(relationship_ratio,
-                                   2) if relationship_ratio else 'unknown'))
+                .format(username,
+                        followers_count if followers_count else 'unknown',
+                        following_count if following_count else 'unknown',
+                        truncate_float(relationship_ratio,
+                                       2) if relationship_ratio else 'unknown'))
 
         if followers_count or following_count:
             if potency_ratio and not delimit_by_numbers:
@@ -210,10 +210,10 @@ def validate_username(browser,
                     inap_msg = (
                         "'{}' is not a {} with the relationship ratio of {}  "
                         "~skipping user\n"
-                        .format(username,
-                                "potential user" if not reverse_relationship
-                                else "massive follower",
-                                truncate_float(relationship_ratio, 2)))
+                            .format(username,
+                                    "potential user" if not reverse_relationship
+                                    else "massive follower",
+                                    truncate_float(relationship_ratio, 2)))
                     return False, inap_msg
 
             elif delimit_by_numbers:
@@ -223,7 +223,7 @@ def validate_username(browser,
                             inap_msg = (
                                 "User '{}'s followers count exceeds maximum "
                                 "limit  ~skipping user\n"
-                                .format(username))
+                                    .format(username))
                             return False, inap_msg
 
                     if min_followers:
@@ -231,7 +231,7 @@ def validate_username(browser,
                             inap_msg = (
                                 "User '{}'s followers count is less than "
                                 "minimum limit  ~skipping user\n"
-                                .format(username))
+                                    .format(username))
                             return False, inap_msg
 
                 if following_count:
@@ -240,7 +240,7 @@ def validate_username(browser,
                             inap_msg = (
                                 "User '{}'s following count exceeds maximum "
                                 "limit  ~skipping user\n"
-                                .format(username))
+                                    .format(username))
                             return False, inap_msg
 
                     if min_following:
@@ -248,7 +248,7 @@ def validate_username(browser,
                             inap_msg = (
                                 "User '{}'s following count is less than "
                                 "minimum limit  ~skipping user\n"
-                                .format(username))
+                                    .format(username))
                             return False, inap_msg
 
                 if potency_ratio:
@@ -257,11 +257,11 @@ def validate_username(browser,
                         inap_msg = (
                             "'{}' is not a {} with the relationship ratio of "
                             "{}  ~skipping user\n"
-                            .format(username,
-                                    "potential user" if not
-                                    reverse_relationship else "massive "
-                                                              "follower",
-                                    truncate_float(relationship_ratio, 2)))
+                                .format(username,
+                                        "potential user" if not
+                                        reverse_relationship else "massive "
+                                                                  "follower",
+                                        truncate_float(relationship_ratio, 2)))
                         return False, inap_msg
 
     if min_posts or max_posts or skip_private or skip_no_profile_pic or \
@@ -284,14 +284,14 @@ def validate_username(browser,
                 inap_msg = (
                     "Number of posts ({}) of '{}' exceeds the maximum limit "
                     "given {}\n"
-                    .format(number_of_posts, username, max_posts))
+                        .format(number_of_posts, username, max_posts))
                 return False, inap_msg
         if min_posts:
             if number_of_posts < min_posts:
                 inap_msg = (
                     "Number of posts ({}) of '{}' is less than the minimum "
                     "limit given {}\n"
-                    .format(number_of_posts, username, min_posts))
+                        .format(number_of_posts, username, min_posts))
                 return False, inap_msg
 
     """Skip users"""
@@ -316,7 +316,7 @@ def validate_username(browser,
             return False, "---> Sorry, couldn't get if user profile pic url\n"
         if (profile_pic in default_profile_pic_instagram or str(
                 profile_pic).find(
-                "11906329_960233084022564_1448528159_a.jpg") > 0) and (
+            "11906329_960233084022564_1448528159_a.jpg") > 0) and (
                 random.randint(0, 100) <= skip_no_profile_pic_percentage):
             return False, "{} has default instagram profile picture\n".format(
                 username)
@@ -533,7 +533,7 @@ def get_active_users(browser, username, posts, boundary, logger):
     checked_posts = 0
     while count <= posts:
         try:
-            checked_posts +=1
+            checked_posts += 1
             sleep_actual(2)
             try:
                 likers_count = browser.execute_script(
@@ -571,20 +571,20 @@ def get_active_users(browser, username, posts, boundary, logger):
                     sleep_actual(3)
                 else:
                     raise NoSuchElementException
-                    
+
             except (IndexError, NoSuchElementException):
                 # Video have no likes button / no posts in page
                 logger.info("video found, try next post until we run out of posts")
-                
+
                 # edge case of account having only videos,  or last post is a video.
                 if checked_posts >= total_posts:
                     break
                 # if not reached posts(parameter) value, continue (but load next post)
-                if count != posts+1:
+                if count != posts + 1:
                     try:
                         # click close button
                         close_dialog_box(browser)
-        
+
                         # click next button
                         next_button = browser.find_element_by_xpath(
                             "//a[contains(@class, 'HBoOv')]"
@@ -614,7 +614,7 @@ def get_active_users(browser, username, posts, boundary, logger):
                 )
             else:
                 amount = None
-                
+
             while scroll_it is not False and boundary != 0:
                 scroll_it = browser.execute_script('''
                     var div = arguments[0];
@@ -665,7 +665,7 @@ def get_active_users(browser, username, posts, boundary, logger):
                                 "Cor! Failed to get the desired amount of "
                                 "usernames but trying again.."
                                 "\t|> post:{}  |> attempt: {}\n"
-                                .format(posts, try_again + 1))
+                                    .format(posts, try_again + 1))
                             try_again += 1
                             too_many_requests += 1
                             scroll_it = True
@@ -1130,8 +1130,8 @@ def highlight_print(username=None, message=None, priority=None, level=None,
         lower_char = None
 
     if (upper_char
-        and (show_logs
-             or priority == "workspace")):
+            and (show_logs
+                 or priority == "workspace")):
         print("\n{}".format(
             upper_char * int(ceil(output_len / len(upper_char)))))
 
@@ -1154,8 +1154,8 @@ def highlight_print(username=None, message=None, priority=None, level=None,
             print(message)
 
     if (lower_char
-        and (show_logs
-             or priority == "workspace")):
+            and (show_logs
+                 or priority == "workspace")):
         print("{}".format(
             lower_char * int(ceil(output_len / len(lower_char)))))
 
@@ -1272,7 +1272,7 @@ def ping_server(host, logger):
         if connectivity is False:
             logger.warning(
                 "Pinging the server again!\t~total attempts left: {}"
-                .format(ping_attempts))
+                    .format(ping_attempts))
             ping_attempts -= 1
             sleep(5)
 
@@ -1547,7 +1547,7 @@ def explicit_wait(browser, track, ec_params, logger, timeout=35, notify=True):
         if notify is True:
             logger.info(
                 "Timed out with failure while explicitly waiting until {}!\n"
-                .format(ec_name))
+                    .format(ec_name))
         return False
 
     return result
@@ -1952,7 +1952,7 @@ def get_users_from_dialog(old_data, dialog):
 def progress_tracker(current_value, highest_value, initial_time, logger):
     """ Provide a progress tracker to keep value updated until finishes """
     if (current_value is None or
-        highest_value is None or
+            highest_value is None or
             highest_value == 0):
         return
 
@@ -1977,15 +1977,15 @@ def progress_tracker(current_value, highest_value, initial_time, logger):
         tracker_line = "-----------------------------------"
         filled_index = int(progress_percent / 2.77)
         progress_container = (
-            "["
-            + tracker_line[:filled_index]
-            + "+"
-            + tracker_line[filled_index:]
-            + "]"
+                "["
+                + tracker_line[:filled_index]
+                + "+"
+                + tracker_line[filled_index:]
+                + "]"
         )
         progress_container = (
-            progress_container[:filled_index + 1].replace("-", "=")
-            + progress_container[filled_index + 1:]
+                progress_container[:filled_index + 1].replace("-", "=")
+                + progress_container[filled_index + 1:]
         )
 
         total_message = ("\r  {}/{} {}  {}%    "
@@ -2087,6 +2087,7 @@ def parse_cli_args():
 
     return args
 
+
 def get_cord_location(location):
     base_url = 'https://www.instagram.com/explore/locations/'
     query_url = '{}{}{}'.format(base_url, location, "?__a=1")
@@ -2098,37 +2099,44 @@ def get_cord_location(location):
 
     return lat, lon
 
-def get_bounding_box(latitude_in_degrees, longitude_in_degrees, half_side_in_miles):
-    assert half_side_in_miles > 0
-    assert latitude_in_degrees >= -90.0 and latitude_in_degrees <= 90.0
-    assert longitude_in_degrees >= -180.0 and longitude_in_degrees <= 180.0
 
-    half_side_in_km = half_side_in_miles * 1.609344
-    lat = radians(latitude_in_degrees)
-    lon = radians(longitude_in_degrees)
+def get_bounding_box(latitude_in_degrees, longitude_in_degrees, half_side_in_miles, logger):
+    if half_side_in_miles > 0:
+        if -90.0 <= latitude_in_degrees <= 90.0:
+            if -180.0 <= longitude_in_degrees <= 180.0:
+                half_side_in_km = half_side_in_miles * 1.609344
+                lat = radians(latitude_in_degrees)
+                lon = radians(longitude_in_degrees)
 
-    radius = 6371
-    # Radius of the parallel at given latitude
-    parallel_radius = radius * cos(lat)
+                radius = 6371
+                # Radius of the parallel at given latitude
+                parallel_radius = radius * cos(lat)
 
-    lat_min = lat - half_side_in_km / radius
-    lat_max = lat + half_side_in_km / radius
-    lon_min = lon - half_side_in_km / parallel_radius
-    lon_max = lon + half_side_in_km / parallel_radius
+                lat_min = lat - half_side_in_km / radius
+                lat_max = lat + half_side_in_km / radius
+                lon_min = lon - half_side_in_km / parallel_radius
+                lon_max = lon + half_side_in_km / parallel_radius
 
-    lat_min = rad2deg(lat_min)
-    lon_min = rad2deg(lon_min)
-    lat_max = rad2deg(lat_max)
-    lon_max = rad2deg(lon_max)
+                lat_min = rad2deg(lat_min)
+                lon_min = rad2deg(lon_min)
+                lat_max = rad2deg(lat_max)
+                lon_max = rad2deg(lon_max)
 
-    bbox = {
-        "lat_min": lat_min,
-        "lat_max": lat_max,
-        "lon_min": lon_min,
-        "lon_max": lon_max
-    }
+                bbox = {
+                    "lat_min": lat_min,
+                    "lat_max": lat_max,
+                    "lon_min": lon_min,
+                    "lon_max": lon_max
+                }
 
-    return bbox
+                return bbox
+            else:
+                logger("Check your longtitude should be between -180/180")
+        else:
+            logger("Check your latitude should be between -90/90")
+    else:
+        logger("Check your Radius its lower then 0")
+
 
 class CustomizedArgumentParser(ArgumentParser):
     """
@@ -2152,4 +2160,3 @@ class CustomizedArgumentParser(ArgumentParser):
         will give the location of the 'argparse.py' file that have this method.
         """
         return []
-
