@@ -1702,6 +1702,7 @@ class InstaPy:
                      amount=50,
                      skip_top_posts=True,
                      use_smart_hashtags=False,
+                     use_smart_hashtags_map=False,
                      interact=False,
                      randomize=False,
                      media=None):
@@ -1720,6 +1721,9 @@ class InstaPy:
         if use_smart_hashtags is True and self.smart_hashtags is not []:
             print('Using smart hashtags')
             tags = self.smart_hashtags
+        elif use_smart_hashtags_map is True and self.smart_hashtags_map is not []:
+            print('Using smart hashtags map')
+            tags = self.smart_hashtags_map
 
         # deletes white spaces in tags
         tags = [tag.strip() for tag in tags]
@@ -4223,6 +4227,7 @@ class InstaPy:
                        amount=50,
                        skip_top_posts=True,
                        use_smart_hashtags=False,
+                       use_smart_hashtags_map=False,
                        randomize=False,
                        media=None):
         if self.aborting:
@@ -4236,6 +4241,9 @@ class InstaPy:
         if use_smart_hashtags is True and self.smart_hashtags is not []:
             print('Using smart hashtags')
             tags = self.smart_hashtags
+        elif use_smart_hashtags_map is True and self.smart_hashtags_map is not []:
+            print('Using smart hashtags map')
+            tags = self.smart_hashtags_map
 
         # deletes white spaces in tags
         tags = [tag.strip() for tag in tags]
