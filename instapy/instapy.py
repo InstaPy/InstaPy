@@ -658,9 +658,9 @@ class InstaPy:
                                     limit=3,
                                     log_tags=True):
         """Generate smart hashtags based on https://displaypurposes.com/map"""
-        lat, lon = self.get_cord_location(location)
+        lat, lon = get_cord_location(location)
 
-        bbox = self.get_bounding_box(lat, lon, half_side_in_miles=radius)
+        bbox = get_bounding_box(lat, lon, half_side_in_miles=radius)
         bbox_url = '{},{},{},{}&zoom={}'.format(bbox['lon_min'], bbox['lat_min'], bbox['lon_max'],
                                                 bbox['lat_max'], radius)
         url = 'https://query.displaypurposes.com/local/?bbox={}'.format(bbox_url)
