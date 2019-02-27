@@ -714,7 +714,7 @@ class InstaPy:
         if int(data['count']) > 0:
             count = data['count']
             i = 0
-            tags: List[Any] = []
+            tags = []
             while i < count:
                 tags.append(data['tags'][i]['tag'])
                 i += 1
