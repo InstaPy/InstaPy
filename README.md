@@ -207,6 +207,7 @@ Check out this short guide on [how to start contributing!](https://github.com/In
   * [Excluding friends](#excluding-friends)
   * [Blacklist Campaign](#blacklist-campaign)
   * [Smart Hashtags](#smart-hashtags)
+  * [Smart Location_Hashtags](#smart-location-hashtags)
   * [Follow/Unfollow/exclude not working?](#followunfollowexclude-not-working)
   * [Bypass Suspicious Login Attempt](#bypass-suspicious-login-attempt)
   * [Quota Supervisor](#quota-supervisor)
@@ -1218,6 +1219,20 @@ session.like_by_tags(['soccer', 'cr7', 'neymar'], amount=100, media='Photo')
 
 session.set_smart_hashtags(['cycling', 'roadbike'], limit=3, sort='top', log_tags=True)
 session.like_by_tags(amount=10, use_smart_hashtags=True)
+```
+
+### Smart Location Hashtags
+
+```python
+# Generate smart hashtags based on https://displaypurposes.com/map ranking,
+# banned and spammy tags are filtered out.
+# (radius) Radius is in Miles.
+# (limit) defines amount limit of generated hashtags by hashtag
+# (log_tags) shows generated hashtags before use it
+# (use_smart_location_hashtags) activates like_by_tag to use smart hashtags
+
+session.set_smart_location_hashtags(['204517928/chicago-illinois', '1249346723/brazil'], radius=20, limit=10, log_tags=True)
+session.like_by_tags(amount=10, use_smart_location_hashtags=True)
 ```
 
 ### Mandatory Words
