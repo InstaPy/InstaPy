@@ -207,7 +207,7 @@ Check out this short guide on [how to start contributing!](https://github.com/In
   * [Excluding friends](#excluding-friends)
   * [Blacklist Campaign](#blacklist-campaign)
   * [Smart Hashtags](#smart-hashtags)
-  * [Smart Location_Hashtags](#smart-location-hashtags)
+  * [Smart Location Hashtags](#smart-location-hashtags)
   * [Follow/Unfollow/exclude not working?](#followunfollowexclude-not-working)
   * [Bypass Suspicious Login Attempt](#bypass-suspicious-login-attempt)
   * [Quota Supervisor](#quota-supervisor)
