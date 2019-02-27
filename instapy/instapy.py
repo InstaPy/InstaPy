@@ -17,7 +17,7 @@ import logging
 from contextlib import contextmanager
 from copy import deepcopy
 import unicodedata
-from typing import List, Any
+
 # import InstaPy modules
 from .clarifai_util import check_image
 from .comment_util import comment_image
