@@ -2,7 +2,6 @@
 # import built-in & third-party modules
 import time
 from math import ceil
-import math
 import random
 from sys import platform
 from platform import python_version
@@ -48,6 +47,8 @@ from .util import dump_record_activity
 from .util import truncate_float
 from .util import save_account_progress
 from .util import parse_cli_args
+from .util import get_cord_location
+from .util import get_bounding_box
 from .unfollow_util import get_given_user_followers
 from .unfollow_util import get_given_user_following
 from .unfollow_util import unfollow
@@ -185,7 +186,7 @@ class InstaPy:
         self.do_like = False
         self.like_percentage = 0
         self.smart_hashtags = []
-        self.smart_hashtags_map = []
+        self.smart_location_hashtags = []
 
         self.dont_like = ['sex', 'nsfw']
         self.mandatory_words = []
@@ -651,63 +652,18 @@ class InstaPy:
         self.smart_hashtags = list(set(self.smart_hashtags))
         return self
 
-    def get_cord_location(self, location):  # Get LON and LAT from Instagram Explorer
-        base_url = 'https://www.instagram.com/explore/locations/'
-        query_url = '{}{}{}'.format(base_url, location, "?__a=1")
-        req = requests.get(query_url)
-        data = json.loads(req.text)
-
-        lat = data['graphql']['location']['lat']
-        lon = data['graphql']['location']['lng']
-
-        return lat, lon
-
-    def get_bounding_box(self, latitude_in_degrees, longitude_in_degrees, half_side_in_miles):
-        assert half_side_in_miles > 0
-        assert latitude_in_degrees >= -90.0 and latitude_in_degrees <= 90.0
-        assert longitude_in_degrees >= -180.0 and longitude_in_degrees <= 180.0
-
-        half_side_in_km = half_side_in_miles * 1.609344
-        lat = math.radians(latitude_in_degrees)
-        lon = math.radians(longitude_in_degrees)
-
-        radius = 6371
-        # Radius of the parallel at given latitude
-        parallel_radius = radius * math.cos(lat)
-
-        lat_min = lat - half_side_in_km / radius
-        lat_max = lat + half_side_in_km / radius
-        lon_min = lon - half_side_in_km / parallel_radius
-        lon_max = lon + half_side_in_km / parallel_radius
-
-        rad2deg = math.degrees
-
-        lat_min = rad2deg(lat_min)
-        lon_min = rad2deg(lon_min)
-        lat_max = rad2deg(lat_max)
-        lon_max = rad2deg(lon_max)
-
-        bbox = {
-            "lat_min": lat_min,
-            "lat_max": lat_max,
-            "lon_min": lon_min,
-            "lon_max": lon_max
-        }
-
-        return bbox
-
-    def set_smart_hashtags_map(self,
-                               location,
-                               radius=10,
-                               limit=3,
-                               log_tags=True):
+    def set_smart_location_hashtags(self,
+                                    location,
+                                    radius=10,
+                                    limit=3,
+                                    log_tags=True):
         """Generate smart hashtags based on https://displaypurposes.com/map"""
         lat, lon = self.get_cord_location(location)
 
         bbox = self.get_bounding_box(lat, lon, half_side_in_miles=radius)
         bbox_url = '{},{},{},{}&zoom={}'.format(bbox['lon_min'], bbox['lat_min'], bbox['lon_max'],
                                                 bbox['lat_max'], radius)
-        url = '{}{}'.format('https://query.displaypurposes.com/local/?bbox=', bbox_url)
+        url = 'https://query.displaypurposes.com/local/?bbox={}'.format(bbox_url)
 
         req = requests.get(url)
         data = json.loads(req.text)
@@ -718,12 +674,12 @@ class InstaPy:
             while i < count:
                 tags.append(data['tags'][i]['tag'])
                 i += 1
-            self.smart_hashtags = (tags[:limit])
+            self.smart_location_hashtags = (tags[:limit])
 
             if log_tags is True:
-                print(u'[smart hashtag generated: {}]'.format(self.smart_hashtags))
+                self.logger.info(u'[smart location hashtag generated: {}]\n'.format(self.smart_location_hashtags))
         else:
-            print(u'Too few results for #{} tag'.format(data['count']))
+            self.logger.warning(u'Too few results for #{} tag'.format(data['count']))
 
         return self
 
@@ -1702,7 +1658,7 @@ class InstaPy:
                      amount=50,
                      skip_top_posts=True,
                      use_smart_hashtags=False,
-                     use_smart_hashtags_map=False,
+                     use_smart_location_hashtags=False,
                      interact=False,
                      randomize=False,
                      media=None):
@@ -1721,9 +1677,9 @@ class InstaPy:
         if use_smart_hashtags is True and self.smart_hashtags is not []:
             print('Using smart hashtags')
             tags = self.smart_hashtags
-        elif use_smart_hashtags_map is True and self.smart_hashtags_map is not []:
-            print('Using smart hashtags map')
-            tags = self.smart_hashtags_map
+        elif use_smart_location_hashtags is True and self.smart_location_hashtags is not []:
+            print('Using smart location hashtags')
+            tags = self.smart_location_hashtags
 
         # deletes white spaces in tags
         tags = [tag.strip() for tag in tags]
@@ -4227,7 +4183,7 @@ class InstaPy:
                        amount=50,
                        skip_top_posts=True,
                        use_smart_hashtags=False,
-                       use_smart_hashtags_map=False,
+                       use_smart_location_hashtags=False,
                        randomize=False,
                        media=None):
         if self.aborting:
@@ -4241,9 +4197,9 @@ class InstaPy:
         if use_smart_hashtags is True and self.smart_hashtags is not []:
             print('Using smart hashtags')
             tags = self.smart_hashtags
-        elif use_smart_hashtags_map is True and self.smart_hashtags_map is not []:
-            print('Using smart hashtags map')
-            tags = self.smart_hashtags_map
+        elif use_smart_location_hashtags is True and self.smart_location_hashtags is not []:
+            print('Using smart location hashtags')
+            tags = self.smart_location_hashtags
 
         # deletes white spaces in tags
         tags = [tag.strip() for tag in tags]
