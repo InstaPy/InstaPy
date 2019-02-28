@@ -47,6 +47,8 @@ from .util import dump_record_activity
 from .util import truncate_float
 from .util import save_account_progress
 from .util import parse_cli_args
+from .util import get_cord_location
+from .util import get_bounding_box
 from .unfollow_util import get_given_user_followers
 from .unfollow_util import get_given_user_following
 from .unfollow_util import unfollow
@@ -184,6 +186,7 @@ class InstaPy:
         self.do_like = False
         self.like_percentage = 0
         self.smart_hashtags = []
+        self.smart_location_hashtags = []
 
         self.dont_like = ['sex', 'nsfw']
         self.mandatory_words = []
@@ -647,6 +650,47 @@ class InstaPy:
 
         # delete duplicated tags
         self.smart_hashtags = list(set(self.smart_hashtags))
+        return self
+
+    def set_smart_location_hashtags(self,
+                                    locations,
+                                    radius=10,
+                                    limit=3,
+                                    log_tags=True):
+        """Generate smart hashtags based on https://displaypurposes.com/map"""
+        if locations is None:
+            self.logger.error('set_smart_location_hashtags is misconfigured')
+            return self
+
+        for location in locations:
+            lat, lon = get_cord_location(self.browser, location)
+
+            bbox = get_bounding_box(lat,
+                                    lon,
+                                    logger=self.logger,
+                                    half_side_in_miles=radius)
+            bbox_url = '{},{},{},{}&zoom={}'.format(bbox['lon_min'], bbox['lat_min'], bbox['lon_max'],
+                                                    bbox['lat_max'], radius)
+            url = 'https://query.displaypurposes.com/local/?bbox={}'.format(bbox_url)
+
+            req = requests.get(url)
+            data = json.loads(req.text)
+            if int(data['count']) == 0:
+                self.logger.warning(u'Too few results for {} location'.format(location))
+                continue
+
+            count = limit if limit < data['count'] else data['count']
+            i = 0
+            tags = []
+            while i < count:
+                self.smart_location_hashtags.append(data['tags'][i]['tag'])
+                i += 1
+
+        self.smart_location_hashtags = list(set(self.smart_location_hashtags))
+
+        if log_tags is True:
+            self.logger.info(u'[smart location hashtag generated: {}]\n'.format(self.smart_location_hashtags))
+
         return self
 
     def set_mandatory_language(self, enabled=False, character_set='LATIN'):
@@ -1626,6 +1670,7 @@ class InstaPy:
                      amount=50,
                      skip_top_posts=True,
                      use_smart_hashtags=False,
+                     use_smart_location_hashtags=False,
                      interact=False,
                      randomize=False,
                      media=None):
@@ -1642,8 +1687,11 @@ class InstaPy:
 
         # if smart hashtag is enabled
         if use_smart_hashtags is True and self.smart_hashtags is not []:
-            print('Using smart hashtags')
+            self.logger.info('Using smart hashtags')
             tags = self.smart_hashtags
+        elif use_smart_location_hashtags is True and self.smart_location_hashtags is not []:
+            self.logger.info('Using smart location hashtags')
+            tags = self.smart_location_hashtags
 
         # deletes white spaces in tags
         tags = [tag.strip() for tag in tags]
@@ -4149,6 +4197,7 @@ class InstaPy:
                        amount=50,
                        skip_top_posts=True,
                        use_smart_hashtags=False,
+                       use_smart_location_hashtags=False,
                        randomize=False,
                        media=None,
                        interact=False):
@@ -4161,8 +4210,11 @@ class InstaPy:
 
         # if smart hashtag is enabled
         if use_smart_hashtags is True and self.smart_hashtags is not []:
-            print('Using smart hashtags')
+            self.logger.info('Using smart hashtags')
             tags = self.smart_hashtags
+        elif use_smart_location_hashtags is True and self.smart_location_hashtags is not []:
+            self.logger.info('Using smart location hashtags')
+            tags = self.smart_location_hashtags
 
         # deletes white spaces in tags
         tags = [tag.strip() for tag in tags]
