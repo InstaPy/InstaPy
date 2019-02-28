@@ -653,7 +653,7 @@ class InstaPy:
         return self
 
     def set_smart_location_hashtags(self,
-                                    location,
+                                    locations,
                                     radius=10,
                                     limit=3,
                                     log_tags=True):
