@@ -4002,11 +4002,11 @@ class InstaPy:
 
         return mutual_following
 
-    def end(self):
+    def end(self, threaded_session=False):
         """Closes the current session"""
 
         Settings.InstaPy_is_running = False
-        close_browser(self.browser, False, self.logger)
+        close_browser(self.browser, threaded_session, self.logger)
 
         with interruption_handler():
             # close virtual display
