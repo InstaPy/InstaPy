@@ -1914,14 +1914,19 @@ def save_account_progress(browser, username, logger):
         logger.exception('message')
 
 
-def get_epoch_time_diff(time_stamp):
-    ''' time diff in seconds from input to now'''
-    log_time = datetime.strptime(time_stamp, '%Y-%m-%d %H:%M')
+def get_epoch_time_diff(time_stamp, logger):
+    try:
+        ''' time diff in seconds from input to now'''
+        log_time = datetime.datetime.strptime(time_stamp, '%Y-%m-%d %H:%M')
 
-    former_epoch = (log_time - datetime(1970, 1, 1)).total_seconds()
-    cur_epoch = (datetime.now() - datetime(1970, 1, 1)).total_seconds()
+        former_epoch = (log_time - datetime.datetime(1970, 1, 1)).total_seconds()
+        cur_epoch = (datetime.datetime.now() - datetime.datetime(1970, 1, 1)).total_seconds()
 
-    return cur_epoch - former_epoch
+        return cur_epoch - former_epoch
+    except ValueError:
+        logger.error(
+            "Error occurred while reading timestamp value from database")
+        return None
 
 
 def is_follow_me(browser, person=None):
