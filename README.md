@@ -198,6 +198,7 @@ Check out this short guide on [how to start contributing!](https://github.com/In
   * [Follow by Locations](#follow-by-locations)
   * [Like by Locations](#like-by-locations)
   * [Like by Tags](#like-by-tags)
+  * [Follow by Tags](#follow-by-tags)
   * [Like by Feeds](#like-by-feeds)
   * [Mandatory Words](#mandatory-words)
   * [Mandatory Language](#mandatory-language)
@@ -546,11 +547,18 @@ session.follow_user_followers(['friend1', 'friend2', 'friend3'], amount=10, rand
 
 
 ### Follow by Tags
-
+#####  Follow user based on hashtags (without liking the image)
 ```python
-# Follow user based on hashtags (without liking the image)
-
-session.follow_by_tags(['tag1', 'tag2'], amount=10)
+session.follow_by_tags(['tag1', 'tag2'], amount=10),
+```
+#####  Follow user based on hashtags (interact with user, liking images)
+* You can also **interact** with the users you just started by activating `interact = True`, which will use the `set_user_interact` configuration:
+```python
+session.set_user_interact(amount=2,
+                            percentage=70,
+                            randomize=True,
+                            media='Photo')
+session.follow_by_tags(['tag1', 'tag2'], amount=10, interact=True),
 ```
 
 
