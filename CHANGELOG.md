@@ -9,6 +9,9 @@ _The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 - Allowing `follow_by_tags` to interact with the user
 - Context manager to interaction calls in `like_by_tags` and `follow_likers`
 
+### Changed
+- Expose `threaded_session` of Instapy.end()
+
 ### Fixed
 - `follow_likers` always fetches zero likers
 - Prevent division by zero in `validate_username`
