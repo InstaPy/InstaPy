@@ -21,7 +21,6 @@ import json
 from contextlib import contextmanager
 from tempfile import gettempdir
 import emoji
-import requests
 from emoji.unicode_codes import UNICODE_EMOJI
 from argparse import ArgumentParser
 
