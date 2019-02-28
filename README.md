@@ -1271,7 +1271,7 @@ Banned and spammy tags are filtered out.
 ```python
 Use_smart_location_hashtags activates like_by_tag to use smart hashtags
 
-session.set_smart_location_hashtags(['204517928/chicago-illinois', '1249346723/brazil'], radius=20, limit=10)
+session.set_smart_location_hashtags(['204517928/chicago-illinois', '213570652/nagoya-shi-aichi-japan'], radius=20, limit=10)
 session.like_by_tags(amount=10, use_smart_location_hashtags=True)
 ```
 
