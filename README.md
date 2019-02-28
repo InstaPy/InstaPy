@@ -554,6 +554,23 @@ session.follow_user_followers(['friend1', 'friend2', 'friend3'], amount=10, rand
 session.follow_by_tags(['tag1', 'tag2'], amount=10)
 ```
 
+#### Parameters:
+`tags`: The tags that will be searched for and posts will be liked from
+
+`amount`: The amount of posts that will be liked
+
+`skip_top_posts`: Determines whether the first 9 top posts should be liked or not (default is True)
+
+`use_smart_hashtags`: Make use of the [smart hashtag feature]()
+
+`use_smart_location_hashtags`: Make use of the [smart location hashtag feature]()
+
+`interact`: Defines whether the users of the given post should also be interacted with (needs `set_user_interact` to be also set)
+
+`randomize`: Determines whether the first `amount` of posts should be liked or a random selection.
+
+`media`: Determines which media should be liked, Photo or Video (default is `None` which is all)
+
 
 
 ### Follow the likers of photos of users
@@ -1169,6 +1186,24 @@ Example:
 session.like_by_tags(['natgeo', 'world'], amount=10)
 ```
 
+#### Parameters:
+`tags`: The tags that will be searched for and posts will be liked from
+
+`amount`: The amount of posts that will be liked
+
+`skip_top_posts`: Determines whether the first 9 top posts should be liked or not (default is True)
+
+`use_smart_hashtags`: Make use of the [smart hashtag feature]()
+
+`use_smart_location_hashtags`: Make use of the [smart location hashtag feature]()
+
+`interact`: Defines whether the users of the given post should also be interacted with (needs `set_user_interact` to be also set)
+
+`randomize`: Determines whether the first `amount` of posts should be liked or a random selection.
+
+`media`: Determines which media should be liked, Photo or Video (default is `None` which is all)
+
+
 ### Like by Tags and interact with user
 
 ```python
@@ -1222,18 +1257,20 @@ session.like_by_tags(amount=10, use_smart_hashtags=True)
 ```
 
 ### Smart Location Hashtags
+Generate smart hashtags based on https://displaypurposes.com/map ranking.
+Banned and spammy tags are filtered out.
 
 ```python
-# Generate smart hashtags based on https://displaypurposes.com/map ranking,
-# banned and spammy tags are filtered out.
-# (radius) Radius is in Miles.
-# (limit) defines amount limit of generated hashtags by hashtag
-# (log_tags) shows generated hashtags before use it
-# (use_smart_location_hashtags) activates like_by_tag to use smart hashtags
+Use_smart_location_hashtags activates like_by_tag to use smart hashtags
 
-session.set_smart_location_hashtags(['204517928/chicago-illinois', '1249346723/brazil'], radius=20, limit=10, log_tags=True)
+session.set_smart_location_hashtags(['204517928/chicago-illinois', '1249346723/brazil'], radius=20, limit=10)
 session.like_by_tags(amount=10, use_smart_location_hashtags=True)
 ```
+
+#### Parameters
+`radius`: Radius around the location in Miles   
+`limit`: Defines amount limit of generated hashtags by hashtag   
+`log_tags`: Shows generated hashtags before use it (default is True)   
 
 ### Mandatory Words
 
@@ -2392,7 +2429,8 @@ def job():
     session.set_do_comment(enabled=True, percentage=20)
     session.set_comments(['Well done!'])
     session.set_do_follow(enabled=True, percentage=5, times=2)
-    session.like_by_tags(['love'], amount=100, media='Photo')
+    session.
+    (['love'], amount=100, media='Photo')
 
 
 schedule.every().day.at("6:35").do(job)
