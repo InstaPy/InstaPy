@@ -2100,42 +2100,42 @@ def get_cord_location(location):
     return lat, lon
 
 
-def get_bounding_box(latitude_in_degrees, longitude_in_degrees, half_side_in_miles):
-    if half_side_in_miles > 0:
-        if -90.0 <= latitude_in_degrees <= 90.0:
-            if -180.0 <= longitude_in_degrees <= 180.0:
-                half_side_in_km = half_side_in_miles * 1.609344
-                lat = radians(latitude_in_degrees)
-                lon = radians(longitude_in_degrees)
+def get_bounding_box(latitude_in_degrees, longitude_in_degrees, half_side_in_miles, logger):
+    if half_side_in_miles == 0:
+        logger.error("Check your Radius its lower then 0")
+        return {}
+    if latitude_in_degrees < -90.0 or latitude_in_degrees > 90.0:
+        logger.error("Check your latitude should be between -90/90")
+        return {}
+    if longitude_in_degrees < -180.0 or longitude_in_degrees > 180.0:
+        logger.error("Check your longtitude should be between -180/180")
+        return {}
+    half_side_in_km = half_side_in_miles * 1.609344
+    lat = radians(latitude_in_degrees)
+    lon = radians(longitude_in_degrees)
 
-                radius = 6371
-                # Radius of the parallel at given latitude
-                parallel_radius = radius * cos(lat)
+    radius = 6371
+    # Radius of the parallel at given latitude
+    parallel_radius = radius * cos(lat)
 
-                lat_min = lat - half_side_in_km / radius
-                lat_max = lat + half_side_in_km / radius
-                lon_min = lon - half_side_in_km / parallel_radius
-                lon_max = lon + half_side_in_km / parallel_radius
+    lat_min = lat - half_side_in_km / radius
+    lat_max = lat + half_side_in_km / radius
+    lon_min = lon - half_side_in_km / parallel_radius
+    lon_max = lon + half_side_in_km / parallel_radius
 
-                lat_min = rad2deg(lat_min)
-                lon_min = rad2deg(lon_min)
-                lat_max = rad2deg(lat_max)
-                lon_max = rad2deg(lon_max)
+    lat_min = rad2deg(lat_min)
+    lon_min = rad2deg(lon_min)
+    lat_max = rad2deg(lat_max)
+    lon_max = rad2deg(lon_max)
 
-                bbox = {
-                    "lat_min": lat_min,
-                    "lat_max": lat_max,
-                    "lon_min": lon_min,
-                    "lon_max": lon_max
-                }
+    bbox = {
+        "lat_min": lat_min,
+        "lat_max": lat_max,
+        "lon_min": lon_min,
+        "lon_max": lon_max
+    }
 
-                return bbox
-            else:
-                logger("Check your longtitude should be between -180/180")
-        else:
-            logger("Check your latitude should be between -90/90")
-    else:
-        logger("Check your Radius its lower then 0")
+    return bbox
 
 
 class CustomizedArgumentParser(ArgumentParser):
