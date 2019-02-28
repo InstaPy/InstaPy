@@ -2092,11 +2092,12 @@ def parse_cli_args():
     return args
 
 
-def get_cord_location(location):
+def get_cord_location(browser, location):
     base_url = 'https://www.instagram.com/explore/locations/'
     query_url = '{}{}{}'.format(base_url, location, "?__a=1")
-    req = requests.get(query_url)
-    data = json.loads(req.text)
+    browser.get(query_url)
+    json_text = browser.find_element_by_xpath('//body').text
+    data = json.loads(json_text)
 
     lat = data['graphql']['location']['lat']
     lon = data['graphql']['location']['lng']

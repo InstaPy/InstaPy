@@ -658,28 +658,35 @@ class InstaPy:
                                     limit=3,
                                     log_tags=True):
         """Generate smart hashtags based on https://displaypurposes.com/map"""
-        lat, lon = get_cord_location(location)
-
-        bbox = get_bounding_box(lat,
-                                lon,
-                                logger=self.logger,
-                                half_side_in_miles=radius)
-        bbox_url = '{},{},{},{}&zoom={}'.format(bbox['lon_min'], bbox['lat_min'], bbox['lon_max'],
-                                                bbox['lat_max'], radius)
-        url = 'https://query.displaypurposes.com/local/?bbox={}'.format(bbox_url)
-
-        req = requests.get(url)
-        data = json.loads(req.text)
-        if int(data['count']) == 0:
-            self.logger.warning(u'Too few results for #{} tag'.format(data['count']))
+        if locations is None:
+            self.logger.error('set_smart_location_hashtags is misconfigured')
             return self
-        count = data['count']
-        i = 0
-        tags = []
-        while i < count:
-            tags.append(data['tags'][i]['tag'])
-            i += 1
-        self.smart_location_hashtags = (tags[:limit])
+
+        for location in locations:
+            lat, lon = get_cord_location(self.browser, location)
+
+            bbox = get_bounding_box(lat,
+                                    lon,
+                                    logger=self.logger,
+                                    half_side_in_miles=radius)
+            bbox_url = '{},{},{},{}&zoom={}'.format(bbox['lon_min'], bbox['lat_min'], bbox['lon_max'],
+                                                    bbox['lat_max'], radius)
+            url = 'https://query.displaypurposes.com/local/?bbox={}'.format(bbox_url)
+
+            req = requests.get(url)
+            data = json.loads(req.text)
+            if int(data['count']) == 0:
+                self.logger.warning(u'Too few results for {} location'.format(location))
+                continue
+
+            count = limit if limit < data['count'] else data['count']
+            i = 0
+            tags = []
+            while i < count:
+                self.smart_location_hashtags.append(data['tags'][i]['tag'])
+                i += 1
+
+        self.smart_location_hashtags = list(set(self.smart_location_hashtags))
 
         if log_tags is True:
             self.logger.info(u'[smart location hashtag generated: {}]\n'.format(self.smart_location_hashtags))
