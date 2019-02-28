@@ -8,6 +8,7 @@
 [![built with Python3](https://img.shields.io/badge/built%20with-Python3-red.svg)](https://www.python.org/)
 [![Travis](https://img.shields.io/travis/rust-lang/rust.svg)](https://travis-ci.org/timgrossmann/InstaPy)
 [![Backers on Open Collective](https://opencollective.com/instapy/backers/badge.svg)](#backers)
+[![Sponsors on Open Collective](https://opencollective.com/instapy/sponsors/badge.svg)](#sponsors)
 
 ### Tooling that automates your social media interactions to “farm” Likes, Comments, and Followers on Instagram
 Implemented in Python using the Selenium module.
@@ -16,7 +17,7 @@ Implemented in Python using the Selenium module.
 If you should encounter any issue, please first [search for similar issues](https://github.com/timgrossmann/InstaPy/issues) and only if you can't find any, create a new issue or use the [discord channel](https://discord.gg/FDETsht) for help.
 
 #### Newsletter: [Sign Up for the Newsletter here!](http://eepurl.com/cZbV_v)
-
+#### Get the Offical Video Guide: [Get it here!](https://www.udemy.com/instapy-guide/?couponCode=INSTAPY_OFFICIAL)
 
 ## **Installation**
 ```elm
@@ -141,23 +142,27 @@ pip uninstall instapy
 </a>
 
 **Help build InstaPy!**      
-Check out this short guide on [how to start contributing!](https://github.com/InstaPy/instapy-wiki/blob/master/CONTRIBUTORS.md).
+Check out this short guide on [how to start contributing!](https://github.com/InstaPy/instapy-docs/blob/master/CONTRIBUTORS.md).
 
 ---
 
 ### Guides
 
 #### Video tutorials:
-**[Setting up InstaPy for MacOS using Firefox](https://www.youtube.com/watch?v=A1a8J_IjSPs)**
+**[Official InstaPy Guide on Udemy](https://www.udemy.com/instapy-guide/?couponCode=INSTAPY_OFFICIAL)**
 
-**[Setting up InstaPy at Digital Ocean (for Debian)](https://www.youtube.com/watch?v=2Ci-hXU1IEY)**
+**[Installation on Windows](https://www.youtube.com/watch?v=9DkEl2MrFQk&list=PLa4P1NPX9hthXV-wko0xyxFpbhYZFkW7o&index=11&t=40s)**
 
-**[Setting up InstaPy for Windows](https://www.youtube.com/watch?v=AOUraeus-XA)**
+**[Installation on MacOS](https://www.youtube.com/watch?v=TqQWM63Hhh4&t=11s&list=PLa4P1NPX9hthXV-wko0xyxFpbhYZFkW7o&index=12)**
+
+**[Installation on Linux](https://www.youtube.com/watch?v=sZ-SFy9vKHg&list=PLa4P1NPX9hthXV-wko0xyxFpbhYZFkW7o&index=10&t=28s)**
+
+**[Installation on DigitalOcean Server](https://www.youtube.com/watch?v=my0FM5hra_s&t=14s&list=PLa4P1NPX9hthXV-wko0xyxFpbhYZFkW7o&index=9)**
 
 #### Written Guides:
-**[How to Ubuntu (64-Bit)](./docs/How_To_DO_Ubuntu_on_Digital_Ocean.md) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**
+**[How to Ubuntu (64-Bit)](https://github.com/InstaPy/instapy-docs/blob/master/How_Tos/How_To_DO_Ubuntu_on_Digital_Ocean.md) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**
 
-**[How to RaspberryPi](./docs/How_to_Raspberry.md) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**
+**[How to RaspberryPi](https://github.com/InstaPy/instapy-docs/blob/master/How_Tos/How_to_Raspberry.md) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**
 
 
 # Documentation
@@ -180,6 +185,7 @@ Check out this short guide on [how to start contributing!](https://github.com/In
   * [Interact on posts at given URLs](#interact-on-posts-at-given-urls)
   * [Interact by Comments](#interact-by-comments)
   * [Unfollowing](#unfollowing)
+  * [Accept pending follow requests](#accept-pending-follow-requests)
   * [Remove outgoing follow requests](#remove-outgoing-follow-requests)
   * [Don't unfollow active users](#dont-unfollow-active-users)
   * [Interactions based on the number of followers and/or following a user has](#interactions-based-on-the-number-of-followers-andor-following-a-user-has)
@@ -189,8 +195,10 @@ Check out this short guide on [how to start contributing!](https://github.com/In
   * [Commenting based on the number of existing comments a post has](#commenting-based-on-the-number-of-existing-comments-a-post-has)
   * [Commenting based on mandatory words in the description or first comment](#commenting-based-on-mandatory-words-in-the-description-or-first-comment)
   * [Comment by Locations](#comment-by-locations)
+  * [Follow by Locations](#follow-by-locations)
   * [Like by Locations](#like-by-locations)
   * [Like by Tags](#like-by-tags)
+  * [Follow by Tags](#follow-by-tags)
   * [Like by Feeds](#like-by-feeds)
   * [Mandatory Words](#mandatory-words)
   * [Mandatory Language](#mandatory-language)
@@ -213,7 +221,8 @@ Check out this short guide on [how to start contributing!](https://github.com/In
 * [Text Analytics](#text-analytics)
   *  [Yandex Translate API](#yandex-translate-api)
   *  [MeaningCloud Sentiment Analysis API](#meaningcloud-sentiment-analysis-api)
-* [Use a proxy](#use-a-proxy)
+* [Use a proxy (Chrome)](#use-a-proxy-chrome)
+* [Use a proxy (Firefox)](#use-a-proxy-firefox)
 * [Switching to Firefox](#switching-to-firefox)
 * [Emoji Support](#emoji-support)
 * [Clarifai ImageAPI](#clarifai-imageapi)
@@ -538,11 +547,18 @@ session.follow_user_followers(['friend1', 'friend2', 'friend3'], amount=10, rand
 
 
 ### Follow by Tags
-
+#####  Follow user based on hashtags (without liking the image)
 ```python
-# Follow user based on hashtags (without liking the image)
-
-session.follow_by_tags(['tag1', 'tag2'], amount=10)
+session.follow_by_tags(['tag1', 'tag2'], amount=10),
+```
+#####  Follow user based on hashtags (interact with user, liking images)
+* You can also **interact** with the users you just started by activating `interact = True`, which will use the `set_user_interact` configuration:
+```python
+session.set_user_interact(amount=2,
+                            percentage=70,
+                            randomize=True,
+                            media='Photo')
+session.follow_by_tags(['tag1', 'tag2'], amount=10, interact=True),
 ```
 
 
@@ -891,6 +907,18 @@ session.unfollow_users(amount=60, InstapyFollowed=(True, "all"), style="FIFO", u
 ```
 This will unfollow all users that are not following you back after **2 days**. The unfollowing for users that are following you back will be **delayed by an additional 10 days** (12 days to unfollow in total).
 
+### Accept pending follow requests
+
+```python
+session.accept_follow_requests(amount=100, sleep_delay=1)
+```
+
+`amount`   
+The maximum amount of follow requests that will be accepted.
+
+`sleep_delay`  
+Sleep delay _sets_ the time it will sleep **after** every accepted request (_default delay is ~ `1` second).
+
 ### Remove outgoing follow requests
 
 ```python
@@ -1042,7 +1070,7 @@ session.set_skip_users(skip_private=True,
 This will skip all business accounts except the ones that have a category that matches one item in the list of _dont_skip_business_categories_
 **N.B.** If both _dont_skip_business_categories_ and _skip_business_categories_, InstaPy will skip only business accounts in the list given from _skip_business_categories_.
 
-> [A list of all availlable business categories can be found here](./assets/business_categories.md)
+> [A list of all availlable business categories can be found here](https://github.com/InstaPy/instapy-docs/blob/master/BUSINESS_CATEGORIES.md)
 
 ### Liking based on the number of existing likes a post has
 
@@ -1117,6 +1145,18 @@ session.comment_by_locations(['224442573'], amount=5, skip_top_posts=False)
 This method allows commenting by locations, without liking posts. To get locations follow instructions in 'Like by Locations'
 
 
+### Follow by Locations
+
+```python
+session.follow_by_locations(['224442573/salton-sea/'], amount=100)
+# or
+session.follow_by_locations(['224442573'], amount=100)
+# or include media entities from top posts section
+
+session.follow_by_locations(['224442573'], amount=5, skip_top_posts=False)
+```
+This method allows following by locations, without liking or commenting posts. To get locations follow instructions in 'Like by Locations'
+
 
 ### Like by Locations
 
@@ -1128,6 +1168,7 @@ session.like_by_locations(['224442573'], amount=100)
 
 session.like_by_locations(['224442573'], amount=5, skip_top_posts=False)
 ```
+
 
 You can find locations for the `like_by_locations` function by:
 - Browsing https://www.instagram.com/explore/locations/
@@ -1917,16 +1958,18 @@ This project uses MeaningCloud™ (http://www.meaningcloud.com) for Text Analyti
 
 
 
-### Use a proxy
+### Use a proxy (Chrome)
 
 You can use InstaPy behind a proxy by specifying server address and port
 
+Simple proxy setup example:
 ```python
 session = InstaPy(username=insta_username, password=insta_password, proxy_address='8.8.8.8', proxy_port=8080)
 ```
 
-To use proxy with authentication you should firstly generate proxy chrome extension (works only with headless_browser=False unless using FF where it works with headless_browser=True).
+To use proxy with authentication you should firstly import proxy chrome extension to you configuration file (the one with your Instagram username and password).
 
+Proxy setup using authentication example:
 ```python
 from proxy_extension import create_proxy_extension
 
@@ -1934,6 +1977,31 @@ proxy = 'login:password@ip:port'
 proxy_chrome_extension = create_proxy_extension(proxy)
 
 session = InstaPy(username=insta_username, password=insta_password, proxy_chrome_extension=proxy_chrome_extension, nogui=True)
+```
+
+### Use a proxy (Firefox)
+
+You can use InstaPy behind a proxy by specifying server address, port and/or proxy authentication credentials. It works with and without ```headless_browser``` option.
+
+Simple proxy setup example:
+```python
+session = InstaPy(username=insta_username, 
+                  password=insta_password,
+		  use_firefox=True,
+		  proxy_address='8.8.8.8', 
+		  proxy_port=8080)
+
+```
+
+Proxy setup with authentication example:
+```python
+session = InstaPy(username=insta_username,
+                  password=insta_password,
+                  proxy_username='',
+                  proxy_password='',
+                  proxy_address='8.8.8.8',
+                  proxy_port=4444,
+                  use_firefox=True)
 ```
 
 ### Switching to Firefox
@@ -2310,29 +2378,33 @@ pip install schedule
 
 ```python
 from instapy import InstaPy
+from instapy import smart_run
+from instapy import set_workspace
 import schedule
 import time
 
+#your login credentials
+insta_username=''
+insta_password=''
+
+#path to your workspace
+set_workspace(path=None)
+
 def job():
-    try:
-        session = InstaPy(selenium_local_session=False) # Assuming running in Compose
-        session.set_selenium_remote_session(selenium_url='http://selenium:4444/wd/hub')
-        session.login()
-        session.set_do_comment(enabled=True, percentage=20)
-        session.set_comments(['Well done!'])
-        session.set_do_follow(enabled=True, percentage=5, times=2)
-        session.like_by_tags(['love'], amount=100, media='Photo')
-        session.end()
-    except:
-        import traceback
-        print(traceback.format_exc())
+  session = InstaPy(username=insta_username, password=insta_password)
+  with smart_run(session):
+    session.set_do_comment(enabled=True, percentage=20)
+    session.set_comments(['Well done!'])
+    session.set_do_follow(enabled=True, percentage=5, times=2)
+    session.like_by_tags(['love'], amount=100, media='Photo')
+
 
 schedule.every().day.at("6:35").do(job)
 schedule.every().day.at("16:22").do(job)
 
 while True:
-    schedule.run_pending()
-    time.sleep(1)
+  schedule.run_pending()
+  time.sleep(10)
 ```
 
 
@@ -2825,5 +2897,6 @@ Thank you to all our backers! 🙏 [[Become a backer](https://opencollective.com
 Support this project by becoming a sponsor. Your logo will show up here with a link to your website. [[Become a sponsor](https://opencollective.com/instapy#sponsor)]
 
 <a href="https://opencollective.com/instapy/sponsor/0/website" target="_blank"><img src="https://opencollective.com/instapy/sponsor/0/avatar.svg"></a>
-
-
+<a href="https://www.chancetheapp.com" target="_blank">
+	<img src="https://user-images.githubusercontent.com/16529337/52699787-dbb17f80-2f76-11e9-9657-c103d4e89d88.png" height=75 />
+</a>
