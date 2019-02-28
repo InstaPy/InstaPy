@@ -189,6 +189,10 @@ def validate_username(browser,
             potency_ratio *= -1
             reverse_relationship = True
 
+        # division by zero is bad
+        followers_count = 1 if followers_count == 0 else followers_count
+        following_count = 1 if following_count == 0 else following_count
+
         if followers_count and following_count:
             relationship_ratio = (
                 float(followers_count) / float(following_count)
