@@ -2735,7 +2735,12 @@ In case you are unfamiliar with the concept do read a little. Here's a blog to l
 ```python
 
 photo_comments = ['Nice shot! @{}',
-            'I love your profile! @{}']
+            'I love your profile! @{}',
+	    'Your feed is an inspiration :thumbsup:',
+	    'Just incredible :open_mouth:',
+	    'What camera did you use @{}?',
+	    'Love your posts @{}',
+	    'Looks awesome @{}']
 
 session = InstaPy()
 
@@ -2749,8 +2754,6 @@ with smart_run(session):
 Topic of the posts to be interacted with. `general` by default.
 
 > Note :  Topics allowed are {'general', 'beauty', 'food', 'travel', 'sports', 'entertainment'}. But it is highly recomended to use 'general' till we gain sufficient users in each of the topics.
-
-It needs a Server code backed by a cloud database. Server Repo is here [InstaPyPodsServer](https://github.com/ishandutta2007/InstaPyPodsServer)
 
 
 ### Pass arguments by CLI
