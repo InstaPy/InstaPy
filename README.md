@@ -249,8 +249,8 @@ Check out this short guide on [how to start contributing!](https://github.com/In
   * [Changing DB or Chromedriver locations](#changing-db-or-chromedriver-locations)
   * [Custom action delays](#custom-action-delays)
   * [How to avoid _python_ & **pip** confusion](#how-to-avoid-python--pip-confusion)
+  * [Pods](#pods)
   * [Pass arguments by CLI](#pass-arguments-by-cli)
-
 
 ### Advanced Installation
 #### 🛠 Install or update to the unreleased version  
@@ -2779,6 +2779,36 @@ python -m pip show instapy
 
 Using this style, you will never have to worry about what is the correct alias of the **pip** for you specific _python_ installation and all you have to know is just the _python_'s alias you use.  
 
+
+### Pods
+
+In case you are unfamiliar with the concept do read a little. Here's a blog to learn more about [Pods](https://blog.hubspot.com/marketing/instagram-pods)
+
+```python
+
+photo_comments = ['Nice shot! @{}',
+            'I love your profile! @{}',
+	    'Your feed is an inspiration :thumbsup:',
+	    'Just incredible :open_mouth:',
+	    'What camera did you use @{}?',
+	    'Love your posts @{}',
+	    'Looks awesome @{}',
+	    'Getting inspired by you @{}',
+	    ':raised_hands: Yes!',
+	    'I can feel your passion @{} :muscle:']
+
+session = InstaPy()
+
+with smart_run(session):
+    session.set_comments(photo_comments, media='Photo')
+    session.join_pods()
+```
+
+#### Parameters:  
+`topic`:  
+Topic of the posts to be interacted with. `general` by default.
+
+> Note :  Topics allowed are {'general', 'beauty', 'food', 'travel', 'sports', 'entertainment'}. But it is highly recomended to use 'general' till we gain sufficient users in each of the topics.
 
 
 ### Pass arguments by CLI
