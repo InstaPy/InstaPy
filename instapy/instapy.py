@@ -101,7 +101,7 @@ class InstaPy:
                  disable_image_load=False,
                  bypass_suspicious_attempt=False,
                  bypass_with_mobile=False,
-                 influxdb=None
+                 influxdb=None,
                  multi_logs=True,
                  log_handler=None,
                  browser_binary_path=None):
