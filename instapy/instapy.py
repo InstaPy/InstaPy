@@ -5157,29 +5157,35 @@ class InstaPy:
     def join_pods(self, topic='general'):
         """ Join pods """
         if topic not in self.allowed_pod_topics:
-            self.logger.error("You have entered an invalid topic for pods, allowed topics are : {}. Exiting...".format(self.allowed_pod_topics))
+            self.logger.error('You have entered an invalid topic for pods, allowed topics are : {}. Exiting...'.format(self.allowed_pod_topics))
+            return self
+
+        if self.comments is not None and len(self.comments) < 10:
+            self.logger.error('You have too few comments, please set at least 10 distinct comments to avoid looking suspicious.')
             return self
 
         user_link = 'https://www.instagram.com/{}/'.format(self.username)
         web_address_navigator(self.browser, user_link)
         try:
             pod_post_ids = get_recent_posts_from_pods(topic, self.logger)
-
+            sleep(2)
+            post_link_elems = self.browser.find_elements_by_xpath("//a[contains(@href, '/p/')]")
             post_links = []
-            potential_post_links = self.browser.find_elements_by_xpath("//div/div/div/div/a")
-            for potential_post_link in potential_post_links:
+
+            for post_link_elem in post_link_elems:
                 try:
-                    href = potential_post_link.get_attribute('href')
-                    if 'www.instagram.com/p/' in href:
-                        post_links.append(href)
+                    post_link = post_link_elem.get_attribute('href')
+                    post_links.append(post_link)
                 except Exception as e:
-                    self.logger.error(e)
+                    self.logger.error('Can not get href for {} - {}'.format(post_link, e))
+                    continue
 
             post_links = list(set(post_links))
             my_recent_post_ids = []
             for post_link in post_links:
                 web_address_navigator(self.browser, post_link)
-                time_element = self.browser.find_element_by_xpath("//div/div/article/div[2]/div/a/time")
+                sleep(2)
+                time_element = self.browser.find_element_by_xpath("//div/a/time")
                 post_datetime_str = time_element.get_attribute('datetime')
                 post_datetime = datetime.strptime(post_datetime_str, "%Y-%m-%dT%H:%M:%S.%fZ")
                 postid = post_link.split('/')[4]
