@@ -8,7 +8,7 @@ def get_recent_posts_from_pods(topic, logger):
     params = {'topic' : topic}
     r = requests.get(Settings.pods_server_endpoint + '/getRecentPosts', params=params)
     try:
-        logger.info("Downloaded postids from Pods:")
+        logger.info('Downloaded postids from Pod {}:'.format(topic))
         if r.status_code == 200:
             logger.info(r.json())
             return r.json()
@@ -16,7 +16,7 @@ def get_recent_posts_from_pods(topic, logger):
             logger.error(r.text)
             return []
     except Exception as err:
-        logger.error(err)
+        logger.error('Could not get postids from pod {} - {}'.format(topic, err))
         return []
 
 def share_my_post_with_pods(postid, topic, logger):
