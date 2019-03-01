@@ -50,6 +50,7 @@
   - [Interact by Comments](#interact-by-comments)
   - [Accept pending follow requests](#accept-pending-follow-requests)
   - [Remove outgoing follow requests](#remove-outgoing-follow-requests)
+  - [InstaPy Pods](#instapy-pods)
   
  <br />
   
@@ -1171,6 +1172,38 @@ Sleep delay _sets_ the time it will sleep **after** every accepted request (_def
 
 session.remove_follow_requests(amount=200, sleep_delay=600)
 ```
+
+
+### InstaPy Pods
+
+  In case you are unfamiliar with the concept do read a little. Here's a blog to learn more about [Pods](https://blog.hubspot.com/marketing/instagram-pods)
+
+  ```python
+
+ photo_comments = ['Nice shot! @{}',
+                   'I love your profile! @{}',
+ 	           'Your feed is an inspiration :thumbsup:',
+ 	           'Just incredible :open_mouth:',
+ 	           'What camera did you use @{}?',
+ 	           'Love your posts @{}',
+ 	           'Looks awesome @{}',
+ 	           'Getting inspired by you @{}',
+ 	           ':raised_hands: Yes!',
+ 	           'I can feel your passion @{} :muscle:']
+
+ session = InstaPy()
+
+ with smart_run(session):
+     session.set_comments(photo_comments, media='Photo')
+     session.join_pods()
+ ```
+
+  #### Parameters:  
+ `topic`:  
+ Topic of the posts to be interacted with. `general` by default.
+
+  > Note :  Topics allowed are {'general', 'beauty', 'food', 'travel', 'sports', 'entertainment'}. But it is highly recomended to use 'general' till we gain sufficient users in each of the topics.
+
 
 ---
 
