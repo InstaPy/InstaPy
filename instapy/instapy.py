@@ -116,11 +116,7 @@ class InstaPy:
                  disable_image_load=False,
                  bypass_suspicious_attempt=False,
                  bypass_with_mobile=False,
-                 user_influx=None,
-                 password_influx=None,
-                 db_influx=None,
-                 host_influx=None,
-                 port_influx=None,
+                 influxdb=None,
                  multi_logs=True,
                  log_handler=None,
                  split_db=False,
@@ -166,6 +162,16 @@ class InstaPy:
         self.bypass_suspicious_attempt = bypass_suspicious_attempt
         self.bypass_with_mobile = bypass_with_mobile
         self.disable_image_load = disable_image_load
+
+        if influxdb:
+            Settings.user_influx = influxdb['user']
+            Settings.password_influx = influxdb['password']
+            Settings.db_influx = influxdb['database']
+            Settings.host_influx = influxdb['host']
+            Settings.port_influx = influxdb['port']
+            
+            # create singleton so connection will be established
+            InfluxDBLog()
 
         # choose environment over static typed credentials
         self.username = os.environ.get('INSTA_USER') or username
