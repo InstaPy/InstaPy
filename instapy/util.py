@@ -10,18 +10,20 @@ import os
 import sys
 from sys import exit as clean_exit
 from platform import system
+from platform import python_version
 from subprocess import call
 import csv
 import sqlite3
 import json
 from contextlib import contextmanager
+from tempfile import gettempdir
+import emoji
+from emoji.unicode_codes import UNICODE_EMOJI
+from argparse import ArgumentParser
 
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as ec
 from selenium.webdriver.common.by import By
-from tempfile import gettempdir
-import emoji
-from emoji.unicode_codes import UNICODE_EMOJI
 
 from .time_util import sleep
 from .time_util import sleep_actual
@@ -73,7 +75,7 @@ def is_private_profile(browser, logger, following=True):
 
     # double check with xpath that should work only when we not follwoing a
     # user
-    if is_private is True and not following:
+    if is_private and not following:
         logger.info("Is private account you're not following.")
         body_elem = browser.find_element_by_tag_name('body')
         is_private = body_elem.find_element_by_xpath(
@@ -103,7 +105,8 @@ def validate_username(browser,
                       skip_business_percentage,
                       skip_business_categories,
                       dont_skip_business_categories,
-                      logger):
+                      logger,
+                      logfolder):
     """Check if we can interact with the user"""
 
     # some features may not provide `username` and in those cases we will
@@ -151,9 +154,6 @@ def validate_username(browser,
         inap_msg = "---> '{}' is in the `ignore_users` list\t~skipping " \
                    "user\n".format(username)
         return False, inap_msg
-
-    logfolder = logfolder = '{0}{1}{2}{1}'.format(
-        Settings.log_location, os.path.sep, own_username)
 
     blacklist_file = "{}blacklist.csv".format(logfolder)
     blacklist_file_exists = os.path.isfile(blacklist_file)
@@ -525,8 +525,11 @@ def get_active_users(browser, username, posts, boundary, logger):
         "Getting active users who liked the latest {} posts:\n  {}".format(
             posts, message))
 
-    for count in range(1, posts + 1):
+    count = 1
+    checked_posts = 0
+    while count <= posts:
         try:
+            checked_posts +=1
             sleep_actual(2)
             try:
                 likers_count = browser.execute_script(
@@ -552,11 +555,39 @@ def get_active_users(browser, username, posts, boundary, logger):
                     likers_count = None
             try:
                 likes_button = browser.find_elements_by_xpath(
-                    "//button[contains(@class, '_8A5w5')]")[1]
-                click_element(browser, likes_button)
-                sleep_actual(5)
+                    "//button[contains(@class, '_8A5w5')]")
+                '''
+                    Len(likes_button) = 3 when user is followed and it's a post,
+                    but when user is followed and it's a video it is 2, so we avoid this
+                    and empty case.
+                '''
+                if len(likes_button) == 3 or len(likes_button) == 1:
+                    likes_button = likes_button[-1]
+                    click_element(browser, likes_button)
+                    sleep_actual(3)
+                else:
+                    raise NoSuchElementException
+                    
             except (IndexError, NoSuchElementException):
                 # Video have no likes button / no posts in page
+                logger.info("video found, try next post until we run out of posts")
+                
+                # edge case of account having only videos,  or last post is a video.
+                if checked_posts >= total_posts:
+                    break
+                # if not reached posts(parameter) value, continue (but load next post)
+                if count != posts+1:
+                    try:
+                        # click close button
+                        close_dialog_box(browser)
+        
+                        # click next button
+                        next_button = browser.find_element_by_xpath(
+                            "//a[contains(@class, 'HBoOv')]"
+                            "[text()='Next']")
+                        click_element(browser, next_button)
+                    except Exception:
+                        logger.error('Unable to go to next profile post')
                 continue
 
             # get a reference to the 'Likes' dialog box
@@ -579,7 +610,7 @@ def get_active_users(browser, username, posts, boundary, logger):
                 )
             else:
                 amount = None
-
+                
             while scroll_it is not False and boundary != 0:
                 scroll_it = browser.execute_script('''
                     var div = arguments[0];
@@ -606,12 +637,7 @@ def get_active_users(browser, username, posts, boundary, logger):
                     sleep_actual(1.2)  # old value 5.6
                     sc_rolled += 1
 
-                """ Old method 1 """
-                # tmp_list = browser.find_elements_by_xpath(
-                #     "//a[contains(@class, 'FPmhX')]")
-
                 user_list = get_users_from_dialog(user_list, dialog)
-                # print("len(user_list): {}".format(len(user_list)))
 
                 # write & update records at Progress Tracker
                 if amount:
@@ -652,26 +678,13 @@ def get_active_users(browser, username, posts, boundary, logger):
             logger.error("Ku-ku! There is an error searching active users"
                          "~\t{}\n\n".format(str(exc).encode("utf-8")))
 
-            """ Old method 2 """
-            # try:
-            #     tmp_list = browser.find_elements_by_xpath(
-            #         "//div[contains(@class, '_1xe_U')]/a")
-
-            #     if len(tmp_list) > 0:
-            #         logger.info(
-            #             "Post {}  |  Likers: found {}, catched {}".format(
-            #                 count, len(tmp_list), len(tmp_list)))
-
-            # except NoSuchElementException:
-            #     print("Ku-ku")
-
         for user in user_list:
             active_users.append(user)
 
         sleep_actual(1)
 
         # if not reached posts(parameter) value, continue
-        if count + 1 != posts + 1 and count != 0:
+        if count != posts + 1:
             try:
                 # click close button
                 close_dialog_box(browser)
@@ -684,6 +697,7 @@ def get_active_users(browser, username, posts, boundary, logger):
 
             except Exception:
                 logger.error('Unable to go to next profile post')
+        count += 1
 
     real_time = time.time()
     diff_in_minutes = int((real_time - start_time) / 60)
@@ -782,24 +796,26 @@ def scroll_bottom(browser, element, range_int):
 
 
 def click_element(browser, element, tryNum=0):
-    # There are three (maybe more) different ways to "click" an element/button.
-    # 1. element.click()
-    # 2. element.send_keys("\n")
-    # 3. browser.execute_script("document.getElementsByClassName('" +
-    # element.get_attribute("class") + "')[0].click()")
+    """
+    There are three (maybe more) different ways to "click" an element/button.
+    1. element.click()
+    2. element.send_keys("\n")
+    3. browser.execute_script("document.getElementsByClassName('" +
+    element.get_attribute("class") + "')[0].click()")
 
-    # I'm guessing all three have their advantages/disadvantages
-    # Before committing over this code, you MUST justify your change
-    # and potentially adding an 'if' statement that applies to your
-    # specific case. See the following issue for more details
-    # https://github.com/timgrossmann/InstaPy/issues/1232
+    I'm guessing all three have their advantages/disadvantages
+    Before committing over this code, you MUST justify your change
+    and potentially adding an 'if' statement that applies to your
+    specific case. See the following issue for more details
+    https://github.com/timgrossmann/InstaPy/issues/1232
 
-    # explaination of the following recursive function:
-    #   we will attempt to click the element given, if an error is thrown
-    #   we know something is wrong (element not in view, element doesn't
-    #   exist, ...). on each attempt try and move the screen around in
-    #   various ways. if all else fails, programmically click the button
-    #   using `execute_script` in the browser.
+    explaination of the following recursive function:
+      we will attempt to click the element given, if an error is thrown
+      we know something is wrong (element not in view, element doesn't
+      exist, ...). on each attempt try and move the screen around in
+      various ways. if all else fails, programmically click the button
+      using `execute_script` in the browser.
+      """
 
     try:
         # use Selenium's built in click function
@@ -1066,7 +1082,8 @@ def highlight_print(username=None, message=None, priority=None, level=None,
     # can add other highlighters at other priorities enriching this function
 
     # find the number of chars needed off the length of the logger message
-    output_len = 28 + len(username) + 3 + len(message)
+    output_len = (28 + len(username) + 3 + len(message) if logger
+                  else len(message))
     show_logs = Settings.show_logs
 
     if priority in ["initialization", "end"]:
@@ -1102,19 +1119,41 @@ def highlight_print(username=None, message=None, priority=None, level=None,
         upper_char = "~"
         lower_char = None
 
-    if show_logs is True:
+    elif priority == "workspace":
+        # ._. ._. ._. ._. ._. ._. ._. ._. ._. ._. ._. ._.
+        # E.g.: |> Workspace in use: "C:/Users/El/InstaPy"
+        upper_char = " ._. "
+        lower_char = None
+
+    if (upper_char
+        and (show_logs
+             or priority == "workspace")):
         print("\n{}".format(
             upper_char * int(ceil(output_len / len(upper_char)))))
 
     if level == "info":
-        logger.info(message)
-    elif level == "warning":
-        logger.warning(message)
-    elif level == "critical":
-        logger.critical(message)
+        if logger:
+            logger.info(message)
+        else:
+            print(message)
 
-    if lower_char and show_logs is True:
-        print("{}".format(lower_char * output_len))
+    elif level == "warning":
+        if logger:
+            logger.warning(message)
+        else:
+            print(message)
+
+    elif level == "critical":
+        if logger:
+            logger.critical(message)
+        else:
+            print(message)
+
+    if (lower_char
+        and (show_logs
+             or priority == "workspace")):
+        print("{}".format(
+            lower_char * int(ceil(output_len / len(lower_char)))))
 
 
 def remove_duplicates(container, keep_order, logger):
@@ -1974,4 +2013,97 @@ def close_dialog_box(browser):
 
     except NoSuchElementException as exc:
         pass
+
+
+def parse_cli_args():
+    """ Parse arguments passed by command line interface """
+
+    AP_kwargs = dict(prog="InstaPy",
+                     description="Parse InstaPy constructor's arguments",
+                     epilog="And that's how you'd pass arguments by CLI..",
+                     conflict_handler="resolve")
+    if python_version() < "3.5":
+        parser = CustomizedArgumentParser(**AP_kwargs)
+    else:
+        AP_kwargs.update(allow_abbrev=False)
+        parser = ArgumentParser(**AP_kwargs)
+
+    """ Flags that REQUIRE a value once added
+    ```python quickstart.py --username abc```
+    """
+    parser.add_argument(
+        "-u", "--username", help="Username", type=str, metavar="abc")
+    parser.add_argument(
+        "-p", "--password", help="Password", type=str, metavar="123")
+    parser.add_argument(
+        "-pd", "--page-delay", help="Implicit wait", type=int, metavar=25)
+    parser.add_argument(
+        "-pa", "--proxy-address", help="Proxy address",
+        type=str, metavar="192.168.1.1")
+    parser.add_argument(
+        "-pp", "--proxy-port", help="Proxy port", type=int, metavar=8080)
+
+    """ Auto-booleans: adding these flags ENABLE themselves automatically
+    ```python quickstart.py --use-firefox```
+    """
+    parser.add_argument(
+        "-uf", "--use-firefox", help="Use Firefox",
+        action="store_true", default=None)
+    parser.add_argument(
+        "-hb", "--headless-browser", help="Headless browser",
+        action="store_true", default=None)
+    parser.add_argument(
+        "-dil", "--disable-image-load", help="Disable image load",
+        action="store_true", default=None)
+    parser.add_argument(
+        "-bsa", "--bypass-suspicious-attempt",
+        help="Bypass suspicious attempt", action="store_true", default=None)
+    parser.add_argument(
+        "-bwm", "--bypass-with-mobile", help="Bypass with mobile phone",
+        action="store_true", default=None)
+
+    """ Style below can convert strings into booleans:
+    ```parser.add_argument("--is-debug",
+                           default=False,
+                           type=lambda x: (str(x).capitalize() == "True"))```
+
+    So that, you can pass bool values explicitly from CLI,
+    ```python quickstart.py --is-debug True```
+
+    NOTE: This style is the easiest of it and currently not being used.
+    """
+
+    args, args_unknown = parser.parse_known_args()
+    """ Once added custom arguments if you use a reserved name of core flags
+    and don't parse it, e.g.,
+    `-ufa` will misbehave cos it has `-uf` reserved flag in it.
+
+    But if you parse it, it's okay.
+    """
+
+    return args
+
+
+class CustomizedArgumentParser(ArgumentParser):
+    """
+     Subclass ArgumentParser in order to turn off
+    the abbreviation matching on older pythons.
+
+    `allow_abbrev` parameter was added by Python 3.5 to do it.
+    Thanks to @paul.j3 - https://bugs.python.org/msg204678 for this solution.
+    """
+
+    def _get_option_tuples(self, option_string):
+        """
+         Default of this method searches through all possible prefixes
+        of the option string and all actions in the parser for possible
+        interpretations.
+
+        To view the original source of this method, running,
+        ```
+        import inspect; import argparse; inspect.getsourcefile(argparse)
+        ```
+        will give the location of the 'argparse.py' file that have this method.
+        """
+        return []
 

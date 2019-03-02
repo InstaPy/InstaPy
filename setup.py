@@ -1,50 +1,71 @@
-import io
-import os
+# This Python file uses the following encoding: utf-8
+
 from setuptools import setup
+from os import path
+# io.open is needed for projects that support Python 2.7
+# It ensures open() defaults to text mode with universal newlines,
+# and accepts an argument to specify the text encoding
+# Python 3 only projects can skip this import and use built-in open()
+from io import open as io_open
+import re
 
-__version__ = '0.0.1'
-__author__ = 'Tim Grossmann'
 
-description = 'Instagram Like, Comment and Follow Automation Script'
-here = os.path.abspath(os.path.dirname(__file__))
+summary = "Tool for automated Instagram interactions"
+project_homepage = "https://github.com/timgrossmann/InstaPy"
+here = path.abspath(path.dirname(__file__))
 
-# load requirements
+
+def readall(*args):
+    with io_open(path.join(here, *args), encoding="utf-8") as fp:
+        return fp.read()
+
+
 with open("requirements.txt") as f:
     dependencies = f.read().splitlines()
 
-# load README
-with io.open(os.path.join(here, "README.md"), encoding="utf-8") as doc_file:
-    documentation = '\n' + doc_file.read()
+documentation = readall("README.md")
+metadata = dict(
+    re.findall(
+        r"""__([a-z]+)__ = "([^"]+)""", readall("instapy", "__init__.py")))
 
 setup(
-    name='instagram_py',
-    version=__version__,
-    description=description,
+    name="instapy",
+    version=metadata["version"],
+    description=summary,
     long_description=documentation,
-    author=__author__,
-    author_email='contact.timgrossmann@gmail.com',
+    long_description_content_type="text/markdown",
+    author=u"Tim Großmann",
+    author_email="contact.timgrossmann@gmail.com",
     maintainer="InstaPy Community at Github",
-    url='https://github.com/timgrossmann/InstaPy',
-    download_url="https://github.com/timgrossmann/InstaPy/archive/master.zip",
-    project_urls={"GUI": "https://github.com/ahmadudin/electron-instaPy-GUI",
-                  "How Tos": "https://github.com/timgrossmann/InstaPy/tree"
-                             "/master/docs",
-                  "Examples": "https://github.com/timgrossmann/InstaPy/tree"
-                              "/master/examples"},
-    packages=['instapy'],
-    py_modules='instapy',
     license="GPLv3",
-    keywords=["instagram", "automation", "promotion", "marketing", "instapy",
-              "bot"],
-    classifiers=["Development Status :: 5 - Production/Stable",
+    url=project_homepage,
+    download_url=(project_homepage + "/archive/master.zip"),
+    project_urls={
+        "How Tos": (project_homepage + "/tree/master/docs"),
+        "Examples": (project_homepage + "/tree/master/quickstart_templates"),
+        "Bug Reports": (project_homepage + "/issues"),
+        "Funding": "https://www.paypal.me/supportInstaPy",
+        "Say Thanks!": "http://saythanks.io/to/uluQulu",
+        "Source": (project_homepage + "/tree/master/instapy")
+    },
+    packages=["instapy"],
+    # include_package_data=True,  # <- packs every data file in the package
+    package_data={   # we need only the files below:
+        "instapy": ["icons/Windows/*.ico",
+                    "icons/Linux/*.png",
+                    "icons/Mac/*.icns"]
+    },
+    keywords=(
+        "instapy python instagram automation \
+         marketing promotion bot selenium"
+    ),
+    classifiers=["Development Status :: 4 - Beta",
                  "Environment :: Console",
                  "Environment :: Win32 (MS Windows)",
                  "Environment :: MacOS X",
                  "Environment :: Web Environment",
-                 "Environment :: Other Environment :: VPS",
                  "Intended Audience :: End Users/Desktop",
                  "Intended Audience :: Developers",
-                 "License :: OSI Approved :: GNU General Public License v3",
                  "Operating System :: Microsoft :: Windows",
                  "Operating System :: POSIX :: Linux",
                  "Operating System :: MacOS :: MacOS X",
@@ -52,13 +73,30 @@ setup(
                  "Programming Language :: Python",
                  "Programming Language :: JavaScript",
                  "Programming Language :: SQL",
-                 "Topic :: Internet :: Browsers",
-                 "Topic :: Other/Nonlisted Topic :: Automation :: Selenium",
                  "Topic :: Utilities",
-                 "Natural Language :: English"],
+                 "Topic :: Software Development :: Build Tools",
+                 "Programming Language :: Python :: 2",
+                 "Programming Language :: Python :: 2.7",
+                 "Programming Language :: Python :: 3",
+                 "Programming Language :: Python :: 3.4",
+                 "Programming Language :: Python :: 3.5",
+                 "Programming Language :: Python :: 3.6",
+                 "Programming Language :: Python :: 3.7",
+                 "Natural Language :: English"
+                 ],
     install_requires=dependencies,
-    extras_require={"test": ["pytest", "tox"]},
-    include_package_data=True,
-    python_requires=">=2.7",
-    platforms=["win32", "linux", "linux2", "darwin"]
+    extras_require={
+        "test": ["pytest >= 3.0.0",
+                 "tox",
+                 "flake8",
+                 "virtualenv",
+                 "tox-venv"
+                 ]
+    },
+    python_requires=">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*",
+    platforms=["win32", "linux", "linux2", "darwin"],
+    zip_safe=False,
+    entry_points={
+        "console_scripts": []
+    }
 )
