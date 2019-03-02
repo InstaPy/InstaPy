@@ -2,11 +2,15 @@
 # https://github.com/timgrossmann/InstaPy
 # ------------------------------------->
 from instapy import InstaPy
-from instapy.util import smart_run
+from instapy import smart_run
+from instapy import set_workspace
 
 # import other stuff
 import random
 import json
+
+# set workspace folder at desired location (default is at your home folder)
+# set_workspace(path=None)
 
 # implement to avoid UnicodeEncodeError for e.g chinese hashtags
 # -------------->
@@ -24,7 +28,7 @@ with open('settings.json') as settings_file:
 # get an InstaPy session!
 # set headless_browser=True to run InstaPy in the background
 # ------------------------------------->
-session = InstaPy(username=settings['credentials']['username'], password=settings['credentials']['password'], headless_browser=False)
+session = InstaPy(username=str(settings['credentials']['username']), password=str(settings['credentials']['password']), headless_browser=False)
 
 # Fire up Session!
 # ------------------->
