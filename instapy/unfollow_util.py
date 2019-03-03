@@ -423,8 +423,9 @@ def unfollow(browser,
                             
                             user_link = "https://www.instagram.com/{}/".format(person)
                             web_address_navigator(browser, user_link)
+                            valid_page = is_page_available(browser, logger)
 
-                            if is_follow_me(browser, person):
+                            if valid_page and is_follow_me(browser, person):
                                 # delay follow-backers with delay_follow_back.
                                 time_stamp = (automatedFollowedPool["all"][person]["time_stamp"] if
                                              person in automatedFollowedPool["all"].keys() else False)
