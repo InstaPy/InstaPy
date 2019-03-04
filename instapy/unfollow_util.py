@@ -1476,7 +1476,7 @@ def verify_action(browser, action, track, username, person, person_id, logger,
                     "failure!".format(action))
                 return False, "unexpected"
 
-            if not button_change or random_action(3):
+            if not button_change:
                 if retry_count == 1:
                     reload_webpage(browser)
 
