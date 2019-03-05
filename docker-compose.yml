@@ -1,7 +1,6 @@
-version: '3' 
+version: '3'
 services:
   web:
-    #command: ["./code/wait-for-selenium.sh", "http://selenium:4444/wd/hub", "--", "python", "code/docker_quickstart.py"]
     environment:
       - PYTHONUNBUFFERED=0
       - INSTAPY_WORKSPACE=/code
