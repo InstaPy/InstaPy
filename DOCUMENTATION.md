@@ -92,6 +92,7 @@
   - [Advanced Installation](#advanced-installation)
   - [Workspace folders](#workspace-folders)
   - [Pass arguments by CLI](#pass-arguments-by-cli)
+  - [Docker](#docker)
   - [Extensions](#extensions)
   - [Custom chromedriver version](#custom-chromedriver-version)
   - [Using one of the templates](#using-one-of-the-templates)
@@ -2596,6 +2597,10 @@ python quickstart.py -u abc
 ```
 
 </details>
+
+
+## Docker
+All information on how to use InstaPy with Docker can be found in the [instapy-docker](https://github.com/InstaPy/instapy-docker) repository.
 
 
 ## Extensions
