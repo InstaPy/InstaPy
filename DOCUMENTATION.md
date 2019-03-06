@@ -1126,7 +1126,7 @@ session.set_use_meaningcloud(enabled=True, license_key='', polarity="P")
 session.set_use_yandex(enabled=True, API_key='', match_language=True, language_code="en")
 
 session.set_do_comment(enabled=True, percentage=14)
-session.set_reply_comments(replies=[u"😎😎😎", u"😁😁😁😁😁😁😁💪🏼"], media="Photo")
+session.set_comment_replies(replies=[u"😎😎😎", u"😁😁😁😁😁😁😁💪🏼"], media="Photo")
 
 session.set_user_interact(amount=2, percentage=70, randomize=False, media="Photo")
 session.set_do_like(enabled=True, percentage=100)
