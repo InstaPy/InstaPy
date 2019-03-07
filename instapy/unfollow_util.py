@@ -1489,8 +1489,9 @@ def verify_action(browser, action, track, username, person, person_id, logger,
                     click_visibly(browser, follow_button)
 
                     if action == "unfollow":
-                        sleep(4)
                         confirm_unfollow(browser)
+
+                    sleep(4)
 
                 elif retry_count == 3:
                     logger.warning("Phew! Last {0} is not verified."
