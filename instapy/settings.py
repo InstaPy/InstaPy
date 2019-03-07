@@ -110,8 +110,8 @@ class Selectors:
 
 
 
-""" InfluxDB Singleton Class """
 class InfluxDBLog:  
+    """ InfluxDB Singleton Class """
     singleton = None 
     client_influxDB = None 
    
