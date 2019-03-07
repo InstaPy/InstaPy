@@ -448,7 +448,7 @@ class InstaPy:
                           follow=None,
                           unfollow=None,
                           randomize: bool = False,
-                          random_range=(None, None),
+                          random_range: tuple = (None, None),
                           safety_match: bool = True):
         """ Set custom sleep delay after actions """
         Settings.action_delays.update({"enabled": enabled,
@@ -1112,12 +1112,12 @@ class InstaPy:
                                 enabled: bool = False,
                                 potency_ratio=None,
                                 delimit_by_numbers=None,
-                                min_posts=None,
-                                max_posts=None,
-                                max_followers=None,
-                                max_following=None,
-                                min_followers=None,
-                                min_following=None):
+                                min_posts: int = None,
+                                max_posts: int = None,
+                                max_followers: int = None,
+                                max_following: int = None,
+                                min_followers: int = None,
+                                min_following: int = None):
         """Sets the potency ratio and limits to the provide an efficient
         activity between the targeted masses"""
 
