@@ -1453,7 +1453,7 @@ def verify_action(browser, action, track, username, person, person_id, logger,
             post_action_text_correct = ["Follow", "Follow Back", "Unblock"]
             post_action_text_fail = ["Following", "Requested"]
 
-        while not button_change:
+        while True:
 
             # count retries at beginning
             retry_count += 1
@@ -1476,7 +1476,10 @@ def verify_action(browser, action, track, username, person, person_id, logger,
                     "failure!".format(action))
                 return False, "unexpected"
 
-            if not button_change:
+
+            if button_change:
+                break
+            else:
                 if retry_count == 1:
                     reload_webpage(browser)
 
