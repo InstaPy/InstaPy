@@ -16,6 +16,9 @@ from time import sleep
 # local project
 from .util import interruption_handler
 from .util import highlight_print
+from .util import emergency_exit
+from .util import get_current_url
+from .util import check_authorization
 from .settings import Settings
 from .file_manager import get_chromedriver_location
 
@@ -302,12 +305,45 @@ def retry(max_retry_count = 3, start_page = None):
 
 
 class custom_browser(Remote):
-    """Custom browser instance for manupulation later on"""
+    '''Custom browser instance for manupulation later on'''
+
 
     def find_element_by_xpath(self, *args, **kwargs):
-        print('yeeeah this line gets printed out on EVERY get element by xpath without changing any code !!')
+        '''example usage of hooking into built in functions'''
         rv = super(custom_browser, self).find_element_by_xpath(*args, **kwargs)
         return rv
+
+
+    def wait_for_valid_connection(self, username, logger):
+        counter = 0
+        while True and counter < 10:
+            sirens_wailing, emergency_state = emergency_exit(self, username, logger)
+            if sirens_wailing and emergency_state == 'not connected':
+                logger.warning('there is no valid connection')
+                counter += 1
+                sleep(60)
+            else:
+                break
+
+
+    def wait_for_valid_authorization(self, username, logger):
+        # save current page
+        current_url = get_current_url(self)
+
+        # stuck on invalid auth
+        auth_method = 'activity counts'
+        counter = 0
+        while True and counter < 10:
+            login_state = check_authorization(self, username, auth_method, logger)
+            if login_state is False:
+                logger.warning('not logged in')
+                counter += 1
+                sleep(60)
+            else:
+                break
+
+        # return to original page
+        web_address_navigator(self, current_url) 
 
 
 
