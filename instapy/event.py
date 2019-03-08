@@ -5,6 +5,7 @@ class Event:
     from .event import Event
     Event().image_liked(image)
     '''
+
     singleton = None 
    
     def __new__(cls, *args, **kwargs):  
