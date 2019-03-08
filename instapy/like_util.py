@@ -411,15 +411,15 @@ def get_links_for_username(browser,
         return False
 
     # if private user, we can get links only if we following
-    following, follow_button = get_following_status(browser, 'profile',
-                                                    username, person, None,
-                                                    logger, logfolder)
-    if following == 'Following':
-        following = True
-    is_private = is_private_profile(browser, logger, following)
-    if (is_private is None) or (is_private is True and not following) or (
-            following == 'Blocked'):
-        return False
+    following_status, follow_button = get_following_status(
+        browser, "profile", username, person, None, logger, logfolder)
+
+    if following_status != "OWNER":
+        is_private = is_private_profile(browser, logger, following_status)
+        if (is_private is None
+            or (is_private and not following_status)
+                or following_status == "Blocked"):
+            return False
 
     # Get links
     links = []
@@ -813,9 +813,16 @@ def like_comment(browser, original_comment_text, logger):
             comment = extract_text_from_element(comment_elem)
 
             if comment and (comment == original_comment_text):
+                # find "Like" span (a direct child of Like button)
+                span_like_elements = comment_line.find_elements_by_xpath(
+                    "//span[@aria-label='Like']")
+                if not span_like_elements:
+                    # this is most likely a liked comment
+                    return True, "success"
+
                 # like the given comment
-                comment_like_button = comment_line.find_element_by_tag_name(
-                    "button")
+                span_like = span_like_elements[0]
+                comment_like_button = span_like.find_element_by_xpath('..')
                 click_element(browser, comment_like_button)
 
                 # verify if like succeeded by waiting until the like button

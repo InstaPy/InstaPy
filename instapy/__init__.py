@@ -8,5 +8,5 @@ from .file_manager import get_workspace
 
 
 # __variables__ with double-quoted values will be available in setup.py
-__version__ = "0.1.3"
+__version__ = "0.2.3"
 

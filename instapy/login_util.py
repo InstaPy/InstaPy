@@ -200,8 +200,13 @@ def login_user(browser,
               "new cookie...".format(username))
 
     # Check if the first div is 'Create an Account' or 'Log In'
-    login_elem = browser.find_element_by_xpath(
-        "//article//a[text()='Log in']")
+    try:
+        login_elem = browser.find_element_by_xpath(
+            "//a[text()='Log in']")
+    except NoSuchElementException:
+        print("Login A/B test detected! Trying another string...")
+        login_elem = browser.find_element_by_xpath(
+            "//a[text()='Log In']")
 
     if login_elem is not None:
         try:
@@ -258,8 +263,13 @@ def login_user(browser,
     for i in range(2):
         update_activity()
 
-    login_button = browser.find_element_by_xpath(
-        "//button[text()='Log in']")
+    try:
+        login_button = browser.find_element_by_xpath(
+            "//div[text()='Log in']")
+    except NoSuchElementException:
+        print("Login A/B test detected! Trying another string...")
+        login_button = browser.find_element_by_xpath(
+            "//div[text()='Log In']")
 
     (ActionChains(browser)
      .move_to_element(login_button)

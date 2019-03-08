@@ -352,6 +352,8 @@ def likers_from_photo(browser, amount=20):
 
             if previous_len + 10 >= amount:
                 print("\nScrolling finished")
+                if amount < 10:
+                    user_list = get_users_from_dialog(user_list, dialog)
                 sleep(1)
                 break
 
