@@ -198,7 +198,9 @@ class MongoDB:
             # only import when needed
             from pymongo import MongoClient
 
-            conn_str = f'mongodb://{Settings.user_mongo}:{Settings.password_mongo}@{Settings.host_mongo}:{Settings.port_mongo}'
+            conn_str = 'mongodb://' + Settings.user_mongo + ':' + \
+                        Settings.password_mongo + '@' + Settings.host_mongo + \
+                        ':' + str(Settings.port_mongo)
             self.client = MongoClient(conn_str)
             self.db = self.client[Settings.db_mongo]
             print('Connected to MongoDB.')
