@@ -149,6 +149,7 @@ class InfluxDBLog:
             print('Using InfluxDB version: ' + str(version))
         except Exception as e:
             self.client_influxDB = None
+            print('Error connecting to InfluxDB!')
             # TODO throw some exception ?
             pass
     
@@ -203,8 +204,9 @@ class MongoDB:
             conn_str = f'mongodb://{Settings.user_mongo}:{Settings.password_mongo}@{Settings.host_mongo}:{Settings.port_mongo}'
             self.client = MongoClient(conn_str)
             self.db = self.client[Settings.db_mongo]
-            print('connected to mongo db')
+            print('Connected to MongoDB.')
         except Exception as e:
             self.client = None
+            print('Error connecting to MongoDB!')
             # TODO throw some exception ?
             pass
