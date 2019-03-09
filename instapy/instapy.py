@@ -40,6 +40,7 @@ from .login_util import login_user
 from .settings import Settings
 from .settings import localize_path
 from .settings import InfluxDBLog
+from .settings import MongoDB
 from .print_log_writer import log_follower_num
 from .print_log_writer import log_following_num
 
@@ -117,6 +118,7 @@ class InstaPy:
                  bypass_suspicious_attempt=False,
                  bypass_with_mobile=False,
                  influxdb=None,
+                 mongodb=None,
                  multi_logs=True,
                  log_handler=None,
                  split_db=False,
@@ -172,6 +174,16 @@ class InstaPy:
             
             # create singleton so connection will be established
             InfluxDBLog()
+
+        if mongodb:
+            Settings.user_mongo = mongodb['user']
+            Settings.password_mongo = mongodb['password']
+            Settings.db_mongo = mongodb['database']
+            Settings.host_mongo = mongodb['host']
+            Settings.port_mongo = mongodb['port']
+            
+            # create singleton so connection will be established
+            MongoDB()
 
         # choose environment over static typed credentials
         self.username = os.environ.get('INSTA_USER') or username

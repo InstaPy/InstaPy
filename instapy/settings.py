@@ -6,7 +6,6 @@ Vice verse, it'd produce circular dependent imports.
 """
 
 from sys import platform
-from influxdb import InfluxDBClient
 from os import environ as environmental_variables
 from os.path import join as join_path
 from os.path import exists as path_exists
@@ -82,6 +81,12 @@ class Settings:
     password_influx = None
     db_influx  = None
 
+    #mongodb Settings
+    host_mongo = None
+    port_mongo = None
+    user_mongo = None
+    password_mongo = None
+    db_mongo  = None
 
     # state of instantiation of InstaPy
     InstaPy_is_running = False
@@ -129,6 +134,9 @@ class InfluxDBLog:
                 not Settings.db_influx
             ): return
 
+        # only import when needed
+        from influxdb import InfluxDBClient
+
         try:
             self.client_influxDB = InfluxDBClient(host = Settings.host_influx,
                                                     port = Settings.port_influx,
@@ -166,3 +174,34 @@ class InfluxDBLog:
 
         self.client_influxDB.switch_database(database)
         Settings.db_influx = database
+
+
+class MongoDB:  
+    """ MongoDB Singleton Class """
+    singleton = None 
+    client = None 
+    db = None
+   
+    def __new__(cls, *args, **kwargs):  
+        if not cls.singleton:  
+            cls.singleton = object.__new__(MongoDB)  
+        return cls.singleton  
+   
+    def __init__(self):
+        if (self.client or
+                not Settings.host_mongo or
+                not Settings.port_mongo or
+                not Settings.user_mongo or
+                not Settings.password_mongo or
+                not Settings.db_mongo
+            ): return
+
+        try:
+            conn_str = f'mongodb://{Settings.user_mongo}:{Settings.password_mongo}@{Settings.host_mongo}:{Settings.port_mongo}'
+            self.client = MongoClient(conn_str)
+            self.db = self.client[Settings.db_mongo]
+            print('connected to mongo db')
+        except Exception as e:
+            self.client = None
+            # TODO throw some exception ?
+            pass

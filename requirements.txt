@@ -23,4 +23,9 @@ instapy-chromedriver
 =======
 instapy-chromedriver==2.44
 influxdb>=5.2.1
+<<<<<<< HEAD
 >>>>>>> influxdb singleton
+=======
+instapy-chromedriver>=2.44
+pymongo
+>>>>>>> implement mongo db
