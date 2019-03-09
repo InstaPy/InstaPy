@@ -134,10 +134,10 @@ class InfluxDBLog:
                 not Settings.db_influx
             ): return
 
-        # only import when needed
-        from influxdb import InfluxDBClient
-
         try:
+            # only import when needed
+            from influxdb import InfluxDBClient
+
             self.client_influxDB = InfluxDBClient(host = Settings.host_influx,
                                                     port = Settings.port_influx,
                                                     username = Settings.user_influx,
@@ -197,6 +197,9 @@ class MongoDB:
             ): return
 
         try:
+            # only import when needed
+            from pymongo import MongoClient
+
             conn_str = f'mongodb://{Settings.user_mongo}:{Settings.password_mongo}@{Settings.host_mongo}:{Settings.port_mongo}'
             self.client = MongoClient(conn_str)
             self.db = self.client[Settings.db_mongo]
