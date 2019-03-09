@@ -36,6 +36,7 @@ from .like_util import like_comment
 from .login_util import login_user
 from .settings import Settings
 from .settings import InfluxDBLog
+from .settings import MongoDB
 from .print_log_writer import log_follower_num
 from .print_log_writer import log_following_num
 
@@ -108,6 +109,7 @@ class InstaPy:
                  bypass_suspicious_attempt=False,
                  bypass_with_mobile=False,
                  influxdb=None,
+                 mongodb=None,
                  multi_logs=True,
                  log_handler=None,
                  browser_binary_path=None):
@@ -157,6 +159,16 @@ class InstaPy:
             
             # create singleton so connection will be established
             InfluxDBLog()
+
+        if mongodb:
+            Settings.user_mongo = mongodb['user']
+            Settings.password_mongo = mongodb['password']
+            Settings.db_mongo = mongodb['database']
+            Settings.host_mongo = mongodb['host']
+            Settings.port_mongo = mongodb['port']
+            
+            # create singleton so connection will be established
+            MongoDB()
 
         self.username = username or os.environ.get('INSTA_USER')
         self.password = password or os.environ.get('INSTA_PW')
@@ -4235,7 +4247,7 @@ class InstaPy:
                        use_smart_hashtags: bool = False,
                        use_smart_location_hashtags: bool = False,
                        randomize: bool = False,
-                       media: str = None
+                       media: str = None,
                        interact: bool = False):
 
         if self.aborting:
