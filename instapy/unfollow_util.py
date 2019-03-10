@@ -1,6 +1,6 @@
 """ Module which handles the follow features like unfollowing and following """
+from datetime import datetime, timedelta
 import time
-from datetime import datetime
 import os
 import random
 import json
@@ -37,24 +37,31 @@ from .relationship_tools import get_nonfollowers
 from .database_engine import get_database
 from .quota_supervisor import quota_supervisor
 from .settings import InfluxDBLog
+from .util import is_follow_me
+from .util import get_epoch_time_diff
 
 from selenium.common.exceptions import WebDriverException
 from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import ElementNotVisibleException
 
 
-def set_automated_followed_pool(username, unfollow_after, logger, logfolder):
+def set_automated_followed_pool(username, unfollow_after, logger, logfolder, delay_followbackers, pool='followedPool'):
     """ Generare a user list based on the InstaPy followed usernames """
-    pool_name = "{0}{1}_followedPool.csv".format(logfolder, username)
+    pool_name = '{0}{1}_{2}.csv'.format(logfolder, username, pool)
     automatedFollowedPool = {"all": {}, "eligible": {}}
     time_stamp = None
-    user_id = "undefined"  # 'undefined' rather than None is *intentional
 
     try:
         with open(pool_name, 'r+') as followedPoolFile:
             reader = csv.reader(followedPoolFile)
 
             for row in reader:
+
+                # init
+                followedback = None
+                user_id = "undefined"  # 'undefined' rather than None is *intentional
+                eligle = True  # 'undefined' rather than None is *intentional
+
                 entries = row[0].split(' ~ ')
                 sz = len(entries)
                 """
@@ -76,25 +83,41 @@ def set_automated_followed_pool(username, unfollow_after, logger, logfolder):
                     user = entries[1]
                     user_id = entries[2]
 
-                automatedFollowedPool["all"].update({user: {"id": user_id}})
+                elif sz == 4:
+                    time_stamp = entries[0]
+                    user = entries[1]
+                    user_id = entries[2]
+                    followedback = True if entries[3] == "true" else None
+
+                automatedFollowedPool["all"].update({user: {"id": user_id,
+                                                            'time_stamp': time_stamp,
+                                                            'followedback': followedback
+                                                            }})
                 # get eligible list
-                if unfollow_after is not None and time_stamp:
-                    try:
-                        log_time = datetime.strptime(time_stamp,
-                                                     '%Y-%m-%d %H:%M')
-                    except ValueError:
-                        continue
+                if time_stamp is not None:
+                    # filter the eligible users by
+                    # unfollow_after seconds
+                    # or by delay_followbackers seconds
+                    delay_unfollow = True
 
-                    former_epoch = (log_time - datetime(1970, 1,
-                                                        1)).total_seconds()
-                    cur_epoch = (datetime.now() - datetime(1970, 1,
-                                                           1)).total_seconds()
+                    if followedback is True and delay_followbackers:
+                        # delay length is for follow backers
+                        unfollow_after_eligible = delay_followbackers
+                    elif unfollow_after is not None:
+                        # delay length is set by admin
+                        unfollow_after_eligible = unfollow_after
+                    else:
+                        delay_unfollow = False
 
-                    if cur_epoch - former_epoch > unfollow_after:
-                        automatedFollowedPool["eligible"].update(
-                            {user: {"id": user_id}})
+                    if delay_unfollow:
+                        time_diff = get_epoch_time_diff(time_stamp, logger)
+                        if time_diff is None:
+                            continue
 
-                else:
+                        if time_diff < unfollow_after_eligible:
+                            eligle = False
+
+                if eligle:
                     automatedFollowedPool["eligible"].update(
                         {user: {"id": user_id}})
 
@@ -186,6 +209,7 @@ def unfollow(browser,
              white_list,
              sleep_delay,
              jumps,
+             delay_followbackers,
              logger,
              logfolder):
     """ Unfollows the given amount of users"""
@@ -388,6 +412,44 @@ def unfollow(browser,
                     person_id = (automatedFollowedPool["all"][person]["id"] if
                                  person in automatedFollowedPool[
                                      "all"].keys() else False)
+
+                    # delay unfollowing of follow-backers
+                    if delay_followbackers and unfollow_track != "nonfollowers":
+
+                        followedback_status = automatedFollowedPool["all"][person]["followedback"]
+                        # if once before we set that flag to true
+                        # now it is time to unfollow since
+                        # time filter pass, user is now eligble to unfollow
+                        if followedback_status is not True:
+                            
+                            user_link = "https://www.instagram.com/{}/".format(person)
+                            web_address_navigator(browser, user_link)
+                            valid_page = is_page_available(browser, logger)
+
+                            if valid_page and is_follow_me(browser, person):
+                                # delay follow-backers with delay_follow_back.
+                                time_stamp = (automatedFollowedPool["all"][person]["time_stamp"] if
+                                             person in automatedFollowedPool["all"].keys() else False)
+                                if time_stamp not in [False, None]:
+                                    try:
+                                        time_diff = get_epoch_time_diff(time_stamp, logger)
+                                        if time_diff is None:
+                                            continue
+
+                                        if time_diff < delay_followbackers:  # N days in seconds
+                                            set_followback_in_pool(username,
+                                                                   person,
+                                                                   person_id,
+                                                                   time_stamp,  # stay with original timestamp
+                                                                   logger,
+                                                                   logfolder)
+                                            # don't unfollow (for now) this follow backer !
+                                            continue
+
+                                    except ValueError:
+                                        logger.error(
+                                            "time_diff reading for user {} failed \n".format(person))
+                                        pass
 
                     try:
                         unfollow_state, msg = unfollow_user(browser,
@@ -1441,20 +1503,27 @@ def verify_action(browser, action, track, username, person, person_id, logger,
     """ Verify if the action has succeeded """
     # currently supported actions are follow & unfollow
 
+    retry_count = 0
+
     if action in ["follow", "unfollow"]:
+
+        # assuming button_change testing is relevant to those actions only
+        button_change = False
+
         if action == "follow":
-            post_action_text = "//button[text()='Following' or text(" \
-                               ")='Requested']"
+            post_action_text_correct = ["Following", "Requested"]
+            post_action_text_fail = ["Follow", "Follow Back", "Unblock"]
 
         elif action == "unfollow":
-            post_action_text = "//button[text()='Follow' or text()='Follow " \
-                               "Back']"
+            post_action_text_correct = ["Follow", "Follow Back", "Unblock"]
+            post_action_text_fail = ["Following", "Requested"]
 
-        button_change = explicit_wait(browser, "VOEL",
-                                      [post_action_text, "XPath"], logger, 7,
-                                      False)
-        if not button_change:
-            reload_webpage(browser)
+        while True:
+
+            # count retries at beginning
+            retry_count += 1
+
+            # find out CURRENT follow status (this is safe as the follow button is before others)
             following_status, follow_button = get_following_status(browser,
                                                                    track,
                                                                    username,
@@ -1462,34 +1531,34 @@ def verify_action(browser, action, track, username, person, person_id, logger,
                                                                    person_id,
                                                                    logger,
                                                                    logfolder)
-            # find action state *.^
-            if following_status in ["Following", "Requested"]:
-                action_state = False if action == "unfollow" else True
-
-            elif following_status in ["Follow", "Follow Back"]:
-                action_state = True if action == "unfollow" else False
-
+            if following_status in post_action_text_correct:
+                button_change = True
+            elif following_status in post_action_text_fail:
+                button_change = False
             else:
-                action_state = None
+                logger.error(
+                    "Hey! Last {} is not verified out of an unexpected "
+                    "failure!".format(action))
+                return False, "unexpected"
 
-            # handle it!
-            if action_state is True:
-                logger.info(
-                    "Last {} is verified after reloading the page!".format(
-                        action))
 
-            elif action_state is False:
-                # try to do the action one more time!
-                click_visibly(browser, follow_button)
+            if button_change:
+                break
+            else:
+                if retry_count == 1:
+                    reload_webpage(browser)
 
-                if action == "unfollow":
-                    sleep(4)  # TODO: use explicit wait here
-                    confirm_unfollow(browser)
+                elif retry_count == 2:
+                    # handle it!
+                    # try to do the action one more time!
+                    click_visibly(browser, follow_button)
 
-                button_change = explicit_wait(browser, "VOEL",
-                                              [post_action_text, "XPath"],
-                                              logger, 9, False)
-                if not button_change:
+                    if action == "unfollow":
+                        confirm_unfollow(browser)
+
+                    sleep(4)
+
+                elif retry_count == 3:
                     logger.warning("Phew! Last {0} is not verified."
                                    "\t~'{1}' might be temporarily blocked "
                                    "from {0}ing\n"
@@ -1497,11 +1566,10 @@ def verify_action(browser, action, track, username, person, person_id, logger,
                     sleep(210)
                     return False, "temporary block"
 
-            elif action_state is None:
-                logger.error(
-                    "Hey! Last {} is not verified out of an unexpected "
-                    "failure!".format(action))
-                return False, "unexpected"
+        if retry_count == 2:
+            logger.info(
+                "Last {} is verified after reloading the page!".format(
+                    action))
 
     return True, "success"
 
@@ -1557,3 +1625,25 @@ def get_follow_requests(browser, amount, sleep_delay, logger, logfolder):
         .format(len(users_to_unfollow), users_to_unfollow))
 
     return users_to_unfollow
+
+
+def set_followback_in_pool(username, person, person_id, logtime, logger, logfolder):
+    # first we delete the user from pool
+    delete_line_from_file(
+        '{0}{1}_followedPool.csv'.format(logfolder, username), person, logger)
+
+    # return the username with new timestamp
+    log_followed_pool(username, person, logger, logfolder, logtime, person_id, "true")
+
+
+def refresh_follow_time_in_pool(username, person, person_id, extra_secs, logger, logfolder):
+    # set the new time to now plus extra delay
+    logtime = (datetime.now() + timedelta(seconds=extra_secs)).strftime('%Y-%m-%d %H:%M')
+
+    # first we delete the user from pool
+    delete_line_from_file(
+        '{0}{1}_followedPool.csv'.format(logfolder, username), person, logger)
+
+    # return the username with new timestamp
+    log_followed_pool(username, person, logger, logfolder, logtime, person_id, "unknown")
+
