@@ -11,6 +11,7 @@ _The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 - Engagement pods feature 🙌 
 - Smart Hashtags based on locations `set_smart_location_hashtags`
 - Verify action for unfollow and follow actions
+- Browser abstraction and Decorator that handles Selenium Browser exceptions by reloading
 
 ### Changed
 - Expose `threaded_session` of Instapy.end()
