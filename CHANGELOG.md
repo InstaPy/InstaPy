@@ -10,6 +10,7 @@ _The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 - Context manager to interaction calls in `like_by_tags` and `follow_likers`
 - Engagement pods feature 🙌 
 - Smart Hashtags based on locations `set_smart_location_hashtags`
+- Browser abstraction and Decorator that handles Selenium Browser exceptions by reloading
 
 ### Changed
 - Expose `threaded_session` of Instapy.end()
