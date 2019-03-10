@@ -243,7 +243,6 @@ class InstaPy:
         self.skip_business_percentage = 100
         self.skip_no_profile_pic_percentage = 100
         self.skip_private_percentage = 100
-
         self.relationship_data = {
             username: {"all_following": [], "all_followers": []}}
 
@@ -3436,6 +3435,7 @@ class InstaPy:
                        allFollowing=False,
                        style="FIFO",
                        unfollow_after=None,
+                       delay_followbackers=0,  # 864000 = 10 days, 0 = don't delay
                        sleep_delay=600):
         """Unfollows (default) 10 users from your following list"""
 
@@ -3457,7 +3457,8 @@ class InstaPy:
             self.username,
             unfollow_after,
             self.logger,
-            self.logfolder)
+            self.logfolder,
+            delay_followbackers)
 
         try:
             unfollowed = unfollow(self.browser,
@@ -3474,6 +3475,7 @@ class InstaPy:
                                   self.white_list,
                                   sleep_delay,
                                   self.jumps,
+                                  delay_followbackers,
                                   self.logger,
                                   self.logfolder)
             self.logger.info(
