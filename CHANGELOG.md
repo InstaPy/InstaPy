@@ -8,10 +8,28 @@ _The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 ### Added
 - Allowing `follow_by_tags` to interact with the user
 - Context manager to interaction calls in `like_by_tags` and `follow_likers`
+- Engagement pods feature 🙌 
+- Smart Hashtags based on locations `set_smart_location_hashtags`
+- Verify action for unfollow and follow actions
+- Browser abstraction and Decorator that handles Selenium Browser exceptions by reloading
 - Add delay unfollow of follow backers
+
+### Changed
+- Expose `threaded_session` of Instapy.end()
 
 ### Fixed
 - `follow_likers` always fetches zero likers
+- Prevent division by zero in `validate_username`
+
+
+## [0.2.3] - 2019-03-01
+### Changed
+- Made Log in text checking more resilient 
+
+
+## [0.2.2] - 2019-02-21
+### Fixed
+- Chromedriver requirement now >= 2.44 instead of == 2.44
 
 
 ## [0.2.1] - 2019-02-21

@@ -1500,20 +1500,27 @@ def verify_action(browser, action, track, username, person, person_id, logger,
     """ Verify if the action has succeeded """
     # currently supported actions are follow & unfollow
 
+    retry_count = 0
+
     if action in ["follow", "unfollow"]:
+
+        # assuming button_change testing is relevant to those actions only
+        button_change = False
+
         if action == "follow":
-            post_action_text = "//button[text()='Following' or text(" \
-                               ")='Requested']"
+            post_action_text_correct = ["Following", "Requested"]
+            post_action_text_fail = ["Follow", "Follow Back", "Unblock"]
 
         elif action == "unfollow":
-            post_action_text = "//button[text()='Follow' or text()='Follow " \
-                               "Back']"
+            post_action_text_correct = ["Follow", "Follow Back", "Unblock"]
+            post_action_text_fail = ["Following", "Requested"]
 
-        button_change = explicit_wait(browser, "VOEL",
-                                      [post_action_text, "XPath"], logger, 7,
-                                      False)
-        if not button_change:
-            reload_webpage(browser)
+        while True:
+
+            # count retries at beginning
+            retry_count += 1
+
+            # find out CURRENT follow status (this is safe as the follow button is before others)
             following_status, follow_button = get_following_status(browser,
                                                                    track,
                                                                    username,
@@ -1521,34 +1528,34 @@ def verify_action(browser, action, track, username, person, person_id, logger,
                                                                    person_id,
                                                                    logger,
                                                                    logfolder)
-            # find action state *.^
-            if following_status in ["Following", "Requested"]:
-                action_state = False if action == "unfollow" else True
-
-            elif following_status in ["Follow", "Follow Back"]:
-                action_state = True if action == "unfollow" else False
-
+            if following_status in post_action_text_correct:
+                button_change = True
+            elif following_status in post_action_text_fail:
+                button_change = False
             else:
-                action_state = None
+                logger.error(
+                    "Hey! Last {} is not verified out of an unexpected "
+                    "failure!".format(action))
+                return False, "unexpected"
 
-            # handle it!
-            if action_state is True:
-                logger.info(
-                    "Last {} is verified after reloading the page!".format(
-                        action))
 
-            elif action_state is False:
-                # try to do the action one more time!
-                click_visibly(browser, follow_button)
+            if button_change:
+                break
+            else:
+                if retry_count == 1:
+                    reload_webpage(browser)
 
-                if action == "unfollow":
-                    sleep(4)  # TODO: use explicit wait here
-                    confirm_unfollow(browser)
+                elif retry_count == 2:
+                    # handle it!
+                    # try to do the action one more time!
+                    click_visibly(browser, follow_button)
 
-                button_change = explicit_wait(browser, "VOEL",
-                                              [post_action_text, "XPath"],
-                                              logger, 9, False)
-                if not button_change:
+                    if action == "unfollow":
+                        confirm_unfollow(browser)
+
+                    sleep(4)
+
+                elif retry_count == 3:
                     logger.warning("Phew! Last {0} is not verified."
                                    "\t~'{1}' might be temporarily blocked "
                                    "from {0}ing\n"
@@ -1556,11 +1563,10 @@ def verify_action(browser, action, track, username, person, person_id, logger,
                     sleep(210)
                     return False, "temporary block"
 
-            elif action_state is None:
-                logger.error(
-                    "Hey! Last {} is not verified out of an unexpected "
-                    "failure!".format(action))
-                return False, "unexpected"
+        if retry_count == 2:
+            logger.info(
+                "Last {} is verified after reloading the page!".format(
+                    action))
 
     return True, "success"
 

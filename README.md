@@ -208,6 +208,7 @@ Check out this short guide on [how to start contributing!](https://github.com/In
   * [Excluding friends](#excluding-friends)
   * [Blacklist Campaign](#blacklist-campaign)
   * [Smart Hashtags](#smart-hashtags)
+  * [Smart Location Hashtags](#smart-location-hashtags)
   * [Follow/Unfollow/exclude not working?](#followunfollowexclude-not-working)
   * [Bypass Suspicious Login Attempt](#bypass-suspicious-login-attempt)
   * [Quota Supervisor](#quota-supervisor)
@@ -248,8 +249,8 @@ Check out this short guide on [how to start contributing!](https://github.com/In
   * [Changing DB or Chromedriver locations](#changing-db-or-chromedriver-locations)
   * [Custom action delays](#custom-action-delays)
   * [How to avoid _python_ & **pip** confusion](#how-to-avoid-python--pip-confusion)
+  * [Pods](#pods)
   * [Pass arguments by CLI](#pass-arguments-by-cli)
-
 
 ### Advanced Installation
 #### 🛠 Install or update to the unreleased version  
@@ -561,6 +562,23 @@ session.set_user_interact(amount=2,
 session.follow_by_tags(['tag1', 'tag2'], amount=10, interact=True),
 ```
 
+#### Parameters:
+`tags`: The tags that will be searched for and posts will be liked from
+
+`amount`: The amount of posts that will be liked
+
+`skip_top_posts`: Determines whether the first 9 top posts should be liked or not (default is True)
+
+`use_smart_hashtags`: Make use of the [smart hashtag feature]()
+
+`use_smart_location_hashtags`: Make use of the [smart location hashtag feature]()
+
+`interact`: Defines whether the users of the given post should also be interacted with (needs `set_user_interact` to be also set)
+
+`randomize`: Determines whether the first `amount` of posts should be liked or a random selection.
+
+`media`: Determines which media should be liked, Photo or Video (default is `None` which is all)
+
 
 
 ### Follow the likers of photos of users
@@ -792,7 +810,7 @@ session.set_use_meaningcloud(enabled=True, license_key='', polarity="P")
 session.set_use_yandex(enabled=True, API_key='', match_language=True, language_code="en")
 
 session.set_do_comment(enabled=True, percentage=14)
-session.set_reply_comments(replies=[u"😎😎😎", u"😁😁😁😁😁😁😁💪🏼"], media="Photo")
+session.set_comment_replies(replies=[u"😎😎😎", u"😁😁😁😁😁😁😁💪🏼"], media="Photo")
 
 session.set_user_interact(amount=2, percentage=70, randomize=False, media="Photo")
 session.set_do_like(enabled=True, percentage=100)
@@ -1187,6 +1205,24 @@ Example:
 session.like_by_tags(['natgeo', 'world'], amount=10)
 ```
 
+#### Parameters:
+`tags`: The tags that will be searched for and posts will be liked from
+
+`amount`: The amount of posts that will be liked
+
+`skip_top_posts`: Determines whether the first 9 top posts should be liked or not (default is True)
+
+`use_smart_hashtags`: Make use of the [smart hashtag feature]()
+
+`use_smart_location_hashtags`: Make use of the [smart location hashtag feature]()
+
+`interact`: Defines whether the users of the given post should also be interacted with (needs `set_user_interact` to be also set)
+
+`randomize`: Determines whether the first `amount` of posts should be liked or a random selection.
+
+`media`: Determines which media should be liked, Photo or Video (default is `None` which is all)
+
+
 ### Like by Tags and interact with user
 
 ```python
@@ -1238,6 +1274,22 @@ session.like_by_tags(['soccer', 'cr7', 'neymar'], amount=100, media='Photo')
 session.set_smart_hashtags(['cycling', 'roadbike'], limit=3, sort='top', log_tags=True)
 session.like_by_tags(amount=10, use_smart_hashtags=True)
 ```
+
+### Smart Location Hashtags
+Generate smart hashtags based on https://displaypurposes.com/map ranking.
+Banned and spammy tags are filtered out.
+
+```python
+Use_smart_location_hashtags activates like_by_tag to use smart hashtags
+
+session.set_smart_location_hashtags(['204517928/chicago-illinois', '213570652/nagoya-shi-aichi-japan'], radius=20, limit=10)
+session.like_by_tags(amount=10, use_smart_location_hashtags=True)
+```
+
+#### Parameters
+`radius`: Radius around the location in Miles   
+`limit`: Defines amount limit of generated hashtags by hashtag   
+`log_tags`: Shows generated hashtags before use it (default is True)   
 
 ### Mandatory Words
 
@@ -2738,6 +2790,36 @@ python -m pip show instapy
 
 Using this style, you will never have to worry about what is the correct alias of the **pip** for you specific _python_ installation and all you have to know is just the _python_'s alias you use.  
 
+
+### Pods
+
+In case you are unfamiliar with the concept do read a little. Here's a blog to learn more about [Pods](https://blog.hubspot.com/marketing/instagram-pods)
+
+```python
+
+photo_comments = ['Nice shot! @{}',
+            'I love your profile! @{}',
+	    'Your feed is an inspiration :thumbsup:',
+	    'Just incredible :open_mouth:',
+	    'What camera did you use @{}?',
+	    'Love your posts @{}',
+	    'Looks awesome @{}',
+	    'Getting inspired by you @{}',
+	    ':raised_hands: Yes!',
+	    'I can feel your passion @{} :muscle:']
+
+session = InstaPy()
+
+with smart_run(session):
+    session.set_comments(photo_comments, media='Photo')
+    session.join_pods()
+```
+
+#### Parameters:  
+`topic`:  
+Topic of the posts to be interacted with. `general` by default.
+
+> Note :  Topics allowed are {'general', 'beauty', 'food', 'travel', 'sports', 'entertainment'}. But it is highly recomended to use 'general' till we gain sufficient users in each of the topics.
 
 
 ### Pass arguments by CLI
