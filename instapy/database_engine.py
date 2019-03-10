@@ -28,6 +28,12 @@ SQL_CREATE_FOLLOW_RESTRICTION_TABLE = """
         `username` TEXT NOT NULL,
         `times` TINYINT UNSIGNED NOT NULL);"""
 
+SQL_CREATE_SHARE_WITH_PODS_RESTRICTION_TABLE = """
+    CREATE TABLE IF NOT EXISTS `shareWithPodsRestriction` (
+        `profile_id` INTEGER REFERENCES `profiles` (id),
+        `postid` TEXT NOT NULL,
+        `times` TINYINT UNSIGNED NOT NULL);"""
+
 SQL_CREATE_ACCOUNTS_PROGRESS_TABLE = """
     CREATE TABLE IF NOT EXISTS `accountsProgress` (
         `profile_id` INTEGER NOT NULL,
@@ -66,6 +72,7 @@ def create_database(address, logger, name):
             create_tables(cursor, ["profiles",
                                    "recordActivity",
                                    "followRestriction",
+                                   "shareWithPodsRestriction",
                                    "accountsProgress"])
 
             connection.commit()
@@ -90,6 +97,9 @@ def create_tables(cursor, tables):
 
     if "followRestriction" in tables:
         cursor.execute(SQL_CREATE_FOLLOW_RESTRICTION_TABLE)
+
+    if "shareWithPodsRestriction" in tables:
+        cursor.execute(SQL_CREATE_SHARE_WITH_PODS_RESTRICTION_TABLE)
 
     if "accountsProgress" in tables:
         cursor.execute(SQL_CREATE_ACCOUNTS_PROGRESS_TABLE)
