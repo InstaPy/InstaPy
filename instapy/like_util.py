@@ -420,7 +420,7 @@ def get_links_for_username(browser,
         browser.wait_for_valid_connection(browser, username, logger)
 
     if following_status == 'Follow':
-        browser.wait_for_valid_authorization(browser, username, logger, notify=False)
+        browser.wait_for_valid_authorization(browser, username, logger)
 
     is_private = is_private_profile(browser, logger, following_status == 'Following')
     if (is_private is None
