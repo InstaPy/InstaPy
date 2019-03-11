@@ -75,6 +75,8 @@ class Settings:
     # state of instantiation of InstaPy
     InstaPy_is_running = False
 
+    # This is where currently the pods server is hosted
+    pods_server_endpoint = 'https://us-central1-instapy-pods.cloudfunctions.net'
 
 class Storage:
     """ Globally accessible standalone storage """
