@@ -3,7 +3,6 @@ import random
 import re
 from re import findall
 
-from .browser import retry
 from .time_util import sleep
 from .util import format_number
 from .util import add_user_to_blacklist
