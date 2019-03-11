@@ -740,7 +740,7 @@ def get_tags(browser, url):
 
     return tags
 
-@retry()
+
 def get_links(browser, page, logger, media, element):
     # Get image links in scope from hashtag, location and other pages
     link_elems = element.find_elements_by_tag_name('a')
