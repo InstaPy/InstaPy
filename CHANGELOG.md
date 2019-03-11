@@ -4,6 +4,24 @@ The **goal** of this file is explaining to the users of our project the notable 
 _The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html)_.
 
 
+## [0.3.0] - 2019-03-11
+### Added
+- Allowing `follow_by_tags` to interact with the user
+- Context manager to interaction calls in `like_by_tags` and `follow_likers`
+- Engagement pods feature 🙌 
+- Smart Hashtags based on locations `set_smart_location_hashtags`
+- Verify action for unfollow and follow actions
+- Browser abstraction and Decorator that handles Selenium Browser exceptions by reloading
+- Add delay unfollow of follow backers
+
+### Changed
+- Expose `threaded_session` of Instapy.end()
+
+### Fixed
+- `follow_likers` always fetches zero likers
+- Prevent division by zero in `validate_username`
+
+
 ## [0.2.3] - 2019-03-01
 ### Changed
 - Made Log in text checking more resilient 
