@@ -19,5 +19,5 @@ regex>=2018.11.22
 MeaningCloud-python>=1.1.1
 PyYAML>=3.13
 influxdb>=5.2.1
-instapy-chromedriver>=2.44
 pymongo
+instapy-chromedriver
