@@ -4,6 +4,11 @@ The **goal** of this file is explaining to the users of our project the notable 
 _The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html)_.
 
 
+## [0.4.0] - ADD DATE HERE
+### Changed
+- Remove docker from core, moved into instapy-docker repo
+
+
 ## [0.3.0] - 2019-03-11
 ### Added
 - Allowing `follow_by_tags` to interact with the user
