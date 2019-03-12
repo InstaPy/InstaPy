@@ -92,3 +92,10 @@ class Selectors:
         "//h1[text()='Likes']/../../following-sibling::div/div")
 
     likes_dialog_close_xpath = "//span[contains(@aria-label, 'Close')]"
+
+    follow_button_xpath = r'//*[@id="react-root"]/section/main/div/header/section/div[1]/span/span[1]/button'
+
+    search_xpath = r'//*[@id="react-root"]/section/nav/div[2]/div/div/div[2]/div/div'
+
+    first_results_xpath = r'//*[@id="react-root"]/section/nav/div[2]/div/div/div[2]/div[2]/div[2]/div/a[1]/div'
+

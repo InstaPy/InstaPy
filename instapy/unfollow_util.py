@@ -637,6 +637,7 @@ def follow_user(browser, track, login, user_name, button, blacklist, logger,
                                                                logfolder)
         if following_status in ["Follow", "Follow Back"]:
             click_visibly(browser, follow_button)  # click to follow
+            sleep(4)
             follow_state, msg = verify_action(browser, "follow", track, login,
                                               user_name, None, logger,
                                               logfolder)
@@ -1444,19 +1445,32 @@ def verify_action(browser, action, track, username, person, person_id, logger,
 
         # assuming button_change testing is relevant to those actions only
         button_change = False
+        post_action_xpath = Selectors.follow_button_xpath
 
         if action == "follow":
             post_action_text_correct = ["Following", "Requested"]
             post_action_text_fail = ["Follow", "Follow Back", "Unblock"]
+            post_action_xpath += "[text()='{}' or text()='{}']".format(post_action_text_correct[0],
+                                                                       post_action_text_correct[1])
 
         elif action == "unfollow":
             post_action_text_correct = ["Follow", "Follow Back", "Unblock"]
             post_action_text_fail = ["Following", "Requested"]
+            post_action_xpath += "[text()='{}' or text()='{}' or text()='{}']".format(post_action_text_correct[0],
+                                                                                      post_action_text_correct[1],
+                                                                                      post_action_text_correct[2])
 
         while True:
 
             # count retries at beginning
             retry_count += 1
+
+            # wait for the element to change
+            if retry_count != 2:  # don't wait after reload
+                explicit_wait(browser,
+                              "VOEL",
+                              [post_action_xpath, "XPath"], logger, 7,
+                              False)
 
             # find out CURRENT follow status (this is safe as the follow button is before others)
             following_status, follow_button = get_following_status(browser,
@@ -1466,6 +1480,7 @@ def verify_action(browser, action, track, username, person, person_id, logger,
                                                                    person_id,
                                                                    logger,
                                                                    logfolder)
+
             if following_status in post_action_text_correct:
                 button_change = True
             elif following_status in post_action_text_fail:
