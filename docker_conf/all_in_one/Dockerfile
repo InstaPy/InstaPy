@@ -41,10 +41,10 @@ RUN apt-get update \
         xdg-utils \
         git \
 	lsb-release \
-    && pip3 install --upgrade pip \
+    && python3 -m pip install --upgrade pip \
     && locale-gen en_US.UTF-8 \
     && dpkg-reconfigure locales \
-    && pip3 install --upgrade pip \
+    && python3 -m pip install --upgrade pip \
     && apt-get -f install
 
 ENV LANG en_US.UTF-8
@@ -66,11 +66,11 @@ RUN apt-get clean \
 RUN git clone https://github.com/timgrossmann/InstaPy.git \
     && wget ${CRHOMEDRIVER} \
     && unzip chromedriver_linux64 \
-    && mv chromedriver InstaPy/assets/chromedriver \
-    && chmod +x InstaPy/assets/chromedriver \
-    && chmod 755 InstaPy/assets/chromedriver \
+    && chmod +x chromedriver \
+    && chmod 755 chromedriver \
+    && ln -s chromedriver /usr/local/bin/chromedriver \
     && cd InstaPy \
-    && pip install . \
+    && python3 -m pip install . \
     && sed -ie 's/#self.display/self.display/g' instapy/instapy.py
 
 # Copying the your quickstart file into the container and setting directory
