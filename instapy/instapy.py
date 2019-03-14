@@ -148,7 +148,6 @@ class InstaPy:
         Settings.profile["name"] = self.username
 
         self.page_delay = page_delay
-        self.switch_language = True
         self.use_firefox = use_firefox
         Settings.use_firefox = self.use_firefox
         self.browser_profile_path = browser_profile_path
@@ -382,7 +381,6 @@ class InstaPy:
                           self.password,
                           self.logger,
                           self.logfolder,
-                          self.switch_language,
                           self.bypass_suspicious_attempt,
                           self.bypass_with_mobile):
             message = "Wrong login data!"
@@ -570,10 +568,6 @@ class InstaPy:
         self.dont_include = set(friends) or set()
         self.white_list = set(friends) or set()
 
-        return self
-
-    def set_switch_language(self, option=True):
-        self.switch_language = option
         return self
 
     def set_use_clarifai(self,
