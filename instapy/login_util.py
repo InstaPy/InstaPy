@@ -205,8 +205,11 @@ def login_user(browser,
             "//a[text()='Log in']")
     except NoSuchElementException:
         print("Login A/B test detected! Trying another string...")
-        login_elem = browser.find_element_by_xpath(
-            "//a[text()='Log In']")
+        try:
+            login_elem = browser.find_element_by_xpath(
+                "//a[text()='Log In']")
+        except NoSuchElementException:
+            return False
 
     if login_elem is not None:
         try:
