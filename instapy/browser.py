@@ -42,6 +42,7 @@ def set_selenium_local_session(proxy_address,
 
     if use_firefox:
         firefox_options = Firefox_Options()
+        
         if headless_browser:
             firefox_options.add_argument('-headless')
 
@@ -50,6 +51,9 @@ def set_selenium_local_session(proxy_address,
                 browser_profile_path)
         else:
             firefox_profile = webdriver.FirefoxProfile()
+
+        # set English language
+        firefox_profile.set_preference('intl.accept_languages', 'en')
 
         if disable_image_load:
             # permissions.default.image = 2: Disable images load,

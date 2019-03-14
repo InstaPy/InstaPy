@@ -1,6 +1,5 @@
 """Module only used for the login part of the script"""
 # import built-in & third-party modules
-import time
 import pickle
 from selenium.webdriver.common.action_chains import ActionChains
 
@@ -8,7 +7,6 @@ from selenium.webdriver.common.action_chains import ActionChains
 from .time_util import sleep
 from .util import update_activity
 from .util import web_address_navigator
-from .util import reload_webpage
 from .util import explicit_wait
 from .util import click_element
 from .util import check_authorization
@@ -150,7 +148,6 @@ def login_user(browser,
                password,
                logger,
                logfolder,
-               switch_language=True,
                bypass_suspicious_attempt=False,
                bypass_with_mobile=False):
     """Logins the user with the given username and password"""
@@ -169,18 +166,6 @@ def login_user(browser,
             cookie_loaded = True
     except (WebDriverException, OSError, IOError):
         print("Cookie file not found, creating cookie...")
-
-    # include time.sleep(1) to prevent getting stuck on google.com
-    time.sleep(1)
-
-    # changes instagram website language to english to use english xpaths
-    if switch_language:
-        language_element_ENG = browser.find_element_by_xpath(
-            "//select[@class='hztqj']/option[text()='English']")
-        click_element(browser, language_element_ENG)
-
-    web_address_navigator(browser, ig_homepage)
-    reload_webpage(browser)
 
     # cookie has been LOADED, so the user SHOULD be logged in
     # check if the user IS logged in
