@@ -2553,7 +2553,7 @@ the `get_workspace()` function,
 from instapy import InstaPy
 from instapy import smart_run
 from instapy import set_workspace
-from isntapy import get_workspace
+from instapy import get_workspace
 
 set_workspace(path="C:\\Custom\\Path\\InstaPy_super\\")
 
