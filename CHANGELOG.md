@@ -6,6 +6,7 @@ _The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 ## [0.4.0] - ADD DATE HERE
 ### Changed
+- Remove docker from core, moved into instapy-docker repo
 - Remove quickstart templates and only reference instapy-quickstart
 
 
