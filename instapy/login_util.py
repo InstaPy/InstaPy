@@ -1,6 +1,5 @@
 """Module only used for the login part of the script"""
 # import built-in & third-party modules
-import time
 import pickle
 from selenium.webdriver.common.action_chains import ActionChains
 
