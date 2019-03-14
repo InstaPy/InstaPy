@@ -11,7 +11,7 @@
   - [Quota Supervisor](#quota-supervisor)
   - [Restricting Likes](#restricting-likes)
   - [Ignoring Restrictions](#ignoring-restrictions)
-  - [Ignoring Users](#ignoring-users)
+  - [Ignoring Users](#ignoring-users)instapy
   - [Excluding friends](#excluding-friends)
   - [Mandatory Words](#mandatory-words)
   - [Mandatory Language](#mandatory-language)
@@ -2402,7 +2402,7 @@ the `get_workspace()` function,
 from instapy import InstaPy
 from instapy import smart_run
 from instapy import set_workspace
-from isntapy import get_workspace
+from instapy import get_workspace
 
 set_workspace(path="C:\\Custom\\Path\\InstaPy_super\\")
 
