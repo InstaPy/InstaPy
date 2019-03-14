@@ -546,7 +546,7 @@ def get_active_users(browser, username, posts, boundary, logger):
             except WebDriverException:
                 try:
                     likers_count = (browser.find_element_by_xpath(
-                        "//button[contains(@class, '_8A5w5')]/span").text)
+                        "//div[contains(@class,'Nm9Fw')]/child::button/span").text)
                     if likers_count:  # prevent an empty string scenarios
                         likers_count = format_number(likers_count)
                     else:
@@ -562,19 +562,15 @@ def get_active_users(browser, username, posts, boundary, logger):
                     likers_count = None
             try:
                 likes_button = browser.find_elements_by_xpath(
-                    "//button[contains(@class, '_8A5w5')]")
-                '''
-                    Len(likes_button) = 3 when user is followed and it's a post,
-                    but when user is followed and it's a video it is 2, so we avoid this
-                    and empty case.
-                '''
-                if len(likes_button) == 3 or len(likes_button) == 1:
-                    likes_button = likes_button[-1]
+                    "//div[contains(@class,'Nm9Fw')]/child::button")
+
+                if likes_button != []:
+                    likes_button = likes_button[0]
                     click_element(browser, likes_button)
                     sleep_actual(3)
                 else:
                     raise NoSuchElementException
-
+                    
             except (IndexError, NoSuchElementException):
                 # Video have no likes button / no posts in page
                 logger.info("video found, try next post until we run out of posts")
