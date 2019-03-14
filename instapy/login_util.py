@@ -8,7 +8,6 @@ from selenium.webdriver.common.action_chains import ActionChains
 from .time_util import sleep
 from .util import update_activity
 from .util import web_address_navigator
-from .util import reload_webpage
 from .util import explicit_wait
 from .util import click_element
 from .util import check_authorization
