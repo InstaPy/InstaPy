@@ -771,6 +771,7 @@ def follow_user(browser, track, login, user_name, button, blacklist, logger,
 
 
 def scroll_to_bottom_of_followers_list(browser, element):
+    sleep(5)
     browser.execute_script(
         "arguments[0].children[1].scrollIntoView()", element)
     sleep(1)
