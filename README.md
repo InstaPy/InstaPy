@@ -21,6 +21,9 @@ Implemented in Python using the Selenium module.<p>
     </a>
     <a href="https://www.github.com/timgrossmann/InstaPy#sponsors">
 	<img src="https://opencollective.com/instapy/sponsors/badge.svg">
+    </a>  
+    <a href="https://discord.gg/FDETsht">
+	<img src="https://img.shields.io/discord/510385886869979136.svg">
     </a>
   </p>
 </p>
