@@ -10,6 +10,7 @@ from .util import web_address_navigator
 from .util import explicit_wait
 from .util import click_element
 from .util import check_authorization
+from .util import reload_webpage
 
 # import exceptions
 from selenium.common.exceptions import NoSuchElementException
@@ -166,6 +167,9 @@ def login_user(browser,
             cookie_loaded = True
     except (WebDriverException, OSError, IOError):
         print("Cookie file not found, creating cookie...")
+
+    # force refresh after cookie load or check_authorization() will FAIL
+    reload_webpage(browser)
 
     # cookie has been LOADED, so the user SHOULD be logged in
     # check if the user IS logged in
