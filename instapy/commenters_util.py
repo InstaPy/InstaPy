@@ -326,7 +326,6 @@ def likers_from_photo(browser, amount=20):
 
         sleep(1)
         click_element(browser, element_to_click)
-        print("opening likes")
         # update server calls
         # update_activity()
 
