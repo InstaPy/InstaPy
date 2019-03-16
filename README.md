@@ -1244,6 +1244,19 @@ session.like_by_tags(['natgeo', 'world'], amount=10, interact=True)
 session.like_by_feed(amount=100, randomize=True, unfollow=True, interact=True)
 ```
 
+### Like likers
+
+```python
+# You can return likes to users that liked your posts:
+# usernames: a user (or a list of users) to like their likers
+# photos_grab_amount: the amount of posts to pull likers from (max 12)
+# like_likers_per_photo: the amount of users to like back from each post
+# likes_per_liker: the amount of likes to perform on every chosen liker
+
+session.like_likers(['user', 'not-a-user'], photos_grab_amount=3,
+                    like_likers_per_photo=3, likes_per_liker=3)
+```
+
 ### Blacklist Campaign
 ```python
 # Controls your interactions by campaigns.

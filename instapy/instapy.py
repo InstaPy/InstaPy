@@ -2126,6 +2126,76 @@ class InstaPy:
 
         return self
 
+    def like_likers(self, usernames, photos_grab_amount=3,
+                    like_likers_per_photo=3, likes_per_liker=3,
+                    randomize=True):
+        """ Likes posts of users' likers """
+        if self.aborting:
+            return self
+
+        message = "Starting to like likers..."
+        highlight_print(self.username, message, "feature", "info", self.logger)
+
+        if not isinstance(usernames, list):
+            usernames = [usernames]
+
+        if photos_grab_amount > 12:
+            self.logger.info(
+                "Sorry, you can only grab likers from first 12 photos for "
+                "given username now.\n")
+            photos_grab_amount = 12
+
+        liked_init = self.liked_img
+        commented_init = self.commented
+
+        self.quotient_breach = False
+
+        for index, username in enumerate(usernames):
+            if self.quotient_breach:
+                break
+
+            self.logger.info('User [{}/{}]'.format(index+1, len(usernames)))
+            self.logger.info('--> {}'.format(username.encode('utf-8')))
+
+            photo_urls = get_photo_urls_from_profile(self.browser, username,
+                    photos_grab_amount, randomize)
+            sleep(1)
+            if not isinstance(photo_urls, list):
+                photo_urls = [photo_urls]
+
+            for photo_index, photo_url in enumerate(photo_urls):
+                if self.quotient_breach:
+                    break
+
+                self.logger.info('Post [{}/{}]'
+                        .format(photo_index+1, len(photo_urls)))
+                self.logger.info('--> {}'.format(photo_url.encode('utf-8')))
+
+                likers = users_liked(self.browser, photo_url, like_likers_per_photo)
+                random.shuffle(likers)
+
+                sliced_likers = likers[:like_likers_per_photo]
+                for liker_index, liker in enumerate(sliced_likers):
+                    if self.quotient_breach:
+                        self.logger.warning(
+                            "--> Like quotient reached its peak!"
+                            "\t~leaving Like Likers activity\n")
+                        break
+
+                    self.logger.info('Liker [{}/{}]'
+                            .format(liker_index+1, len(sliced_likers)))
+                    self.logger.info('--> {}'.format(liker.encode('utf-8')))
+
+                    with self.feature_in_feature("like_by_users", True):
+                        self.like_by_users(liker, likes_per_liker, randomize)
+
+        self.logger.info("Finished liking likers!\n")
+        new_likes = self.liked_img - liked_init
+        new_comments = self.commented - commented_init
+        self.logger.info("Liked: {}".format(new_likes))
+        self.logger.info('Commented: {}'.format(new_comments))
+        return self
+
     def interact_by_users(self,
                           usernames,
                           amount=10,
