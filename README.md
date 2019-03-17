@@ -1247,14 +1247,21 @@ session.like_by_feed(amount=100, randomize=True, unfollow=True, interact=True)
 ### Like likers
 
 ```python
-# You can return likes to users that liked your posts:
-# usernames: a user (or a list of users) to like their likers
-# photos_grab_amount: the amount of posts to pull likers from (max 12)
-# like_likers_per_photo: the amount of users to like back from each post
-# likes_per_liker: the amount of likes to perform on every chosen liker
+# You can interact with users that liked your posts (or someone else's posts).
+#
+# To like 3 photos of each one of the 10 random users that liked one of the 5
+# posts of 'your_username' or 'other_person', use:
 
-session.like_likers(['user', 'not-a-user'], photos_grab_amount=3,
-                    like_likers_per_photo=3, likes_per_liker=3)
+session.like_likers(['your_username', 'other_person'], photos_grab_amount=5,
+                    like_likers_per_photo=10, likes_per_liker=3)
+
+# usernames:             a user (or a list of users) to like their likers (can
+#                        be your own)
+# photos_grab_amount:    this amount of posts of each one of the usernames will be
+#                        used to get a list of the accoutns that liked them
+# like_likers_per_photo: this amount of users from each one of the grabbed
+#                        photos will be selected for interaction
+# likes_per_liker:       this amount of posts of each selected liker will be liked
 ```
 
 ### Blacklist Campaign
