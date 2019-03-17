@@ -959,14 +959,14 @@ session.set_dont_unfollow_active_users(enabled=True, posts=5)
 ##### This is used to check the number of _followers_ and/or _following_ a user has and if these numbers _either_ **exceed** the number set OR **does not pass** the number set OR if **their ratio does not reach** desired potency ratio then no further interaction happens
 ```python
 session.set_relationship_bounds(enabled=True,
-				 potency_ratio=1.34,
-				  delimit_by_numbers=True,
-				   max_followers=8500,
-				    max_following=4490,
-				     min_followers=100,
-				      min_following=56,
-				       min_posts=10,
-                max_posts=1000)
+                                potency_ratio=1.34,
+                                delimit_by_numbers=True,
+                                max_followers=8500,
+                                max_following=4490,
+                                min_followers=100,
+                                min_following=56,
+                                min_posts=10,
+                                max_posts=1000)
 ```
 Use `enabled=True` to **activate** this feature, and `enabled=False` to **deactivate** it, _any time_  
 `delimit_by_numbers` is used to **activate** & **deactivate** the usage of max & min values  
@@ -1004,7 +1004,7 @@ session.set_relationship_bounds(enabled=True, potency_ratio=-1.44, delimit_by_nu
 #### This is used to check number of posts of a user and skip if they aren't in the boundaries provided
 ```python
 session.set_relationship_bounds(min_posts=10,
-                                 max_posts=1000)
+                                max_posts=1000)
 ```
 Users that have more than 1000 posts or less than 10 will be discarded
 
@@ -1059,8 +1059,8 @@ You can set a percentage of skipping:
 ```python
 session.set_skip_users(skip_private=True,
                        skip_no_profile_pic=True,
-		               skip_business=True,
-		               business_percentage=100)
+                       skip_business=True,
+                       business_percentage=100)
 ```
 This will skip all users that have business account activated.
 You can set a percentage of skipping:
@@ -1385,12 +1385,16 @@ InstaPy(username=insta_username, password=insta_password, bypass_suspicious_atte
 ###### Take full control of the actions with the most sophisticated approaches
 
 ```python
-session.set_quota_supervisor(enabled=True, sleep_after=["likes", "comments_d", "follows", "unfollows", "server_calls_h"], sleepyhead=True, stochastic_flow=True, notify_me=True,
-                              peak_likes=(57, 585),
-                               peak_comments=(21, 182),
-                                peak_follows=(48, None),
-                                 peak_unfollows=(35, 402),
-                                  peak_server_calls=(None, 4700))
+session.set_quota_supervisor(enabled=True,
+                             sleep_after=["likes", "comments_d", "follows", "unfollows", "server_calls_h"],
+                             sleepyhead=True,
+                             stochastic_flow=True,
+                             notify_me=True,
+                             peak_likes=(57, 585),
+                             peak_comments=(21, 182),
+                             peak_follows=(48, None),
+                             peak_unfollows=(35, 402),
+                             peak_server_calls=(None, 4700))
 ```
 #### Parameters:
 `enabled`: put `True` to **activate** or `False` to **deactivate** supervising any time
@@ -1473,7 +1477,7 @@ session.set_quota_supervisor(enabled=True, peak_follows=(56, 660), peak_unfollow
 ###### Gets and returns `followers` of the given user in desired amount, also can save locally  
 ```python
 popeye_followers = session.grab_followers(username="Popeye", amount="full", live_match=True, store_locally=True)
-##now, `popeye_followers` variable which is a list- holds the `Followers` data of "Popeye" at requested time
+# now, `popeye_followers` variable which is a list- holds the `Followers` data of "Popeye" at requested time
 ```  
 #### Parameters:  
 `username`:  
@@ -1515,12 +1519,12 @@ _If the data is requested at the range **else than** `"full"`, it will write **t
 There are **several** `use cases` of this tool for **various purposes**.  
 _E.g._, inside your **quickstart** script, you can **do** _something like this_:
 ```python
-#get followers of "Popeye" and "Cinderella"
+# get followers of "Popeye" and "Cinderella"
 popeye_followers = session.grab_followers(username="Popeye", amount="full", live_match=True, store_locally=True)
 sleep(600)
 cinderella_followers = session.grab_followers(username="Cinderella", amount="full", live_match=True, store_locally=True)
 
-#find the users following "Popeye" WHO also follow "Cinderella" :D
+# find the users following "Popeye" WHO also follow "Cinderella" :D
 popeye_cinderella_followers = [follower for follower in popeye_followers if follower in cinderella_followers]
 ```
 
@@ -1533,7 +1537,7 @@ You can **use** this tool to take a **backup** of _your_ **or** _any other user'
 ###### Gets and returns `following` of the given user in desired amount, also can save locally  
 ```python
 lazySmurf_following = session.grab_following(username="lazy.smurf", amount="full", live_match=True, store_locally=True)
-##now, `lazySmurf_following` variable which is a list- holds the `Following` data of "lazy.smurf" at requested time
+# now, `lazySmurf_following` variable which is a list- holds the `Following` data of "lazy.smurf" at requested time
 ```  
 #### Parameters:  
 `username`:  
@@ -1575,15 +1579,15 @@ _If the data is requested at the range **else than** `"full"`, it will write **t
 There are **several** `use cases` of this tool for **various purposes**.  
 _E.g._, inside your **quickstart** script, you can **do** _something like this_:
 ```python
-##as we know that all lazy Smurf care is to take some good rest, so by mistake, he can follow somebody WHOM Gargamel also follow!
-#so let's find it out to save Smurfs from troubles! :D
+# as we know that all lazy Smurf care is to take some good rest, so by mistake, he can follow somebody WHOM Gargamel also follow!
+# so let's find it out to save Smurfs from troubles! :D
 
-#get following of "lazy.smurf" and "Gargamel"
+# get following of "lazy.smurf" and "Gargamel"
 lazySmurf_following = session.grab_following(username="lazy.smurf", amount="full", live_match=True, store_locally=True)
 sleep(600)
 gargamel_following = session.grab_following(username="Gargamel", amount="full", live_match=True, store_locally=True)
 
-#find the users "lazy.smurf" is following WHOM "Gargamel" also follow :D
+# find the users "lazy.smurf" is following WHOM "Gargamel" also follow :D
 lazySmurf_gargamel_following = [following for following in lazySmurf_following if following in gargamel_following]
 ```
 
@@ -1596,8 +1600,8 @@ You can **use** this tool to take a **backup** of _your_ **or** _any other user'
 ###### Compares the `followers` stored in a local storage against current followers and returns absent followers
 ```python
 all_unfollowers, active_unfollowers = session.pick_unfollowers(username="Bernard_bear", compare_by="month", compare_track="first", live_match=True, store_locally=True, print_out=True)
-##now, `all_unfollowers` and `all_unfollowers` variables which are lists- hold the `Unfollowers` data of "Bernard_bear" at requested time
-#`all_unfollowers` holds all of the unfollowers WHILST `active_unfollowers` holds the unfollowers WHOM "Bernard_bear" is still following
+# now, `all_unfollowers` and `all_unfollowers` variables which are lists- hold the `Unfollowers` data of "Bernard_bear" at requested time
+# `all_unfollowers` holds all of the unfollowers WHILST `active_unfollowers` holds the unfollowers WHOM "Bernard_bear" is still following
 ```
 #### Parameters:  
 `username`:  
@@ -1662,10 +1666,10 @@ And then, e.g. do some `useful` **analysis** with that _generated unfollowers da
 + _And_ you can also **find** the unfollowers to `block` them **all**.
 + Also, you can **unfollow back** those `active unfollowers` _right away_:
 ```python
-#find all of the active unfollowers of Bernard bear
+# find all of the active unfollowers of Bernard bear
 all_unfollowers, active_unfollowers = session.pick_unfollowers(username="Bernard_bear", compare_by="earliest", compare_track="first", live_match=True, store_locally=True, print_out=True)
 sleep(200)
-#let's unfollow them immediately cos Bernard will be angry if heards about those unfollowers! :D
+# let's unfollow them immediately cos Bernard will be angry if heards about those unfollowers! :D
 session.unfollow_users(amount=len(active_unfollowers), customList=(True, active_unfollowers, "all"), style="RANDOM", unfollow_after=None, sleep_delay=600)
 ```
 
@@ -1675,7 +1679,7 @@ session.unfollow_users(amount=len(active_unfollowers), customList=(True, active_
 ###### Compares the `Followers` data against `Following` data of a user and returns the `Nonfollowers` data
 ```python
 scoobyDoo_nonfollowers = session.pick_nonfollowers(username="ScoobyDoo", live_match=True, store_locally=True)
-#now, `scoobyDoo_nonfollowers` variable which is a list- holds the `Nonfollowers` data of "ScoobyDoo" at requested time
+# now, `scoobyDoo_nonfollowers` variable which is a list- holds the `Nonfollowers` data of "ScoobyDoo" at requested time
 ```
 #### Parameters:  
 `username`:  
@@ -1711,10 +1715,10 @@ There are **several** `use cases` of this tool for **various purposes**.
 + You can get the nonfollowers of several users and then do analysis.  
     + _e.g., in this example Scooby Do used it like this_:  
     ```python
-    ##Scooby Doo always wonders a lot and this time he wonders if there are people Shaggy is following WHO do not follow him back...
+    # Scooby Doo always wonders a lot and this time he wonders if there are people Shaggy is following WHO do not follow him back...
     shaggy_nonfollowers = session.pick_nonfollowers(username="Shaggy", live_match=True, store_locally=True)
 
-    #now Scooby Doo will tell his friend Shaggy about this, who knows, maybe Shaggy will unfollow them all or even add to block :D
+    # now Scooby Doo will tell his friend Shaggy about this, who knows, maybe Shaggy will unfollow them all or even add to block :D
     ```  
 
 
@@ -1723,7 +1727,7 @@ There are **several** `use cases` of this tool for **various purposes**.
 ###### Returns Fans data- all of the accounts who do follow the user WHOM user itself do not follow back
 ```python
 smurfette_fans = session.pick_fans(username="Smurfette", live_match=True, store_locally=True)
-#now, `smurfette_fans` variable which is a list- holds the `Fans` data of "Smurfette" at requested time
+# now, `smurfette_fans` variable which is a list- holds the `Fans` data of "Smurfette" at requested time
 ```
 #### Parameters:  
 `username`:  
@@ -1759,9 +1763,9 @@ There are **several** `use cases` of this tool for **various purposes**.
 + You can get the fans of several users and then do analysis.  
     + _e.g., in this example Smurfette used it like this_:  
     ```python
-    ##Smurfette is so famous in the place and she wonders which smurfs is following her WHOM she doesn't even know of :D
+    # Smurfette is so famous in the place and she wonders which smurfs is following her WHOM she doesn't even know of :D
     smurfette_fans = session.pick_fans(username="Smurfette", live_match=True, store_locally=True)
-    #and now, maybe she will follow back some of the smurfs whom she may know :P
+    # and now, maybe she will follow back some of the smurfs whom she may know :P
     ```  
 
 
@@ -1770,7 +1774,7 @@ There are **several** `use cases` of this tool for **various purposes**.
 ###### Returns `Mutual Following` data- all of the accounts who do follow the user WHOM user itself **also** do follow back
 ```python
 Winnie_mutualFollowing = session.pick_mutual_following(username="WinnieThePooh", live_match=True, store_locally=True)
-#now, `Winnie_mutualFollowing` variable which is a list- holds the `Mutual Following` data of "WinnieThePooh" at requested time
+# now, `Winnie_mutualFollowing` variable which is a list- holds the `Mutual Following` data of "WinnieThePooh" at requested time
 ```
 #### Parameters:  
 `username`:  
@@ -1806,9 +1810,9 @@ There are **several** `use cases` of this tool for **various purposes**.
 + You can get the mutual following of several users and then do analysis.  
     + _e.g., in this example Winnie The Pooh used it like this_:  
     ```python
-    #Winnie The Pooh is a very friendly guy and almost everybody follows him back, but he wants to be sure about it :D
+    # Winnie The Pooh is a very friendly guy and almost everybody follows him back, but he wants to be sure about it :D
     Winnie_mutual_following = session.pick_mutual_following(username="WinnieThePooh", live_match=True, store_locally=True)
-    ##now, he will write a message to his mutual followers to help him get a new honey pot :>
+    # now, he will write a message to his mutual followers to help him get a new honey pot :>
     ```  
 
 
@@ -2435,11 +2439,11 @@ from instapy import set_workspace
 import schedule
 import time
 
-#your login credentials
+# your login credentials
 insta_username=''
 insta_password=''
 
-#path to your workspace
+# path to your workspace
 set_workspace(path=None)
 
 def job():
@@ -2655,10 +2659,10 @@ Use the Quota Supervisor feature to set some fixed limits for the bot for maximu
 ##### During indirect data retrieval, **simulation** happens to provide a _genuine_ activity flow triggered by a wise algorithm.  
 To **turn off** simulation or to **decrease** its occurrence frequency, use `set_simulation` setting:  
 ```python
-#use the value of `False` to permanently turn it off
+# use the value of `False` to permanently turn it off
 session.set_simulation(enabled=False)
 
-#use a desired occurrence percentage
+# use a desired occurrence percentage
 session.set_simulation(enabled=True, percentage=66)
 ```
 
@@ -2673,7 +2677,7 @@ To do this simply pass the `disable_image_load=True` parameter in the InstaPy co
 session = InstaPy(username=insta_username,
                   password=insta_password,
                   headless_browser=False,
-		              disable_image_load=True,
+                  disable_image_load=True,
                   multi_logs=True)
 ```
 
@@ -2701,10 +2705,10 @@ Settings.chromedriver_location = '/path/to/chromedriver'
 ##### But you can set a _custom_ sleep delay for each action yourself by using the `set_action_delays` setting!
 ```python
 session.set_action_delays(enabled=True,
-                           like=3,
-                           comment=5,
-                           follow=4.17,
-                           unfollow=28)
+                          like=3,
+                          comment=5,
+                          follow=4.17,
+                          unfollow=28)
 ```
 _Now it will sleep `3` seconds **after putting every single like**, `5` seconds for every single comment and similarly for the others.._
 
@@ -2798,15 +2802,15 @@ In case you are unfamiliar with the concept do read a little. Here's a blog to l
 ```python
 
 photo_comments = ['Nice shot! @{}',
-            'I love your profile! @{}',
-	    'Your feed is an inspiration :thumbsup:',
-	    'Just incredible :open_mouth:',
-	    'What camera did you use @{}?',
-	    'Love your posts @{}',
-	    'Looks awesome @{}',
-	    'Getting inspired by you @{}',
-	    ':raised_hands: Yes!',
-	    'I can feel your passion @{} :muscle:']
+                  'I love your profile! @{}',
+                  'Your feed is an inspiration :thumbsup:',
+                  'Just incredible :open_mouth:',
+                  'What camera did you use @{}?',
+                  'Love your posts @{}',
+                  'Looks awesome @{}',
+                  'Getting inspired by you @{}',
+                  ':raised_hands: Yes!',
+                  'I can feel your passion @{} :muscle:']
 
 session = InstaPy()
 
