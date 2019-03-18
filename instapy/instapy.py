@@ -1314,7 +1314,7 @@ class InstaPy:
                     self.jumps["consequent"]["likes"] = 0
                     break
 
-                self.logger.info('[{}/{}]'.format(i + 1, len(links)))
+                self.logger.info('Like# [{}/{}]'.format(i + 1, len(links)))
                 self.logger.info(link)
 
                 try:
@@ -1521,7 +1521,7 @@ class InstaPy:
                     self.jumps["consequent"]["comments"] = 0
                     break
 
-                self.logger.info('[{}/{}]'.format(i + 1, len(links)))
+                self.logger.info('Comment# [{}/{}]'.format(i + 1, len(links)))
                 self.logger.info(link)
 
                 try:
@@ -1728,7 +1728,7 @@ class InstaPy:
                     self.jumps["consequent"]["likes"] = 0
                     break
 
-                self.logger.info('[{}/{}]'.format(i + 1, len(links)))
+                self.logger.info('Like# [{}/{}]'.format(i + 1, len(links)))
                 self.logger.info(link)
 
                 try:
@@ -4130,7 +4130,7 @@ class InstaPy:
                     self.jumps["consequent"]["follows"] = 0
                     break
 
-                self.logger.info('[{}/{}]'.format(i + 1, len(links)))
+                self.logger.info('Follow# [{}/{}]'.format(i + 1, len(links)))
                 self.logger.info(link)
 
                 try:
@@ -4253,7 +4253,7 @@ class InstaPy:
                     self.jumps["consequent"]["follows"] = 0
                     break
 
-                self.logger.info('[{}/{}]'.format(i + 1, len(links)))
+                self.logger.info('Follow# [{}/{}]'.format(i + 1, len(links)))
                 self.logger.info(link)
 
                 try:
