@@ -259,9 +259,23 @@ def login_user(browser,
         login_button = browser.find_element_by_xpath(
             "//div[text()='Log in']")
     except NoSuchElementException:
-        print("Login A/B test detected! Trying another string...")
-        login_button = browser.find_element_by_xpath(
-            "//div[text()='Log In']")
+        print("Login A/B test detected! Trying another...1")
+        try:
+            login_button = browser.find_element_by_xpath(
+                "//button//div[text()='Log in']")
+        except NoSuchElementException:
+            print("Login button A/B test detected! Trying another...2")
+            try:
+                login_button = browser.find_element_by_xpath(
+                "//button[text()='Log in']")
+            except NoSuchElementException:
+                print("Login button A/B test detected! Trying another... 3")
+                try:
+                    login_button = browser.find_element_by_xpath(
+                    "//button[@type='submit']")
+                except NoSuchElementException:
+                    print("Login button A/B test detected! ran out of option..quite")
+                    return False
 
     (ActionChains(browser)
      .move_to_element(login_button)
