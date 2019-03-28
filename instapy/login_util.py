@@ -274,7 +274,7 @@ def login_user(browser,
                     login_button = browser.find_element_by_xpath(
                     "//button[@type='submit']")
                 except NoSuchElementException:
-                    print("Login button A/B test detected! ran out of option..quite")
+                    print("Login button A/B test detected! ran out of option..quit")
                     return False
 
     (ActionChains(browser)
