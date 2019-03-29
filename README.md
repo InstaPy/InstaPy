@@ -164,6 +164,13 @@ Check out this short guide on [how to start contributing!](https://github.com/In
 
 **[How to RaspberryPi](https://github.com/InstaPy/instapy-docs/blob/master/How_Tos/How_to_Raspberry.md) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**
 
+---
+
+### External Tools
+
+**[InstaPy Dashboard](https://github.com/converge/instapy-dashboard)**
+
+InstaPy Dashboard is an Open Source project developed by [@converge](https://github.com/converge/) to visualize Instagram accounts progress and real-time InstaPy logs on the browser.
 
 # Documentation
 
