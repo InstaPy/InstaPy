@@ -1,5 +1,7 @@
 """ Common utilities """
 import time
+import collections
+import requests
 import datetime
 from math import ceil
 from math import radians
@@ -105,6 +107,7 @@ def validate_username(browser,
                       skip_no_profile_pic,
                       skip_no_profile_pic_percentage,
                       skip_business,
+                      skip_non_business,
                       skip_business_percentage,
                       skip_business_categories,
                       dont_skip_business_categories,
@@ -2184,3 +2187,13 @@ class CustomizedArgumentParser(ArgumentParser):
         will give the location of the 'argparse.py' file that have this method.
         """
         return []
+
+TelegramSettings = collections.namedtuple('TelegramSettings', ['chat_id', 'bot_token'])
+
+class TelegramLogHandler(object):        
+
+    def __init__(self, settings: TelegramSettings):
+        self.settings = settings
+        
+    def write(self, msg):
+        requests.get("https://api.telegram.org/bot{}/sendMessage?chat_id={}&text={}".format(self.settings.bot_token, self.settings.chat_id, msg))

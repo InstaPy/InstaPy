@@ -50,6 +50,7 @@ from .util import save_account_progress
 from .util import parse_cli_args
 from .util import get_cord_location
 from .util import get_bounding_box
+from .util import TelegramLogHandler
 from .unfollow_util import get_given_user_followers
 from .unfollow_util import get_given_user_following
 from .unfollow_util import unfollow
@@ -105,7 +106,8 @@ class InstaPy:
                  disable_image_load=False,
                  bypass_suspicious_attempt=False,
                  bypass_with_mobile=False,
-                 multi_logs=True):
+                 multi_logs=True,
+                 telegram_log_settings=None):
 
         cli_args = parse_cli_args()
         username = cli_args.username or username
@@ -278,6 +280,7 @@ class InstaPy:
         self.show_logs = show_logs
         Settings.show_logs = show_logs or None
         self.multi_logs = multi_logs
+        self.telegram_log_settings = telegram_log_settings
         self.logfolder = get_logfolder(self.username, self.multi_logs)
         self.logger = self.get_instapy_logger(self.show_logs)
 
@@ -298,23 +301,25 @@ class InstaPy:
         else:
             # initialize and setup logging system for the InstaPy object
             logger = logging.getLogger(self.username)
-            logger.setLevel(logging.DEBUG)
-            file_handler = logging.FileHandler(
-                '{}general.log'.format(self.logfolder))
-            file_handler.setLevel(logging.DEBUG)
+            logger.setLevel(logging.DEBUG)            
+            
+            logger_formatter = logging.Formatter('%(levelname)s [%(asctime)s] [%(username)s]  %(message)s', datefmt='%Y-%m-%d %H:%M:%S')            
+            
+            my_loggers = []
+            my_loggers.append(logging.FileHandler('{}general.log'.format(self.logfolder)))
+
+            if show_logs:
+                my_loggers.append(logging.StreamHandler())
+            
+            if self.telegram_log_settings is not None:
+                my_loggers.append(logging.StreamHandler(TelegramLogHandler(self.telegram_log_settings)))
+
+            for my_logger in my_loggers:
+                my_logger.setLevel(logging.DEBUG)
+                my_logger.setFormatter(logger_formatter)
+                logger.addHandler(my_logger)
+                
             extra = {"username": self.username}
-            logger_formatter = logging.Formatter(
-                '%(levelname)s [%(asctime)s] [%(username)s]  %(message)s',
-                datefmt='%Y-%m-%d %H:%M:%S')
-            file_handler.setFormatter(logger_formatter)
-            logger.addHandler(file_handler)
-
-            if show_logs is True:
-                console_handler = logging.StreamHandler()
-                console_handler.setLevel(logging.DEBUG)
-                console_handler.setFormatter(logger_formatter)
-                logger.addHandler(console_handler)
-
             logger = logging.LoggerAdapter(logger, extra)
 
             Settings.loggers[self.username] = logger
