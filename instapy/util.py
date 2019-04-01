@@ -2190,7 +2190,7 @@ class CustomizedArgumentParser(ArgumentParser):
 
 TelegramSettings = collections.namedtuple('TelegramSettings', ['chat_id', 'bot_token'])
 
-class TelegramLogHandler(object):        
+class TelegramLogHandler(object):
 
     def __init__(self, settings: TelegramSettings):
         self.settings = settings
