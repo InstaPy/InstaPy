@@ -11,7 +11,7 @@
   - [Quota Supervisor](#quota-supervisor)
   - [Restricting Likes](#restricting-likes)
   - [Ignoring Restrictions](#ignoring-restrictions)
-  - [Ignoring Users](#ignoring-users)instapy
+  - [Ignoring Users](#ignoring-users)
   - [Excluding friends](#excluding-friends)
   - [Mandatory Words](#mandatory-words)
   - [Mandatory Language](#mandatory-language)
@@ -389,6 +389,7 @@ session.set_skip_users(skip_private=True,
                        skip_no_profile_pic=False,
                        no_profile_pic_percentage=100,
                        skip_business=False,
+		       skip_non_business=False,
                        business_percentage=100,
                        skip_business_categories=[],
                        dont_skip_business_categories=[])
@@ -440,6 +441,7 @@ session.set_skip_users(skip_private=True,
 ```
 This will skip all business accounts that have category in given list
 **N.B.** In _skip_business_categories_ you can add more than one category
+
 ###### Skip all business accounts, except from list given
 ```python
 session.set_skip_users(skip_private=True,
@@ -452,6 +454,15 @@ This will skip all business accounts except the ones that have a category that m
 
 > [A list of all availlable business categories can be found here](https://github.com/InstaPy/instapy-docs/blob/master/BUSINESS_CATEGORIES.md)
 
+###### Skip all non business and bussines accounts, except from list given
+ ```python
+ session.set_skip_users(skip_private=True,
+                        skip_no_profile_pic=True,
+                        skip_business=True,
+                        skip_non_business=True,
+                        dont_skip_business_categories=['Creators & Celebrities'])
+ ```
+ Thiw will skip all non business and business accounts except categories in _dont_skip_business_categories_.
 
 ### Liking based on the number of existing likes a post has
 ##### This is used to check the number of existing likes a post has and if it _either_ **exceed** the _maximum_ value set OR **does not pass** the _minimum_ value set then it will not like that post
