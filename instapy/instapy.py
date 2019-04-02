@@ -237,6 +237,7 @@ class InstaPy:
         self.skip_business_categories = []
         self.dont_skip_business_categories = []
         self.skip_business = False
+        self.skip_non_business = False
         self.skip_no_profile_pic = False
         self.skip_private = True
         self.skip_business_percentage = 100
@@ -1173,6 +1174,7 @@ class InstaPy:
                                                 self.skip_no_profile_pic,
                                                 self.skip_no_profile_pic_percentage,
                                                 self.skip_business,
+                                                self.skip_non_business,
                                                 self.skip_business_percentage,
                                                 self.skip_business_categories,
                                                 self.dont_skip_business_categories,
@@ -1201,7 +1203,8 @@ class InstaPy:
                        skip_business=False,
                        business_percentage=100,
                        skip_business_categories=[],
-                       dont_skip_business_categories=[]):
+                       dont_skip_business_categories=[],
+                       skip_non_business=False):
 
         self.skip_business = skip_business
         self.skip_private = skip_private
@@ -1209,6 +1212,7 @@ class InstaPy:
         self.skip_business_percentage = business_percentage
         self.skip_no_profile_pic_percentage = no_profile_pic_percentage
         self.skip_private_percentage = private_percentage
+        self.skip_non_business = skip_non_business
         if skip_business:
             self.skip_business_categories = skip_business_categories
             if len(skip_business_categories) == 0:
@@ -1314,7 +1318,7 @@ class InstaPy:
                     self.jumps["consequent"]["likes"] = 0
                     break
 
-                self.logger.info('[{}/{}]'.format(i + 1, len(links)))
+                self.logger.info('Like# [{}/{}]'.format(i + 1, len(links)))
                 self.logger.info(link)
 
                 try:
@@ -1521,7 +1525,7 @@ class InstaPy:
                     self.jumps["consequent"]["comments"] = 0
                     break
 
-                self.logger.info('[{}/{}]'.format(i + 1, len(links)))
+                self.logger.info('Comment# [{}/{}]'.format(i + 1, len(links)))
                 self.logger.info(link)
 
                 try:
@@ -1728,7 +1732,7 @@ class InstaPy:
                     self.jumps["consequent"]["likes"] = 0
                     break
 
-                self.logger.info('[{}/{}]'.format(i + 1, len(links)))
+                self.logger.info('Like# [{}/{}]'.format(i + 1, len(links)))
                 self.logger.info(link)
 
                 try:
@@ -1882,7 +1886,8 @@ class InstaPy:
                 except NoSuchElementException as err:
                     self.logger.error('Invalid Page: {}'.format(err))
 
-        self.logger.info('Tag: {}'.format(tag.encode('utf-8')))
+            self.logger.info('Tag: {}'.format(tag.encode('utf-8')))
+        
         self.logger.info('Liked: {}'.format(liked_img))
         self.logger.info('Already Liked: {}'.format(already_liked))
         self.logger.info('Commented: {}'.format(commented))
@@ -4200,7 +4205,7 @@ class InstaPy:
                     self.jumps["consequent"]["follows"] = 0
                     break
 
-                self.logger.info('[{}/{}]'.format(i + 1, len(links)))
+                self.logger.info('Follow# [{}/{}]'.format(i + 1, len(links)))
                 self.logger.info(link)
 
                 try:
@@ -4323,7 +4328,7 @@ class InstaPy:
                     self.jumps["consequent"]["follows"] = 0
                     break
 
-                self.logger.info('[{}/{}]'.format(i + 1, len(links)))
+                self.logger.info('Follow# [{}/{}]'.format(i + 1, len(links)))
                 self.logger.info(link)
 
                 try:
