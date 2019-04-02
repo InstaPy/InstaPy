@@ -8,6 +8,7 @@ from .util import format_number
 from .util import add_user_to_blacklist
 from .util import click_element
 from .util import is_private_profile
+from .util import is_page_available
 from .util import update_activity
 from .util import web_address_navigator
 from .util import get_number_of_posts
@@ -404,7 +405,7 @@ def get_links_for_username(browser,
     # then do not navigate to it again
     web_address_navigator(browser, user_link)
 
-    if "Page Not Found" in browser.title:
+    if not is_page_available(browser, logger):
         logger.error(
             'Instagram error: The link you followed may be broken, or the '
             'page may have been removed...')
@@ -414,12 +415,18 @@ def get_links_for_username(browser,
     following_status, follow_button = get_following_status(
         browser, "profile", username, person, None, logger, logfolder)
 
-    if following_status != "OWNER":
-        is_private = is_private_profile(browser, logger, following_status)
-        if (is_private is None
-            or (is_private and not following_status)
-                or following_status == "Blocked"):
-            return False
+    #if following_status is None:
+    #    browser.wait_for_valid_connection(browser, username, logger)
+
+    #if following_status == 'Follow':
+    #    browser.wait_for_valid_authorization(browser, username, logger)
+
+    is_private = is_private_profile(browser, logger, following_status == 'Following')
+    if (is_private is None
+        or (is_private is True and following_status not in ['Following', True])
+        or (following_status == 'Blocked')):
+        logger.info('This user is private and we are not following')
+        return False
 
     # Get links
     links = []
