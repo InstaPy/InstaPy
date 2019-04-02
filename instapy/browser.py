@@ -43,6 +43,7 @@ def set_selenium_local_session(proxy_address,
 
     if use_firefox:
         firefox_options = Firefox_Options()
+        
         if headless_browser:
             firefox_options.add_argument('-headless')
 
@@ -51,6 +52,9 @@ def set_selenium_local_session(proxy_address,
                 browser_profile_path)
         else:
             firefox_profile = webdriver.FirefoxProfile()
+
+        # set English language
+        firefox_profile.set_preference('intl.accept_languages', 'en')
 
         if disable_image_load:
             # permissions.default.image = 2: Disable images load,
@@ -72,7 +76,7 @@ def set_selenium_local_session(proxy_address,
                                     options=firefox_options)
 
         # converts to custom browser
-        browser = convert_selenium_browser(browser)
+        # browser = convert_selenium_browser(browser)
     
         # authenticate with popup alert window
         if (proxy_username and proxy_password):
@@ -143,7 +147,7 @@ def set_selenium_local_session(proxy_address,
                                        chrome_options=chrome_options)
 
             # gets custom instance
-            browser = convert_selenium_browser(browser)
+            # browser = convert_selenium_browser(browser)
 
         except WebDriverException as exc:
             logger.exception(exc)
@@ -184,7 +188,7 @@ def set_selenium_remote_session(use_firefox,
     """
 
     if selenium_driver:
-        browser = convert_selenium_browser(selenium_driver)
+        browser = selenium_driver # convert_selenium_browser(selenium_driver)
     else:
         desired_caps = DesiredCapabilities.FIREFOX if use_firefox else DesiredCapabilities.CHROME
         browser = get_remote_browser(
@@ -353,7 +357,7 @@ def get_remote_browser(command_executor, desired_capabilities):
         command_executor=command_executor,
         desired_capabilities=desired_capabilities)
 
-    return convert_selenium_browser(browser)
+    return browser # convert_selenium_browser(browser)
 
 
 

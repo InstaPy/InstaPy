@@ -3,7 +3,6 @@ import random
 import re
 from re import findall
 
-from .browser import retry
 from .time_util import sleep
 from .util import format_number
 from .util import add_user_to_blacklist
@@ -195,8 +194,8 @@ def get_links_for_location(browser,
                     else:
                         logger.info(
                             "'{}' location POSSIBLY has less images than "
-                            "desired...".format(
-                                location))
+                                "desired:{} found:{}...".format(
+                                location, amount, len(links)))
                         break
             else:
                 filtered_links = len(links)
@@ -358,8 +357,8 @@ def get_links_for_tag(browser,
                     else:
                         logger.info(
                             "'{}' tag POSSIBLY has less images than "
-                            "desired...".format(
-                                tag))
+                            "desired:{} found:{}...".format(
+                                tag, amount, len(links)))
                         break
             else:
                 filtered_links = len(links)
@@ -417,11 +416,11 @@ def get_links_for_username(browser,
     following_status, follow_button = get_following_status(
         browser, "profile", username, person, None, logger, logfolder)
 
-    if following_status is None:
-        browser.wait_for_valid_connection(browser, username, logger)
+    #if following_status is None:
+    #    browser.wait_for_valid_connection(browser, username, logger)
 
-    if following_status == 'Follow':
-        browser.wait_for_valid_authorization(browser, username, logger)
+    #if following_status == 'Follow':
+    #    browser.wait_for_valid_authorization(browser, username, logger)
 
     is_private = is_private_profile(browser, logger, following_status == 'Following')
     if (is_private is None
@@ -742,7 +741,7 @@ def get_tags(browser, url):
 
     return tags
 
-@retry()
+
 def get_links(browser, page, logger, media, element):
     # Get image links in scope from hashtag, location and other pages
     link_elems = element.find_elements_by_tag_name('a')

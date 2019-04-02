@@ -773,6 +773,7 @@ def follow_user(browser, track, login, user_name, button, blacklist, logger,
 
 
 def scroll_to_bottom_of_followers_list(browser, element):
+    sleep(5)
     browser.execute_script(
         "arguments[0].children[1].scrollIntoView()", element)
     sleep(1)
@@ -807,7 +808,7 @@ def get_users_through_dialog(browser,
     sc_rolled = 0
 
     # find dialog box
-    dialog_address = "//body/div[2]/div/div[2]"
+    dialog_address = "//body/div[3]/div/div[2]"
     dialog = browser.find_element_by_xpath(dialog_address)
 
     # scroll to end of follower list to initiate first load which hides the

@@ -105,6 +105,7 @@ def validate_username(browser,
                       skip_no_profile_pic,
                       skip_no_profile_pic_percentage,
                       skip_business,
+                      skip_non_business,
                       skip_business_percentage,
                       skip_business_categories,
                       dont_skip_business_categories,
@@ -325,7 +326,7 @@ def validate_username(browser,
                 username)
 
     # skip business
-    if skip_business:
+    if skip_business or skip_non_business:
         # if is business account skip under conditions
         try:
             is_business_account = getUserData(
@@ -335,6 +336,9 @@ def validate_username(browser,
             return False, "---> Sorry, couldn't get if user has business " \
                           "account active\n"
 
+        if skip_non_business and not is_business_account:
+            return False, '---> Skiping non business because skip_non_business set to True'
+            
         if is_business_account:
             try:
                 category = getUserData("graphql.user.business_category_name",
@@ -546,7 +550,7 @@ def get_active_users(browser, username, posts, boundary, logger):
             except WebDriverException:
                 try:
                     likers_count = (browser.find_element_by_xpath(
-                        "//button[contains(@class, '_8A5w5')]/span").text)
+                        "//div[contains(@class,'Nm9Fw')]/child::button/span").text)
                     if likers_count:  # prevent an empty string scenarios
                         likers_count = format_number(likers_count)
                     else:
@@ -562,14 +566,10 @@ def get_active_users(browser, username, posts, boundary, logger):
                     likers_count = None
             try:
                 likes_button = browser.find_elements_by_xpath(
-                    "//button[contains(@class, '_8A5w5')]")
-                '''
-                    Len(likes_button) = 3 when user is followed and it's a post,
-                    but when user is followed and it's a video it is 2, so we avoid this
-                    and empty case.
-                '''
-                if len(likes_button) == 3 or len(likes_button) == 1:
-                    likes_button = likes_button[-1]
+                    "//div[contains(@class,'Nm9Fw')]/child::button")
+
+                if likes_button != []:
+                    likes_button = likes_button[0]
                     click_element(browser, likes_button)
                     sleep_actual(3)
                 else:
