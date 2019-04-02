@@ -193,8 +193,8 @@ def get_links_for_location(browser,
                     else:
                         logger.info(
                             "'{}' location POSSIBLY has less images than "
-                            "desired...".format(
-                                location))
+                                "desired:{} found:{}...".format(
+                                location, amount, len(links)))
                         break
             else:
                 filtered_links = len(links)
@@ -356,8 +356,8 @@ def get_links_for_tag(browser,
                     else:
                         logger.info(
                             "'{}' tag POSSIBLY has less images than "
-                            "desired...".format(
-                                tag))
+                            "desired:{} found:{}...".format(
+                                tag, amount, len(links)))
                         break
             else:
                 filtered_links = len(links)

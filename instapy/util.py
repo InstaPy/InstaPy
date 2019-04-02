@@ -573,7 +573,7 @@ def get_active_users(browser, username, posts, boundary, logger):
                     sleep_actual(3)
                 else:
                     raise NoSuchElementException
-                    
+
             except (IndexError, NoSuchElementException):
                 # Video have no likes button / no posts in page
                 logger.info("video found, try next post until we run out of posts")

@@ -6,6 +6,7 @@ _The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 ## [0.4.0] - ADD DATE HERE
 ### Added
+- Improved info provided by log messages in instapy.py and like_util.py
 - Possibility to skip non bussiness accounts
 
 ### Changed
