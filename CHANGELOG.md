@@ -14,6 +14,9 @@ _The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 - Remove quickstart templates and only reference instapy-quickstart
 - Restructure README and add new DOCUMENTATION file
 
+### Fixed
+- "UnboundLocalError: local variable 'tag' referenced before assignment" when there is no smart-hastag genereated
+
 
 ## [0.3.4] - 2019-03-17
 ### Added
