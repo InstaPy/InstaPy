@@ -25,6 +25,8 @@ pip install instapy
 ```
 That's it 🍫☕
 
+__Important:__ depending on your system, make sure to use `pip3` and `python3` instead.
+
 <br />
 
 Now all you need is a **quickstart** script to start _InstaPy_ 🥳  
@@ -1926,14 +1928,14 @@ _To have it configured, read its [documentation](#yandex-translate-api)_.
 : It indicates the polarity found (_or not found_) in the text and applies to the **global** polarity of the text;  
 _It's a **graduated** polarity - rates from **very** negative to **very** positive_.
 
-| `score_tag` |                   definition                    |  
-| ----------- | ----------------------------------------------- |    
-|    `"P+"`   |       match if text is _**strong** positive_    |  
-|    `"P"`    |       match if text is _positive_ or above      |   
-|    `"NEU"`  |       match if text is _neutral_ or above       |  
-|    `"N"`    |       match if text is _negative_ or above      |
-|    `"N+"`   | match if text is _**strong** negative_ or above |  
-|    `None`   |     do not match per _polarity_ found, at all   |  
+| `score_tag` | definition                                      |
+| ----------- | ----------------------------------------------- |
+| `"P+"`      | match if text is _**strong** positive_          |
+| `"P"`       | match if text is _positive_ or above            |
+| `"NEU"`     | match if text is _neutral_ or above             |
+| `"N"`       | match if text is _negative_ or above            |
+| `"N+"`      | match if text is _**strong** negative_ or above |
+| `None`      | do not match per _polarity_ found, at all       |
 
   > By "_or above_" it means- _e.g._, if you set `polarity` to `"P"`, and text is `"P+"` then it'll also be appropriate (_as it always leans towards positivity_) ..
 
@@ -1941,22 +1943,22 @@ _It's a **graduated** polarity - rates from **very** negative to **very** positi
 : Identifies **opposing** opinions - _contradictory_, _ambiguous_;  
 _It marks the agreement **between** the sentiments detected in the text, the sentence or the segment it refers to_.
 
-|    `agreement`   |                            definition                                     |  
-| ---------------- | ------------------------------------------------------------------------- |    
-|   `"AGREEMENT"`  |       match if the different elements have **the same** polarity          |  
-| `"DISAGREEMENT"` | match if there is _disagreement_ between the different elements' polarity |   
-|      `None`      |              do not match per _agreement_ found, at all                   |    
+| `agreement`      | definition                                                                |
+| ---------------- | ------------------------------------------------------------------------- |
+| `"AGREEMENT"`    | match if the different elements have **the same** polarity                |
+| `"DISAGREEMENT"` | match if there is _disagreement_ between the different elements' polarity |
+| `None`           | do not match per _agreement_ found, at all                                |
 
 
 `subjectivity`
 : Identification of _opinions_ and _facts_ - **distinguishes** between _objective_ and _subjective_;  
 _It marks the subjectivity of the text_.
 
-| `subjectivity` |                          definition                           |  
-| -------------- | ------------------------------------------------------------- |    
-| `"SUBJECTIVE"` |           match if text that has _subjective_ marks           |  
-| `"OBJECTIVE"`  | match if text that does not have **any** _subjectivity_ marks |   
-|     `None`     |         do not match per _subjectivity_ found, at all         |    
+| `subjectivity` | definition                                                    |
+| -------------- | ------------------------------------------------------------- |
+| `"SUBJECTIVE"` | match if text that has _subjective_ marks                     |
+| `"OBJECTIVE"`  | match if text that does not have **any** _subjectivity_ marks |
+| `None`         | do not match per _subjectivity_ found, at all                 |
 
 `confidence`
 : It represents the _confidence_ associated with the sentiment analysis **performed on the** text and takes an integer number in the _range of_ `(0, 100]`;  
@@ -1987,9 +1989,9 @@ Target text
 
 _Sentiment Analysis_ results for the text:
 
-| `score_tag` |  `agreement`  | `subjectivity` | `confidence` |
+| `score_tag` | `agreement`   | `subjectivity` | `confidence` |
 | ----------- | ------------- | -------------- | ------------ |
-|   `"P+"`    | `"AGREEMENT"` | `"SUBJECTIVE"` |     `100`    |
+| `"P+"`      | `"AGREEMENT"` | `"SUBJECTIVE"` | `100`        |
 
 _Now that text is gonna be labeled **appropriate** COS its polarity is `"P+"` which is more positive than `"P"` and `agreement` values also do match_..  
 
@@ -2002,9 +2004,9 @@ Target text
 
 _Sentiment Analysis_ results for the text:
 
-| `score_tag` |    `agreement`   | `subjectivity` | `confidence` |
+| `score_tag` | `agreement`      | `subjectivity` | `confidence` |
 | ----------- | ---------------- | -------------- | ------------ |
-|    `"P"`    | `"DISAGREEMENT"` | `"SUBJECTIVE"` |     `92`    |
+| `"P"`       | `"DISAGREEMENT"` | `"SUBJECTIVE"` | `92`         |
 
 _Now that text is gonna be labeled **inappropriate** COS its polarity is `"P"` which is less positive than `"P+"` and also, `agreement` values also **do NOT** match, and **lastly**, `confidence` is **below** user-defined `98`_..    
 
@@ -2471,11 +2473,11 @@ while True:
 By default, it is gonna be the **InstaPy** folder at your home folder.  
 Such as, if your username is `Cherry`, let's show where your InstaPy folder would be,
 
-|   OS    |       home folder     | _InstaPy_ **workspace** folder |  
+| OS      | home folder           | _InstaPy_ **workspace** folder |
 | ------- | --------------------- | ------------------------------ |
 | Windows | `C:\\Users\\Cherry\\` | `C:\\Users\\Cherry\\InstaPy\\` |
-|   Mac   |    `/Users/Cherry/`   |    `/Users/Cherry/InstaPy/`    |
-|  Linux  |    `/home/Cherry/`    |    `/home/Cherry/InstaPy/`     |
+| Mac     | `/Users/Cherry/`      | `/Users/Cherry/InstaPy/`       |
+| Linux   | `/home/Cherry/`       | `/home/Cherry/InstaPy/`        |
 
 Note that, at the start of each run, it shows you the **workspace** folder in use.
 
@@ -2754,10 +2756,10 @@ Then you'll obviously have crazy aliases linked to _python_ and **pip** commands
 
 For example, let's assume you have _python_ 2.7 & _python_ 3.7 installed in your system,  
 
-| _python_ version | _python_ alias | **pip** alias |  
+| _python_ version | _python_ alias | **pip** alias |
 | ---------------- | -------------- | ------------- |
-|       2.7        |     `py2`      |     `pip`     |
-|       3.7        |    `python`    |     `pip3`    |
+| 2.7              | `py2`          | `pip`         |
+| 3.7              | `python`       | `pip3`        |
 
 And once you install a package by the `pip` command and try to run it with `python` command, it will confuse you.  
 
