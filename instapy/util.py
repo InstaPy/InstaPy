@@ -325,7 +325,7 @@ def validate_username(browser,
                 username)
 
     # skip business
-    if skip_business:
+    if skip_business or skip_non_business:
         # if is business account skip under conditions
         try:
             is_business_account = getUserData(
@@ -335,6 +335,9 @@ def validate_username(browser,
             return False, "---> Sorry, couldn't get if user has business " \
                           "account active\n"
 
+        if skip_non_business and not is_business_account:
+            return False, '---> Skiping non business because skip_non_business set to True'
+            
         if is_business_account:
             try:
                 category = getUserData("graphql.user.business_category_name",
@@ -570,7 +573,7 @@ def get_active_users(browser, username, posts, boundary, logger):
                     sleep_actual(3)
                 else:
                     raise NoSuchElementException
-                    
+
             except (IndexError, NoSuchElementException):
                 # Video have no likes button / no posts in page
                 logger.info("video found, try next post until we run out of posts")
