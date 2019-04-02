@@ -38,20 +38,22 @@ Implemented in Python using the Selenium module.<p>
 
 
 ## Table of contents
-- [How to install and run InstaPy](#installation)
-  * [Installing InstaPy](#installation)
-  * [Updating InstaPy](#updating-instapy)
-  * [Guides and tutorials](#guides)
-    * [Video tutorials](#video-tutorials)
-    * [Written guides](#written-guides)
-- [Externals and additionals tools](#external-tools)
-  * [Dashboard](#dashboard)
-  * [Web Interface](#gui)
-- [Running InstaPy on Docker](#docker)
-- [Documentation of all Instapy's features](#documentation)
-- [Support](#support)
-- [Credits](#credits)
-- [Disclaimer](#disclaimer)
+- [Table of contents](#Table-of-contents)
+- [**Installation**](#Installation)
+    - [Updating InstaPy](#Updating-InstaPy)
+- [Guides](#Guides)
+    - [Video tutorials:](#Video-tutorials)
+    - [Written Guides:](#Written-Guides)
+- [External Tools:](#External-Tools)
+- [Docker](#Docker)
+- [Documentation](#Documentation)
+- [Support](#Support)
+  - [Do you need help ?](#Do-you-need-help-)
+  - [Do you want to support us ?](#Do-you-want-to-support-us-)
+- [Credits](#Credits)
+  - [Contributors](#Contributors)
+  - [Backers](#Backers)
+  - [Sponsors](#Sponsors)
 
 ## **Installation**
 ```elm
