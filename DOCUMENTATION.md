@@ -32,6 +32,7 @@
   - [Like by Tags](#like-by-tags)
   - [Like by Feeds](#like-by-feeds)
   - [Like by Locations](#like-by-locations)
+  - [Like Post Likers](#like-post-likers)
   - [Comment by Locations](#comment-by-locations)
   - [Follow by Tags](#follow-by-tags)
   - [Follow by Locations](#follow-by-locations)
@@ -706,6 +707,26 @@ Example:
 * Search 'Salton Sea' and select the result with a location icon
 * The url is: https://www.instagram.com/explore/locations/224442573/salton-sea/
 * Use everything after 'locations/' or just the number
+
+
+### Like Post Likers
+You can interact with users that liked your posts (or someone else's posts).
+ 
+ ```python
+# To like 3 photos of each one of the 10 random users that liked one of the 5
+# posts of 'your_username' or 'other_person', use:
+
+session.like_likers(['your_username', 'other_person'], photos_grab_amount=5,
+                     like_likers_per_photo=10, likes_per_liker=3)
+```
+#### Parameters:
+ `usernames`: a user (or a list of users) to like their likers (can be your own)
+ 
+ `photos_grab_amount`: this amount of posts of each one of the usernames will be used to get a list of the accoutns that liked them
+ 
+ `like_likers_per_photo`: this amount of users from each one of the grabbed photos will be selected for interaction
+ 
+ `likes_per_liker`: this amount of posts of each selected liker will be liked
 
 
 ### Comment by Locations
