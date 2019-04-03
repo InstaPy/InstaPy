@@ -5,6 +5,7 @@ from .util import smart_run
 from .settings import Settings
 from .file_manager import set_workspace
 from .file_manager import get_workspace
+from .proxy_util import Proxy
 
 
 # __variables__ with double-quoted values will be available in setup.py
