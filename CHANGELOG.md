@@ -7,6 +7,21 @@ _The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 ### Fixed
 - "Failed to find login button" when trying to login (add all the possible A/B-Test login xpath 
 
+## [0.4.0] - 2019-04-03
+### Added
+- Improved info provided by log messages in instapy.py and like_util.py
+- Possibility to skip non bussiness accounts
+
+### Changed
+- Remove docker from core, moved into instapy-docker repo
+- Remove quickstart templates and only reference instapy-quickstart
+- Restructure README and add new DOCUMENTATION file
+
+### Fixed
+- "UnboundLocalError: local variable 'tag' referenced before assignment" when there is no smart-hastag genereated
+- xPath to dialog_address
+
+
 ## [0.3.4] - 2019-03-17
 ### Added
 - (re) add page_reload, after cookie load, on login_user()
