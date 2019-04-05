@@ -2,6 +2,7 @@
 # import built-in & third-party modules
 import pickle
 from selenium.webdriver.common.action_chains import ActionChains
+from selenium.webdriver.common.keys import Keys
 
 # import InstaPy modules
 from .time_util import sleep
@@ -251,39 +252,17 @@ def login_user(browser,
      .send_keys(password)
      .perform())
 
-    # update server calls for both 'click' and 'send_keys' actions
-    for i in range(2):
-        update_activity()
-
-    try:
-        login_button = browser.find_element_by_xpath(
-            "//button[@type='submit']")
-    except NoSuchElementException:
-        print("Login A/B test detected! Trying another...1")
-        try:
-            login_button = browser.find_element_by_xpath(
-                "//button//div[text()='Log In']")
-        except NoSuchElementException:
-            print("Login button A/B test detected! Trying another...2")
-            try:
-                login_button = browser.find_element_by_xpath(
-                    "//button[text()='Log In']")
-            except NoSuchElementException:
-                print("Login button A/B test detected! Trying another... 3")
-                try:
-                    login_button = browser.find_element_by_xpath(
-                        "//div[text()='Log In']")
-                except NoSuchElementException:
-                    print("Login button A/B test detected! ran out of option..quit")
-                    return False
+    sleep(1)
 
     (ActionChains(browser)
-     .move_to_element(login_button)
+     .move_to_element(input_password[0])
      .click()
+     .send_keys(Keys.ENTER)
      .perform())
 
-    # update server calls
-    update_activity()
+    # update server calls for both 'click' and 'send_keys' actions
+    for i in range(4):
+        update_activity()
 
     dismiss_get_app_offer(browser, logger)
     dismiss_notification_offer(browser, logger)
