@@ -34,6 +34,7 @@ from .like_util import get_links_for_username
 from .like_util import like_comment
 from .login_util import login_user
 from .settings import Settings
+from .settings import localize_path
 from .print_log_writer import log_follower_num
 from .print_log_writer import log_following_num
 
@@ -105,7 +106,8 @@ class InstaPy:
                  disable_image_load=False,
                  bypass_suspicious_attempt=False,
                  bypass_with_mobile=False,
-                 multi_logs=True):
+                 multi_logs=True,
+                 split_db=False):
 
         cli_args = parse_cli_args()
         username = cli_args.username or username
@@ -119,6 +121,7 @@ class InstaPy:
         bypass_suspicious_attempt = (
             cli_args.bypass_suspicious_attempt or bypass_suspicious_attempt)
         bypass_with_mobile = cli_args.bypass_with_mobile or bypass_with_mobile
+        split_db = cli_args.split_db or split_db
 
         Settings.InstaPy_is_running = True
         # workspace must be ready before anything
@@ -146,6 +149,10 @@ class InstaPy:
         self.username = username or os.environ.get('INSTA_USER')
         self.password = password or os.environ.get('INSTA_PW')
         Settings.profile["name"] = self.username
+
+        self.split_db = split_db
+        if self.split_db:
+            Settings.database_location = localize_path("db", "instapy_{}.db".format(self.username))
 
         self.page_delay = page_delay
         self.use_firefox = use_firefox
