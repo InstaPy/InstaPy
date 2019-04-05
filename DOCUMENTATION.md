@@ -2653,7 +2653,7 @@ To do this simply pass the `disable_image_load=True` parameter in the InstaPy co
 session = InstaPy(username=insta_username,
                   password=insta_password,
                   headless_browser=False,
-		              disable_image_load=True,
+		  disable_image_load=True,
                   multi_logs=True)
 ```
 
@@ -2688,7 +2688,7 @@ To do this simply pass the `split_db=True` parameter in the InstaPy constructor 
 session = InstaPy(username=insta_username,
                   password=insta_password,
                   headless_browser=False,
-		              split_db=True,
+		  split_db=True,
                   multi_logs=True)
 ```
 
