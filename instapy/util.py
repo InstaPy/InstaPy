@@ -2092,6 +2092,9 @@ def parse_cli_args():
     parser.add_argument(
         "-bwm", "--bypass-with-mobile", help="Bypass with mobile phone",
         action="store_true", default=None)
+    parser.add_argument(
+        "-sdb", "--split-db", help="Split sqlite-db as instapy_{username}.db",
+        action="store_true", default=None)
 
     """ Style below can convert strings into booleans:
     ```parser.add_argument("--is-debug",

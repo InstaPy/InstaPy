@@ -100,6 +100,7 @@
   - [Disable Image Loading](#disable-image-loading)
   - [Using Multiple Chromedrivers](#using-multiple-chromedrivers)
   - [Changing DB or Chromedriver locations](#changing-db-or-chromedriver-locations)
+  - [Split SQLite DB by Username](#split-sqlite-by-username)
   - [How to avoid _python_ & pip confusion](#how-to-avoid-python--pip-confusion)
 
 ---
@@ -2652,7 +2653,7 @@ To do this simply pass the `disable_image_load=True` parameter in the InstaPy co
 session = InstaPy(username=insta_username,
                   password=insta_password,
                   headless_browser=False,
-		              disable_image_load=True,
+		  disable_image_load=True,
                   multi_logs=True)
 ```
 
@@ -2673,6 +2674,24 @@ Set these in instapy/settings.py if you're locating the library in the /usr/lib/
 Settings.database_location = '/path/to/instapy.db'
 Settings.chromedriver_location = '/path/to/chromedriver'
 ```
+
+### Split SQLite by Username 
+If you experience issue with multiple accounts Instapy.db lockup. You can add the following flag
+
+`-sdb` when running in Command line
+
+or 
+
+To do this simply pass the `split_db=True` parameter in the InstaPy constructor like so:
+
+```python
+session = InstaPy(username=insta_username,
+                  password=insta_password,
+                  headless_browser=False,
+		  split_db=True,
+                  multi_logs=True)
+```
+
 
 
 ### How to avoid _python_ & **pip** confusion
