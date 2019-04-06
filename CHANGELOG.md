@@ -5,7 +5,7 @@ _The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 ## [0.4.1] - 2019-04-06
 ### Fixed
-- "Failed to find login button" when trying to login (add all the possible A/B-Test login xpath)
+- "Failed to find login button" when trying to login (add KEYS.ENTER to submit login data)
 
 
 ## [0.4.0] - 2019-04-03
