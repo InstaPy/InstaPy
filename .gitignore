@@ -104,6 +104,7 @@ logs/
 # Editors
 .idea
 .vscode
+.bak
 
 # pytest
 .pytest_cache/
