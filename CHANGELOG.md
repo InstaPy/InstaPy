@@ -7,6 +7,15 @@ _The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 ## [0.5.0] - ADD DATE HERE
 ### Changed
 - Remove support for python2
+- Information regarding the nogui parameter in documentation.
+
+
+## [0.4.1] - 2019-04-06
+### Added
+- Support for split database with -sdb flag to avoid SQLite lock up
+
+### Fixed
+- "Failed to find login button" when trying to login (add KEYS.ENTER to submit login data)
 
 
 ## [0.4.0] - 2019-04-03
