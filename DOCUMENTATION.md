@@ -1224,7 +1224,7 @@ session.remove_follow_requests(amount=200, sleep_delay=600)
 
 ---
 
-<br /> 
+<br />
 <br />
 
 ## Third Party Features
