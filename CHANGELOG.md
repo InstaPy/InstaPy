@@ -7,6 +7,7 @@ _The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 ## [0.5.0] - ADD DATE HERE
 ### Changed
 - Information regarding the nogui parameter in documentation.
+- Remove support for python2
 
 
 ## [0.4.2] - 2019-04-15
