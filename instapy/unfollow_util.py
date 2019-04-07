@@ -36,12 +36,9 @@ from .relationship_tools import get_followers
 from .relationship_tools import get_nonfollowers
 from .database_engine import get_database
 from .quota_supervisor import quota_supervisor
-<<<<<<< HEAD
 from .util import is_follow_me
 from .util import get_epoch_time_diff
-=======
 from .settings import InfluxDBLog
->>>>>>> influxdb singleton
 
 from selenium.common.exceptions import WebDriverException
 from selenium.common.exceptions import NoSuchElementException
