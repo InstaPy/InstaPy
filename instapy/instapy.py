@@ -12,11 +12,14 @@ import json
 import requests
 from selenium import webdriver
 from selenium.webdriver import DesiredCapabilities
-from pyvirtualdisplay import Display
 import logging
 from contextlib import contextmanager
 from copy import deepcopy
 import unicodedata
+try:
+    from pyvirtualdisplay import Display
+except ModuleNotFoundError:
+    pass
 
 # import InstaPy modules
 from .clarifai_util import check_image
@@ -129,10 +132,14 @@ class InstaPy:
             raise InstaPyError(
                 "Oh no! I don't have a workspace to work at :'(")
 
+        # virtual display to hide browser (not supported on Windows)
         self.nogui = nogui
-        if nogui:
-            self.display = Display(visible=0, size=(800, 600))
-            self.display.start()
+        if self.nogui:
+            if not platform.startswith('win32'):
+                self.display = Display(visible=0, size=(800, 600))
+                self.display.start()
+            else:
+                raise InstaPyError("The 'nogui' parameter isn't supported on Windows.")
 
         self.browser = None
         self.headless_browser = headless_browser
