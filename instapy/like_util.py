@@ -666,7 +666,7 @@ def check_link(browser, post_link, dont_like, mandatory_words,
     return False, user_name, is_video, 'None', "Success"
 
 
-def like_image(browser, username, blacklist, logger, logfolder):
+def like_image(browser, username, blacklist, logger, logfolder, total_liked_img):
     """Likes the browser opened image"""
     # check action availability
     if quota_supervisor("likes") == "jump":
@@ -697,6 +697,11 @@ def like_image(browser, username, blacklist, logger, logfolder):
             # get the post-like delay time to sleep
             naply = get_action_delay("like")
             sleep(naply)
+
+            # after every 10 liked image do checking on the block
+            if total_liked_img % 10 == 0 and not verify_blocked_like(browser, logger):
+                return False, "block on likes"
+
             return True, "success"
 
         else:
@@ -713,6 +718,20 @@ def like_image(browser, username, blacklist, logger, logfolder):
     logger.info('--> Invalid Like Element!')
 
     return False, "invalid element"
+
+
+def verify_blocked_like(browser, logger):
+    """Check for a ban on likes using the last liked image"""
+
+    browser.refresh()
+    unlike_xpath = "//section/span/button/span[@aria-label='Unlike']"
+    like_elem = browser.find_elements_by_xpath(unlike_xpath)
+
+    if len(like_elem) == 1:
+        return True
+    else:
+        logger.info('-------- WARNING! Image was NOT liked! You are have a BLOCK on likes!')
+        return False
 
 
 def get_tags(browser, url):
