@@ -1372,7 +1372,8 @@ class InstaPy:
                                                      user_name,
                                                      self.blacklist,
                                                      self.logger,
-                                                     self.logfolder)
+                                                     self.logfolder,
+                                                     liked_img)
 
                         if like_state is True:
                             liked_img += 1
@@ -1460,6 +1461,9 @@ class InstaPy:
 
                         elif msg == "already liked":
                             already_liked += 1
+
+                        elif msg == "block on likes":
+                            break
 
                         elif msg == "jumped":
                             # will break the loop after certain consecutive
@@ -1785,7 +1789,8 @@ class InstaPy:
                                                      user_name,
                                                      self.blacklist,
                                                      self.logger,
-                                                     self.logfolder)
+                                                     self.logfolder,
+                                                     liked_img)
 
                         if like_state is True:
                             liked_img += 1
@@ -1885,6 +1890,9 @@ class InstaPy:
 
                         elif msg == "already liked":
                             already_liked += 1
+
+                        elif msg == "block on likes":
+                            break
 
                         elif msg == "jumped":
                             # will break the loop after certain consecutive
@@ -2049,7 +2057,8 @@ class InstaPy:
                                                      user_name,
                                                      self.blacklist,
                                                      self.logger,
-                                                     self.logfolder)
+                                                     self.logfolder,
+                                                     total_liked_img)
                         if like_state is True:
                             total_liked_img += 1
                             liked_img += 1
@@ -2110,6 +2119,9 @@ class InstaPy:
 
                         elif msg == "already liked":
                             already_liked += 1
+
+                        elif msg == "block on likes":
+                            break
 
                         elif msg == "jumped":
                             # will break the loop after certain consecutive
@@ -2316,7 +2328,8 @@ class InstaPy:
                                                          user_name,
                                                          self.blacklist,
                                                          self.logger,
-                                                         self.logfolder)
+                                                         self.logfolder,
+                                                         total_liked_img)
                             if like_state is True:
                                 total_liked_img += 1
                                 liked_img += 1
@@ -2374,6 +2387,9 @@ class InstaPy:
 
                             elif msg == "already liked":
                                 already_liked += 1
+
+                            elif msg == "block on likes":
+                                break
 
                             elif msg == "jumped":
                                 # will break the loop after certain
@@ -2610,7 +2626,8 @@ class InstaPy:
                                                          user_name,
                                                          self.blacklist,
                                                          self.logger,
-                                                         self.logfolder)
+                                                         self.logfolder,
+                                                         total_liked_img)
                             if like_state is True:
                                 total_liked_img += 1
                                 liked_img += 1
@@ -2675,6 +2692,9 @@ class InstaPy:
 
                             elif msg == "already liked":
                                 already_liked += 1
+
+                            elif msg == "block on likes":
+                                break
 
                             elif msg == "jumped":
                                 # will break the loop after certain
@@ -3683,7 +3703,8 @@ class InstaPy:
                                                              user_name,
                                                              self.blacklist,
                                                              self.logger,
-                                                             self.logfolder)
+                                                             self.logfolder,
+                                                             liked_img)
 
                                 if like_state is True:
                                     liked_img += 1
@@ -3795,6 +3816,9 @@ class InstaPy:
 
                                 elif msg == "already liked":
                                     already_liked += 1
+
+                                elif msg == "block on likes":
+                                    break
 
                                 elif msg == "jumped":
                                     # will break the loop after
@@ -4430,7 +4454,8 @@ class InstaPy:
                                                  user_name,
                                                  self.blacklist,
                                                  self.logger,
-                                                 self.logfolder)
+                                                 self.logfolder,
+                                                 liked_img)
 
                     if like_state is True:
                         liked_img += 1
@@ -4527,6 +4552,9 @@ class InstaPy:
 
                     elif msg == "already liked":
                         already_liked += 1
+
+                    elif msg == "block on likes":
+                        break
 
                     elif msg == "jumped":
                         # will break the loop after certain consecutive jumps
@@ -4987,13 +5015,17 @@ class InstaPy:
                                                    user_name,
                                                    self.blacklist,
                                                    self.logger,
-                                                   self.logfolder)
+                                                   self.logfolder,
+                                                   self.liked_img)
                 if image_like_state is True:
                     like_failures_tracker["consequent"]["post_likes"] = 0
                     self.liked_img += 1
 
                 elif msg == "already liked":
                     self.already_liked += 1
+
+                elif msg == "block on likes":
+                    break
 
                 else:
                     self.logger.info(
@@ -5316,12 +5348,19 @@ class InstaPy:
                         liking = (random.randint(0, 100) <= pods_like_percent)
                         commenting = (random.randint(0, 100) <= pods_comment_percentage)
 
-                        if liking:
-                            like_state, msg = like_image(self.browser,
-                                                            user_name,
-                                                            self.blacklist,
-                                                            self.logger,
-                                                            self.logfolder)
+                    if liking:
+                        like_state, msg = like_image(self.browser,
+                                                     user_name,
+                                                     self.blacklist,
+                                                     self.logger,
+                                                     self.logfolder,
+                                                     self.liked_img)
+
+                        if like_state is True:
+                            self.liked_img += 1
+
+                        elif msg == "block on likes":
+                            break
 
                         if commenting:
                             comments = self.fetch_smart_comments(
