@@ -699,7 +699,7 @@ def like_image(browser, username, blacklist, logger, logfolder, total_liked_img)
             sleep(naply)
 
             # after every 10 liked image do checking on the block
-            if total_liked_img % 10 == 0 and not verify_liked_image(browser, logger):
+            if total_liked_img % 10 == 0 and not verify_blocked_like(browser, logger):
                 return False, "block on likes"
 
             return True, "success"
@@ -720,11 +720,12 @@ def like_image(browser, username, blacklist, logger, logfolder, total_liked_img)
     return False, "invalid element"
 
 
-def verify_liked_image(browser, logger):
+
+def verify_blocked_like(browser, logger):
     """Check for a ban on likes using the last liked image"""
 
     browser.refresh()
-    unlike_xpath = read_xpath(like_image.__name__, "unlike")
+    unlike_xpath = "//section/span/button/span[@aria-label='Unlike']"
     like_elem = browser.find_elements_by_xpath(unlike_xpath)
 
     if len(like_elem) == 1:
@@ -732,6 +733,7 @@ def verify_liked_image(browser, logger):
     else:
         logger.info('-------- WARNING! Image was NOT liked! You are have a BLOCK on likes!')
         return False
+
 
 
 def get_tags(browser, url):
@@ -757,6 +759,7 @@ def get_tags(browser, url):
     tags = findall(r'#\w*', image_text)
 
     return tags
+
 
 
 def get_links(browser, page, logger, media, element):

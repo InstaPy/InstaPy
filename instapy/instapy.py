@@ -5437,11 +5437,12 @@ class InstaPy:
 
                     if liking:
                         like_state, msg = like_image(self.browser,
-                                                        user_name,
-                                                        self.blacklist,
-                                                        self.logger,
-                                                        self.logfolder,
-                                                        self.liked_img)
+                                                     user_name,
+                                                     self.blacklist,
+                                                     self.logger,
+                                                     self.logfolder,
+                                                     self.liked_img)
+
                         if like_state is True:
                             self.liked_img += 1
 
