@@ -699,7 +699,7 @@ def like_image(browser, username, blacklist, logger, logfolder, total_liked_img)
             sleep(naply)
 
             # after every 10 liked image do checking on the block
-            if total_liked_img % 10 == 0 and not verify_blocked_like(browser, logger):
+            if total_liked_img % 10 == 0 and not verify_liked_image(browser, logger):
                 return False, "block on likes"
 
             return True, "success"
@@ -721,7 +721,7 @@ def like_image(browser, username, blacklist, logger, logfolder, total_liked_img)
 
 
 
-def verify_blocked_like(browser, logger):
+def verify_liked_image(browser, logger):
     """Check for a ban on likes using the last liked image"""
 
     browser.refresh()
