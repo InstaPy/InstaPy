@@ -133,8 +133,8 @@ def bypass_suspicious_login(browser, bypass_with_mobile):
     try:
         sleep(5)
         # locate wrong security code message
-        wrong_login = browser.find_element_by_xpath(
-            read_xpath(bypass_suspicious_login.__name__,"wrong_login"))
+        wrong_login = browser.find_element_by_xpath((
+            read_xpath(bypass_suspicious_login.__name__,"wrong_login")))
 
         if wrong_login is not None:
             print(('Wrong security code! Please check the code Instagram'

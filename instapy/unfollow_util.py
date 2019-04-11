@@ -1109,7 +1109,7 @@ def get_given_user_following(browser,
         #allfollowing = format_number(
         #    browser.find_element_by_xpath(read_xpath(get_given_user_following.__name__,"all_following")).text)
         allfollowing = format_number(
-            browser.find_element_by_xpath(str(read_xpath(get_given_user_following.__name__,"all_following"))))
+            browser.find_element_by_xpath(read_xpath(get_given_user_following.__name__,"all_following")).text)
 
     except NoSuchElementException:
         try:
