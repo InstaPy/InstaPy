@@ -165,7 +165,7 @@ class InfluxDBLog:
                     }
                 }]
         self.client_influxDB.write_points(json_body)
-    
+
     def switchDatabase(self, database):
         if not self.client_influxDB: return
 
@@ -173,7 +173,7 @@ class InfluxDBLog:
         Settings.db_influx = database
 
 
-class MongoDB:  
+class MongoDB:
     """ MongoDB Singleton Class """
     singleton = None
     client = None

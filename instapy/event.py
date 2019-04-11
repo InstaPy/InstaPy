@@ -1,4 +1,4 @@
-class Event
+class Event:
     '''Event Singleton Class
 
     How to use:
@@ -7,7 +7,7 @@ class Event
     '''
 
     singleton = None
-   
+
     def __new__(cls, *args, **kwargs):
         if not cls.singleton:
             cls.singleton = object.__new__(InfluxDBLog)
