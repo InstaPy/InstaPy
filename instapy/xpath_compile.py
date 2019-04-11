@@ -18,7 +18,7 @@ xpath['bypass_suspicious_login'].append({
     "submit_security_code_button":"//button[text()='Submit']",
     "this_was_me_button":"//button[@name='choice'][text()='This Was Me']",
     "wrong_login":["//p[text()='Please check the code we sent you and try ","again.']"]
-}) #DAFUQ wrong login
+}) #multiline:  wrong login
 
 xpath['class_selectors'] = []
 xpath['class_selectors'].append({
@@ -36,8 +36,8 @@ xpath['dialog_username_extractor'].append({
     "person":"../../../*"
 })
 
-xpath['dismiss_get_app_offer'] = []  
-xpath['dismiss_get_app_offer'].append({  
+xpath['dismiss_get_app_offer'] = []
+xpath['dismiss_get_app_offer'].append({
     "offer_elem": "//*[contains(text(), 'Get App')]",
     "dismiss_elem": "//*[contains(text(), 'Not Now')]"
 })
@@ -54,7 +54,7 @@ xpath['extract_information'].append({
     "one_pic_elem":["//section/main/article/div[1]/div/div[10]/div[",
                     "3]/a/div"],
     "like_element":"//a[@role='button']/span[text()='Like']/.."
-}) #DAFUQ one_pic_elem
+}) #multiline:  one_pic_elem
 
 xpath['extract_post_info'] = []
 xpath['extract_post_info'].append({
@@ -64,8 +64,8 @@ xpath['extract_post_info'].append({
     "load_more_comments_element_alt":"//div/ul/li[1]/button"
 })
 
-xpath['find_user_id'] = []  
-xpath['find_user_id'].append({  
+xpath['find_user_id'] = []
+xpath['find_user_id'].append({
     "meta_XP":"//meta[@property='instapp:owner_user_id']"
 })
 
@@ -77,7 +77,7 @@ xpath['get_active_users'].append({
     "next_button":  ["//a[contains(@class, 'HBoOv')]",
                     "[text()='Next']"],
     "topCount_elements":"//span[contains(@class,'g47SY')]"
-}) #DAFUQ next_button
+}) #multiline:  next_button
 
 xpath['get_buttons_from_dialog'] = []
 xpath['get_buttons_from_dialog'].append({
@@ -85,8 +85,8 @@ xpath['get_buttons_from_dialog'].append({
     "unfollow_button":"//button[text() = 'Following']"
 })
 
-xpath['get_comment_input'] = []  
-xpath['get_comment_input'].append({  
+xpath['get_comment_input'] = []
+xpath['get_comment_input'].append({
     "comment_input": '//textarea[@placeholder = "Add a comment…"]',
     "placeholder": '//input[@placeholder = "Add a comment…"]'
 })
@@ -130,7 +130,7 @@ xpath['get_given_user_following'].append({
                     "(@href,'following')]/span"],
     "topCount_elements":"//span[contains(@class,'g47SY')]",
     "following_link":'//a[@href="/{}/following/"]'
-}) #DAFUQ all_following
+}) #multiline:  all_following
 
 xpath['get_photo_urls_from_profile'] = []
 xpath['get_photo_urls_from_profile'].append({
@@ -165,13 +165,12 @@ xpath['get_relationship_counts'] = []
 xpath['get_relationship_counts'].append({
     "following_count":  ["//a[contains",
                         "(@href,",
-                        "'following')]/span"], 
-
+                        "'following')]/span"],
     "followers_count":  ["//a[contains",
                         "(@href,",
                         "'followers')]/span"],
     "topCount_elements":"//span[contains(@class,'g47SY')]"
-}) #DAFUQ following_count, followers_count
+}) #multiline: following_count, followers_count
 
 xpath['get_source_link'] = []
 xpath['get_source_link'].append({
