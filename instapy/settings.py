@@ -115,16 +115,16 @@ class Selectors:
 
 
 
-class InfluxDBLog:  
+class InfluxDBLog:
     """ InfluxDB Singleton Class """
-    singleton = None 
-    client_influxDB = None 
+    singleton = None
+    client_influxDB = None
    
-    def __new__(cls, *args, **kwargs):  
-        if not cls.singleton:  
-            cls.singleton = object.__new__(InfluxDBLog)  
-        return cls.singleton  
-   
+    def __new__(cls, *args, **kwargs):
+        if not cls.singleton:
+            cls.singleton = object.__new__(InfluxDBLog)
+        return cls.singleton
+
     def __init__(self):
         if (self.client_influxDB or
                 not Settings.host_influx or
@@ -151,9 +151,8 @@ class InfluxDBLog:
             self.client_influxDB = None
             print('Error connecting to InfluxDB!')
             # TODO throw some exception ?
-            pass
-    
-    
+
+
     def addEntry(self, measurement, tag_name, tag_value, field1_name, field1_value, field2_name, field2_value):
         if not self.client_influxDB: return
 
@@ -165,7 +164,7 @@ class InfluxDBLog:
                     },
                     "fields": {
                         field1_name: field1_value,
-                        field2_name: field2_value   
+                        field2_name: field2_value
                     }
                 }]
         self.client_influxDB.write_points(json_body)
@@ -179,15 +178,15 @@ class InfluxDBLog:
 
 class MongoDB:  
     """ MongoDB Singleton Class """
-    singleton = None 
-    client = None 
+    singleton = None
+    client = None
     db = None
-   
-    def __new__(cls, *args, **kwargs):  
-        if not cls.singleton:  
-            cls.singleton = object.__new__(MongoDB)  
-        return cls.singleton  
-   
+
+    def __new__(cls, *args, **kwargs):
+        if not cls.singleton:
+            cls.singleton = object.__new__(MongoDB)
+        return cls.singleton
+
     def __init__(self):
         if (self.client or
                 not Settings.host_mongo or
@@ -211,4 +210,3 @@ class MongoDB:
             self.client = None
             print('Error connecting to MongoDB!')
             # TODO throw some exception ?
-            pass
