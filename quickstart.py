@@ -10,14 +10,11 @@ from instapy import set_workspace
 set_workspace(path=None)
 
 # get an InstaPy session!
-session = InstaPy(username="superfkndopetho", 
-        password="$t0rmd4t4!")
+session = InstaPy()
 
 with smart_run(session):
     # general settings
     session.set_dont_include(["friend1", "friend2", "friend3"])
-    session.set_do_follow(enabled=True, percentage=10, times=2)
 
     # activity
-    session.like_by_tags(["natgeo"], amount=10)
     session.like_by_tags(["natgeo"], amount=10)
