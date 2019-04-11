@@ -5,11 +5,6 @@ import json
 
 xpath = {}
 
-xpath[''] = []  
-xpath[''].append({  
-    "":""
-})
-
 xpath['bypass_suspicious_login'] = []  
 xpath['bypass_suspicious_login'].append({  
     "bypass_with_mobile_choice":"//label[@for='choice_0']",
