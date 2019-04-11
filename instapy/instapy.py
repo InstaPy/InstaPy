@@ -80,6 +80,8 @@ from .pods_util import get_recent_posts_from_pods
 from .pods_util import share_my_post_with_pods
 from .pods_util import share_with_pods_restriction
 
+from .xpath import read_xpath
+
 # import exceptions
 from selenium.common.exceptions import NoSuchElementException
 from .exceptions import InstaPyError
@@ -2743,7 +2745,7 @@ class InstaPy:
         try:
             if not url:
                 urls = self.browser.find_elements_by_xpath(
-                    "//main//article//div//div[1]//div[1]//a[1]")
+                    read_xpath(self.__class__.__name__,"main_article"))
                 url = urls[0].get_attribute("href")
                 self.logger.info("new url {}".format(url))
             tags = get_tags(self.browser, url)
