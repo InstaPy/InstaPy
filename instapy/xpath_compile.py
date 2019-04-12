@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import json
-
 xpath = {}
 
 xpath['bypass_suspicious_login'] = []
@@ -226,6 +224,3 @@ xpath['unfollow'].append({
     "following_link":'//section//ul//li[3]',
     "find_dialog_box":"//div[text()='Following']/../../../following-sibling::div"
 })
-
-with open('xpath.json', 'w') as outfile:
-    json.dump(xpath, outfile)
