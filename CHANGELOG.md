@@ -11,6 +11,11 @@ _The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 - XPath Isolation
 
 
+## [0.4.2] - 2019-04-15
+### Fixed
+- Fail of whole pod run on exception
+
+
 ## [0.4.1] - 2019-04-06
 ### Added
 - Support for split database with -sdb flag to avoid SQLite lock up
