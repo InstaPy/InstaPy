@@ -39,6 +39,8 @@ from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import WebDriverException
 from selenium.common.exceptions import TimeoutException
 
+from .xpath import read_xpath
+
 default_profile_pic_instagram = [
     "https://instagram.flas1-2.fna.fbcdn.net/vp"
     "/a8539c22ed9fec8e1c43b538b1ebfd1d/5C5A1A7A/t51.2885-19"
@@ -82,7 +84,7 @@ def is_private_profile(browser, logger, following=True):
         logger.info("Is private account you're not following.")
         body_elem = browser.find_element_by_tag_name('body')
         is_private = body_elem.find_element_by_xpath(
-            '//h2[@class="_kcrwx"]')
+            read_xpath(is_private_profile.__name__,"is_private"))
 
     return is_private
 
@@ -483,7 +485,7 @@ def get_active_users(browser, username, posts, boundary, logger):
     except WebDriverException:
         try:
             topCount_elements = browser.find_elements_by_xpath(
-                "//span[contains(@class,'g47SY')]")
+                read_xpath(get_active_users.__name__,"topCount_elements"))
 
             if topCount_elements:  # prevent an empty string scenario
                 total_posts = format_number(topCount_elements[0].text)
@@ -506,7 +508,7 @@ def get_active_users(browser, username, posts, boundary, logger):
     # click latest post
     try:
         latest_posts = browser.find_elements_by_xpath(
-            "//div[contains(@class, '_9AhH0')]")
+            read_xpath(get_active_users.__name__,"latest_posts"))
         # avoid no posts
         if latest_posts:
             latest_post = latest_posts[0]
@@ -550,7 +552,7 @@ def get_active_users(browser, username, posts, boundary, logger):
             except WebDriverException:
                 try:
                     likers_count = (browser.find_element_by_xpath(
-                        "//div[contains(@class,'Nm9Fw')]/child::button/span").text)
+                        read_xpath(get_active_users.__name__,"likers_count")).text)
                     if likers_count:  # prevent an empty string scenarios
                         likers_count = format_number(likers_count)
                     else:
@@ -566,7 +568,7 @@ def get_active_users(browser, username, posts, boundary, logger):
                     likers_count = None
             try:
                 likes_button = browser.find_elements_by_xpath(
-                    "//div[contains(@class,'Nm9Fw')]/child::button")
+                    read_xpath(get_active_users.__name__,"likes_button"))
 
                 if likes_button != []:
                     likes_button = likes_button[0]
@@ -590,8 +592,7 @@ def get_active_users(browser, username, posts, boundary, logger):
 
                         # click next button
                         next_button = browser.find_element_by_xpath(
-                            "//a[contains(@class, 'HBoOv')]"
-                            "[text()='Next']")
+                            read_xpath(get_active_users.__name__,"next_button"))
                         click_element(browser, next_button)
                     except Exception:
                         logger.error('Unable to go to next profile post')
@@ -698,8 +699,7 @@ def get_active_users(browser, username, posts, boundary, logger):
 
                 # click next button
                 next_button = browser.find_element_by_xpath(
-                    "//a[contains(@class, 'HBoOv')]"
-                    "[text()='Next']")
+                    read_xpath(get_active_users.__name__,"next_button"))
                 click_element(browser, next_button)
 
             except Exception:
@@ -912,11 +912,11 @@ def get_number_of_posts(browser):
 
         try:
             num_of_posts_txt = browser.find_element_by_xpath(
-                "//section/main/div/header/section/ul/li[1]/span/span").text
+                read_xpath(get_number_of_posts.__name__,"num_of_posts_txt_no_such_element")).text
 
         except NoSuchElementException:
             num_of_posts_txt = browser.find_element_by_xpath(
-                "//section/div[3]/div/header/section/ul/li[1]/span/span").text
+                read_xpath(get_number_of_posts.__name__,"num_of_posts_txt_no_such_element")).text
 
         num_of_posts_txt = num_of_posts_txt.replace(" ", "")
         num_of_posts_txt = num_of_posts_txt.replace(",", "")
@@ -942,9 +942,7 @@ def get_relationship_counts(browser, username, logger):
     except WebDriverException:
         try:
             followers_count = format_number(
-                browser.find_element_by_xpath("//a[contains"
-                                              "(@href,"
-                                              "'followers')]/span").text)
+                browser.find_element_by_xpath(read_xpath(get_relationship_counts.__name__,"followers_count")).text)
         except NoSuchElementException:
             try:
                 browser.execute_script("location.reload()")
@@ -957,7 +955,7 @@ def get_relationship_counts(browser, username, logger):
             except WebDriverException:
                 try:
                     topCount_elements = browser.find_elements_by_xpath(
-                        "//span[contains(@class,'g47SY')]")
+                        read_xpath(get_relationship_counts.__name__,"topCount_elements"))
 
                     if topCount_elements:
                         followers_count = format_number(
@@ -985,9 +983,7 @@ def get_relationship_counts(browser, username, logger):
     except WebDriverException:
         try:
             following_count = format_number(
-                browser.find_element_by_xpath("//a[contains"
-                                              "(@href,"
-                                              "'following')]/span").text)
+                browser.find_element_by_xpath(read_xpath(get_relationship_counts.__name__,"following_count")).text)
 
         except NoSuchElementException:
             try:
@@ -1001,7 +997,7 @@ def get_relationship_counts(browser, username, logger):
             except WebDriverException:
                 try:
                     topCount_elements = browser.find_elements_by_xpath(
-                        "//span[contains(@class,'g47SY')]")
+                        read_xpath(get_relationship_counts.__name__,"topCount_elements"))
 
                     if topCount_elements:
                         following_count = format_number(
@@ -1435,7 +1431,7 @@ def find_user_id(browser, track, username, logger):
     elif track == "post":
         query = "return window._sharedData.entry_data.PostPage[" \
                 "0].graphql.shortcode_media.owner.id"
-        meta_XP = "//meta[@property='instapp:owner_user_id']"
+        meta_XP = read_xpath(find_user_id.__name__,"meta_XP")
 
     failure_message = "Failed to get the user ID of '{}' from {} page!".format(
         username, track)
@@ -2122,7 +2118,7 @@ def get_cord_location(browser, location):
     base_url = 'https://www.instagram.com/explore/locations/'
     query_url = '{}{}{}'.format(base_url, location, "?__a=1")
     browser.get(query_url)
-    json_text = browser.find_element_by_xpath('//body').text
+    json_text = browser.find_element_by_xpath(read_xpath(get_cord_location.__name__,"json_text")).text
     data = json.loads(json_text)
 
     lat = data['graphql']['location']['lat']
