@@ -43,6 +43,7 @@ from selenium.common.exceptions import WebDriverException
 from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import ElementNotVisibleException
 
+from .xpath import read_xpath
 
 def set_automated_followed_pool(username, unfollow_after, logger, logfolder, delay_followbackers, pool='followedPool'):
     """ Generare a user list based on the InstaPy followed usernames """
@@ -141,12 +142,7 @@ def get_following_status(browser, track, username, person, person_id, logger,
         ig_homepage = "https://www.instagram.com/"
         web_address_navigator(browser, ig_homepage + person)
 
-    follow_button_XP = ("//button[text()='Following' or \
-                                  text()='Requested' or \
-                                  text()='Follow' or \
-                                  text()='Follow Back' or \
-                                  text()='Unblock']"
-                        )
+    follow_button_XP = read_xpath(get_following_status.__name__,"follow_button_XP")
     failure_msg = "--> Unable to detect the following status of '{}'!"
     user_inaccessible_msg = (
         "Couldn't access the profile page of '{}'!\t~might have changed the"
@@ -512,7 +508,7 @@ def unfollow(browser,
         # unfollow from profile
         try:
             following_link = browser.find_elements_by_xpath(
-                '//section//ul//li[3]')
+                read_xpath(unfollow.__name__,"following_link"))
 
             click_element(browser, following_link[0])
             # update server calls
@@ -529,7 +525,7 @@ def unfollow(browser,
 
         # find dialog box
         dialog = browser.find_element_by_xpath(
-            "//div[text()='Following']/../../../following-sibling::div")
+            read_xpath(unfollow.__name__,"find_dialog_box"))
 
         sleep(3)
 
@@ -806,7 +802,7 @@ def get_users_through_dialog(browser,
     sc_rolled = 0
 
     # find dialog box
-    dialog_address = "//body/div[3]/div/div[2]"
+    dialog_address = read_xpath(get_users_through_dialog.__name__,"find_dialog_box")
     dialog = browser.find_element_by_xpath(dialog_address)
 
     # scroll to end of follower list to initiate first load which hides the
@@ -926,7 +922,7 @@ def dialog_username_extractor(buttons):
     for person in buttons:
         if person and hasattr(person, 'text') and person.text:
             try:
-                person_list.append(person.find_element_by_xpath("../../../*")
+                person_list.append(person.find_element_by_xpath(read_xpath(dialog_username_extractor.__name__,"person"))
                                    .find_elements_by_tag_name("a")[1].text)
             except IndexError:
                 pass  # Element list is too short to have a [1] element
@@ -1055,7 +1051,7 @@ def get_given_user_followers(browser,
     # locate element to user's followers
     try:
         followers_link = browser.find_elements_by_xpath(
-            '//a[@href="/{}/followers/"]'.format(user_name))
+            read_xpath(get_given_user_followers.__name__,"followers_link").format(user_name))
         click_element(browser, followers_link[0])
         # update server calls
         update_activity()
@@ -1108,8 +1104,7 @@ def get_given_user_following(browser,
     #  throw RuntimeWarning if we are 0 people following this user
     try:
         allfollowing = format_number(
-            browser.find_element_by_xpath("//a[contains"
-                                          "(@href,'following')]/span").text)
+            browser.find_element_by_xpath(read_xpath(get_given_user_following.__name__,"all_following")).text)
 
     except NoSuchElementException:
         try:
@@ -1129,7 +1124,7 @@ def get_given_user_following(browser,
             except WebDriverException:
                 try:
                     topCount_elements = browser.find_elements_by_xpath(
-                        "//span[contains(@class,'g47SY')]")
+                        read_xpath(get_given_user_following.__name__,"topCount_elements"))
 
                     if topCount_elements:
                         allfollowing = format_number(topCount_elements[2].text)
@@ -1159,7 +1154,7 @@ def get_given_user_following(browser,
 
     try:
         following_link = browser.find_elements_by_xpath(
-            '//a[@href="/{}/following/"]'.format(user_name))
+            read_xpath(get_given_user_following.__name__,"following_link").format(user_name))
         click_element(browser, following_link[0])
         # update server calls
         update_activity()
@@ -1393,7 +1388,7 @@ def confirm_unfollow(browser):
     while attempt < 3:
         try:
             attempt += 1
-            button_xp = "//button[text()='Unfollow']"  # "//button[contains(
+            button_xp = read_xpath(confirm_unfollow.__name__,"button_xp")  # "//button[contains(
             # text(), 'Unfollow')]"
             unfollow_button = browser.find_element_by_xpath(button_xp)
 
@@ -1446,11 +1441,11 @@ def get_buttons_from_dialog(dialog, channel):
         # get follow buttons. This approach will find the follow buttons and
         # ignore the Unfollow/Requested buttons.
         buttons = dialog.find_elements_by_xpath(
-            "//button[text()='Follow']")
+            read_xpath(get_buttons_from_dialog.__name__,"follow_button"))
 
     elif channel == "Unfollow":
         buttons = dialog.find_elements_by_xpath(
-            "//button[text() = 'Following']")
+            read_xpath(get_buttons_from_dialog.__name__,"unfollow_button"))
 
     return buttons
 
@@ -1591,7 +1586,7 @@ def get_follow_requests(browser, amount, sleep_delay, logger, logfolder):
             list_of_users) < amount and view_more_clicks < 750 and \
             view_more_button_exist:
         sleep(4)
-        list_of_users = browser.find_elements_by_xpath("//section/div")
+        list_of_users = browser.find_elements_by_xpath(read_xpath(get_follow_requests.__name__,"list_of_users"))
 
         if len(list_of_users) == 0:
             logger.info("There are not outgoing follow requests")
@@ -1599,7 +1594,7 @@ def get_follow_requests(browser, amount, sleep_delay, logger, logfolder):
 
         try:
             view_more_button = browser.find_element_by_xpath(
-                "//button[text()='View More']")
+                read_xpath(get_follow_requests.__name__,"view_more_button"))
         except NoSuchElementException:
             view_more_button_exist = False
 
