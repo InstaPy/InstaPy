@@ -671,8 +671,8 @@ def like_image(browser, username, blacklist, logger, logfolder, total_liked_img)
     if quota_supervisor("likes") == "jump":
         return False, "jumped"
 
-    like_xpath = read_xpath(like_image.__name__,"like")
-    unlike_xpath = read_xpath(like_image.__name__,"unlike")
+    like_xpath = read_xpath(like_image.__name__, "like")
+    unlike_xpath = read_xpath(like_image.__name__, "unlike")
 
     # find first for like element
     like_elem = browser.find_elements_by_xpath(like_xpath)
@@ -725,7 +725,7 @@ def verify_liked_image(browser, logger):
     """Check for a ban on likes using the last liked image"""
 
     browser.refresh()
-    unlike_xpath = "//section/span/button/span[@aria-label='Unlike']"
+    unlike_xpath = read_xpath(like_image.__name__, "unlike")
     like_elem = browser.find_elements_by_xpath(unlike_xpath)
 
     if len(like_elem) == 1:
