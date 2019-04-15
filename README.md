@@ -41,6 +41,8 @@ Implemented in Python using the Selenium module.<p>
 ```elm
 pip install instapy
 ```
+__Important:__ depending on your system, make sure to use `pip3` and `python3` instead.
+<br />
 **That's it! 🚀**   
 If you're on Ubuntu, read the specific guide on [Installing on Ubuntu (64-Bit)](https://github.com/InstaPy/instapy-docs/blob/master/How_Tos/How_To_DO_Ubuntu_on_Digital_Ocean.md). If you're on a Raspberry Pi, read the [Installing on RaspberryPi](https://github.com/InstaPy/instapy-docs/blob/master/How_Tos/How_to_Raspberry.md) guide instead.
 
