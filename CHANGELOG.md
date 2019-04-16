@@ -5,6 +5,9 @@ _The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 
 ## [0.5.0] - ADD DATE HERE
+### Added
+- Additional check for like block.
+
 ### Changed
 - Remove support for python2
 - Information regarding the nogui parameter in documentation.
