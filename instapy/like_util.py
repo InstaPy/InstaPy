@@ -23,6 +23,8 @@ from selenium.common.exceptions import WebDriverException
 from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import StaleElementReferenceException
 
+from .xpath import read_xpath
+
 
 def get_links_from_feed(browser, amount, num_of_search, logger):
     """Fetches random number of links from feed and returns a list of links"""
@@ -41,7 +43,7 @@ def get_links_from_feed(browser, amount, num_of_search, logger):
 
     # get links
     link_elems = browser.find_elements_by_xpath(
-        "//article/div[2]/div[2]/a")
+        read_xpath(get_links_from_feed.__name__,"get_links"))
 
     total_links = len(link_elems)
     logger.info("Total of links feched for analysis: {}".format(total_links))
@@ -83,12 +85,12 @@ def get_links_for_location(browser,
         location)
     web_address_navigator(browser, location_link)
 
-    top_elements = browser.find_element_by_xpath('//main/article/div[1]')
+    top_elements = browser.find_element_by_xpath(read_xpath(get_links_for_location.__name__,"top_elements"))
     top_posts = top_elements.find_elements_by_tag_name('a')
     sleep(1)
 
     if skip_top_posts:
-        main_elem = browser.find_element_by_xpath('//main/article/div[2]')
+        main_elem = browser.find_element_by_xpath(read_xpath(get_links_for_location.__name__,"main_elem"))
     else:
         main_elem = browser.find_element_by_tag_name('main')
 
@@ -97,7 +99,7 @@ def get_links_for_location(browser,
 
     if not link_elems:  # this location does not have `Top Posts` or it
         # really is empty..
-        main_elem = browser.find_element_by_xpath('//main/article/div[1]')
+        main_elem = browser.find_element_by_xpath(get_links_for_location.__name__,"top_elements")
         top_posts = []
     sleep(2)
 
@@ -186,9 +188,9 @@ def get_links_for_location(browser,
                         sleep(10)
 
                         main_elem = (browser.find_element_by_xpath(
-                            '//main/article/div[1]') if not link_elems else
+                            read_xpath(get_links_for_location.__name__,"top_elements")) if not link_elems else
                                      browser.find_element_by_xpath(
-                                         '//main/article/div[2]') if
+                                         read_xpath(get_links_for_location.__name__,"main_elem")) if
                                      skip_top_posts else
                                      browser.find_element_by_tag_name('main'))
                     else:
@@ -234,12 +236,12 @@ def get_links_for_tag(browser,
     tag_link = "https://www.instagram.com/explore/tags/{}".format(tag)
     web_address_navigator(browser, tag_link)
 
-    top_elements = browser.find_element_by_xpath('//main/article/div[1]')
+    top_elements = browser.find_element_by_xpath(read_xpath(get_links_for_tag.__name__,"top_elements"))
     top_posts = top_elements.find_elements_by_tag_name('a')
     sleep(1)
 
     if skip_top_posts:
-        main_elem = browser.find_element_by_xpath('//main/article/div[2]')
+        main_elem = browser.find_element_by_xpath(read_xpath(get_links_for_tag.__name__,"main_elem"))
     else:
         main_elem = browser.find_element_by_tag_name('main')
     link_elems = main_elem.find_elements_by_tag_name('a')
@@ -247,7 +249,7 @@ def get_links_for_tag(browser,
 
     if not link_elems:  # this tag does not have `Top Posts` or it really is
         # empty..
-        main_elem = browser.find_element_by_xpath('//main/article/div[1]')
+        main_elem = browser.find_element_by_xpath(read_xpath(get_links_for_tag.__name__,"top_elements"))
         top_posts = []
     sleep(2)
 
@@ -259,7 +261,7 @@ def get_links_for_tag(browser,
     except WebDriverException:
         try:
             possible_posts = (browser.find_element_by_xpath(
-                "//span[contains(@class, 'g47SY')]").text)
+                read_xpath(get_links_for_tag.__name__,"possible_post")).text)
             if possible_posts:
                 possible_posts = format_number(possible_posts)
 
@@ -349,9 +351,9 @@ def get_links_for_tag(browser,
                         sleep(10)
 
                         main_elem = (browser.find_element_by_xpath(
-                            '//main/article/div[1]') if not link_elems else
+                            read_xpath(get_links_for_tag.__name__,"top_elements")) if not link_elems else
                                      browser.find_element_by_xpath(
-                                         '//main/article/div[2]') if
+                                         read_xpath(get_links_for_tag.__name__,"main_elem")) if
                                      skip_top_posts else
                                      browser.find_element_by_tag_name('main'))
                     else:
@@ -667,14 +669,14 @@ def check_link(browser, post_link, dont_like, mandatory_words,
     return False, user_name, is_video, 'None', "Success"
 
 
-def like_image(browser, username, blacklist, logger, logfolder):
+def like_image(browser, username, blacklist, logger, logfolder, total_liked_img):
     """Likes the browser opened image"""
     # check action availability
     if quota_supervisor("likes") == "jump":
         return False, "jumped"
 
-    like_xpath = "//section/span/button/span[@aria-label='Like']"
-    unlike_xpath = "//section/span/button/span[@aria-label='Unlike']"
+    like_xpath = read_xpath(like_image.__name__, "like")
+    unlike_xpath = read_xpath(like_image.__name__, "unlike")
 
     # find first for like element
     like_elem = browser.find_elements_by_xpath(like_xpath)
@@ -699,6 +701,11 @@ def like_image(browser, username, blacklist, logger, logfolder):
             # get the post-like delay time to sleep
             naply = get_action_delay("like")
             sleep(naply)
+
+            # after every 10 liked image do checking on the block
+            if total_liked_img % 10 == 0 and not verify_liked_image(browser, logger):
+                return False, "block on likes"
+
             return True, "success"
 
         else:
@@ -715,6 +722,20 @@ def like_image(browser, username, blacklist, logger, logfolder):
     logger.info('--> Invalid Like Element!')
 
     return False, "invalid element"
+
+
+def verify_liked_image(browser, logger):
+    """Check for a ban on likes using the last liked image"""
+
+    browser.refresh()
+    unlike_xpath = read_xpath(like_image.__name__, "unlike")
+    like_elem = browser.find_elements_by_xpath(unlike_xpath)
+
+    if len(like_elem) == 1:
+        return True
+    else:
+        logger.warning('----- Image was NOT liked! You are have a BLOCK on likes!')
+        return False
 
 
 def get_tags(browser, url):
@@ -812,7 +833,7 @@ def verify_liking(browser, max, min, logger):
 
 def like_comment(browser, original_comment_text, logger):
     """ Like the given comment """
-    comments_block_XPath = "//div/div/h3/../../../.."  # quite an efficient
+    comments_block_XPath = read_xpath(like_comment.__name__,"comments_block")  # quite an efficient
     # location path
 
     try:
@@ -824,14 +845,14 @@ def like_comment(browser, original_comment_text, logger):
             if comment and (comment == original_comment_text):
                 # find "Like" span (a direct child of Like button)
                 span_like_elements = comment_line.find_elements_by_xpath(
-                    "//span[@aria-label='Like']")
+                    read_xpath(like_comment.__name__,"span_like_elements"))
                 if not span_like_elements:
                     # this is most likely a liked comment
                     return True, "success"
 
                 # like the given comment
                 span_like = span_like_elements[0]
-                comment_like_button = span_like.find_element_by_xpath('..')
+                comment_like_button = span_like.find_element_by_xpath(read_xpath(like_comment.__name__,"comment_like_button"))
                 click_element(browser, comment_like_button)
 
                 # verify if like succeeded by waiting until the like button
