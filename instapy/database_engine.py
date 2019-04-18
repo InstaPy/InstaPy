@@ -47,7 +47,6 @@ SQL_CREATE_ACCOUNTS_PROGRESS_TABLE = """
 
 
 def get_database(make=False):
-    address = Settings.database_location
     logger = Settings.logger
     credentials = Settings.profile
 
