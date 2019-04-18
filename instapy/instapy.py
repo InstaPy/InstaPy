@@ -5269,9 +5269,7 @@ class InstaPy:
                 self.logger.info("I don't have any recent post, so I will just help a few pod posts and move on.")
                 nposts = 40
 
-            if len(pod_post_ids) <= nposts:
-                pod_post_ids = pod_post_ids
-            else:
+            if len(pod_post_ids) > nposts:
                 pod_post_ids = random.sample(pod_post_ids, nposts)
 
             for pod_post_id in pod_post_ids:
