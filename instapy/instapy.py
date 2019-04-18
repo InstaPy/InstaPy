@@ -337,6 +337,7 @@ class InstaPy:
         if self.selenium_local_session is True:
             self.set_selenium_local_session()
 
+    
     def get_instapy_logger(self, show_logs: bool, log_handler = None):
         """
         Handles the creation and retrieval of loggers to avoid
@@ -3510,15 +3511,18 @@ class InstaPy:
         return self
 
     def unfollow_users(self,
-                       amount=10,
-                       customList=(False, [], "all"),
-                       InstapyFollowed=(False, "all"),
-                       nonFollowers=False,
-                       allFollowing=False,
-                       style="FIFO",
-                       unfollow_after=None,
-                       delay_followbackers=0,  # 864000 = 10 days, 0 = don't delay
-                       sleep_delay=600):
+                       amount: int = 10,
+                       custom_list_enabled: bool = False,
+                       custom_list: list = [],
+                       custom_list_param: str = 'all',
+                       instapy_followed_enabled: bool = False,
+                       instapy_followed_param: str = 'all',
+                       nonFollowers: bool = False,
+                       allFollowing: bool = False,
+                       style: str = 'FIFO',
+                       unfollow_after: int =  None,
+                       delay_followbackers: int = 0,  # 864000 = 10 days, 0 = don't delay
+                       sleep_delay: int = 600):
         """Unfollows (default) 10 users from your following list"""
 
         if self.aborting:
@@ -3546,8 +3550,8 @@ class InstaPy:
             unfollowed = unfollow(self.browser,
                                   self.username,
                                   amount,
-                                  customList,
-                                  InstapyFollowed,
+                                  (custom_list_enabled, custom_list, custom_list_param),
+                                  (instapy_followed_enabled, instapy_followed_param),
                                   nonFollowers,
                                   allFollowing,
                                   style,
