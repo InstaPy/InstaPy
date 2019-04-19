@@ -36,6 +36,7 @@ from .relationship_tools import get_followers
 from .relationship_tools import get_nonfollowers
 from .database_engine import get_database
 from .quota_supervisor import quota_supervisor
+from .settings import Selectors
 
 from selenium.common.exceptions import WebDriverException
 from selenium.common.exceptions import NoSuchElementException
