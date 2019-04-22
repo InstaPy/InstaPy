@@ -1710,10 +1710,10 @@ class InstaPy:
         not_valid_users = 0
 
         # if smart hashtag is enabled
-        if use_smart_hashtags is True and self.smart_hashtags is not []:
+        if use_smart_hashtags is True and self.smart_hashtags != []:
             self.logger.info('Using smart hashtags')
             tags = self.smart_hashtags
-        elif use_smart_location_hashtags is True and self.smart_location_hashtags is not []:
+        elif use_smart_location_hashtags is True and self.smart_location_hashtags != []:
             self.logger.info('Using smart location hashtags')
             tags = self.smart_location_hashtags
 
@@ -4257,10 +4257,10 @@ class InstaPy:
         not_valid_users = 0
 
         # if smart hashtag is enabled
-        if use_smart_hashtags is True and self.smart_hashtags is not []:
+        if use_smart_hashtags is True and self.smart_hashtags != []:
             self.logger.info('Using smart hashtags')
             tags = self.smart_hashtags
-        elif use_smart_location_hashtags is True and self.smart_location_hashtags is not []:
+        elif use_smart_location_hashtags is True and self.smart_location_hashtags != []:
             self.logger.info('Using smart location hashtags')
             tags = self.smart_location_hashtags
 
