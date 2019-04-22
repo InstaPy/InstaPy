@@ -306,9 +306,16 @@ def get_comments_count(browser, logger):
             "edge_media_to_comment.count")
 
     except Exception as e:
-        msg = ("Failed to get comments' count!\n\t{}"
-               .format(str(e).encode("utf-8")))
-        return None, msg
+        try:
+            comments_count = browser.execute_script(
+                "return window._sharedData.entry_data."
+                "PostPage[0].graphql.shortcode_media."
+                "edge_media_preview_comment.count")
+
+        except Exception as e:
+            msg = ("Failed to get comments' count!\n\t{}"
+                .format(str(e).encode("utf-8")))
+            return None, msg
 
     if not comments_count:
         if comments_count == 0:
