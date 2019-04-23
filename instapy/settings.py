@@ -117,7 +117,7 @@ class InfluxDBLog:
     """ InfluxDB Singleton Class """
     singleton = None
     client_influxDB = None
-   
+
     def __new__(cls, *args, **kwargs):
         if not cls.singleton:
             cls.singleton = object.__new__(InfluxDBLog)
@@ -206,5 +206,5 @@ class MongoDB:
             print('Connected to MongoDB.')
         except Exception as e:
             self.client = None
-            print('Error connecting to MongoDB!')
+            print('Error connecting to MongoDB!: ', str(e))
             # TODO throw some exception ?
