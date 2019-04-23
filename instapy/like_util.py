@@ -70,10 +70,10 @@ def get_links_for_location(browser,
     by amount and returns a list of links"""
     if media is None:
         # All known media types
-        media = ['', 'Post', 'Video']
+        media = ['Photo', 'Carousel', 'Video']
     elif media == 'Photo':
         # Include posts with multiple images in it
-        media = ['', 'Post']
+        media = ['Photo', 'Carousel']
     else:
         # Make it an array to use it in the following part
         media = [media]
@@ -217,13 +217,12 @@ def get_links_for_tag(browser,
                       logger):
     """Fetches the number of links specified
     by amount and returns a list of links"""
-
     if media is None:
         # All known media types
-        media = ['', 'Post', 'Video']
+        media = ['Photo', 'Carousel', 'Video']
     elif media == 'Photo':
         # Include posts with multiple images in it
-        media = ['', 'Post']
+        media = ['Photo', 'Carousel']
     else:
         # Make it an array to use it in the following part
         media = [media]
@@ -387,10 +386,10 @@ def get_links_for_username(browser,
     by amount and returns a list of links"""
     if media is None:
         # All known media types
-        media = ['', 'Post', 'Video']
+        media = ['Photo', 'Carousel', 'Video']
     elif media == 'Photo':
         # Include posts with multiple images in it
-        media = ['', 'Post']
+        media = ['Photo', 'Carousel']
     else:
         # Make it an array to use it in the following part
         media = [media]
@@ -742,15 +741,34 @@ def get_tags(browser, url):
 
 def get_links(browser, page, logger, media, element):
     # Get image links in scope from hashtag, location and other pages
-    link_elems = element.find_elements_by_tag_name('a')
+    link_elems = element.find_elements_by_xpath('//a[starts-with(@href, "/p/")]')
     sleep(2)
     links = []
+
     try:
         if link_elems:
-            new_links = [link_elem.get_attribute('href') for link_elem in
-                         link_elems
-                         if link_elem and link_elem.text in media]
-            links.extend(new_links)
+            for link_elem in link_elems:
+                try:
+                    post_href = link_elem.get_attribute('href')
+                    post_elem = element.find_elements_by_xpath(
+                            "//a[@href='/p/" + post_href.split('/')[-2] +
+                            "/']/child::div")
+
+                    if len(post_elem) == 1 and 'Photo' in media:
+                        # Single photo
+                        links.append(post_href)
+
+                    if len(post_elem) == 2:
+                        # Carousel or Video
+                        post_category = element.find_element_by_xpath(
+                            "//a[@href='/p/" + post_href.split('/')[-2] +
+                            "/']/child::div[@class='u7YqG']/child::span"
+                            ).get_attribute('aria-label')
+
+                        if post_category in media:
+                            links.append(post_href)
+                except WebDriverException:
+                    logger.info("Cannot detect post media type. Skip {}".format(post_href))
         else:
             logger.info("'{}' page does not contain a picture".format(page))
     except BaseException as e:
