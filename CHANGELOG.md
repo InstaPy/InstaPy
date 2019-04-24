@@ -13,6 +13,7 @@ _The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 - Information regarding the nogui parameter in documentation.
 - XPath Isolation
 - Remove redundant assignment of pod_post_ids
+- Remove address var assigned multiple times without intermediate usage
 
 
 ## [0.4.2] - 2019-04-15
