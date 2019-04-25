@@ -4833,7 +4833,8 @@ class InstaPy:
          Like comments of people on posts, reply to them
         and also interact with those commenters
         """
-
+        if self.aborting:
+            return self
         message = "Starting to interact by comments.."
         highlight_print(self.username, message, "feature", "info", self.logger)
 
