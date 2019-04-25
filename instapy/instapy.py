@@ -710,19 +710,30 @@ class InstaPy:
 
         return self
 
-    def set_mandatory_language(self, enabled=False, character_set='LATIN'):
+    def set_mandatory_language(self, enabled=False, character_set=['LATIN']):
         """Restrict the description of the image to a character set"""
         if self.aborting:
             return self
 
-        if (character_set not in ['LATIN', 'GREEK', 'CYRILLIC', 'ARABIC',
-                                  'HEBREW', 'CJK', 'HANGUL', 'HIRAGANA',
-                                  'KATAKANA', 'THAI']):
-            self.logger.warning('Unkown character set! Treating as "LATIN".')
-            character_set = 'LATIN'
+        char_set = []
 
+        if not isinstance(character_set, list):
+            character_set = [character_set]
+        
+        for chr_set in character_set:
+            if (chr_set not in ['LATIN', 'GREEK', 'CYRILLIC', 'ARABIC',
+                                      'HEBREW', 'CJK', 'HANGUL', 'HIRAGANA',
+                                      'KATAKANA', 'THAI', 'MATHEMATICAL']):
+                self.logger.warning('Unkown character set! Treating as "LATIN".')
+                ch_set_name = 'LATIN'
+            else:
+                ch_set_name = chr_set
+                
+            if ch_set_name not in char_set:
+                char_set.append(ch_set_name)
+                
         self.mandatory_language = enabled
-        self.mandatory_character = character_set
+        self.mandatory_character = char_set
 
         return self
 
@@ -5197,8 +5208,8 @@ class InstaPy:
             return self.check_letters[uchr]
         except KeyError:
             return self.check_letters.setdefault(uchr,
-                                                 self.mandatory_character in
-                                                 unicodedata.name(uchr))
+                                                any(mandatory_char in unicodedata.name(
+                                                uchr) for mandatory_char in self.mandatory_character))
 
     def run_time(self):
         """ Get the time session lasted in seconds """
