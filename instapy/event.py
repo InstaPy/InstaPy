@@ -7,6 +7,7 @@ class Event:
     '''
 
     singleton = None
+    callbacks = dict()
 
     def __new__(cls, *args, **kwargs):
         if not cls.singleton:
@@ -14,7 +15,7 @@ class Event:
         return cls.singleton
 
     def __init__(self):
-        self.callbacks = dict()
+        pass
 
     def fire_callbacks(self, function_name, *args, **kwargs):
         if function_name not in self.callbacks: return
