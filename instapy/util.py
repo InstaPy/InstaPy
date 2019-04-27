@@ -40,6 +40,7 @@ from selenium.common.exceptions import WebDriverException
 from selenium.common.exceptions import TimeoutException
 
 from .xpath import read_xpath
+from .event import Event
 
 default_profile_pic_instagram = [
     "https://instagram.flas1-2.fna.fbcdn.net/vp"
@@ -1016,6 +1017,7 @@ def get_relationship_counts(browser, username, logger):
                         "of '{}'\n".format(username.encode("utf-8")))
                     following_count = None
 
+    Event().profile_data_updated(username, followers_count, following_count)
     return followers_count, following_count
 
 

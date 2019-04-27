@@ -1331,10 +1331,10 @@ class InstaPy:
             self.simulation = {"enabled": True, "percentage": percentage}
 
     def like_by_locations(self,
-                          locations=None,
-                          amount=50,
-                          media=None,
-                          skip_top_posts=True):
+                          locations: list = None,
+                          amount: int = 50,
+                          media: str = None,
+                          skip_top_posts: bool = True):
         """Likes (default) 50 images per given locations"""
         if self.aborting:
             return self
@@ -1738,14 +1738,14 @@ class InstaPy:
         return self
 
     def like_by_tags(self,
-                     tags=None,
-                     amount=50,
-                     skip_top_posts=True,
-                     use_smart_hashtags=False,
-                     use_smart_location_hashtags=False,
-                     interact=False,
-                     randomize=False,
-                     media=None):
+                     tags: list = None,
+                     amount: int = 50,
+                     skip_top_posts: bool = True,
+                     use_smart_hashtags: bool = False,
+                     use_smart_location_hashtags: bool = False,
+                     interact: bool = False,
+                     randomize: bool = False,
+                     media: str = None):
         """Likes (default) 50 images per given tag"""
         if self.aborting:
             return self
@@ -1976,7 +1976,11 @@ class InstaPy:
 
         return self
 
-    def like_by_users(self, usernames, amount=10, randomize=False, media=None):
+    def like_by_users(self,
+                      usernames: list,
+                      amount: int = 10,
+                      randomize: bool = False,
+                      media: str = None):
         """Likes some amounts of images for each usernames"""
         if self.aborting:
             return self
@@ -3638,10 +3642,10 @@ class InstaPy:
         return self
 
     def like_by_feed_generator(self,
-                               amount=50,
-                               randomize=False,
-                               unfollow=False,
-                               interact=False):
+                               amount: int = 50,
+                               randomize: bool = False,
+                               unfollow: bool = False,
+                               interact: bool = False):
         """Like the users feed"""
 
         if self.aborting:

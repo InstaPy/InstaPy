@@ -11,6 +11,7 @@ from os.path import join as join_path
 from os.path import exists as path_exists
 
 from .xpath import read_xpath
+from .event import Event
 
 
 WORKSPACE = {"name": "InstaPy",
@@ -145,26 +146,30 @@ class InfluxDBLog:
 
             version = self.client_influxDB.ping()
             print('Using InfluxDB version: ' + str(version))
+            self.register_callbacks()
         except Exception as e:
             self.client_influxDB = None
-            print('Error connecting to InfluxDB!')
+            print('Error connecting to InfluxDB!: ', str(e))
             # TODO throw some exception ?
 
-
     def addEntry(self, measurement, tag_name, tag_value, field1_name, field1_value, field2_name, field2_value):
+        tags = {
+            tag_name: tag_value
+        }
+        fields = {
+            field1_name: field1_value,
+            field2_name: field2_value
+        }
+        self.add(measurement, tags, fields)
+
+    def add(self, measurement, tags, fields):
         if not self.client_influxDB: return
 
-        json_body = [
-                {
-                    "measurement": measurement,
-                    "tags": {
-                        tag_name: tag_value
-                    },
-                    "fields": {
-                        field1_name: field1_value,
-                        field2_name: field2_value
-                    }
-                }]
+        json_body = [{
+                "measurement": measurement,
+                "tags": tags,
+                "fields": fields
+            }]
         self.client_influxDB.write_points(json_body)
 
     def switchDatabase(self, database):
@@ -172,6 +177,17 @@ class InfluxDBLog:
 
         self.client_influxDB.switch_database(database)
         Settings.db_influx = database
+    
+    def register_callbacks(self):
+        event = Event()
+        event.add_callback(event.profile_data_updated.__name__, self.update_profile_data);
+
+    def update_profile_data(self, username, followers_count, following_count):
+        fields = {
+            'followers_count': followers_count,
+            'following_count': following_count
+        }
+        self.add('profile', { 'username': username }, fields)
 
 
 class MongoDB:
