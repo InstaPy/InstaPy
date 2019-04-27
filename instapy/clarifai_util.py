@@ -4,6 +4,7 @@ from clarifai.rest import ClarifaiApp
 from clarifai.rest import Workflow
 from selenium.common.exceptions import NoSuchElementException
 
+from .xpath import read_xpath
 
 def check_image(browser,
                 clarifai_api_key,
@@ -121,18 +122,18 @@ def get_source_link(browser):
     try:
         source.append(
             browser.find_element_by_xpath(
-                '//img[@class="FFVAD"]').get_attribute('src')
+                read_xpath(get_source_link.__name__,"image")).get_attribute('src')
         )
     except NoSuchElementException:
         source.append(
             browser.find_element_by_xpath(
-                '//video[@class="tWeCl"]').get_attribute(
+                read_xpath(get_source_link.__name__,"video")).get_attribute(
                 'src'
             )
         )
         source.append(
             browser.find_element_by_xpath(
-                '//img[@class="_8jZFn"]').get_attribute('src')
+                read_xpath(get_source_link.__name__,"image_alt")).get_attribute('src')
         )
 
     return source
