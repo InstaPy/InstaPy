@@ -6,7 +6,7 @@ from .database_engine import get_database
 def get_recent_posts_from_pods(topic, logger):
     """ fetches all recent posts shared with pods """
     params = {'topic' : topic}
-    r = requests.get(Settings.pods_server_endpoint + '/getRecentPosts', params=params)
+    r = requests.get(Settings.pods_server_endpoint + '/getRecentPostsV1', params=params)
     try:
         logger.info('Downloaded postids from Pod {}:'.format(topic))
         if r.status_code == 200:
