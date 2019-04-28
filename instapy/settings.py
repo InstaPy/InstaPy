@@ -10,6 +10,8 @@ from os import environ as environmental_variables
 from os.path import join as join_path
 from os.path import exists as path_exists
 
+from .xpath import read_xpath
+
 
 WORKSPACE = {"name": "InstaPy",
              "path": environmental_variables.get("INSTAPY_WORKSPACE")}
@@ -91,6 +93,6 @@ class Selectors:
     """
 
     likes_dialog_body_xpath = (
-        "//h1[text()='Likes']/../../following-sibling::div/div")
+        read_xpath("class_selectors","likes_dialog_body_xpath"))
 
-    likes_dialog_close_xpath = "//span[contains(@aria-label, 'Close')]"
+    likes_dialog_close_xpath = read_xpath("class_selectors","likes_dialog_close_xpath")
