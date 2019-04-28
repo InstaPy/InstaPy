@@ -14,6 +14,7 @@ _The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 - XPath Isolation
 - Remove redundant assignment of pod_post_ids
 - Remove address var assigned multiple times without intermediate usage
+- `set_mandatory_language` can maintain multiple character sets
 
 ### Fixed
 - Interact_by_comments aborts when self.abort is true
