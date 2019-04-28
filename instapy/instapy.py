@@ -76,9 +76,12 @@ from .browser import set_selenium_local_session
 from .browser import close_browser
 from .file_manager import get_workspace
 from .file_manager import get_logfolder
+
+from .pods_util import group_posts
 from .pods_util import get_recent_posts_from_pods
 from .pods_util import share_my_post_with_pods
 from .pods_util import share_with_pods_restriction
+from .pods_util import comment_restriction
 
 # import exceptions
 from selenium.common.exceptions import NoSuchElementException
@@ -188,6 +191,7 @@ class InstaPy:
 
         self.follow_times = 1
         self.share_times = 1
+        self.comment_times = 1
         self.do_follow = False
         self.follow_percentage = 0
         self.dont_include = set()
@@ -270,6 +274,7 @@ class InstaPy:
                                 "unfollows": 4}}
 
         self.allowed_pod_topics = ['general', 'beauty', 'food', 'travel', 'sports', 'entertainment']
+        self.allowed_pod_engagement_modes = ['light', 'normal', 'heavy']
 
         # stores the features' name which are being used by other features
         self.internal_usage = {}
@@ -5214,10 +5219,14 @@ class InstaPy:
 
         return self
 
-    def join_pods(self, topic='general'):
+    def join_pods(self, topic='general', engagement_mode='normal'):
         """ Join pods """
         if topic not in self.allowed_pod_topics:
             self.logger.error('You have entered an invalid topic for pods, allowed topics are : {}. Exiting...'.format(self.allowed_pod_topics))
+            return self
+
+        if engagement_mode not in self.allowed_pod_engagement_modes:
+            self.logger.error('You have entered an invalid engagement_mode for pods, allowed engagement_modes are : {}. Exiting...'.format(self.allowed_pod_engagement_modes))
             return self
 
         if self.comments is not None and len(self.comments) < 10:
@@ -5227,8 +5236,9 @@ class InstaPy:
         user_link = 'https://www.instagram.com/{}/'.format(self.username)
         web_address_navigator(self.browser, user_link)
         try:
-            pod_post_ids = get_recent_posts_from_pods(topic, self.logger)
-            self.logger.info("Downloaded pod_post_ids : {}".format(pod_post_ids))
+            pod_posts = get_recent_posts_from_pods(topic, self.logger)
+            self.logger.info("Downloaded pod_posts : {}".format(pod_posts))
+
             sleep(2)
             post_link_elems = self.browser.find_elements_by_xpath("//a[contains(@href, '/p/')]")
             post_links = []
@@ -5257,7 +5267,7 @@ class InstaPy:
                                             self.logger)
                     if datetime.now() - post_datetime < timedelta(hours=12, minutes=30) and not share_restricted:
                         my_recent_post_ids.append(postid)
-                        if share_my_post_with_pods(postid, topic, self.logger):
+                        if share_my_post_with_pods(postid, topic, engagement_mode, self.logger):
                             share_with_pods_restriction("write", postid, None, self.logger)
                 except Exception as err:
                     self.logger.error("Failed for {} with Error {}".format(post_link, err))
@@ -5269,69 +5279,88 @@ class InstaPy:
                 self.logger.info("I don't have any recent post, so I will just help a few pod posts and move on.")
                 nposts = 40
 
-            if len(pod_post_ids) <= nposts:
-                pod_post_ids = pod_post_ids
+            if len(pod_posts) <= nposts:
+                pod_posts = pod_posts
             else:
-                pod_post_ids = random.sample(pod_post_ids, nposts)
+                pod_posts = random.sample(pod_posts, nposts)
 
-            for pod_post_id in pod_post_ids:
-                try:
-                    post_link = "https://www.instagram.com/p/{}".format(pod_post_id)
-                    web_address_navigator(self.browser, post_link)
+            light_posts, normal_posts, heavy_posts = group_posts(pod_posts, self.logger)
 
-                    inappropriate, user_name, is_video, reason, scope = (
-                        check_link(self.browser,
-                                    post_link,
-                                    self.dont_like,
-                                    self.mandatory_words,
-                                    self.mandatory_language,
-                                    self.is_mandatory_character,
-                                    self.mandatory_character,
-                                    self.check_character_set,
-                                    self.ignore_if_contains,
-                                    self.logger))
+            self.logger.error("light_posts : {} ".format(light_posts))
+            self.logger.error("normal_posts : {} ".format(normal_posts))
+            self.logger.error("heavy_posts : {} ".format(heavy_posts))
 
-                    if user_name != self.username:
-                        follow_state, msg = follow_user(self.browser,
-                                                        "post",
-                                                        self.username,
-                                                        user_name,
-                                                        None,
-                                                        self.blacklist,
-                                                        self.logger,
-                                                        self.logfolder)
-
-                        self.dont_include.add(user_name)
-
-                    if not inappropriate and user_name != self.username:
-                        pods_like_percent = max(80, min(100, self.like_percentage))
-                        pods_comment_percentage = max(80, min(100, self.comment_percentage))
-                        liking = (random.randint(0, 100) <= pods_like_percent)
-                        commenting = (random.randint(0, 100) <= pods_comment_percentage)
-
-                        if liking:
-                            like_state, msg = like_image(self.browser,
-                                                            user_name,
-                                                            self.blacklist,
-                                                            self.logger,
-                                                            self.logfolder)
-
-                        if commenting:
-                            comments = self.fetch_smart_comments(
-                                                            is_video,
-                                                            temp_comments=[])
-
-                            comment_state, msg = comment_image(
-                                                            self.browser,
-                                                            user_name,
-                                                            comments,
-                                                            self.blacklist,
-                                                            self.logger,
-                                                            self.logfolder)
-                except Exception as err:
-                    self.logger.error("Failed for {} with Error {}".format(pod_post_id, err))
+            self.engage_with_posts(light_posts, 10)
+            self.engage_with_posts(normal_posts, 30)
+            self.engage_with_posts(normal_posts, 90)
 
         except Exception as err:
             self.logger.error(err)
 
         return self
+
+    def engage_with_posts(self, pod_posts, modespecific_comment_percentage):
+        for pod_post in pod_posts:
+            try:
+                pod_post_id = pod_post['postid']
+                post_link = "https://www.instagram.com/p/{}".format(pod_post_id)
+                web_address_navigator(self.browser, post_link)
+
+                inappropriate, user_name, is_video, reason, scope = (
+                    check_link(self.browser,
+                                post_link,
+                                self.dont_like,
+                                self.mandatory_words,
+                                self.mandatory_language,
+                                self.is_mandatory_character,
+                                self.mandatory_character,
+                                self.check_character_set,
+                                self.ignore_if_contains,
+                                self.logger))
+
+                if user_name != self.username:
+                    follow_state, msg = follow_user(self.browser,
+                                                    "post",
+                                                    self.username,
+                                                    user_name,
+                                                    None,
+                                                    self.blacklist,
+                                                    self.logger,
+                                                    self.logfolder)
+
+                    self.dont_include.add(user_name)
+
+                if not inappropriate and user_name != self.username:
+                    pods_like_percent = max(90, min(100, self.like_percentage))
+                    liking = (random.randint(0, 100) <= pods_like_percent)
+                    commenting = (random.randint(0, 100) <= modespecific_comment_percentage)
+
+                    if liking:
+                        like_state, msg = like_image(self.browser,
+                                                        user_name,
+                                                        self.blacklist,
+                                                        self.logger,
+                                                        self.logfolder)
+
+                    commenting_restricted = comment_restriction("read", pod_post_id,
+                                            self.comment_times,
+                                            self.logger)
+
+                    if commenting and not commenting_restricted:
+                        comments = self.fetch_smart_comments(
+                                                        is_video,
+                                                        temp_comments=[])
+
+                        comment_state, msg = comment_image(
+                                                        self.browser,
+                                                        user_name,
+                                                        comments,
+                                                        self.blacklist,
+                                                        self.logger,
+                                                        self.logfolder)
+                        if comment_state:
+                            comment_restriction("write", pod_post_id, None, self.logger)
+
+            except Exception as err:
+                self.logger.error("Failed for {} with Error {}".format(pod_post, err))
+
