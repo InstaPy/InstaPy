@@ -5292,7 +5292,7 @@ class InstaPy:
 
             self.engage_with_posts(light_posts, 10)
             self.engage_with_posts(normal_posts, 30)
-            self.engage_with_posts(normal_posts, 90)
+            self.engage_with_posts(heavy_posts, 90)
 
         except Exception as err:
             self.logger.error(err)
