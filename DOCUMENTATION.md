@@ -27,7 +27,7 @@
   - [Custom action delays](#custom-action-delays)
   
  <br />
-  
+
 - **[Actions](#actions)**
   - [Like by Tags](#like-by-tags)
   - [Like by Feeds](#like-by-feeds)
@@ -53,7 +53,7 @@
   - [InstaPy Pods](#instapy-pods)
   
  <br />
-  
+
 - **[Third Party features](#third-party-features)**
   - [Clarifai ImageAPI](#clarifai-imageapi)
   - [Text Analytics](#text-analytics)
@@ -70,7 +70,7 @@
   - [Use a proxy (Firefox)](#use-a-proxy-firefox)
   
  <br />
-  
+
 - **[Relationship tools](#relationship-tools)**
   - [Grab Followers of a user](#grab-followers-of-a-user)
   - [Grab Following of a user](#grab-following-of-a-user)
@@ -87,7 +87,7 @@
   - [Schedule](#schedule)  
   
  <br />
-  
+
 - **[Additional Information](#additional-information)**
   - [Advanced Installation](#advanced-installation)
   - [Workspace folders](#workspace-folders)
@@ -185,7 +185,7 @@ session.like_by_tags(amount=10, use_smart_hashtags=True)
 
  session.set_smart_location_hashtags(['204517928/chicago-illinois', '213570652/nagoya-shi-aichi-japan'], radius=20, limit=10)
  session.like_by_tags(amount=10, use_smart_location_hashtags=True)
- ```
+  ```
 
   #### Parameters
  `radius`: Radius around the location in Miles   
@@ -334,10 +334,11 @@ will like the image if **any** of those words are in there
 ### Mandatory Language
 
 ```python
-session.set_mandatory_language(enabled=True, character_set='LATIN')
+session.set_mandatory_language(enabled=True, character_set=['LATIN'])
+session.set_mandatory_language(enabled=True, character_set=['LATIN', 'CYRILLIC'])
 ```
 
-`.set_mandatory_language` restrict the interactions, liking and following if any character of the description is outside of the character set selected (the location is not included and non-alphabetic characters are ignored). For example if you choose `LATIN`, any character in Cyrillic will flag the post as inappropriate.
+`.set_mandatory_language` restrict the interactions, liking and following if any character of the description is outside of the character sets you selected (the location is not included and non-alphabetic characters are ignored). For example if you choose `LATIN`, any character in Cyrillic will flag the post as inappropriate. If you choose 'LATIN' and 'CYRILLIC', any other character sets will flag the post as inappropriate as well.
 
 * Available character sets: `LATIN`,  `GREEK`, `CYRILLIC`, `ARABIC`, `HEBREW`, `CJK`, `HANGUL`, `HIRAGANA`, `KATAKANA` and `THAI`
 
@@ -840,7 +841,7 @@ session.follow_user_followers(['friend1', 'friend2', 'friend3'], amount=10, rand
 ##### This will follow the people those liked photos of given list of users   
 ```python
 session.follow_likers(['user1' , 'user2'], photos_grab_amount = 2, follow_likers_per_photo = 3, randomize=True, sleep_delay=600, interact=False)
-```   
+```
 _in this case 2 random photos from each given user will be analyzed and 3 people who liked them will be followed, so 6 follows in total_  
 The `usernames` can be any list   
 The `photos_grab_amount` is how many photos will I grat from users profile and analyze who liked it  
@@ -862,7 +863,7 @@ session.follow_likers(['user1' , 'user2'], photos_grab_amount = 2, follow_likers
 ##### This will follow the people those commented on photos of given list of users
 ```python
 session.follow_commenters(['user1', 'user2', 'user3'], amount=100, daysold=365, max_pic = 100, sleep_delay=600, interact=False)
-```   
+```
 _in this case (max 100 newest photos & maximum 365 days old) from each given user will be analyzed and 100 people who commented the most will be followed_  
 The `usernames` can be any list  
 The `amount` is how many people to follow  
@@ -1209,7 +1210,7 @@ session.remove_follow_requests(amount=200, sleep_delay=600)
  with smart_run(session):
      session.set_comments(photo_comments, media='Photo')
      session.join_pods()
- ```
+  ```
 
   #### Parameters:  
  `topic`:  
@@ -1525,14 +1526,14 @@ _To have it configured, read its [documentation](#yandex-translate-api)_.
 : It indicates the polarity found (_or not found_) in the text and applies to the **global** polarity of the text;  
 _It's a **graduated** polarity - rates from **very** negative to **very** positive_.
 
-| `score_tag` |                   definition                    |  
-| ----------- | ----------------------------------------------- |    
-|    `"P+"`   |       match if text is _**strong** positive_    |  
-|    `"P"`    |       match if text is _positive_ or above      |   
-|    `"NEU"`  |       match if text is _neutral_ or above       |  
+| `score_tag` |                   definition                    |
+| ----------- | ----------------------------------------------- |
+|    `"P+"`   |       match if text is _**strong** positive_    |
+|    `"P"`    |       match if text is _positive_ or above      |
+|    `"NEU"`  |       match if text is _neutral_ or above       |
 |    `"N"`    |       match if text is _negative_ or above      |
-|    `"N+"`   | match if text is _**strong** negative_ or above |  
-|    `None`   |     do not match per _polarity_ found, at all   |  
+|    `"N+"`   | match if text is _**strong** negative_ or above |
+|    `None`   |     do not match per _polarity_ found, at all   |
 
   > By "_or above_" it means- _e.g._, if you set `polarity` to `"P"`, and text is `"P+"` then it'll also be appropriate (_as it always leans towards positivity_) ..
 
@@ -1540,22 +1541,22 @@ _It's a **graduated** polarity - rates from **very** negative to **very** positi
 : Identifies **opposing** opinions - _contradictory_, _ambiguous_;  
 _It marks the agreement **between** the sentiments detected in the text, the sentence or the segment it refers to_.
 
-|    `agreement`   |                            definition                                     |  
-| ---------------- | ------------------------------------------------------------------------- |    
-|   `"AGREEMENT"`  |       match if the different elements have **the same** polarity          |  
-| `"DISAGREEMENT"` | match if there is _disagreement_ between the different elements' polarity |   
-|      `None`      |              do not match per _agreement_ found, at all                   |    
+|    `agreement`   |                            definition                                     |
+| ---------------- | ------------------------------------------------------------------------- |
+|   `"AGREEMENT"`  |       match if the different elements have **the same** polarity          |
+| `"DISAGREEMENT"` | match if there is _disagreement_ between the different elements' polarity |
+|      `None`      |              do not match per _agreement_ found, at all                   |
 
 
 `subjectivity`
 : Identification of _opinions_ and _facts_ - **distinguishes** between _objective_ and _subjective_;  
 _It marks the subjectivity of the text_.
 
-| `subjectivity` |                          definition                           |  
-| -------------- | ------------------------------------------------------------- |    
-| `"SUBJECTIVE"` |           match if text that has _subjective_ marks           |  
-| `"OBJECTIVE"`  | match if text that does not have **any** _subjectivity_ marks |   
-|     `None`     |         do not match per _subjectivity_ found, at all         |    
+| `subjectivity` |                          definition                           |
+| -------------- | ------------------------------------------------------------- |
+| `"SUBJECTIVE"` |           match if text that has _subjective_ marks           |
+| `"OBJECTIVE"`  | match if text that does not have **any** _subjectivity_ marks |
+|     `None`     |         do not match per _subjectivity_ found, at all         |
 
 `confidence`
 : It represents the _confidence_ associated with the sentiment analysis **performed on the** text and takes an integer number in the _range of_ `(0, 100]`;  
@@ -1620,10 +1621,18 @@ This project uses MeaningCloud™ (http://www.meaningcloud.com) for Text Analyti
 ### Running on a Headless Browser
 Use `headless_browser` parameter to run the bot via the CLI. Works great if running the scripts locally, or to deploy on a server. No GUI, less CPU intensive. [Example](http://g.recordit.co/BhEgXANLhJ.gif)
 
-```
+**Warning:** Some users discourage the use of this feature as Instagram could [detect](https://antoinevastel.com/bot%20detection/2017/08/05/detect-chrome-headless.html) this headless mode!
+
+```python
 session = InstaPy(username='test', password='test', headless_browser=True)
 ```
 
+**(Alternative)**
+If the web driver you're using doesn't support headless mode (or the headless mode becomes very detectable), you can use the `nogui` parameter which displays the window out of view. Keep in mind, this parameter lacks support and ease of use, only supporting Linux based operating systems (or those that have Xvfb, Xephyr and Xvnc display software).
+
+```python
+session = InstaPy(username='test', password='test', nogui=True)
+```
 
 ### Bypass Suspicious Login Attempt
 
@@ -1712,7 +1721,7 @@ session = InstaPy(username=insta_username,
 ```python
 popeye_followers = session.grab_followers(username="Popeye", amount="full", live_match=True, store_locally=True)
 ##now, `popeye_followers` variable which is a list- holds the `Followers` data of "Popeye" at requested time
-```  
+```
 #### Parameters:  
 `username`:  
 A desired username to grab its followers  
@@ -1771,7 +1780,7 @@ You can **use** this tool to take a **backup** of _your_ **or** _any other user'
 ```python
 lazySmurf_following = session.grab_following(username="lazy.smurf", amount="full", live_match=True, store_locally=True)
 ##now, `lazySmurf_following` variable which is a list- holds the `Following` data of "lazy.smurf" at requested time
-```  
+```
 #### Parameters:  
 `username`:  
 A desired username to grab its following  
@@ -1950,7 +1959,7 @@ There are **several** `use cases` of this tool for **various purposes**.
     shaggy_nonfollowers = session.pick_nonfollowers(username="Shaggy", live_match=True, store_locally=True)
 
     #now Scooby Doo will tell his friend Shaggy about this, who knows, maybe Shaggy will unfollow them all or even add to block :D
-    ```  
+    ```
 
 
 ### Pick Fans of a user
@@ -1996,7 +2005,7 @@ There are **several** `use cases` of this tool for **various purposes**.
     ##Smurfette is so famous in the place and she wonders which smurfs is following her WHOM she doesn't even know of :D
     smurfette_fans = session.pick_fans(username="Smurfette", live_match=True, store_locally=True)
     #and now, maybe she will follow back some of the smurfs whom she may know :P
-    ```  
+    ```
 
 
 ### Pick Mutual Following of a user
@@ -2042,7 +2051,7 @@ There are **several** `use cases` of this tool for **various purposes**.
     #Winnie The Pooh is a very friendly guy and almost everybody follows him back, but he wants to be sure about it :D
     Winnie_mutual_following = session.pick_mutual_following(username="WinnieThePooh", live_match=True, store_locally=True)
     ##now, he will write a message to his mutual followers to help him get a new honey pot :>
-    ```  
+    ```
 
 ---
 
@@ -2303,7 +2312,7 @@ In essence,
  - This is be the **only** _python_ library you should install as `root` (_e.g., with `sudo`_).  
  - All other _python_ libraries should be inside a **virtualenv**.  
  - Running `source venv/bin/activate` will activate the correct _python_ to run _InstaPy_.  
-  And to exit an activated **virtualenv** run `deactivate`.  
+    And to exit an activated **virtualenv** run `deactivate`.  
  - Now, copy & paste the **quickstart.py** _python_ code below and run your first _InstaPy_ script.  
  Remember to run it with _python_ from the **virtualenv**, so from **venv/bin/python**.  
  - To make sure which _python_ is used, run `which python` which would tell you the active version of _python_.
@@ -2338,7 +2347,7 @@ Simply copy and paste the content of your logs folder into that workspace folder
 By default, it is gonna be the **InstaPy** folder at your home folder.  
 Such as, if your username is `Cherry`, let's show where your InstaPy folder would be,
 
-|   OS    |       home folder     | _InstaPy_ **workspace** folder |  
+|   OS    |       home folder     | _InstaPy_ **workspace** folder |
 | ------- | --------------------- | ------------------------------ |
 | Windows | `C:\\Users\\Cherry\\` | `C:\\Users\\Cherry\\InstaPy\\` |
 |   Mac   |    `/Users/Cherry/`   |    `/Users/Cherry/InstaPy/`    |
@@ -2703,7 +2712,7 @@ Then you'll obviously have crazy aliases linked to _python_ and **pip** commands
 
 For example, let's assume you have _python_ 2.7 & _python_ 3.7 installed in your system,  
 
-| _python_ version | _python_ alias | **pip** alias |  
+| _python_ version | _python_ alias | **pip** alias |
 | ---------------- | -------------- | ------------- |
 |       2.7        |     `py2`      |     `pip`     |
 |       3.7        |    `python`    |     `pip3`    |

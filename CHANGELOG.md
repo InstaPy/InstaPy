@@ -4,6 +4,22 @@ The **goal** of this file is explaining to the users of our project the notable 
 _The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html)_.
 
 
+## [0.5.0] - ADD DATE HERE
+### Added
+- Additional check for like block.
+
+### Changed
+- Remove support for python2
+- Information regarding the nogui parameter in documentation.
+- XPath Isolation
+- Remove redundant assignment of pod_post_ids
+- Remove address var assigned multiple times without intermediate usage
+- `set_mandatory_language` can maintain multiple character sets
+
+### Fixed
+- Interact_by_comments aborts when self.abort is true
+
+
 ## [0.4.2] - 2019-04-15
 ### Fixed
 - Fail of whole pod run on exception
