@@ -5399,7 +5399,7 @@ class InstaPy:
                                             self.comment_times,
                                             self.logger)
 
-                        self.dont_include.add(user_name)
+                    self.dont_include.add(user_name)
 
                     if not inappropriate and user_name != self.username:
                         pods_like_percent = max(80, min(100, self.like_percentage))
