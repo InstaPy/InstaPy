@@ -179,7 +179,7 @@ class InfluxDBLog:
 
         self.client_influxDB.switch_database(database)
         Settings.db_influx = database
-    
+
     def register_callbacks(self):
         event = Event()
         event.add_callback(event.profile_data_updated.__name__, self.update_profile_data);
