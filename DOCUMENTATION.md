@@ -334,10 +334,11 @@ will like the image if **any** of those words are in there
 ### Mandatory Language
 
 ```python
-session.set_mandatory_language(enabled=True, character_set='LATIN')
+session.set_mandatory_language(enabled=True, character_set=['LATIN'])
+session.set_mandatory_language(enabled=True, character_set=['LATIN', 'CYRILLIC'])
 ```
 
-`.set_mandatory_language` restrict the interactions, liking and following if any character of the description is outside of the character set selected (the location is not included and non-alphabetic characters are ignored). For example if you choose `LATIN`, any character in Cyrillic will flag the post as inappropriate.
+`.set_mandatory_language` restrict the interactions, liking and following if any character of the description is outside of the character sets you selected (the location is not included and non-alphabetic characters are ignored). For example if you choose `LATIN`, any character in Cyrillic will flag the post as inappropriate. If you choose 'LATIN' and 'CYRILLIC', any other character sets will flag the post as inappropriate as well.
 
 * Available character sets: `LATIN`,  `GREEK`, `CYRILLIC`, `ARABIC`, `HEBREW`, `CJK`, `HANGUL`, `HIRAGANA`, `KATAKANA` and `THAI`
 
@@ -653,9 +654,9 @@ session.like_by_tags(['natgeo', 'world'], amount=10)
 
   `skip_top_posts`: Determines whether the first 9 top posts should be liked or not (default is True)
 
-  `use_smart_hashtags`: Make use of the [smart hashtag feature]()
+  `use_smart_hashtags`: Make use of the [smart hashtag feature](#smart-hashtag)
 
-  `use_smart_location_hashtags`: Make use of the [smart location hashtag feature]()
+  `use_smart_location_hashtags`: Make use of the [smart location hashtag feature](#smart-location-hashtags)
 
   `interact`: Defines whether the users of the given post should also be interacted with (needs `set_user_interact` to be also set)
 

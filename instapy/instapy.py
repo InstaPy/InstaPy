@@ -757,20 +757,31 @@ class InstaPy:
 
         return self
 
-    def set_mandatory_language(self, enabled: bool = False, character_set: str = 'LATIN'):
+    def set_mandatory_language(self, enabled: bool = False, character_set: list = ['LATIN']):
         """Restrict the description of the image to a character set"""
         
         if self.aborting:
             return self
 
-        if (character_set not in ['LATIN', 'GREEK', 'CYRILLIC', 'ARABIC',
-                                  'HEBREW', 'CJK', 'HANGUL', 'HIRAGANA',
-                                  'KATAKANA', 'THAI']):
-            self.logger.warning('Unkown character set! Treating as "LATIN".')
-            character_set = 'LATIN'
+        char_set = []
 
+        if not isinstance(character_set, list):
+            character_set = [character_set]
+        
+        for chr_set in character_set:
+            if (chr_set not in ['LATIN', 'GREEK', 'CYRILLIC', 'ARABIC',
+                                      'HEBREW', 'CJK', 'HANGUL', 'HIRAGANA',
+                                      'KATAKANA', 'THAI', 'MATHEMATICAL']):
+                self.logger.warning('Unkown character set! Treating as "LATIN".')
+                ch_set_name = 'LATIN'
+            else:
+                ch_set_name = chr_set
+                
+            if ch_set_name not in char_set:
+                char_set.append(ch_set_name)
+                
         self.mandatory_language = enabled
-        self.mandatory_character = character_set
+        self.mandatory_character = char_set
 
         return self
 
@@ -1758,10 +1769,10 @@ class InstaPy:
         not_valid_users = 0
 
         # if smart hashtag is enabled
-        if use_smart_hashtags is True and self.smart_hashtags is not []:
+        if use_smart_hashtags is True and self.smart_hashtags != []:
             self.logger.info('Using smart hashtags')
             tags = self.smart_hashtags
-        elif use_smart_location_hashtags is True and self.smart_location_hashtags is not []:
+        elif use_smart_location_hashtags is True and self.smart_location_hashtags != []:
             self.logger.info('Using smart location hashtags')
             tags = self.smart_location_hashtags
 
@@ -4313,10 +4324,10 @@ class InstaPy:
         not_valid_users = 0
 
         # if smart hashtag is enabled
-        if use_smart_hashtags is True and self.smart_hashtags is not []:
+        if use_smart_hashtags is True and self.smart_hashtags != []:
             self.logger.info('Using smart hashtags')
             tags = self.smart_hashtags
-        elif use_smart_location_hashtags is True and self.smart_location_hashtags is not []:
+        elif use_smart_location_hashtags is True and self.smart_location_hashtags != []:
             self.logger.info('Using smart location hashtags')
             tags = self.smart_location_hashtags
 
@@ -4926,7 +4937,8 @@ class InstaPy:
          Like comments of people on posts, reply to them
         and also interact with those commenters
         """
-
+        if self.aborting:
+            return self
         message = "Starting to interact by comments.."
         highlight_print(self.username, message, "feature", "info", self.logger)
 
@@ -5252,8 +5264,8 @@ class InstaPy:
             return self.check_letters[uchr]
         except KeyError:
             return self.check_letters.setdefault(uchr,
-                                                 self.mandatory_character in
-                                                 unicodedata.name(uchr))
+                                                any(mandatory_char in unicodedata.name(
+                                                uchr) for mandatory_char in self.mandatory_character))
 
     def run_time(self):
         """ Get the time session lasted in seconds """
@@ -5366,9 +5378,7 @@ class InstaPy:
                 self.logger.info("I don't have any recent post, so I will just help a few pod posts and move on.")
                 nposts = 40
 
-            if len(pod_post_ids) <= nposts:
-                pod_post_ids = pod_post_ids
-            else:
+            if len(pod_post_ids) > nposts:
                 pod_post_ids = random.sample(pod_post_ids, nposts)
 
             for pod_post_id in pod_post_ids:
@@ -5406,12 +5416,6 @@ class InstaPy:
                         liking = (random.randint(0, 100) <= pods_like_percent)
                         commenting = (random.randint(0, 100) <= pods_comment_percentage)
 
-                        if liking:
-                            like_state, msg = like_image(self.browser,
-                                                            user_name,
-                                                            self.blacklist,
-                                                            self.logger,
-                                                            self.logfolder)
                     if liking:
                         like_state, msg = like_image(self.browser,
                                                      user_name,

@@ -734,7 +734,7 @@ def verify_liked_image(browser, logger):
     if len(like_elem) == 1:
         return True
     else:
-        logger.warning('----- Image was NOT liked! You are have a BLOCK on likes!')
+        logger.info('-------- WARNING! Image was NOT liked! You are have a BLOCK on likes!')
         return False
 
 

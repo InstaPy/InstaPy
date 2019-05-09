@@ -110,7 +110,7 @@ class Selectors:
 
     likes_dialog_body_xpath = (
         read_xpath("class_selectors","likes_dialog_body_xpath"))
-    likes_dialog_close_xpath = read_xpath("class_selectors","likes_dialog_close_xpath")
+    likes_dialog_close_xpath = read_xpath("class_selectors", "likes_dialog_close_xpath")
 
 
 
