@@ -21,11 +21,11 @@ class Event:
         if function_name not in self.callbacks: return
         for callback in self.callbacks[function_name]:
             callback(*args, **kwargs)
-    
+
     def add_callback(self, function_name, callback):
         if function_name not in self.callbacks:
             self.callbacks[function_name] = []
-        
+
         self.callbacks[function_name].append(callback)
 
     # place custom events below
