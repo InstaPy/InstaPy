@@ -3597,8 +3597,8 @@ class InstaPy:
         return self
 
     def remove_follow_requests(self,
-                               amount=200,
-                               sleep_delay=600):
+                               amount: int = 200,
+                               sleep_delay: int = 600):
         """Remove user unaccepted follow requests"""
 
         if self.aborting:
@@ -3942,9 +3942,9 @@ class InstaPy:
         return
 
     def set_dont_unfollow_active_users(self,
-                                       enabled=False,
-                                       posts=4,
-                                       boundary=500):
+                                       enabled: bool = False,
+                                       posts: int = 4,
+                                       boundary: int = 500):
         """Prevents unfollow followers who have liked one of
         your latest X posts"""
 
@@ -3965,7 +3965,7 @@ class InstaPy:
         # include active user to not unfollow list
         self.dont_include.update(active_users)
 
-    def set_blacklist(self, enabled, campaign):
+    def set_blacklist(self, enabled: bool, campaign: str):
         """
          Enable/disable blacklist. If enabled, adds users to a blacklist
         after interact with and adds users to dont_include list
