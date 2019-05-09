@@ -4075,7 +4075,7 @@ class InstaPy:
         Settings.InstaPy_is_running = False
         close_browser(self.browser, threaded_session, self.logger)
 
-        with interruption_handler():
+        with interruption_handler(threaded=threaded_session):
             # close virtual display
             if self.nogui:
                 self.display.stop()
