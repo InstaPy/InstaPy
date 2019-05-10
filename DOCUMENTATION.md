@@ -68,6 +68,7 @@
   - [Use a proxy (Chrome)](#use-a-proxy-chrome)
   - [Switching to Firefox](#switching-to-firefox)
   - [Use a proxy (Firefox)](#use-a-proxy-firefox)
+  - [Running in threads](#running-in-threads)
   
  <br />
   
@@ -1697,6 +1698,27 @@ session = InstaPy(username=insta_username,
                   proxy_address='8.8.8.8',
                   proxy_port=4444,
                   use_firefox=True)
+```
+
+### Running in threads
+If you're running InstaPy in threads and get exception `ValueError: signal only works in main thread` , you have to properly close the session.
+There is two ways to do it:
+
+Closing session in smart_run context:
+```python
+session = InstaPy()
+with smart_run(session, threaded=True):
+    """ Activity flow """
+    # some activity here ...
+```
+
+
+Closing session with `end()` method 
+```python
+session = InstaPy()
+session.login()
+# some activity here ...
+session.end(threaded_session=True)
 ```
 
 ---
