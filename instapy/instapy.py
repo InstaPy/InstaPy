@@ -5393,7 +5393,8 @@ class InstaPy:
                                                         user_name,
                                                         self.blacklist,
                                                         self.logger,
-                                                        self.logfolder)
+                                                        self.logfolder,
+                                                        self.liked_img)
                         if like_state is True:
                             self.liked_img += 1
 
