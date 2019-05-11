@@ -18,6 +18,8 @@ _The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 ### Fixed
 - Interact_by_comments aborts when self.abort is true
+- Media type filter (Photo, Video) in get_links
+- 'Failed to get comments' issue 
 
 
 ## [0.4.2] - 2019-04-15
