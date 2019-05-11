@@ -5394,32 +5394,15 @@ class InstaPy:
                                                         self.blacklist,
                                                         self.logger,
                                                         self.logfolder)
-
-                    commenting_restricted = comment_restriction("read", pod_post_id,
-                                            self.comment_times,
-                                            self.logger)
-
-                    self.dont_include.add(user_name)
-
-                    if not inappropriate and user_name != self.username:
-                        pods_like_percent = max(80, min(100, self.like_percentage))
-                        pods_comment_percentage = max(80, min(100, self.comment_percentage))
-                        liking = (random.randint(0, 100) <= pods_like_percent)
-                        commenting = (random.randint(0, 100) <= pods_comment_percentage)
-
-                    if liking:
-                        like_state, msg = like_image(self.browser,
-                                                     user_name,
-                                                     self.blacklist,
-                                                     self.logger,
-                                                     self.logfolder,
-                                                     self.liked_img)
-
                         if like_state is True:
                             self.liked_img += 1
 
                         elif msg == "block on likes":
                             break
+
+                    commenting_restricted = comment_restriction("read", pod_post_id,
+                                            self.comment_times,
+                                            self.logger)
 
                     if commenting and not commenting_restricted:
                         comments = self.fetch_smart_comments(
