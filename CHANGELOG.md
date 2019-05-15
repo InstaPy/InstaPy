@@ -22,6 +22,7 @@ _The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 - Media type filter (Photo, Video) in get_links
 - 'Failed to get comments' issue 
 - Threaded session ending with exception `ValueError: signal only works in main thread`
+- `like_image` in dev has this arg
 
 
 ## [0.4.3] - 2019-05-15
