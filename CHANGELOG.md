@@ -24,6 +24,11 @@ _The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 - Threaded session ending with exception `ValueError: signal only works in main thread`
 
 
+## [0.4.3] - 2019-05-15
+### Fixed
+- Commenting issue #4409
+
+
 ## [0.4.2] - 2019-04-15
 ### Fixed
 - Fail of whole pod run on exception
