@@ -121,7 +121,7 @@ def verify_commenting(browser, max, min, mand_words, logger):
         return False, disapproval_reason
 
     comments_count, msg = get_comments_count(browser, logger)
-    if not comments_count:
+    if comments_count is None:
         disapproval_reason = "--> Not commenting! {}".format(msg)
         return False, disapproval_reason
 
@@ -167,6 +167,8 @@ def verify_commenting(browser, max, min, mand_words, logger):
                     mand_word.lower() in first_comment for
                     mand_word in mand_words))):
             return False, 'mandantory words not in post desc'
+        if (post_desc is None and first_comment is None):
+            return False, "couldn't get post description and comments"
 
     return True, 'Approval'
 
