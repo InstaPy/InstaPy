@@ -168,7 +168,7 @@ def verify_commenting(browser, max, min, mand_words, logger):
                     mand_word in mand_words))):
             return False, 'mandantory words not in post desc'
         if (post_desc is None and first_comment is None):
-            return False, 'couldn't get post description and comments'
+            return False, "couldn't get post description and comments"
 
     return True, 'Approval'
 
