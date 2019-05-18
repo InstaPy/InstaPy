@@ -24,6 +24,7 @@ _The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 - Threaded session ending with exception `ValueError: signal only works in main thread`
 - `like_image` in dev has this arg
 - Verifying mandatory words when the script can not get post description
+- Codacy checks for unused var, out of scope, and missing args
 
 
 ## [0.4.3] - 2019-05-15
