@@ -413,7 +413,7 @@ def get_links_for_username(browser,
         return False
 
     # if private user, we can get links only if we following
-    following_status, follow_button = get_following_status(
+    following_status, _ = get_following_status(
         browser, "profile", username, person, None, logger, logfolder)
 
     #if following_status is None:
@@ -509,7 +509,7 @@ def check_link(browser, post_link, dont_like, mandatory_words,
     # navigate to it again
     web_address_navigator(browser, post_link)
 
-    """Check if the Post is Valid/Exists"""
+    # Check if the Post is Valid/Exists
     try:
         post_page = browser.execute_script(
             "return window._sharedData.entry_data.PostPage")
@@ -530,8 +530,7 @@ def check_link(browser, post_link, dont_like, mandatory_words,
             'Unavailable Page: {}'.format(post_link.encode('utf-8')))
         return True, None, None, 'Unavailable Page', "Failure"
 
-    """Gets the description of the post's link and checks for the dont_like
-    tags"""
+    # Gets the description of the post's link and checks for the dont_like tags
     graphql = 'graphql' in post_page[0]
     if graphql:
         media = post_page[0]['graphql']['shortcode_media']
@@ -579,14 +578,14 @@ def check_link(browser, post_link, dont_like, mandatory_words,
     if owner_comments == '':
         owner_comments = None
 
-    """Append owner comments to description as it might contain further tags"""
+    # Append owner comments to description as it might contain further tags
     if image_text is None:
         image_text = owner_comments
 
     elif owner_comments:
         image_text = image_text + '\n' + owner_comments
 
-    """If the image still has no description gets the first comment"""
+    # If the image still has no description gets the first comment
     if image_text is None:
         if graphql:
             media_edge_string = get_media_edge_comment_string(media)
@@ -604,16 +603,14 @@ def check_link(browser, post_link, dont_like, mandatory_words,
     logger.info('Link: {}'.format(post_link.encode('utf-8')))
     logger.info('Description: {}'.format(image_text.encode('utf-8')))
 
-    """Check if mandatory character set, before adding the location to the
-    text"""
+    # Check if mandatory character set, before adding the location to the text
     if mandatory_language:
         if not check_character_set(image_text):
             return True, user_name, is_video, 'Mandatory language not ' \
                                               'fulfilled', "Not mandatory " \
                                                            "language"
 
-    """Append location to image_text so we can search through both in one
-    go."""
+    # Append location to image_text so we can search through both in one go
     if location_name:
         logger.info('Location: {}'.format(location_name.encode('utf-8')))
         image_text = image_text + '\n' + location_name

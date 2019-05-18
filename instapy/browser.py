@@ -76,7 +76,7 @@ def set_selenium_local_session(proxy_address,
 
         # converts to custom browser
         # browser = convert_selenium_browser(browser)
-    
+
         # authenticate with popup alert window
         if (proxy_username and proxy_password):
             proxy_authentication(browser,
@@ -255,6 +255,7 @@ def retry(max_retry_count = 3, start_page = None):
     def real_decorator(org_func):
         def wrapper(*args, **kwargs):
             browser = None
+            _start_page = start_page
 
             # try to find instance of a browser in the arguments
             # all webdriver classes (chrome, firefox, ...) inherit from Remote class
@@ -281,7 +282,7 @@ def retry(max_retry_count = 3, start_page = None):
 
             # get current page if none is given
             if not start_page:
-                start_page = browser.current_url
+                _start_page = browser.current_url
 
             rv = None
             retry_count = 0
@@ -300,9 +301,9 @@ def retry(max_retry_count = 3, start_page = None):
                     rv = None
 
                     # refresh page
-                    browser.get(start_page)
+                    browser.get(_start_page)
 
-            return rv;
+            return rv
         return wrapper
     return real_decorator
 
@@ -347,7 +348,7 @@ class custom_browser(Remote):
                 break
 
         # return to original page
-        web_address_navigator(self, current_url) 
+        web_address_navigator(self, current_url)
 
 
 

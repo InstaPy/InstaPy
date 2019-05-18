@@ -210,14 +210,14 @@ def unfollow(browser,
     """ Unfollows the given amount of users"""
 
     if (customList is not None and
-            type(customList) in [tuple, list] and
+            isinstance(customList, (tuple, list)) and
             len(customList) == 3 and
             customList[0] is True and
-            type(customList[1]) in [list, tuple, set] and
+            isinstance(customList[1], (list, tuple, set)) and
             len(customList[1]) > 0 and
             customList[2] in ["all", "nonfollowers"]):
         customList_data = customList[1]
-        if type(customList_data) != list:
+        if not isinstance(customList_data, list):
             customList_data = list(customList_data)
         unfollow_track = customList[2]
         customList = True
@@ -225,7 +225,7 @@ def unfollow(browser,
         customList = False
 
     if (InstapyFollowed is not None and
-            type(InstapyFollowed) in [tuple, list] and
+            isinstance(InstapyFollowed, (tuple, list)) and
             len(InstapyFollowed) == 2 and
             InstapyFollowed[0] is True and
             InstapyFollowed[1] in ["all", "nonfollowers"]):
@@ -243,7 +243,7 @@ def unfollow(browser,
     web_address_navigator(browser, user_link)
 
     # check how many poeple we are following
-    allfollowers, allfollowing = get_relationship_counts(browser, username,
+    _, allfollowing = get_relationship_counts(browser, username,
                                                          logger)
 
     if allfollowing is None:
@@ -276,7 +276,8 @@ def unfollow(browser,
 
         elif nonFollowers is True:
             logger.info("Unfollowing the users who do not follow back\n")
-            """  Unfollow only the users who do not follow you back """
+
+            # Unfollow only the users who do not follow you back
             unfollow_list = get_nonfollowers(browser,
                                              username,
                                              relationship_data,
@@ -416,7 +417,7 @@ def unfollow(browser,
                         # now it is time to unfollow since
                         # time filter pass, user is now eligble to unfollow
                         if followedback_status is not True:
-                            
+
                             user_link = "https://www.instagram.com/{}/".format(person)
                             web_address_navigator(browser, user_link)
                             valid_page = is_page_available(browser, logger)
@@ -1035,7 +1036,7 @@ def get_given_user_followers(browser,
         return [], []
 
     # check how many people are following this user.
-    allfollowers, allfollowing = get_relationship_counts(browser, user_name,
+    allfollowers, _ = get_relationship_counts(browser, user_name,
                                                          logger)
 
     # skip early for no followers
@@ -1302,7 +1303,8 @@ def unfollow_user(browser, track, username, person, person_id, button,
         return False, "jumped"
 
     if track in ["profile", "post"]:
-        """ Method of unfollowing from a user's profile page or post page """
+        # Method of unfollowing from a user's profile page or post page
+
         if track == "profile":
             user_link = "https://www.instagram.com/{}/".format(person)
             web_address_navigator(browser, user_link)
@@ -1363,7 +1365,8 @@ def unfollow_user(browser, track, username, person, person_id, button,
                         person))
                 return False, "unexpected failure"
     elif track == "dialog":
-        """  Method of unfollowing from a dialog box """
+        # Method of unfollowing from a dialog box
+
         click_element(browser, button)
         sleep(4)  # TODO: use explicit wait here
         confirm_unfollow(browser)
@@ -1404,8 +1407,6 @@ def confirm_unfollow(browser):
 
             elif isinstance(exc, NoSuchElementException):
                 sleep(1)
-                pass
-
 
 def post_unfollow_cleanup(state, username, person, relationship_data,
                           person_id, logger, logfolder):
@@ -1626,7 +1627,7 @@ def set_followback_in_pool(username, person, person_id, logtime, logger, logfold
         '{0}{1}_followedPool.csv'.format(logfolder, username), person, logger)
 
     # return the username with new timestamp
-    log_followed_pool(username, person, logger, logfolder, logtime, person_id, "true")
+    log_followed_pool(username, person, logger, logfolder, logtime, person_id)
 
 
 def refresh_follow_time_in_pool(username, person, person_id, extra_secs, logger, logfolder):
@@ -1638,5 +1639,5 @@ def refresh_follow_time_in_pool(username, person, person_id, extra_secs, logger,
         '{0}{1}_followedPool.csv'.format(logfolder, username), person, logger)
 
     # return the username with new timestamp
-    log_followed_pool(username, person, logger, logfolder, logtime, person_id, "unknown")
+    log_followed_pool(username, person, logger, logfolder, logtime, person_id)
 
