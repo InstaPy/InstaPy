@@ -173,7 +173,6 @@ def extract_information(browser, username, daysold, max_pic):
                         click_element(browser, one_pic_elem)
                     except Exception:
                         print("Error: cant click on the photo..")
-                        pass
 
                     sleep(1.5)
 
@@ -409,8 +408,3 @@ def get_photo_urls_from_profile(browser, username, links_to_return_amount=1,
           links[:links_to_return_amount])
     sleep(1)
     return links[:links_to_return_amount]
-    # except:
-    # Code below is unreachable - perhaps get rid of?
-    print("Error: Couldnt get pictures links.")
-    return []
-

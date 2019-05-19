@@ -51,14 +51,15 @@ def text_analysis(text, text_type, logger):
             (YANDEX_CONFIG["match_language"] is not True and
              (not MEANINGCLOUD_CONFIG or MEANINGCLOUD_CONFIG[
                  "enabled"] is not True))):
-        """ No analysis will be held """
+
+        # No analysis will be held
         print('')
         logger.info(
             "{} text: \"{}\"".format(text_type_c, text.encode("utf-8")))
         return None
 
     if YANDEX_CONFIG["match_language"] is True:
-        """ Language detection & match will take place """
+        # Language detection & match will take place
         if has_any_letters(emojiless_text):
             language_of_text = detect_language(emojiless_text)
         else:
@@ -84,7 +85,7 @@ def text_analysis(text, text_type, logger):
             return False
 
     if MEANINGCLOUD_CONFIG["enabled"] is True:
-        """ Text language normalization for accuracy & efficiency """
+        # Text language normalization for accuracy & efficiency
         if not language_of_text:
             if has_any_letters(emojiless_text):
                 language_of_text = detect_language(emojiless_text)
@@ -113,7 +114,7 @@ def text_analysis(text, text_type, logger):
             text = translate_text(translation_direction, text)
             language_of_text = "en"
 
-        """ Sentiment Analysis """
+        # Sentiment Analysis
         sentiment = sentiment_analysis(text, language_of_text, logger)
 
         if sentiment is None:
@@ -250,7 +251,7 @@ def sentiment_analysis(text, language_of_text, logger):
 
     except (ValueError, ConnectionError) as exc:
         print('')
-        logger.exception("{}\t~{}\n{}\n"
+        logger.exception("{}\t~{}\n"
                          .format(MEANINGCLOUD_FAILURE_MSG,
                                  str(exc).encode("utf-8")))
         return None

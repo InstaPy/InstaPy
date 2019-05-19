@@ -174,8 +174,8 @@ def validate_username(browser,
                         return False, "---> {} is in blacklist  ~skipping " \
                                       "user\n".format(username)
 
-    """Checks the potential of target user by relationship status in order
-    to delimit actions within the desired boundary"""
+    # Checks the potential of target user by relationship status in order
+    # to delimit actions within the desired boundary
     if potency_ratio or delimit_by_numbers and (
             max_followers or max_following or min_followers or min_following):
 
@@ -300,7 +300,7 @@ def validate_username(browser,
                         .format(number_of_posts, username, min_posts))
                 return False, inap_msg
 
-    """Skip users"""
+    # Skip users
 
     # skip private
     if skip_private:
@@ -340,7 +340,7 @@ def validate_username(browser,
 
         if skip_non_business and not is_business_account:
             return False, '---> Skiping non business because skip_non_business set to True'
-            
+
         if is_business_account:
             try:
                 category = getUserData("graphql.user.business_category_name",
@@ -783,7 +783,7 @@ def delete_line_from_file(filepath, userToDelete, logger):
         os.remove(file_path_old)
 
     except BaseException as e:
-        logger.error("delete_line_from_file error {}\n{}".format(
+        logger.error("delete_line_from_file error {}".format(
             str(e).encode("utf-8")))
 
 
@@ -792,7 +792,7 @@ def scroll_bottom(browser, element, range_int):
     if range_int > 50:
         range_int = 50
 
-    for i in range(int(range_int / 2)):
+    for _ in range(int(range_int / 2)):
         browser.execute_script(
             "arguments[0].scrollTop = arguments[0].scrollHeight", element)
         # update server calls
@@ -1163,7 +1163,7 @@ def remove_duplicates(container, keep_order, logger):
     """ Remove duplicates from all kinds of data types easily """
     # add support for data types as needed in future
     # currently only 'list' data type is supported
-    if type(container) == list:
+    if isinstance(container, list):
         if keep_order is True:
             result = sorted(set(container), key=container.index)
 
@@ -1764,7 +1764,7 @@ def get_action_delay(action):
     if (not config or
             config["enabled"] is not True or
             config[action] is None or
-            type(config[action]) not in [int, float]):
+            isinstance(config[action], (int, float))):
         return defaults[action]
 
     else:
@@ -1772,11 +1772,11 @@ def get_action_delay(action):
 
     # randomize the custom delay in user-defined range
     if (config["randomize"] is True and
-            type(config["random_range"]) == tuple and
+            isinstance(config["random_range"], tuple) and
             len(config["random_range"]) == 2 and
-            all((type(i) in [type(None), int, float] for i in
+            all((isinstance(i, (type(None), int, float)) for i in
                  config["random_range"])) and
-            any(type(i) is not None for i in config["random_range"])):
+            any(not isinstance(i, type(None)) for i in config["random_range"])):
         min_range = config["random_range"][0]
         max_range = config["random_range"][1]
 
@@ -1860,7 +1860,7 @@ def truncate_float(number, precision, round=False):
     else:
         operate_on = 1  # returns the absolute number (e.g. 11.0 from 11.456)
 
-        for i in range(precision):
+        for _ in range(precision):
             operate_on *= 10
 
         short_float = float(int(number * operate_on)) / operate_on
@@ -1933,7 +1933,7 @@ def save_account_progress(browser, username, logger):
 
 def get_epoch_time_diff(time_stamp, logger):
     try:
-        ''' time diff in seconds from input to now'''
+        # time diff in seconds from input to now
         log_time = datetime.datetime.strptime(time_stamp, '%Y-%m-%d %H:%M')
 
         former_epoch = (log_time - datetime.datetime(1970, 1, 1)).total_seconds()
@@ -2038,7 +2038,7 @@ def close_dialog_box(browser):
             Selectors.likes_dialog_close_xpath)
         click_element(browser, close)
 
-    except NoSuchElementException as exc:
+    except NoSuchElementException:
         pass
 
 
@@ -2103,13 +2103,11 @@ def parse_cli_args():
     NOTE: This style is the easiest of it and currently not being used.
     """
 
-    args, args_unknown = parser.parse_known_args()
-    """ Once added custom arguments if you use a reserved name of core flags
-    and don't parse it, e.g.,
-    `-ufa` will misbehave cos it has `-uf` reserved flag in it.
-
-    But if you parse it, it's okay.
-    """
+    args, _ = parser.parse_known_args()
+    # Once added custom arguments if you use a reserved name of core flags
+    # and don't parse it, e.g.,
+    # `-ufa` will misbehave cos it has `-uf` reserved flag in it.
+    # But if you parse it, it's okay.
 
     return args
 

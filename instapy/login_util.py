@@ -234,7 +234,7 @@ def login_user(browser,
      .perform())
 
     # update server calls for both 'click' and 'send_keys' actions
-    for i in range(2):
+    for _ in range(2):
         update_activity()
 
     sleep(1)

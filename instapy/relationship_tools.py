@@ -302,7 +302,7 @@ def get_following(browser,
     web_address_navigator(browser, user_link)
 
     # Get following count
-    followers_count, following_count = get_relationship_counts(browser,
+    _, following_count = get_relationship_counts(browser,
                                                                username,
                                                                logger)
 
@@ -362,7 +362,7 @@ def get_following(browser,
         )
         web_address_navigator(browser, url)
 
-        """ Get stored graphql queries data to be used """
+        # Get stored graphql queries data to be used
         try:
             filename = '{}graphql_queries.json'.format(logfolder)
             query_date = datetime.today().strftime('%d-%m-%Y')
@@ -372,7 +372,8 @@ def get_following(browser,
                         json.dump({username: {query_date: {"sc_rolled": 0}}},
                                   graphql_queries_file)
                         graphql_queries_file.close()
-            """ Loads the existing graphql queries data """
+
+            # Loads the existing graphql queries data
             with open(filename) as graphql_queries_file:
                 graphql_queries = json.load(graphql_queries_file)
                 stored_usernames = list(
@@ -553,7 +554,7 @@ def get_unfollowers(browser,
             "~leaving out of an invalid value")
         return [], []
 
-    elif username is None or type(username) != str:
+    elif username is None or not isinstance(username, str):
         logger.info(
             "Please enter a username to pick Unfollowers  ~leaving out of an "
             "invalid value")
@@ -630,7 +631,7 @@ def get_nonfollowers(browser,
                      logfolder):
     """ Finds Nonfollowers of a given user """
 
-    if username is None or type(username) != str:
+    if username is None or not isinstance(username, str):
         logger.info(
             "Please enter a username to pick Nonfollowers  ~leaving out of "
             "an invalid value")
