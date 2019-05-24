@@ -472,6 +472,9 @@ def unfollow(browser,
                         # reset jump counter after a successful unfollow
                         jumps["consequent"]["unfollows"] = 0
 
+                    elif msg == 'step':
+                        unfollowNum += 1
+                        jumps["consequent"]["unfollows"] = 0
                     elif msg == "jumped":
                         # will break the loop after certain consecutive jumps
                         jumps["consequent"]["unfollows"] += 1
@@ -1321,7 +1324,7 @@ def unfollow_user(browser, track, username, person, person_id, button,
                                                                logger,
                                                                logfolder)
 
-        if following_status in ["Following", "Requested"]:
+        if following_status in ["Following"]:
             click_element(browser, follow_button)  # click to unfollow
             sleep(4)  # TODO: use explicit wait here
             confirm_unfollow(browser)
@@ -1332,6 +1335,10 @@ def unfollow_user(browser, track, username, person, person_id, button,
             if unfollow_state is not True:
                 return False, msg
 
+        elif following_status in ["Requested"]:
+            logger.warning(
+                "--> Person have profile private and dont follow back. step user '{}'!\n".format(person))
+            return False, 'step'
         elif following_status in ["Follow", "Follow Back"]:
             logger.info(
                 "--> Already unfollowed '{}'! or a private user that "
