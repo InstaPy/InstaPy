@@ -41,20 +41,16 @@ Implemented in Python using the Selenium module.<p>
 - [How to install and run InstaPy](#installation)
   * [Installing InstaPy](#installation)
   * [Updating InstaPy](#updating)
-- [Running InstaPy on Docker](#docker)
-- [Guides and tutorials](#guides)
-  * [Video tutorials](#tuto)
-  * [Written guides](#written-guides)
-    * [How to Ubuntu](#ubuntu)
-    * [How to RaspberryPi](#rpi)
+  * [Guides and tutorials](#guides)
+    * [Video tutorials](#tuto)
+    * [Written guides](#written-guides)
 - [Externals and additionals tools](#tools)
   * [Dashboard](#dashboard)
-- [Full documentation of Instapy's features](#full-doc)
+  * [Web Interface](#gui)
+- [Running InstaPy on Docker](#docker)
+- [Documentation of all Instapy's features](#full-doc)
 - [Support](#support)
 - [Credits](#credits)
-  * [Contributors](#contributors)
-  * [Backers](#backers)
-  * [Sponsors](#sponsors)
 - [Disclaimer](#disclaimer)
 
 ## **Installation**<a name="installation"></a>
@@ -98,8 +94,6 @@ Or add the `headless_browser=True` parameter to the `InstaPy(headless_browser=Tr
 pip install instapy -U
 ```
 
-## Docker<a name="docker"></a>
-All information on how to use InstaPy with Docker can be found in the [instapy-docker](https://github.com/InstaPy/instapy-docker) repository.
 
 ## Guides<a name="guides"></a>
 
@@ -115,16 +109,22 @@ All information on how to use InstaPy with Docker can be found in the [instapy-d
 **[Installation on DigitalOcean Server](https://www.youtube.com/watch?v=my0FM5hra_s&t=14s&list=PLa4P1NPX9hthXV-wko0xyxFpbhYZFkW7o&index=9)**
 
 #### Written Guides:<a name="written-guides"></a>
-**[How to Ubuntu (64-Bit)](https://github.com/InstaPy/instapy-docs/blob/master/How_Tos/How_To_DO_Ubuntu_on_Digital_Ocean.md)<a name="ubuntu"></a> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**
+**[How to Ubuntu (64-Bit)](https://github.com/InstaPy/instapy-docs/blob/master/How_Tos/How_To_DO_Ubuntu_on_Digital_Ocean.md) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**
 
-**[How to RaspberryPi](https://github.com/InstaPy/instapy-docs/blob/master/How_Tos/How_to_Raspberry.md)<a name="rpi"></a> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**
+**[How to RaspberryPi](https://github.com/InstaPy/instapy-docs/blob/master/How_Tos/How_to_Raspberry.md) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**
 
 
-#### External Tools:<a name="tools"></a>
+## External Tools:<a name="tools"></a>
 
 **[InstaPy Dashboard](https://github.com/converge/instapy-dashboard)**<a name="dashboard"></a>
 > InstaPy Dashboard is an Open Source project developed by [@converge](https://github.com/converge/) to visualize Instagram accounts progress and real-time InstaPy logs on the browser.
 
+**[InstaPy GUI](https://github.com/breuerfelix/instapy-gui)**<a name="gui"></a>
+> InstaPy GUI is a Graphical User Interface including some useful Analytics developed by [@breuerfelix](https://github.com/breuerfelix).
+
+
+## Docker<a name="docker"></a>
+All information on how to use InstaPy with Docker can be found in the [instapy-docker](https://github.com/InstaPy/instapy-docker) repository.
 
 
 ## Documentation<a name="full-doc"></a>
@@ -154,19 +154,19 @@ If you should encounter any issue, please first [search for similar issues](http
 Check out this short guide on [how to start contributing!](https://github.com/InstaPy/instapy-docs/blob/master/CONTRIBUTORS.md).
 
 ## Credits<a name="creds"></a>
-### Contributors<a name="contributors"></a>
+### Contributors
 
 This project exists thanks to all the people who contribute. [[Contribute](https://github.com/timgrossmann/InstaPy/wiki/How-to-Contribute)].
 
 <a href="https://github.com/timgrossmann/InstaPy/graphs/contributors"><img src="https://opencollective.com/instapy/contributors.svg?width=890&button=false" /></a>
 
-### Backers<a name="backers"></a>
+### Backers
 
 Thank you to all our backers! 🙏 [[Become a backer](https://opencollective.com/instapy#backer)]
 
 <a href="https://opencollective.com/instapy#backers" target="_blank"><img src="https://opencollective.com/instapy/backers.svg?width=890"></a>
 
-### Sponsors<a name="sponsors"></a>
+### Sponsors
 
 Support this project by becoming a sponsor. Your logo will show up here with a link to your website. [[Become a sponsor](https://opencollective.com/instapy#sponsor)]
 
