@@ -21,14 +21,15 @@ from selenium.common.exceptions import WebDriverException
 from selenium.common.exceptions import InvalidElementStateException
 from selenium.common.exceptions import NoSuchElementException
 
+from .xpath import read_xpath
 
 def get_comment_input(browser):
     comment_input = browser.find_elements_by_xpath(
-        '//textarea[@placeholder = "Add a comment…"]')
+        read_xpath(get_comment_input.__name__,"comment_input"))
 
     if len(comment_input) <= 0:
         comment_input = browser.find_elements_by_xpath(
-            '//input[@placeholder = "Add a comment…"]')
+            read_xpath(get_comment_input.__name__,"placeholder"))
 
     return comment_input
 
@@ -39,7 +40,7 @@ def open_comment_section(browser, logger):
         "\t~may cause issues with browser windows of smaller widths")
 
     comment_elem = browser.find_elements_by_xpath(
-        "//button/span[@aria-label='Comment']")
+        read_xpath(open_comment_section.__name__,"comment_elem"))
 
     if len(comment_elem) > 0:
         try:
@@ -121,7 +122,7 @@ def verify_commenting(browser, max, min, mand_words, logger):
         return False, disapproval_reason
 
     comments_count, msg = get_comments_count(browser, logger)
-    if not comments_count:
+    if comments_count is None:
         disapproval_reason = "--> Not commenting! {}".format(msg)
         return False, disapproval_reason
 
@@ -167,6 +168,8 @@ def verify_commenting(browser, max, min, mand_words, logger):
                     mand_word.lower() in first_comment for
                     mand_word in mand_words))):
             return False, 'mandantory words not in post desc'
+        if (post_desc is None and first_comment is None):
+            return False, "couldn't get post description and comments"
 
     return True, 'Approval'
 
@@ -200,10 +203,10 @@ def get_comments_on_post(browser,
         return None
 
     # get comments & commenters information
-    comments_block_XPath = "//div/div/h3/../../../.."  # efficient location
+    comments_block_XPath = read_xpath(get_comments_on_post.__name__,"comments_block")  # efficient location
     # path
-    like_button_full_XPath = "//div/span/button/span[@aria-label='Like']"
-    unlike_button_full_XPath = "//div/span/button/span[@aria-label='Unlike']"
+    like_button_full_XPath = read_xpath(get_comments_on_post.__name__,"like_button_full_XPath")
+    unlike_button_full_XPath = read_xpath(get_comments_on_post.__name__,"unlike_button_full_XPath")
 
     comments = []
     commenters = []
@@ -217,7 +220,7 @@ def get_comments_on_post(browser,
             comments_block = browser.find_elements_by_xpath(
                 comments_block_XPath)
             for comment_line in comments_block:
-                commenter_elem = comment_line.find_element_by_xpath('//h3/a')
+                commenter_elem = comment_line.find_element_by_xpath(read_xpath(get_comments_on_post.__name__,"commenter_elem"))
                 commenter = extract_text_from_element(commenter_elem)
                 if (commenter and
                         commenter not in [owner, poster, ignore_users] and
@@ -310,9 +313,16 @@ def get_comments_count(browser, logger):
         comments_count = media[media_edge_string]['count']
 
     except Exception as e:
-        msg = ("Failed to get comments' count!\n\t{}"
-               .format(str(e).encode("utf-8")))
-        return None, msg
+        try:
+            comments_count = browser.execute_script(
+                "return window._sharedData.entry_data."
+                "PostPage[0].graphql.shortcode_media."
+                "edge_media_preview_comment.count")
+
+        except Exception as e:
+            msg = ("Failed to get comments' count!\n\t{}"
+                .format(str(e).encode("utf-8")))
+            return None, msg
 
     if not comments_count:
         if comments_count == 0:
