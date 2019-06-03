@@ -93,7 +93,6 @@
   - [Advanced Installation](#advanced-installation)
   - [Workspace folders](#workspace-folders)
   - [Pass arguments by CLI](#pass-arguments-by-cli)
-  - [Docker](#docker)
   - [Extensions](#extensions)
   - [Custom chromedriver version](#custom-chromedriver-version)
   - [Using one of the templates](#using-one-of-the-templates)
@@ -655,7 +654,7 @@ session.like_by_tags(['natgeo', 'world'], amount=10)
 
   `skip_top_posts`: Determines whether the first 9 top posts should be liked or not (default is True)
 
-  `use_smart_hashtags`: Make use of the [smart hashtag feature](#smart-hashtag)
+  `use_smart_hashtags`: Make use of the [smart hashtag feature](#smart-hashtags)
 
   `use_smart_location_hashtags`: Make use of the [smart location hashtag feature](#smart-location-hashtags)
 
@@ -2642,10 +2641,6 @@ python quickstart.py -u abc
 ```
 
 </details>
-
-
-## Docker
-All information on how to use InstaPy with Docker can be found in the [instapy-docker](https://github.com/InstaPy/instapy-docker) repository.
 
 
 ## Extensions

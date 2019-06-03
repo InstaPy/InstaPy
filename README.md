@@ -37,6 +37,22 @@ Implemented in Python using the Selenium module.<p>
 **Offical Video Guide: [Get it here!](https://www.udemy.com/instapy-guide/?couponCode=INSTAPY_OFFICIAL)**
 
 
+## Table of contents
+- [How to install and run InstaPy](#installation)
+  * [Installing InstaPy](#installation)
+  * [Updating InstaPy](#updating-instapy)
+  * [Guides and tutorials](#guides)
+    * [Video tutorials](#video-tutorials)
+    * [Written guides](#written-guides)
+- [Externals and additionals tools](#external-tools)
+  * [Dashboard](#dashboard)
+  * [Web Interface](#gui)
+- [Running InstaPy on Docker](#docker)
+- [Documentation of all Instapy's features](#documentation)
+- [Support](#support)
+- [Credits](#credits)
+- [Disclaimer](#disclaimer)
+
 ## **Installation**
 ```elm
 pip install instapy
@@ -80,6 +96,7 @@ Or add the `headless_browser=True` parameter to the `InstaPy(headless_browser=Tr
 pip install instapy -U
 ```
 
+
 ## Guides
 
 #### Video tutorials:
@@ -99,11 +116,17 @@ pip install instapy -U
 **[How to RaspberryPi](https://github.com/InstaPy/instapy-docs/blob/master/How_Tos/How_to_Raspberry.md) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**
 
 
-#### External Tools:
+## External Tools:
 
-**[InstaPy Dashboard](https://github.com/converge/instapy-dashboard)**
+**[InstaPy Dashboard](https://github.com/converge/instapy-dashboard)**<a name="dashboard" />
 > InstaPy Dashboard is an Open Source project developed by [@converge](https://github.com/converge/) to visualize Instagram accounts progress and real-time InstaPy logs on the browser.
 
+**[InstaPy GUI](https://github.com/breuerfelix/instapy-gui)**<a name="gui" />
+> InstaPy GUI is a Graphical User Interface including some useful Analytics developed by [@breuerfelix](https://github.com/breuerfelix).
+
+
+## Docker
+All information on how to use InstaPy with Docker can be found in the [instapy-docker](https://github.com/InstaPy/instapy-docker) repository.
 
 
 ## Documentation
@@ -155,4 +178,4 @@ Support this project by becoming a sponsor. Your logo will show up here with a l
 
 ---
 
-> **Disclaimer**: Please Note that this is a research project. I am by no means responsible for any usage of this tool. Use on your own behalf. I'm also not responsible if your accounts get banned due to extensive use of this tool.
+> **Disclaimer**<a name="disclaimer" />: Please Note that this is a research project. I am by no means responsible for any usage of this tool. Use on your own behalf. I'm also not responsible if your accounts get banned due to extensive use of this tool.
