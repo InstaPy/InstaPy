@@ -40,20 +40,20 @@ Implemented in Python using the Selenium module.<p>
 ## Table of contents
 - [How to install and run InstaPy](#installation)
   * [Installing InstaPy](#installation)
-  * [Updating InstaPy](#updating)
+  * [Updating InstaPy](#updating-instapy)
   * [Guides and tutorials](#guides)
-    * [Video tutorials](#tuto)
+    * [Video tutorials](#video-tutorials)
     * [Written guides](#written-guides)
-- [Externals and additionals tools](#tools)
+- [Externals and additionals tools](#external-tools)
   * [Dashboard](#dashboard)
   * [Web Interface](#gui)
 - [Running InstaPy on Docker](#docker)
-- [Documentation of all Instapy's features](#full-doc)
+- [Documentation of all Instapy's features](#documentation)
 - [Support](#support)
 - [Credits](#credits)
 - [Disclaimer](#disclaimer)
 
-## **Installation**<a name="installation"></a>
+## **Installation**
 ```elm
 pip install instapy
 ```
@@ -89,15 +89,15 @@ InstaPy will now open a browser window and start working.
 > If want InstaPy to run in the background pass the `--headless-browser` option when running from the CLI   
 Or add the `headless_browser=True` parameter to the `InstaPy(headless_browser=True)` constructor.
 
-#### Updating InstaPy<a name="updating"></a>
+#### Updating InstaPy
 ```elm
 pip install instapy -U
 ```
 
 
-## Guides<a name="guides"></a>
+## Guides
 
-#### Video tutorials:<a name="tuto"></a>
+#### Video tutorials:
 **[Official InstaPy Guide on Udemy](https://www.udemy.com/instapy-guide/?couponCode=INSTAPY_OFFICIAL)**
 
 **[Installation on Windows](https://www.youtube.com/watch?v=9DkEl2MrFQk&list=PLa4P1NPX9hthXV-wko0xyxFpbhYZFkW7o&index=11&t=40s)**
@@ -114,24 +114,24 @@ pip install instapy -U
 **[How to RaspberryPi](https://github.com/InstaPy/instapy-docs/blob/master/How_Tos/How_to_Raspberry.md) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**
 
 
-## External Tools:<a name="tools"></a>
+## External Tools:
 
-**[InstaPy Dashboard](https://github.com/converge/instapy-dashboard)**<a name="dashboard"></a>
+**[InstaPy Dashboard](https://github.com/converge/instapy-dashboard)**<a name="dashboard" />
 > InstaPy Dashboard is an Open Source project developed by [@converge](https://github.com/converge/) to visualize Instagram accounts progress and real-time InstaPy logs on the browser.
 
-**[InstaPy GUI](https://github.com/breuerfelix/instapy-gui)**<a name="gui"></a>
+**[InstaPy GUI](https://github.com/breuerfelix/instapy-gui)**<a name="gui" />
 > InstaPy GUI is a Graphical User Interface including some useful Analytics developed by [@breuerfelix](https://github.com/breuerfelix).
 
 
-## Docker<a name="docker"></a>
+## Docker
 All information on how to use InstaPy with Docker can be found in the [instapy-docker](https://github.com/InstaPy/instapy-docker) repository.
 
 
-## Documentation<a name="full-doc"></a>
+## Documentation
 A list of **all features** of InstaPy [can be found here](./DOCUMENTATION.md). 
 
 
-## Support<a name="support"></a>
+## Support
 
 ### Do you need help ?
 If you should encounter any issue, please first [search for similar issues](https://github.com/timgrossmann/InstaPy/issues) and only if you can't find any, create a new issue or use the [discord channel](https://discord.gg/FDETsht) for help.
@@ -153,7 +153,7 @@ If you should encounter any issue, please first [search for similar issues](http
 **Help build InstaPy!**      
 Check out this short guide on [how to start contributing!](https://github.com/InstaPy/instapy-docs/blob/master/CONTRIBUTORS.md).
 
-## Credits<a name="creds"></a>
+## Credits
 ### Contributors
 
 This project exists thanks to all the people who contribute. [[Contribute](https://github.com/timgrossmann/InstaPy/wiki/How-to-Contribute)].
@@ -176,4 +176,4 @@ Support this project by becoming a sponsor. Your logo will show up here with a l
 
 ---
 
-> **Disclaimer**<a name="disclaimer"></a>: Please Note that this is a research project. I am by no means responsible for any usage of this tool. Use on your own behalf. I'm also not responsible if your accounts get banned due to extensive use of this tool.
+> **Disclaimer**<a name="disclaimer" />: Please Note that this is a research project. I am by no means responsible for any usage of this tool. Use on your own behalf. I'm also not responsible if your accounts get banned due to extensive use of this tool.
