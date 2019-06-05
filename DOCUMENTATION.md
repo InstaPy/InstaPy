@@ -2468,6 +2468,7 @@ E.g. setting the _location_ of the **database** file,
 ```python
 from instapy import InstaPy
 from instapy import set_workspace
+from instapy import Settings
 
 
 set_workspace(...)   # if you will set a custom workspace, set it before anything
@@ -2492,6 +2493,7 @@ _E.g. while instantiating _InstaPy_, you make a logger at that given location an
 ```python
 from instapy import InstaPy
 from instapy import set_workspace
+from instapy import Settings
 
 # first time settings custom workspace folder
 set_workspace("C:\\Users\\MMega\\Desktop\\My_InstaPy\\")
