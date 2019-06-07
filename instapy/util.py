@@ -942,7 +942,7 @@ def get_relationship_counts(browser, username, logger):
     except WebDriverException:
         try:
             followers_count = format_number(
-                browser.find_element_by_xpath(read_xpath(get_relationship_counts.__name__,"followers_count")).text)
+                browser.find_element_by_xpath(read_xpath(get_relationship_counts.__name__,"followers_count")))
         except NoSuchElementException:
             try:
                 browser.execute_script("location.reload()")
