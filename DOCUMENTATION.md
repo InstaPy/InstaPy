@@ -102,6 +102,7 @@
   - [Changing DB or Chromedriver locations](#changing-db-or-chromedriver-locations)
   - [Split SQLite DB by Username](#split-sqlite-by-username)
   - [How to avoid _python_ & pip confusion](#how-to-avoid-python--pip-confusion)
+  - [Dealing with Selenium Common Exception Issues](#dealing-with-selenium-common-exception-issues)
 
 ---
 
@@ -2770,6 +2771,74 @@ python -m pip show instapy
 ```
 
 Using this style, you will never have to worry about what is the correct alias of the **pip** for you specific _python_ installation and all you have to know is just the _python_'s alias you use.  
+
+### Dealing with Selenium Common Exception Issues
+
+##### selenium.common.exceptions.WebDriverException: Message: unknown error: Cannot read property 'entry_data' of undefined
+This error could also caused by unstable Internet connection or Instagram's web changed their data-structure.
+
+##### TL;DR - Make sure your chromedriver version is compatible with your Google Chrome version.
+Occasionally *Instapy* will stop working because one of the issues below has been thrown.
+
+>_Traceback (most recent call last):
+....// File list with the exception trace
+selenium.common.exceptions.WebDriverException: Message: unknown error: Cannot read property 'entry_data' of undefined
+(Session info: headless **chrome=75.0.3770.80**)
+(Driver info: **chromedriver=2.36.540469** (1881fd7f8641508feb5166b7cae561d87723cfa8),platform=Mac OS X 10.14.5 x86_64)
+
+>_Traceback (most recent call last):
+....// File list with the exception traceselenium.common.exceptions.WebDriverException: Message: unknown error: unknown sessionId
+(Session info: headless **chrome=75.0.3770.80**)
+(Driver info: **chromedriver=2.36.540469** (1881fd7f8641508feb5166b7cae561d87723cfa8),platform=Mac OS X 10.14.5 x86_64)
+
+Notice that *chrome* version is **75** and the *chromedriver* version is **2.36**. 
+
+According to the [release notes](https://chromedriver.storage.googleapis.com/2.36/notes.txt) for chromedriver, version 2.36 only supports Chrome versions 63-65.
+
+Which means, there is a mismatch in chromedriver and Chrome that installed on my machine. 
+
+There several steps to this fix.
+
+1. Completely uninstall Google Chrome.
+2. Download an older version.
+3. Prevent Google Chrome from auto-updating.
+
+
+#### MAC FIX
+Since *Instapy* seems to work well, in my experience on my Mac, with chromedriver version 2.36, I will downgrade my Google Chrome. I do not use Google Chrome, so this isn't an issue.
+
+
+1. **Uninstall Google Chrome**
+	I used an app called [App Cleaner]("https://freemacsoft.net/appcleaner/") to remove Chrome.
+	After you install App Cleaner, simply drag Google Chrome, from the Applications folder to App Cleaner and Remove All
+	
+2. **Download Chrome 65** *(Read this step completely before proceeding)*
+	- Find and install Chrome 65 from [sllimjet.com]("https://www.slimjet.com/chrome/google-chrome-old-version.php") 
+
+	- After you have installed Chrome 65, open and click the Apple Security Ok button that alerts you to the fact this was downloaded from the internet.
+	- THEN, immediately close Google Chrome completely by holding **`CMD+Q`**. This is extremely important! Google Chrome will being its auto-update function. So it must be completely closed, not just the window.
+	*We need Chrome to run first and put all its files where it needs them.*
+	
+3. **Prevent Google Chrome from updating**
+	- Open **Terminal** and type 
+	`sudo chmod -R 000 ~/Library/Google`
+	
+	- You will be asked for your computer password, enter it.
+	
+	- Next run the command
+	`sudo rm -rf /Library/Google/`
+	
+	Google Chrome should not be able to auto-update now.
+
+If for some reason Chrome is still updating, or you're unable to run the command in step 3, you can edit your `/etc/hosts file` to include the following line: `0.0.0.0 tools.google.com`
+
+
+#### Windows Fix
+Coming soon
+
+#### Raspberry Pi Fix
+Coming Soon
+
 
 ---
 
