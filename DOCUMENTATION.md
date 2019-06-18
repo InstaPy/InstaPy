@@ -102,6 +102,7 @@
   - [Changing DB or Chromedriver locations](#changing-db-or-chromedriver-locations)
   - [Split SQLite DB by Username](#split-sqlite-by-username)
   - [How to avoid _python_ & pip confusion](#how-to-avoid-python--pip-confusion)
+  - [Dealing with Selenium Common Exception Issues](#dealing-with-selenium-common-exception-issues)
 
 ---
 
@@ -2770,6 +2771,10 @@ python -m pip show instapy
 Using this style, you will never have to worry about what is the correct alias of the **pip** for you specific _python_ installation and all you have to know is just the _python_'s alias you use.  
 
 ### Dealing with Selenium Common Exception Issues
+
+##### selenium.common.exceptions.WebDriverException: Message: unknown error: Cannot read property 'entry_data' of undefined
+This error could also caused by unstable Internet connection or Instagram's web changed their data-structure.
+
 ##### TL;DR - Make sure your chromedriver version is compatible with your Google Chrome version.
 Occasionally *Instapy* will stop working because one of the issues below has been thrown.
 
