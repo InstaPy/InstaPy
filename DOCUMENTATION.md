@@ -392,7 +392,7 @@ session.set_skip_users(skip_private=True,
                        skip_no_profile_pic=False,
                        no_profile_pic_percentage=100,
                        skip_business=False,
-		       skip_non_business=False,
+           skip_non_business=False,
                        business_percentage=100,
                        skip_business_categories=[],
                        dont_skip_business_categories=[])
@@ -425,8 +425,8 @@ You can set a percentage of skipping:
 ```python
 session.set_skip_users(skip_private=True,
                        skip_no_profile_pic=True,
-		               skip_business=True,
-		               business_percentage=100)
+                   skip_business=True,
+                   business_percentage=100)
 ```
 This will skip all users that have business account activated.
 You can set a percentage of skipping:
@@ -439,8 +439,8 @@ You can set a percentage of skipping:
 ```python
 session.set_skip_users(skip_private=True,
                        skip_no_profile_pic=True,
-		       skip_business=True,
-		       skip_business_categories=['Creators & Celebrities'])
+           skip_business=True,
+           skip_business_categories=['Creators & Celebrities'])
 ```
 This will skip all business accounts that have category in given list
 **N.B.** In _skip_business_categories_ you can add more than one category
@@ -449,8 +449,8 @@ This will skip all business accounts that have category in given list
 ```python
 session.set_skip_users(skip_private=True,
                        skip_no_profile_pic=True,
-		       skip_business=True,
-		       dont_skip_business_categories=['Creators & Celebrities'])
+           skip_business=True,
+           dont_skip_business_categories=['Creators & Celebrities'])
 ```
 This will skip all business accounts except the ones that have a category that matches one item in the list of _dont_skip_business_categories_
 **N.B.** If both _dont_skip_business_categories_ and _skip_business_categories_, InstaPy will skip only business accounts in the list given from _skip_business_categories_.
@@ -529,13 +529,13 @@ session.set_delimit_commenting(enabled=True, comments_mandatory_words=['cat', 'd
 ##### This is used to check the number of _followers_ and/or _following_ a user has and if these numbers _either_ **exceed** the number set OR **does not pass** the number set OR if **their ratio does not reach** desired potency ratio then no further interaction happens
 ```python
 session.set_relationship_bounds(enabled=True,
-				 potency_ratio=1.34,
-				  delimit_by_numbers=True,
-				   max_followers=8500,
-				    max_following=4490,
-				     min_followers=100,
-				      min_following=56,
-				       min_posts=10,
+         potency_ratio=1.34,
+          delimit_by_numbers=True,
+           max_followers=8500,
+            max_following=4490,
+             min_followers=100,
+              min_following=56,
+               min_posts=10,
                 max_posts=1000)
 ```
 Use `enabled=True` to **activate** this feature, and `enabled=False` to **deactivate** it, _any time_  
@@ -780,7 +780,7 @@ session.follow_by_list(accs, times=1, sleep_delay=600, interact=False)
 * You can also **interact** with the followed users by enabling `interact=True` which will use the configuration of `set_user_interact` setting:  
 ```python
 session.set_user_interact(amount=4,
-				 percentage=50,
+         percentage=50,
                   randomize=True,
                    media='Photo')
 session.follow_by_list(followlist=['samantha3', 'larry_ok'], times=2, sleep_delay=600, interact=True)
@@ -853,7 +853,7 @@ The `follow_likers_per_photo` is how many people to follow per each photo
 * You can also **interact** with the followed users by enabling `interact=True` which will use the configuration of `set_user_interact` setting:  
 ```python
 session.set_user_interact(amount=2,
-				 percentage=70,
+         percentage=70,
                   randomize=True,
                    media='Photo')
 session.follow_likers(['user1' , 'user2'], photos_grab_amount = 2, follow_likers_per_photo = 3, randomize=True, sleep_delay=600, interact=True)
@@ -875,7 +875,7 @@ The `max_pic` will limit number of photos to analyze
 * You can also **interact** with the followed users by enabling `interact=True` which will use the configuration of `set_user_interact` setting:  
 ```python
 session.set_user_interact(amount=3,
-				 percentage=32,
+         percentage=32,
                   randomize=True,
                    media='Video')
 session.follow_commenters(['user1', 'user2', 'user3'], amount=100, daysold=365, max_pic = 100, sleep_delay=600, interact=True)
@@ -1034,7 +1034,8 @@ session.set_do_follow(enabled=False, percentage=70)
 session.set_do_like(enabled=False, percentage=70)
 session.set_comments(["Cool", "Super!"])
 session.set_do_comment(enabled=True, percentage=80)
-session.interact_user_followers(['natgeo'], amount=10, randomize=True)
+# If skip_same_users is false, it will not skip users bot has already interacted with
+session.interact_user_followers(['natgeo'], amount=10, randomize=True, skip_same_users=False)
 ```
 > **Note**: [simulation](#simulation) takes place while running this feature.
 
@@ -1050,7 +1051,8 @@ session.set_do_follow(enabled=False, percentage=70)
 session.set_do_like(enabled=False, percentage=70)
 session.set_comments(["Cool", "Super!"])
 session.set_do_comment(enabled=True, percentage=80)
-session.interact_user_following(['natgeo'], amount=10, randomize=True)
+# If skip_same_users is false, it will not skip users bot has already interacted with
+session.interact_user_following(['natgeo'], amount=10, randomize=True, skip_same_users=False)
 ```
 > **Note**: [simulation](#simulation) takes place while running this feature.
 
@@ -1197,14 +1199,14 @@ session.remove_follow_requests(amount=200, sleep_delay=600)
 
  photo_comments = ['Nice shot! @{}',
                    'I love your profile! @{}',
- 	           'Your feed is an inspiration :thumbsup:',
- 	           'Just incredible :open_mouth:',
- 	           'What camera did you use @{}?',
- 	           'Love your posts @{}',
- 	           'Looks awesome @{}',
- 	           'Getting inspired by you @{}',
- 	           ':raised_hands: Yes!',
- 	           'I can feel your passion @{} :muscle:']
+             'Your feed is an inspiration :thumbsup:',
+             'Just incredible :open_mouth:',
+             'What camera did you use @{}?',
+             'Love your posts @{}',
+             'Looks awesome @{}',
+             'Getting inspired by you @{}',
+             ':raised_hands: Yes!',
+             'I can feel your passion @{} :muscle:']
 
  session = InstaPy()
 
@@ -1694,9 +1696,9 @@ Simple proxy setup example:
 ```python
 session = InstaPy(username=insta_username, 
                   password=insta_password,
-		  use_firefox=True,
-		  proxy_address='8.8.8.8', 
-		  proxy_port=8080)
+      use_firefox=True,
+      proxy_address='8.8.8.8', 
+      proxy_port=8080)
 
 ```
 
@@ -2684,7 +2686,7 @@ To do this simply pass the `disable_image_load=True` parameter in the InstaPy co
 session = InstaPy(username=insta_username,
                   password=insta_password,
                   headless_browser=False,
-		  disable_image_load=True,
+      disable_image_load=True,
                   multi_logs=True)
 ```
 
@@ -2719,7 +2721,7 @@ To do this simply pass the `split_db=True` parameter in the InstaPy constructor 
 session = InstaPy(username=insta_username,
                   password=insta_password,
                   headless_browser=False,
-		  split_db=True,
+      split_db=True,
                   multi_logs=True)
 ```
 
@@ -2809,26 +2811,26 @@ Since *Instapy* seems to work well, in my experience on my Mac, with chromedrive
 
 
 1. **Uninstall Google Chrome**
-	I used an app called [App Cleaner]("https://freemacsoft.net/appcleaner/") to remove Chrome.
-	After you install App Cleaner, simply drag Google Chrome, from the Applications folder to App Cleaner and Remove All
-	
+  I used an app called [App Cleaner]("https://freemacsoft.net/appcleaner/") to remove Chrome.
+  After you install App Cleaner, simply drag Google Chrome, from the Applications folder to App Cleaner and Remove All
+  
 2. **Download Chrome 65** *(Read this step completely before proceeding)*
-	- Find and install Chrome 65 from [sllimjet.com]("https://www.slimjet.com/chrome/google-chrome-old-version.php") 
+  - Find and install Chrome 65 from [sllimjet.com]("https://www.slimjet.com/chrome/google-chrome-old-version.php") 
 
-	- After you have installed Chrome 65, open and click the Apple Security Ok button that alerts you to the fact this was downloaded from the internet.
-	- THEN, immediately close Google Chrome completely by holding **`CMD+Q`**. This is extremely important! Google Chrome will being its auto-update function. So it must be completely closed, not just the window.
-	*We need Chrome to run first and put all its files where it needs them.*
-	
+  - After you have installed Chrome 65, open and click the Apple Security Ok button that alerts you to the fact this was downloaded from the internet.
+  - THEN, immediately close Google Chrome completely by holding **`CMD+Q`**. This is extremely important! Google Chrome will being its auto-update function. So it must be completely closed, not just the window.
+  *We need Chrome to run first and put all its files where it needs them.*
+  
 3. **Prevent Google Chrome from updating**
-	- Open **Terminal** and type 
-	`sudo chmod -R 000 ~/Library/Google`
-	
-	- You will be asked for your computer password, enter it.
-	
-	- Next run the command
-	`sudo rm -rf /Library/Google/`
-	
-	Google Chrome should not be able to auto-update now.
+  - Open **Terminal** and type 
+  `sudo chmod -R 000 ~/Library/Google`
+  
+  - You will be asked for your computer password, enter it.
+  
+  - Next run the command
+  `sudo rm -rf /Library/Google/`
+  
+  Google Chrome should not be able to auto-update now.
 
 If for some reason Chrome is still updating, or you're unable to run the command in step 3, you can edit your `/etc/hosts file` to include the following line: `0.0.0.0 tools.google.com`
 

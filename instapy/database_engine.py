@@ -51,6 +51,10 @@ SQL_CREATE_ACCOUNTS_PROGRESS_TABLE = """
         CONSTRAINT `fk_accountsProgress_profiles1`
         FOREIGN KEY(`profile_id`) REFERENCES `profiles`(`id`));"""
 
+SQL_CREATE_INTERACTED_WITH_TABLE = """
+    CREATE TABLE IF NOT EXISTS `interactedWith` (
+        `profile_id` INTEGER REFERENCES `profiles` (id),
+        `username` TEXT NOT NULL);"""
 
 def get_database(make=False):
     logger = Settings.logger
@@ -79,7 +83,8 @@ def create_database(address, logger, name):
                                    "followRestriction",
                                    "shareWithPodsRestriction",
                                    "commentRestriction",
-                                   "accountsProgress"])
+                                   "accountsProgress",
+                                   "interactedWith"])
 
             connection.commit()
 
@@ -112,6 +117,9 @@ def create_tables(cursor, tables):
 
     if "accountsProgress" in tables:
         cursor.execute(SQL_CREATE_ACCOUNTS_PROGRESS_TABLE)
+
+    if "interactedWith" in tables:
+        cursor.execute(SQL_CREATE_INTERACTED_WITH_TABLE)
 
 
 def verify_database_directories(address):

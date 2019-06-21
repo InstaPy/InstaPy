@@ -88,7 +88,6 @@ def is_private_profile(browser, logger, following=True):
 
     return is_private
 
-
 def validate_username(browser,
                       username_or_link,
                       own_username,
@@ -150,6 +149,14 @@ def validate_username(browser,
     else:
         username = username_or_link  # if there is no `/` in
         # `username_or_link`, then it is a `username`
+    
+    # check if already interacted with user
+    db, id = get_database()
+    conn = sqlite3.connect(db)
+    with conn:
+        cur = conn.cursor()
+        cur.execute("SELECT username FROM interactedWith WHERE profile_id=:var",{"var": id})
+        interacted_with = cur.fetchall()
 
     if username == own_username:
         inap_msg = "---> Username '{}' is yours!\t~skipping user\n".format(
@@ -158,6 +165,11 @@ def validate_username(browser,
 
     if username in ignore_users:
         inap_msg = "---> '{}' is in the `ignore_users` list\t~skipping " \
+                   "user\n".format(username)
+        return False, inap_msg
+
+    if username in interacted_with:
+        inap_msg = "---> '{}' is a person we already interacted with\t~skipping " \
                    "user\n".format(username)
         return False, inap_msg
 
@@ -467,6 +479,14 @@ def add_user_to_blacklist(username, campaign, action, logger, logfolder):
     logger.info('--> {} added to blacklist for {} campaign (action: {})'
                 .format(username, campaign, action))
 
+def add_interacted_with(username, logger):
+    db, id = get_database()
+    conn = sqlite3.connect(db)
+    item = id, username
+    with conn:
+        cur = conn.cursor()
+        cur.execute("INSERT INTO interactedWith VALUES (?,?)", item)
+    logger.info("Setting to skip interactions with '{}' in the future.".format(username))
 
 def get_active_users(browser, username, posts, boundary, logger):
     """Returns a list with usernames who liked the latest n posts"""
