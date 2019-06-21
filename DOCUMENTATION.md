@@ -1034,7 +1034,8 @@ session.set_do_follow(enabled=False, percentage=70)
 session.set_do_like(enabled=False, percentage=70)
 session.set_comments(["Cool", "Super!"])
 session.set_do_comment(enabled=True, percentage=80)
-session.interact_user_followers(['natgeo'], amount=10, randomize=True)
+# If skip_same_users is false, it will not skip users bot has already interacted with
+session.interact_user_followers(['natgeo'], amount=10, randomize=True, skip_same_users=False)
 ```
 > **Note**: [simulation](#simulation) takes place while running this feature.
 
@@ -1050,7 +1051,8 @@ session.set_do_follow(enabled=False, percentage=70)
 session.set_do_like(enabled=False, percentage=70)
 session.set_comments(["Cool", "Super!"])
 session.set_do_comment(enabled=True, percentage=80)
-session.interact_user_following(['natgeo'], amount=10, randomize=True)
+# If skip_same_users is false, it will not skip users bot has already interacted with
+session.interact_user_following(['natgeo'], amount=10, randomize=True, skip_same_users=False)
 ```
 > **Note**: [simulation](#simulation) takes place while running this feature.
 
