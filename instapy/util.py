@@ -153,6 +153,7 @@ def validate_username(browser,
     db, id = get_database()
     conn = sqlite3.connect(db)
     with conn:
+        conn.row_factory = lambda cursor, row: row[0]
         cur = conn.cursor()
         cur.execute("SELECT username FROM interactedWith WHERE profile_id=:var",{"var": id})
         interacted_with = cur.fetchall()
