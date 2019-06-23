@@ -1205,8 +1205,8 @@ class InstaPy:
 
     def set_relationship_bounds(self,
                                 enabled: bool = False,
-                                potency_ratio=None,
-                                delimit_by_numbers=None,
+                                potency_ratio: float = None,
+                                delimit_by_numbers: bool = None,
                                 min_posts: int = None,
                                 max_posts: int = None,
                                 max_followers: int = None,
