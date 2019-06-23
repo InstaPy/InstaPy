@@ -4,7 +4,16 @@ The **goal** of this file is explaining to the users of our project the notable 
 _The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html)_.
 
 
-## [0.5.0] - ADD DATE HERE
+## [0.5.1] - 2019-06-18
+### Added
+- Documentation for basic Selenium Errors
+- Import `Settings` in docs
+
+### Fixed
+- `session.follow_user_following()` broken behavior
+
+
+## [0.5.0] - 2019-06-03
 ### Added
 - Additional check for like block.
 

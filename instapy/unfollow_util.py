@@ -1104,8 +1104,10 @@ def get_given_user_following(browser,
     #  check how many poeple are following this user.
     #  throw RuntimeWarning if we are 0 people following this user
     try:
+        #allfollowing = format_number(
+        #    browser.find_element_by_xpath(read_xpath(get_given_user_following.__name__,"all_following")).text)
         allfollowing = format_number(
-            browser.find_element_by_xpath(read_xpath(get_given_user_following.__name__,"all_following")).text)
+            browser.find_element_by_xpath(str(read_xpath(get_given_user_following.__name__,"all_following"))))
 
     except NoSuchElementException:
         try:
