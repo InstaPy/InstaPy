@@ -662,7 +662,7 @@ def check_link(browser, post_link, dont_like, mandatory_words,
                 inapp_unit = 'Inappropriate! ~ contains "{}"'.format(
                     quashed if iffy == quashed else
                     '" in "'.join([str(iffy), str(quashed)]))
-            except IndexError as error:
+            except IndexError:
                 inapp_unit = 'Inappropriate! ~ contains "{}"'.format(dont_likes_regex)
             return True, user_name, is_video, inapp_unit, "Undesired word"
 
