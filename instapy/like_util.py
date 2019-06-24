@@ -658,11 +658,11 @@ def check_link(browser, post_link, dont_like, mandatory_words,
                         (re.split(r'\W+', dont_likes_regex))[
                             3] if dont_likes_regex.startswith(
                             '#[\\d\\w]+') else  # ']word'
-                        (re.split(r'\W+', dont_likes_regex))[1])  # '#word'                
+                        (re.split(r'\W+', dont_likes_regex))[1])  # '#word'
                 inapp_unit = 'Inappropriate! ~ contains "{}"'.format(
                     quashed if iffy == quashed else
                     '" in "'.join([str(iffy), str(quashed)]))
-            except: 
+            except IndexError as error:
                 inapp_unit = 'Inappropriate! ~ contains "{}"'.format(dont_likes_regex)
             return True, user_name, is_video, inapp_unit, "Undesired word"
 
