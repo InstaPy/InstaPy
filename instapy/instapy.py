@@ -255,6 +255,7 @@ class InstaPy:
         self.max_posts = None
         self.min_posts = None
         self.skip_business_categories = []
+        self.skip_bio_keyword = []
         self.dont_skip_business_categories = []
         self.skip_business = False
         self.skip_non_business = False
@@ -1209,6 +1210,7 @@ class InstaPy:
                                                 self.skip_non_business,
                                                 self.skip_business_percentage,
                                                 self.skip_business_categories,
+                                                self.skip_bio_keyword,
                                                 self.dont_skip_business_categories,
                                                 self.logger,
                                                 self.logfolder)
@@ -1235,6 +1237,7 @@ class InstaPy:
                        skip_business=False,
                        business_percentage=100,
                        skip_business_categories=[],
+                       skip_bio_keyword=[],
                        dont_skip_business_categories=[],
                        skip_non_business=False):
 
@@ -1245,6 +1248,7 @@ class InstaPy:
         self.skip_no_profile_pic_percentage = no_profile_pic_percentage
         self.skip_private_percentage = private_percentage
         self.skip_non_business = skip_non_business
+        self.skip_bio_keyword = skip_bio_keyword
         if skip_business:
             self.skip_business_categories = skip_business_categories
             if len(skip_business_categories) == 0:
