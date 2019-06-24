@@ -629,7 +629,9 @@ def check_link(browser, post_link, dont_like, mandatory_words,
     dont_like_regex = []
 
     for dont_likes in dont_like:
-        if dont_likes.startswith("#"):
+        if dont_likes.startswith("*"):
+            dont_like_regex.append(dont_likes.replace("*",""))
+        elif dont_likes.startswith("#"):
             dont_like_regex.append(dont_likes + "([^\d\w]|$)")
         elif dont_likes.startswith("["):
             dont_like_regex.append("#" + dont_likes[1:] + "[\d\w]+([^\d\w]|$)")
@@ -642,23 +644,26 @@ def check_link(browser, post_link, dont_like, mandatory_words,
     for dont_likes_regex in dont_like_regex:
         quash = re.search(dont_likes_regex, image_text, re.IGNORECASE)
         if quash:
-            quashed = \
-            (((quash.group(0)).split('#')[1]).split(' ')[0]).split('\n')[
-                0].encode(
-                'utf-8')  # dismiss possible space and newlines
-            iffy = ((re.split(r'\W+', dont_likes_regex))[
-                        3] if dont_likes_regex.endswith(
-                '*([^\\d\\w]|$)') else  # 'word' without format
-                    (re.split(r'\W+', dont_likes_regex))[
-                        1] if dont_likes_regex.endswith(
-                        '+([^\\d\\w]|$)') else  # '[word'
-                    (re.split(r'\W+', dont_likes_regex))[
-                        3] if dont_likes_regex.startswith(
-                        '#[\\d\\w]+') else  # ']word'
-                    (re.split(r'\W+', dont_likes_regex))[1])  # '#word'
-            inapp_unit = 'Inappropriate! ~ contains "{}"'.format(
-                quashed if iffy == quashed else
-                '" in "'.join([str(iffy), str(quashed)]))
+            try:
+                quashed = \
+                (((quash.group(0)).split('#')[1]).split(' ')[0]).split('\n')[
+                    0].encode(
+                    'utf-8')  # dismiss possible space and newlines
+                iffy = ((re.split(r'\W+', dont_likes_regex))[
+                            3] if dont_likes_regex.endswith(
+                    '*([^\\d\\w]|$)') else  # 'word' without format
+                        (re.split(r'\W+', dont_likes_regex))[
+                            1] if dont_likes_regex.endswith(
+                            '+([^\\d\\w]|$)') else  # '[word'
+                        (re.split(r'\W+', dont_likes_regex))[
+                            3] if dont_likes_regex.startswith(
+                            '#[\\d\\w]+') else  # ']word'
+                        (re.split(r'\W+', dont_likes_regex))[1])  # '#word'                
+                inapp_unit = 'Inappropriate! ~ contains "{}"'.format(
+                    quashed if iffy == quashed else
+                    '" in "'.join([str(iffy), str(quashed)]))
+            except: 
+                inapp_unit = 'Inappropriate! ~ contains "{}"'.format(dont_likes_regex)
             return True, user_name, is_video, inapp_unit, "Undesired word"
 
     return False, user_name, is_video, 'None', "Success"
