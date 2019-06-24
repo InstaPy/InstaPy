@@ -111,7 +111,7 @@ def validate_username(browser,
                       skip_business_percentage,
                       skip_business_categories,
                       dont_skip_business_categories,
-                      skip_profile_bio,  #This is to filter out user base on bio description.
+                      skip_bio_keyword,  #This is to filter out user base on bio description.
                       logger,
                       logfolder):
     """Check if we can interact with the user"""
@@ -371,7 +371,7 @@ def validate_username(browser,
 
                 
     # NEW Feature of skippping user base on profile bio
-    if len(skip_profile_bio) != 0:
+    if len(skip_bio_keyword) != 0:
         # if contain stop words then skip 
         try:
             profile_bio = getUserData("graphql.user.biography", browser)
@@ -379,9 +379,9 @@ def validate_username(browser,
             logger.error("~cannot get user bio")
             return False, "---> Sorry, couldn't get get user bio " \
                           "account active\n"
-        for profile_bio_key in skip_profile_bio: 
-            if profile_bio_key.lower() in profile_bio.lower():
-                return False, "{} has a bio keyword of {}, by default skip\n".format(username, profile_bio_key)
+        for bio_keyword in skip_bio_keyword: 
+            if bio_keyword.lower() in profile_bio.lower():
+                return False, "{} has a bio keyword of {}, by default skip\n".format(username, bio_keyword)
                 
     # if everything is ok
     return True, "Valid user"
