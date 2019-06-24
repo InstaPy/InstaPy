@@ -382,7 +382,7 @@ def validate_username(browser,
         for bio_keyword in skip_bio_keyword:
             if bio_keyword.lower() in profile_bio.lower():
                 return False, "{} has a bio keyword of {}, by default skip\n".format(username, bio_keyword)
-            
+
     # if everything is ok
     return True, "Valid user"
 
