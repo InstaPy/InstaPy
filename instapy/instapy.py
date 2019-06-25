@@ -2283,7 +2283,26 @@ class InstaPy:
             if links is False:
                 continue
 
-            # Reset like counter for every username
+            #follow
+            if following and not (self.dont_follow_inap_post and inap_img > 0):
+
+                follow_state, msg = follow_user(
+                    self.browser,
+                    track,
+                    self.username,
+                    username,
+                    None,
+                    self.blacklist,
+                    self.logger,
+                    self.logfolder)
+                if follow_state is True:
+                    followed += 1
+
+                elif msg == "already followed":
+                    already_followed += 1
+
+			
+			# Reset like counter for every username
             liked_img = 0
 
             for i, link in enumerate(links[:amount]):
@@ -2423,24 +2442,7 @@ class InstaPy:
                 except NoSuchElementException as err:
                     self.logger.info('Invalid Page: {}'.format(err))
 
-            # follow
-            if following and not (self.dont_follow_inap_post and inap_img > 0):
-
-                follow_state, msg = follow_user(
-                    self.browser,
-                    track,
-                    self.username,
-                    username,
-                    None,
-                    self.blacklist,
-                    self.logger,
-                    self.logfolder)
-                if follow_state is True:
-                    followed += 1
-
-                elif msg == "already followed":
-                    already_followed += 1
-
+           
             else:
                 self.logger.info('--> Not following')
                 sleep(1)
