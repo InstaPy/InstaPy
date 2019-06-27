@@ -125,7 +125,7 @@ pip install instapy -U
 > InstaPy GUI is a Graphical User Interface including some useful Analytics developed by [@breuerfelix](https://github.com/breuerfelix).
 
 **[InstaPy](https://github.com/InstaPy) and [Socialbotspy](https://github.com/socialbotspy)**<a name="socialbotspy" />
-> You will find some more InstaPy specific tools at [InstaPy](https://github.com/InstaPy) and few other similar experimental bots for twitter, linkedin, faceboot etc at [Socialbotspy](https://github.com/socialbotspy).
+> You will find some more InstaPy specific tools at [InstaPy](https://github.com/InstaPy) and few other similar experimental bots for twitter, linkedin, facebook etc at [Socialbotspy](https://github.com/socialbotspy).
 
 ## Docker
 All information on how to use InstaPy with Docker can be found in the [instapy-docker](https://github.com/InstaPy/instapy-docker) repository.
