@@ -161,18 +161,12 @@ def validate_username(browser,
                    "user\n".format(username)
         return False, inap_msg
 
-    blacklist_file = "{}blacklist.csv".format(logfolder)
-    blacklist_file_exists = os.path.isfile(blacklist_file)
-    if blacklist_file_exists:
-        with open("{}blacklist.csv".format(logfolder), 'rt') as f:
-            reader = csv.reader(f, delimiter=',')
-            for row in reader:
-                for field in row:
-                    if field == username:
-                        logger.info(
-                            'Username in BlackList: {} '.format(username))
-                        return False, "---> {} is in blacklist  ~skipping " \
-                                      "user\n".format(username)
+    if (blacklist.enabled and
+        blacklist.entry_exists(username, "followed") or
+        blacklist.entry_exists(username, "commented") or
+        blacklist.entry_exists(username, "liked")):
+        logger.info('Username in BlackList: {} '.format(username))
+        return False, "---> {} is in blacklist  ~skipping user\n".format(username)
 
     # Checks the potential of target user by relationship status in order
     # to delimit actions within the desired boundary
@@ -445,27 +439,6 @@ def update_activity(action="server_calls"):
         conn.commit()
 
 
-def add_user_to_blacklist(username, campaign, action, logger, logfolder):
-    file_exists = os.path.isfile('{}blacklist.csv'.format(logfolder))
-    fieldnames = ['date', 'username', 'campaign', 'action']
-    today = datetime.date.today().strftime('%m/%d/%y')
-
-    try:
-        with open('{}blacklist.csv'.format(logfolder), 'a+') as blacklist:
-            writer = csv.DictWriter(blacklist, fieldnames=fieldnames)
-            if not file_exists:
-                writer.writeheader()
-            writer.writerow({
-                'date': today,
-                'username': username,
-                'campaign': campaign,
-                'action': action
-            })
-    except Exception as err:
-        logger.error('blacklist dictWrite error {}'.format(err))
-
-    logger.info('--> {} added to blacklist for {} campaign (action: {})'
-                .format(username, campaign, action))
 
 
 def get_active_users(browser, username, posts, boundary, logger):

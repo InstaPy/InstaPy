@@ -6,7 +6,6 @@ import emoji
 
 from .time_util import sleep
 from .util import update_activity
-from .util import add_user_to_blacklist
 from .util import click_element
 from .util import get_action_delay
 from .util import explicit_wait
@@ -59,6 +58,12 @@ def comment_image(browser, username, comments, blacklist, logger, logfolder):
     if quota_supervisor('comments') == 'jump':
         return False, "jumped"
 
+    if blacklist.entry_exists(username, "commented"):
+        logger.info("--> Comment blacklist entry found for this campaign. Not sending another comment!")
+        return False, "blacklist"
+    else:
+        logger.info("--> Looks like we're allowed to post a comment")
+
     rand_comment = (random.choice(comments).format(username))
     rand_comment = emoji.demojize(rand_comment)
     rand_comment = emoji.emojize(rand_comment, use_aliases=True)
@@ -84,13 +89,8 @@ def comment_image(browser, username, comments, blacklist, logger, logfolder):
             comment_input[0].submit()
             update_activity('comments')
 
-            if blacklist['enabled'] is True:
-                action = 'commented'
-                add_user_to_blacklist(username,
-                                      blacklist['campaign'],
-                                      action,
-                                      logger,
-                                      logfolder)
+            if blacklist.enabled:
+                blacklist.add_entry(username=username, action='commented')
         else:
             logger.warning("--> Comment Action Likely Failed!"
                            "\t~comment Element was not found")

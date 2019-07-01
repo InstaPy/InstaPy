@@ -79,6 +79,7 @@ from .browser import set_selenium_local_session
 from .browser import close_browser
 from .file_manager import get_workspace
 from .file_manager import get_logfolder
+from .blacklist import Blacklist
 
 from .pods_util import group_posts
 from .pods_util import get_recent_posts_from_pods
@@ -205,7 +206,6 @@ class InstaPy:
         self.follow_percentage = 0
         self.dont_include = set()
         self.white_list = set()
-        self.blacklist = {'enabled': 'True', 'campaign': ''}
         self.automatedFollowedPool = {"all": [], "eligible": []}
         self.do_like = False
         self.like_percentage = 0
@@ -302,6 +302,9 @@ class InstaPy:
         self.multi_logs = multi_logs
         self.logfolder = get_logfolder(self.username, self.multi_logs)
         self.logger = self.get_instapy_logger(self.show_logs)
+
+
+        self.blacklist = Blacklist(logfolder=self.logfolder, logger=self.logger)
 
         get_database(make=True)  # IMPORTANT: think twice before relocating
 
@@ -3925,19 +3928,14 @@ class InstaPy:
             self.dont_include = self.white_list
             return
 
-        self.blacklist['enabled'] = True
-        self.blacklist['campaign'] = campaign
+        self.blacklist.enabled = enabled
+        self.blacklist.campaign = campaign
+        self.blacklist.init()
 
-        try:
-            with open('{}blacklist.csv'.format(self.logfolder), 'r') \
-                    as blacklist:
-                reader = csv.DictReader(blacklist)
-                for row in reader:
-                    if row['campaign'] == campaign:
-                        self.dont_include.add(row['username'])
-        # except:
-        except Exception:
-            self.logger.info('Campaign {} first run'.format(campaign))
+        users = self.blacklist.get_users(campaign)
+        for user in users:
+            self.dont_include.add(user)
+
 
     def grab_followers(self,
                        username=None,

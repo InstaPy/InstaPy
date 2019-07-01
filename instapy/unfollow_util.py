@@ -13,7 +13,6 @@ from .util import delete_line_from_file
 from .util import scroll_bottom
 from .util import format_number
 from .util import update_activity
-from .util import add_user_to_blacklist
 from .util import click_element
 from .util import web_address_navigator
 from .util import get_relationship_counts
@@ -679,6 +678,10 @@ def follow_user(browser, track, login, user_name, button, blacklist, logger,
     if quota_supervisor("follows") == "jump":
         return False, "jumped"
 
+    if blacklist.entry_exists(username=user_name, action="followed"):
+        logger.info("--> Follow blacklist entry found for '{}'!\n".format(user_name))
+        return False, "already followed"
+
     if track in ["profile", "post"]:
         if track == "profile":
             # check URL of the webpage, if it already is user's profile
@@ -752,13 +755,8 @@ def follow_user(browser, track, login, user_name, button, blacklist, logger,
 
     follow_restriction("write", user_name, None, logger)
 
-    if blacklist['enabled'] is True:
-        action = 'followed'
-        add_user_to_blacklist(user_name,
-                              blacklist['campaign'],
-                              action,
-                              logger,
-                              logfolder)
+    if blacklist.enabled:
+        blacklist.add_entry(username=user_name,action="followed")
 
     # get the post-follow delay time to sleep
     naply = get_action_delay("follow")

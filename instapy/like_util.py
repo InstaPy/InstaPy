@@ -5,7 +5,6 @@ from re import findall
 
 from .time_util import sleep
 from .util import format_number
-from .util import add_user_to_blacklist
 from .util import click_element
 from .util import is_private_profile
 from .util import is_page_available
@@ -687,10 +686,8 @@ def like_image(browser, username, blacklist, logger, logfolder, total_liked_img)
             logger.info('--> Image Liked!')
             update_activity('likes')
 
-            if blacklist['enabled'] is True:
-                action = 'liked'
-                add_user_to_blacklist(
-                    username, blacklist['campaign'], action, logger, logfolder)
+            if blacklist.enabled:
+                blacklist.add_entry(username=username, action="liked")
 
             # get the post-like delay time to sleep
             naply = get_action_delay("like")
