@@ -7,7 +7,6 @@ import random
 from sys import platform
 from platform import python_version
 import os
-import csv
 import json
 import requests
 from selenium import webdriver
