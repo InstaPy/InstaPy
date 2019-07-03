@@ -5,6 +5,9 @@ _The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 
 ## [0.5.4] - 2019-07-03
+### Changed
+- Always start chromedriver with --no-sandbox to fix #4607
+
 ### Fixed
 - `get_action_delay` method always returning default values #4540
 
