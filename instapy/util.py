@@ -1765,7 +1765,7 @@ def get_action_delay(action):
             action not in config or
             config["enabled"] is not True or
             config[action] is None or
-            isinstance(config[action], (int, float))) is not True:
+            isinstance(config[action], (int, float)) is not True):
         return defaults[action]
 
     else:
