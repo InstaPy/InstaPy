@@ -31,7 +31,7 @@ class TestBlacklist(unittest.TestCase):
         self.assertTrue(os.path.isfile(csv))
 
     def test_b_add_and_get_entries(self):
-        for x in  range(0,10):
+        for _ in range(0,10):
             TestBlacklist.blacklist.add_entry(username="pressplay", action="liked")
             TestBlacklist.blacklist.add_entry(username="pressplay", action="followed")
         users = TestBlacklist.blacklist.get_users('test')
