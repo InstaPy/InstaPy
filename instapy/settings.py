@@ -82,13 +82,6 @@ class Settings:
     password_influx = None
     db_influx  = None
 
-    #mongodb Settings
-    host_mongo = None
-    port_mongo = None
-    user_mongo = None
-    password_mongo = None
-    db_mongo  = None
-
     # state of instantiation of InstaPy
     InstaPy_is_running = False
 
@@ -188,39 +181,3 @@ class InfluxDBLog:
             'following_count': following_count
         }
         self.add('profile', { 'username': username }, fields)
-
-
-class MongoDB:
-    """ MongoDB Singleton Class """
-    singleton = None
-    client = None
-    db = None
-
-    def __new__(cls, *args, **kwargs):
-        if not cls.singleton:
-            cls.singleton = object.__new__(MongoDB)
-        return cls.singleton
-
-    def __init__(self):
-        if (self.client or
-                not Settings.host_mongo or
-                not Settings.port_mongo or
-                not Settings.user_mongo or
-                not Settings.password_mongo or
-                not Settings.db_mongo
-            ): return
-
-        try:
-            # only import when needed
-            from pymongo import MongoClient
-
-            conn_str = 'mongodb://' + Settings.user_mongo + ':' + \
-                        Settings.password_mongo + '@' + Settings.host_mongo + \
-                        ':' + str(Settings.port_mongo)
-            self.client = MongoClient(conn_str)
-            self.db = self.client[Settings.db_mongo]
-            print('Connected to MongoDB.')
-        except Exception as e:
-            self.client = None
-            print('Error connecting to MongoDB!: ', str(e))
-            # TODO throw some exception ?
