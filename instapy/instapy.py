@@ -38,6 +38,7 @@ from .like_util import get_links_for_username
 from .like_util import like_comment
 from .login_util import login_user
 from .settings import Settings
+from .settings import InfluxDBLog
 from .settings import localize_path
 from .settings import InfluxDBLog
 from .print_log_writer import log_follower_num
@@ -788,6 +789,7 @@ class InstaPy:
 
     def set_mandatory_language(self, enabled: bool = False, character_set: list = ['LATIN']):
         """Restrict the description of the image to a character set"""
+        
         if self.aborting:
             return self
 
@@ -4418,6 +4420,7 @@ class InstaPy:
                        randomize: bool = False,
                        media: str = None,
                        interact: bool = False):
+
         if self.aborting:
             return self
 
@@ -5597,4 +5600,3 @@ class InstaPy:
 
             except Exception as err:
                 self.logger.error("Failed for {} with Error {}".format(pod_post, err))
-

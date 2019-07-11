@@ -36,6 +36,7 @@ from .relationship_tools import get_followers
 from .relationship_tools import get_nonfollowers
 from .database_engine import get_database
 from .quota_supervisor import quota_supervisor
+from .settings import InfluxDBLog
 from .util import is_follow_me
 from .util import get_epoch_time_diff
 from .settings import InfluxDBLog
