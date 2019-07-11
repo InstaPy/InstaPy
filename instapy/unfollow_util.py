@@ -39,7 +39,6 @@ from .quota_supervisor import quota_supervisor
 from .settings import InfluxDBLog
 from .util import is_follow_me
 from .util import get_epoch_time_diff
-from .settings import InfluxDBLog
 
 from selenium.common.exceptions import WebDriverException
 from selenium.common.exceptions import NoSuchElementException

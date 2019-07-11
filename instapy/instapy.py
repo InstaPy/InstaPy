@@ -38,7 +38,6 @@ from .like_util import get_links_for_username
 from .like_util import like_comment
 from .login_util import login_user
 from .settings import Settings
-from .settings import InfluxDBLog
 from .settings import localize_path
 from .settings import InfluxDBLog
 from .print_log_writer import log_follower_num
