@@ -90,8 +90,6 @@ from .pods_util import comment_restriction
 
 from .xpath import read_xpath
 
-from .xpath import read_xpath
-
 # import exceptions
 from selenium.common.exceptions import NoSuchElementException
 from .exceptions import InstaPyError
