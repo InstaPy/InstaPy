@@ -4795,16 +4795,16 @@ class InstaPy:
                 peak_server_calls_hourly and
                 peak_server_calls_daily):
 
-            peaks = {"likes": {"hourly": peak_likes[0],
-                               "daily": peak_likes[1]},
-                     "comments": {"hourly": peak_comments[0],
-                                  "daily": peak_comments[1]},
-                     "follows": {"hourly": peak_follows[0],
-                                 "daily": peak_follows[1]},
-                     "unfollows": {"hourly": peak_unfollows[0],
-                                   "daily": peak_unfollows[1]},
-                     "server_calls": {"hourly": peak_server_calls[0],
-                                      "daily": peak_server_calls[1]}}
+            peaks = { "likes": {"hourly": peak_likes_hourly,
+                               "daily": peak_likes_daily},
+                     "comments": {"hourly": peak_comments_hourly,
+                                  "daily": peak_comments_daily },
+                     "follows": {"hourly": peak_follows_hourly,
+                                 "daily": peak_follows_daily },
+                     "unfollows": {"hourly": peak_unfollows_hourly,
+                                   "daily": peak_unfollows_daily },
+                     "server_calls": {"hourly": peak_server_calls_hourly,
+                                      "daily": peak_server_calls_daily } }
 
             if not isinstance(sleep_after, list):
                 sleep_after = [sleep_after]
