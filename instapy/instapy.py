@@ -5280,19 +5280,16 @@ class InstaPy:
                 self.skip_pod_comments = True
             if skip_comments is False:
                 self.skip_pod_comments = False
-
-            return self
+        else:
+            self.logger.error('badly configured option for skip_comments')
 
         if skip_follows is not None:
             if skip_follows is True:
                 self.skip_pod_follows = True
             if skip_follows is False:
                 self.skip_pod_follows = False
-
-            return self
-
-        """badly configured options if above as failed"""
-        self.logger.error('you have entered an invalid option')
+        else:
+            self.logger.error('badly configured option for skip_follows')
 
         return self
 
