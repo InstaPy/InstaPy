@@ -1210,6 +1210,7 @@ session.remove_follow_requests(amount=200, sleep_delay=600)
 
  with smart_run(session):
      session.set_comments(photo_comments, media='Photo')
+     session.set_pods_config(skip_comments=True)
      session.join_pods()
   ```
 
@@ -1218,6 +1219,8 @@ session.remove_follow_requests(amount=200, sleep_delay=600)
  Topic of the posts to be interacted with. `general` by default.
 
   > Note :  Topics allowed are {'general', 'beauty', 'food', 'travel', 'sports', 'entertainment'}. But it is highly recomended to use 'general' till we gain sufficient users in each of the topics.
+
+  > Note:   You can configure the way you interact with posts on the pods by using set_pods_config with skip_comments (True or False) and skip_follows (True or False)
 
  `engagement_mode`:
  Desided engagement mode for your posts. There are three levels of engagement modes 'light', 'normal' and 'heavy'(`normal` by default). Setting engagement_mode to 'light' encourages approximately 10% of pod members to comment on your post, similarly it's around 30% and 90% for 'normal' and 'heavy' modes respectively. Note: Liking, following or any other kind of engagements doesn't follow these modes.

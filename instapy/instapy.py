@@ -284,6 +284,8 @@ class InstaPy:
 
         self.allowed_pod_topics = ['general', 'beauty', 'food', 'travel', 'sports', 'entertainment']
         self.allowed_pod_engagement_modes = ['light', 'normal', 'heavy']
+        self.skip_pod_comments = False
+        self.skip_pod_follows = False
 
         # stores the features' name which are being used by other features
         self.internal_usage = {}
@@ -5272,6 +5274,28 @@ class InstaPy:
 
         return self
 
+    def set_pods_config(self,skip_comments, skip_follows):
+        if skip_comments is not None:
+            if skip_comments is True:
+                self.skip_pod_comments = True
+            if skip_comments is False:
+                self.skip_pod_comments = False
+
+            return self
+
+        if skip_follows is not None:
+            if skip_follows is True:
+                self.skip_pod_follows = True
+            if skip_follows is False:
+                self.skip_pod_follows = False
+
+            return self
+
+        """badly configured options if above as failed"""
+        self.logger.error('you have entered an invalid option')
+
+        return self
+
     def join_pods(self, topic='general', engagement_mode='normal'):
         """ Join pods """
         if topic not in self.allowed_pod_topics:
@@ -5282,7 +5306,7 @@ class InstaPy:
             self.logger.error('You have entered an invalid engagement_mode for pods, allowed engagement_modes are : {}. Exiting...'.format(self.allowed_pod_engagement_modes))
             return self
 
-        if self.comments is not None and len(self.comments) < 10:
+        if not self.skip_pod_comments and (self.comments is not None and len(self.comments) < 10):
             self.logger.error('You have too few comments, please set at least 10 distinct comments to avoid looking suspicious.')
             return self
 
@@ -5371,7 +5395,7 @@ class InstaPy:
                                 self.ignore_if_contains,
                                 self.logger))
 
-                if user_name != self.username:
+                if not self.skip_pod_follows and user_name != self.username:
                     follow_state, msg = follow_user(self.browser,
                                                     "post",
                                                     self.username,
@@ -5405,7 +5429,7 @@ class InstaPy:
                                             self.comment_times,
                                             self.logger)
 
-                    if commenting and not commenting_restricted:
+                    if not self.skip_pod_comments and commenting and not commenting_restricted:
                         comments = self.fetch_smart_comments(
                                                         is_video,
                                                         temp_comments=[])
