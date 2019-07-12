@@ -5310,20 +5310,36 @@ class InstaPy:
                 try:
                     web_address_navigator(self.browser, post_link)
                     sleep(2)
+                    # FIXME: datetime HTML TIME element is different
+                    # than the posting date
                     time_element = self.browser.find_element_by_xpath("//div/a/time")
                     post_datetime_str = time_element.get_attribute('datetime')
                     post_datetime = datetime.strptime(post_datetime_str, "%Y-%m-%dT%H:%M:%S.%fZ")
                     postid = post_link.split('/')[4]
-                    self.logger.info("Post: {}, Instaposted at: {}".format(postid, post_datetime))
-                    share_restricted = share_with_pods_restriction("read", postid,
-                                            self.share_times,
-                                            self.logger)
-                    if datetime.now() - post_datetime < timedelta(hours=12, minutes=30) and not share_restricted:
+                    self.logger.info("Post: {}, Instaposted at: {}"
+                                     .format(postid, post_datetime))
+                    share_restricted = share_with_pods_restriction(
+                        "read",
+                        postid,
+                        self.share_times,
+                        self.logger)
+
+                    if (datetime.now() - post_datetime
+                       < timedelta(hours=Settings.pods_active_post_hour_limit)
+                       and not share_restricted):
+
                         my_recent_post_ids.append(postid)
-                        if share_my_post_with_pods(postid, topic, engagement_mode, self.logger):
-                            share_with_pods_restriction("write", postid, None, self.logger)
+                        if share_my_post_with_pods(postid,
+                                                   topic,
+                                                   engagement_mode,
+                                                   self.logger):
+                            share_with_pods_restriction("write",
+                                                        postid,
+                                                        None,
+                                                        self.logger)
                 except Exception as err:
-                    self.logger.error("Failed for {} with Error {}".format(post_link, err))
+                    self.logger.error("Failed for {} with Error {}"
+                                      .format(post_link, err))
 
             if len(my_recent_post_ids) > 0:
                 self.logger.info("I have recent post(s): {}, so I will now help pod members actively.".format(my_recent_post_ids))

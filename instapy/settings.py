@@ -80,6 +80,10 @@ class Settings:
     # This is where currently the pods server is hosted
     pods_server_endpoint = 'https://us-central1-instapy-pods.cloudfunctions.net'
 
+    # Hour threshold to upload Pods Post ID's
+    pods_active_post_hour_limit = 12
+
+
 class Storage:
     """ Globally accessible standalone storage """
 
@@ -93,6 +97,7 @@ class Selectors:
     """
 
     likes_dialog_body_xpath = (
-        read_xpath("class_selectors","likes_dialog_body_xpath"))
+        read_xpath("class_selectors", "likes_dialog_body_xpath"))
 
-    likes_dialog_close_xpath = read_xpath("class_selectors","likes_dialog_close_xpath")
+    likes_dialog_close_xpath = read_xpath(
+        "class_selectors", "likes_dialog_close_xpath")
