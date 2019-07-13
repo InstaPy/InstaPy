@@ -14,8 +14,8 @@ xpath['bypass_suspicious_login'] = {
     "send_security_code_button":"//button[text()='Send Security Code']",
     "submit_security_code_button":"//button[text()='Submit']",
     "this_was_me_button":"//button[@name='choice'][text()='This Was Me']",
-    "wrong_login":["//p[text()='Please check the code we sent you and try ","again.']"]
-} #multiline:  wrong login
+    "wrong_login":"//p[text()='Please check the code we sent you and try again.']"
+}
 
 xpath['class_selectors'] = {
     "likes_dialog_body_xpath":"//h1[text()='Likes']/../../following-sibling::div/div",
