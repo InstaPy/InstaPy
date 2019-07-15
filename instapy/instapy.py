@@ -501,7 +501,7 @@ class InstaPy:
 
     def set_do_comment(self, enabled: bool = False, percentage: int = 0):
         """
-         Defines if images should be commented or not.
+        Defines if images should be commented or not.
         E.g. percentage=25 means every ~4th picture will be commented.
         """
 
@@ -516,7 +516,10 @@ class InstaPy:
 
 
     def set_comments(self, comments: list = [], media: str = None):
-        """Changes the possible comments"""
+        """
+        Sets the possible posted comments.
+        'What an amazing shot :heart_eyes: !' is an example for using emojis.
+        """
         if self.aborting:
             return self
 
