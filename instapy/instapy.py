@@ -210,6 +210,8 @@ class InstaPy:
         self.automatedFollowedPool = {"all": [], "eligible": []}
         self.do_like = False
         self.like_percentage = 0
+        self.do_story = False
+        self.story_percentage = 0
         self.smart_hashtags = []
         self.smart_location_hashtags = []
 
@@ -515,6 +517,16 @@ class InstaPy:
         self.like_percentage = min(percentage,100)
 
         return self
+
+    def set_do_story(self, enabled=False, percentage=0):
+        if self.aborting:
+            return self
+
+        self.do_story = enabled
+        self.story_percentage = min(percentage,100)
+
+        return self
+
 
     def set_dont_like(self, tags=None):
         """Changes the possible restriction tags, if one of this
@@ -2205,6 +2217,7 @@ class InstaPy:
         followed = 0
         already_followed = 0
         not_valid_users = 0
+        story_watched = 0
 
         self.quotient_breach = False
 
@@ -2248,17 +2261,19 @@ class InstaPy:
                               not_dont_include)
                 liking = (random.randint(0, 100) <= self.like_percentage)
 
+                story = (random.randint(0,100) <= self.story_percentage and self.do_story)
+                print("debug: story value="+str(story))
                 counter += 1
 
                 # if we have only one image to like/comment
                 if commenting and not liking and amount == 1:
                     continue
 
-                if following or commenting or liking:
+                if following or commenting or liking or story:
                     self.logger.info(
                         'username actions: following={} commenting={} '
-                        'liking={}'.format(
-                            following, commenting, liking))
+                        'liking={} story={}'.format(
+                            following, commenting, liking, story))
                     break
 
                 # if for some reason we have no actions on this user
@@ -2334,6 +2349,7 @@ class InstaPy:
                                           self.comment_percentage and
                                           self.do_comment and
                                           not_dont_include)
+                            story = (random.randint(0, 100) <= self.story_percentage and self.do_story)
 
                         # like
                         if self.do_like and liking and self.delimit_liking:
@@ -2446,6 +2462,15 @@ class InstaPy:
                 self.logger.info('--> Not following')
                 sleep(1)
 
+            #watch story if present
+            if story:
+                watched = watch_story_for_user(self.browser, username)
+                if watched:
+                    self.logger.info('--> story watched')
+                    story_watched = story_watched + 1
+                else:
+                    self.logger.info('--> no story to watch')
+
             if liked_img < amount:
                 self.logger.info('-------------')
                 self.logger.info("--> Given amount not fullfilled, image pool "
@@ -2464,6 +2489,7 @@ class InstaPy:
             self.logger.info('Commented: {}'.format(commented))
             self.logger.info('Followed: {}'.format(followed))
             self.logger.info('Already Followed: {}'.format(already_followed))
+            self.logger.info('Story(ies) watched: {}'.format(story_watched))
             self.logger.info('Inappropriate: {}'.format(inap_img))
             self.logger.info('Not valid users: {}\n'.format(not_valid_users))
 
@@ -5450,5 +5476,30 @@ class InstaPy:
                                         tag,
                                         self.logger)
                 except NoSuchElementException:
-                    self.logger.info('No storiesm skipping this tag')
+                    self.logger.info('No stories skipping this tag')
+                    continue
+
+    def story_by_users(self, browser, users=None):
+        """ Watch stories for specific user(s)"""
+        if self.aborting:
+            return self
+
+        if users is None:
+            self.logger.info("No users passed to story_by_users")
+        else:
+            # iterate over available users
+            for index, user in enumerate(users):
+                #Quota Supervisor peak check
+                if self.quotient_breach:
+                    break
+
+                #inform user whats happening
+                self.logger.info('Loading stories view...')
+                self.logger.info('Tag [{}/{}]'.format(index + 1, len(users)))
+                self.logger.info('Loading stories with User --> {}'.format(user.encode('utf-8')))
+
+                try:
+                    watch_story_for_user(self.browser, user, self.logger)
+                except NoSuchElementException:
+                    self.logger.info('No stories skipping this user')
                     continue
