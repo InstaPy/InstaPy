@@ -35,6 +35,7 @@ from .like_util import get_links_for_location
 from .like_util import like_image
 from .like_util import get_links_for_username
 from .like_util import like_comment
+from .story_util import watch_story_for_tag
 from .login_util import login_user
 from .settings import Settings
 from .settings import localize_path
@@ -5423,3 +5424,31 @@ class InstaPy:
             except Exception as err:
                 self.logger.error("Failed for {} with Error {}".format(pod_post, err))
 
+
+    def story_by_tags(self,
+                      tags=None):
+        """Watch stories for specific tag(s)"""
+        if self.aborting:
+            return self
+
+        watched=0
+
+        if tags is not None:
+            for index, tag in enumerate(tags):
+                if self.quotient_breach:
+                    break
+
+                self.logger.info('Tag [{}/{}]'.format(index + 1, len(tags)))
+                self.logger.info('--> {}'.format(tag.encode('utf-8')))
+
+                try:
+                    watch_story_for_tag(self.browser,
+                                               tag,
+                                               self.logger)
+                except NoSuchElementException:
+                    self.logger.info('No storiesm skipping this tag')
+                    continue
+
+
+        else:
+                logger.info("No tags passed to story_by_tags")
