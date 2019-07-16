@@ -1227,7 +1227,15 @@ session.remove_follow_requests(amount=200, sleep_delay=600)
 Will watch up to 50 stories published with specified tags
 
 ```python
-session.story_by_tag(['tag1', 'tag2'])
+session.story_by_tags(['tag1', 'tag2'])
+```
+
+### Watch stories from users
+
+Take a list of users and try to watch their stories
+
+```python
+session.story_by_users(['user1', 'user2'])
 ```
 
 ---
