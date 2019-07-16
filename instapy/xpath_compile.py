@@ -198,6 +198,6 @@ xpath['watch_story_for_tag'] = {
 }
 
 xpath['watch_story_for_user'] = {
-    "story_button":"//section/main/div/header/div/div",
+    "explore_stories":"//section/main/div/header/div/div",
     "wait_finish":"//section/div/div/section/div[2]/button[3]"
 }

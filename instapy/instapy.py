@@ -2262,7 +2262,7 @@ class InstaPy:
                 liking = (random.randint(0, 100) <= self.like_percentage)
 
                 story = (random.randint(0,100) <= self.story_percentage and self.do_story)
-                print("debug: story value="+str(story))
+
                 counter += 1
 
                 # if we have only one image to like/comment
@@ -2464,8 +2464,8 @@ class InstaPy:
 
             #watch story if present
             if story:
-                watched = watch_story_for_user(self.browser, username)
-                if watched:
+                watched = self.story_by_users([username])
+                if watched>0:
                     self.logger.info('--> story watched')
                     story_watched = story_watched + 1
                 else:
@@ -5479,8 +5479,9 @@ class InstaPy:
                     self.logger.info('No stories skipping this tag')
                     continue
 
-    def story_by_users(self, browser, users=None):
+    def story_by_users(self, users=None):
         """ Watch stories for specific user(s)"""
+        watched=0
         if self.aborting:
             return self
 
@@ -5500,6 +5501,8 @@ class InstaPy:
 
                 try:
                     watch_story(self.browser, user, self.logger, "user")
+                    watched = watched+1
                 except NoSuchElementException:
                     self.logger.info('No stories skipping this user')
                     continue
+        return watched
