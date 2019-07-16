@@ -5427,28 +5427,28 @@ class InstaPy:
 
     def story_by_tags(self,
                       tags=None):
-        """Watch stories for specific tag(s)"""
+        """ Watch stories for specific tag(s) """
         if self.aborting:
             return self
 
-        watched=0
-
-        if tags is not None:
+        if tags is None:
+            self.logger.info("No tags passed to story_by_tags")
+        else:
+            # iterate over available tags
             for index, tag in enumerate(tags):
+                # Quota Supervisor peak check
                 if self.quotient_breach:
                     break
 
+                # inform user whats happening
+                self.logger.info('Loading stories view...')
                 self.logger.info('Tag [{}/{}]'.format(index + 1, len(tags)))
-                self.logger.info('--> {}'.format(tag.encode('utf-8')))
+                self.logger.info('Loading stories with Tag --> {}'.format(tag.encode('utf-8')))
 
                 try:
                     watch_story_for_tag(self.browser,
-                                               tag,
-                                               self.logger)
+                                        tag,
+                                        self.logger)
                 except NoSuchElementException:
                     self.logger.info('No storiesm skipping this tag')
                     continue
-
-
-        else:
-                logger.info("No tags passed to story_by_tags")

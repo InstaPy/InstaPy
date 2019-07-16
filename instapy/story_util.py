@@ -1,16 +1,17 @@
+import time
+from random import randint
 from selenium.common.exceptions import WebDriverException
 from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import ElementNotVisibleException
-
 from .util import click_element
 from .util import web_address_navigator
-
 from .xpath import read_xpath
-import time
 
 """not used fort the moment, more coding needed to understand this"""
+
+
 def get_story_data(browser, tag, logger):
-    query_hash="cda12de4f7fd3719c0569ce03589f4c4"
+    query_hash = "cda12de4f7fd3719c0569ce03589f4c4"
 
     graphql_query_URL = "https://www.instagram.com/graphql/query/?query_hash" \
                         "={}".format(query_hash)+"&variables={\"reel_ids\":[],\"tag_names\":[\"{}\"],\"location_ids\":[]," \
@@ -20,31 +21,32 @@ def get_story_data(browser, tag, logger):
 
     print(graphql_query_URL)
 
-    web_address_navigator(browser,graphql_query_URL)
+    web_address_navigator(browser, graphql_query_URL)
 
 
 def watch_story_for_tag(browser, tag, logger):
-
-#    get_story_data(browser, tag, logger)
-
+    """ TODO: add function description here """
     story_link = "https://www.instagram.com/explore/tags/{}".format(tag)
     web_address_navigator(browser, story_link)
 
-    """wait for the page to load"""
-    time.sleep(4)
+    # wait for the page to load
+    time.sleep(randint(2, 6))
 
-
-    story_elem = browser.find_element_by_xpath(read_xpath(watch_story_for_tag.__name__, "explore_stories"))
+    story_elem = browser.find_element_by_xpath(
+        read_xpath(watch_story_for_tag.__name__, "explore_stories"))
 
     if not story_elem:
         logger.info("'{}' tag POSSIBLY does not exist", tag)
         raise NoSuchElementException
     else:
-        click_element(browser,story_elem)
+        # load stories/view stories
+        click_element(browser, story_elem)
 
+    # watch stories until there is no more stories available
+    logger.info('Watching stories...')
     while True:
-        button_elem = browser.find_element_by_xpath(read_xpath(watch_story_for_tag.__name__,"wait_finish"))
-        if not button_elem:
-            break
-        else:
-            time.sleep(5)
+        try:
+            browser.find_element_by_xpath(
+                read_xpath(watch_story_for_tag.__name__, "wait_finish"))
+        except NoSuchElementException:
+            time.sleep(randint(2, 6))
