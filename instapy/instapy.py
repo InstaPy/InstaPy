@@ -5432,7 +5432,7 @@ class InstaPy:
             return self
 
         if tags is None:
-            self.logger.info("No tags passed to story_by_tags")
+            self.logger.info("No Tags set")
         else:
             # iterate over available tags
             for index, tag in enumerate(tags):
@@ -5450,5 +5450,5 @@ class InstaPy:
                                         tag,
                                         self.logger)
                 except NoSuchElementException:
-                    self.logger.info('No storiesm skipping this tag')
+                    self.logger.info('No stories skipping {} Tag'.format(tag.encode('utf-8')))
                     continue
