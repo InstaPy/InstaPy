@@ -1,8 +1,6 @@
 import time
 from random import randint
-from selenium.common.exceptions import WebDriverException
 from selenium.common.exceptions import NoSuchElementException
-from selenium.common.exceptions import ElementNotVisibleException
 from .util import click_element
 from .util import web_address_navigator
 from .xpath import read_xpath
@@ -26,7 +24,10 @@ def get_story_data(browser, tag, logger):
 
 
 def watch_story(browser, elem, logger, type):
-    """ Watch stories published under specific tags """
+    """
+        Load Tag Stories, and watch it until there is no more stores
+        to watch for the related element
+    """
 
     if type is "tag":
         story_link = "https://www.instagram.com/explore/tags/{}".format(elem)

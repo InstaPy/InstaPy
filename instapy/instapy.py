@@ -5458,7 +5458,7 @@ class InstaPy:
             return self
 
         if tags is None:
-            self.logger.info("No tags passed to story_by_tags")
+            self.logger.info("No Tags set")
         else:
             # iterate over available tags
             for index, tag in enumerate(tags):
@@ -5495,7 +5495,7 @@ class InstaPy:
 
                 #inform user whats happening
                 self.logger.info('Loading stories view...')
-                self.logger.info('Tag [{}/{}]'.format(index + 1, len(users)))
+                self.logger.info('User [{}/{}]'.format(index + 1, len(users)))
                 self.logger.info('Loading stories with User --> {}'.format(user.encode('utf-8')))
 
                 try:
