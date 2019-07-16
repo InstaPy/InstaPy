@@ -35,7 +35,7 @@ from .like_util import get_links_for_location
 from .like_util import like_image
 from .like_util import get_links_for_username
 from .like_util import like_comment
-from .story_util import watch_story_for_tag
+from .story_util import watch_story
 from .login_util import login_user
 from .settings import Settings
 from .settings import localize_path
@@ -5472,9 +5472,9 @@ class InstaPy:
                 self.logger.info('Loading stories with Tag --> {}'.format(tag.encode('utf-8')))
 
                 try:
-                    watch_story_for_tag(self.browser,
+                    watch_story(self.browser,
                                         tag,
-                                        self.logger)
+                                        self.logger, "tag")
                 except NoSuchElementException:
                     self.logger.info('No stories skipping this tag')
                     continue
@@ -5499,7 +5499,7 @@ class InstaPy:
                 self.logger.info('Loading stories with User --> {}'.format(user.encode('utf-8')))
 
                 try:
-                    watch_story_for_user(self.browser, user, self.logger)
+                    watch_story(self.browser, user, self.logger, "user")
                 except NoSuchElementException:
                     self.logger.info('No stories skipping this user')
                     continue

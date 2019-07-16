@@ -40,10 +40,10 @@ def watch_story(browser, elem, logger, type):
     time.sleep(randint(2, 6))
 
     story_elem = browser.find_element_by_xpath(
-        read_xpath(watch_story.__name__+"_{}".format(type), "explore_stories"))
+        read_xpath(watch_story.__name__+"_for_{}".format(type), "explore_stories"))
 
     if not story_elem:
-        logger.info("'{}' tag POSSIBLY does not exist", tag)
+        logger.info("'{}' {} POSSIBLY does not exist", elem, type)
         raise NoSuchElementException
     else:
         # load stories/view stories
@@ -55,7 +55,8 @@ def watch_story(browser, elem, logger, type):
         try:
             browser.find_element_by_xpath(
                 read_xpath(watch_story.__name__+"_for_{}".format(type), "wait_finish"))
-        except NoSuchElementException:
             time.sleep(randint(2, 6))
+        except NoSuchElementException:
+            break
 
 
