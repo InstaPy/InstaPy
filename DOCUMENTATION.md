@@ -1222,6 +1222,14 @@ session.remove_follow_requests(amount=200, sleep_delay=600)
  `engagement_mode`:
  Desided engagement mode for your posts. There are three levels of engagement modes 'light', 'normal' and 'heavy'(`normal` by default). Setting engagement_mode to 'light' encourages approximately 10% of pod members to comment on your post, similarly it's around 30% and 90% for 'normal' and 'heavy' modes respectively. Note: Liking, following or any other kind of engagements doesn't follow these modes.
 
+### Watch stories by Tags
+
+Will watch up to 50 stories published with specified tags
+
+```python
+session.story_by_tag(['tag1', 'tag2'])
+```
+
 ---
 
 <br /> 
