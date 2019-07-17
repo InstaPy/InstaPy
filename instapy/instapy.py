@@ -737,7 +737,7 @@ class InstaPy:
 
         if not isinstance(character_set, list):
             character_set = [character_set]
-        
+
         for chr_set in character_set:
             if (chr_set not in ['LATIN', 'GREEK', 'CYRILLIC', 'ARABIC',
                                       'HEBREW', 'CJK', 'HANGUL', 'HIRAGANA',
@@ -746,10 +746,10 @@ class InstaPy:
                 ch_set_name = 'LATIN'
             else:
                 ch_set_name = chr_set
-                
+
             if ch_set_name not in char_set:
                 char_set.append(ch_set_name)
-                
+
         self.mandatory_language = enabled
         self.mandatory_character = char_set
 
@@ -1124,14 +1124,14 @@ class InstaPy:
                             # disable following temporarily 
                             # cos the user is already followed
                             self.do_follow = False
-                            
+
                             # disable revalidating user in interact_by_users
                             with self.feature_in_feature("interact_by_users", False):
                                 self.interact_by_users(acc_to_follow,
                                                        self.user_interact_amount,
                                                        self.user_interact_random,
                                                        self.user_interact_media)
-                            
+
                             # revert back to original `self.do_follow` value
                             self.do_follow = original_do_follow
 
@@ -1940,7 +1940,7 @@ class InstaPy:
                     self.logger.error('Invalid Page: {}'.format(err))
 
             self.logger.info('Tag: {}'.format(tag.encode('utf-8')))
-        
+
         self.logger.info('Liked: {}'.format(liked_img))
         self.logger.info('Already Liked: {}'.format(already_liked))
         self.logger.info('Commented: {}'.format(commented))
@@ -5450,7 +5450,6 @@ class InstaPy:
             except Exception as err:
                 self.logger.error("Failed for {} with Error {}".format(pod_post, err))
 
-
     def story_by_tags(self, tags: list = None):
         """ Watch stories for specific tag(s) """
         if self.aborting:
@@ -5472,15 +5471,14 @@ class InstaPy:
 
                 try:
                     watch_story(self.browser,
-                                        tag,
-                                        self.logger, "tag")
+                                tag,
+                                self.logger, "tag")
                 except NoSuchElementException:
                     self.logger.info('No stories skipping this tag')
                     continue
 
     def story_by_users(self, users: list = None):
         """ Watch stories for specific user(s)"""
-        watched=0
         if self.aborting:
             return self
 
@@ -5489,19 +5487,17 @@ class InstaPy:
         else:
             # iterate over available users
             for index, user in enumerate(users):
-                #Quota Supervisor peak check
+                # Quota Supervisor peak check
                 if self.quotient_breach:
                     break
 
-                #inform user whats happening
+                # inform user whats happening
                 self.logger.info('Loading stories view...')
                 self.logger.info('User [{}/{}]'.format(index + 1, len(users)))
                 self.logger.info('Loading stories with User --> {}'.format(user.encode('utf-8')))
 
                 try:
                     watch_story(self.browser, user, self.logger, "user")
-                    watched = watched+1
                 except NoSuchElementException:
                     self.logger.info('No stories skipping this user')
                     continue
-        return watched
