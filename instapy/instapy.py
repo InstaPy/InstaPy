@@ -518,7 +518,7 @@ class InstaPy:
 
         return self
 
-    def set_do_story(self, enabled=False, percentage=0):
+    def set_do_story(self, enabled: bool = False, percentage: int = 0):
         if self.aborting:
             return self
 
@@ -5451,8 +5451,7 @@ class InstaPy:
                 self.logger.error("Failed for {} with Error {}".format(pod_post, err))
 
 
-    def story_by_tags(self,
-                      tags=None):
+    def story_by_tags(self, tags: list = None):
         """ Watch stories for specific tag(s) """
         if self.aborting:
             return self
@@ -5479,7 +5478,7 @@ class InstaPy:
                     self.logger.info('No stories skipping this tag')
                     continue
 
-    def story_by_users(self, users=None):
+    def story_by_users(self, users: list = None):
         """ Watch stories for specific user(s)"""
         watched=0
         if self.aborting:
