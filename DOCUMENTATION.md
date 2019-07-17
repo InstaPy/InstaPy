@@ -1222,6 +1222,24 @@ session.remove_follow_requests(amount=200, sleep_delay=600)
  `engagement_mode`:
  Desided engagement mode for your posts. There are three levels of engagement modes 'light', 'normal' and 'heavy'(`normal` by default). Setting engagement_mode to 'light' encourages approximately 10% of pod members to comment on your post, similarly it's around 30% and 90% for 'normal' and 'heavy' modes respectively. Note: Liking, following or any other kind of engagements doesn't follow these modes.
 
+### Activate story watching while interacting
+
+  Will add story watching while interacting with users
+
+```python
+ session = Instapy()
+ 
+ with smart_run(session):
+    session.set_do_story(enabled=True,percentage=70)
+```
+
+  #### Parameters
+  `enabled`:
+  Can be True or False
+  
+  `percentage`:
+  The amount of users where InstaPy will watch stories 
+
 ### Watch stories by Tags
 
 Will watch up to 50 stories published with specified tags
