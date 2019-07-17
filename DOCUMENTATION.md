@@ -1232,7 +1232,7 @@ session.set_do_story(enabled = True, percentage = 70)
 
 ### Watch stories by Tags
 
-Will watch up to 50 stories published with specified tags.
+Will watch up to 20 stories published with specified tags.
 
 ```python
 session.story_by_tags(['tag1', 'tag2'])
@@ -1240,7 +1240,7 @@ session.story_by_tags(['tag1', 'tag2'])
 
 ### Watch stories from users
 
-Take a list of users and try to watch their stories.
+Take a list of users and watch their stories.
 
 ```python
 session.story_by_users(['user1', 'user2'])
