@@ -2217,7 +2217,6 @@ class InstaPy:
         followed = 0
         already_followed = 0
         not_valid_users = 0
-        story_watched = 0
 
         self.quotient_breach = False
 
@@ -2464,12 +2463,7 @@ class InstaPy:
 
             #watch story if present
             if story:
-                watched = self.story_by_users([username])
-                if watched>0:
-                    self.logger.info('--> story watched')
-                    story_watched = story_watched + 1
-                else:
-                    self.logger.info('--> no story to watch')
+                self.story_by_users([username])
 
             if liked_img < amount:
                 self.logger.info('-------------')
@@ -2489,7 +2483,6 @@ class InstaPy:
             self.logger.info('Commented: {}'.format(commented))
             self.logger.info('Followed: {}'.format(followed))
             self.logger.info('Already Followed: {}'.format(already_followed))
-            self.logger.info('Story(ies) watched: {}'.format(story_watched))
             self.logger.info('Inappropriate: {}'.format(inap_img))
             self.logger.info('Not valid users: {}\n'.format(not_valid_users))
 

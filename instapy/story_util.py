@@ -1,6 +1,7 @@
 import time
 from random import randint
 from selenium.common.exceptions import NoSuchElementException
+from selenium.common.exceptions import WebDriverException
 from .util import click_element
 from .util import web_address_navigator
 from .util import update_activity
@@ -25,9 +26,14 @@ def get_story_data(browser, elem: str, action_type: str, logger) -> dict:
                             "\"stories_video_dash_manifest\":false}"
     else:
         # if we are on a user page, we need to find out it's profile id and fill it into reel_ids
-        elem_id = browser.execute_script(
-            "return window._sharedData.entry_data."
-            "ProfilePage[0].graphql.user.id")
+        try:
+            elem_id = browser.execute_script(
+                "return window._sharedData.entry_data."
+                "ProfilePage[0].graphql.user.id")
+        except WebDriverException:
+            logger.error("---> Sorry, this page isn't available!\t~either " + \
+                           "link is broken or page is removed\n")
+            return {'status': 'not_ok', 'reels_cnt': 0}
         graphql_query_url = "https://www.instagram.com/graphql/query/?query_hash" + \
                             "={}".format(query_hash) + \
                             "&variables={{\"reel_ids\":[\"{}\"],\"tag_names\":[],\"location_ids\":[],".format(elem_id) + \
@@ -68,22 +74,24 @@ def get_story_data(browser, elem: str, action_type: str, logger) -> dict:
     if response['status'] == 'ok':
         # we got a correct response from the server
         # check how many reels we got
-        reels_cnt = len(response['data']['reels_media'])
+        media_cnt = len(response['data']['reels_media'])
 
-        if reels_cnt == 0:
+        if media_cnt == 0:
             # then nothing to watch, we received no stories
             return {'status': 'ok', 'reels_cnt': 0}
         else:
             # we got content
             # check if there is something new to watch otherwise we just return 0
-            if response['data']['reels_media'][0]['seen'] is None:
-                # nothing has been seen so reel_cnt = len(response['data']['reels_media'])
-                reel_cnt = len(response['data']['reels_media'])
-            elif response['data']['reels_media'][0]['seen'] < response['data']['reels_media'][0]['latest_reel_media']:
-                for item in response['data']['reels_media'][0]['items']:
-                    if item['taken_at_timestamp'] > response['data']['reels_media'][0]['seen']:
-                        # this is new and we haven't seen it
-                        reels_cnt += 1
+            if (action_type == 'tag') or (response['data']['reels_media'][0]['seen'] is None):
+                #there is no seen in tag, so we just respond with everything we got
+                return {'status': 'ok', 'reels_cnt': len(response['data']['reels_media'][0]['items'])}
+
+            if response['data']['reels_media'][0]['seen'] is not None:
+                if response['data']['reels_media'][0]['seen'] < response['data']['reels_media'][0]['latest_reel_media']:
+                    for item in response['data']['reels_media'][0]['items']:
+                        if item['taken_at_timestamp'] > response['data']['reels_media'][0]['seen']:
+                            # this is new and we haven't seen it
+                            reels_cnt += 1
 
             return {'status': 'ok', 'reels_cnt': reels_cnt}
     else:
@@ -118,7 +126,8 @@ def watch_story(browser, elem: str, logger, action_type: str):
 
     if story_data['reels_cnt'] == 0:
         # nothing to watch, there is no stories
-        return 0
+        logger.info('no stories to watch (either there is none) or we have already watched everything')
+        return
 
     story_elem = browser.find_element_by_xpath(
         read_xpath(watch_story.__name__ + "_for_{}".format(action_type), "explore_stories"))
