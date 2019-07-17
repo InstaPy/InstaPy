@@ -191,3 +191,13 @@ xpath['unfollow'] = {
     "following_link":'//section//ul//li[3]',
     "find_dialog_box":"//div[text()='Following']/../../../following-sibling::div"
 }
+
+xpath['watch_story_for_tag'] = {
+    "explore_stories":"//section/main/header/div[1]/div",
+    "wait_finish":"//section/div/div/section/div[2]/button[2]"
+}
+
+xpath['watch_story_for_user'] = {
+    "explore_stories":"//section/main/div/header/div/div",
+    "wait_finish":"//section/div/div/section/div[2]/button[3]"
+}
