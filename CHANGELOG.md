@@ -8,6 +8,9 @@ _The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 ### Fixed
 - xpath compile 'wrong_login' value
 
+### Added
+- feature watch stories
+
 
 ## [0.5.5] - 2019-07-11
 ### Fixed
