@@ -1224,25 +1224,15 @@ session.remove_follow_requests(amount=200, sleep_delay=600)
 
 ### Activate story watching while interacting
 
-  Will add story watching while interacting with users
+Will add story watching while interacting with users
 
 ```python
- session = Instapy()
- 
- with smart_run(session):
-    session.set_do_story(enabled=True,percentage=70)
+session.set_do_story(enabled = True, percentage = 70)
 ```
-
-  #### Parameters
-  `enabled`:
-  Can be True or False
-  
-  `percentage`:
-  The amount of users where InstaPy will watch stories 
 
 ### Watch stories by Tags
 
-Will watch up to 50 stories published with specified tags
+Will watch up to 50 stories published with specified tags.
 
 ```python
 session.story_by_tags(['tag1', 'tag2'])
@@ -1250,7 +1240,7 @@ session.story_by_tags(['tag1', 'tag2'])
 
 ### Watch stories from users
 
-Take a list of users and try to watch their stories
+Take a list of users and try to watch their stories.
 
 ```python
 session.story_by_users(['user1', 'user2'])
