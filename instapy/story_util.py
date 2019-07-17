@@ -62,7 +62,6 @@ def get_story_data(browser, elem: str, action_type: str, logger) -> dict:
 
     data = s.get(graphql_query_url)
     response = data.json()
-    print(response)
     update_activity()
 
     reels_cnt = 0
