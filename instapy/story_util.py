@@ -61,6 +61,17 @@ def get_story_data(browser, elem, action_type, logger):
 
     response = s.get(graphql_query_URL)
 
+    if response['status'] == 'ok':
+        #we got a correct response from the server
+        #check how many reels we got
+        reels = len(response['data']['reels_media'])
+
+        if reels == 0:
+            #then nothing to watch, we receive no stories
+        else:
+            #we got content
+    
+
     #we have the json describing the stories
     #output the amount of segments, total time, check if there is anything new
     #in case of tags, the users
