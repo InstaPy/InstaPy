@@ -5276,15 +5276,9 @@ class InstaPy:
 
     def set_pods_config(self,skip_comments: bool=False, skip_follows: bool=False):
         """ Function to configure pods"""
-        if skip_comments is True:
-            self.skip_pod_comments = True
-        if skip_comments is False:
-            self.skip_pod_comments = False
 
-        if skip_follows is True:
-            self.skip_pod_follows = True
-        if skip_follows is False:
-            self.skip_pod_follows = False
+        self.skip_pod_comments = skip_comments
+        self.skip_pod_follows = skip_follows
 
         return self
 
