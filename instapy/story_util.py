@@ -45,26 +45,26 @@ def get_story_data(browser, elem: str, action_type: str, logger) -> dict:
     s = requests.Session()
 
     for cookie in cookies:
-        required_args = {
-            'name': cookie['name'],
-            'value': cookie['value']
-        }
         if (cookie['name'] == "urlgen") or (cookie['name'] == "rur"):
-            optional_args = {
+            all_args = {
+                'name': cookie['name'],
+                'value': cookie['value'],
                 'domain': cookie['domain'],
                 'secure': cookie['secure'],
                 'rest': {'HttpOnly': cookie['httpOnly']},
                 'path': cookie['path']
             }
         else:
-            optional_args = {
+            all_args = {
+                'name': cookie['name'],
+                'value': cookie['value'],
                 'domain': cookie['domain'],
                 'secure': cookie['secure'],
                 'rest': {'HttpOnly': cookie['httpOnly']},
                 'path': cookie['path'],
                 'expires': cookie['expiry']
             }
-        s.cookies.set(**required_args, **optional_args)
+        s.cookies.set(**all_args)
 
     data = s.get(graphql_query_url)
     response = data.json()
