@@ -59,12 +59,11 @@ xpath['find_user_id'] = {
 }
 
 xpath['get_active_users'] = {
-    "latest_posts":"//div[contains(@class, '_9AhH0')]",
-    "likers_count":"//div[contains(@class,'Nm9Fw')]/child::button/span",
-    "likes_button":"//div[contains(@class,'Nm9Fw')]/child::button",
-    "next_button":  ["//a[contains(@class, 'HBoOv')]",
-                    "[text()='Next']"],
-    "topCount_elements":"//span[contains(@class,'g47SY')]"
+    "latest_posts": "//div[contains(@class, '_9AhH0')]",
+    "likers_count": "//div[contains(@class,'Nm9Fw')]/child::button/span",
+    "likes_button": "//div[contains(@class,'Nm9Fw')]/child::button",
+    "next_button": "//a[text()='Next']",
+    "topCount_elements": "//span[contains(@class,'g47SY')]"
 } #multiline:  next_button
 
 xpath['get_buttons_from_dialog'] = {
