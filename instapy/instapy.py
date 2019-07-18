@@ -5274,11 +5274,12 @@ class InstaPy:
 
         return self
 
-    def set_pods_config(self,skip_comments: bool=False, skip_follows: bool=False):
+    def set_pods_config(self,skip_comments: bool = False, skip_follows: bool = False):
         """ Function to configure pods"""
 
-        self.skip_pod_comments = skip_comments
-        self.skip_pod_follows = skip_follows
+        # both parameters can never be None
+        self.skip_pod_comments = skip_comments or False
+        self.skip_pod_follows = skip_follows or False
 
         return self
 
