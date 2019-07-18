@@ -103,7 +103,7 @@ def get_story_data(browser, elem: str, action_type: str, logger) -> dict:
     #
 
 
-def watch_story(browser, elem: str, logger, action_type: str):
+def watch_story(browser, elem: str, logger, action_type: str) -> int:
     """
         Load Stories, and watch it until there is no more stores
         to watch for the related element
@@ -127,7 +127,7 @@ def watch_story(browser, elem: str, logger, action_type: str):
     if story_data['reels_cnt'] == 0:
         # nothing to watch, there is no stories
         logger.info('no stories to watch (either there is none) or we have already watched everything')
-        return
+        return 0
 
     story_elem = browser.find_element_by_xpath(
         read_xpath(watch_story.__name__ + "_for_{}".format(action_type), "explore_stories"))
@@ -151,7 +151,10 @@ def watch_story(browser, elem: str, logger, action_type: str):
 
     if story_data['reels_cnt'] == 0:
         logger.info('no stories to watch (either there is none) or we have already watched everything')
+        return 0
 
     logger.info('watched {} reels from {}: {}'.format(story_data['reels_cnt'], action_type, elem.encode('utf-8')))
+
+    return story_data['reels_cnt']
 
 

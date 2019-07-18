@@ -198,6 +198,8 @@ class InstaPy:
         self.not_valid_users = 0
         self.video_played = 0
         self.already_Visited = 0
+        self.stories_watched = 0
+        self.reels_watched = 0
 
         self.follow_times = 1
         self.share_times = 1
@@ -4769,6 +4771,7 @@ class InstaPy:
                 "\t|> REPLIED to {} comments\n"
                 "\t|> INAPPROPRIATE images: {}\n"
                 "\t|> NOT VALID users: {}\n"
+                "\t|> WATCHED {} story(ies)  |  WATCHED {} reel(s)\n"
                 "\n{}\n{}"
                 .format(self.liked_img,
                         self.already_liked,
@@ -4780,6 +4783,8 @@ class InstaPy:
                         self.replied_to_comments,
                         self.inap_img,
                         self.not_valid_users,
+                        self.stories_watched,
+                        self.reels_watched,
                         owner_relationship_info,
                         run_time_msg))
         else:
@@ -5458,17 +5463,20 @@ class InstaPy:
                     break
 
                 # inform user whats happening
-                self.logger.info('Loading stories view...')
-                self.logger.info('Tag [{}/{}]'.format(index + 1, len(tags)))
+                if len(tags)> 1:
+                    self.logger.info('Tag [{}/{}]'.format(index + 1, len(tags)))
                 self.logger.info('Loading stories with Tag --> {}'.format(tag.encode('utf-8')))
 
                 try:
-                    watch_story(self.browser,
+                    reels=watch_story(self.browser,
                                 tag,
                                 self.logger, "tag")
                 except NoSuchElementException:
                     self.logger.info('No stories skipping this tag')
                     continue
+                if reels > 0:
+                    self.stories_watched += 1
+                    self.reels_watched += reels
 
     def story_by_users(self, users: list = None):
         """ Watch stories for specific user(s)"""
@@ -5485,12 +5493,15 @@ class InstaPy:
                     break
 
                 # inform user whats happening
-                self.logger.info('Loading stories view...')
-                self.logger.info('User [{}/{}]'.format(index + 1, len(users)))
+                if len(users) >1:
+                    self.logger.info('User [{}/{}]'.format(index + 1, len(users)))
                 self.logger.info('Loading stories with User --> {}'.format(user.encode('utf-8')))
 
                 try:
-                    watch_story(self.browser, user, self.logger, "user")
+                    reels=watch_story(self.browser, user, self.logger, "user")
                 except NoSuchElementException:
                     self.logger.info('No stories skipping this user')
                     continue
+                if reels > 0:
+                    self.stories_watched += 1
+                    self.reels_watched += reels
