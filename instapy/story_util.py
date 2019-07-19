@@ -45,25 +45,17 @@ def get_story_data(browser, elem: str, action_type: str, logger) -> dict:
     s = requests.Session()
 
     for cookie in cookies:
-        if (cookie['name'] == "urlgen") or (cookie['name'] == "rur"):
-            all_args = {
-                'name': cookie['name'],
-                'value': cookie['value'],
-                'domain': cookie['domain'],
-                'secure': cookie['secure'],
-                'rest': {'HttpOnly': cookie['httpOnly']},
-                'path': cookie['path']
-            }
-        else:
-            all_args = {
-                'name': cookie['name'],
-                'value': cookie['value'],
-                'domain': cookie['domain'],
-                'secure': cookie['secure'],
-                'rest': {'HttpOnly': cookie['httpOnly']},
-                'path': cookie['path'],
-                'expires': cookie['expiry']
-            }
+        all_args = {
+            'name': cookie['name'],
+            'value': cookie['value'],
+            'domain': cookie['domain'],
+            'secure': cookie['secure'],
+            'rest': {'HttpOnly' : cookie['httpOnly']},
+            'path': cookie['path']
+        }
+        if not (cookie['name'] == "urlgen") and not (cookie['name'] == "rur"):
+            all_args['expires'] = cookie['expiry']
+
         s.cookies.set(**all_args)
 
     data = s.get(graphql_query_url)
