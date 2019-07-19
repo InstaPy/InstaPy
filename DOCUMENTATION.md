@@ -69,6 +69,7 @@
   - [Switching to Firefox](#switching-to-firefox)
   - [Use a proxy (Firefox)](#use-a-proxy-firefox)
   - [Running in threads](#running-in-threads)
+  - [Random UserAgent](#get-a-random-useragent)
   
  <br />
 
