@@ -1756,6 +1756,12 @@ session.login()
 session.end(threaded_session=True)
 ```
 
+### Get a random UserAgent
+
+```python
+session = InstaPy(..., random_user_agent = True, ...)
+```
+
 ---
 
 <br /> 
