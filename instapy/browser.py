@@ -44,11 +44,11 @@ def set_selenium_local_session(proxy_address,
     # define the custom user agent
     fb_agent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36'
     ua = UserAgent(cache = False, fallback = fb_agent)
-    user_agent = ua.random if random_user_agent else ua.chrome
 
     if use_firefox:
         firefox_options = Firefox_Options()
 
+        user_agent = ua.random if random_user_agent else ua.firefox
         firefox_options.add_argument('user-agent={user_agent}'
                                     .format(user_agent = user_agent))
 
@@ -112,6 +112,7 @@ def set_selenium_local_session(proxy_address,
                     '--blink-settings=imagesEnabled=false')
 
             # replaces browser User Agent from "HeadlessChrome".
+            user_agent = ua.random if random_user_agent else ua.chrome
             chrome_options.add_argument('user-agent={user_agent}'
                                         .format(user_agent = user_agent))
 
