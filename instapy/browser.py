@@ -33,7 +33,8 @@ def set_selenium_local_session(proxy_address,
                                browser_profile_path,
                                disable_image_load,
                                page_delay,
-                               logger):
+                               logger,
+                               random_user_agent):
     """Starts local session for a selenium server.
     Default case scenario."""
 
@@ -43,7 +44,7 @@ def set_selenium_local_session(proxy_address,
     # define the custom user agent
     fb_agent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36'
     ua = UserAgent(cache = False, fallback = fb_agent)
-    user_agent = ua.random # get a random one based on popular browsers
+    user_agent = ua.random if random_user_agent else ua.chrome
 
     if use_firefox:
         firefox_options = Firefox_Options()
