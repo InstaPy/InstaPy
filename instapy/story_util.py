@@ -11,7 +11,10 @@ import requests
 
 
 def get_story_data(browser, elem: str, action_type: str, logger) -> dict:
-    """not used fort the moment, more coding needed to understand this"""
+    """
+    get the JSON data from the graphql URL
+    output the amount of segments we can watch
+    """
 
     # if things change in the future, modify here:
     query_hash = "cda12de4f7fd3719c0569ce03589f4c4"
@@ -46,6 +49,7 @@ def get_story_data(browser, elem: str, action_type: str, logger) -> dict:
 
     session = requests.Session()
 
+    #prepare the cookies for the requests session
     for cookie in cookies:
         all_args = {
             'name': cookie['name'],
@@ -91,10 +95,6 @@ def get_story_data(browser, elem: str, action_type: str, logger) -> dict:
     else:
         return {'status': 'not_ok', 'reels_cnt': 0}
 
-    # we have the json describing the stories
-    # output the amount of segments, total time, check if there is anything new
-    # in case of tags, the users
-    #
 
 
 def watch_story(browser, elem: str, logger, action_type: str) -> int:
