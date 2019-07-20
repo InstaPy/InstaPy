@@ -15,31 +15,33 @@ def get_story_data(browser, elem: str, action_type: str, logger) -> dict:
 
     # if things change in the future, modify here:
     query_hash = "cda12de4f7fd3719c0569ce03589f4c4"
+    elem_id = ""
 
-    if action_type == "tag":
-        # pretty easy here, we just have to fill tag_names with the tag we want
-        graphql_query_url = "https://www.instagram.com/graphql/query/?query_hash" + \
-                            "={}".format(query_hash) + \
-                            "&variables={{\"reel_ids\":[],\"tag_names\":[\"{}\"],\"location_ids\":[],".format(elem) + \
-                            "\"highlight_reel_ids\":[],\"precomposed_overlay\":false,\"show_story_viewer_list\":true," + \
-                            "\"story_viewer_fetch_count\":50,\"story_viewer_cursor\":\"\"," + \
-                            "\"stories_video_dash_manifest\":false}"
-    else:
-        # if we are on a user page, we need to find out it's profile id and fill it into reel_ids
+
+    if action_type == "user":
         try:
             elem_id = browser.execute_script(
                 "return window._sharedData.entry_data."
                 "ProfilePage[0].graphql.user.id")
+            #correct formating for elem_id
+            elem_id = '"'+elem_id+'"'
+            #and elem needs to be nothingZ
+            elem = ""
         except WebDriverException:
             logger.error("---> Sorry, this page isn't available!\t~either " + \
                            "link is broken or page is removed\n")
             return {'status': 'not_ok', 'reels_cnt': 0}
-        graphql_query_url = "https://www.instagram.com/graphql/query/?query_hash" + \
-                            "={}".format(query_hash) + \
-                            "&variables={{\"reel_ids\":[\"{}\"],\"tag_names\":[],\"location_ids\":[],".format(elem_id) + \
-                            "\"highlight_reel_ids\":[],\"precomposed_overlay\":false,\"show_story_viewer_list\":true," + \
-                            "\"story_viewer_fetch_count\":50,\"story_viewer_cursor\":\"\"," + \
-                            "\"stories_video_dash_manifest\":false}"
+
+    graphql_query_url = (
+        'https://www.instagram.com/graphql/query/?query_hash={}'
+        '&variables={{"reel_ids":[{}],"tag_names":["{}"],"location_ids":[],'
+        '"highlight_reel_ids":[],"precomposed_overlay":false,"show_story_viewer_list":true,'
+        '"story_viewer_fetch_count":50,"story_viewer_cursor":"",'
+        '"stories_video_dash_manifest":false}}'.format(query_hash,elem_id,elem)
+    )
+
+    print(graphql_query_url)
+
     cookies = browser.get_cookies()
 
     session = requests.Session()
