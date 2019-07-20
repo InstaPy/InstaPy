@@ -42,7 +42,7 @@ def get_story_data(browser, elem: str, action_type: str, logger) -> dict:
                             "\"stories_video_dash_manifest\":false}"
     cookies = browser.get_cookies()
 
-    s = requests.Session()
+    session = requests.Session()
 
     for cookie in cookies:
         all_args = {
@@ -56,9 +56,9 @@ def get_story_data(browser, elem: str, action_type: str, logger) -> dict:
         if not (cookie['name'] == "urlgen") and not (cookie['name'] == "rur"):
             all_args['expires'] = cookie['expiry']
 
-        s.cookies.set(**all_args)
+        session.cookies.set(**all_args)
 
-    data = s.get(graphql_query_url)
+    data = session.get(graphql_query_url)
     response = data.json()
     update_activity()
 
