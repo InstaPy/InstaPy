@@ -43,10 +43,7 @@ def get_story_data(browser, elem: str, action_type: str, logger) -> dict:
         '"stories_video_dash_manifest":false}}'.format(query_hash,elem_id,elem)
     )
 
-    print(graphql_query_url)
-
     cookies = browser.get_cookies()
-
     session = requests.Session()
 
     #prepare the cookies for the requests session
