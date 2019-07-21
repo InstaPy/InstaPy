@@ -7,7 +7,7 @@ from selenium.webdriver.common.proxy import Proxy, ProxyType
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.firefox.options import Options as Firefox_Options
 from selenium.webdriver import Remote
-
+from fake_useragent import UserAgent
 
 # general libs
 import re
@@ -33,16 +33,25 @@ def set_selenium_local_session(proxy_address,
                                browser_profile_path,
                                disable_image_load,
                                page_delay,
-                               logger):
+                               logger,
+                               random_user_agent):
     """Starts local session for a selenium server.
     Default case scenario."""
 
     browser = None
     err_msg = ''
 
+    # define the custom user agent
+    fb_agent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36'
+    ua = UserAgent(cache = False, fallback = fb_agent)
+
     if use_firefox:
         firefox_options = Firefox_Options()
-        
+
+        user_agent = ua.random if random_user_agent else ua.firefox
+        firefox_options.add_argument('user-agent={user_agent}'
+                                    .format(user_agent = user_agent))
+
         if headless_browser:
             firefox_options.add_argument('-headless')
 
@@ -103,9 +112,9 @@ def set_selenium_local_session(proxy_address,
                     '--blink-settings=imagesEnabled=false')
 
             # replaces browser User Agent from "HeadlessChrome".
-            user_agent = "Chrome"
+            user_agent = ua.random if random_user_agent else ua.chrome
             chrome_options.add_argument('user-agent={user_agent}'
-                                        .format(user_agent=user_agent))
+                                        .format(user_agent = user_agent))
 
         capabilities = DesiredCapabilities.CHROME
 
