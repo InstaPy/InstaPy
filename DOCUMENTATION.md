@@ -1227,8 +1227,12 @@ session.remove_follow_requests(amount=200, sleep_delay=600)
 Will add story watching while interacting with users
 
 ```python
-session.set_do_story(enabled = True, percentage = 70)
+session.set_do_story(enabled = True, percentage = 70, simulate=True)
 ```
+
+ `simulate`:
+ If set to `True` InstaPy will simulate watching the stories (you won't see it in the browser), we just send commands to Instagram saying we have watched the stories.
+ If set to `False` Instapy will perform the exact same action as a human user (clicking on stories, waiting until watching finishes, etc...)
 
 ### Watch stories by Tags
 
