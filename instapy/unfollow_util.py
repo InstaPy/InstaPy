@@ -927,6 +927,9 @@ def dialog_username_extractor(buttons, logger):
                 element_by_xpath = person.find_element_by_xpath(xpath)
                 elements_by_tag_name = element_by_xpath.find_elements_by_tag_name("a")[0].text
 
+                if elements_by_tag_name == '':
+                    elements_by_tag_name = element_by_xpath.find_elements_by_tag_name("a")[1].text
+
                 person_list.append(elements_by_tag_name)
             except IndexError:
                 logger.warn(f"PATH_NOT_FOUND_FOR_PERSON:{person}\nPERSON_TEXT:{person.text}\nXPATH:{xpath}")
