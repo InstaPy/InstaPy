@@ -929,10 +929,10 @@ def dialog_username_extractor(buttons, logger):
 
                 person_list.append(elements_by_tag_name)
             except IndexError:
-                logger.critical(f"PATH_NOT_FOUND_FOR_PERSON:{person}\nPERSON_TEXT:{person.text}\nXPATH:{xpath}")
+                logger.warn(f"PATH_NOT_FOUND_FOR_PERSON:{person}\nPERSON_TEXT:{person.text}\nXPATH:{xpath}")
                 pass  # Element list is too short to have a [1] element
             except Exception as e:
-                logger.critical(e)
+                logger.warn(e)
 
     return person_list
 
