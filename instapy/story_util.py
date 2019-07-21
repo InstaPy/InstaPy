@@ -86,7 +86,7 @@ def get_story_data(browser, elem: str, action_type: str, logger,simulate: bool=F
             seen=0
             if (action_type != "tag") and (response['data']['reels_media'][0]['seen'] is not None):
                 seen = response['data']['reels_media'][0]['seen']
-
+            index=1
             for item in response['data']['reels_media'][0]['items']:
                 if item['taken_at_timestamp'] <= seen:
                     continue
@@ -105,7 +105,9 @@ def get_story_data(browser, elem: str, action_type: str, logger,simulate: bool=F
                                              'viewSeenAt': math.floor(time.time())
                                              },
                                      headers=headers)
-                        time.sleep(random.randint(3,6))
+                        logger.info('  --> simulated watch reel # {}'.format(index))
+                        index += 1
+                        time.sleep(randint(3,6))
 
                     reels_cnt += 1
 
