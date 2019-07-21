@@ -214,6 +214,7 @@ class InstaPy:
         self.like_percentage = 0
         self.do_story = False
         self.story_percentage = 0
+        self.story_simulate = False
         self.smart_hashtags = []
         self.smart_location_hashtags = []
 
@@ -520,12 +521,20 @@ class InstaPy:
 
         return self
 
-    def set_do_story(self, enabled: bool = False, percentage: int = 0):
+    def set_do_story(self, enabled: bool = False, percentage: int = 0, simulate: bool=False):
+        """
+            configure stories
+            enabled: to add story to interact
+            percentage: how much to watch
+            simulate: if True, we will simulate watching (faster),
+                      but nothing will be seen on the browser window
+        """
         if self.aborting:
             return self
 
         self.do_story = enabled
         self.story_percentage = min(percentage,100)
+        self.story_simulate = simulate
 
         return self
 
@@ -5448,6 +5457,7 @@ class InstaPy:
             except Exception as err:
                 self.logger.error("Failed for {} with Error {}".format(pod_post, err))
 
+
     def story_by_tags(self, tags: list = None):
         """ Watch stories for specific tag(s) """
         if self.aborting:
@@ -5468,9 +5478,7 @@ class InstaPy:
                 self.logger.info('Loading stories with Tag --> {}'.format(tag.encode('utf-8')))
 
                 try:
-                    reels=watch_story(self.browser,
-                                tag,
-                                self.logger, "tag")
+                    reels=watch_story(self.browser, tag, self.logger, "tag", self.story_simulate)
                 except NoSuchElementException:
                     self.logger.info('No stories skipping this tag')
                     continue
@@ -5498,7 +5506,7 @@ class InstaPy:
                 self.logger.info('Loading stories with User --> {}'.format(user.encode('utf-8')))
 
                 try:
-                    reels=watch_story(self.browser, user, self.logger, "user")
+                    reels=watch_story(self.browser, user, self.logger, "user", self.story_simulate)
                 except NoSuchElementException:
                     self.logger.info('No stories skipping this user')
                     continue

@@ -1,4 +1,5 @@
 import time
+import math
 from random import randint
 from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import WebDriverException
@@ -10,7 +11,7 @@ from .xpath import read_xpath
 import requests
 
 
-def get_story_data(browser, elem: str, action_type: str, logger) -> dict:
+def get_story_data(browser, elem: str, action_type: str, logger,simulate: bool=False) -> dict:
     """
     get the JSON data from the graphql URL
     output the amount of segments we can watch
@@ -23,17 +24,19 @@ def get_story_data(browser, elem: str, action_type: str, logger) -> dict:
 
     if action_type == "user":
         try:
-            elem_id = browser.execute_script(
+            reel_id = browser.execute_script(
                 "return window._sharedData.entry_data."
                 "ProfilePage[0].graphql.user.id")
             #correct formating for elem_id
-            elem_id = '"'+elem_id+'"'
-            #and elem needs to be nothingZ
+            elem_id = '"'+reel_id+'"'
+            #and elem needs to be nothing
             elem = ""
         except WebDriverException:
             logger.error("---> Sorry, this page isn't available!\t~either " + \
                            "link is broken or page is removed\n")
             return {'status': 'not_ok', 'reels_cnt': 0}
+    else:
+        reel_id = "tag:{}".format(elem)
 
     graphql_query_url = (
         'https://www.instagram.com/graphql/query/?query_hash={}'
@@ -45,6 +48,7 @@ def get_story_data(browser, elem: str, action_type: str, logger) -> dict:
 
     cookies = browser.get_cookies()
     session = requests.Session()
+    csrftoken = ""
 
     #prepare the cookies for the requests session
     for cookie in cookies:
@@ -56,6 +60,8 @@ def get_story_data(browser, elem: str, action_type: str, logger) -> dict:
             'rest': {'HttpOnly' : cookie['httpOnly']},
             'path': cookie['path']
         }
+        if cookie['name'] == 'csrftoken':
+            csrftoken = cookie['value']
         if not (cookie['name'] == "urlgen") and not (cookie['name'] == "rur"):
             all_args['expires'] = cookie['expiry']
 
@@ -77,16 +83,31 @@ def get_story_data(browser, elem: str, action_type: str, logger) -> dict:
         else:
             # we got content
             # check if there is something new to watch otherwise we just return 0
-            if (action_type == 'tag') or (response['data']['reels_media'][0]['seen'] is None):
-                #there is no seen in tag, so we just respond with everything we got
-                return {'status': 'ok', 'reels_cnt': len(response['data']['reels_media'][0]['items'])}
+            seen=0
+            if (action_type != "tag") and (response['data']['reels_media'][0]['seen'] is not None):
+                seen = response['data']['reels_media'][0]['seen']
 
-            if response['data']['reels_media'][0]['seen'] is not None:
-                if response['data']['reels_media'][0]['seen'] < response['data']['reels_media'][0]['latest_reel_media']:
-                    for item in response['data']['reels_media'][0]['items']:
-                        if item['taken_at_timestamp'] > response['data']['reels_media'][0]['seen']:
-                            # this is new and we haven't seen it
-                            reels_cnt += 1
+            for item in response['data']['reels_media'][0]['items']:
+                if item['taken_at_timestamp'] <= seen:
+                    continue
+                else:
+                    if simulate is True:
+                        headers = {
+                            'X-CSRFToken': csrftoken,
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'Content-Type': 'application/x-www-form-urlencoded'
+                        }
+                        response=session.post("https://www.instagram.com/stories/reel/seen",
+                                     data= { 'reelMediaId': item['id'],
+                                             'reelMediaOwnerId': item['owner']['id'],
+                                             'reelId': reel_id,
+                                             'reelMediaTakenAt': item['taken_at_timestamp'],
+                                             'viewSeenAt': math.floor(time.time())
+                                             },
+                                     headers=headers)
+                        time.sleep(random.randint(3,6))
+
+                    reels_cnt += 1
 
             return {'status': 'ok', 'reels_cnt': reels_cnt}
     else:
@@ -94,7 +115,7 @@ def get_story_data(browser, elem: str, action_type: str, logger) -> dict:
 
 
 
-def watch_story(browser, elem: str, logger, action_type: str) -> int:
+def watch_story(browser, elem: str, logger, action_type: str, simulate: bool=False) -> int:
     """
         Load Stories, and watch it until there is no more stores
         to watch for the related element
@@ -110,7 +131,7 @@ def watch_story(browser, elem: str, logger, action_type: str) -> int:
     # wait for the page to load
     time.sleep(randint(2, 6))
     # order is important here otherwise we are not on the page of the story we want to watch
-    story_data = get_story_data(browser, elem, action_type, logger)
+    story_data = get_story_data(browser, elem, action_type, logger, simulate)
 
     if story_data['status'] == 'not ok':
         raise NoSuchElementException
@@ -120,29 +141,26 @@ def watch_story(browser, elem: str, logger, action_type: str) -> int:
         logger.info('no stories to watch (either there is none) or we have already watched everything')
         return 0
 
-    story_elem = browser.find_element_by_xpath(
-        read_xpath(watch_story.__name__ + "_for_{}".format(action_type), "explore_stories"))
+    if simulate is False:
+        story_elem = browser.find_element_by_xpath(
+            read_xpath(watch_story.__name__ + "_for_{}".format(action_type), "explore_stories"))
 
-    if not story_elem:
-        logger.info("'{}' {} POSSIBLY does not exist", elem, action_type)
-        raise NoSuchElementException
-    else:
-        # load stories/view stories
-        click_element(browser, story_elem)
+        if not story_elem:
+            logger.info("'{}' {} POSSIBLY does not exist", elem, action_type)
+            raise NoSuchElementException
+        else:
+            # load stories/view stories
+            click_element(browser, story_elem)
 
-    # watch stories until there is no more stories available
-    logger.info('Watching stories...')
-    while True:
-        try:
-            browser.find_element_by_xpath(
-                read_xpath(watch_story.__name__ + "_for_{}".format(action_type), "wait_finish"))
-            time.sleep(randint(2, 6))
-        except NoSuchElementException:
-            break
-
-    if story_data['reels_cnt'] == 0:
-        logger.info('no stories to watch (either there is none) or we have already watched everything')
-        return 0
+        # watch stories until there is no more stories available
+        logger.info('Watching stories...')
+        while True:
+            try:
+                browser.find_element_by_xpath(
+                    read_xpath(watch_story.__name__ + "_for_{}".format(action_type), "wait_finish"))
+                time.sleep(randint(2, 6))
+            except NoSuchElementException:
+                break
 
     logger.info('watched {} reels from {}: {}'.format(story_data['reels_cnt'], action_type, elem.encode('utf-8')))
 
