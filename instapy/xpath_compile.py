@@ -27,7 +27,7 @@ xpath['confirm_unfollow'] = {
 }
 
 xpath['dialog_username_extractor'] = {
-    "person":"../../../*"
+    "person":"../../*"
 }
 
 xpath['dismiss_get_app_offer'] = {

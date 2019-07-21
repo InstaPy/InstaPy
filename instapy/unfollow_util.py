@@ -840,7 +840,7 @@ def get_users_through_dialog(browser,
 
         if sc_rolled > 85:  # you may want to use up to 100
             if total_list < amount:
-                print('')
+                print('\n')
                 logger.info(
                     "Too many requests sent!  attempt: {}  |  gathered "
                     "links: {}"
@@ -891,13 +891,12 @@ def get_users_through_dialog(browser,
                         or i != (quick_amount - 1))
                         and (not pts_printed
                              or not abort)):
-                        print('')
+                        print('\n')
                     simulated_list.extend(quick_follow)
 
             simulator_counter = 0
 
-    print('')
-    person_list = dialog_username_extractor(buttons)
+    person_list = dialog_username_extractor(buttons, logger)
 
     if randomize:
         random.shuffle(person_list)
@@ -913,8 +912,9 @@ def get_users_through_dialog(browser,
     return person_list, simulated_list
 
 
-def dialog_username_extractor(buttons):
+def dialog_username_extractor(buttons, logger):
     """ Extract username of a follow button from a dialog box """
+    # TODO: make logger global
 
     if not isinstance(buttons, list):
         buttons = [buttons]
@@ -923,10 +923,16 @@ def dialog_username_extractor(buttons):
     for person in buttons:
         if person and hasattr(person, 'text') and person.text:
             try:
-                person_list.append(person.find_element_by_xpath(read_xpath(dialog_username_extractor.__name__,"person"))
-                                   .find_elements_by_tag_name("a")[1].text)
+                xpath = read_xpath(dialog_username_extractor.__name__, "person")
+                element_by_xpath = person.find_element_by_xpath(xpath)
+                elements_by_tag_name = element_by_xpath.find_elements_by_tag_name("a")[0].text
+
+                person_list.append(elements_by_tag_name)
             except IndexError:
+                logger.critical(f"PATH_NOT_FOUND_FOR_PERSON:{person}\nPERSON_TEXT:{person.text}\nXPATH:{xpath}")
                 pass  # Element list is too short to have a [1] element
+            except Exception as e:
+                logger.critical(e)
 
     return person_list
 
@@ -1444,11 +1450,11 @@ def get_buttons_from_dialog(dialog, channel):
         # get follow buttons. This approach will find the follow buttons and
         # ignore the Unfollow/Requested buttons.
         buttons = dialog.find_elements_by_xpath(
-            read_xpath(get_buttons_from_dialog.__name__,"follow_button"))
+            read_xpath(get_buttons_from_dialog.__name__, "follow_button"))
 
     elif channel == "Unfollow":
         buttons = dialog.find_elements_by_xpath(
-            read_xpath(get_buttons_from_dialog.__name__,"unfollow_button"))
+            read_xpath(get_buttons_from_dialog.__name__, "unfollow_button"))
 
     return buttons
 
