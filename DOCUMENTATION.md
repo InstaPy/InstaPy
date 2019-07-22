@@ -69,6 +69,7 @@
   - [Switching to Firefox](#switching-to-firefox)
   - [Use a proxy (Firefox)](#use-a-proxy-firefox)
   - [Running in threads](#running-in-threads)
+  - [Random UserAgent](#get-a-random-useragent)
   
  <br />
 
@@ -1222,6 +1223,34 @@ session.remove_follow_requests(amount=200, sleep_delay=600)
  `engagement_mode`:
  Desided engagement mode for your posts. There are three levels of engagement modes 'light', 'normal' and 'heavy'(`normal` by default). Setting engagement_mode to 'light' encourages approximately 10% of pod members to comment on your post, similarly it's around 30% and 90% for 'normal' and 'heavy' modes respectively. Note: Liking, following or any other kind of engagements doesn't follow these modes.
 
+### Activate story watching while interacting
+
+Will add story watching while interacting with users
+
+```python
+session.set_do_story(enabled = True, percentage = 70, simulate = True)
+```
+
+ `simulate`:
+ If set to `True` InstaPy will simulate watching the stories (you won't see it in the browser), we just send commands to Instagram saying we have watched the stories.
+ If set to `False` Instapy will perform the exact same action as a human user (clicking on stories, waiting until watching finishes, etc...)
+
+### Watch stories by Tags
+
+Will watch up to 20 stories published with specified tags.
+
+```python
+session.story_by_tags(['tag1', 'tag2'])
+```
+
+### Watch stories from users
+
+Take a list of users and watch their stories.
+
+```python
+session.story_by_users(['user1', 'user2'])
+```
+
 ---
 
 <br />
@@ -1730,6 +1759,12 @@ session = InstaPy()
 session.login()
 # some activity here ...
 session.end(threaded_session=True)
+```
+
+### Get a random UserAgent
+
+```python
+session = InstaPy(..., random_user_agent = True, ...)
 ```
 
 ---
