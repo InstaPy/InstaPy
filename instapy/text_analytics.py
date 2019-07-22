@@ -47,15 +47,18 @@ def text_analysis(text, text_type, logger):
     language_of_text = None
     text_is_printed = None
 
-    if (not YANDEX_CONFIG or YANDEX_CONFIG["enabled"] is not True or
-            (YANDEX_CONFIG["match_language"] is not True and
-             (not MEANINGCLOUD_CONFIG or MEANINGCLOUD_CONFIG[
-                 "enabled"] is not True))):
+    if (
+        not YANDEX_CONFIG
+        or YANDEX_CONFIG["enabled"] is not True
+        or (
+            YANDEX_CONFIG["match_language"] is not True
+            and (not MEANINGCLOUD_CONFIG or MEANINGCLOUD_CONFIG["enabled"] is not True)
+        )
+    ):
 
         # No analysis will be held
-        print('')
-        logger.info(
-            "{} text: \"{}\"".format(text_type_c, text.encode("utf-8")))
+        print("")
+        logger.info('{} text: "{}"'.format(text_type_c, text.encode("utf-8")))
         return None
 
     if YANDEX_CONFIG["match_language"] is True:
@@ -67,21 +70,22 @@ def text_analysis(text, text_type, logger):
             language_of_text = "en"
 
         # output the text to be analysed
-        print('')
+        print("")
         logger.info(
-            "{} text ['{}']: \"{}\"".format(text_type_c, language_of_text,
-                                            text.encode("utf-8")))
+            "{} text ['{}']: \"{}\"".format(
+                text_type_c, language_of_text, text.encode("utf-8")
+            )
+        )
         text_is_printed = True
 
-        if language_of_text and YANDEX_CONFIG[
-            "language_code"] != language_of_text:
-            logger.info("{}\t~language of the text is '{}'".format(inap_msg,
-                                                                   language_of_text))
+        if language_of_text and YANDEX_CONFIG["language_code"] != language_of_text:
+            logger.info(
+                "{}\t~language of the text is '{}'".format(inap_msg, language_of_text)
+            )
             return False
 
         elif not language_of_text:
-            logger.info(
-                "{}\t~language of text couldn't be detected!".format(inap_msg))
+            logger.info("{}\t~language of text couldn't be detected!".format(inap_msg))
             return False
 
     if MEANINGCLOUD_CONFIG["enabled"] is True:
@@ -95,16 +99,17 @@ def text_analysis(text, text_type, logger):
 
             # output the text to be analysed [if not printed above]
             if text_is_printed is not True:
-                print('')
-                logger.info("{} text ['{}']: \"{}\"".format(text_type_c,
-                                                            language_of_text,
-                                                            text.encode(
-                                                                "utf-8")))
+                print("")
+                logger.info(
+                    "{} text ['{}']: \"{}\"".format(
+                        text_type_c, language_of_text, text.encode("utf-8")
+                    )
+                )
 
             if not language_of_text:
                 logger.info(
-                    "{}\t~language of text couldn't be detected!".format(
-                        inap_msg))
+                    "{}\t~language of text couldn't be detected!".format(inap_msg)
+                )
                 return False
 
         # if language of text is not supported by MeaningCloud, translate it
@@ -118,16 +123,15 @@ def text_analysis(text, text_type, logger):
         sentiment = sentiment_analysis(text, language_of_text, logger)
 
         if sentiment is None:
-            logger.info("{}\t~sentiment of text couldn't be detected!".format(
-                inap_msg))
+            logger.info("{}\t~sentiment of text couldn't be detected!".format(inap_msg))
             return False
 
         # polarity verification
         if MEANINGCLOUD_CONFIG["score_tag"]:
             if not sentiment["score_tag"]:
                 logger.info(
-                    "{}\t~polarity of text couldn't be detected!".format(
-                        inap_msg))
+                    "{}\t~polarity of text couldn't be detected!".format(inap_msg)
+                )
                 return False
 
             else:
@@ -136,23 +140,44 @@ def text_analysis(text, text_type, logger):
                 pol = sentiment["score_tag"]
                 des_pol = MEANINGCLOUD_CONFIG["score_tag"]
 
-                polarity_level = (3 if pol == "P+" else 2 if pol == 'P' else
-                1 if pol == "NEU" else
-                -2 if pol == "N+" else -1 if pol == 'N' else
-                0 if pol == "NONE" else None)
+                polarity_level = (
+                    3
+                    if pol == "P+"
+                    else 2
+                    if pol == "P"
+                    else 1
+                    if pol == "NEU"
+                    else -2
+                    if pol == "N+"
+                    else -1
+                    if pol == "N"
+                    else 0
+                    if pol == "NONE"
+                    else None
+                )
 
                 desired_polarity_level = (
-                    3 if des_pol == "P+" else 2 if des_pol == 'P' else
-                    1 if des_pol == "NEU" else
-                    -2 if des_pol == "N+" else -1 if des_pol == 'N' else
-                    0 if des_pol == "NONE" else None)
+                    3
+                    if des_pol == "P+"
+                    else 2
+                    if des_pol == "P"
+                    else 1
+                    if des_pol == "NEU"
+                    else -2
+                    if des_pol == "N+"
+                    else -1
+                    if des_pol == "N"
+                    else 0
+                    if des_pol == "NONE"
+                    else None
+                )
 
                 if desired_polarity_level > polarity_level:
                     logger.info(
-                        "{}\t~polarity of text is '{}' with {}% confidence"
-                        .format(inap_msg,
-                                sentiment["score_tag"],
-                                sentiment["confidence"]))
+                        "{}\t~polarity of text is '{}' with {}% confidence".format(
+                            inap_msg, sentiment["score_tag"], sentiment["confidence"]
+                        )
+                    )
                     return False
 
         # agreement verification
@@ -160,28 +185,32 @@ def text_analysis(text, text_type, logger):
             if not sentiment["agreement"]:
                 logger.info(
                     "{}\t~expressions' agreement of text couldn't be "
-                    "detected!".format(
-                        inap_msg))
+                    "detected!".format(inap_msg)
+                )
                 return False
 
             elif MEANINGCLOUD_CONFIG["agreement"] != sentiment["agreement"]:
-                logger.info("{}\t~expressions in text has {}"
-                            .format(inap_msg, sentiment["agreement"].lower()))
+                logger.info(
+                    "{}\t~expressions in text has {}".format(
+                        inap_msg, sentiment["agreement"].lower()
+                    )
+                )
                 return False
 
         # subjectivity verification
         if MEANINGCLOUD_CONFIG["subjectivity"]:
             if not sentiment["subjectivity"]:
                 logger.info(
-                    "{}\t~subjectivity of text couldn't be detected!".format(
-                        inap_msg))
+                    "{}\t~subjectivity of text couldn't be detected!".format(inap_msg)
+                )
                 return False
 
-            elif MEANINGCLOUD_CONFIG["subjectivity"] != sentiment[
-                "subjectivity"]:
-                logger.info("{}\t~text is {}"
-                            .format(inap_msg,
-                                    sentiment["subjectivity"].lower()))
+            elif MEANINGCLOUD_CONFIG["subjectivity"] != sentiment["subjectivity"]:
+                logger.info(
+                    "{}\t~text is {}".format(
+                        inap_msg, sentiment["subjectivity"].lower()
+                    )
+                )
                 return False
 
         # confidence verification
@@ -189,14 +218,16 @@ def text_analysis(text, text_type, logger):
             if not sentiment["confidence"]:
                 logger.info(
                     "{}\t~sentiment confidence of text couldn't be "
-                    "detected!".format(
-                        inap_msg))
+                    "detected!".format(inap_msg)
+                )
                 return False
 
-            elif MEANINGCLOUD_CONFIG["confidence"] > int(
-                    sentiment["confidence"]):
-                logger.info("{}\t~sentiment confidence of text is {}"
-                            .format(inap_msg, sentiment["confidence"]))
+            elif MEANINGCLOUD_CONFIG["confidence"] > int(sentiment["confidence"]):
+                logger.info(
+                    "{}\t~sentiment confidence of text is {}".format(
+                        inap_msg, sentiment["confidence"]
+                    )
+                )
                 return False
 
     return True
@@ -221,8 +252,8 @@ def sentiment_analysis(text, language_of_text, logger):
                 key=MEANINGCLOUD_CONFIG["license_key"],
                 lang=language_of_text,
                 txt=text,
-                txtf='plain')
-                .sendReq()
+                txtf="plain",
+            ).sendReq()
         )
         # check if there are any errors in the request
         request_state = lift_meaningcloud_request(sentiment_response)
@@ -231,29 +262,29 @@ def sentiment_analysis(text, language_of_text, logger):
 
         # get results
         sentiment = sentiment_response.getResults()
-        if sentiment and "score_tag" in sentiment.keys() and sentiment[
-            "score_tag"]:
+        if sentiment and "score_tag" in sentiment.keys() and sentiment["score_tag"]:
             # if text has a question mark & its polarity is neither negative
             # nor none, then label it neutral
             # @todo: polarity is assigned but never used
             if sentiment["score_tag"] not in ["N", "N+", "NONE"]:
-                if '?' in text:
+                if "?" in text:
                     polarity = "NEU"
             return sentiment
 
         else:
             status_message = sentiment_response.getStatusMsg()
-            print('')
-            logger.error("{}\t~there was an unexpected error :|"
-                         "\n{}\n".format(MEANINGCLOUD_FAILURE_MSG,
-                                         status_message))
+            print("")
+            logger.error(
+                "{}\t~there was an unexpected error :|"
+                "\n{}\n".format(MEANINGCLOUD_FAILURE_MSG, status_message)
+            )
             return None
 
     except (ValueError, ConnectionError) as exc:
-        print('')
-        logger.exception("{}\t~{}\n"
-                         .format(MEANINGCLOUD_FAILURE_MSG,
-                                 str(exc).encode("utf-8")))
+        print("")
+        logger.exception(
+            "{}\t~{}\n".format(MEANINGCLOUD_FAILURE_MSG, str(exc).encode("utf-8"))
+        )
         return None
 
 
@@ -266,16 +297,18 @@ def detect_language(text):
     """
 
     POST = "/api/{}/tr.json/detect?key={}&text={}".format(
-        YANDEX_API_VERSION, YANDEX_CONFIG["API_key"], text)
+        YANDEX_API_VERSION, YANDEX_CONFIG["API_key"], text
+    )
     logger = Settings.logger
 
     try:
         req = requests.get(YANDEX_HOST + POST)
     except SSLError as exc:
-        print('')
-        logger.exception("{}\t~there was a connection error :<"
-                         "\n{}\n".format(YANDEX_FAILURE_MSG,
-                                         str(exc).encode("utf-8")))
+        print("")
+        logger.exception(
+            "{}\t~there was a connection error :<"
+            "\n{}\n".format(YANDEX_FAILURE_MSG, str(exc).encode("utf-8"))
+        )
         return None
 
     data = json.loads(req.text)
@@ -305,7 +338,8 @@ def yandex_supported_languages(language_code="en"):
     """
 
     POST = "/api/{}/tr.json/getLangs?key={}&ui={}".format(
-        YANDEX_API_VERSION, YANDEX_CONFIG["API_key"], language_code)
+        YANDEX_API_VERSION, YANDEX_CONFIG["API_key"], language_code
+    )
     logger = Settings.logger
 
     try:
@@ -317,10 +351,11 @@ def yandex_supported_languages(language_code="en"):
         try:
             req = requests.get(YANDEX_HOST + POST)
         except SSLError as exc:
-            print('')
-            logger.exception("{}\t~there was a connection error :<"
-                             "\n{}\n".format(YANDEX_FAILURE_MSG,
-                                             str(exc).encode("utf-8")))
+            print("")
+            logger.exception(
+                "{}\t~there was a connection error :<"
+                "\n{}\n".format(YANDEX_FAILURE_MSG, str(exc).encode("utf-8"))
+            )
             return None
 
     data = json.loads(req.text)
@@ -346,21 +381,25 @@ def translate_text(translation_direction, text_to_translate):
 
     # if the text doesn't have an end mark, add a dot to get a better
     # translation
-    if not text_to_translate.endswith(('.', '?', '!', ';')):
-        text_to_translate += '.'
+    if not text_to_translate.endswith((".", "?", "!", ";")):
+        text_to_translate += "."
 
     POST = "/api/{}/tr.json/translate?key={}&text={}&lang={}".format(
-        YANDEX_API_VERSION, YANDEX_CONFIG["API_key"],
-        text_to_translate, translation_direction)
+        YANDEX_API_VERSION,
+        YANDEX_CONFIG["API_key"],
+        text_to_translate,
+        translation_direction,
+    )
     logger = Settings.logger
 
     try:
         req = requests.get(YANDEX_HOST + POST)
     except SSLError as exc:
-        print('')
-        logger.exception("{}\t~there was a connection error :<"
-                         "\n{}\n".format(YANDEX_FAILURE_MSG,
-                                         str(exc).encode("utf-8")))
+        print("")
+        logger.exception(
+            "{}\t~there was a connection error :<"
+            "\n{}\n".format(YANDEX_FAILURE_MSG, str(exc).encode("utf-8"))
+        )
         return None
 
     data = json.loads(req.text)
@@ -402,10 +441,10 @@ def lift_yandex_request(request):
         elif status_code == 404:
             error_msg = "you've reached the request limit"
 
-        print('')
-        logger.error("{}\t~{} [{}]\n".format(YANDEX_FAILURE_MSG,
-                                             error_msg,
-                                             service_turnoff_msg))
+        print("")
+        logger.error(
+            "{}\t~{} [{}]\n".format(YANDEX_FAILURE_MSG, error_msg, service_turnoff_msg)
+        )
         return False
 
     elif status_code in [413, 422, 501]:
@@ -414,12 +453,10 @@ def lift_yandex_request(request):
         elif status_code == 422:
             error_msg = "given text couldn't be translated :("
         elif status_code == 501:
-            error_msg = "the specified translation direction is not " \
-                        "supported ~.~"
+            error_msg = "the specified translation direction is not " "supported ~.~"
 
-        print('')
-        logger.error("{}\t~{}\n".format(YANDEX_FAILURE_MSG,
-                                        error_msg))
+        print("")
+        logger.error("{}\t~{}\n".format(YANDEX_FAILURE_MSG, error_msg))
         return False
 
     return True
@@ -439,7 +476,7 @@ def lift_meaningcloud_request(request):
     logger = Settings.logger
 
     # handle per status code
-    if status_code == '0':
+    if status_code == "0":
         # request is successful
         return True
 
@@ -449,13 +486,17 @@ def lift_meaningcloud_request(request):
         service_turnoff_msg = "turned off MeaningCloud service"
 
         if status_code == "100":
-            error_msg = ("operation denied: license key is either incorrect,"
-                         " unauthorized to make requests or you've been "
-                         "banned from using service")
+            error_msg = (
+                "operation denied: license key is either incorrect,"
+                " unauthorized to make requests or you've been "
+                "banned from using service"
+            )
 
         elif status_code == "101":
-            error_msg = "license expired: license key you're sending to use " \
-                        "the API has expired"
+            error_msg = (
+                "license expired: license key you're sending to use "
+                "the API has expired"
+            )
 
         elif status_code == "102":
             consumed_credits = request.getConsumedCredits() or "unknown"
@@ -465,84 +506,112 @@ def lift_meaningcloud_request(request):
                 "credits per subscription exceeded: ran out of credits for "
                 "current month"
                 " (spent: {}) - wait for credits to be reset at month end ({}"
-                " days)".format(consumed_credits,
-                                truncate_float(
-                                    time_until_next_month / 60 / 60 / 24,
-                                    2)))
+                " days)".format(
+                    consumed_credits,
+                    truncate_float(time_until_next_month / 60 / 60 / 24, 2),
+                )
+            )
 
-        print('')
-        logger.error("{}\t~{} [{}]\n".format(MEANINGCLOUD_FAILURE_MSG,
-                                             error_msg,
-                                             service_turnoff_msg))
+        print("")
+        logger.error(
+            "{}\t~{} [{}]\n".format(
+                MEANINGCLOUD_FAILURE_MSG, error_msg, service_turnoff_msg
+            )
+        )
 
-    elif status_code in ["103", "104", "105", "200", "201", "202", "203",
-                         "204", "205", "206", "207", "212", "214", "215"]:
+    elif status_code in [
+        "103",
+        "104",
+        "105",
+        "200",
+        "201",
+        "202",
+        "203",
+        "204",
+        "205",
+        "206",
+        "207",
+        "212",
+        "214",
+        "215",
+    ]:
 
         if status_code == "103":
             error_msg = (
                 "request too large: exceeded the limit on the number of words"
-                " that can be analyzed in a single request (max 50000)")
+                " that can be analyzed in a single request (max 50000)"
+            )
 
         elif status_code == "104":
             error_msg = (
                 "request rate limit exceeded: hit the limit set for number of"
-                " requests can be carried out concurrently (per second)")
+                " requests can be carried out concurrently (per second)"
+            )
 
         elif status_code == "105":
             error_msg = (
                 "resource access denied: no access to a resource or language "
-                "either cos haven't subscribed to any packs or trial ended")
+                "either cos haven't subscribed to any packs or trial ended"
+            )
 
         elif status_code == "200":
             error_msg = (
                 "missing required parameter(s): you haven't specified one of"
-                " the required parameters")
+                " the required parameters"
+            )
 
         elif status_code == "201":
             error_msg = (
                 "resource not supported: you've sent an incorrect value for"
-                " the 'model' or 'ud' parameters")
+                " the 'model' or 'ud' parameters"
+            )
 
         elif status_code == "202":
             error_msg = (
                 "engine internal error: internal error has occurred in"
-                " service engines (wait a few minutes and try again)")
+                " service engines (wait a few minutes and try again)"
+            )
 
         elif status_code == "203":
             error_msg = (
                 "can't connect to service: unable to serve the request due to"
-                " high load in servers (wait a few minutes & try again)")
+                " high load in servers (wait a few minutes & try again)"
+            )
 
         elif status_code == "204":
             error_msg = (
                 "resource not compatible for the language automatically"
-                " identified from the text")
+                " identified from the text"
+            )
 
         elif status_code == "205":
             error_msg = (
                 "language not supported: you've sent an incorrect value "
-                "for the lang parameter")
+                "for the lang parameter"
+            )
 
         elif status_code == "212":
             error_msg = (
                 "no content to analyze: content provided to analyze couldn't "
                 "be"
                 " accessed or converted into HTML (make sure value is "
-                "supported)")
+                "supported)"
+            )
 
         elif status_code == "214":
             error_msg = (
                 "wrong format: one of the parameters sent does not have"
-                " the accepted format")
+                " the accepted format"
+            )
 
         elif status_code == "215":
             error_msg = (
                 "timeout exceeded for service response: it's taken too long"
-                " to respond & exceeded the timeout set for the system")
+                " to respond & exceeded the timeout set for the system"
+            )
 
-        print('')
-        logger.error("{}\t~{}\n".format(MEANINGCLOUD_FAILURE_MSG,
-                                        error_msg))
+        print("")
+        logger.error("{}\t~{}\n".format(MEANINGCLOUD_FAILURE_MSG, error_msg))
 
     else:
         response = request.getResponse()
@@ -550,11 +619,9 @@ def lift_meaningcloud_request(request):
             error_msg = "the request sent did not return a JSON :/"
         else:
             status_message = request.getStatusMsg()
-            error_msg = ("there was an unusual error :|"
-                         "\n{}".format(status_message))
+            error_msg = "there was an unusual error :|" "\n{}".format(status_message)
 
-        print('')
-        logger.error("{}\t~{}\n".format(MEANINGCLOUD_FAILURE_MSG,
-                                        error_msg))
+        print("")
+        logger.error("{}\t~{}\n".format(MEANINGCLOUD_FAILURE_MSG, error_msg))
 
     return False

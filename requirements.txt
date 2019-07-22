@@ -1,3 +1,4 @@
+black>=19.3b0
 certifi>=2018.10.15
 chardet>=3.0.4
 clarifai>=2.4.1

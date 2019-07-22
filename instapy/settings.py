@@ -13,11 +13,13 @@ from os.path import exists as path_exists
 from .xpath import read_xpath
 
 
-WORKSPACE = {"name": "InstaPy",
-             "path": environmental_variables.get("INSTAPY_WORKSPACE")}
-OS_ENV = ("windows" if platform == "win32"
-          else "osx" if platform == "darwin"
-          else "linux")
+WORKSPACE = {
+    "name": "InstaPy",
+    "path": environmental_variables.get("INSTAPY_WORKSPACE"),
+}
+OS_ENV = (
+    "windows" if platform == "win32" else "osx" if platform == "darwin" else "linux"
+)
 
 
 def localize_path(*args):
@@ -39,8 +41,7 @@ class Settings:
     database_location = localize_path("db", "instapy.db")
     specific_chromedriver = "chromedriver_{}".format(OS_ENV)
     chromedriver_location = localize_path("assets", specific_chromedriver)
-    if (not chromedriver_location
-            or not path_exists(chromedriver_location)):
+    if not chromedriver_location or not path_exists(chromedriver_location):
         chromedriver_location = localize_path("assets", "chromedriver")
 
     # minimum supported version of chromedriver
@@ -78,7 +79,8 @@ class Settings:
     InstaPy_is_running = False
 
     # This is where currently the pods server is hosted
-    pods_server_endpoint = 'https://us-central1-instapy-pods.cloudfunctions.net'
+    pods_server_endpoint = "https://us-central1-instapy-pods.cloudfunctions.net"
+
 
 class Storage:
     """ Globally accessible standalone storage """
@@ -92,7 +94,6 @@ class Selectors:
     Store XPath, CSS, and other element selectors to be used at many places
     """
 
-    likes_dialog_body_xpath = (
-        read_xpath("class_selectors","likes_dialog_body_xpath"))
+    likes_dialog_body_xpath = read_xpath("class_selectors", "likes_dialog_body_xpath")
 
-    likes_dialog_close_xpath = read_xpath("class_selectors","likes_dialog_close_xpath")
+    likes_dialog_close_xpath = read_xpath("class_selectors", "likes_dialog_close_xpath")

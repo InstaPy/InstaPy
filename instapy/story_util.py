@@ -23,7 +23,10 @@ def watch_story(browser, elem, logger, action_type):
     time.sleep(randint(2, 6))
 
     story_elem = browser.find_element_by_xpath(
-        read_xpath(watch_story.__name__+"_for_{}".format(action_type), "explore_stories"))
+        read_xpath(
+            watch_story.__name__ + "_for_{}".format(action_type), "explore_stories"
+        )
+    )
 
     if not story_elem:
         logger.info("'{}' {} POSSIBLY does not exist", elem, action_type)
@@ -33,13 +36,14 @@ def watch_story(browser, elem, logger, action_type):
         click_element(browser, story_elem)
 
     # watch stories until there is no more stories available
-    logger.info('Watching stories...')
+    logger.info("Watching stories...")
     while True:
         try:
             browser.find_element_by_xpath(
-                read_xpath(watch_story.__name__+"_for_{}".format(action_type), "wait_finish"))
+                read_xpath(
+                    watch_story.__name__ + "_for_{}".format(action_type), "wait_finish"
+                )
+            )
             time.sleep(randint(2, 6))
         except NoSuchElementException:
             break
-
-

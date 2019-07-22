@@ -28,29 +28,28 @@ from .xpath import read_xpath
 def get_links_from_feed(browser, amount, num_of_search, logger):
     """Fetches random number of links from feed and returns a list of links"""
 
-    feeds_link = 'https://www.instagram.com/'
+    feeds_link = "https://www.instagram.com/"
 
     # Check URL of the webpage, if it already is in Feeds page, then do not
     # navigate to it again
     web_address_navigator(browser, feeds_link)
 
     for i in range(num_of_search + 1):
-        browser.execute_script(
-            "window.scrollTo(0, document.body.scrollHeight);")
+        browser.execute_script("window.scrollTo(0, document.body.scrollHeight);")
         update_activity()
         sleep(2)
 
     # get links
     link_elems = browser.find_elements_by_xpath(
-        read_xpath(get_links_from_feed.__name__,"get_links"))
+        read_xpath(get_links_from_feed.__name__, "get_links")
+    )
 
     total_links = len(link_elems)
     logger.info("Total of links feched for analysis: {}".format(total_links))
     links = []
     try:
         if link_elems:
-            links = [link_elem.get_attribute('href') for link_elem in
-                     link_elems]
+            links = [link_elem.get_attribute("href") for link_elem in link_elems]
             logger.info("~~~~~~~~~~~~~~~~~~~~~~~~~~~")
             for i, link in enumerate(links):
                 print(i, link)
@@ -62,67 +61,75 @@ def get_links_from_feed(browser, amount, num_of_search, logger):
     return links
 
 
-def get_links_for_location(browser,
-                           location,
-                           amount,
-                           logger,
-                           media=None,
-                           skip_top_posts=True):
+def get_links_for_location(
+    browser, location, amount, logger, media=None, skip_top_posts=True
+):
     """Fetches the number of links specified
     by amount and returns a list of links"""
     if media is None:
         # All known media types
-        media = ['Photo', 'Carousel', 'Video']
-    elif media == 'Photo':
+        media = ["Photo", "Carousel", "Video"]
+    elif media == "Photo":
         # Include posts with multiple images in it
-        media = ['Photo', 'Carousel']
+        media = ["Photo", "Carousel"]
     else:
         # Make it an array to use it in the following part
         media = [media]
 
-    location_link = "https://www.instagram.com/explore/locations/{}".format(
-        location)
+    location_link = "https://www.instagram.com/explore/locations/{}".format(location)
     web_address_navigator(browser, location_link)
 
-    top_elements = browser.find_element_by_xpath(read_xpath(get_links_for_location.__name__,"top_elements"))
-    top_posts = top_elements.find_elements_by_tag_name('a')
+    top_elements = browser.find_element_by_xpath(
+        read_xpath(get_links_for_location.__name__, "top_elements")
+    )
+    top_posts = top_elements.find_elements_by_tag_name("a")
     sleep(1)
 
     if skip_top_posts:
-        main_elem = browser.find_element_by_xpath(read_xpath(get_links_for_location.__name__,"main_elem"))
+        main_elem = browser.find_element_by_xpath(
+            read_xpath(get_links_for_location.__name__, "main_elem")
+        )
     else:
-        main_elem = browser.find_element_by_tag_name('main')
+        main_elem = browser.find_element_by_tag_name("main")
 
-    link_elems = main_elem.find_elements_by_tag_name('a')
+    link_elems = main_elem.find_elements_by_tag_name("a")
     sleep(1)
 
     if not link_elems:  # this location does not have `Top Posts` or it
         # really is empty..
-        main_elem = browser.find_element_by_xpath(get_links_for_location.__name__,"top_elements")
+        main_elem = browser.find_element_by_xpath(
+            get_links_for_location.__name__, "top_elements"
+        )
         top_posts = []
     sleep(2)
 
     try:
         possible_posts = browser.execute_script(
             "return window._sharedData.entry_data."
-            "LocationsPage[0].graphql.location.edge_location_to_media.count")
+            "LocationsPage[0].graphql.location.edge_location_to_media.count"
+        )
 
     except WebDriverException:
         logger.info(
             "Failed to get the amount of possible posts in '{}' "
-            "location".format(
-                location))
+            "location".format(location)
+        )
         possible_posts = None
 
     logger.info(
         "desired amount: {}  |  top posts [{}]: {}  |  possible posts: "
-        "{}".format(amount, "enabled" if not skip_top_posts else "disabled",
-                    len(top_posts), possible_posts))
+        "{}".format(
+            amount,
+            "enabled" if not skip_top_posts else "disabled",
+            len(top_posts),
+            possible_posts,
+        )
+    )
 
     if possible_posts is not None:
-        possible_posts = possible_posts if not skip_top_posts else \
-            possible_posts - len(
-            top_posts)
+        possible_posts = (
+            possible_posts if not skip_top_posts else possible_posts - len(top_posts)
+        )
         amount = possible_posts if amount > possible_posts else amount
         # sometimes pages do not have the correct amount of posts as it is
         # written there, it may be cos of some posts is deleted but still
@@ -144,17 +151,16 @@ def get_links_for_location(browser,
 
             for i in range(3):
                 browser.execute_script(
-                    "window.scrollTo(0, document.body.scrollHeight);")
+                    "window.scrollTo(0, document.body.scrollHeight);"
+                )
                 update_activity()
                 sc_rolled += 1
-                sleep(
-                    nap)  # if not slept, and internet speed is low,
+                sleep(nap)  # if not slept, and internet speed is low,
                 # instagram will only scroll one time, instead of many times
                 # you sent scroll command...
 
             sleep(3)
-            links.extend(
-                get_links(browser, location, logger, media, main_elem))
+            links.extend(get_links(browser, location, logger, media, main_elem))
 
             links_all = links  # uniqify links while preserving order
             s = set()
@@ -168,16 +174,16 @@ def get_links_for_location(browser,
                 try_again += 1
                 nap = 3 if try_again == 1 else 5
                 logger.info(
-                    "Insufficient amount of links ~ trying again: {}".format(
-                        try_again))
+                    "Insufficient amount of links ~ trying again: {}".format(try_again)
+                )
                 sleep(3)
 
                 if try_again > 2:  # you can try again as much as you want
                     # by changing this number
                     if put_sleep < 1 and filtered_links <= 21:
                         logger.info(
-                            "Cor! Did you send too many requests? ~ let's "
-                            "rest some")
+                            "Cor! Did you send too many requests? ~ let's " "rest some"
+                        )
                         sleep(600)
                         put_sleep += 1
 
@@ -186,17 +192,26 @@ def get_links_for_location(browser,
                         try_again = 0
                         sleep(10)
 
-                        main_elem = (browser.find_element_by_xpath(
-                            read_xpath(get_links_for_location.__name__,"top_elements")) if not link_elems else
-                                     browser.find_element_by_xpath(
-                                         read_xpath(get_links_for_location.__name__,"main_elem")) if
-                                     skip_top_posts else
-                                     browser.find_element_by_tag_name('main'))
+                        main_elem = (
+                            browser.find_element_by_xpath(
+                                read_xpath(
+                                    get_links_for_location.__name__, "top_elements"
+                                )
+                            )
+                            if not link_elems
+                            else browser.find_element_by_xpath(
+                                read_xpath(get_links_for_location.__name__, "main_elem")
+                            )
+                            if skip_top_posts
+                            else browser.find_element_by_tag_name("main")
+                        )
                     else:
                         logger.info(
                             "'{}' location POSSIBLY has less images than "
-                                "desired:{} found:{}...".format(
-                                location, amount, len(links)))
+                            "desired:{} found:{}...".format(
+                                location, amount, len(links)
+                            )
+                        )
                         break
             else:
                 filtered_links = len(links)
@@ -210,82 +225,88 @@ def get_links_for_location(browser,
     return links[:amount]
 
 
-def get_links_for_tag(browser,
-                      tag,
-                      amount,
-                      skip_top_posts,
-                      randomize,
-                      media,
-                      logger):
+def get_links_for_tag(browser, tag, amount, skip_top_posts, randomize, media, logger):
     """Fetches the number of links specified
     by amount and returns a list of links"""
     if media is None:
         # All known media types
-        media = ['Photo', 'Carousel', 'Video']
-    elif media == 'Photo':
+        media = ["Photo", "Carousel", "Video"]
+    elif media == "Photo":
         # Include posts with multiple images in it
-        media = ['Photo', 'Carousel']
+        media = ["Photo", "Carousel"]
     else:
         # Make it an array to use it in the following part
         media = [media]
 
-    tag = (tag[1:] if tag[:1] == '#' else tag)
+    tag = tag[1:] if tag[:1] == "#" else tag
 
     tag_link = "https://www.instagram.com/explore/tags/{}".format(tag)
     web_address_navigator(browser, tag_link)
 
-    top_elements = browser.find_element_by_xpath(read_xpath(get_links_for_tag.__name__,"top_elements"))
-    top_posts = top_elements.find_elements_by_tag_name('a')
+    top_elements = browser.find_element_by_xpath(
+        read_xpath(get_links_for_tag.__name__, "top_elements")
+    )
+    top_posts = top_elements.find_elements_by_tag_name("a")
     sleep(1)
 
     if skip_top_posts:
-        main_elem = browser.find_element_by_xpath(read_xpath(get_links_for_tag.__name__,"main_elem"))
+        main_elem = browser.find_element_by_xpath(
+            read_xpath(get_links_for_tag.__name__, "main_elem")
+        )
     else:
-        main_elem = browser.find_element_by_tag_name('main')
-    link_elems = main_elem.find_elements_by_tag_name('a')
+        main_elem = browser.find_element_by_tag_name("main")
+    link_elems = main_elem.find_elements_by_tag_name("a")
     sleep(1)
 
     if not link_elems:  # this tag does not have `Top Posts` or it really is
         # empty..
-        main_elem = browser.find_element_by_xpath(read_xpath(get_links_for_tag.__name__,"top_elements"))
+        main_elem = browser.find_element_by_xpath(
+            read_xpath(get_links_for_tag.__name__, "top_elements")
+        )
         top_posts = []
     sleep(2)
 
     try:
         possible_posts = browser.execute_script(
             "return window._sharedData.entry_data."
-            "TagPage[0].graphql.hashtag.edge_hashtag_to_media.count")
+            "TagPage[0].graphql.hashtag.edge_hashtag_to_media.count"
+        )
 
     except WebDriverException:
         try:
-            possible_posts = (browser.find_element_by_xpath(
-                read_xpath(get_links_for_tag.__name__,"possible_post")).text)
+            possible_posts = browser.find_element_by_xpath(
+                read_xpath(get_links_for_tag.__name__, "possible_post")
+            ).text
             if possible_posts:
                 possible_posts = format_number(possible_posts)
 
             else:
                 logger.info(
                     "Failed to get the amount of possible posts in '{}' tag  "
-                    "~empty string".format(
-                        tag))
+                    "~empty string".format(tag)
+                )
                 possible_posts = None
 
         except NoSuchElementException:
             logger.info(
-                "Failed to get the amount of possible posts in {} tag".format(
-                    tag))
+                "Failed to get the amount of possible posts in {} tag".format(tag)
+            )
             possible_posts = None
 
     logger.info(
         "desired amount: {}  |  top posts [{}]: {}  |  possible posts: "
-        "{}".format(amount, "enabled" if not skip_top_posts else "disabled",
-                    len(top_posts),
-                    possible_posts))
+        "{}".format(
+            amount,
+            "enabled" if not skip_top_posts else "disabled",
+            len(top_posts),
+            possible_posts,
+        )
+    )
 
     if possible_posts is not None:
-        possible_posts = possible_posts if not skip_top_posts else \
-            possible_posts - len(
-            top_posts)
+        possible_posts = (
+            possible_posts if not skip_top_posts else possible_posts - len(top_posts)
+        )
         amount = possible_posts if amount > possible_posts else amount
     # sometimes pages do not have the correct amount of posts as it is
     # written there, it may be cos of some posts is deleted but still keeps
@@ -307,11 +328,11 @@ def get_links_for_tag(browser,
 
             for i in range(3):
                 browser.execute_script(
-                    "window.scrollTo(0, document.body.scrollHeight);")
+                    "window.scrollTo(0, document.body.scrollHeight);"
+                )
                 update_activity()
                 sc_rolled += 1
-                sleep(
-                    nap)  # if not slept, and internet speed is low,
+                sleep(nap)  # if not slept, and internet speed is low,
                 # instagram will only scroll one time, instead of many times
                 # you sent scoll command...
 
@@ -330,16 +351,16 @@ def get_links_for_tag(browser,
                 try_again += 1
                 nap = 3 if try_again == 1 else 5
                 logger.info(
-                    "Insufficient amount of links ~ trying again: {}".format(
-                        try_again))
+                    "Insufficient amount of links ~ trying again: {}".format(try_again)
+                )
                 sleep(3)
 
                 if try_again > 2:  # you can try again as much as you want
                     # by changing this number
                     if put_sleep < 1 and filtered_links <= 21:
                         logger.info(
-                            "Cor! Did you send too many requests? ~ let's "
-                            "rest some")
+                            "Cor! Did you send too many requests? ~ let's " "rest some"
+                        )
                         sleep(600)
                         put_sleep += 1
 
@@ -348,17 +369,22 @@ def get_links_for_tag(browser,
                         try_again = 0
                         sleep(10)
 
-                        main_elem = (browser.find_element_by_xpath(
-                            read_xpath(get_links_for_tag.__name__,"top_elements")) if not link_elems else
-                                     browser.find_element_by_xpath(
-                                         read_xpath(get_links_for_tag.__name__,"main_elem")) if
-                                     skip_top_posts else
-                                     browser.find_element_by_tag_name('main'))
+                        main_elem = (
+                            browser.find_element_by_xpath(
+                                read_xpath(get_links_for_tag.__name__, "top_elements")
+                            )
+                            if not link_elems
+                            else browser.find_element_by_xpath(
+                                read_xpath(get_links_for_tag.__name__, "main_elem")
+                            )
+                            if skip_top_posts
+                            else browser.find_element_by_tag_name("main")
+                        )
                     else:
                         logger.info(
                             "'{}' tag POSSIBLY has less images than "
-                            "desired:{} found:{}...".format(
-                                tag, amount, len(links)))
+                            "desired:{} found:{}...".format(tag, amount, len(links))
+                        )
                         break
             else:
                 filtered_links = len(links)
@@ -375,32 +401,34 @@ def get_links_for_tag(browser,
     return links[:amount]
 
 
-def get_links_for_username(browser,
-                           username,
-                           person,
-                           amount,
-                           logger,
-                           logfolder,
-                           randomize=False,
-                           media=None,
-                           taggedImages=False):
+def get_links_for_username(
+    browser,
+    username,
+    person,
+    amount,
+    logger,
+    logfolder,
+    randomize=False,
+    media=None,
+    taggedImages=False,
+):
     """Fetches the number of links specified
     by amount and returns a list of links"""
     if media is None:
         # All known media types
-        media = ['Photo', 'Carousel', 'Video']
-    elif media == 'Photo':
+        media = ["Photo", "Carousel", "Video"]
+    elif media == "Photo":
         # Include posts with multiple images in it
-        media = ['Photo', 'Carousel']
+        media = ["Photo", "Carousel"]
     else:
         # Make it an array to use it in the following part
         media = [media]
 
-    logger.info('Getting {} image list...'.format(person))
+    logger.info("Getting {} image list...".format(person))
 
     user_link = "https://www.instagram.com/{}/".format(person)
     if taggedImages:
-        user_link = user_link + 'tagged/'
+        user_link = user_link + "tagged/"
 
     # Check URL of the webpage, if it already is user's profile page,
     # then do not navigate to it again
@@ -408,44 +436,47 @@ def get_links_for_username(browser,
 
     if not is_page_available(browser, logger):
         logger.error(
-            'Instagram error: The link you followed may be broken, or the '
-            'page may have been removed...')
+            "Instagram error: The link you followed may be broken, or the "
+            "page may have been removed..."
+        )
         return False
 
     # if private user, we can get links only if we following
     following_status, _ = get_following_status(
-        browser, "profile", username, person, None, logger, logfolder)
+        browser, "profile", username, person, None, logger, logfolder
+    )
 
-    #if following_status is None:
+    # if following_status is None:
     #    browser.wait_for_valid_connection(browser, username, logger)
 
-    #if following_status == 'Follow':
+    # if following_status == 'Follow':
     #    browser.wait_for_valid_authorization(browser, username, logger)
 
-    is_private = is_private_profile(browser, logger, following_status == 'Following')
-    if (is_private is None
-        or (is_private is True and following_status not in ['Following', True])
-        or (following_status == 'Blocked')):
-        logger.info('This user is private and we are not following')
+    is_private = is_private_profile(browser, logger, following_status == "Following")
+    if (
+        is_private is None
+        or (is_private is True and following_status not in ["Following", True])
+        or (following_status == "Blocked")
+    ):
+        logger.info("This user is private and we are not following")
         return False
 
     # Get links
     links = []
-    main_elem = browser.find_element_by_tag_name('article')
+    main_elem = browser.find_element_by_tag_name("article")
     posts_count = get_number_of_posts(browser)
     attempt = 0
 
     if posts_count is not None and amount > posts_count:
         logger.info(
             "You have requested to get {} posts from {}'s profile page BUT"
-            " there only {} posts available :D".format(amount, person,
-                                                       posts_count))
+            " there only {} posts available :D".format(amount, person, posts_count)
+        )
         amount = posts_count
 
     while len(links) < amount:
         initial_links = links
-        browser.execute_script(
-            "window.scrollTo(0, document.body.scrollHeight);")
+        browser.execute_script("window.scrollTo(0, document.body.scrollHeight);")
         # update server calls after a scroll request
         update_activity()
         sleep(0.66)
@@ -459,8 +490,8 @@ def get_links_for_username(browser,
             if attempt >= 7:
                 logger.info(
                     "There are possibly less posts than {} in {}'s profile "
-                    "page!".format(
-                        amount, person))
+                    "page!".format(amount, person)
+                )
                 break
             else:
                 attempt += 1
@@ -475,7 +506,7 @@ def get_links_for_username(browser,
 
 def get_media_edge_comment_string(media):
     """AB test (Issue 3712) alters the string for media edge, this resoves it"""
-    options = ['edge_media_to_comment', 'edge_media_preview_comment']
+    options = ["edge_media_to_comment", "edge_media_preview_comment"]
     for option in options:
         try:
             media[option]
@@ -484,10 +515,18 @@ def get_media_edge_comment_string(media):
         return option
 
 
-def check_link(browser, post_link, dont_like, mandatory_words,
-               mandatory_language, mandatory_character,
-               is_mandatory_character, check_character_set, ignore_if_contains,
-               logger):
+def check_link(
+    browser,
+    post_link,
+    dont_like,
+    mandatory_words,
+    mandatory_language,
+    mandatory_character,
+    is_mandatory_character,
+    check_character_set,
+    ignore_if_contains,
+    logger,
+):
     """
     Check the given link if it is appropriate
 
@@ -512,7 +551,8 @@ def check_link(browser, post_link, dont_like, mandatory_words,
     # Check if the Post is Valid/Exists
     try:
         post_page = browser.execute_script(
-            "return window._sharedData.entry_data.PostPage")
+            "return window._sharedData.entry_data.PostPage"
+        )
 
     except WebDriverException:  # handle the possible `entry_data` error
         try:
@@ -520,29 +560,30 @@ def check_link(browser, post_link, dont_like, mandatory_words,
             update_activity()
 
             post_page = browser.execute_script(
-                "return window._sharedData.entry_data.PostPage")
+                "return window._sharedData.entry_data.PostPage"
+            )
 
         except WebDriverException:
             post_page = None
 
     if post_page is None:
-        logger.warning(
-            'Unavailable Page: {}'.format(post_link.encode('utf-8')))
-        return True, None, None, 'Unavailable Page', "Failure"
+        logger.warning("Unavailable Page: {}".format(post_link.encode("utf-8")))
+        return True, None, None, "Unavailable Page", "Failure"
 
     # Gets the description of the post's link and checks for the dont_like tags
-    graphql = 'graphql' in post_page[0]
+    graphql = "graphql" in post_page[0]
     if graphql:
-        media = post_page[0]['graphql']['shortcode_media']
-        is_video = media['is_video']
-        user_name = media['owner']['username']
-        image_text = media['edge_media_to_caption']['edges']
-        image_text = image_text[0]['node']['text'] if image_text else None
-        location = media['location']
-        location_name = location['name'] if location else None
+        media = post_page[0]["graphql"]["shortcode_media"]
+        is_video = media["is_video"]
+        user_name = media["owner"]["username"]
+        image_text = media["edge_media_to_caption"]["edges"]
+        image_text = image_text[0]["node"]["text"] if image_text else None
+        location = media["location"]
+        location_name = location["name"] if location else None
         media_edge_string = get_media_edge_comment_string(media)
         # double {{ allows us to call .format here:
-        owner_comments = browser.execute_script('''
+        owner_comments = browser.execute_script(
+            """
             latest_comments = window._sharedData.entry_data.PostPage[
             0].graphql.shortcode_media.{}.edges;
             if (latest_comments === undefined) {{
@@ -554,14 +595,19 @@ def check_link(browser, post_link, dont_like, mandatory_words,
                 return owner_comments;}}
             else {{
                 return null;}}
-        '''.format(media_edge_string), user_name)
+        """.format(
+                media_edge_string
+            ),
+            user_name,
+        )
 
     else:
-        media = post_page[0]['media']
-        is_video = media['is_video']
-        user_name = media['owner']['username']
-        image_text = media['caption']
-        owner_comments = browser.execute_script('''
+        media = post_page[0]["media"]
+        is_video = media["is_video"]
+        user_name = media["owner"]["username"]
+        image_text = media["caption"]
+        owner_comments = browser.execute_script(
+            """
             latest_comments = window._sharedData.entry_data.PostPage[
             0].media.comments.nodes;
             if (latest_comments === undefined) {
@@ -573,9 +619,11 @@ def check_link(browser, post_link, dont_like, mandatory_words,
                 return owner_comments;}
             else {
                 return null;}
-        ''', user_name)
+        """,
+            user_name,
+        )
 
-    if owner_comments == '':
+    if owner_comments == "":
         owner_comments = None
 
     # Append owner comments to description as it might contain further tags
@@ -583,48 +631,56 @@ def check_link(browser, post_link, dont_like, mandatory_words,
         image_text = owner_comments
 
     elif owner_comments:
-        image_text = image_text + '\n' + owner_comments
+        image_text = image_text + "\n" + owner_comments
 
     # If the image still has no description gets the first comment
     if image_text is None:
         if graphql:
             media_edge_string = get_media_edge_comment_string(media)
-            image_text = media[media_edge_string]['edges']
-            image_text = image_text[0]['node']['text'] if image_text else None
+            image_text = media[media_edge_string]["edges"]
+            image_text = image_text[0]["node"]["text"] if image_text else None
 
         else:
-            image_text = media['comments']['nodes']
-            image_text = image_text[0]['text'] if image_text else None
+            image_text = media["comments"]["nodes"]
+            image_text = image_text[0]["text"] if image_text else None
 
     if image_text is None:
         image_text = "No description"
 
-    logger.info('Image from: {}'.format(user_name.encode('utf-8')))
-    logger.info('Link: {}'.format(post_link.encode('utf-8')))
-    logger.info('Description: {}'.format(image_text.encode('utf-8')))
+    logger.info("Image from: {}".format(user_name.encode("utf-8")))
+    logger.info("Link: {}".format(post_link.encode("utf-8")))
+    logger.info("Description: {}".format(image_text.encode("utf-8")))
 
     # Check if mandatory character set, before adding the location to the text
     if mandatory_language:
         if not check_character_set(image_text):
-            return True, user_name, is_video, 'Mandatory language not ' \
-                                              'fulfilled', "Not mandatory " \
-                                                           "language"
+            return (
+                True,
+                user_name,
+                is_video,
+                "Mandatory language not " "fulfilled",
+                "Not mandatory " "language",
+            )
 
     # Append location to image_text so we can search through both in one go
     if location_name:
-        logger.info('Location: {}'.format(location_name.encode('utf-8')))
-        image_text = image_text + '\n' + location_name
+        logger.info("Location: {}".format(location_name.encode("utf-8")))
+        image_text = image_text + "\n" + location_name
 
     if mandatory_words:
         if not any((word in image_text for word in mandatory_words)):
-            return True, user_name, is_video, 'Mandatory words not ' \
-                                              'fulfilled', "Not mandatory " \
-                                                           "likes"
+            return (
+                True,
+                user_name,
+                is_video,
+                "Mandatory words not " "fulfilled",
+                "Not mandatory " "likes",
+            )
 
     image_text_lower = [x.lower() for x in image_text]
     ignore_if_contains_lower = [x.lower() for x in ignore_if_contains]
     if any((word in image_text_lower for word in ignore_if_contains_lower)):
-        return False, user_name, is_video, 'None', "Pass"
+        return False, user_name, is_video, "None", "Pass"
 
     dont_like_regex = []
 
@@ -636,32 +692,31 @@ def check_link(browser, post_link, dont_like, mandatory_words,
         elif dont_likes.startswith("]"):
             dont_like_regex.append("#[\d\w]+" + dont_likes[1:] + "([^\d\w]|$)")
         else:
-            dont_like_regex.append(
-                "#[\d\w]*" + dont_likes + "[\d\w]*([^\d\w]|$)")
+            dont_like_regex.append("#[\d\w]*" + dont_likes + "[\d\w]*([^\d\w]|$)")
 
     for dont_likes_regex in dont_like_regex:
         quash = re.search(dont_likes_regex, image_text, re.IGNORECASE)
         if quash:
-            quashed = \
-            (((quash.group(0)).split('#')[1]).split(' ')[0]).split('\n')[
-                0].encode(
-                'utf-8')  # dismiss possible space and newlines
-            iffy = ((re.split(r'\W+', dont_likes_regex))[
-                        3] if dont_likes_regex.endswith(
-                '*([^\\d\\w]|$)') else  # 'word' without format
-                    (re.split(r'\W+', dont_likes_regex))[
-                        1] if dont_likes_regex.endswith(
-                        '+([^\\d\\w]|$)') else  # '[word'
-                    (re.split(r'\W+', dont_likes_regex))[
-                        3] if dont_likes_regex.startswith(
-                        '#[\\d\\w]+') else  # ']word'
-                    (re.split(r'\W+', dont_likes_regex))[1])  # '#word'
+            quashed = (
+                (((quash.group(0)).split("#")[1]).split(" ")[0])
+                .split("\n")[0]
+                .encode("utf-8")
+            )  # dismiss possible space and newlines
+            iffy = (
+                (re.split(r"\W+", dont_likes_regex))[3]
+                if dont_likes_regex.endswith("*([^\\d\\w]|$)")
+                else (re.split(r"\W+", dont_likes_regex))[1]  # 'word' without format
+                if dont_likes_regex.endswith("+([^\\d\\w]|$)")
+                else (re.split(r"\W+", dont_likes_regex))[3]  # '[word'
+                if dont_likes_regex.startswith("#[\\d\\w]+")
+                else (re.split(r"\W+", dont_likes_regex))[1]  # ']word'
+            )  # '#word'
             inapp_unit = 'Inappropriate! ~ contains "{}"'.format(
-                quashed if iffy == quashed else
-                '" in "'.join([str(iffy), str(quashed)]))
+                quashed if iffy == quashed else '" in "'.join([str(iffy), str(quashed)])
+            )
             return True, user_name, is_video, inapp_unit, "Undesired word"
 
-    return False, user_name, is_video, 'None', "Success"
+    return False, user_name, is_video, "None", "Success"
 
 
 def like_image(browser, username, blacklist, logger, logfolder, total_liked_img):
@@ -684,13 +739,14 @@ def like_image(browser, username, blacklist, logger, logfolder, total_liked_img)
         liked_elem = browser.find_elements_by_xpath(unlike_xpath)
 
         if len(liked_elem) == 1:
-            logger.info('--> Image Liked!')
-            update_activity('likes')
+            logger.info("--> Image Liked!")
+            update_activity("likes")
 
-            if blacklist['enabled'] is True:
-                action = 'liked'
+            if blacklist["enabled"] is True:
+                action = "liked"
                 add_user_to_blacklist(
-                    username, blacklist['campaign'], action, logger, logfolder)
+                    username, blacklist["campaign"], action, logger, logfolder
+                )
 
             # get the post-like delay time to sleep
             naply = get_action_delay("like")
@@ -704,16 +760,16 @@ def like_image(browser, username, blacklist, logger, logfolder, total_liked_img)
 
         else:
             # if like not seceded wait for 2 min
-            logger.info('--> Image was not able to get Liked! maybe blocked ?')
+            logger.info("--> Image was not able to get Liked! maybe blocked ?")
             sleep(120)
 
     else:
         liked_elem = browser.find_elements_by_xpath(unlike_xpath)
         if len(liked_elem) == 1:
-            logger.info('--> Image already liked!')
+            logger.info("--> Image already liked!")
             return False, "already liked"
 
-    logger.info('--> Invalid Like Element!')
+    logger.info("--> Invalid Like Element!")
 
     return False, "invalid element"
 
@@ -728,7 +784,9 @@ def verify_liked_image(browser, logger):
     if len(like_elem) == 1:
         return True
     else:
-        logger.info('-------- WARNING! Image was NOT liked! You are have a BLOCK on likes!')
+        logger.info(
+            "-------- WARNING! Image was NOT liked! You are have a BLOCK on likes!"
+        )
         return False
 
 
@@ -740,19 +798,21 @@ def get_tags(browser, url):
     web_address_navigator(browser, url)
 
     graphql = browser.execute_script(
-        "return ('graphql' in window._sharedData.entry_data.PostPage[0])")
+        "return ('graphql' in window._sharedData.entry_data.PostPage[0])"
+    )
 
     if graphql:
         image_text = browser.execute_script(
             "return window._sharedData.entry_data.PostPage[0].graphql."
-            "shortcode_media.edge_media_to_caption.edges[0].node.text")
+            "shortcode_media.edge_media_to_caption.edges[0].node.text"
+        )
 
     else:
         image_text = browser.execute_script(
-            "return window._sharedData.entry_data."
-            "PostPage[0].media.caption.text")
+            "return window._sharedData.entry_data." "PostPage[0].media.caption.text"
+        )
 
-    tags = findall(r'#\w*', image_text)
+    tags = findall(r"#\w*", image_text)
 
     return tags
 
@@ -767,26 +827,29 @@ def get_links(browser, page, logger, media, element):
         if link_elems:
             for link_elem in link_elems:
                 try:
-                    post_href = link_elem.get_attribute('href')
+                    post_href = link_elem.get_attribute("href")
                     post_elem = element.find_elements_by_xpath(
-                            "//a[@href='/p/" + post_href.split('/')[-2] +
-                            "/']/child::div")
+                        "//a[@href='/p/" + post_href.split("/")[-2] + "/']/child::div"
+                    )
 
-                    if len(post_elem) == 1 and 'Photo' in media:
+                    if len(post_elem) == 1 and "Photo" in media:
                         # Single photo
                         links.append(post_href)
 
                     if len(post_elem) == 2:
                         # Carousel or Video
                         post_category = element.find_element_by_xpath(
-                            "//a[@href='/p/" + post_href.split('/')[-2] +
-                            "/']/child::div[@class='u7YqG']/child::span"
-                            ).get_attribute('aria-label')
+                            "//a[@href='/p/"
+                            + post_href.split("/")[-2]
+                            + "/']/child::div[@class='u7YqG']/child::span"
+                        ).get_attribute("aria-label")
 
                         if post_category in media:
                             links.append(post_href)
                 except WebDriverException:
-                    logger.info("Cannot detect post media type. Skip {}".format(post_href))
+                    logger.info(
+                        "Cannot detect post media type. Skip {}".format(post_href)
+                    )
         else:
             logger.info("'{}' page does not contain a picture".format(page))
     except BaseException as e:
@@ -801,7 +864,8 @@ def verify_liking(browser, max, min, logger):
         likes_count = browser.execute_script(
             "return window._sharedData.entry_data."
             "PostPage[0].graphql.shortcode_media.edge_media_preview_like"
-            ".count")
+            ".count"
+        )
 
     except WebDriverException:
         try:
@@ -811,18 +875,19 @@ def verify_liking(browser, max, min, logger):
             likes_count = browser.execute_script(
                 "return window._sharedData.entry_data."
                 "PostPage[0].graphql.shortcode_media.edge_media_preview_like"
-                ".count")
+                ".count"
+            )
 
         except WebDriverException:
             try:
-                likes_count = (browser.find_element_by_css_selector(
-                    "section._1w76c._nlmjy > div > a > span").text)
+                likes_count = browser.find_element_by_css_selector(
+                    "section._1w76c._nlmjy > div > a > span"
+                ).text
 
                 if likes_count:
                     likes_count = format_number(likes_count)
                 else:
-                    logger.info(
-                        "Failed to check likes' count  ~empty string\n")
+                    logger.info("Failed to check likes' count  ~empty string\n")
                     return True
 
             except NoSuchElementException:
@@ -832,7 +897,8 @@ def verify_liking(browser, max, min, logger):
     if max is not None and likes_count > max:
         logger.info(
             "Not liked this post! ~more likes exist off maximum limit at "
-            "{}".format(likes_count))
+            "{}".format(likes_count)
+        )
         return False
     elif min is not None and likes_count < min:
         logger.info(
@@ -846,7 +912,9 @@ def verify_liking(browser, max, min, logger):
 
 def like_comment(browser, original_comment_text, logger):
     """ Like the given comment """
-    comments_block_XPath = read_xpath(like_comment.__name__,"comments_block")  # quite an efficient
+    comments_block_XPath = read_xpath(
+        like_comment.__name__, "comments_block"
+    )  # quite an efficient
     # location path
 
     try:
@@ -858,21 +926,24 @@ def like_comment(browser, original_comment_text, logger):
             if comment and (comment == original_comment_text):
                 # find "Like" span (a direct child of Like button)
                 span_like_elements = comment_line.find_elements_by_xpath(
-                    read_xpath(like_comment.__name__,"span_like_elements"))
+                    read_xpath(like_comment.__name__, "span_like_elements")
+                )
                 if not span_like_elements:
                     # this is most likely a liked comment
                     return True, "success"
 
                 # like the given comment
                 span_like = span_like_elements[0]
-                comment_like_button = span_like.find_element_by_xpath(read_xpath(like_comment.__name__,"comment_like_button"))
+                comment_like_button = span_like.find_element_by_xpath(
+                    read_xpath(like_comment.__name__, "comment_like_button")
+                )
                 click_element(browser, comment_like_button)
 
                 # verify if like succeeded by waiting until the like button
                 # element goes stale..
-                button_change = explicit_wait(browser, "SO",
-                                              [comment_like_button], logger, 7,
-                                              False)
+                button_change = explicit_wait(
+                    browser, "SO", [comment_like_button], logger, 7, False
+                )
 
                 if button_change:
                     logger.info("--> Liked the comment!")
@@ -885,8 +956,11 @@ def like_comment(browser, original_comment_text, logger):
                     return False, "failure"
 
     except (NoSuchElementException, StaleElementReferenceException) as exc:
-        logger.error("Error occured while liking a comment.\n\t{}\n\n"
-                     .format(str(exc).encode("utf-8")))
+        logger.error(
+            "Error occured while liking a comment.\n\t{}\n\n".format(
+                str(exc).encode("utf-8")
+            )
+        )
         return False, "error"
 
     return None, "unknown"

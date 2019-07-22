@@ -6,18 +6,21 @@ from selenium.common.exceptions import NoSuchElementException
 
 from .xpath import read_xpath
 
-def check_image(browser,
-                clarifai_api_key,
-                img_tags,
-                img_tags_skip_if_contain,
-                logger,
-                clarifai_models,
-                workflow,
-                probability,
-                full_match=False,
-                check_video=False,
-                proxy=None,
-                picture_url=None):
+
+def check_image(
+    browser,
+    clarifai_api_key,
+    img_tags,
+    img_tags_skip_if_contain,
+    logger,
+    clarifai_models,
+    workflow,
+    probability,
+    full_match=False,
+    check_video=False,
+    proxy=None,
+    picture_url=None,
+):
     try:
         """Uses the link to the image to check for invalid content in the
         image.
@@ -29,7 +32,7 @@ def check_image(browser,
         clarifai_tags = []
 
         if proxy is not None:
-            clarifai_api.api.session.proxies = {'https': proxy}
+            clarifai_api.api.session.proxies = {"https": proxy}
         # Set req image or video source URL to given one or get it from
         # current page
         if picture_url is None:
@@ -44,18 +47,15 @@ def check_image(browser,
         # Check image using workflow if provided. If no workflow,
         # check image using model(s)
         if workflow:
-            clarifai_workflow = Workflow(clarifai_api.api,
-                                         workflow_id=workflow[0])
+            clarifai_workflow = Workflow(clarifai_api.api, workflow_id=workflow[0])
             # If source is video, checks keyframe against models as video
             # inputs not supported when using workflows
-            if source_link[0].endswith('mp4'):
-                clarifai_response = clarifai_workflow.predict_by_url(
-                    source_link[1])
+            if source_link[0].endswith("mp4"):
+                clarifai_response = clarifai_workflow.predict_by_url(source_link[1])
             else:
-                clarifai_response = clarifai_workflow.predict_by_url(
-                    source_link[0])
+                clarifai_response = clarifai_workflow.predict_by_url(source_link[0])
 
-            for response in clarifai_response['results'][0]['outputs']:
+            for response in clarifai_response["results"][0]["outputs"]:
                 results = get_clarifai_tags(response, probability)
                 clarifai_tags.extend(results)
         else:
@@ -64,12 +64,12 @@ def check_image(browser,
                     clarifai_api, model, source_link, check_video
                 )
                 results = get_clarifai_tags(
-                    clarifai_response['outputs'][0], probability
+                    clarifai_response["outputs"][0], probability
                 )
                 clarifai_tags.extend(results)
 
         logger.info(
-            'source_link {} got predicted result(s):\n{}'.format(
+            "source_link {} got predicted result(s):\n{}".format(
                 source_link, clarifai_tags
             )
         )
@@ -79,20 +79,18 @@ def check_image(browser,
         if given_tags_in_result(img_tags_skip_if_contain, clarifai_tags):
             logger.info(
                 'Not Commenting, image contains concept(s): "{}".'.format(
-                    ', '.join(list(
-                        set(clarifai_tags) & set(img_tags_skip_if_contain)))
+                    ", ".join(list(set(clarifai_tags) & set(img_tags_skip_if_contain)))
                 )
             )
             return False, [], clarifai_tags
 
         for (tags, should_comment, comments) in img_tags:
-            if should_comment and given_tags_in_result(tags, clarifai_tags,
-                                                       full_match):
+            if should_comment and given_tags_in_result(tags, clarifai_tags, full_match):
                 return True, comments, clarifai_tags
             elif given_tags_in_result(tags, clarifai_tags, full_match):
                 logger.info(
                     'Not Commenting, image contains concept(s): "{}".'.format(
-                        ', '.join(list(set(clarifai_tags) & set(tags)))
+                        ", ".join(list(set(clarifai_tags) & set(tags)))
                     )
                 )
                 return False, [], clarifai_tags
@@ -100,7 +98,7 @@ def check_image(browser,
         return True, [], clarifai_tags
 
     except Exception as err:
-        logger.error('Image check error: {}'.format(err))
+        logger.error("Image check error: {}".format(err))
 
 
 def given_tags_in_result(search_tags, clarifai_tags, full_match=False):
@@ -122,47 +120,47 @@ def get_source_link(browser):
     try:
         source.append(
             browser.find_element_by_xpath(
-                read_xpath(get_source_link.__name__,"image")).get_attribute('src')
+                read_xpath(get_source_link.__name__, "image")
+            ).get_attribute("src")
         )
     except NoSuchElementException:
         source.append(
             browser.find_element_by_xpath(
-                read_xpath(get_source_link.__name__,"video")).get_attribute(
-                'src'
-            )
+                read_xpath(get_source_link.__name__, "video")
+            ).get_attribute("src")
         )
         source.append(
             browser.find_element_by_xpath(
-                read_xpath(get_source_link.__name__,"image_alt")).get_attribute('src')
+                read_xpath(get_source_link.__name__, "image_alt")
+            ).get_attribute("src")
         )
 
     return source
 
 
-def get_clarifai_response(clarifai_api, clarifai_model, source_link,
-                          check_video):
+def get_clarifai_response(clarifai_api, clarifai_model, source_link, check_video):
     """Compiles a list of tags from Clarifai using the chosen models.
     First checks the value of each item in the models list against a
     dictionary. If the model value provided does not match one of the
     keys in the dictionary below, model value is used in
     clarifai_api.models.get(). Useful for custom models."""
     # List of models which support video inputs
-    video_models = ['apparel', 'food', 'general', 'nsfw', 'travel', 'wedding']
+    video_models = ["apparel", "food", "general", "nsfw", "travel", "wedding"]
     clarifai_models = {
-        'general': 'general-v1.3',
-        'nsfw': 'nsfw-v1.0',
-        'apparel': 'apparel',
-        'celebrity': 'celeb-v1.3',
-        'color': 'color',
-        'demographics': 'demographics',
-        'food': 'food-items-v1.0',
-        'landscape quality': 'Landscape Quality',
-        'logo': 'logo',
-        'moderation': 'moderation',
-        'portrait quality': 'Portrait Quality',
-        'textures': 'Textures & Patterns',
-        'travel': 'travel-v1.0',
-        'weddings': 'weddings-v1.0',
+        "general": "general-v1.3",
+        "nsfw": "nsfw-v1.0",
+        "apparel": "apparel",
+        "celebrity": "celeb-v1.3",
+        "color": "color",
+        "demographics": "demographics",
+        "food": "food-items-v1.0",
+        "landscape quality": "Landscape Quality",
+        "logo": "logo",
+        "moderation": "moderation",
+        "portrait quality": "Portrait Quality",
+        "textures": "Textures & Patterns",
+        "travel": "travel-v1.0",
+        "weddings": "weddings-v1.0",
     }
 
     model = clarifai_api.models.get(
@@ -172,14 +170,14 @@ def get_clarifai_response(clarifai_api, clarifai_model, source_link,
     # If source is video, model accepts video inputs and check_video is
     # True, analyze content of frames in video
     if (
-            check_video
-            and source_link[0].endswith('mp4')
-            and clarifai_model.lower() in video_models
+        check_video
+        and source_link[0].endswith("mp4")
+        and clarifai_model.lower() in video_models
     ):
         response = model.predict_by_url(source_link[0], is_video=True)
     # If source is video but model does not accept video inputs or
     # check_video is False, analyze content of keyframe
-    elif source_link[0].endswith('mp4'):
+    elif source_link[0].endswith("mp4"):
         response = model.predict_by_url(source_link[1])
     else:
         response = model.predict_by_url(source_link[0])
@@ -196,20 +194,20 @@ def get_clarifai_tags(clarifai_response, probability):
     # Parse response for Color model
     try:
         concepts = [
-            {concept.get('w3c', {}).get('name').lower(): concept.get('value')}
-            for concept in clarifai_response['data']['colors']
+            {concept.get("w3c", {}).get("name").lower(): concept.get("value")}
+            for concept in clarifai_response["data"]["colors"]
         ]
     except KeyError:
         pass
 
     # Parse response for Celebrity and Demographics models
     try:
-        for value in clarifai_response['data']['regions']:
-            for face in value['data']['face'].values():
+        for value in clarifai_response["data"]["regions"]:
+            for face in value["data"]["face"].values():
                 concepts.extend(
                     [
-                        {concept.get('name').lower(): concept.get('value')}
-                        for concept in face['concepts']
+                        {concept.get("name").lower(): concept.get("value")}
+                        for concept in face["concepts"]
                     ]
                 )
     except KeyError:
@@ -218,9 +216,8 @@ def get_clarifai_tags(clarifai_response, probability):
     # Parse response for Logo model
     try:
         concepts = [
-            {concept.get('name').lower(): concept.get('value')}
-            for concept in
-            clarifai_response['data']['regions'][0]['data']['concepts']
+            {concept.get("name").lower(): concept.get("value")}
+            for concept in clarifai_response["data"]["regions"][0]["data"]["concepts"]
         ]
     except KeyError:
         pass
@@ -228,19 +225,19 @@ def get_clarifai_tags(clarifai_response, probability):
     # Parse response for General model and similarly structured responses
     try:
         concepts = [
-            {concept.get('name').lower(): concept.get('value')}
-            for concept in clarifai_response['data']['concepts']
+            {concept.get("name").lower(): concept.get("value")}
+            for concept in clarifai_response["data"]["concepts"]
         ]
     except KeyError:
         pass
 
     # Parse response for Video input
     try:
-        for frame in clarifai_response['data']['frames']:
+        for frame in clarifai_response["data"]["frames"]:
             concepts.extend(
                 [
-                    {concept.get('name').lower(): concept.get('value')}
-                    for concept in frame['data']['concepts']
+                    {concept.get("name").lower(): concept.get("value")}
+                    for concept in frame["data"]["concepts"]
                 ]
             )
     except KeyError:
