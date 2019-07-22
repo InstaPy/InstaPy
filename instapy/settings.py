@@ -75,13 +75,6 @@ class Settings:
     # true, chrome if false.
     use_firefox = None
 
-    #inluxdb Settings
-    host_influx = None
-    port_influx = None
-    user_influx = None
-    password_influx = None
-    db_influx  = None
-
     # state of instantiation of InstaPy
     InstaPy_is_running = False
 
@@ -105,80 +98,3 @@ class Selectors:
     likes_dialog_body_xpath = (
         read_xpath("class_selectors", "likes_dialog_body_xpath"))
     likes_dialog_close_xpath = read_xpath("class_selectors", "likes_dialog_close_xpath")
-
-
-
-class InfluxDBLog:
-    """ InfluxDB Singleton Class """
-    singleton = None
-    client_influxDB = None
-
-    def __new__(cls, *args, **kwargs):
-        if not cls.singleton:
-            cls.singleton = object.__new__(InfluxDBLog)
-        return cls.singleton
-
-    def __init__(self):
-        if (self.client_influxDB or
-                not Settings.host_influx or
-                not Settings.port_influx or
-                not Settings.user_influx or
-                not Settings.password_influx or
-                not Settings.db_influx
-            ): return
-
-        try:
-            # only import when needed
-            from influxdb import InfluxDBClient
-
-            self.client_influxDB = InfluxDBClient(host = Settings.host_influx,
-                                                    port = Settings.port_influx,
-                                                    username = Settings.user_influx,
-                                                    password = Settings.password_influx,
-                                                    database = Settings.db_influx)
-            self.client_influxDB.switch_database(Settings.db_influx)
-
-            version = self.client_influxDB.ping()
-            print('Using InfluxDB version: ' + str(version))
-            self.register_callbacks()
-        except Exception as e:
-            self.client_influxDB = None
-            print('Error connecting to InfluxDB!: ', str(e))
-            # TODO throw some exception ?
-
-    def addEntry(self, measurement, tag_name, tag_value, field1_name, field1_value, field2_name, field2_value):
-        tags = {
-            tag_name: tag_value
-        }
-        fields = {
-            field1_name: field1_value,
-            field2_name: field2_value
-        }
-        self.add(measurement, tags, fields)
-
-    def add(self, measurement, tags, fields):
-        if not self.client_influxDB: return
-
-        json_body = [{
-                "measurement": measurement,
-                "tags": tags,
-                "fields": fields
-            }]
-        self.client_influxDB.write_points(json_body)
-
-    def switchDatabase(self, database):
-        if not self.client_influxDB: return
-
-        self.client_influxDB.switch_database(database)
-        Settings.db_influx = database
-
-    def register_callbacks(self):
-        event = Event()
-        event.add_callback(event.profile_data_updated.__name__, self.update_profile_data);
-
-    def update_profile_data(self, username, followers_count, following_count):
-        fields = {
-            'followers_count': followers_count,
-            'following_count': following_count
-        }
-        self.add('profile', { 'username': username }, fields)

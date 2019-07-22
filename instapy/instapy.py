@@ -39,7 +39,6 @@ from .like_util import like_comment
 from .login_util import login_user
 from .settings import Settings
 from .settings import localize_path
-from .settings import InfluxDBLog
 from .print_log_writer import log_follower_num
 from .print_log_writer import log_following_num
 
@@ -113,7 +112,6 @@ class InstaPy:
                  proxy_password: str = None,
                  proxy_address: str = None,
                  proxy_port: str = None,
-                 influxdb = None, # TODO add type
                  disable_image_load: bool = False,
                  bypass_suspicious_attempt: bool = False,
                  bypass_with_mobile: bool = False,
@@ -162,16 +160,6 @@ class InstaPy:
         self.bypass_suspicious_attempt = bypass_suspicious_attempt
         self.bypass_with_mobile = bypass_with_mobile
         self.disable_image_load = disable_image_load
-
-        if influxdb:
-            Settings.user_influx = influxdb['user']
-            Settings.password_influx = influxdb['password']
-            Settings.db_influx = influxdb['database']
-            Settings.host_influx = influxdb['host']
-            Settings.port_influx = influxdb['port']
-            
-            # create singleton so connection will be established
-            InfluxDBLog()
 
         # choose environment over static typed credentials
         self.username = os.environ.get('INSTA_USER') or username

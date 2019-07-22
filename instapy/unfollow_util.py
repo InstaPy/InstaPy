@@ -36,9 +36,9 @@ from .relationship_tools import get_followers
 from .relationship_tools import get_nonfollowers
 from .database_engine import get_database
 from .quota_supervisor import quota_supervisor
-from .settings import InfluxDBLog
 from .util import is_follow_me
 from .util import get_epoch_time_diff
+from .event import Event
 
 from selenium.common.exceptions import WebDriverException
 from selenium.common.exceptions import NoSuchElementException
@@ -743,8 +743,8 @@ def follow_user(browser, track, login, user_name, button, blacklist, logger,
 
     # general tasks after a successful follow
     logger.info("--> Followed '{}'!".format(user_name.encode("utf-8")))
-    InfluxDBLog().addEntry("Follow", "Followed User", 1, "username", user_name, "count", 1 )
     update_activity('follows')
+    Event().followed(user_name)
 
     # get user ID to record alongside username
     user_id = get_user_id(browser, track, user_name, logger)
@@ -1377,8 +1377,8 @@ def unfollow_user(browser, track, username, person, person_id, button,
 
     # general tasks after a successful unfollow
     logger.info("--> Unfollowed '{}'!".format(person))
-    InfluxDBLog().addEntry("Unfollow", "Unfollowed User", 1, "username", person, "count", 1 )
     update_activity('unfollows')
+    Event().unfollowed(person)
     post_unfollow_cleanup("successful", username, person, relationship_data,
                           person_id, logger, logfolder)
 

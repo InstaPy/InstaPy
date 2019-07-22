@@ -31,3 +31,15 @@ class Event:
     # place custom events below
     def profile_data_updated(self, username, followers_count, following_count):
         self.fire_callbacks(self.profile_data_updated.__name__, username, followers_count, following_count)
+
+    def commented(self, username):
+        self.fire_callbacks(self.commented.__name__, username)
+
+    def liked(self, username):
+        self.fire_callbacks(self.liked.__name__, username)
+
+    def followed(self, username):
+        self.fire_callbacks(self.followed.__name__, username)
+
+    def unfollowed(self, username):
+        self.fire_callbacks(self.unfollowed.__name__, username)
