@@ -121,7 +121,6 @@ def create_tables(cursor, tables):
     if "interactedWith" in tables:
         cursor.execute(SQL_CREATE_INTERACTED_WITH_TABLE)
 
-
 def verify_database_directories(address):
     db_dir = os.path.dirname(address)
     if not os.path.exists(db_dir):

@@ -88,6 +88,7 @@ def is_private_profile(browser, logger, following=True):
 
     return is_private
 
+
 def validate_username(browser,
                       username_or_link,
                       own_username,
@@ -167,9 +168,9 @@ def validate_username(browser,
         inap_msg = "---> '{}' is in the `ignore_users` list\t~skipping " \
                    "user\n".format(username)
         return False, inap_msg
-
+    
     if username in interacted_with:
-        inap_msg = "---> '{}' is a person we already interacted with\t~skipping " \
+        inap_msg = "---> '{}' is a person we already interacted with ~skipping " \
                    "user\n".format(username)
         return False, inap_msg
 
@@ -487,6 +488,7 @@ def add_interacted_with(username, logger):
         cur = conn.cursor()
         cur.execute("INSERT INTO interactedWith VALUES (?,?)", item)
     logger.info("Setting to skip interactions with '{}' in the future.".format(username))
+
 
 def get_active_users(browser, username, posts, boundary, logger):
     """Returns a list with usernames who liked the latest n posts"""
@@ -962,7 +964,7 @@ def get_relationship_counts(browser, username, logger):
     except WebDriverException:
         try:
             followers_count = format_number(
-                browser.find_element_by_xpath(read_xpath(get_relationship_counts.__name__,"followers_count")).text)
+                browser.find_element_by_xpath(str(read_xpath(get_relationship_counts.__name__,"followers_count"))))
         except NoSuchElementException:
             try:
                 browser.execute_script("location.reload()")
@@ -1003,7 +1005,7 @@ def get_relationship_counts(browser, username, logger):
     except WebDriverException:
         try:
             following_count = format_number(
-                browser.find_element_by_xpath(read_xpath(get_relationship_counts.__name__,"following_count")).text)
+                browser.find_element_by_xpath(str(read_xpath(get_relationship_counts.__name__,"following_count"))))
 
         except NoSuchElementException:
             try:
@@ -1782,9 +1784,10 @@ def get_action_delay(action):
     config = Settings.action_delays
 
     if (not config or
+            action not in config or
             config["enabled"] is not True or
             config[action] is None or
-            isinstance(config[action], (int, float))):
+            isinstance(config[action], (int, float)) is not True):
         return defaults[action]
 
     else:
