@@ -97,14 +97,14 @@ def get_story_data(browser, elem, action_type, logger, simulate = False):
                             'X-Requested-With': 'XMLHttpRequest',
                             'Content-Type': 'application/x-www-form-urlencoded'
                         }
-                        response=session.post("https://www.instagram.com/stories/reel/seen",
-                                     data= { 'reelMediaId': item['id'],
+                        response = session.post("https://www.instagram.com/stories/reel/seen",
+                                     data = { 'reelMediaId': item['id'],
                                              'reelMediaOwnerId': item['owner']['id'],
                                              'reelId': reel_id,
                                              'reelMediaTakenAt': item['taken_at_timestamp'],
                                              'viewSeenAt': math.floor(time.time())
                                              },
-                                     headers=headers)
+                                     headers = headers)
                         logger.info('  --> simulated watch reel # {}'.format(index))
                         index += 1
                         time.sleep(randint(3,6))

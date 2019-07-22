@@ -5485,12 +5485,12 @@ class InstaPy:
                     break
 
                 # inform user whats happening
-                if len(tags)> 1:
+                if len(tags) > 1:
                     self.logger.info('Tag [{}/{}]'.format(index + 1, len(tags)))
                 self.logger.info('Loading stories with Tag --> {}'.format(tag.encode('utf-8')))
 
                 try:
-                    reels=watch_story(self.browser, tag, self.logger, "tag", self.story_simulate)
+                    reels = watch_story(self.browser, tag, self.logger, "tag", self.story_simulate)
                 except NoSuchElementException:
                     self.logger.info('No stories skipping this tag')
                     continue
@@ -5513,12 +5513,12 @@ class InstaPy:
                     break
 
                 # inform user whats happening
-                if len(users) >1:
+                if len(users) > 1:
                     self.logger.info('User [{}/{}]'.format(index + 1, len(users)))
                 self.logger.info('Loading stories with User --> {}'.format(user.encode('utf-8')))
 
                 try:
-                    reels=watch_story(self.browser, user, self.logger, "user", self.story_simulate)
+                    reels = watch_story(self.browser, user, self.logger, "user", self.story_simulate)
                 except NoSuchElementException:
                     self.logger.info('No stories skipping this user')
                     continue
