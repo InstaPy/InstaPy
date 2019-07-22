@@ -5466,13 +5466,13 @@ class InstaPy:
         if tags is None:
             self.logger.info("No Tags set")
         else:
-            #iterate over available tags
+            # iterate over available tags
             for index, tag in enumerate(tags):
-                #Quota Supervisor peak check
+                # Quota Supervisor peak check
                 if self.quotient_breach:
                     break
 
-                #inform user whats happening
+                # inform user whats happening
                 if len(tags)> 1:
                     self.logger.info('Tag [{}/{}]'.format(index + 1, len(tags)))
                 self.logger.info('Loading stories with Tag --> {}'.format(tag.encode('utf-8')))
@@ -5494,13 +5494,13 @@ class InstaPy:
         if users is None:
             self.logger.info("No users passed to story_by_users")
         else:
-            #iterate over available users
+            # iterate over available users
             for index, user in enumerate(users):
-                #Quota Supervisor peak check
+                # Quota Supervisor peak check
                 if self.quotient_breach:
                     break
 
-                #inform user whats happening
+                # inform user whats happening
                 if len(users) >1:
                     self.logger.info('User [{}/{}]'.format(index + 1, len(users)))
                 self.logger.info('Loading stories with User --> {}'.format(user.encode('utf-8')))

@@ -17,7 +17,7 @@ def get_story_data(browser, elem, action_type, logger, simulate = False):
     output the amount of segments we can watch
     """
 
-    #if things change in the future, modify here:
+    # if things change in the future, modify here:
     query_hash = "cda12de4f7fd3719c0569ce03589f4c4"
     elem_id = ""
 
@@ -50,7 +50,7 @@ def get_story_data(browser, elem, action_type, logger, simulate = False):
     session = requests.Session()
     csrftoken = ""
 
-    #prepare the cookies for the requests session
+    # prepare the cookies for the requests session
     for cookie in cookies:
         all_args = {
             'name': cookie['name'],
@@ -73,16 +73,16 @@ def get_story_data(browser, elem, action_type, logger, simulate = False):
 
     reels_cnt = 0
     if response['status'] == 'ok':
-        #we got a correct response from the server
-        #check how many reels we got
+        # we got a correct response from the server
+        # check how many reels we got
         media_cnt = len(response['data']['reels_media'])
 
         if media_cnt == 0:
-            #then nothing to watch, we received no stories
+            # then nothing to watch, we received no stories
             return {'status': 'ok', 'reels_cnt': 0}
         else:
-            #we got content
-            #check if there is something new to watch otherwise we just return 0
+            # we got content
+            # check if there is something new to watch otherwise we just return 0
             seen=0
             if (action_type != "tag") and (response['data']['reels_media'][0]['seen'] is not None):
                 seen = response['data']['reels_media'][0]['seen']
@@ -130,16 +130,16 @@ def watch_story(browser, elem, logger, action_type, simulate = False):
         story_link = "https://www.instagram.com/{}".format(elem)
 
     web_address_navigator(browser, story_link)
-    #wait for the page to load
+    # wait for the page to load
     time.sleep(randint(2, 6))
-    #order is important here otherwise we are not on the page of the story we want to watch
+    # order is important here otherwise we are not on the page of the story we want to watch
     story_data = get_story_data(browser, elem, action_type, logger, simulate)
 
     if story_data['status'] == 'not ok':
         raise NoSuchElementException
 
     if story_data['reels_cnt'] == 0:
-        #nothing to watch, there is no stories
+        # nothing to watch, there is no stories
         logger.info('no stories to watch (either there is none) or we have already watched everything')
         return 0
 
@@ -151,10 +151,10 @@ def watch_story(browser, elem, logger, action_type, simulate = False):
             logger.info("'{}' {} POSSIBLY does not exist", elem, action_type)
             raise NoSuchElementException
         else:
-            #load stories/view stories
+            # load stories/view stories
             click_element(browser, story_elem)
 
-        #watch stories until there is no more stories available
+        # watch stories until there is no more stories available
         logger.info('Watching stories...')
         while True:
             try:
