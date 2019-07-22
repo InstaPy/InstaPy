@@ -2409,7 +2409,8 @@ class InstaPy:
                                         # smart commenting
                                         comments = self.fetch_smart_comments(
                                             is_video,
-                                            temp_comments)
+                                            temp_comments
+                                        )
                                         if comments:
                                             comment_state, msg = comment_image(
                                                 self.browser,
@@ -2417,7 +2418,8 @@ class InstaPy:
                                                 comments,
                                                 self.blacklist,
                                                 self.logger,
-                                                self.logfolder)
+                                                self.logfolder
+                                            )
                                             if comment_state is True:
                                                 commented += 1
 
@@ -2442,7 +2444,9 @@ class InstaPy:
                     else:
                         self.logger.info(
                             '--> Image not liked: {}'.format(
-                                reason.encode('utf-8')))
+                                reason.encode('utf-8')
+                            )
+                        )
                         inap_img += 1
 
                 except NoSuchElementException as err:
@@ -2459,7 +2463,9 @@ class InstaPy:
                     None,
                     self.blacklist,
                     self.logger,
-                    self.logfolder)
+                    self.logfolder
+                )
+
                 if follow_state is True:
                     followed += 1
 
@@ -5307,15 +5313,23 @@ class InstaPy:
     def join_pods(self, topic='general', engagement_mode='normal'):
         """ Join pods """
         if topic not in self.allowed_pod_topics:
-            self.logger.error('You have entered an invalid topic for pods, allowed topics are : {}. Exiting...'.format(self.allowed_pod_topics))
+            self.logger.error(
+                'You have entered an invalid topic for pods, allowed topics are : {}. Exiting...'
+                .format(self.allowed_pod_topics)
+            )
             return self
 
         if engagement_mode not in self.allowed_pod_engagement_modes:
-            self.logger.error('You have entered an invalid engagement_mode for pods, allowed engagement_modes are : {}. Exiting...'.format(self.allowed_pod_engagement_modes))
+            self.logger.error(
+                'You have entered an invalid engagement_mode for pods, allowed engagement_modes are : {}. Exiting...'
+                .format(self.allowed_pod_engagement_modes)
+            )
             return self
 
         if self.comments is not None and len(self.comments) < 10:
-            self.logger.error('You have too few comments, please set at least 10 distinct comments to avoid looking suspicious.')
+            self.logger.error(
+                'You have too few comments, please set at least 10 distinct comments to avoid looking suspicious.'
+            )
             return self
 
         user_link = 'https://www.instagram.com/{}/'.format(self.username)
@@ -5471,12 +5485,12 @@ class InstaPy:
                     break
 
                 # inform user whats happening
-                if len(tags)> 1:
+                if len(tags) > 1:
                     self.logger.info('Tag [{}/{}]'.format(index + 1, len(tags)))
                 self.logger.info('Loading stories with Tag --> {}'.format(tag.encode('utf-8')))
 
                 try:
-                    reels=watch_story(self.browser, tag, self.logger, "tag", self.story_simulate)
+                    reels = watch_story(self.browser, tag, self.logger, "tag", self.story_simulate)
                 except NoSuchElementException:
                     self.logger.info('No stories skipping this tag')
                     continue
@@ -5499,12 +5513,12 @@ class InstaPy:
                     break
 
                 # inform user whats happening
-                if len(users) >1:
+                if len(users) > 1:
                     self.logger.info('User [{}/{}]'.format(index + 1, len(users)))
                 self.logger.info('Loading stories with User --> {}'.format(user.encode('utf-8')))
 
                 try:
-                    reels=watch_story(self.browser, user, self.logger, "user", self.story_simulate)
+                    reels = watch_story(self.browser, user, self.logger, "user", self.story_simulate)
                 except NoSuchElementException:
                     self.logger.info('No stories skipping this user')
                     continue
