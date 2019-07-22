@@ -521,7 +521,7 @@ class InstaPy:
 
         return self
 
-    def set_do_story(self, enabled: bool = False, percentage: int = 0, simulate: bool=False):
+    def set_do_story(self, enabled = False, percentage = 0, simulate = False):
         """
             configure stories
             enabled: to add story to interact
@@ -5458,7 +5458,7 @@ class InstaPy:
                 self.logger.error("Failed for {} with Error {}".format(pod_post, err))
 
 
-    def story_by_tags(self, tags: list = None):
+    def story_by_tags(self, tags = None):
         """ Watch stories for specific tag(s) """
         if self.aborting:
             return self
@@ -5466,13 +5466,13 @@ class InstaPy:
         if tags is None:
             self.logger.info("No Tags set")
         else:
-            # iterate over available tags
+            #iterate over available tags
             for index, tag in enumerate(tags):
-                # Quota Supervisor peak check
+                #Quota Supervisor peak check
                 if self.quotient_breach:
                     break
 
-                # inform user whats happening
+                #inform user whats happening
                 if len(tags)> 1:
                     self.logger.info('Tag [{}/{}]'.format(index + 1, len(tags)))
                 self.logger.info('Loading stories with Tag --> {}'.format(tag.encode('utf-8')))
@@ -5486,7 +5486,7 @@ class InstaPy:
                     self.stories_watched += 1
                     self.reels_watched += reels
 
-    def story_by_users(self, users: list = None):
+    def story_by_users(self, users = None):
         """ Watch stories for specific user(s)"""
         if self.aborting:
             return self
@@ -5494,13 +5494,13 @@ class InstaPy:
         if users is None:
             self.logger.info("No users passed to story_by_users")
         else:
-            # iterate over available users
+            #iterate over available users
             for index, user in enumerate(users):
-                # Quota Supervisor peak check
+                #Quota Supervisor peak check
                 if self.quotient_breach:
                     break
 
-                # inform user whats happening
+                #inform user whats happening
                 if len(users) >1:
                     self.logger.info('User [{}/{}]'.format(index + 1, len(users)))
                 self.logger.info('Loading stories with User --> {}'.format(user.encode('utf-8')))
