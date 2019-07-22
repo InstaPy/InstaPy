@@ -27,9 +27,9 @@ def get_story_data(browser, elem, action_type, logger, simulate = False):
             reel_id = browser.execute_script(
                 "return window._sharedData.entry_data."
                 "ProfilePage[0].graphql.user.id")
-            #correct formating for elem_id
+            # correct formating for elem_id
             elem_id = '"'+reel_id+'"'
-            #and elem needs to be nothing
+            # and elem needs to be nothing
             elem = ""
         except WebDriverException:
             logger.error("---> Sorry, this page isn't available!\t~either " + \
