@@ -11,7 +11,7 @@ def response(flow):
     if not flow.response.status_code == 200: return
 
     # inject the script tag
-    html = BeautifulSoup(flow.response.text, 'lxml')
+    html = BeautifulSoup(flow.response.text, 'html.parser')
     container = html.head or html.body
     if container:
         script = html.new_tag('script', type='text/javascript')
