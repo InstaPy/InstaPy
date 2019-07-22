@@ -69,7 +69,7 @@ def get_main_element(browser, link_elems, skip_top_posts):
     if not link_elems:
         main_elem = browser.find_element_by_xpath(
             read_xpath(get_links_for_location.__name__, "top_elements")
-        ) 
+        )
     else:
         if skip_top_posts:
             main_elem = browser.find_element_by_xpath(
