@@ -503,29 +503,24 @@ def get_active_users(browser, username, posts, boundary, logger):
         total_posts = browser.execute_script(
             "return window._sharedData.entry_data."
             "ProfilePage[0].graphql.user.edge_owner_to_timeline_media.count")
-
     except WebDriverException:
         try:
             topCount_elements = browser.find_elements_by_xpath(
-                read_xpath(get_active_users.__name__,"topCount_elements"))
+                read_xpath(get_active_users.__name__, "topCount_elements"))
 
             if topCount_elements:  # prevent an empty string scenario
                 total_posts = format_number(topCount_elements[0].text)
-
             else:
                 logger.info(
                     "Failed to get posts count on your profile!  ~empty "
                     "string")
                 total_posts = None
-
         except NoSuchElementException:
             logger.info("Failed to get posts count on your profile!")
             total_posts = None
 
     # if posts > total user posts, assume total posts
-    posts = posts if total_posts is None else total_posts if posts > \
-                                                             total_posts \
-        else posts
+    posts = posts if total_posts is None else total_posts if posts > total_posts else posts
 
     # click latest post
     try:
@@ -535,7 +530,6 @@ def get_active_users(browser, username, posts, boundary, logger):
         if latest_posts:
             latest_post = latest_posts[0]
             click_element(browser, latest_post)
-
     except (NoSuchElementException, WebDriverException):
         logger.warning(
             "Failed to click on the latest post to grab active likers!\n")
@@ -568,9 +562,8 @@ def get_active_users(browser, username, posts, boundary, logger):
             sleep_actual(2)
             try:
                 likers_count = browser.execute_script(
-                    "return window._sharedData.entry_data."
-                    "PostPage["
-                    "0].graphql.shortcode_media.edge_media_preview_like.count")
+                    "return window._sharedData.entry_data.ProfilePage[0]"
+                    ".graphql.user.edge_saved_media.count")
             except WebDriverException:
                 try:
                     likers_count = (browser.find_element_by_xpath(
@@ -698,12 +691,10 @@ def get_active_users(browser, username, posts, boundary, logger):
                             nap_it = 4 if try_again == 0 else 7
                             sleep_actual(nap_it)
 
-            print('\n')
             user_list = get_users_from_dialog(user_list, dialog)
 
             logger.info("Post {}  |  Likers: found {}, catched {}\n\n".format(
                 count, likers_count, len(user_list)))
-
         except NoSuchElementException as exc:
             logger.error("Ku-ku! There is an error searching active users"
                          "~\t{}\n\n".format(str(exc).encode("utf-8")))
@@ -718,10 +709,9 @@ def get_active_users(browser, username, posts, boundary, logger):
             try:
                 # click close button
                 close_dialog_box(browser)
-
                 # click next button
                 next_button = browser.find_element_by_xpath(
-                    read_xpath(get_active_users.__name__,"next_button"))
+                    read_xpath(get_active_users.__name__, "next_button"))
                 click_element(browser, next_button)
 
             except Exception:

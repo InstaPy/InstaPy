@@ -35,6 +35,7 @@ from .like_util import get_links_for_location
 from .like_util import like_image
 from .like_util import get_links_for_username
 from .like_util import like_comment
+from .story_util import watch_story
 from .login_util import login_user
 from .settings import Settings
 from .settings import localize_path
@@ -116,7 +117,8 @@ class InstaPy:
                  bypass_suspicious_attempt=False,
                  bypass_with_mobile=False,
                  multi_logs=True,
-                 split_db=False):
+                 split_db=False,
+                 random_user_agent: bool = False):
 
         cli_args = parse_cli_args()
         username = cli_args.username or username
@@ -210,6 +212,8 @@ class InstaPy:
         self.automatedFollowedPool = {"all": [], "eligible": []}
         self.do_like = False
         self.like_percentage = 0
+        self.do_story = False
+        self.story_percentage = 0
         self.smart_hashtags = []
         self.smart_location_hashtags = []
 
@@ -307,7 +311,7 @@ class InstaPy:
         get_database(make=True)  # IMPORTANT: think twice before relocating
 
         if self.selenium_local_session is True:
-            self.set_selenium_local_session()
+            self.set_selenium_local_session(random_user_agent)
 
     def get_instapy_logger(self, show_logs):
         """
@@ -344,7 +348,7 @@ class InstaPy:
             Settings.logger = logger
             return logger
 
-    def set_selenium_local_session(self):
+    def set_selenium_local_session(self, random_user_agent: bool):
         self.browser, err_msg = set_selenium_local_session(self.proxy_address,
                                                            self.proxy_port,
                                                            self.proxy_username,
@@ -353,13 +357,10 @@ class InstaPy:
                                                            self.headless_browser,
                                                            self.use_firefox,
                                                            self.browser_profile_path,
-                                                           # Replaces
-                                                           # browser User
-                                                           # Agent from
-                                                           # "HeadlessChrome".
                                                            self.disable_image_load,
                                                            self.page_delay,
-                                                           self.logger)
+                                                           self.logger,
+                                                           random_user_agent)
         if len(err_msg) > 0:
             raise InstaPyError(err_msg)
 
@@ -515,6 +516,16 @@ class InstaPy:
         self.like_percentage = min(percentage,100)
 
         return self
+
+    def set_do_story(self, enabled: bool = False, percentage: int = 0):
+        if self.aborting:
+            return self
+
+        self.do_story = enabled
+        self.story_percentage = min(percentage,100)
+
+        return self
+
 
     def set_dont_like(self, tags=None):
         """Changes the possible restriction tags, if one of this
@@ -2205,6 +2216,7 @@ class InstaPy:
         followed = 0
         already_followed = 0
         not_valid_users = 0
+        story_watched = 0
 
         self.quotient_breach = False
 
@@ -2248,17 +2260,19 @@ class InstaPy:
                               not_dont_include)
                 liking = (random.randint(0, 100) <= self.like_percentage)
 
+                story = (random.randint(0,100) <= self.story_percentage and self.do_story)
+
                 counter += 1
 
                 # if we have only one image to like/comment
                 if commenting and not liking and amount == 1:
                     continue
 
-                if following or commenting or liking:
+                if following or commenting or liking or story:
                     self.logger.info(
                         'username actions: following={} commenting={} '
-                        'liking={}'.format(
-                            following, commenting, liking))
+                        'liking={} story={}'.format(
+                            following, commenting, liking, story))
                     break
 
                 # if for some reason we have no actions on this user
@@ -2334,6 +2348,7 @@ class InstaPy:
                                           self.comment_percentage and
                                           self.do_comment and
                                           not_dont_include)
+                            story = (random.randint(0, 100) <= self.story_percentage and self.do_story)
 
                         # like
                         if self.do_like and liking and self.delimit_liking:
@@ -2446,6 +2461,15 @@ class InstaPy:
                 self.logger.info('--> Not following')
                 sleep(1)
 
+            #watch story if present
+            if story:
+                watched = self.story_by_users([username])
+                if watched>0:
+                    self.logger.info('--> story watched')
+                    story_watched = story_watched + 1
+                else:
+                    self.logger.info('--> no story to watch')
+
             if liked_img < amount:
                 self.logger.info('-------------')
                 self.logger.info("--> Given amount not fullfilled, image pool "
@@ -2464,6 +2488,7 @@ class InstaPy:
             self.logger.info('Commented: {}'.format(commented))
             self.logger.info('Followed: {}'.format(followed))
             self.logger.info('Already Followed: {}'.format(already_followed))
+            self.logger.info('Story(ies) watched: {}'.format(story_watched))
             self.logger.info('Inappropriate: {}'.format(inap_img))
             self.logger.info('Not valid users: {}\n'.format(not_valid_users))
 
@@ -5424,3 +5449,58 @@ class InstaPy:
             except Exception as err:
                 self.logger.error("Failed for {} with Error {}".format(pod_post, err))
 
+
+    def story_by_tags(self, tags: list = None):
+        """ Watch stories for specific tag(s) """
+        if self.aborting:
+            return self
+
+        if tags is None:
+            self.logger.info("No Tags set")
+        else:
+            # iterate over available tags
+            for index, tag in enumerate(tags):
+                # Quota Supervisor peak check
+                if self.quotient_breach:
+                    break
+
+                # inform user whats happening
+                self.logger.info('Loading stories view...')
+                self.logger.info('Tag [{}/{}]'.format(index + 1, len(tags)))
+                self.logger.info('Loading stories with Tag --> {}'.format(tag.encode('utf-8')))
+
+                try:
+                    watch_story(self.browser,
+                                        tag,
+                                        self.logger, "tag")
+                except NoSuchElementException:
+                    self.logger.info('No stories skipping this tag')
+                    continue
+
+    def story_by_users(self, users: list = None):
+        """ Watch stories for specific user(s)"""
+        watched=0
+        if self.aborting:
+            return self
+
+        if users is None:
+            self.logger.info("No users passed to story_by_users")
+        else:
+            # iterate over available users
+            for index, user in enumerate(users):
+                #Quota Supervisor peak check
+                if self.quotient_breach:
+                    break
+
+                #inform user whats happening
+                self.logger.info('Loading stories view...')
+                self.logger.info('User [{}/{}]'.format(index + 1, len(users)))
+                self.logger.info('Loading stories with User --> {}'.format(user.encode('utf-8')))
+
+                try:
+                    watch_story(self.browser, user, self.logger, "user")
+                    watched = watched+1
+                except NoSuchElementException:
+                    self.logger.info('No stories skipping this user')
+                    continue
+        return watched
