@@ -8,10 +8,11 @@ select =
 	F821,
 	F822,
 	F823,
-	E501,
-	E225
-max_complexity = 10
-max_line_length = 79
+	C901, # complexity
+	E501, # line length
+	E225 # whitespace around operators
+max_complexity = 70
+max_line_length = 130
 show_source = True
 statistics = True
 count = True

@@ -28,7 +28,9 @@ def bypass_suspicious_login(browser, bypass_with_mobile):
     CRITICAL - Wrong login data!"""
     # close sign up Instagram modal if available
     try:
-        close_button = browser.find_element_by_xpath(read_xpath(bypass_suspicious_login.__name__,"close_button"))
+        close_button = browser.find_element_by_xpath(
+            read_xpath(bypass_suspicious_login.__name__, "close_button")
+        )
 
         (ActionChains(browser)
          .move_to_element(close_button)
@@ -44,7 +46,7 @@ def bypass_suspicious_login(browser, bypass_with_mobile):
     try:
         # click on "This was me" button if challenge page was called
         this_was_me_button = browser.find_element_by_xpath(
-            read_xpath(bypass_suspicious_login.__name__,"this_was_me_button"))
+            read_xpath(bypass_suspicious_login.__name__, "this_was_me_button"))
 
         (ActionChains(browser)
          .move_to_element(this_was_me_button)
@@ -60,17 +62,19 @@ def bypass_suspicious_login(browser, bypass_with_mobile):
 
     try:
         choice = browser.find_element_by_xpath(
-            read_xpath(bypass_suspicious_login.__name__,"choice")).text
+            read_xpath(bypass_suspicious_login.__name__, "choice")).text
 
     except NoSuchElementException:
         try:
             choice = browser.find_element_by_xpath(
-                read_xpath(bypass_suspicious_login.__name__,"choice_no_such_element")).text
+                read_xpath(bypass_suspicious_login.__name__, "choice_no_such_element")
+            ).text
 
         except Exception:
             try:
                 choice = browser.find_element_by_xpath(
-                    read_xpath(bypass_suspicious_login.__name__,"choice_exception")).text
+                    read_xpath(bypass_suspicious_login.__name__, "choice_exception")
+                ).text
 
             except Exception:
                 print("Unable to locate email or phone button, maybe "
@@ -79,10 +83,12 @@ def bypass_suspicious_login(browser, bypass_with_mobile):
 
     if bypass_with_mobile:
         choice = browser.find_element_by_xpath(
-            read_xpath(bypass_suspicious_login.__name__,"bypass_with_mobile_choice")).text
+            read_xpath(bypass_suspicious_login.__name__, "bypass_with_mobile_choice")
+        ).text
 
         mobile_button = browser.find_element_by_xpath(
-            read_xpath(bypass_suspicious_login.__name__,"bypass_with_mobile_button"))
+            read_xpath(bypass_suspicious_login.__name__, "bypass_with_mobile_button")
+        )
 
         (ActionChains(browser)
          .move_to_element(mobile_button)
@@ -92,7 +98,7 @@ def bypass_suspicious_login(browser, bypass_with_mobile):
         sleep(5)
 
     send_security_code_button = browser.find_element_by_xpath(
-        read_xpath(bypass_suspicious_login.__name__,"send_security_code_button"))
+        read_xpath(bypass_suspicious_login.__name__, "send_security_code_button"))
 
     (ActionChains(browser)
      .move_to_element(send_security_code_button)
@@ -106,8 +112,9 @@ def bypass_suspicious_login(browser, bypass_with_mobile):
     print('A security code was sent to your {}'.format(choice))
     security_code = input('Type the security code here: ')
 
-    security_code_field = browser.find_element_by_xpath((
-        read_xpath(bypass_suspicious_login.__name__,"security_code_field")))
+    security_code_field = browser.find_element_by_xpath(
+        read_xpath(bypass_suspicious_login.__name__, "security_code_field")
+    )
 
     (ActionChains(browser)
      .move_to_element(security_code_field)
@@ -120,7 +127,8 @@ def bypass_suspicious_login(browser, bypass_with_mobile):
         update_activity()
 
     submit_security_code_button = browser.find_element_by_xpath(
-        read_xpath(bypass_suspicious_login.__name__,"submit_security_code_button"))
+        read_xpath(bypass_suspicious_login.__name__, "submit_security_code_button")
+    )
 
     (ActionChains(browser)
      .move_to_element(submit_security_code_button)
@@ -134,11 +142,12 @@ def bypass_suspicious_login(browser, bypass_with_mobile):
         sleep(5)
         # locate wrong security code message
         wrong_login = browser.find_element_by_xpath(
-            read_xpath(bypass_suspicious_login.__name__,"wrong_login"))
+            read_xpath(bypass_suspicious_login.__name__, "wrong_login")
+        )
 
         if wrong_login is not None:
-            print(('Wrong security code! Please check the code Instagram'
-                   'sent you and try again.'))
+            print('Wrong security code! Please check the code Instagram'
+                   'sent you and try again.')
 
     except NoSuchElementException:
         # correct security code
@@ -192,12 +201,13 @@ def login_user(browser,
     # Check if the first div is 'Create an Account' or 'Log In'
     try:
         login_elem = browser.find_element_by_xpath(
-            read_xpath(login_user.__name__,"login_elem"))
+            read_xpath(login_user.__name__, "login_elem"))
     except NoSuchElementException:
         print("Login A/B test detected! Trying another string...")
         try:
             login_elem = browser.find_element_by_xpath(
-                read_xpath(login_user.__name__,"login_elem_no_such_exception"))
+                read_xpath(login_user.__name__, "login_elem_no_such_exception")
+            )
         except NoSuchElementException:
             return False
 

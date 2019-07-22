@@ -25,9 +25,9 @@ def group_posts(posts, logger):
     heavy_post_ids = []
     for postobj in posts:
         try:
-            if(postobj['mode']=='light'):
+            if(postobj['mode'] == 'light'):
                 light_post_ids.append(postobj)
-            elif(postobj['mode']=='heavy'):
+            elif(postobj['mode'] == 'heavy'):
                 heavy_post_ids.append(postobj)
             else:
                 normal_post_ids.append(postobj)
