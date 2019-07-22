@@ -1,0 +1,17 @@
+[flake8]
+select =
+	E772,
+	F401,
+	F811,
+	E901,
+	E999,
+	F821,
+	F822,
+	F823,
+	E501,
+	E225
+max_complexity = 10
+max_line_length = 79
+show_source = True
+statistics = True
+count = True
