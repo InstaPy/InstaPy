@@ -199,6 +199,8 @@ class InstaPy:
         self.not_valid_users = 0
         self.video_played = 0
         self.already_Visited = 0
+        self.stories_watched = 0
+        self.reels_watched = 0
 
         self.follow_times = 1
         self.share_times = 1
@@ -213,6 +215,7 @@ class InstaPy:
         self.like_percentage = 0
         self.do_story = False
         self.story_percentage = 0
+        self.story_simulate = False
         self.smart_hashtags = []
         self.smart_location_hashtags = []
 
@@ -516,12 +519,20 @@ class InstaPy:
 
         return self
 
-    def set_do_story(self, enabled: bool = False, percentage: int = 0):
+    def set_do_story(self, enabled = False, percentage = 0, simulate = False):
+        """
+            configure stories
+            enabled: to add story to interact
+            percentage: how much to watch
+            simulate: if True, we will simulate watching (faster),
+                      but nothing will be seen on the browser window
+        """
         if self.aborting:
             return self
 
         self.do_story = enabled
         self.story_percentage = min(percentage,100)
+        self.story_simulate = simulate
 
         return self
 
@@ -735,7 +746,7 @@ class InstaPy:
 
         if not isinstance(character_set, list):
             character_set = [character_set]
-        
+
         for chr_set in character_set:
             if (chr_set not in ['LATIN', 'GREEK', 'CYRILLIC', 'ARABIC',
                                       'HEBREW', 'CJK', 'HANGUL', 'HIRAGANA',
@@ -744,10 +755,10 @@ class InstaPy:
                 ch_set_name = 'LATIN'
             else:
                 ch_set_name = chr_set
-                
+
             if ch_set_name not in char_set:
                 char_set.append(ch_set_name)
-                
+
         self.mandatory_language = enabled
         self.mandatory_character = char_set
 
@@ -1122,14 +1133,14 @@ class InstaPy:
                             # disable following temporarily 
                             # cos the user is already followed
                             self.do_follow = False
-                            
+
                             # disable revalidating user in interact_by_users
                             with self.feature_in_feature("interact_by_users", False):
                                 self.interact_by_users(acc_to_follow,
                                                        self.user_interact_amount,
                                                        self.user_interact_random,
                                                        self.user_interact_media)
-                            
+
                             # revert back to original `self.do_follow` value
                             self.do_follow = original_do_follow
 
@@ -1938,7 +1949,7 @@ class InstaPy:
                     self.logger.error('Invalid Page: {}'.format(err))
 
             self.logger.info('Tag: {}'.format(tag.encode('utf-8')))
-        
+
         self.logger.info('Liked: {}'.format(liked_img))
         self.logger.info('Already Liked: {}'.format(already_liked))
         self.logger.info('Commented: {}'.format(commented))
@@ -2215,7 +2226,6 @@ class InstaPy:
         followed = 0
         already_followed = 0
         not_valid_users = 0
-        story_watched = 0
 
         self.quotient_breach = False
 
@@ -2462,12 +2472,7 @@ class InstaPy:
 
             #watch story if present
             if story:
-                watched = self.story_by_users([username])
-                if watched>0:
-                    self.logger.info('--> story watched')
-                    story_watched = story_watched + 1
-                else:
-                    self.logger.info('--> no story to watch')
+                self.story_by_users([username])
 
             if liked_img < amount:
                 self.logger.info('-------------')
@@ -2487,7 +2492,6 @@ class InstaPy:
             self.logger.info('Commented: {}'.format(commented))
             self.logger.info('Followed: {}'.format(followed))
             self.logger.info('Already Followed: {}'.format(already_followed))
-            self.logger.info('Story(ies) watched: {}'.format(story_watched))
             self.logger.info('Inappropriate: {}'.format(inap_img))
             self.logger.info('Not valid users: {}\n'.format(not_valid_users))
 
@@ -4774,6 +4778,7 @@ class InstaPy:
                 "\t|> REPLIED to {} comments\n"
                 "\t|> INAPPROPRIATE images: {}\n"
                 "\t|> NOT VALID users: {}\n"
+                "\t|> WATCHED {} story(ies)  |  WATCHED {} reel(s)\n"
                 "\n{}\n{}"
                 .format(self.liked_img,
                         self.already_liked,
@@ -4785,6 +4790,8 @@ class InstaPy:
                         self.replied_to_comments,
                         self.inap_img,
                         self.not_valid_users,
+                        self.stories_watched,
+                        self.reels_watched,
                         owner_relationship_info,
                         run_time_msg))
         else:
@@ -5449,7 +5456,7 @@ class InstaPy:
                 self.logger.error("Failed for {} with Error {}".format(pod_post, err))
 
 
-    def story_by_tags(self, tags: list = None):
+    def story_by_tags(self, tags = None):
         """ Watch stories for specific tag(s) """
         if self.aborting:
             return self
@@ -5464,21 +5471,21 @@ class InstaPy:
                     break
 
                 # inform user whats happening
-                self.logger.info('Loading stories view...')
-                self.logger.info('Tag [{}/{}]'.format(index + 1, len(tags)))
+                if len(tags)> 1:
+                    self.logger.info('Tag [{}/{}]'.format(index + 1, len(tags)))
                 self.logger.info('Loading stories with Tag --> {}'.format(tag.encode('utf-8')))
 
                 try:
-                    watch_story(self.browser,
-                                        tag,
-                                        self.logger, "tag")
+                    reels=watch_story(self.browser, tag, self.logger, "tag", self.story_simulate)
                 except NoSuchElementException:
                     self.logger.info('No stories skipping this tag')
                     continue
+                if reels > 0:
+                    self.stories_watched += 1
+                    self.reels_watched += reels
 
-    def story_by_users(self, users: list = None):
+    def story_by_users(self, users = None):
         """ Watch stories for specific user(s)"""
-        watched=0
         if self.aborting:
             return self
 
@@ -5487,19 +5494,20 @@ class InstaPy:
         else:
             # iterate over available users
             for index, user in enumerate(users):
-                #Quota Supervisor peak check
+                # Quota Supervisor peak check
                 if self.quotient_breach:
                     break
 
-                #inform user whats happening
-                self.logger.info('Loading stories view...')
-                self.logger.info('User [{}/{}]'.format(index + 1, len(users)))
+                # inform user whats happening
+                if len(users) >1:
+                    self.logger.info('User [{}/{}]'.format(index + 1, len(users)))
                 self.logger.info('Loading stories with User --> {}'.format(user.encode('utf-8')))
 
                 try:
-                    watch_story(self.browser, user, self.logger, "user")
-                    watched = watched+1
+                    reels=watch_story(self.browser, user, self.logger, "user", self.story_simulate)
                 except NoSuchElementException:
                     self.logger.info('No stories skipping this user')
                     continue
-        return watched
+                if reels > 0:
+                    self.stories_watched += 1
+                    self.reels_watched += reels
