@@ -896,7 +896,7 @@ def get_users_through_dialog(browser,
 
             simulator_counter = 0
 
-    person_list = dialog_username_extractor(buttons, logger)
+    person_list = dialog_username_extractor(buttons)
 
     if randomize:
         random.shuffle(person_list)
@@ -912,9 +912,8 @@ def get_users_through_dialog(browser,
     return person_list, simulated_list
 
 
-def dialog_username_extractor(buttons, logger):
+def dialog_username_extractor(buttons):
     """ Extract username of a follow button from a dialog box """
-    # TODO: make logger global
 
     if not isinstance(buttons, list):
         buttons = [buttons]
