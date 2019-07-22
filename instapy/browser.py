@@ -19,6 +19,7 @@ from .util import highlight_print
 from .util import emergency_exit
 from .util import get_current_url
 from .util import check_authorization
+from .util import web_address_navigator
 from .settings import Settings
 from .file_manager import get_chromedriver_location
 
@@ -43,7 +44,10 @@ def set_selenium_local_session(proxy_address,
     err_msg = ''
 
     # define the custom user agent
-    fb_agent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36'
+    fb_agent = (
+        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 '
+        '(KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36'
+    )
     ua = UserAgent(cache = False, fallback = fb_agent)
 
     if use_firefox:

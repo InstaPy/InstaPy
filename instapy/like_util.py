@@ -63,6 +63,26 @@ def get_links_from_feed(browser, amount, num_of_search, logger):
     return links
 
 
+
+def get_main_element(browser, link_elems, skip_top_posts):
+    main_elem = None
+
+    if not link_elems:
+        main_elem = browser.find_element_by_xpath(
+            read_xpath(get_links_for_location.__name__, "top_elements")
+        )
+    else:
+        if skip_top_posts:
+            main_elem = browser.find_element_by_xpath(
+                read_xpath(get_links_for_location.__name__, "main_elem")
+            )
+        else:
+            main_elem = browser.find_element_by_tag_name('main')
+
+    return main_elem
+
+
+
 def get_links_for_location(browser,
                            location,
                            amount,
@@ -85,12 +105,16 @@ def get_links_for_location(browser,
         location)
     web_address_navigator(browser, location_link)
 
-    top_elements = browser.find_element_by_xpath(read_xpath(get_links_for_location.__name__,"top_elements"))
+    top_elements = browser.find_element_by_xpath(
+        read_xpath(get_links_for_location.__name__, "top_elements")
+    )
     top_posts = top_elements.find_elements_by_tag_name('a')
     sleep(1)
 
     if skip_top_posts:
-        main_elem = browser.find_element_by_xpath(read_xpath(get_links_for_location.__name__,"main_elem"))
+        main_elem = browser.find_element_by_xpath(
+            read_xpath(get_links_for_location.__name__, "main_elem")
+        )
     else:
         main_elem = browser.find_element_by_tag_name('main')
 
@@ -99,7 +123,9 @@ def get_links_for_location(browser,
 
     if not link_elems:  # this location does not have `Top Posts` or it
         # really is empty..
-        main_elem = browser.find_element_by_xpath(get_links_for_location.__name__,"top_elements")
+        main_elem = browser.find_element_by_xpath(
+            get_links_for_location.__name__, "top_elements"
+        )
         top_posts = []
     sleep(2)
 
@@ -178,7 +204,8 @@ def get_links_for_location(browser,
                     if put_sleep < 1 and filtered_links <= 21:
                         logger.info(
                             "Cor! Did you send too many requests? ~ let's "
-                            "rest some")
+                            "rest some"
+                        )
                         sleep(600)
                         put_sleep += 1
 
@@ -187,12 +214,9 @@ def get_links_for_location(browser,
                         try_again = 0
                         sleep(10)
 
-                        main_elem = (browser.find_element_by_xpath(
-                            read_xpath(get_links_for_location.__name__,"top_elements")) if not link_elems else
-                                     browser.find_element_by_xpath(
-                                         read_xpath(get_links_for_location.__name__,"main_elem")) if
-                                     skip_top_posts else
-                                     browser.find_element_by_tag_name('main'))
+                        main_elem = get_main_element(
+                            browser, link_elems, skip_top_posts
+                        )
                     else:
                         logger.info(
                             "'{}' location POSSIBLY has less images than "
@@ -235,12 +259,16 @@ def get_links_for_tag(browser,
     tag_link = "https://www.instagram.com/explore/tags/{}".format(tag)
     web_address_navigator(browser, tag_link)
 
-    top_elements = browser.find_element_by_xpath(read_xpath(get_links_for_tag.__name__,"top_elements"))
+    top_elements = browser.find_element_by_xpath(
+        read_xpath(get_links_for_tag.__name__, "top_elements")
+    )
     top_posts = top_elements.find_elements_by_tag_name('a')
     sleep(1)
 
     if skip_top_posts:
-        main_elem = browser.find_element_by_xpath(read_xpath(get_links_for_tag.__name__,"main_elem"))
+        main_elem = browser.find_element_by_xpath(
+            read_xpath(get_links_for_tag.__name__, "main_elem")
+        )
     else:
         main_elem = browser.find_element_by_tag_name('main')
     link_elems = main_elem.find_elements_by_tag_name('a')
@@ -248,7 +276,9 @@ def get_links_for_tag(browser,
 
     if not link_elems:  # this tag does not have `Top Posts` or it really is
         # empty..
-        main_elem = browser.find_element_by_xpath(read_xpath(get_links_for_tag.__name__,"top_elements"))
+        main_elem = browser.find_element_by_xpath(
+            read_xpath(get_links_for_tag.__name__, "top_elements")
+        )
         top_posts = []
     sleep(2)
 
@@ -349,12 +379,9 @@ def get_links_for_tag(browser,
                         try_again = 0
                         sleep(10)
 
-                        main_elem = (browser.find_element_by_xpath(
-                            read_xpath(get_links_for_tag.__name__,"top_elements")) if not link_elems else
-                                     browser.find_element_by_xpath(
-                                         read_xpath(get_links_for_tag.__name__,"main_elem")) if
-                                     skip_top_posts else
-                                     browser.find_element_by_tag_name('main'))
+                        main_elem = get_main_element(
+                            browser, link_elems, skip_top_posts
+                        )
                     else:
                         logger.info(
                             "'{}' tag POSSIBLY has less images than "
@@ -382,9 +409,9 @@ def get_links_for_username(browser,
                            amount,
                            logger,
                            logfolder,
-                           randomize=False,
-                           media=None,
-                           taggedImages=False):
+                           randomize = False,
+                           media = None,
+                           taggedImages = False):
     """Fetches the number of links specified
     by amount and returns a list of links"""
     if media is None:
@@ -410,12 +437,14 @@ def get_links_for_username(browser,
     if not is_page_available(browser, logger):
         logger.error(
             'Instagram error: The link you followed may be broken, or the '
-            'page may have been removed...')
+            'page may have been removed...'
+        )
         return False
 
     # if private user, we can get links only if we following
     following_status, _ = get_following_status(
-        browser, "profile", username, person, None, logger, logfolder)
+        browser, "profile", username, person, None, logger, logfolder
+    )
 
     #if following_status is None:
     #    browser.wait_for_valid_connection(browser, username, logger)
@@ -631,14 +660,15 @@ def check_link(browser, post_link, dont_like, mandatory_words,
 
     for dont_likes in dont_like:
         if dont_likes.startswith("#"):
-            dont_like_regex.append(dont_likes + "([^\d\w]|$)")
+            dont_like_regex.append(dont_likes + r"([^\d\w]|$)")
         elif dont_likes.startswith("["):
-            dont_like_regex.append("#" + dont_likes[1:] + "[\d\w]+([^\d\w]|$)")
+            dont_like_regex.append("#" + dont_likes[1:] + r"[\d\w]+([^\d\w]|$)")
         elif dont_likes.startswith("]"):
-            dont_like_regex.append("#[\d\w]+" + dont_likes[1:] + "([^\d\w]|$)")
+            dont_like_regex.append(r"#[\d\w]+" + dont_likes[1:] + r"([^\d\w]|$)")
         else:
             dont_like_regex.append(
-                "#[\d\w]*" + dont_likes + "[\d\w]*([^\d\w]|$)")
+                r"#[\d\w]*" + dont_likes + r"[\d\w]*([^\d\w]|$)"
+            )
 
     for dont_likes_regex in dont_like_regex:
         quash = re.search(dont_likes_regex, image_text, re.IGNORECASE)
@@ -731,7 +761,10 @@ def verify_liked_image(browser, logger):
     if len(like_elem) == 1:
         return True
     else:
-        logger.info('-------- WARNING! Image was NOT liked! You are have a BLOCK on likes!')
+        logger.info(
+            '-------- WARNING! Image was NOT liked! '
+            'You are have a BLOCK on likes!'
+        )
         return False
 
 
@@ -791,7 +824,9 @@ def get_links(browser, page, logger, media, element):
                         if post_category in media:
                             links.append(post_href)
                 except WebDriverException:
-                    logger.info("Cannot detect post media type. Skip {}".format(post_href))
+                    logger.info(
+                        "Cannot detect post media type. Skip {}".format(post_href)
+                    )
         else:
             logger.info("'{}' page does not contain a picture".format(page))
     except BaseException as e:
@@ -863,14 +898,17 @@ def like_comment(browser, original_comment_text, logger):
             if comment and (comment == original_comment_text):
                 # find "Like" span (a direct child of Like button)
                 span_like_elements = comment_line.find_elements_by_xpath(
-                    read_xpath(like_comment.__name__,"span_like_elements"))
+                    read_xpath(like_comment.__name__, "span_like_elements")
+                )
                 if not span_like_elements:
                     # this is most likely a liked comment
                     return True, "success"
 
                 # like the given comment
                 span_like = span_like_elements[0]
-                comment_like_button = span_like.find_element_by_xpath(read_xpath(like_comment.__name__,"comment_like_button"))
+                comment_like_button = span_like.find_element_by_xpath(
+                    read_xpath(like_comment.__name__, "comment_like_button")
+                )
                 click_element(browser, comment_like_button)
 
                 # verify if like succeeded by waiting until the like button
