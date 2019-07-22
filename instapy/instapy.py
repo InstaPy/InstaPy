@@ -5635,7 +5635,7 @@ class InstaPy:
                 self.logger.error("Failed for {} with Error {}".format(pod_post, err))
 
 
-    def story_by_tags(self, tags = None):
+    def story_by_tags(self, tags: list = None):
         """ Watch stories for specific tag(s) """
         if self.aborting:
             return self
@@ -5663,7 +5663,7 @@ class InstaPy:
                     self.stories_watched += 1
                     self.reels_watched += reels
 
-    def story_by_users(self, users = None):
+    def story_by_users(self, users: list = None):
         """ Watch stories for specific user(s)"""
         if self.aborting:
             return self

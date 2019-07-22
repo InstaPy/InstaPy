@@ -11,7 +11,6 @@ from os.path import join as join_path
 from os.path import exists as path_exists
 
 from .xpath import read_xpath
-from .event import Event
 
 
 WORKSPACE = {"name": "InstaPy",
