@@ -106,8 +106,7 @@ xpath['get_given_user_followers'] = {
 }
 
 xpath['get_given_user_following'] = {
-    "all_following":["//a[contains",
-                    "(@href,'following')]/span"],
+    "all_following":"//a[contains(@href,'following')]/span",
     "topCount_elements":"//span[contains(@class,'g47SY')]",
     "following_link":'//a[@href="/{}/following/"]'
 } #multiline:  all_following
