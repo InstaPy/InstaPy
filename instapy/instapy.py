@@ -2802,7 +2802,7 @@ class InstaPy:
 
         return self
 
-    def interact_user_followers(self, usernames, amount=10, randomize=False, skip_same_users=True):
+    def interact_user_followers(self, usernames, amount=10, randomize=False, skip_same_users=False):
 
         if self.aborting:
             return self
@@ -2969,7 +2969,7 @@ class InstaPy:
 
         return self
 
-    def interact_user_following(self, usernames, amount=10, randomize=False, skip_same_users=True):
+    def interact_user_following(self, usernames, amount=10, randomize=False, skip_same_users=False):
 
         if self.aborting:
             return self
