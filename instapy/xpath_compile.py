@@ -27,7 +27,7 @@ xpath['confirm_unfollow'] = {
 }
 
 xpath['dialog_username_extractor'] = {
-    "person":"../../../*"
+    "person":"../../*"
 }
 
 xpath['dismiss_get_app_offer'] = {
@@ -42,10 +42,9 @@ xpath['dismiss_notification_offer'] = {
 
 xpath['extract_information'] = {
     "close_overlay":"//div/div[@role='dialog']",
-    "one_pic_elem":["//section/main/article/div[1]/div/div[10]/div[",
-                    "3]/a/div"],
+    "one_pic_elem":"//section/main/article/div[1]/div/div[10]/div[3]/a/div",
     "like_element":"//a[@role='button']/span[text()='Like']/.."
-} #multiline:  one_pic_elem
+}
 
 xpath['extract_post_info'] = {
     "comment_list":"//div/ul",
@@ -105,11 +104,10 @@ xpath['get_given_user_followers'] = {
 }
 
 xpath['get_given_user_following'] = {
-    "all_following":["//a[contains",
-                    "(@href,'following')]/span"],
+    "all_following":"//a[contains(@href,'following')]/span",
     "topCount_elements":"//span[contains(@class,'g47SY')]",
     "following_link":'//a[@href="/{}/following/"]'
-} #multiline:  all_following
+}
 
 xpath['get_photo_urls_from_profile'] = {
     "photos_a_elems":"//div/a"
@@ -136,14 +134,10 @@ xpath['get_number_of_posts'] = {
 }
 
 xpath['get_relationship_counts'] = {
-    "following_count":  ["//a[contains",
-                        "(@href,",
-                        "'following')]/span"],
-    "followers_count":  ["//a[contains",
-                        "(@href,",
-                        "'followers')]/span"],
-    "topCount_elements":"//span[contains(@class,'g47SY')]"
-} #multiline: following_count, followers_count
+    "following_count": "//a[contains(@href,'following')]/span",
+    "followers_count": "//a[contains(@href,'followers')]/span",
+    "topCount_elements": "//span[contains(@class,'g47SY')]"
+}
 
 xpath['get_source_link'] = {
     "image":'//img[@class="FFVAD"]',
