@@ -83,10 +83,10 @@ def get_story_data(browser, elem, action_type, logger, simulate = False):
         else:
             # we got content
             # check if there is something new to watch otherwise we just return 0
-            seen=0
+            seen = 0
             if (action_type != "tag") and (response['data']['reels_media'][0]['seen'] is not None):
                 seen = response['data']['reels_media'][0]['seen']
-            index=1
+            index = 1
             for item in response['data']['reels_media'][0]['items']:
                 if item['taken_at_timestamp'] <= seen:
                     continue
