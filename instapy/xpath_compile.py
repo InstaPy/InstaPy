@@ -42,8 +42,7 @@ xpath['dismiss_notification_offer'] = {
 
 xpath['extract_information'] = {
     "close_overlay":"//div/div[@role='dialog']",
-    "one_pic_elem":["//section/main/article/div[1]/div/div[10]/div[",
-                    "3]/a/div"],
+    "one_pic_elem":"//section/main/article/div[1]/div/div[10]/div[3]/a/div",
     "like_element":"//a[@role='button']/span[text()='Like']/.."
 } #multiline:  one_pic_elem
 
@@ -62,8 +61,7 @@ xpath['get_active_users'] = {
     "latest_posts":"//div[contains(@class, '_9AhH0')]",
     "likers_count":"//div[contains(@class,'Nm9Fw')]/child::button/span",
     "likes_button":"//div[contains(@class,'Nm9Fw')]/child::button",
-    "next_button":  ["//a[contains(@class, 'HBoOv')]",
-                    "[text()='Next']"],
+    "next_button":  "//a[contains(@class, 'HBoOv')][text()='Next']",
     "topCount_elements":"//span[contains(@class,'g47SY')]"
 } #multiline:  next_button
 
@@ -136,12 +134,8 @@ xpath['get_number_of_posts'] = {
 }
 
 xpath['get_relationship_counts'] = {
-    "following_count":  ["//a[contains",
-                        "(@href,",
-                        "'following')]/span"],
-    "followers_count":  ["//a[contains",
-                        "(@href,",
-                        "'followers')]/span"],
+    "following_count":  "//a[contains(@href,'following')]/span",
+    "followers_count":  "//a[contains(@href,'followers')]/span",
     "topCount_elements":"//span[contains(@class,'g47SY')]"
 } #multiline: following_count, followers_count
 
