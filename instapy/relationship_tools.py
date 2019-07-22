@@ -47,7 +47,7 @@ def get_followers(
     web_address_navigator(browser, user_link)
 
     # Get followers count
-    followers_count, following_count = get_relationship_counts(
+    followers_count, _ = get_relationship_counts(
         browser, username, logger
     )
 
@@ -255,7 +255,7 @@ def get_followers(
         )
 
     # remove possible duplicates
-    all_followers = sorted(set(all_followers), key=lambda x: all_followers.index(x))
+    all_followers = sorted(set(all_followers))
 
     if grab_notifier is False:
         print("\n")
@@ -532,7 +532,7 @@ def get_following(
         )
 
     # remove possible duplicates
-    all_following = sorted(set(all_following), key=lambda x: all_following.index(x))
+    all_following = sorted(set(all_following))
 
     if grab_notifier is False:
         print("\n")
