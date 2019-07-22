@@ -1227,7 +1227,7 @@ session.remove_follow_requests(amount=200, sleep_delay=600)
 Will add story watching while interacting with users
 
 ```python
-session.set_do_story(enabled = True, percentage = 70, simulate=True)
+session.set_do_story(enabled = True, percentage = 70, simulate = True)
 ```
 
  `simulate`:
