@@ -4753,6 +4753,7 @@ class InstaPy:
                  self.commented,
                  self.followed, self.already_followed,
                  self.unfollowed,
+                 self.stories_watched, self.reels_watched,
                  self.inap_img,
                  self.not_valid_users]
 
