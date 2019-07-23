@@ -49,10 +49,6 @@ def set_selenium_local_session(proxy_address,
     if use_firefox:
         firefox_options = Firefox_Options()
 
-        # user_agent = ua.random if random_user_agent else ua.firefox
-        firefox_options.add_argument('user-agent={user_agent}'
-                                    .format(user_agent = user_agent))
-
         if headless_browser:
             firefox_options.add_argument('-headless')
 
@@ -64,6 +60,7 @@ def set_selenium_local_session(proxy_address,
 
         # set English language
         firefox_profile.set_preference('intl.accept_languages', 'en')
+        firefox_profile.set_preference('general.useragent.override', user_agent)
 
         if disable_image_load:
             # permissions.default.image = 2: Disable images load,
