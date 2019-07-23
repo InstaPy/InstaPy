@@ -399,7 +399,7 @@ class InstaPy:
     def login(self):
         """Used to login the user either with the username and password"""
         # InstaPy uses page_delay speed to implicit wait for elements,
-        # here we're decreasing it to 3 seconds instead of the default 25 seconds
+        # here we're decreasing it to 5 seconds instead of the default 25 seconds
         # to speed up the login process.
         #
         # In short: default page_delay speed took 25 seconds trying to locate every
