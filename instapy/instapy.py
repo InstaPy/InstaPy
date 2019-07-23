@@ -398,6 +398,21 @@ class InstaPy:
 
     def login(self):
         """Used to login the user either with the username and password"""
+        # InstaPy uses page_delay speed to implicit wait for elements,
+        # here we're decreasing it to 3 seconds instead of the default 25 seconds
+        # to speed up the login process.
+        #
+        # In short: default page_delay speed took 25 seconds trying to locate every
+        # element, now it's taking 5 seconds.
+        # import ipdb;ipdb.set_trace()
+        temporary_page_delay = 5
+        self.browser.implicitly_wait(temporary_page_delay)
+        # TODO: try slow connection
+        self.browser.set_network_conditions(offline=False,
+                                            latency=5,
+                                            download_throughput=1024 * 15, # maximal throughput
+                                            upload_throughput=1024 * 15)  # maximal throughput
+        #
         if not login_user(self.browser,
                           self.username,
                           self.password,
@@ -405,7 +420,7 @@ class InstaPy:
                           self.logfolder,
                           self.bypass_suspicious_attempt,
                           self.bypass_with_mobile):
-            message = "Wrong login data!"
+            message = "Wrong login data!";import ipdb;ipdb.set_trace()
             highlight_print(self.username,
                             message,
                             "login",
@@ -413,8 +428,8 @@ class InstaPy:
                             self.logger)
 
             self.aborting = True
-
         else:
+            self.browser.implicitly_wait(self.page_delay)
             message = "Logged in successfully!"
             highlight_print(self.username,
                             message,
@@ -430,12 +445,15 @@ class InstaPy:
                 self.logger.warning(
                     'Unable to save account progress, skipping data update')
 
-        self.followed_by = log_follower_num(self.browser,
-                                            self.username,
-                                            self.logfolder)
-        self.following_num = log_following_num(self.browser,
-                                               self.username,
-                                               self.logfolder)
+            # logs only followers/following numbers when able to login,
+            # to speed up the login process and avoid loading profile
+            # page (meaning less server calls)
+            self.followed_by = log_follower_num(self.browser,
+                                                self.username,
+                                                self.logfolder)
+            self.following_num = log_following_num(self.browser,
+                                                   self.username,
+                                                   self.logfolder)
 
         return self
 
