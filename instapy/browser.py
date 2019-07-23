@@ -84,6 +84,9 @@ def set_selenium_local_session(proxy_address,
             firefox_profile.set_preference('network.proxy.ssl_port',
                                            proxy_port)
 
+        # mute audio while watching stories
+        firefox_profile.set_preference('media.volume_scale', '0.0')
+
         browser = webdriver.Firefox(firefox_profile=firefox_profile,
                                     options=firefox_options)
 
