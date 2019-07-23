@@ -171,7 +171,7 @@ def set_selenium_local_session(proxy_address,
                 float(matches.groups()[0]), Settings.chromedriver_min_version)
             return browser, err_msg
 
-    browser.implicitly_wait(page_delay)
+    # browser.implicitly_wait(page_delay)
 
     message = "Session started!"
     highlight_print('browser', message, "initialization", "info", logger)
