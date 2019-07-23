@@ -423,6 +423,7 @@ class InstaPy:
 
             self.aborting = True
         else:
+            # back the page_delay to default, or the value set by the user
             self.browser.implicitly_wait(self.page_delay)
             message = "Logged in successfully!"
             highlight_print(self.username,
