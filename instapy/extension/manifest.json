@@ -1,0 +1,17 @@
+{
+  "manifest_version": 2,
+  "name": "Hiding Selenium",
+  "version": "1.0.0",
+  "applications": {
+    "gecko": {
+      "id": "hi@felixbreuer.me"
+    }
+  },
+  "content_scripts": [
+    {
+      "matches": ["*://*/*"],
+      "js": ["content.js"],
+      "run_at": "document_start"
+    }
+  ]
+}
