@@ -404,15 +404,9 @@ class InstaPy:
         #
         # In short: default page_delay speed took 25 seconds trying to locate every
         # element, now it's taking 5 seconds.
-        # import ipdb;ipdb.set_trace()
         temporary_page_delay = 5
         self.browser.implicitly_wait(temporary_page_delay)
-        # TODO: try slow connection
-        self.browser.set_network_conditions(offline=False,
-                                            latency=5,
-                                            download_throughput=1024 * 15, # maximal throughput
-                                            upload_throughput=1024 * 15)  # maximal throughput
-        #
+
         if not login_user(self.browser,
                           self.username,
                           self.password,
@@ -420,7 +414,7 @@ class InstaPy:
                           self.logfolder,
                           self.bypass_suspicious_attempt,
                           self.bypass_with_mobile):
-            message = "Wrong login data!";import ipdb;ipdb.set_trace()
+            message = "Wrong login data!"
             highlight_print(self.username,
                             message,
                             "login",
