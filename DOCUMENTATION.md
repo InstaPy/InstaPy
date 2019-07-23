@@ -51,6 +51,7 @@
   - [Accept pending follow requests](#accept-pending-follow-requests)
   - [Remove outgoing follow requests](#remove-outgoing-follow-requests)
   - [InstaPy Pods](#instapy-pods)
+  - [InstaPy Stories](#instapy-stories)
   
  <br />
 

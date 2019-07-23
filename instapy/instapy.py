@@ -453,6 +453,7 @@ class InstaPy:
                           comment=None,
                           follow=None,
                           unfollow=None,
+                          story=None,
                           randomize=False,
                           random_range=(None, None),
                           safety_match=True):
@@ -462,6 +463,7 @@ class InstaPy:
                                        "comment": comment,
                                        "follow": follow,
                                        "unfollow": unfollow,
+                                       "story": story,
                                        "randomize": randomize,
                                        "random_range": random_range,
                                        "safety_match": safety_match})
