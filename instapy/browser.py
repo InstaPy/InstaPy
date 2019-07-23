@@ -43,18 +43,22 @@ def set_selenium_local_session(proxy_address,
     err_msg = ''
 
     # define the custom user agent
-    fb_agent = (
+    user_agent = (
         'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 '
         '(KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36'
     )
-    ua = UserAgent(cache = False, fallback = fb_agent)
+    
+    try:
+        ua = UserAgent(cache = False, fallback = fb_agent)
+        if random_user_agent: user_agent = ua.random
+        else:
+            if use_firefox: user_agent = ua.firefox
+            else: user_agent = ua.chrome
+    except:
+        pass
 
     if use_firefox:
         firefox_options = Firefox_Options()
-
-        user_agent = ua.random if random_user_agent else ua.firefox
-        firefox_options.add_argument('user-agent={user_agent}'
-                                    .format(user_agent = user_agent))
 
         if headless_browser:
             firefox_options.add_argument('-headless')
@@ -67,6 +71,7 @@ def set_selenium_local_session(proxy_address,
 
         # set English language
         firefox_profile.set_preference('intl.accept_languages', 'en')
+        firefox_profile.set_preference('general.useragent.override', user_agent)
 
         if disable_image_load:
             # permissions.default.image = 2: Disable images load,
@@ -105,6 +110,8 @@ def set_selenium_local_session(proxy_address,
         chrome_options.add_argument('--lang=en-US')
         chrome_options.add_argument('--disable-setuid-sandbox')
         chrome_options.add_argument('--no-sandbox')
+        chrome_options.add_argument('--user-agent={user_agent}'
+                                    .format(user_agent = user_agent))
 
         # this option implements Chrome Headless, a new (late 2017)
         # GUI-less browser. chromedriver 2.9 and above required
@@ -114,11 +121,6 @@ def set_selenium_local_session(proxy_address,
             if disable_image_load:
                 chrome_options.add_argument(
                     '--blink-settings=imagesEnabled=false')
-
-            # replaces browser User Agent from "HeadlessChrome".
-            user_agent = ua.random if random_user_agent else ua.chrome
-            chrome_options.add_argument('user-agent={user_agent}'
-                                        .format(user_agent = user_agent))
 
         capabilities = DesiredCapabilities.CHROME
 
@@ -167,6 +169,9 @@ def set_selenium_local_session(proxy_address,
                 Settings.chromedriver_location)
             return browser, err_msg
 
+        # only work in chrome
+        browser.implicitly_wait(page_delay)
+
         # prevent: Message: unknown error: call function result missing 'value'
         matches = re.match(r'^(\d+\.\d+)',
                            browser.capabilities['chrome'][
@@ -175,8 +180,6 @@ def set_selenium_local_session(proxy_address,
             err_msg = 'chromedriver {} is not supported, expects {}+'.format(
                 float(matches.groups()[0]), Settings.chromedriver_min_version)
             return browser, err_msg
-
-    browser.implicitly_wait(page_delay)
 
     message = "Session started!"
     highlight_print('browser', message, "initialization", "info", logger)
