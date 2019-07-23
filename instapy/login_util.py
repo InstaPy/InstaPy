@@ -156,6 +156,36 @@ def login_user(browser,
     assert username, 'Username not provided'
     assert password, 'Password not provided'
 
+    # check connection status
+    try:
+        logger.info('-- Connection Checklist [1/2] (Internet Connection Status)')
+        browser.get("https://www.google.com")
+        logger.info('- Internet Connection Status: ok')
+    except Exception:
+        logger.warn('- Internet Connection Status: error')
+        return False
+
+    # check Instagram.com status
+    try:
+        logger.info('-- Connection Checklist [2/2] (Instagram Server Status)')
+        browser.get("https://isitdownorjust.me/instagram-com/")
+
+        # collect isitdownorjust.me website information
+        website_status = browser.find_element_by_xpath(
+            read_xpath(login_user.__name__, "website_status"))
+        response_time = browser.find_element_by_xpath(
+            read_xpath(login_user.__name__, "response_time"))
+        response_code = browser.find_element_by_xpath(
+            read_xpath(login_user.__name__, "response_code"))
+
+        logger.info('- Instagram WebSite Status: {} '.format(website_status.text))
+        logger.info('- Instagram Response Time: {} '.format(response_time.text))
+        logger.info('- Instagram Reponse Code: {}'.format(response_code.text))
+        logger.info('- Instagram Server Status: ok')
+    except Exception:
+        logger.warn('- Instagram Server Status: error')
+        return False
+
     ig_homepage = "https://www.instagram.com"
     web_address_navigator(browser, ig_homepage)
     cookie_loaded = False
