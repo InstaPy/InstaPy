@@ -593,14 +593,15 @@ Will skip only users that have more than 1000 posts in their feed
 
 
 ### Custom action delays
-###### _After doing each action- like, comment, follow or unfollow, there is a sleep delay to provide smooth activity flow_.  
+###### _After doing each action- like, comment, follow or unfollow or story, there is a sleep delay to provide smooth activity flow_.  
 ##### But you can set a _custom_ sleep delay for each action yourself by using the `set_action_delays` setting!
 ```python
 session.set_action_delays(enabled=True,
                            like=3,
                            comment=5,
                            follow=4.17,
-                           unfollow=28)
+                           unfollow=28,
+                           story=10)
 ```
 _Now it will sleep `3` seconds **after putting every single like**, `5` seconds for every single comment and similarly for the others.._
 
