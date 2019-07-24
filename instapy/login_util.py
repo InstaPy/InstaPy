@@ -299,7 +299,7 @@ def login_user(browser,
             return False
         except NoSuchElementException:
             pass
-        
+
         # try to initiate security code challenge
         try:
             browser.find_element_by_xpath(
