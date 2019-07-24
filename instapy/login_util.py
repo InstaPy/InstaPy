@@ -307,7 +307,6 @@ def login_user(browser,
             bypass_suspicious_login(browser, bypass_with_mobile)
         except NoSuchElementException:
             pass
-
     # check for wrong username or password message, and show it to the user
     try:
         error_alert = browser.find_element_by_xpath(
