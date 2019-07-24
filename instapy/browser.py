@@ -49,7 +49,7 @@ def set_selenium_local_session(proxy_address,
     
     # try to fetch latest user agent
     try:
-        ua = UserAgent(cache = False, fallback = fb_agent)
+        ua = UserAgent(cache = False, fallback = user_agent)
         user_agent = ua.firefox if use_firefox else ua.chrome
     except:
         pass
