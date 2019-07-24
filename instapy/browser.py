@@ -46,13 +46,13 @@ def set_selenium_local_session(proxy_address,
         'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 '
         '(KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36'
     )
-    
+
     # try to fetch latest user agent
     try:
         ua = UserAgent(cache = False, fallback = user_agent)
         user_agent = ua.firefox if use_firefox else ua.chrome
-    except:
-        pass
+    except Exception:
+        print('Latest user agent currently not reachable. Using fallback.')
 
     if use_firefox:
         firefox_options = Firefox_Options()
