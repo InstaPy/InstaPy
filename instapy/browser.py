@@ -34,26 +34,23 @@ def set_selenium_local_session(proxy_address,
                                browser_profile_path,
                                disable_image_load,
                                page_delay,
-                               logger,
-                               random_user_agent):
+                               logger):
     """Starts local session for a selenium server.
     Default case scenario."""
 
     browser = None
     err_msg = ''
 
-    # define the custom user agent
+    # define fallback useragent
     user_agent = (
         'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 '
         '(KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36'
     )
     
+    # try to fetch latest user agent
     try:
         ua = UserAgent(cache = False, fallback = fb_agent)
-        if random_user_agent: user_agent = ua.random
-        else:
-            if use_firefox: user_agent = ua.firefox
-            else: user_agent = ua.chrome
+        user_agent = ua.firefox if use_firefox else ua.chrome
     except:
         pass
 
@@ -169,9 +166,6 @@ def set_selenium_local_session(proxy_address,
                 Settings.chromedriver_location)
             return browser, err_msg
 
-        # only work in chrome
-        browser.implicitly_wait(page_delay)
-
         # prevent: Message: unknown error: call function result missing 'value'
         matches = re.match(r'^(\d+\.\d+)',
                            browser.capabilities['chrome'][
@@ -180,6 +174,8 @@ def set_selenium_local_session(proxy_address,
             err_msg = 'chromedriver {} is not supported, expects {}+'.format(
                 float(matches.groups()[0]), Settings.chromedriver_min_version)
             return browser, err_msg
+
+    browser.implicitly_wait(page_delay)
 
     message = "Session started!"
     highlight_print('browser', message, "initialization", "info", logger)
