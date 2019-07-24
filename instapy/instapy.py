@@ -116,8 +116,7 @@ class InstaPy:
                  bypass_suspicious_attempt=False,
                  bypass_with_mobile=False,
                  multi_logs=True,
-                 split_db=False,
-                 random_user_agent: bool = False):
+                 split_db=False):
 
         cli_args = parse_cli_args()
         username = cli_args.username or username
@@ -313,7 +312,7 @@ class InstaPy:
         get_database(make=True)  # IMPORTANT: think twice before relocating
 
         if self.selenium_local_session is True:
-            self.set_selenium_local_session(random_user_agent)
+            self.set_selenium_local_session()
 
     def get_instapy_logger(self, show_logs):
         """
@@ -350,7 +349,7 @@ class InstaPy:
             Settings.logger = logger
             return logger
 
-    def set_selenium_local_session(self, random_user_agent: bool):
+    def set_selenium_local_session(self):
         self.browser, err_msg = set_selenium_local_session(self.proxy_address,
                                                            self.proxy_port,
                                                            self.proxy_username,
@@ -361,8 +360,7 @@ class InstaPy:
                                                            self.browser_profile_path,
                                                            self.disable_image_load,
                                                            self.page_delay,
-                                                           self.logger,
-                                                           random_user_agent)
+                                                           self.logger)
         if len(err_msg) > 0:
             raise InstaPyError(err_msg)
 

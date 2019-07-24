@@ -69,7 +69,6 @@
   - [Switching to Firefox](#switching-to-firefox)
   - [Use a proxy (Firefox)](#use-a-proxy-firefox)
   - [Running in threads](#running-in-threads)
-  - [Random UserAgent](#get-a-random-useragent)
   
  <br />
 
@@ -1759,12 +1758,6 @@ session = InstaPy()
 session.login()
 # some activity here ...
 session.end(threaded_session=True)
-```
-
-### Get a random UserAgent
-
-```python
-session = InstaPy(..., random_user_agent = True, ...)
 ```
 
 ---
