@@ -51,6 +51,7 @@
   - [Accept pending follow requests](#accept-pending-follow-requests)
   - [Remove outgoing follow requests](#remove-outgoing-follow-requests)
   - [InstaPy Pods](#instapy-pods)
+  - [InstaPy Stories](#instapy-stories)
   
  <br />
 
@@ -69,7 +70,6 @@
   - [Switching to Firefox](#switching-to-firefox)
   - [Use a proxy (Firefox)](#use-a-proxy-firefox)
   - [Running in threads](#running-in-threads)
-  - [Random UserAgent](#get-a-random-useragent)
   
  <br />
 
@@ -592,14 +592,15 @@ Will skip only users that have more than 1000 posts in their feed
 
 
 ### Custom action delays
-###### _After doing each action- like, comment, follow or unfollow, there is a sleep delay to provide smooth activity flow_.  
+###### _After doing each action- like, comment, follow, unfollow or story, there is a sleep delay to provide smooth activity flow_.  
 ##### But you can set a _custom_ sleep delay for each action yourself by using the `set_action_delays` setting!
 ```python
 session.set_action_delays(enabled=True,
                            like=3,
                            comment=5,
                            follow=4.17,
-                           unfollow=28)
+                           unfollow=28,
+                           story=10)
 ```
 _Now it will sleep `3` seconds **after putting every single like**, `5` seconds for every single comment and similarly for the others.._
 
@@ -1235,6 +1236,9 @@ session.set_do_story(enabled = True, percentage = 70, simulate = True)
  If set to `True` InstaPy will simulate watching the stories (you won't see it in the browser), we just send commands to Instagram saying we have watched the stories.
  If set to `False` Instapy will perform the exact same action as a human user (clicking on stories, waiting until watching finishes, etc...)
 
+  Please note: on very small setups or if running on platform that cannot see videos, you will get stuck trying to watch the video. 
+  Recommended mode for those setups is `simulate=True`
+
 ### Watch stories by Tags
 
 Will watch up to 20 stories published with specified tags.
@@ -1756,12 +1760,6 @@ session = InstaPy()
 session.login()
 # some activity here ...
 session.end(threaded_session=True)
-```
-
-### Get a random UserAgent
-
-```python
-session = InstaPy(..., random_user_agent = True, ...)
 ```
 
 ---

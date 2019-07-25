@@ -115,8 +115,7 @@ class InstaPy:
                  disable_image_load=False,
                  bypass_with_mobile=False,
                  multi_logs=True,
-                 split_db=False,
-                 random_user_agent: bool = False):
+                 split_db=False):
 
         cli_args = parse_cli_args()
         username = cli_args.username or username
@@ -309,7 +308,7 @@ class InstaPy:
         get_database(make=True)  # IMPORTANT: think twice before relocating
 
         if self.selenium_local_session is True:
-            self.set_selenium_local_session(random_user_agent)
+            self.set_selenium_local_session()
 
     def get_instapy_logger(self, show_logs):
         """
@@ -346,7 +345,7 @@ class InstaPy:
             Settings.logger = logger
             return logger
 
-    def set_selenium_local_session(self, random_user_agent: bool):
+    def set_selenium_local_session(self):
         self.browser, err_msg = set_selenium_local_session(self.proxy_address,
                                                            self.proxy_port,
                                                            self.proxy_username,
@@ -357,8 +356,7 @@ class InstaPy:
                                                            self.browser_profile_path,
                                                            self.disable_image_load,
                                                            self.page_delay,
-                                                           self.logger,
-                                                           random_user_agent)
+                                                           self.logger)
         if len(err_msg) > 0:
             raise InstaPyError(err_msg)
 
@@ -398,6 +396,15 @@ class InstaPy:
 
     def login(self):
         """Used to login the user either with the username and password"""
+        # InstaPy uses page_delay speed to implicit wait for elements,
+        # here we're decreasing it to 5 seconds instead of the default 25 seconds
+        # to speed up the login process.
+        #
+        # In short: default page_delay speed took 25 seconds trying to locate every
+        # element, now it's taking 5 seconds.
+        temporary_page_delay = 5
+        self.browser.implicitly_wait(temporary_page_delay)
+
         if not login_user(self.browser,
                           self.username,
                           self.password,
@@ -413,23 +420,28 @@ class InstaPy:
                             self.logger)
 
             self.aborting = True
+            return self
 
-        else:
-            message = "Logged in successfully!"
-            highlight_print(self.username,
-                            message,
-                            "login",
-                            "info",
-                            self.logger)
-            # try to save account progress
-            try:
-                save_account_progress(self.browser,
-                                      self.username,
-                                      self.logger)
-            except Exception:
-                self.logger.warning(
-                    'Unable to save account progress, skipping data update')
+        # back the page_delay to default, or the value set by the user
+        self.browser.implicitly_wait(self.page_delay)
+        message = "Logged in successfully!"
+        highlight_print(self.username,
+                        message,
+                        "login",
+                        "info",
+                        self.logger)
+        # try to save account progress
+        try:
+            save_account_progress(self.browser,
+                                  self.username,
+                                  self.logger)
+        except Exception:
+            self.logger.warning(
+                'Unable to save account progress, skipping data update')
 
+        # logs only followers/following numbers when able to login,
+        # to speed up the login process and avoid loading profile
+        # page (meaning less server calls)
         self.followed_by = log_follower_num(self.browser,
                                             self.username,
                                             self.logfolder)
@@ -449,6 +461,7 @@ class InstaPy:
                           comment=None,
                           follow=None,
                           unfollow=None,
+                          story=None,
                           randomize=False,
                           random_range=(None, None),
                           safety_match=True):
@@ -458,6 +471,7 @@ class InstaPy:
                                        "comment": comment,
                                        "follow": follow,
                                        "unfollow": unfollow,
+                                       "story": story,
                                        "randomize": randomize,
                                        "random_range": random_range,
                                        "safety_match": safety_match})
@@ -4747,6 +4761,7 @@ class InstaPy:
                  self.commented,
                  self.followed, self.already_followed,
                  self.unfollowed,
+                 self.stories_watched, self.reels_watched,
                  self.inap_img,
                  self.not_valid_users]
 
