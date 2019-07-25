@@ -1,16 +1,16 @@
 {
   "manifest_version": 2,
-  "name": "Hiding Selenium",
+  "name": "hide selenium",
   "version": "1.0.0",
   "applications": {
     "gecko": {
-      "id": "hi@felixbreuer.me"
+      "id": "instapy@rocks"
     }
   },
   "content_scripts": [
     {
       "matches": ["*://*/*"],
-      "js": ["content.js"],
+      "js": ["arrive.js", "content.js"],
       "run_at": "document_start"
     }
   ]

@@ -1,14 +1,22 @@
-// -- overwrite the `languages` property to use a custom getter
+var customScript = `
+// Overwrite the contents of the body.
+Object.defineProperty(navigator, 'webdriver', {
+  get: function() {
+    return false;
+  },
+});
+
+// -- overwrite the languages property to use a custom getter
 Object.defineProperty(navigator, 'languages', {
   get: function() {
     return ['en-US', 'en'];
   },
 });
 
-// -- overwrite the `plugins` property to use a custom getter
+// -- overwrite the plugins property to use a custom getter
 Object.defineProperty(navigator, 'plugins', {
   get: function() {
-    // this just needs to have `length > 0`, but we could mock the plugins too
+    // this just needs to have length > 0, but we could mock the plugins too
     return [1, 2, 3, 4, 5];
   },
 });
@@ -62,13 +70,6 @@ Object.defineProperty(HTMLDivElement.prototype, 'offsetHeight', {
   },
 });
 
-// -- pass webdriver test
-Object.defineProperty(navigator, 'webdriver', {
-  get: function() {
-    return false;
-  },
-});
-
 // -- pass permissions test
 var originalQuery = window.navigator.permissions.query;
 window.navigator.permissions.query = (parameters) => (
@@ -76,6 +77,14 @@ window.navigator.permissions.query = (parameters) => (
     Promise.resolve({ state: Notification.permission }) :
     originalQuery(parameters)
 );
+`;
+
+document.arrive('head', () => {
+  var script = document.createElement('script');
+  script.innerHTML = customScript;
+  script.type = 'text/javascript'
+  document.head.insertBefore(script, document.head.children[0]);
+});
 
 // -- mock chrome object
 window.navigator.chrome = {

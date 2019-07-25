@@ -1,6 +1,10 @@
 # pylint file
 googlecl-pylint.rc.txt
 assets/chromedriver
+
+# firefox extension file
+extension.xpi
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
