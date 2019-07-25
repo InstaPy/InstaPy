@@ -113,7 +113,6 @@ class InstaPy:
                  proxy_address=None,
                  proxy_port=None,
                  disable_image_load=False,
-                 bypass_suspicious_attempt=False,
                  bypass_with_mobile=False,
                  multi_logs=True,
                  split_db=False):
@@ -127,8 +126,6 @@ class InstaPy:
         proxy_address = cli_args.proxy_address or proxy_address
         proxy_port = cli_args.proxy_port or proxy_port
         disable_image_load = cli_args.disable_image_load or disable_image_load
-        bypass_suspicious_attempt = (
-            cli_args.bypass_suspicious_attempt or bypass_suspicious_attempt)
         bypass_with_mobile = cli_args.bypass_with_mobile or bypass_with_mobile
         split_db = cli_args.split_db or split_db
 
@@ -155,7 +152,6 @@ class InstaPy:
         self.proxy_port = proxy_port
         self.proxy_chrome_extension = proxy_chrome_extension
         self.selenium_local_session = selenium_local_session
-        self.bypass_suspicious_attempt = bypass_suspicious_attempt
         self.bypass_with_mobile = bypass_with_mobile
         self.disable_image_load = disable_image_load
 
@@ -414,9 +410,9 @@ class InstaPy:
                           self.password,
                           self.logger,
                           self.logfolder,
-                          self.bypass_suspicious_attempt,
                           self.bypass_with_mobile):
-            message = "Wrong login data!"
+            message = ("Unable to login to Instagram! "
+                       "You will find more information in the logs above.")
             highlight_print(self.username,
                             message,
                             "login",

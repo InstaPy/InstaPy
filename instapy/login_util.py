@@ -159,7 +159,6 @@ def login_user(browser,
                password,
                logger,
                logfolder,
-               bypass_suspicious_attempt=False,
                bypass_with_mobile=False):
     """Logins the user with the given username and password"""
     assert username, 'Username not provided'
@@ -307,8 +306,46 @@ def login_user(browser,
     dismiss_get_app_offer(browser, logger)
     dismiss_notification_offer(browser, logger)
 
-    if bypass_suspicious_attempt is True:
-        bypass_suspicious_login(browser, bypass_with_mobile)
+    # check for login error messages and display it in the logs
+    if ('instagram.com/challenge' in browser.current_url):
+        # check if account is disabled by Instagram,
+        # or there is an active challenge to solve
+        try:
+            account_disabled = browser.find_element_by_xpath(
+                read_xpath(login_user.__name__, "account_disabled"))
+            logger.warn(account_disabled.text)
+            return False
+        except NoSuchElementException:
+            pass
+
+        # in case the user doesnt have a phone number linked to the Instagram account
+        try:
+            browser.find_element_by_xpath(
+                read_xpath(login_user.__name__, "add_phone_number"))
+            logger.warn(
+                "Instagram initiated a challenge before allow your account to login. "
+                "At the moment there isn't a phone number linked to your Instagram "
+                "account. Please, add a phone number to your account, and try again.")
+            return False
+        except NoSuchElementException:
+            pass
+
+        # try to initiate security code challenge
+        try:
+            browser.find_element_by_xpath(
+                read_xpath(login_user.__name__, "suspicious_login_attempt"))
+            bypass_suspicious_login(browser, bypass_with_mobile)
+        except NoSuchElementException:
+            pass
+
+    # check for wrong username or password message, and show it to the user
+    try:
+        error_alert = browser.find_element_by_xpath(
+            read_xpath(login_user.__name__, "error_alert"))
+        logger.warn(error_alert.text)
+        return False
+    except NoSuchElementException:
+        pass
 
     # wait until page fully load
     explicit_wait(browser, "PFL", [], logger, 5)

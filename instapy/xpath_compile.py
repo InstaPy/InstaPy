@@ -176,7 +176,11 @@ xpath['login_user'] = {
     "nav": "//nav",
     "website_status": "//span[@id='status']",
     "response_time": "//span[@id='response']",
-    "response_code": "//span[@id='code']"
+    "response_code": "//span[@id='code']",
+    "account_disabled": "//p[contains(text(),'Your account has been disabled')]",
+    "add_phone_number": "//h2[text()='Add Your Phone Number']",
+    "suspicious_login_attempt": "//p[text()='Suspicious Login Attempt']",
+    "error_alert": "//p[@id='slfErrorAlert']"
 }
 
 xpath['open_comment_section'] = {
