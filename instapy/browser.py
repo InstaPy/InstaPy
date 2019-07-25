@@ -7,7 +7,7 @@ from selenium.webdriver.common.proxy import Proxy, ProxyType
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.firefox.options import Options as Firefox_Options
 from selenium.webdriver import Remote
-
+from fake_useragent import UserAgent
 
 # general libs
 import re
@@ -19,6 +19,7 @@ from .util import highlight_print
 from .util import emergency_exit
 from .util import get_current_url
 from .util import check_authorization
+from .util import web_address_navigator
 from .settings import Settings
 from .file_manager import get_chromedriver_location
 
@@ -40,9 +41,22 @@ def set_selenium_local_session(proxy_address,
     browser = None
     err_msg = ''
 
+    # define fallback useragent
+    user_agent = (
+        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 '
+        '(KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36'
+    )
+
+    # try to fetch latest user agent
+    try:
+        ua = UserAgent(cache = False, fallback = user_agent)
+        user_agent = ua.firefox if use_firefox else ua.chrome
+    except Exception:
+        print('Latest user agent currently not reachable. Using fallback.')
+
     if use_firefox:
         firefox_options = Firefox_Options()
-        
+
         if headless_browser:
             firefox_options.add_argument('-headless')
 
@@ -54,6 +68,7 @@ def set_selenium_local_session(proxy_address,
 
         # set English language
         firefox_profile.set_preference('intl.accept_languages', 'en')
+        firefox_profile.set_preference('general.useragent.override', user_agent)
 
         if disable_image_load:
             # permissions.default.image = 2: Disable images load,
@@ -70,6 +85,9 @@ def set_selenium_local_session(proxy_address,
                                            proxy_address)
             firefox_profile.set_preference('network.proxy.ssl_port',
                                            proxy_port)
+
+        # mute audio while watching stories
+        firefox_profile.set_preference('media.volume_scale', '0.0')
 
         browser = webdriver.Firefox(firefox_profile=firefox_profile,
                                     options=firefox_options)
@@ -92,6 +110,8 @@ def set_selenium_local_session(proxy_address,
         chrome_options.add_argument('--lang=en-US')
         chrome_options.add_argument('--disable-setuid-sandbox')
         chrome_options.add_argument('--no-sandbox')
+        chrome_options.add_argument('--user-agent={user_agent}'
+                                    .format(user_agent = user_agent))
 
         # this option implements Chrome Headless, a new (late 2017)
         # GUI-less browser. chromedriver 2.9 and above required
@@ -101,11 +121,6 @@ def set_selenium_local_session(proxy_address,
             if disable_image_load:
                 chrome_options.add_argument(
                     '--blink-settings=imagesEnabled=false')
-
-            # replaces browser User Agent from "HeadlessChrome".
-            user_agent = "Chrome"
-            chrome_options.add_argument('user-agent={user_agent}'
-                                        .format(user_agent=user_agent))
 
         capabilities = DesiredCapabilities.CHROME
 

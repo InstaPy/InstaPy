@@ -481,29 +481,24 @@ def get_active_users(browser, username, posts, boundary, logger):
         total_posts = browser.execute_script(
             "return window._sharedData.entry_data."
             "ProfilePage[0].graphql.user.edge_owner_to_timeline_media.count")
-
     except WebDriverException:
         try:
             topCount_elements = browser.find_elements_by_xpath(
-                read_xpath(get_active_users.__name__,"topCount_elements"))
+                read_xpath(get_active_users.__name__, "topCount_elements"))
 
             if topCount_elements:  # prevent an empty string scenario
                 total_posts = format_number(topCount_elements[0].text)
-
             else:
                 logger.info(
                     "Failed to get posts count on your profile!  ~empty "
                     "string")
                 total_posts = None
-
         except NoSuchElementException:
             logger.info("Failed to get posts count on your profile!")
             total_posts = None
 
     # if posts > total user posts, assume total posts
-    posts = posts if total_posts is None else total_posts if posts > \
-                                                             total_posts \
-        else posts
+    posts = posts if total_posts is None else total_posts if posts > total_posts else posts
 
     # click latest post
     try:
@@ -513,7 +508,6 @@ def get_active_users(browser, username, posts, boundary, logger):
         if latest_posts:
             latest_post = latest_posts[0]
             click_element(browser, latest_post)
-
     except (NoSuchElementException, WebDriverException):
         logger.warning(
             "Failed to click on the latest post to grab active likers!\n")
@@ -546,9 +540,8 @@ def get_active_users(browser, username, posts, boundary, logger):
             sleep_actual(2)
             try:
                 likers_count = browser.execute_script(
-                    "return window._sharedData.entry_data."
-                    "PostPage["
-                    "0].graphql.shortcode_media.edge_media_preview_like.count")
+                    "return window._sharedData.entry_data.ProfilePage[0]"
+                    ".graphql.user.edge_saved_media.count")
             except WebDriverException:
                 try:
                     likers_count = (browser.find_element_by_xpath(
@@ -676,12 +669,10 @@ def get_active_users(browser, username, posts, boundary, logger):
                             nap_it = 4 if try_again == 0 else 7
                             sleep_actual(nap_it)
 
-            print('\n')
             user_list = get_users_from_dialog(user_list, dialog)
 
             logger.info("Post {}  |  Likers: found {}, catched {}\n\n".format(
                 count, likers_count, len(user_list)))
-
         except NoSuchElementException as exc:
             logger.error("Ku-ku! There is an error searching active users"
                          "~\t{}\n\n".format(str(exc).encode("utf-8")))
@@ -696,10 +687,9 @@ def get_active_users(browser, username, posts, boundary, logger):
             try:
                 # click close button
                 close_dialog_box(browser)
-
                 # click next button
                 next_button = browser.find_element_by_xpath(
-                    read_xpath(get_active_users.__name__,"next_button"))
+                    read_xpath(get_active_users.__name__, "next_button"))
                 click_element(browser, next_button)
 
             except Exception:
@@ -912,11 +902,13 @@ def get_number_of_posts(browser):
 
         try:
             num_of_posts_txt = browser.find_element_by_xpath(
-                read_xpath(get_number_of_posts.__name__,"num_of_posts_txt_no_such_element")).text
+                read_xpath(get_number_of_posts.__name__, "num_of_posts_txt_no_such_element")
+            ).text
 
         except NoSuchElementException:
             num_of_posts_txt = browser.find_element_by_xpath(
-                read_xpath(get_number_of_posts.__name__,"num_of_posts_txt_no_such_element")).text
+                read_xpath(get_number_of_posts.__name__, "num_of_posts_txt_no_such_element")
+            ).text
 
         num_of_posts_txt = num_of_posts_txt.replace(" ", "")
         num_of_posts_txt = num_of_posts_txt.replace(",", "")
@@ -942,7 +934,10 @@ def get_relationship_counts(browser, username, logger):
     except WebDriverException:
         try:
             followers_count = format_number(
-                browser.find_element_by_xpath(str(read_xpath(get_relationship_counts.__name__,"followers_count"))))
+                browser.find_element_by_xpath(
+                    str(read_xpath(get_relationship_counts.__name__, "followers_count"))
+                )
+            )
         except NoSuchElementException:
             try:
                 browser.execute_script("location.reload()")
@@ -955,7 +950,7 @@ def get_relationship_counts(browser, username, logger):
             except WebDriverException:
                 try:
                     topCount_elements = browser.find_elements_by_xpath(
-                        read_xpath(get_relationship_counts.__name__,"topCount_elements"))
+                        read_xpath(get_relationship_counts.__name__, "topCount_elements"))
 
                     if topCount_elements:
                         followers_count = format_number(
@@ -971,8 +966,8 @@ def get_relationship_counts(browser, username, logger):
                 except NoSuchElementException:
                     logger.error(
                         "Error occurred during getting the followers count "
-                        "of '{}'\n".format(
-                            username.encode("utf-8")))
+                        "of '{}'\n".format(username.encode("utf-8"))
+                    )
                     followers_count = None
 
     try:
@@ -983,7 +978,10 @@ def get_relationship_counts(browser, username, logger):
     except WebDriverException:
         try:
             following_count = format_number(
-                browser.find_element_by_xpath(str(read_xpath(get_relationship_counts.__name__,"following_count"))))
+                browser.find_element_by_xpath(
+                    str(read_xpath(get_relationship_counts.__name__, "following_count"))
+                )
+            )
 
         except NoSuchElementException:
             try:
@@ -997,7 +995,7 @@ def get_relationship_counts(browser, username, logger):
             except WebDriverException:
                 try:
                     topCount_elements = browser.find_elements_by_xpath(
-                        read_xpath(get_relationship_counts.__name__,"topCount_elements"))
+                        read_xpath(get_relationship_counts.__name__, "topCount_elements"))
 
                     if topCount_elements:
                         following_count = format_number(
@@ -1758,7 +1756,8 @@ def get_action_delay(action):
     defaults = {"like": 2,
                 "comment": 2,
                 "follow": 3,
-                "unfollow": 10}
+                "unfollow": 10,
+                "story": 3}
     config = Settings.action_delays
 
     if (not config or
@@ -2117,7 +2116,9 @@ def get_cord_location(browser, location):
     base_url = 'https://www.instagram.com/explore/locations/'
     query_url = '{}{}{}'.format(base_url, location, "?__a=1")
     browser.get(query_url)
-    json_text = browser.find_element_by_xpath(read_xpath(get_cord_location.__name__,"json_text")).text
+    json_text = browser.find_element_by_xpath(
+        read_xpath(get_cord_location.__name__, "json_text")
+    ).text
     data = json.loads(json_text)
 
     lat = data['graphql']['location']['lat']

@@ -35,6 +35,7 @@ from .like_util import get_links_for_location
 from .like_util import like_image
 from .like_util import get_links_for_username
 from .like_util import like_comment
+from .story_util import watch_story
 from .login_util import login_user
 from .settings import Settings
 from .settings import localize_path
@@ -197,6 +198,8 @@ class InstaPy:
         self.not_valid_users = 0
         self.video_played = 0
         self.already_Visited = 0
+        self.stories_watched = 0
+        self.reels_watched = 0
 
         self.follow_times = 1
         self.share_times = 1
@@ -209,6 +212,9 @@ class InstaPy:
         self.automatedFollowedPool = {"all": [], "eligible": []}
         self.do_like = False
         self.like_percentage = 0
+        self.do_story = False
+        self.story_percentage = 0
+        self.story_simulate = False
         self.smart_hashtags = []
         self.smart_location_hashtags = []
 
@@ -352,10 +358,6 @@ class InstaPy:
                                                            self.headless_browser,
                                                            self.use_firefox,
                                                            self.browser_profile_path,
-                                                           # Replaces
-                                                           # browser User
-                                                           # Agent from
-                                                           # "HeadlessChrome".
                                                            self.disable_image_load,
                                                            self.page_delay,
                                                            self.logger)
@@ -463,6 +465,7 @@ class InstaPy:
                           comment=None,
                           follow=None,
                           unfollow=None,
+                          story=None,
                           randomize=False,
                           random_range=(None, None),
                           safety_match=True):
@@ -472,6 +475,7 @@ class InstaPy:
                                        "comment": comment,
                                        "follow": follow,
                                        "unfollow": unfollow,
+                                       "story": story,
                                        "randomize": randomize,
                                        "random_range": random_range,
                                        "safety_match": safety_match})
@@ -528,6 +532,24 @@ class InstaPy:
         self.like_percentage = min(percentage,100)
 
         return self
+
+    def set_do_story(self, enabled = False, percentage = 0, simulate = False):
+        """
+            configure stories
+            enabled: to add story to interact
+            percentage: how much to watch
+            simulate: if True, we will simulate watching (faster),
+                      but nothing will be seen on the browser window
+        """
+        if self.aborting:
+            return self
+
+        self.do_story = enabled
+        self.story_percentage = min(percentage,100)
+        self.story_simulate = simulate
+
+        return self
+
 
     def set_dont_like(self, tags=None):
         """Changes the possible restriction tags, if one of this
@@ -738,7 +760,7 @@ class InstaPy:
 
         if not isinstance(character_set, list):
             character_set = [character_set]
-        
+
         for chr_set in character_set:
             if (chr_set not in ['LATIN', 'GREEK', 'CYRILLIC', 'ARABIC',
                                       'HEBREW', 'CJK', 'HANGUL', 'HIRAGANA',
@@ -747,10 +769,10 @@ class InstaPy:
                 ch_set_name = 'LATIN'
             else:
                 ch_set_name = chr_set
-                
+
             if ch_set_name not in char_set:
                 char_set.append(ch_set_name)
-                
+
         self.mandatory_language = enabled
         self.mandatory_character = char_set
 
@@ -1125,14 +1147,14 @@ class InstaPy:
                             # disable following temporarily 
                             # cos the user is already followed
                             self.do_follow = False
-                            
+
                             # disable revalidating user in interact_by_users
                             with self.feature_in_feature("interact_by_users", False):
                                 self.interact_by_users(acc_to_follow,
                                                        self.user_interact_amount,
                                                        self.user_interact_random,
                                                        self.user_interact_media)
-                            
+
                             # revert back to original `self.do_follow` value
                             self.do_follow = original_do_follow
 
@@ -1941,7 +1963,7 @@ class InstaPy:
                     self.logger.error('Invalid Page: {}'.format(err))
 
             self.logger.info('Tag: {}'.format(tag.encode('utf-8')))
-        
+
         self.logger.info('Liked: {}'.format(liked_img))
         self.logger.info('Already Liked: {}'.format(already_liked))
         self.logger.info('Commented: {}'.format(commented))
@@ -2261,17 +2283,19 @@ class InstaPy:
                               not_dont_include)
                 liking = (random.randint(0, 100) <= self.like_percentage)
 
+                story = (random.randint(0,100) <= self.story_percentage and self.do_story)
+
                 counter += 1
 
                 # if we have only one image to like/comment
                 if commenting and not liking and amount == 1:
                     continue
 
-                if following or commenting or liking:
+                if following or commenting or liking or story:
                     self.logger.info(
                         'username actions: following={} commenting={} '
-                        'liking={}'.format(
-                            following, commenting, liking))
+                        'liking={} story={}'.format(
+                            following, commenting, liking, story))
                     break
 
                 # if for some reason we have no actions on this user
@@ -2347,6 +2371,7 @@ class InstaPy:
                                           self.comment_percentage and
                                           self.do_comment and
                                           not_dont_include)
+                            story = (random.randint(0, 100) <= self.story_percentage and self.do_story)
 
                         # like
                         if self.do_like and liking and self.delimit_liking:
@@ -2398,7 +2423,8 @@ class InstaPy:
                                         # smart commenting
                                         comments = self.fetch_smart_comments(
                                             is_video,
-                                            temp_comments)
+                                            temp_comments
+                                        )
                                         if comments:
                                             comment_state, msg = comment_image(
                                                 self.browser,
@@ -2406,7 +2432,8 @@ class InstaPy:
                                                 comments,
                                                 self.blacklist,
                                                 self.logger,
-                                                self.logfolder)
+                                                self.logfolder
+                                            )
                                             if comment_state is True:
                                                 commented += 1
 
@@ -2431,7 +2458,9 @@ class InstaPy:
                     else:
                         self.logger.info(
                             '--> Image not liked: {}'.format(
-                                reason.encode('utf-8')))
+                                reason.encode('utf-8')
+                            )
+                        )
                         inap_img += 1
 
                 except NoSuchElementException as err:
@@ -2448,7 +2477,9 @@ class InstaPy:
                     None,
                     self.blacklist,
                     self.logger,
-                    self.logfolder)
+                    self.logfolder
+                )
+
                 if follow_state is True:
                     followed += 1
 
@@ -2458,6 +2489,10 @@ class InstaPy:
             else:
                 self.logger.info('--> Not following')
                 sleep(1)
+
+            #watch story if present
+            if story:
+                self.story_by_users([username])
 
             if liked_img < amount:
                 self.logger.info('-------------')
@@ -4730,6 +4765,7 @@ class InstaPy:
                  self.commented,
                  self.followed, self.already_followed,
                  self.unfollowed,
+                 self.stories_watched, self.reels_watched,
                  self.inap_img,
                  self.not_valid_users]
 
@@ -4763,6 +4799,7 @@ class InstaPy:
                 "\t|> REPLIED to {} comments\n"
                 "\t|> INAPPROPRIATE images: {}\n"
                 "\t|> NOT VALID users: {}\n"
+                "\t|> WATCHED {} story(ies)  |  WATCHED {} reel(s)\n"
                 "\n{}\n{}"
                 .format(self.liked_img,
                         self.already_liked,
@@ -4774,6 +4811,8 @@ class InstaPy:
                         self.replied_to_comments,
                         self.inap_img,
                         self.not_valid_users,
+                        self.stories_watched,
+                        self.reels_watched,
                         owner_relationship_info,
                         run_time_msg))
         else:
@@ -5289,15 +5328,23 @@ class InstaPy:
     def join_pods(self, topic='general', engagement_mode='normal'):
         """ Join pods """
         if topic not in self.allowed_pod_topics:
-            self.logger.error('You have entered an invalid topic for pods, allowed topics are : {}. Exiting...'.format(self.allowed_pod_topics))
+            self.logger.error(
+                'You have entered an invalid topic for pods, allowed topics are : {}. Exiting...'
+                .format(self.allowed_pod_topics)
+            )
             return self
 
         if engagement_mode not in self.allowed_pod_engagement_modes:
-            self.logger.error('You have entered an invalid engagement_mode for pods, allowed engagement_modes are : {}. Exiting...'.format(self.allowed_pod_engagement_modes))
+            self.logger.error(
+                'You have entered an invalid engagement_mode for pods, allowed engagement_modes are : {}. Exiting...'
+                .format(self.allowed_pod_engagement_modes)
+            )
             return self
 
         if self.comments is not None and len(self.comments) < 10:
-            self.logger.error('You have too few comments, please set at least 10 distinct comments to avoid looking suspicious.')
+            self.logger.error(
+                'You have too few comments, please set at least 10 distinct comments to avoid looking suspicious.'
+            )
             return self
 
         user_link = 'https://www.instagram.com/{}/'.format(self.username)
@@ -5437,3 +5484,59 @@ class InstaPy:
             except Exception as err:
                 self.logger.error("Failed for {} with Error {}".format(pod_post, err))
 
+
+    def story_by_tags(self, tags = None):
+        """ Watch stories for specific tag(s) """
+        if self.aborting:
+            return self
+
+        if tags is None:
+            self.logger.info("No Tags set")
+        else:
+            # iterate over available tags
+            for index, tag in enumerate(tags):
+                # Quota Supervisor peak check
+                if self.quotient_breach:
+                    break
+
+                # inform user whats happening
+                if len(tags) > 1:
+                    self.logger.info('Tag [{}/{}]'.format(index + 1, len(tags)))
+                self.logger.info('Loading stories with Tag --> {}'.format(tag.encode('utf-8')))
+
+                try:
+                    reels = watch_story(self.browser, tag, self.logger, "tag", self.story_simulate)
+                except NoSuchElementException:
+                    self.logger.info('No stories skipping this tag')
+                    continue
+                if reels > 0:
+                    self.stories_watched += 1
+                    self.reels_watched += reels
+
+    def story_by_users(self, users = None):
+        """ Watch stories for specific user(s)"""
+        if self.aborting:
+            return self
+
+        if users is None:
+            self.logger.info("No users passed to story_by_users")
+        else:
+            # iterate over available users
+            for index, user in enumerate(users):
+                # Quota Supervisor peak check
+                if self.quotient_breach:
+                    break
+
+                # inform user whats happening
+                if len(users) > 1:
+                    self.logger.info('User [{}/{}]'.format(index + 1, len(users)))
+                self.logger.info('Loading stories with User --> {}'.format(user.encode('utf-8')))
+
+                try:
+                    reels = watch_story(self.browser, user, self.logger, "user", self.story_simulate)
+                except NoSuchElementException:
+                    self.logger.info('No stories skipping this user')
+                    continue
+                if reels > 0:
+                    self.stories_watched += 1
+                    self.reels_watched += reels

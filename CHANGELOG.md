@@ -3,8 +3,21 @@ The **goal** of this file is explaining to the users of our project the notable 
 
 _The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html)_.
 
+## [0.5.7] - 2019-07-24
+### Fixed
+- user agent error in firefox
 
-## [0.5.5] - 2019-07-**
+
+## [0.5.6] - 2019-07-22
+### Fixed
+- xpath compile multiple errors
+
+### Added
+- feature watch stories
+- always use the lastest user-agent
+
+
+## [0.5.5] - 2019-07-11
 ### Fixed
 - `get_action_delay` check for uninitialized delays in settings
 

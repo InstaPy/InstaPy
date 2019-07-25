@@ -840,7 +840,7 @@ def get_users_through_dialog(browser,
 
         if sc_rolled > 85:  # you may want to use up to 100
             if total_list < amount:
-                print('')
+                print('\n')
                 logger.info(
                     "Too many requests sent!  attempt: {}  |  gathered "
                     "links: {}"
@@ -891,12 +891,11 @@ def get_users_through_dialog(browser,
                         or i != (quick_amount - 1))
                         and (not pts_printed
                              or not abort)):
-                        print('')
+                        print('\n')
                     simulated_list.extend(quick_follow)
 
             simulator_counter = 0
 
-    print('')
     person_list = dialog_username_extractor(buttons)
 
     if randomize:
@@ -923,8 +922,14 @@ def dialog_username_extractor(buttons):
     for person in buttons:
         if person and hasattr(person, 'text') and person.text:
             try:
-                person_list.append(person.find_element_by_xpath(read_xpath(dialog_username_extractor.__name__,"person"))
-                                   .find_elements_by_tag_name("a")[1].text)
+                xpath = read_xpath(dialog_username_extractor.__name__, "person")
+                element_by_xpath = person.find_element_by_xpath(xpath)
+                elements_by_tag_name = element_by_xpath.find_elements_by_tag_name("a")[0].text
+
+                if elements_by_tag_name == '':
+                    elements_by_tag_name = element_by_xpath.find_elements_by_tag_name("a")[1].text
+
+                person_list.append(elements_by_tag_name)
             except IndexError:
                 pass  # Element list is too short to have a [1] element
 
@@ -1444,11 +1449,11 @@ def get_buttons_from_dialog(dialog, channel):
         # get follow buttons. This approach will find the follow buttons and
         # ignore the Unfollow/Requested buttons.
         buttons = dialog.find_elements_by_xpath(
-            read_xpath(get_buttons_from_dialog.__name__,"follow_button"))
+            read_xpath(get_buttons_from_dialog.__name__, "follow_button"))
 
     elif channel == "Unfollow":
         buttons = dialog.find_elements_by_xpath(
-            read_xpath(get_buttons_from_dialog.__name__,"unfollow_button"))
+            read_xpath(get_buttons_from_dialog.__name__, "unfollow_button"))
 
     return buttons
 
