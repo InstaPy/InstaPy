@@ -902,11 +902,13 @@ def get_number_of_posts(browser):
 
         try:
             num_of_posts_txt = browser.find_element_by_xpath(
-                read_xpath(get_number_of_posts.__name__,"num_of_posts_txt_no_such_element")).text
+                read_xpath(get_number_of_posts.__name__, "num_of_posts_txt_no_such_element")
+            ).text
 
         except NoSuchElementException:
             num_of_posts_txt = browser.find_element_by_xpath(
-                read_xpath(get_number_of_posts.__name__,"num_of_posts_txt_no_such_element")).text
+                read_xpath(get_number_of_posts.__name__, "num_of_posts_txt_no_such_element")
+            ).text
 
         num_of_posts_txt = num_of_posts_txt.replace(" ", "")
         num_of_posts_txt = num_of_posts_txt.replace(",", "")
@@ -932,7 +934,10 @@ def get_relationship_counts(browser, username, logger):
     except WebDriverException:
         try:
             followers_count = format_number(
-                browser.find_element_by_xpath(str(read_xpath(get_relationship_counts.__name__,"followers_count"))))
+                browser.find_element_by_xpath(
+                    str(read_xpath(get_relationship_counts.__name__, "followers_count"))
+                )
+            )
         except NoSuchElementException:
             try:
                 browser.execute_script("location.reload()")
@@ -945,7 +950,7 @@ def get_relationship_counts(browser, username, logger):
             except WebDriverException:
                 try:
                     topCount_elements = browser.find_elements_by_xpath(
-                        read_xpath(get_relationship_counts.__name__,"topCount_elements"))
+                        read_xpath(get_relationship_counts.__name__, "topCount_elements"))
 
                     if topCount_elements:
                         followers_count = format_number(
@@ -961,8 +966,8 @@ def get_relationship_counts(browser, username, logger):
                 except NoSuchElementException:
                     logger.error(
                         "Error occurred during getting the followers count "
-                        "of '{}'\n".format(
-                            username.encode("utf-8")))
+                        "of '{}'\n".format(username.encode("utf-8"))
+                    )
                     followers_count = None
 
     try:
@@ -973,7 +978,10 @@ def get_relationship_counts(browser, username, logger):
     except WebDriverException:
         try:
             following_count = format_number(
-                browser.find_element_by_xpath(str(read_xpath(get_relationship_counts.__name__,"following_count"))))
+                browser.find_element_by_xpath(
+                    str(read_xpath(get_relationship_counts.__name__, "following_count"))
+                )
+            )
 
         except NoSuchElementException:
             try:
@@ -987,7 +995,7 @@ def get_relationship_counts(browser, username, logger):
             except WebDriverException:
                 try:
                     topCount_elements = browser.find_elements_by_xpath(
-                        read_xpath(get_relationship_counts.__name__,"topCount_elements"))
+                        read_xpath(get_relationship_counts.__name__, "topCount_elements"))
 
                     if topCount_elements:
                         following_count = format_number(
@@ -1748,7 +1756,8 @@ def get_action_delay(action):
     defaults = {"like": 2,
                 "comment": 2,
                 "follow": 3,
-                "unfollow": 10}
+                "unfollow": 10,
+                "story": 3}
     config = Settings.action_delays
 
     if (not config or
@@ -2107,7 +2116,9 @@ def get_cord_location(browser, location):
     base_url = 'https://www.instagram.com/explore/locations/'
     query_url = '{}{}{}'.format(base_url, location, "?__a=1")
     browser.get(query_url)
-    json_text = browser.find_element_by_xpath(read_xpath(get_cord_location.__name__,"json_text")).text
+    json_text = browser.find_element_by_xpath(
+        read_xpath(get_cord_location.__name__, "json_text")
+    ).text
     data = json.loads(json_text)
 
     lat = data['graphql']['location']['lat']
