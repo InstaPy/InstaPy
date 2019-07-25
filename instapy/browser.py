@@ -54,6 +54,8 @@ def set_selenium_local_session(proxy_address,
     except Exception:
         print('Latest user agent currently not reachable. Using fallback.')
 
+    # keep user_agent
+    Settings.user_agent = user_agent
     if use_firefox:
         firefox_options = Firefox_Options()
 

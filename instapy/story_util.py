@@ -7,6 +7,7 @@ from .util import click_element
 from .util import web_address_navigator
 from .util import update_activity
 from .util import get_action_delay
+from .settings import Settings
 from .xpath import read_xpath
 
 import requests
@@ -68,7 +69,12 @@ def get_story_data(browser, elem, action_type, logger, simulate = False):
 
         session.cookies.set(**all_args)
 
-    data = session.get(graphql_query_url)
+    headers = {
+        'User-Agent': Settings.user_agent,
+        'X-Requested-With': 'XMLHttpRequest'
+    }
+
+    data = session.get(graphql_query_url, headers=headers)
     response = data.json()
     update_activity()
 
@@ -94,6 +100,7 @@ def get_story_data(browser, elem, action_type, logger, simulate = False):
                 else:
                     if simulate is True:
                         headers = {
+                            'User-Agent': Settings.user_agent,
                             'X-CSRFToken': csrftoken,
                             'X-Requested-With': 'XMLHttpRequest',
                             'Content-Type': 'application/x-www-form-urlencoded'

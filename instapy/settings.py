@@ -73,7 +73,10 @@ class Settings:
     # store what browser the user is using, if they are using firefox it is
     # true, chrome if false.
     use_firefox = None
-
+    user_agent = (
+        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 '
+        '(KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36'
+    )
     # state of instantiation of InstaPy
     InstaPy_is_running = False
 
