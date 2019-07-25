@@ -422,33 +422,34 @@ class InstaPy:
                             self.logger)
 
             self.aborting = True
-        else:
-            # back the page_delay to default, or the value set by the user
-            self.browser.implicitly_wait(self.page_delay)
-            message = "Logged in successfully!"
-            highlight_print(self.username,
-                            message,
-                            "login",
-                            "info",
-                            self.logger)
-            # try to save account progress
-            try:
-                save_account_progress(self.browser,
-                                      self.username,
-                                      self.logger)
-            except Exception:
-                self.logger.warning(
-                    'Unable to save account progress, skipping data update')
+            return self
 
-            # logs only followers/following numbers when able to login,
-            # to speed up the login process and avoid loading profile
-            # page (meaning less server calls)
-            self.followed_by = log_follower_num(self.browser,
-                                                self.username,
-                                                self.logfolder)
-            self.following_num = log_following_num(self.browser,
-                                                   self.username,
-                                                   self.logfolder)
+        # back the page_delay to default, or the value set by the user
+        self.browser.implicitly_wait(self.page_delay)
+        message = "Logged in successfully!"
+        highlight_print(self.username,
+                        message,
+                        "login",
+                        "info",
+                        self.logger)
+        # try to save account progress
+        try:
+            save_account_progress(self.browser,
+                                  self.username,
+                                  self.logger)
+        except Exception:
+            self.logger.warning(
+                'Unable to save account progress, skipping data update')
+
+        # logs only followers/following numbers when able to login,
+        # to speed up the login process and avoid loading profile
+        # page (meaning less server calls)
+        self.followed_by = log_follower_num(self.browser,
+                                            self.username,
+                                            self.logfolder)
+        self.following_num = log_following_num(self.browser,
+                                               self.username,
+                                               self.logfolder)
 
         return self
 
