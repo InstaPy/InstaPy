@@ -1,29 +1,22 @@
 var customScript = `
 // Overwrite the contents of the body.
 Object.defineProperty(navigator, 'webdriver', {
-  get: function() {
-    return false;
-  },
+  get: () => false,
 });
 
 // -- overwrite the languages property to use a custom getter
 Object.defineProperty(navigator, 'languages', {
-  get: function() {
-    return ['en-US', 'en'];
-  },
+  get: () => ['en-US', 'en'],
 });
 
 // -- overwrite the plugins property to use a custom getter
 Object.defineProperty(navigator, 'plugins', {
-  get: function() {
-    // this just needs to have length > 0, but we could mock the plugins too
-    return [1, 2, 3, 4, 5];
-  },
+  get: () => [1, 2, 3, 4, 5],
 });
 
 // -- mock webgl renderer
 var getParameter = WebGLRenderingContext.getParameter;
-WebGLRenderingContext.prototype.getParameter = function(parameter) {
+WebGLRenderingContext.prototype.getParameter = parameter => {
   // UNMASKED_VENDOR_WEBGL
   if (parameter === 37445) {
     return 'Intel Open Source Technology Center';
@@ -44,7 +37,7 @@ WebGLRenderingContext.prototype.getParameter = function(parameter) {
   // redefine the property with a patched descriptor
   Object.defineProperty(HTMLImageElement.prototype, property, {
     ...imageDescriptor,
-    get: function() {
+    get: () => {
       // return an arbitrary non-zero dimension if the image failed to load
       if (this.complete && this.naturalHeight == 0) {
         return 20;
@@ -62,7 +55,7 @@ var elementDescriptor = Object.getOwnPropertyDescriptor(HTMLElement.prototype, '
 // redefine the property with a patched descriptor
 Object.defineProperty(HTMLDivElement.prototype, 'offsetHeight', {
   ...elementDescriptor,
-  get: function() {
+  get: () => {
     if (this.id === 'modernizr') {
         return 1;
     }
@@ -72,7 +65,7 @@ Object.defineProperty(HTMLDivElement.prototype, 'offsetHeight', {
 
 // -- pass permissions test
 var originalQuery = window.navigator.permissions.query;
-window.navigator.permissions.query = (parameters) => (
+window.navigator.permissions.query = parameters => (
   parameters.name === 'notifications' ?
     Promise.resolve({ state: Notification.permission }) :
     originalQuery(parameters)
@@ -84,6 +77,7 @@ document.arrive('head', () => {
   script.innerHTML = customScript;
   script.type = 'text/javascript'
   document.head.insertBefore(script, document.head.children[0]);
+  console.log('InstaPy hide script injected');
 });
 
 // -- mock chrome object

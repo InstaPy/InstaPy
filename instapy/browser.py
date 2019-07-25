@@ -24,20 +24,20 @@ from .util import check_authorization
 from .util import web_address_navigator
 from .settings import Settings
 from .file_manager import get_chromedriver_location
+from .file_manager import use_assets
 
 
 def create_firefox_extension():
     ext_path = os.path.abspath(os.path.dirname(__file__) + '/firefox_extension')
-    ext_filename = ext_path + '/extension.xpi'
-    zipf = zipfile.ZipFile(ext_filename, 'w', zipfile.ZIP_DEFLATED)
+    # safe into assets folder
+    zip_file = use_assets() + '/extension.xpi'
 
     files = [ 'manifest.json', 'content.js', 'arrive.js' ]
-    for file in files:
-        zipf.write(ext_path + '/' + file, file)
+    with zipfile.ZipFile(zip_file, 'w', zipfile.ZIP_DEFLATED, False) as zipf:
+        for file in files:
+            zipf.write(ext_path + '/' + file, file)
 
-    zipf.close()
-
-    return ext_filename
+    return zip_file
 
 
 def set_selenium_local_session(proxy_address,

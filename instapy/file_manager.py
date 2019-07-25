@@ -16,6 +16,22 @@ from .settings import OS_ENV
 from .exceptions import InstaPyError
 
 
+def use_workspace():
+    """Get workspace folder"""
+    workspace_path = slashen(WORKSPACE["path"], "native")
+    validate_path(workspace_path)
+    return workspace_path
+
+
+
+def use_assets():
+    """Get asset folder"""
+    assets_path = "{}{}assets".format(use_workspace(), native_slash)
+    validate_path(assets_path)
+    return assets_path
+
+
+
 def get_workspace():
     """ Make a workspace ready for user """
 
@@ -156,6 +172,7 @@ def remove_last_slash(path):
         path = path[:-1]
 
     return path
+
 
 
 def verify_workspace_name(path):
