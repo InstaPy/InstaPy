@@ -400,6 +400,15 @@ class InstaPy:
 
     def login(self):
         """Used to login the user either with the username and password"""
+        # InstaPy uses page_delay speed to implicit wait for elements,
+        # here we're decreasing it to 5 seconds instead of the default 25 seconds
+        # to speed up the login process.
+        #
+        # In short: default page_delay speed took 25 seconds trying to locate every
+        # element, now it's taking 5 seconds.
+        temporary_page_delay = 5
+        self.browser.implicitly_wait(temporary_page_delay)
+
         if not login_user(self.browser,
                           self.username,
                           self.password,
@@ -415,23 +424,28 @@ class InstaPy:
                             self.logger)
 
             self.aborting = True
+            return self
 
-        else:
-            message = "Logged in successfully!"
-            highlight_print(self.username,
-                            message,
-                            "login",
-                            "info",
-                            self.logger)
-            # try to save account progress
-            try:
-                save_account_progress(self.browser,
-                                      self.username,
-                                      self.logger)
-            except Exception:
-                self.logger.warning(
-                    'Unable to save account progress, skipping data update')
+        # back the page_delay to default, or the value set by the user
+        self.browser.implicitly_wait(self.page_delay)
+        message = "Logged in successfully!"
+        highlight_print(self.username,
+                        message,
+                        "login",
+                        "info",
+                        self.logger)
+        # try to save account progress
+        try:
+            save_account_progress(self.browser,
+                                  self.username,
+                                  self.logger)
+        except Exception:
+            self.logger.warning(
+                'Unable to save account progress, skipping data update')
 
+        # logs only followers/following numbers when able to login,
+        # to speed up the login process and avoid loading profile
+        # page (meaning less server calls)
         self.followed_by = log_follower_num(self.browser,
                                             self.username,
                                             self.logfolder)
