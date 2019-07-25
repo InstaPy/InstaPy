@@ -2339,7 +2339,7 @@ class InstaPy:
                     break
 
                 self.logger.info(
-                    'Post [{}/{}]'.format(liked_img + 1, len(links[:amount])))
+                    'Post [{}/{}]'.format(i + 1, len(links[:amount])))
                 self.logger.info(link)
 
                 try:
