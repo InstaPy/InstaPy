@@ -169,11 +169,18 @@ xpath['like_from_image'] = {
 }
 
 xpath['login_user'] = {
-    "input_password":"//input[@name='password']",
-    "input_username_XP":"//input[@name='username']",
-    "login_elem":"//a[text()='Log in']",
-    "login_elem_no_such_exception":"//a[text()='Log In']",
-    "nav":'//nav'
+    "input_password": "//input[@name='password']",
+    "input_username_XP": "//input[@name='username']",
+    "login_elem": "//a[text()='Log in']",
+    "login_elem_no_such_exception": "//a[text()='Log In']",
+    "nav": "//nav",
+    "website_status": "//span[@id='status']",
+    "response_time": "//span[@id='response']",
+    "response_code": "//span[@id='code']",
+    "account_disabled": "//p[contains(text(),'Your account has been disabled')]",
+    "add_phone_number": "//h2[text()='Add Your Phone Number']",
+    "suspicious_login_attempt": "//p[text()='Suspicious Login Attempt']",
+    "error_alert": "//p[@id='slfErrorAlert']"
 }
 
 xpath['open_comment_section'] = {
