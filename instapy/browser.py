@@ -4,8 +4,8 @@ from selenium.common.exceptions import WebDriverException
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.firefox.options import Options as Firefox_Options
 from selenium.webdriver import Remote
-from fake_useragent import UserAgent
 from webdriverdownloader import GeckoDriverDownloader
+from fake_useragent import UserAgent, FakeUserAgentError
 
 # general libs
 import os
@@ -70,9 +70,9 @@ def set_selenium_local_session(proxy_address,
 
     # try to fetch latest user agent
     try:
-        ua = UserAgent(cache = False, fallback = user_agent)
+        ua = UserAgent(fallback = user_agent)
         user_agent = ua.firefox
-    except Exception:
+    except FakeUserAgentError:
         print('Latest user agent currently not reachable. Using fallback.')
 
     firefox_options = Firefox_Options()
