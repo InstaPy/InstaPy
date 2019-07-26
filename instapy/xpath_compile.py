@@ -193,11 +193,15 @@ xpath['unfollow'] = {
 }
 
 xpath['watch_story_for_tag'] = {
-    "explore_stories":"//section/main/header/div[1]/div",
-    "wait_finish":"//section/div/div/section/div[2]/button[2]"
+    "explore_stories": "//section/main/header/div[1]/div",
+    "wait_finish": "//section/div/div/section/div[2]/button[2]",
+    "next_first": "/html/body/span/section/div/div/section/div[2]/button",
+    "next": "/html/body/span/section/div/div/section/div[2]/button[2]"
 }
 
 xpath['watch_story_for_user'] = {
-    "explore_stories":"//section/main/div/header/div/div",
-    "wait_finish":"//section/div/div/section/div[2]/button[3]"
+    "explore_stories": "//section/main/div/header/div/div",
+    "wait_finish": "//section/div/div/section/div[2]/button[3]",
+    'next_first': "/html/body/span/section/div/div/section/div[2]/button",
+    "next": "/html/body/span/section/div/div/section/div[2]/button[2]"
 }
