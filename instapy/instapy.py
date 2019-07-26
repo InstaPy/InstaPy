@@ -143,6 +143,7 @@ class InstaPy:
                 raise InstaPyError("The 'nogui' parameter isn't supported on Windows.")
 
         self.browser = None
+        self.page_delay = page_delay
         self.bypass_with_mobile = bypass_with_mobile
         self.disable_image_load = disable_image_load
 
