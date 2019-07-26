@@ -25,17 +25,22 @@ from .util import check_authorization
 from .util import web_address_navigator
 from .settings import Settings
 from .file_manager import use_assets
+from .file_manager import slashen
 
 
 def create_firefox_extension():
     ext_path = os.path.abspath(os.path.dirname(__file__) + '/firefox_extension')
+    ext_path = slashen(ext_path)
     # safe into assets folder
     zip_file = use_assets() + '/extension.xpi'
+    zip_file = slashen(zip_file)
 
     files = [ 'manifest.json', 'content.js', 'arrive.js' ]
     with zipfile.ZipFile(zip_file, 'w', zipfile.ZIP_DEFLATED, False) as zipf:
         for file in files:
-            zipf.write(ext_path + '/' + file, file)
+            fp = ext_path + '/' + file
+            fp = slashen(fp)
+            zipf.write(fp, file)
 
     return zip_file
 
