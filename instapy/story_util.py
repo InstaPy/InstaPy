@@ -144,7 +144,7 @@ def get_story_data(browser, elem, action_type, logger, simulate = False):
                                 continue
                         click_element(browser, next_elem)
                         reels_cnt += 1
-                        index +=1
+                        index += 1
 
             return {'status': 'ok', 'reels_cnt': reels_cnt}
     else:
