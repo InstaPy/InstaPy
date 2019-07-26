@@ -133,15 +133,13 @@ def get_story_data(browser, elem, action_type, logger, simulate = False):
                         if index == 1:
                             try:
                                 next_elem = browser.find_element_by_xpath(
-                                        read_xpath(watch_story.__name__
-                                                   + "_for_{}".format(action_type), "next_first"))
+                                        read_xpath(watch_story.__name__, "next_first"))
                             except NoSuchElementException:
                                 continue
                         else:
                             try:
                                 next_elem = browser.find_element_by_xpath(
-                                        read_xpath(watch_story.__name__
-                                           + "_for_{}".format(action_type), "next"))
+                                        read_xpath(watch_story.__name__, "next"))
                             except NoSuchElementException:
                                 continue
                         click_element(browser, next_elem)
