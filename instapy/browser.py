@@ -38,7 +38,6 @@ def create_firefox_extension():
         for file in files:
             zipf.write(ext_path + sep + file, file)
 
-    print(zip_file)
     return zip_file
 
 

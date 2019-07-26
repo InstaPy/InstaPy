@@ -196,6 +196,8 @@ def login_user(browser,
 
     ig_homepage = "https://www.instagram.com"
     web_address_navigator(browser, ig_homepage)
+    navigator = browser.execute_script('return navigator.webdriver')
+    print('webdriver: ', navigator)
     cookie_loaded = False
 
     # try to load cookie from username
