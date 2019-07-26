@@ -15,6 +15,7 @@ import re
 import os
 import zipfile
 from time import sleep
+from os.path import sep
 
 # local project
 from .util import interruption_handler
@@ -25,24 +26,19 @@ from .util import check_authorization
 from .util import web_address_navigator
 from .settings import Settings
 from .file_manager import use_assets
-from .file_manager import slashen
 
 
 def create_firefox_extension():
-    ext_path = os.path.abspath(os.path.dirname(__file__) + '/firefox_extension')
-    ext_path = slashen(ext_path)
+    ext_path = os.path.abspath(os.path.dirname(__file__) + sep + 'firefox_extension')
     # safe into assets folder
-    zip_file = use_assets() + '/extension.xpi'
-    zip_file = slashen(zip_file)
+    zip_file = use_assets() + sep + 'extension.xpi'
 
     files = [ 'manifest.json', 'content.js', 'arrive.js' ]
     with zipfile.ZipFile(zip_file, 'w', zipfile.ZIP_DEFLATED, False) as zipf:
         for file in files:
-            fp = ext_path + '/' + file
-            fp = slashen(fp)
-            zipf.write(fp, file)
+            zipf.write(ext_path + sep + file, file)
 
-    filename = slashen(zip_file)
+    print(filename)
     return filename
 
 
