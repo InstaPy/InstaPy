@@ -114,6 +114,7 @@ def get_story_data(browser, elem, action_type, logger, simulate = False):
                                              },
                                      headers = headers)
                         logger.info('  --> simulated watch reel # {}'.format(index))
+                        update_activity()
                         index += 1
                         time.sleep(randint(3,6))
                         reels_cnt += 1
