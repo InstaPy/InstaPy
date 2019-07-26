@@ -1,9 +1,6 @@
 # selenium
 from selenium import webdriver
 from selenium.common.exceptions import WebDriverException
-from selenium.webdriver import DesiredCapabilities
-from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.common.proxy import Proxy, ProxyType
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.firefox.options import Options as Firefox_Options
 from selenium.webdriver import Remote
@@ -11,7 +8,6 @@ from fake_useragent import UserAgent
 from webdriverdownloader import GeckoDriverDownloader
 
 # general libs
-import re
 import os
 import zipfile
 from time import sleep
@@ -24,7 +20,6 @@ from .util import emergency_exit
 from .util import get_current_url
 from .util import check_authorization
 from .util import web_address_navigator
-from .settings import Settings
 from .file_manager import use_assets
 
 

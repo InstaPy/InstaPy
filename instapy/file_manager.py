@@ -1,10 +1,8 @@
 """ A file management utility """
 
 import os
-import pkg_resources
 from os.path import expanduser
 from os.path import exists as path_exists
-from os.path import isfile as file_exists
 from os.path import sep as native_slash
 from platform import python_version
 
@@ -12,7 +10,6 @@ from .util import highlight_print
 from .settings import Settings
 from .settings import localize_path
 from .settings import WORKSPACE
-from .settings import OS_ENV
 from .exceptions import InstaPyError
 
 
