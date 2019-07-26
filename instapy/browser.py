@@ -7,7 +7,7 @@ from selenium.webdriver.common.proxy import Proxy, ProxyType
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.firefox.options import Options as Firefox_Options
 from selenium.webdriver import Remote
-from fake_useragent import UserAgent
+from fake_useragent import UserAgent, FakeUserAgentError
 
 # general libs
 import re
@@ -49,9 +49,9 @@ def set_selenium_local_session(proxy_address,
 
     # try to fetch latest user agent
     try:
-        ua = UserAgent(cache = False, fallback = user_agent)
+        ua = UserAgent(fallback = user_agent)
         user_agent = ua.firefox if use_firefox else ua.chrome
-    except Exception:
+    except FakeUserAgentError:
         print('Latest user agent currently not reachable. Using fallback.')
 
     if use_firefox:
