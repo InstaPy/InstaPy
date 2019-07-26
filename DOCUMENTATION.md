@@ -1236,8 +1236,7 @@ session.set_do_story(enabled = True, percentage = 70, simulate = True)
  If set to `True` InstaPy will simulate watching the stories (you won't see it in the browser), we just send commands to Instagram saying we have watched the stories.
  If set to `False` Instapy will perform the exact same action as a human user (clicking on stories, waiting until watching finishes, etc...)
 
-  Please note: on very small setups or if running on platform that cannot see videos, you will get stuck trying to watch the video. 
-  Recommended mode for those setups is `simulate=True`
+  Please note: `simulate = False` is the safest settings as it fully simulate all instagram interactions
 
 ### Watch stories by Tags
 
