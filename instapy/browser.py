@@ -42,7 +42,8 @@ def create_firefox_extension():
             fp = slashen(fp)
             zipf.write(fp, file)
 
-    return zip_file
+    filename = slashen(zip_file)
+    return filename
 
 
 
