@@ -58,6 +58,7 @@ default_profile_pic_instagram = [
     "/a8539c22ed9fec8e1c43b538b1ebfd1d/5C5A1A7A/t51.2885-19"
     "/11906329_960233084022564_1448528159_a.jpg"]
 
+next_screenshot = 1
 
 def is_private_profile(browser, logger, following=True):
     is_private = None
@@ -69,7 +70,7 @@ def is_private_profile(browser, logger, following=True):
     except WebDriverException:
         try:
             browser.execute_script("location.reload()")
-            update_activity()
+            update_activity(browser, state=None)
 
             is_private = browser.execute_script(
                 "return window._sharedData.entry_data."
@@ -133,7 +134,7 @@ def validate_username(browser,
         except WebDriverException:
             try:
                 browser.execute_script("location.reload()")
-                update_activity()
+                update_activity(browser, state=None)
 
                 username = browser.execute_script(
                     "return window._sharedData.entry_data."
@@ -382,20 +383,40 @@ def getUserData(query,
         return data
     except WebDriverException:
         browser.execute_script("location.reload()")
-        update_activity()
+        update_activity(browser, state=None)
 
         data = browser.execute_script(
             basequery + query)
         return data
 
 
-def update_activity(action="server_calls"):
-    """ Record every Instagram server call (page load, content load, likes,
-        comments, follows, unfollow). """
+def update_activity(browser=None,
+                    action="server_calls",
+                    state=None):
+    """
+        1. Record every Instagram server call (page load, content load, likes,
+        comments, follows, unfollow)
+        2. Take rotative screenshots
+        3. update connection state and record to .json file
+    """
     # check action availability
     quota_supervisor("server_calls")
 
-    # get a DB and start a connection
+    # take screen shot
+    if browser is not None:
+        take_rotative_screenshot(browser)
+
+    # update state to JSON file
+    if state:
+        data = {"state": state}
+        with open("username___state.json", "w") as write_file:
+            json.dump(data, write_file)
+
+    # in case is just a state update and there is no server call
+    if action is None:
+        return
+
+    # get a DB, start a connection and sum a server call
     db, id = get_database()
     conn = sqlite3.connect(db)
 
@@ -623,7 +644,7 @@ def get_active_users(browser, username, posts, boundary, logger):
                     ''', dialog)
 
                 if scroll_it is True:
-                    update_activity()
+                    update_activity(browser, state=None)
 
                 if sc_rolled > 91 or too_many_requests > 1:  # old value 100
                     print('\n')
@@ -786,7 +807,7 @@ def scroll_bottom(browser, element, range_int):
         browser.execute_script(
             "arguments[0].scrollTop = arguments[0].scrollHeight", element)
         # update server calls
-        update_activity()
+        update_activity(browser, state=None)
         sleep(1)
 
     return
@@ -819,7 +840,7 @@ def click_element(browser, element, tryNum=0):
         element.click()
 
         # update server calls after a successful click by selenium
-        update_activity()
+        update_activity(browser, state=None)
 
     except Exception:
         # click attempt failed
@@ -849,12 +870,12 @@ def click_element(browser, element, tryNum=0):
                 "document.getElementsByClassName('" + element.get_attribute(
                     "class") + "')[0].click()")
             # update server calls after last click attempt by JS
-            update_activity()
+            update_activity(browser, state=None)
             # end condition for the recursive function
             return
 
         # update server calls after the scroll(s) in 0, 1 and 2 attempts
-        update_activity()
+        update_activity(browser, state=None)
 
         # sleep for 1 second to allow window to adjust (may or may not be
         # needed)
@@ -941,7 +962,7 @@ def get_relationship_counts(browser, username, logger):
         except NoSuchElementException:
             try:
                 browser.execute_script("location.reload()")
-                update_activity()
+                update_activity(browser, state=None)
 
                 followers_count = browser.execute_script(
                     "return window._sharedData.entry_data."
@@ -986,7 +1007,7 @@ def get_relationship_counts(browser, username, logger):
         except NoSuchElementException:
             try:
                 browser.execute_script("location.reload()")
-                update_activity()
+                update_activity(browser, state=None)
 
                 following_count = browser.execute_script(
                     "return window._sharedData.entry_data."
@@ -1042,7 +1063,7 @@ def web_address_navigator(browser, link):
             try:
                 browser.get(link)
                 # update server calls
-                update_activity()
+                update_activity(browser, state=None)
                 sleep(2)
                 break
 
@@ -1356,7 +1377,7 @@ def check_authorization(browser, username, method, logger, notify=True):
         except WebDriverException:
             try:
                 browser.execute_script("location.reload()")
-                update_activity()
+                update_activity(browser, state=None)
 
                 activity_counts = browser.execute_script(
                     "return window._sharedData.activity_counts")
@@ -1404,7 +1425,7 @@ def get_username(browser, track, logger):
     except WebDriverException:
         try:
             browser.execute_script("location.reload()")
-            update_activity()
+            update_activity(browser, state=None)
 
             username = browser.execute_script(query)
 
@@ -1440,7 +1461,7 @@ def find_user_id(browser, track, username, logger):
     except WebDriverException:
         try:
             browser.execute_script("location.reload()")
-            update_activity()
+            update_activity(browser, state=None)
 
             user_id = browser.execute_script(query)
 
@@ -1702,7 +1723,7 @@ def smart_run(session, threaded=False):
 def reload_webpage(browser):
     """ Reload the current webpage """
     browser.execute_script("location.reload()")
-    update_activity()
+    update_activity(browser, state=None)
     sleep(2)
 
     return True
@@ -1744,7 +1765,7 @@ def click_visibly(browser, element):
                                "arguments[0].style.opacity = 1",
                                element)
         # update server calls
-        update_activity()
+        update_activity(browser, state=None)
 
         click_element(browser, element)
 
@@ -2163,6 +2184,25 @@ def get_bounding_box(latitude_in_degrees, longitude_in_degrees, half_side_in_mil
     }
 
     return bbox
+
+
+def take_rotative_screenshot(browser):
+    """
+        Make a sequence of screenshots, based on hour:min:secs
+    """
+    global next_screenshot
+
+    if next_screenshot == 1:
+        browser.save_screenshot('1.png')
+    elif next_screenshot == 2:
+        browser.save_screenshot('2.png')        
+    else:
+        browser.save_screenshot('3.png')        
+        next_screenshot = 0
+        # sum +1 next
+
+    # update next
+    next_screenshot += 1
 
 
 class CustomizedArgumentParser(ArgumentParser):

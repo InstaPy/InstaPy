@@ -82,7 +82,7 @@ def comment_image(browser, username, comments, blacklist, logger, logfolder):
             comment_input[0].send_keys('\b')
             comment_input = get_comment_input(browser)
             comment_input[0].submit()
-            update_activity('comments')
+            update_activity(browser, action='comments', state=None)
 
             if blacklist['enabled'] is True:
                 action = 'commented'
@@ -288,7 +288,7 @@ def is_commenting_enabled(browser, logger):
     except WebDriverException:
         try:
             browser.execute_script("location.reload()")
-            update_activity()
+            update_activity(browser, state=None)
 
             comments_disabled = browser.execute_script(
                 "return window._sharedData.entry_data."
