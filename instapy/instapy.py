@@ -102,12 +102,10 @@ class InstaPy:
                  password=None,
                  nogui=False,
                  selenium_local_session=True,
-                 use_firefox=False,
                  browser_profile_path=None,
                  page_delay=25,
                  show_logs=True,
                  headless_browser=False,
-                 proxy_chrome_extension=None,
                  proxy_username=None,
                  proxy_password=None,
                  proxy_address=None,
@@ -116,19 +114,20 @@ class InstaPy:
                  bypass_suspicious_attempt=False,
                  bypass_with_mobile=False,
                  multi_logs=True,
+                 geckodriver_path=None,
                  split_db=False):
 
         cli_args = parse_cli_args()
         username = cli_args.username or username
         password = cli_args.password or password
-        use_firefox = cli_args.use_firefox or use_firefox
         page_delay = cli_args.page_delay or page_delay
         headless_browser = cli_args.headless_browser or headless_browser
         proxy_address = cli_args.proxy_address or proxy_address
         proxy_port = cli_args.proxy_port or proxy_port
         disable_image_load = cli_args.disable_image_load or disable_image_load
         bypass_suspicious_attempt = (
-            cli_args.bypass_suspicious_attempt or bypass_suspicious_attempt)
+            cli_args.bypass_suspicious_attempt or bypass_suspicious_attempt
+        )
         bypass_with_mobile = cli_args.bypass_with_mobile or bypass_with_mobile
         split_db = cli_args.split_db or split_db
 
@@ -148,13 +147,6 @@ class InstaPy:
                 raise InstaPyError("The 'nogui' parameter isn't supported on Windows.")
 
         self.browser = None
-        self.headless_browser = headless_browser
-        self.proxy_username = proxy_username
-        self.proxy_password = proxy_password
-        self.proxy_address = proxy_address
-        self.proxy_port = proxy_port
-        self.proxy_chrome_extension = proxy_chrome_extension
-        self.selenium_local_session = selenium_local_session
         self.bypass_suspicious_attempt = bypass_suspicious_attempt
         self.bypass_with_mobile = bypass_with_mobile
         self.disable_image_load = disable_image_load
@@ -166,11 +158,6 @@ class InstaPy:
         self.split_db = split_db
         if self.split_db:
             Settings.database_location = localize_path("db", "instapy_{}.db".format(self.username))
-
-        self.page_delay = page_delay
-        self.use_firefox = use_firefox
-        Settings.use_firefox = self.use_firefox
-        self.browser_profile_path = browser_profile_path
 
         self.do_comment = False
         self.comment_percentage = 0
@@ -294,11 +281,6 @@ class InstaPy:
         # stores the features' name which are being used by other features
         self.internal_usage = {}
 
-        if (
-                self.proxy_address and self.proxy_port > 0) or \
-                self.proxy_chrome_extension:
-            Settings.connection_type = "proxy"
-
         self.aborting = False
         self.start_time = time.time()
 
@@ -311,8 +293,21 @@ class InstaPy:
 
         get_database(make=True)  # IMPORTANT: think twice before relocating
 
-        if self.selenium_local_session is True:
-            self.set_selenium_local_session()
+        if selenium_local_session:
+            self.browser, err_msg = set_selenium_local_session(proxy_address,
+                                                               proxy_port,
+                                                               proxy_username,
+                                                               proxy_password,
+                                                               headless_browser,
+                                                               browser_profile_path,
+                                                               disable_image_load,
+                                                               page_delay,
+                                                               geckodriver_path,
+                                                               self.logger)
+            if len(err_msg) > 0:
+                raise InstaPyError(err_msg)
+
+
 
     def get_instapy_logger(self, show_logs):
         """
@@ -349,27 +344,14 @@ class InstaPy:
             Settings.logger = logger
             return logger
 
-    def set_selenium_local_session(self):
-        self.browser, err_msg = set_selenium_local_session(self.proxy_address,
-                                                           self.proxy_port,
-                                                           self.proxy_username,
-                                                           self.proxy_password,
-                                                           self.proxy_chrome_extension,
-                                                           self.headless_browser,
-                                                           self.use_firefox,
-                                                           self.browser_profile_path,
-                                                           self.disable_image_load,
-                                                           self.page_delay,
-                                                           self.logger)
-        if len(err_msg) > 0:
-            raise InstaPyError(err_msg)
 
-    def set_selenium_remote_session(self, selenium_url='',
+
+    def set_selenium_remote_session(self, logger,
+                                    selenium_url='',
                                     selenium_driver=None):
         """
         Starts remote session for a selenium server.
-        Creates a new selenium driver instance for remote session or uses
-        provided
+        Creates a new selenium driver instance for remote session or uses provided
         one. Useful for docker setup.
 
         :param selenium_url: string
@@ -380,23 +362,20 @@ class InstaPy:
             return self
 
         if selenium_driver:
-            self.browser = selenium_driver
+            self.browser = selenium_driver 
         else:
-            if self.use_firefox:
-                self.browser = webdriver.Remote(
-                    command_executor=selenium_url,
-                    desired_capabilities=DesiredCapabilities.FIREFOX)
-            else:
-                self.browser = webdriver.Remote(
-                    command_executor=selenium_url,
-                    desired_capabilities=DesiredCapabilities.CHROME)
+            self.browser = webdriver.Remote(
+                command_executor = selenium_url,
+                desired_capabilities = DesiredCapabilities.FIREFOX
+            )
 
+        # convert_selenium_browser(selenium_driver)
         message = "Session started!"
-        highlight_print(self.username, message, "initialization", "info",
-                        self.logger)
-        print('')
+        highlight_print('browser', message, "initialization", "info", logger)
 
         return self
+
+
 
     def login(self):
         """Used to login the user either with the username and password"""

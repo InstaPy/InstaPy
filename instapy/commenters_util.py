@@ -19,7 +19,6 @@ from .util import scroll_bottom
 from .util import get_users_from_dialog
 from .util import progress_tracker
 from .util import close_dialog_box
-from .settings import Selectors
 
 from selenium.common.exceptions import NoSuchElementException
 
@@ -333,7 +332,8 @@ def likers_from_photo(browser, amount=20):
 
         # get a reference to the 'Likes' dialog box
         dialog = browser.find_element_by_xpath(
-            Selectors.likes_dialog_body_xpath)
+            read_xpath("class_selectors", "likes_dialog_body_xpath")
+        )
 
         # scroll down the page
         previous_len = -1

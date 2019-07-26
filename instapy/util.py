@@ -33,7 +33,6 @@ from .time_util import sleep_actual
 from .database_engine import get_database
 from .quota_supervisor import quota_supervisor
 from .settings import Settings
-from .settings import Selectors
 
 from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import WebDriverException
@@ -593,7 +592,8 @@ def get_active_users(browser, username, posts, boundary, logger):
 
             # get a reference to the 'Likes' dialog box
             dialog = browser.find_element_by_xpath(
-                Selectors.likes_dialog_body_xpath)
+                read_xpath("class_selectors", "likes_dialog_body_xpath")
+            )
 
             scroll_it = True
             try_again = 0
@@ -1284,13 +1284,10 @@ def ping_server(host, logger):
 def emergency_exit(browser, username, logger):
     """ Raise emergency if the is no connection to server OR if user is not
     logged in """
-    using_proxy = True if Settings.connection_type == "proxy" else False
-    # ping the server only if connected directly rather than through a proxy
-    if not using_proxy:
-        server_address = "instagram.com"
-        connection_state = ping_server(server_address, logger)
-        if connection_state is False:
-            return True, "not connected"
+    server_address = "instagram.com"
+    connection_state = ping_server(server_address, logger)
+    if connection_state is False:
+        return True, "not connected"
 
     # check if the user is logged in
     auth_method = "activity counts"
@@ -2035,7 +2032,9 @@ def close_dialog_box(browser):
 
     try:
         close = browser.find_element_by_xpath(
-            Selectors.likes_dialog_close_xpath)
+            read_xpath("class_selectors", "likes_dialog_close_xpath")
+        )
+
         click_element(browser, close)
 
     except NoSuchElementException:

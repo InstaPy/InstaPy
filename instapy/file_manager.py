@@ -124,14 +124,6 @@ def update_locations():
     if not Settings.database_location:
         Settings.database_location = localize_path("db", "instapy.db")
 
-    # update chromedriver location
-    if not Settings.chromedriver_location:
-        Settings.chromedriver_location = localize_path(
-            "assets", Settings.specific_chromedriver)
-        if (not Settings.chromedriver_location
-                or not path_exists(Settings.chromedriver_location)):
-            Settings.chromedriver_location = localize_path("assets",
-                                                            "chromedriver")
 
 
 def get_home_path():
@@ -222,36 +214,6 @@ def validate_path(path):
                                    path,
                                    str(exc).encode("utf-8")))
             raise InstaPyError(msg)
-
-
-def get_chromedriver_location():
-    """ Solve chromedriver access issues """
-    CD = Settings.chromedriver_location
-
-    if OS_ENV == "windows":
-        if not CD.endswith(".exe"):
-            CD += ".exe"
-
-    if not file_exists(CD):
-        workspace_path = slashen(WORKSPACE["path"], "native")
-        assets_path = "{}{}assets".format(workspace_path, native_slash)
-        validate_path(assets_path)
-
-        # only import from this package when necessary
-        from instapy_chromedriver import binary_path
-
-        CD = binary_path
-        chrome_version = pkg_resources.get_distribution("instapy_chromedriver").version
-        message = "Using built in instapy-chromedriver executable (version {})".format(chrome_version)
-        highlight_print(Settings.profile["name"],
-                        message,
-                        "workspace",
-                        "info",
-                        Settings.logger)
-
-    # save updated path into settings
-    Settings.chromedriver_location = CD
-    return CD
 
 
 def get_logfolder(username, multi_logs):
