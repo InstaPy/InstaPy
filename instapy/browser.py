@@ -21,6 +21,7 @@ from .util import get_current_url
 from .util import check_authorization
 from .util import web_address_navigator
 from .file_manager import use_assets
+from .settings import Settings
 
 
 def create_firefox_extension():
