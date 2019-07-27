@@ -370,7 +370,6 @@ def validate_username(browser,
                                    .format(username, category))
 
 
-    # NEW Feature of skippping user base on profile bio
     if len(skip_bio_keyword) != 0:
         # if contain stop words then skip
         try:
