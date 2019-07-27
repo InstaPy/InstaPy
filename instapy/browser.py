@@ -76,6 +76,9 @@ def set_selenium_local_session(proxy_address,
         print('Latest user agent currently not reachable. Using fallback.')
 
     firefox_options = Firefox_Options()
+    
+    # keep user_agent
+    Settings.user_agent = user_agent
 
     if headless_browser:
         firefox_options.add_argument('-headless')
