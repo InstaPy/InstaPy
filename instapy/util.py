@@ -111,7 +111,7 @@ def validate_username(browser,
                       skip_business_percentage,
                       skip_business_categories,
                       dont_skip_business_categories,
-                      skip_bio_keyword,  #This is to filter out user base on bio description.
+                      skip_bio_keyword,
                       logger,
                       logfolder):
     """Check if we can interact with the user"""
