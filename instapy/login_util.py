@@ -117,7 +117,7 @@ def bypass_suspicious_login(browser, logger, logfolder, bypass_with_mobile):
     # --
     security_code = None
     try:
-        path = "{}{}_state.json".format(logfolder, logger.name)
+        path = "{}{}.json".format(logfolder, logger.name)
         data = {}
         # check if file exists and has content
         if os.path.isfile(path) and os.path.getsize(path) > 0:

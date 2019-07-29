@@ -411,7 +411,7 @@ def update_activity(browser=None,
     # update state to JSON file
     if state and logfolder and logger:
         try:
-            path = "{}{}_state.json".format(logfolder, logger.name)
+            path = "{}{}.json".format(logfolder, logger.name)
             data = {}
             # check if file exists and has content
             if os.path.isfile(path) and os.path.getsize(path) > 0:
