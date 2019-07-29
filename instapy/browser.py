@@ -42,17 +42,23 @@ def set_selenium_local_session(proxy_address,
     err_msg = ''
 
     # define fallback useragent
+    # TODO: full mobile from now?
+    # user_agent = (
+    #     'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 '
+    #     '(KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36'
+    # )
     user_agent = (
-        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 '
-        '(KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36'
+        "Mozilla/5.0 (iPhone; CPU iPhone OS 11_0 like Mac OS X) AppleWebKit/604.1.34 "
+        "(KHTML, like Gecko) Version/11.0 Mobile/15A5341f Safari/604.1"
     )
 
     # try to fetch latest user agent
-    try:
-        ua = UserAgent(fallback = user_agent)
-        user_agent = ua.firefox if use_firefox else ua.chrome
-    except FakeUserAgentError:
-        print('Latest user agent currently not reachable. Using fallback.')
+    # TODO: check it with Felix for mobile Fake User Agent
+    # try:
+    #     ua = UserAgent(fallback = user_agent)
+    #     user_agent = ua.firefox if use_firefox else ua.chrome
+    # except FakeUserAgentError:
+    #     print('Latest user agent currently not reachable. Using fallback.')
 
     # keep user_agent
     Settings.user_agent = user_agent
@@ -94,8 +100,8 @@ def set_selenium_local_session(proxy_address,
         browser = webdriver.Firefox(firefox_profile=firefox_profile,
                                     options=firefox_options)
 
-        # converts to custom browser
-        # browser = convert_selenium_browser(browser)
+        # set mobile viewport (iPhone X)
+        browser.set_window_size(375, 812)
 
         # authenticate with popup alert window
         if (proxy_username and proxy_password):
@@ -179,6 +185,10 @@ def set_selenium_local_session(proxy_address,
             err_msg = 'chromedriver {} is not supported, expects {}+'.format(
                 float(matches.groups()[0]), Settings.chromedriver_min_version)
             return browser, err_msg
+
+        # set mobile viewport (iPhone X)
+        browser.set_window_size(375, 812)
+
 
     browser.implicitly_wait(page_delay)
 

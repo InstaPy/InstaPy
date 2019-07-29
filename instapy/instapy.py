@@ -78,6 +78,7 @@ from .text_analytics import text_analysis
 from .text_analytics import yandex_supported_languages
 from .browser import set_selenium_local_session
 from .browser import close_browser
+from .mobile_util import create_ig_post
 from .file_manager import get_workspace
 from .file_manager import get_logfolder
 
@@ -5536,3 +5537,11 @@ class InstaPy:
                 if reels > 0:
                     self.stories_watched += 1
                     self.reels_watched += reels
+
+    def create_post(self, post_description, image_file_path):
+        # keep InstaPy class clean :)
+        if create_ig_post(self.browser, self.logger, post_description, image_file_path):
+            self.logger.info('New post created !')
+        else:
+            self.logger.info('Something went wrong in post creation !')
+

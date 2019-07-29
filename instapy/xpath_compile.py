@@ -201,6 +201,14 @@ xpath['watch_story_for_user'] = {
 }
 
 xpath['watch_story'] = {
-    'next_first': "/html/body/span/section/div/div/section/div[2]/button",
+    "next_first": "/html/body/span/section/div/div/section/div[2]/button",
     "next": "/html/body/span/section/div/div/section/div[2]/button[2]"
+}
+
+xpath['create_ig_post'] = {
+    "new_post_button": "//span[@aria-label='New Post']",
+    "form_input_element": "//*[@id='react-root']/section/nav[2]/div/div/form/input",
+    "confirm_post_creation": "//button[text()='Next']",
+    "post_description_textarea": "//textarea",
+    "final_post_creation_step": "//button[text()='Share']"
 }
