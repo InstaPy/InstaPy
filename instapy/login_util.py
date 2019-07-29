@@ -1,6 +1,8 @@
 """Module only used for the login part of the script"""
 # import built-in & third-party modules
 import pickle
+import os
+import json
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.keys import Keys
 
@@ -20,7 +22,8 @@ from selenium.common.exceptions import MoveTargetOutOfBoundsException
 
 from .xpath import read_xpath
 
-def bypass_suspicious_login(browser, bypass_with_mobile):
+
+def bypass_suspicious_login(browser, logger, logfolder, bypass_with_mobile):
     """Bypass suspicious loggin attempt verification. This should be only
     enabled
     when there isn't available cookie for the username, otherwise it will and
@@ -110,7 +113,25 @@ def bypass_suspicious_login(browser, bypass_with_mobile):
 
     print('Instagram detected an unusual login attempt')
     print('A security code was sent to your {}'.format(choice))
-    security_code = input('Type the security code here: ')
+
+    # --
+    security_code = None
+    try:
+        path = "{}{}_state.json".format(logfolder, logger.name)
+        data = {}
+        # check if file exists and has content
+        if os.path.isfile(path) and os.path.getsize(path) > 0:
+            # load JSON file
+            with open(path, "r") as json_file:
+                data = json.load(json_file)
+
+        # update connection state
+        security_code = data["challenge"]["security_code"]
+    except Exception:
+        pass
+    # --
+    if security_code is None:
+        security_code = input('Type the security code here: ')
 
     security_code_field = browser.find_element_by_xpath(
         read_xpath(bypass_suspicious_login.__name__, "security_code_field")
@@ -139,15 +160,21 @@ def bypass_suspicious_login(browser, bypass_with_mobile):
     update_activity(browser, state=None)
 
     try:
-        sleep(5)
+        sleep(3)
         # locate wrong security code message
         wrong_login = browser.find_element_by_xpath(
             read_xpath(bypass_suspicious_login.__name__, "wrong_login")
         )
 
         if wrong_login is not None:
-            print('Wrong security code! Please check the code Instagram'
-                   'sent you and try again.')
+            wrong_login_msg = ('Wrong security code! Please check the code Instagram'
+                               'sent you and try again.')
+            update_activity(browser,
+                            action=None,
+                            state=wrong_login_msg,
+                            logfolder=logfolder,
+                            logger=logger)
+            print(wrong_login_msg)
 
     except NoSuchElementException:
         # correct security code
@@ -377,7 +404,7 @@ def login_user(browser,
                             state='Trying to solve suspicious attempt login',
                             logfolder=logfolder,
                             logger=logger)
-            bypass_suspicious_login(browser, bypass_with_mobile)
+            bypass_suspicious_login(browser, logger, logfolder, bypass_with_mobile)
         except NoSuchElementException:
             pass
 

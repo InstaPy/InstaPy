@@ -420,7 +420,9 @@ def update_activity(browser=None,
                     data = json.load(json_file)
 
             # update connection state
-            data["state"]["connection"] = state
+            connection_data = {}
+            connection_data["connection"] = state
+            data["state"] = connection_data
 
             # write to JSON file
             with open(path, "w") as json_file:
