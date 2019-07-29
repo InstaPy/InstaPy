@@ -421,7 +421,7 @@ def update_activity(browser=None,
 
             # update connection state
             data["state"]["connection"] = state
-            
+
             # write to JSON file
             with open(path, "w") as json_file:
                 json.dump(data, json_file, indent=4)
@@ -2217,11 +2217,11 @@ def take_rotative_screenshot(browser, logfolder, logger):
     global next_screenshot
 
     if next_screenshot == 1:
-        browser.save_screenshot('{}{}_1.png'.format(logfolder, logger))
+        browser.save_screenshot('{}{}_1.png'.format(logfolder, logger.name))
     elif next_screenshot == 2:
-        browser.save_screenshot('{}{}_2.png'.format(logfolder, logger))
+        browser.save_screenshot('{}{}_2.png'.format(logfolder, logger.name))
     else:
-        browser.save_screenshot('{}{}_3.png'.format(logfolder, logger))
+        browser.save_screenshot('{}{}_3.png'.format(logfolder, logger.name))
         next_screenshot = 0
         # sum +1 next
 
