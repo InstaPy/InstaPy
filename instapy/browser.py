@@ -124,6 +124,10 @@ def set_selenium_local_session(
     if proxy_username and proxy_password:
         proxy_authentication(browser, logger, proxy_username, proxy_password)
 
+        # set mobile viewport (iPhone X)
+        browser.set_window_size(375, 812)
+
+
     browser.implicitly_wait(page_delay)
 
     # set mobile viewport (iPhone X)
