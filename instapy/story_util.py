@@ -6,6 +6,8 @@ from selenium.common.exceptions import WebDriverException
 from .util import click_element
 from .util import web_address_navigator
 from .util import update_activity
+from .util import get_action_delay
+from .settings import Settings
 from .xpath import read_xpath
 
 import requests
@@ -67,7 +69,12 @@ def get_story_data(browser, elem, action_type, logger, simulate = False):
 
         session.cookies.set(**all_args)
 
-    data = session.get(graphql_query_url)
+    headers = {
+        'User-Agent': Settings.user_agent,
+        'X-Requested-With': 'XMLHttpRequest'
+    }
+
+    data = session.get(graphql_query_url, headers=headers)
     response = data.json()
     update_activity()
 
@@ -87,12 +94,13 @@ def get_story_data(browser, elem, action_type, logger, simulate = False):
             if (action_type != "tag") and (response['data']['reels_media'][0]['seen'] is not None):
                 seen = response['data']['reels_media'][0]['seen']
             index = 1
-            for item in response['data']['reels_media'][0]['items']:
-                if item['taken_at_timestamp'] <= seen:
-                    continue
-                else:
-                    if simulate is True:
+            if simulate is True:
+                for item in response['data']['reels_media'][0]['items']:
+                    if item['taken_at_timestamp'] <= seen:
+                        continue
+                    else:
                         headers = {
+                            'User-Agent': Settings.user_agent,
                             'X-CSRFToken': csrftoken,
                             'X-Requested-With': 'XMLHttpRequest',
                             'Content-Type': 'application/x-www-form-urlencoded'
@@ -106,10 +114,38 @@ def get_story_data(browser, elem, action_type, logger, simulate = False):
                                              },
                                      headers = headers)
                         logger.info('  --> simulated watch reel # {}'.format(index))
+                        update_activity()
                         index += 1
                         time.sleep(randint(3,6))
+                        reels_cnt += 1
+            else:
+                story_elem = browser.find_element_by_xpath(
+                    read_xpath(watch_story.__name__
+                               + "_for_{}".format(action_type), "explore_stories"))
 
-                    reels_cnt += 1
+                click_element(browser, story_elem)
+
+                logger.info('Watching stories...')
+                for item in response['data']['reels_media'][0]['items']:
+                    if item['taken_at_timestamp'] <= seen:
+                        continue
+                    else:
+                        time.sleep(2)
+                        if index == 1:
+                            try:
+                                next_elem = browser.find_element_by_xpath(
+                                        read_xpath(watch_story.__name__, "next_first"))
+                            except NoSuchElementException:
+                                continue
+                        else:
+                            try:
+                                next_elem = browser.find_element_by_xpath(
+                                        read_xpath(watch_story.__name__, "next"))
+                            except NoSuchElementException:
+                                continue
+                        click_element(browser, next_elem)
+                        reels_cnt += 1
+                        index += 1
 
             return {'status': 'ok', 'reels_cnt': reels_cnt}
     else:
@@ -122,6 +158,9 @@ def watch_story(browser, elem, logger, action_type, simulate = False):
         Load Stories, and watch it until there is no more stores
         to watch for the related element
     """
+
+    # make sure we work with a lower case elem
+    elem = elem.lower()
 
     if action_type == "tag":
         story_link = "https://www.instagram.com/explore/tags/{}".format(elem)
@@ -143,28 +182,11 @@ def watch_story(browser, elem, logger, action_type, simulate = False):
         logger.info('no stories to watch (either there is none) or we have already watched everything')
         return 0
 
-    if simulate is False:
-        story_elem = browser.find_element_by_xpath(
-            read_xpath(watch_story.__name__ + "_for_{}".format(action_type), "explore_stories"))
-
-        if not story_elem:
-            logger.info("'{}' {} POSSIBLY does not exist", elem, action_type)
-            raise NoSuchElementException
-        else:
-            # load stories/view stories
-            click_element(browser, story_elem)
-
-        # watch stories until there is no more stories available
-        logger.info('Watching stories...')
-        while True:
-            try:
-                browser.find_element_by_xpath(
-                    read_xpath(watch_story.__name__ + "_for_{}".format(action_type), "wait_finish"))
-                time.sleep(randint(2, 6))
-            except NoSuchElementException:
-                break
-
     logger.info('watched {} reels from {}: {}'.format(story_data['reels_cnt'], action_type, elem.encode('utf-8')))
+
+    # get the post-story delay time to sleep
+    naply = get_action_delay("story")
+    time.sleep(naply)
 
     return story_data['reels_cnt']
 

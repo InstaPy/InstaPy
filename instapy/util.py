@@ -1756,7 +1756,8 @@ def get_action_delay(action):
     defaults = {"like": 2,
                 "comment": 2,
                 "follow": 3,
-                "unfollow": 10}
+                "unfollow": 10,
+                "story": 3}
     config = Settings.action_delays
 
     if (not config or
