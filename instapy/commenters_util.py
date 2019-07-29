@@ -296,16 +296,22 @@ def likers_from_photo(browser, amount=20):
     """ Get the list of users from the 'Likes' dialog of a photo """
 
     liked_counter_button = "//div/article/div[2]/section[2]/div/div/a"
+    second_counter_button = "//div/article/div[2]/section[2]/div/div/button"
 
     try:
-        liked_this = browser.find_elements_by_xpath(liked_counter_button)
-        likers = []
+        if check_exists_by_xpath(browser, second_counter_button):
+            liked_this = browser.find_elements_by_xpath(second_counter_button)
+            element_to_click = liked_this[0]
+        elif check_exists_by_xpath(browser, liked_counter_button):
 
-        for liker in liked_this:
-            if " like this" not in liker.text:
-                likers.append(liker.text)
 
-        if check_exists_by_xpath(browser, liked_counter_button):
+            liked_this = browser.find_elements_by_xpath(liked_counter_button)
+            likers = []
+
+            for liker in liked_this:
+                if " like this" not in liker.text:
+                    likers.append(liker.text)
+
             if " others" in liked_this[-1].text:
                 element_to_click = liked_this[-1]
 
@@ -317,6 +323,7 @@ def likers_from_photo(browser, amount=20):
                       " likers already.\nGot photo likers: {}\n"
                       .format(likers))
                 return likers
+
 
         else:
             print("Couldn't find liked counter button. May be a video.")
