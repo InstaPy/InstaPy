@@ -742,7 +742,11 @@ def follow_user(browser, track, login, user_name, button, blacklist, logger,
 
     # general tasks after a successful follow
     logger.info("--> Followed '{}'!".format(user_name.encode("utf-8")))
-    update_activity(browser, action='follows', state=None)
+    update_activity(browser,
+                    action='follows',
+                    state=None,
+                    logfolder=logfolder,
+                    logger=logger)
 
     # get user ID to record alongside username
     user_id = get_user_id(browser, track, user_name, logger)
@@ -1380,7 +1384,11 @@ def unfollow_user(browser, track, username, person, person_id, button,
 
     # general tasks after a successful unfollow
     logger.info("--> Unfollowed '{}'!".format(person))
-    update_activity(browser, action='unfollows', state=None)
+    update_activity(browser,
+                    action='unfollows',
+                    state=None,
+                    logfolder=logfolder,
+                    logger=logger)
     post_unfollow_cleanup("successful", username, person, relationship_data,
                           person_id, logger, logfolder)
 

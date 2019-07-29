@@ -165,20 +165,29 @@ def login_user(browser,
     assert password, 'Password not provided'
 
     # set initial state to offline
-    update_activity(browser, action=None, state='trying to connect')
+    update_activity(browser,
+                    action=None,
+                    state='trying to connect',
+                    logfolder=logfolder,
+                    logger=logger)
 
     # check connection status
     try:
         logger.info('-- Connection Checklist [1/2] (Internet Connection Status)')
         browser.get("https://www.google.com")
         logger.info('- Internet Connection Status: ok')
-        update_activity(browser, action=None, state=(
-            'Internet connection is ok'))
+        update_activity(browser,
+                        action=None,
+                        state='Internet connection is ok',
+                        logfolder=logfolder,
+                        logger=logger)
     except Exception:
         logger.warn('- Internet Connection Status: error')
         update_activity(browser,
                         action=None,
-                        state=('There is an issue with the internet connection'))
+                        state='There is an issue with the internet connection',
+                        logfolder=logfolder,
+                        logger=logger)
         return False
 
     # check Instagram.com status
@@ -200,12 +209,16 @@ def login_user(browser,
         logger.info('- Instagram Server Status: ok')
         update_activity(browser,
                         action=None,
-                        state=('Instagram servers are running correctly'))
+                        state='Instagram servers are running correctly',
+                        logfolder=logfolder,
+                        logger=logger)
     except Exception:
         logger.warn('- Instagram Server Status: error')
         update_activity(browser,
                         action=None,
-                        state=('Instagram server is down'))
+                        state='Instagram server is down',
+                        logfolder=logfolder,
+                        logger=logger)
         return False
 
     ig_homepage = "https://www.instagram.com"
@@ -328,6 +341,11 @@ def login_user(browser,
             account_disabled = browser.find_element_by_xpath(
                 read_xpath(login_user.__name__, "account_disabled"))
             logger.warn(account_disabled.text)
+            update_activity(browser,
+                            action=None,
+                            state=account_disabled.text,
+                            logfolder=logfolder,
+                            logger=logger)
             return False
         except NoSuchElementException:
             pass
@@ -336,10 +354,16 @@ def login_user(browser,
         try:
             browser.find_element_by_xpath(
                 read_xpath(login_user.__name__, "add_phone_number"))
-            logger.warn(
+            challenge_warn_msg = (
                 "Instagram initiated a challenge before allow your account to login. "
                 "At the moment there isn't a phone number linked to your Instagram "
                 "account. Please, add a phone number to your account, and try again.")
+            logger.warn(challenge_warn_msg)
+            update_activity(browser,
+                            action=None,
+                            state=challenge_warn_msg,
+                            logfolder=logfolder,
+                            logger=logger)
             return False
         except NoSuchElementException:
             pass
@@ -348,6 +372,11 @@ def login_user(browser,
         try:
             browser.find_element_by_xpath(
                 read_xpath(login_user.__name__, "suspicious_login_attempt"))
+            update_activity(browser,
+                            action=None,
+                            state='Trying to solve suspicious attempt login',
+                            logfolder=logfolder,
+                            logger=logger)
             bypass_suspicious_login(browser, bypass_with_mobile)
         except NoSuchElementException:
             pass
@@ -357,6 +386,11 @@ def login_user(browser,
         error_alert = browser.find_element_by_xpath(
             read_xpath(login_user.__name__, "error_alert"))
         logger.warn(error_alert.text)
+        update_activity(browser,
+                        action=None,
+                        state=error_alert.text,
+                        logfolder=logfolder,
+                        logger=logger)
         return False
     except NoSuchElementException:
         pass

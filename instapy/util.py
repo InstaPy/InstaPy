@@ -392,7 +392,9 @@ def getUserData(query,
 
 def update_activity(browser=None,
                     action="server_calls",
-                    state=None):
+                    state=None,
+                    logfolder=None,
+                    logger=None):
     """
         1. Record every Instagram server call (page load, content load, likes,
         comments, follows, unfollow)
@@ -403,14 +405,28 @@ def update_activity(browser=None,
     quota_supervisor("server_calls")
 
     # take screen shot
-    if browser is not None:
-        take_rotative_screenshot(browser)
+    if browser and logfolder and logger:
+        take_rotative_screenshot(browser, logfolder, logger)
 
     # update state to JSON file
-    if state:
-        data = {"state": state}
-        with open("username___state.json", "w") as write_file:
-            json.dump(data, write_file)
+    if state and logfolder and logger:
+        try:
+            path = "{}{}_state.json".format(logfolder, logger.name)
+            data = {}
+            # check if file exists and has content
+            if os.path.isfile(path) and os.path.getsize(path) > 0:
+                # load JSON file
+                with open(path, "r") as json_file:
+                    data = json.load(json_file)
+
+            # update connection state
+            data["state"]["connection"] = state
+            
+            # write to JSON file
+            with open(path, "w") as json_file:
+                json.dump(data, json_file, indent=4)
+        except Exception:
+            pass
 
     # in case is just a state update and there is no server call
     if action is None:
@@ -1701,6 +1717,7 @@ def smart_run(session, threaded=False):
     except (Exception, KeyboardInterrupt) as exc:
         if isinstance(exc, NoSuchElementException):
             # the problem is with a change in IG page layout
+
             log_file = "{}.html".format(time.strftime("%Y%m%d-%H%M%S"))
             file_path = os.path.join(gettempdir(), log_file)
             with open(file_path, "wb") as fp:
@@ -1717,6 +1734,13 @@ def smart_run(session, threaded=False):
             raise
 
     finally:
+        # FIXME: its generating an exception when called
+        # import ipdb;ipdb.set_trace()
+        # update_activity(browser=session.browser,
+        #                 action=None,
+        #                 state='offline',
+        #                 logfolder=session.logfolder,
+        #                 logger=session.logger)
         session.end(threaded_session=threaded)
 
 
@@ -2186,18 +2210,18 @@ def get_bounding_box(latitude_in_degrees, longitude_in_degrees, half_side_in_mil
     return bbox
 
 
-def take_rotative_screenshot(browser):
+def take_rotative_screenshot(browser, logfolder, logger):
     """
         Make a sequence of screenshots, based on hour:min:secs
     """
     global next_screenshot
 
     if next_screenshot == 1:
-        browser.save_screenshot('1.png')
+        browser.save_screenshot('{}{}_1.png'.format(logfolder, logger))
     elif next_screenshot == 2:
-        browser.save_screenshot('2.png')        
+        browser.save_screenshot('{}{}_2.png'.format(logfolder, logger))
     else:
-        browser.save_screenshot('3.png')        
+        browser.save_screenshot('{}{}_3.png'.format(logfolder, logger))
         next_screenshot = 0
         # sum +1 next
 

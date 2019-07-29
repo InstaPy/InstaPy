@@ -715,7 +715,11 @@ def like_image(browser, username, blacklist, logger, logfolder, total_liked_img)
 
         if len(liked_elem) == 1:
             logger.info('--> Image Liked!')
-            update_activity(browser, action='likes', state=None)
+            update_activity(browser,
+                            action='likes',
+                            state=None,
+                            logfolder=logfolder,
+                            logger=logger)
 
             if blacklist['enabled'] is True:
                 action = 'liked'
