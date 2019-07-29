@@ -1736,13 +1736,11 @@ def smart_run(session, threaded=False):
             raise
 
     finally:
-        # FIXME: its generating an exception when called
-        # import ipdb;ipdb.set_trace()
-        # update_activity(browser=session.browser,
-        #                 action=None,
-        #                 state='offline',
-        #                 logfolder=session.logfolder,
-        #                 logger=session.logger)
+        update_activity(browser=None,
+                        action=None,
+                        state='offline',
+                        logfolder=session.logfolder,
+                        logger=session.logger)
         session.end(threaded_session=threaded)
 
 
