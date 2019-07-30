@@ -66,9 +66,7 @@
 - **[Instance Settings](#instance-settings)**
   - [Running on a Headless Browser](#running-on-a-headless-browser)
   - [Bypass Suspicious Login Attempt](#bypass-suspicious-login-attempt)
-  - [Use a proxy (Chrome)](#use-a-proxy-chrome)
-  - [Switching to Firefox](#switching-to-firefox)
-  - [Use a proxy (Firefox)](#use-a-proxy-firefox)
+  - [Use a proxy](#use-a-proxy)
   - [Running in threads](#running-in-threads)
   
  <br />
@@ -95,12 +93,11 @@
   - [Workspace folders](#workspace-folders)
   - [Pass arguments by CLI](#pass-arguments-by-cli)
   - [Extensions](#extensions)
-  - [Custom chromedriver version](#custom-chromedriver-version)
+  - [Custom geckodriver](#custom-geckodriver)
   - [Using one of the templates](#using-one-of-the-templates)
   - [How not to be banned](#how-not-to-be-banned)
   - [Disable Image Loading](#disable-image-loading)
-  - [Using Multiple Chromedrivers](#using-multiple-chromedrivers)
-  - [Changing DB or Chromedriver locations](#changing-db-or-chromedriver-locations)
+  - [Changing DB location](#changing-db-location)
   - [Split SQLite DB by Username](#split-sqlite-by-username)
   - [How to avoid _python_ & pip confusion](#how-to-avoid-python--pip-confusion)
   - [Dealing with Selenium Common Exception Issues](#dealing-with-selenium-common-exception-issues)
@@ -1684,38 +1681,7 @@ InstaPy(username=insta_username,
         bypass_with_mobile=True)
 ```
 
-
-### Use a proxy (Chrome)
-
-You can use InstaPy behind a proxy by specifying server address and port
-
-Simple proxy setup example:
-```python
-session = InstaPy(username=insta_username, password=insta_password, proxy_address='8.8.8.8', proxy_port=8080)
-```
-
-To use proxy with authentication you should firstly import proxy chrome extension to you configuration file (the one with your Instagram username and password).
-
-Proxy setup using authentication example:
-```python
-from proxy_extension import create_proxy_extension
-
-proxy = 'login:password@ip:port'
-proxy_chrome_extension = create_proxy_extension(proxy)
-
-session = InstaPy(username=insta_username, password=insta_password, proxy_chrome_extension=proxy_chrome_extension, nogui=True)
-```
-
-
-### Switching to Firefox
-Chrome is the default browser, but InstaPy provides support for Firefox as well.
-
-```python
-session = InstaPy(username=insta_username, password=insta_password, use_firefox=True)
-```
-
-
-### Use a proxy (Firefox)
+### Use a proxy
 
 You can use InstaPy behind a proxy by specifying server address, port and/or proxy authentication credentials. It works with and without ```headless_browser``` option.
 
@@ -1723,7 +1689,6 @@ Simple proxy setup example:
 ```python
 session = InstaPy(username=insta_username, 
                   password=insta_password,
-		  use_firefox=True,
 		  proxy_address='8.8.8.8', 
 		  proxy_port=8080)
 
@@ -1736,8 +1701,7 @@ session = InstaPy(username=insta_username,
                   proxy_username='',
                   proxy_password='',
                   proxy_address='8.8.8.8',
-                  proxy_port=4444,
-                  use_firefox=True)
+                  proxy_port=4444)
 ```
 
 ### Running in threads
@@ -2576,9 +2540,6 @@ _And obviously, if you don't pass the flag, it'll try to get that argument from 
   🚩 `-pp` 8080, `--proxy-port` 8080
    - Sets the proxy port.
 
-  🚩 `-uf`, `--use-firefox`
-   - Enables Firefox.
-
   🚩 `-hb`, `--headless-browser`
    - Enables headless mode.
 
@@ -2606,13 +2567,6 @@ python quickstart.py -u Toto.Lin8  -p 4X27_Tibor
 python quickstart.py --username Toto.Lin8  --password 4X27_Tibor
 # or
 python quickstart.py -u "Toto.Lin8"  -p "4X27_Tibor"
-```
-
-⚽ Enable Firefox,
-```erlang
-python quickstart.py -uf
-# or
-python quickstart.py --use-firefox
 ```
 
 <details>
@@ -2679,13 +2633,15 @@ python quickstart.py -u abc
 [1. Session scheduling with Telegram](https://github.com/Tkd-Alex/Telegram-InstaPy-Scheduling)
 
 
-### Custom chromedriver version
-By default, InstaPy downloads the latest version of the chromedriver.
-Unless you need a specific version of the chromdriver, you're ready to go.
+### Custom geckodriver
+By default, InstaPy downloads the latest version of the geckodriver.
+Unless you need a specific version of the geckodriver, you're ready to go.
 
-You have two options to install the version you want to have:
-1. You can get the desired version of chromedriver binary by installing the same version of instapy-chromedriver package by pip [per their python version].
-1. You can manually download and put the chromedriver binary into the assets folder [at their workspace] and then InstaPy will always use it. You can find the specific versions of **chromedriver** for your OS [here](https://sites.google.com/a/chromium.org/chromedriver/downloads). Extract the .**zip** file and put it into the **assets** folder [at your **workspace** folder].
+You can manually download the geckodriver binary and put the path as an argument to the InstaPy contructor:
+
+```python
+session = InstaPy(..., geckodriver_path = '/path/to/binary', ...)
+```
 
 ### Using one of the templates
 
@@ -2717,22 +2673,11 @@ session = InstaPy(username=insta_username,
                   multi_logs=True)
 ```
 
-
-### Using Multiple Chromedrivers
-If you need multiple os versions of chromedriver just rename it like:
-```bash
-chromedriver_linux
-chromedriver_osx
-chromedriver_windows
-```
-
-
-### Changing DB or Chromedriver locations
-If you want to change the location/path of either the DB or the chromedriver, simply head into the `instapy/settings.py` file and change the following lines.
+### Changing DB or location
+If you want to change the location/path of the DB, simply head into the `instapy/settings.py` file and change the following lines.
 Set these in instapy/settings.py if you're locating the library in the /usr/lib/pythonX.X/ directory.
 ```
 Settings.database_location = '/path/to/instapy.db'
-Settings.chromedriver_location = '/path/to/chromedriver'
 ```
 
 ### Split SQLite by Username 
