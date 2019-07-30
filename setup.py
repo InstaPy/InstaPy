@@ -53,7 +53,8 @@ setup(
     package_data={   # we need only the files below:
         "instapy": ["icons/Windows/*.ico",
                     "icons/Linux/*.png",
-                    "icons/Mac/*.icns"]
+                    "icons/Mac/*.icns",
+                    "firefox_extension/*"]
     },
     keywords=(
         "instapy python instagram automation \
