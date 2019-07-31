@@ -26,7 +26,9 @@ with open("requirements.txt") as f:
 documentation = readall("README.md")
 metadata = dict(
     re.findall(
-        r"""__([a-z]+)__ = "([^"]+)""", readall("instapy", "__init__.py")))
+        r"""__([a-z]+)__ = "([^"]+)""", readall("instapy", "__init__.py")
+    )
+)
 
 setup(
     name="instapy",
@@ -76,13 +78,7 @@ setup(
                  "Programming Language :: SQL",
                  "Topic :: Utilities",
                  "Topic :: Software Development :: Build Tools",
-                 "Programming Language :: Python :: 2",
-                 "Programming Language :: Python :: 2.7",
                  "Programming Language :: Python :: 3",
-                 "Programming Language :: Python :: 3.4",
-                 "Programming Language :: Python :: 3.5",
-                 "Programming Language :: Python :: 3.6",
-                 "Programming Language :: Python :: 3.7",
                  "Natural Language :: English"
                  ],
     install_requires=dependencies,
@@ -90,11 +86,11 @@ setup(
         "test": ["pytest >= 3.0.0",
                  "tox",
                  "flake8",
+                 "black",
                  "virtualenv",
-                 "tox-venv"
-                 ]
+                 "tox-venv"]
     },
-    python_requires=">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*",
+    python_requires=">=3, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*",
     platforms=["win32", "linux", "linux2", "darwin"],
     zip_safe=False,
     entry_points={
