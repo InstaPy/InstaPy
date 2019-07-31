@@ -204,3 +204,8 @@ xpath['watch_story'] = {
     'next_first': "/html/body/span/section/div/div/section/div[2]/button",
     "next": "/html/body/span/section/div/div/section/div[2]/button[2]"
 }
+
+xpath['likers_from_photo'] = {
+    "liked_counter_button": "//div/article/div[2]/section[2]/div/div/a",
+    "second_counter_button": "//div/article/div[2]/section[2]/div/div/button"
+}
