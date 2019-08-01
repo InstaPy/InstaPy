@@ -169,11 +169,18 @@ xpath['like_from_image'] = {
 }
 
 xpath['login_user'] = {
-    "input_password":"//input[@name='password']",
-    "input_username_XP":"//input[@name='username']",
-    "login_elem":"//a[text()='Log in']",
-    "login_elem_no_such_exception":"//a[text()='Log In']",
-    "nav":'//nav'
+    "input_password": "//input[@name='password']",
+    "input_username_XP": "//input[@name='username']",
+    "login_elem": "//a[text()='Log in']",
+    "login_elem_no_such_exception": "//a[text()='Log In']",
+    "nav": "//nav",
+    "website_status": "//span[@id='status']",
+    "response_time": "//span[@id='response']",
+    "response_code": "//span[@id='code']",
+    "account_disabled": "//p[contains(text(),'Your account has been disabled')]",
+    "add_phone_number": "//h2[text()='Add Your Phone Number']",
+    "suspicious_login_attempt": "//p[text()='Suspicious Login Attempt']",
+    "error_alert": "//p[@id='slfErrorAlert']"
 }
 
 xpath['open_comment_section'] = {
@@ -186,11 +193,19 @@ xpath['unfollow'] = {
 }
 
 xpath['watch_story_for_tag'] = {
-    "explore_stories":"//section/main/header/div[1]/div",
-    "wait_finish":"//section/div/div/section/div[2]/button[2]"
+    "explore_stories": "//section/main/header/div[1]/div",
 }
 
 xpath['watch_story_for_user'] = {
-    "explore_stories":"//section/main/div/header/div/div",
-    "wait_finish":"//section/div/div/section/div[2]/button[3]"
+    "explore_stories": "//section/main/div/header/div/div",
+}
+
+xpath['watch_story'] = {
+    'next_first': "/html/body/span/section/div/div/section/div[2]/button",
+    "next": "/html/body/span/section/div/div/section/div[2]/button[2]"
+}
+
+xpath['likers_from_photo'] = {
+    "liked_counter_button": "//div/article/div[2]/section[2]/div/div/a",
+    "second_counter_button": "//div/article/div[2]/section[2]/div/div/button"
 }

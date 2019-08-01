@@ -112,6 +112,7 @@ def validate_username(browser,
                       skip_business_percentage,
                       skip_business_categories,
                       dont_skip_business_categories,
+                      skip_bio_keyword,
                       logger,
                       logfolder):
     """Check if we can interact with the user"""
@@ -368,6 +369,19 @@ def validate_username(browser,
                     return False, ("'{}' has a business account in the "
                                    "undesired category of '{}'\n"
                                    .format(username, category))
+
+
+    if len(skip_bio_keyword) != 0:
+        # if contain stop words then skip
+        try:
+            profile_bio = getUserData("graphql.user.biography", browser)
+        except WebDriverException:
+            logger.error("~cannot get user bio")
+            return False, "---> Sorry, couldn't get get user bio " \
+                          "account active\n"
+        for bio_keyword in skip_bio_keyword:
+            if bio_keyword.lower() in profile_bio.lower():
+                return False, "{} has a bio keyword of {}, by default skip\n".format(username, bio_keyword)
 
     # if everything is ok
     return True, "Valid user"
@@ -1758,7 +1772,8 @@ def get_action_delay(action):
     defaults = {"like": 2,
                 "comment": 2,
                 "follow": 3,
-                "unfollow": 10}
+                "unfollow": 10,
+                "story": 3}
     config = Settings.action_delays
 
     if (not config or
