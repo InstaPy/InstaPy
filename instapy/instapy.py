@@ -113,7 +113,6 @@ class InstaPy:
                  disable_image_load=False,
                  bypass_with_mobile=False,
                  multi_logs=True,
-                 geckodriver_path=None,
                  split_db=False):
 
         cli_args = parse_cli_args()
@@ -298,7 +297,6 @@ class InstaPy:
                                                                browser_profile_path,
                                                                disable_image_load,
                                                                page_delay,
-                                                               geckodriver_path,
                                                                self.logger)
             if len(err_msg) > 0:
                 raise InstaPyError(err_msg)
