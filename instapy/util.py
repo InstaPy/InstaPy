@@ -1736,11 +1736,6 @@ def smart_run(session, threaded=False):
             raise
 
     finally:
-        update_activity(browser=None,
-                        action=None,
-                        state='offline',
-                        logfolder=session.logfolder,
-                        logger=session.logger)
         session.end(threaded_session=threaded)
 
 
