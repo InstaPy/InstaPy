@@ -117,6 +117,7 @@ class InstaPy:
                  bypass_with_mobile: bool = False,
                  multi_logs: bool = True,
                  log_handler = None, # TODO function type ?
+                 browser_binary_path: str = None,
                  split_db: bool = False):
 
         cli_args = parse_cli_args()
@@ -314,7 +315,7 @@ class InstaPy:
         get_database(make=True)  # IMPORTANT: think twice before relocating
 
         if self.selenium_local_session is True:
-            self.set_selenium_local_session()
+            self.set_selenium_local_session(browser_binary_path)
 
 
 
@@ -357,7 +358,7 @@ class InstaPy:
             Settings.logger = logger
             return logger
 
-    def set_selenium_local_session(self):
+    def set_selenium_local_session(self, browser_binary_path):
         self.browser, err_msg = set_selenium_local_session(self.proxy_address,
                                                            self.proxy_port,
                                                            self.proxy_username,
@@ -368,6 +369,7 @@ class InstaPy:
                                                            self.browser_profile_path,
                                                            self.disable_image_load,
                                                            self.page_delay,
+                                                           browser_binary_path,
                                                            self.logger)
         if len(err_msg) > 0:
             raise InstaPyError(err_msg)
