@@ -4820,63 +4820,40 @@ class InstaPy:
         # take a reference of the global configuration
         configuration = Settings.QS_config
 
-        # set QS if peak values are given
-        if (peak_likes_daily and
-                peak_likes_hourly and
-                peak_comments_hourly and
-                peak_comments_daily and
-                peak_follows_hourly and
-                peak_follows_daily and
-                peak_unfollows_hourly and
-                peak_unfollows_daily and
-                peak_server_calls_hourly and
-                peak_server_calls_daily):
+        peaks = { "likes": {"hourly": peak_likes_hourly,
+                           "daily": peak_likes_daily},
+                 "comments": {"hourly": peak_comments_hourly,
+                              "daily": peak_comments_daily },
+                 "follows": {"hourly": peak_follows_hourly,
+                             "daily": peak_follows_daily },
+                 "unfollows": {"hourly": peak_unfollows_hourly,
+                               "daily": peak_unfollows_daily },
+                 "server_calls": {"hourly": peak_server_calls_hourly,
+                                  "daily": peak_server_calls_daily } }
 
-            peaks = { "likes": {"hourly": peak_likes_hourly,
-                               "daily": peak_likes_daily},
-                     "comments": {"hourly": peak_comments_hourly,
-                                  "daily": peak_comments_daily },
-                     "follows": {"hourly": peak_follows_hourly,
-                                 "daily": peak_follows_daily },
-                     "unfollows": {"hourly": peak_unfollows_hourly,
-                                   "daily": peak_unfollows_daily },
-                     "server_calls": {"hourly": peak_server_calls_hourly,
-                                      "daily": peak_server_calls_daily } }
+        if not isinstance(sleep_after, list):
+            sleep_after = [sleep_after]
 
-            if not isinstance(sleep_after, list):
-                sleep_after = [sleep_after]
+        rt = time.time()
+        latesttime = {"hourly": rt, "daily": rt}
+        orig_peaks = deepcopy(peaks)  # original peaks always remain static
+        stochasticity = {"enabled": stochastic_flow,
+                         "latesttime": latesttime,
+                         "original_peaks": orig_peaks}
 
-            rt = time.time()
-            latesttime = {"hourly": rt, "daily": rt}
-            orig_peaks = deepcopy(peaks)  # original peaks always remain static
-            stochasticity = {"enabled": stochastic_flow,
-                             "latesttime": latesttime,
-                             "original_peaks": orig_peaks}
+        if (platform.startswith("win32") and
+                python_version() < "2.7.15"):
+            # UPDATE ME: remove this block once plyer is
+            # verified to work on [very] old versions of Python 2
+            notify_me = False
 
-            if (platform.startswith("win32") and
-                    python_version() < "2.7.15"):
-                # UPDATE ME: remove this block once plyer is
-                # verified to work on [very] old versions of Python 2
-                notify_me = False
-
-            # update QS configuration with the fresh settings
-            configuration.update({"state": enabled,
-                                  "sleep_after": sleep_after,
-                                  "sleepyhead": sleepyhead,
-                                  "stochasticity": stochasticity,
-                                  "notify": notify_me,
-                                  "peaks": peaks})
-
-        else:
-            # turn off QS for the rest of the session
-            # since peak values are ineligible
-            configuration.update(state = 'False')
-
-            # user should be warned only if has had QS turned on
-            if enabled is True:
-                self.logger.warning("Quota Supervisor: peak rates are misfit! "
-                                    "Please use supported formats."
-                                    "\t~disabled QS")
+        # update QS configuration with the fresh settings
+        configuration.update({"state": enabled,
+                              "sleep_after": sleep_after,
+                              "sleepyhead": sleepyhead,
+                              "stochasticity": stochasticity,
+                              "notify": notify_me,
+                              "peaks": peaks})
 
 
 
