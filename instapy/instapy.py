@@ -172,7 +172,6 @@ class InstaPy:
         self.use_firefox = use_firefox
         Settings.use_firefox = self.use_firefox
         self.browser_profile_path = browser_profile_path
-        self.browser_binary_path = browser_binary_path
 
         self.do_comment = False
         self.comment_percentage = 0
