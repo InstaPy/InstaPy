@@ -34,7 +34,7 @@ def set_selenium_local_session(proxy_address,
                                browser_profile_path,
                                disable_image_load,
                                page_delay,
-                               browser_binary_path
+                               browser_binary_path,
                                logger):
     """Starts local session for a selenium server.
     Default case scenario."""
