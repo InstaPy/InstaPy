@@ -7,7 +7,6 @@ from selenium.webdriver.common.proxy import Proxy, ProxyType
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.firefox.options import Options as Firefox_Options
 from selenium.webdriver import Remote
-from fake_useragent import UserAgent, FakeUserAgentError
 
 # general libs
 import re
