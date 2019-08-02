@@ -1,11 +1,4 @@
 from time import sleep
-# from random import sample, randint
-# from instapy import InstaPy
-# from instapy.exceptions import InstaPyError
-# from engine.browser import set_selenium_local_session
-# from selenium.common.exceptions import NoSuchElementException
-# from selenium.webdriver.common.keys import Keys
-# from instapy.util import web_address_navigator
 from instapy.login_util import dismiss_notification_offer
 from .xpath import read_xpath
 import pyautogui
