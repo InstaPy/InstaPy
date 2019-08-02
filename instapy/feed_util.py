@@ -47,4 +47,4 @@ def get_like_on_feed(browser, amount):
 
         browser.execute_script(
             "window.scrollTo(0, document.body.scrollHeight);")
-        update_activity()
+        update_activity(browser, state=None)

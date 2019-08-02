@@ -295,17 +295,22 @@ def users_liked(browser, photo_url, amount=100):
 def likers_from_photo(browser, amount=20):
     """ Get the list of users from the 'Likes' dialog of a photo """
 
-    liked_counter_button = "//div/article/div[2]/section[2]/div/div/a"
-
     try:
-        liked_this = browser.find_elements_by_xpath(liked_counter_button)
-        likers = []
+        if check_exists_by_xpath(browser, read_xpath(likers_from_photo.__name__,"second_counter_button")):
+            liked_this = browser.find_elements_by_xpath(
+                read_xpath(likers_from_photo.__name__,"second_counter_button"))
+            element_to_click = liked_this[0]
+        elif check_exists_by_xpath(browser,
+                                   read_xpath(likers_from_photo.__name__,"liked_counter_button")):
 
-        for liker in liked_this:
-            if " like this" not in liker.text:
-                likers.append(liker.text)
+            liked_this = browser.find_elements_by_xpath(
+                read_xpath(likers_from_photo.__name__,"liked_counter_button"))
+            likers = []
 
-        if check_exists_by_xpath(browser, liked_counter_button):
+            for liker in liked_this:
+                if " like this" not in liker.text:
+                    likers.append(liker.text)
+
             if " others" in liked_this[-1].text:
                 element_to_click = liked_this[-1]
 
@@ -318,6 +323,7 @@ def likers_from_photo(browser, amount=20):
                       .format(likers))
                 return likers
 
+
         else:
             print("Couldn't find liked counter button. May be a video.")
             print("Moving on..")
@@ -327,7 +333,7 @@ def likers_from_photo(browser, amount=20):
         click_element(browser, element_to_click)
         print("opening likes")
         # update server calls
-        # update_activity()
+        update_activity(browser, state=None)
 
         sleep(1)
 
@@ -339,7 +345,7 @@ def likers_from_photo(browser, amount=20):
         previous_len = -1
         browser.execute_script(
             "arguments[0].scrollTop = arguments[0].scrollHeight", dialog)
-        update_activity()
+        update_activity(browser, state=None)
         sleep(1)
 
         start_time = time.time()

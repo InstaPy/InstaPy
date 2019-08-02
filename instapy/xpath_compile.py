@@ -212,3 +212,8 @@ xpath['create_ig_post'] = {
     "post_description_textarea": "//textarea",
     "final_post_creation_step": "//button[text()='Share']"
 }
+
+xpath['likers_from_photo'] = {
+    "liked_counter_button": "//div/article/div[2]/section[2]/div/div/a",
+    "second_counter_button": "//div/article/div[2]/section[2]/div/div/button"
+}

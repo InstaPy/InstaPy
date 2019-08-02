@@ -1,6 +1,8 @@
 """Module only used for the login part of the script"""
 # import built-in & third-party modules
 import pickle
+import os
+import json
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.keys import Keys
 
@@ -20,7 +22,8 @@ from selenium.common.exceptions import MoveTargetOutOfBoundsException
 
 from .xpath import read_xpath
 
-def bypass_suspicious_login(browser, bypass_with_mobile):
+
+def bypass_suspicious_login(browser, logger, logfolder, bypass_with_mobile):
     """Bypass suspicious loggin attempt verification. This should be only
     enabled
     when there isn't available cookie for the username, otherwise it will and
@@ -38,7 +41,7 @@ def bypass_suspicious_login(browser, bypass_with_mobile):
          .perform())
 
         # update server calls
-        update_activity()
+        update_activity(browser, state=None)
 
     except NoSuchElementException:
         pass
@@ -54,7 +57,7 @@ def bypass_suspicious_login(browser, bypass_with_mobile):
          .perform())
 
         # update server calls
-        update_activity()
+        update_activity(browser, state=None)
 
     except NoSuchElementException:
         # no verification needed
@@ -106,11 +109,30 @@ def bypass_suspicious_login(browser, bypass_with_mobile):
      .perform())
 
     # update server calls
-    update_activity()
+    update_activity(browser, state=None)
 
     print('Instagram detected an unusual login attempt')
     print('A security code was sent to your {}'.format(choice))
-    security_code = input('Type the security code here: ')
+
+    # --
+    security_code = None
+    try:
+        path = "{}{}.json".format(logfolder, logger.name)
+        data = {}
+        # check if file exists and has content
+        if os.path.isfile(path) and os.path.getsize(path) > 0:
+            # load JSON file
+            with open(path, "r") as json_file:
+                data = json.load(json_file)
+
+        # update connection state
+        security_code = data["challenge"]["security_code"]
+    except Exception:
+        logger.info('Security Code not present in {}{}.json file'
+                    .format(logfolder, logger.name))
+
+    if security_code is None:
+        security_code = input('Type the security code here: ')
 
     security_code_field = browser.find_element_by_xpath(
         read_xpath(bypass_suspicious_login.__name__, "security_code_field")
@@ -124,7 +146,7 @@ def bypass_suspicious_login(browser, bypass_with_mobile):
 
     # update server calls for both 'click' and 'send_keys' actions
     for i in range(2):
-        update_activity()
+        update_activity(browser, state=None)
 
     submit_security_code_button = browser.find_element_by_xpath(
         read_xpath(bypass_suspicious_login.__name__, "submit_security_code_button")
@@ -136,18 +158,24 @@ def bypass_suspicious_login(browser, bypass_with_mobile):
      .perform())
 
     # update server calls
-    update_activity()
+    update_activity(browser, state=None)
 
     try:
-        sleep(5)
+        sleep(3)
         # locate wrong security code message
         wrong_login = browser.find_element_by_xpath(
             read_xpath(bypass_suspicious_login.__name__, "wrong_login")
         )
 
         if wrong_login is not None:
-            print('Wrong security code! Please check the code Instagram'
-                   'sent you and try again.')
+            wrong_login_msg = ('Wrong security code! Please check the code Instagram'
+                               'sent you and try again.')
+            update_activity(browser,
+                            action=None,
+                            state=wrong_login_msg,
+                            logfolder=logfolder,
+                            logger=logger)
+            print(wrong_login_msg)
 
     except NoSuchElementException:
         # correct security code
@@ -164,13 +192,30 @@ def login_user(browser,
     assert username, 'Username not provided'
     assert password, 'Password not provided'
 
+    # set initial state to offline
+    update_activity(browser,
+                    action=None,
+                    state='trying to connect',
+                    logfolder=logfolder,
+                    logger=logger)
+
     # check connection status
     try:
         logger.info('-- Connection Checklist [1/2] (Internet Connection Status)')
         browser.get("https://www.google.com")
         logger.info('- Internet Connection Status: ok')
+        update_activity(browser,
+                        action=None,
+                        state='Internet connection is ok',
+                        logfolder=logfolder,
+                        logger=logger)
     except Exception:
         logger.warn('- Internet Connection Status: error')
+        update_activity(browser,
+                        action=None,
+                        state='There is an issue with the internet connection',
+                        logfolder=logfolder,
+                        logger=logger)
         return False
 
     # check Instagram.com status
@@ -190,8 +235,18 @@ def login_user(browser,
         logger.info('- Instagram Response Time: {} '.format(response_time.text))
         logger.info('- Instagram Reponse Code: {}'.format(response_code.text))
         logger.info('- Instagram Server Status: ok')
+        update_activity(browser,
+                        action=None,
+                        state='Instagram servers are running correctly',
+                        logfolder=logfolder,
+                        logger=logger)
     except Exception:
         logger.warn('- Instagram Server Status: error')
+        update_activity(browser,
+                        action=None,
+                        state='Instagram server is down',
+                        logfolder=logfolder,
+                        logger=logger)
         return False
 
     ig_homepage = "https://www.instagram.com"
@@ -250,7 +305,7 @@ def login_user(browser,
             login_elem.click()
 
         # update server calls
-        update_activity()
+        update_activity(browser, state=None)
 
     # Enter username and password and logs the user in
     # Sometimes the element name isn't 'Username' and 'Password'
@@ -274,7 +329,7 @@ def login_user(browser,
 
     # update server calls for both 'click' and 'send_keys' actions
     for _ in range(2):
-        update_activity()
+        update_activity(browser, state=None)
 
     sleep(1)
 
@@ -301,7 +356,7 @@ def login_user(browser,
 
     # update server calls for both 'click' and 'send_keys' actions
     for i in range(4):
-        update_activity()
+        update_activity(browser, state=None)
 
     dismiss_get_app_offer(browser, logger)
     dismiss_notification_offer(browser, logger)
@@ -314,6 +369,11 @@ def login_user(browser,
             account_disabled = browser.find_element_by_xpath(
                 read_xpath(login_user.__name__, "account_disabled"))
             logger.warn(account_disabled.text)
+            update_activity(browser,
+                            action=None,
+                            state=account_disabled.text,
+                            logfolder=logfolder,
+                            logger=logger)
             return False
         except NoSuchElementException:
             pass
@@ -322,10 +382,16 @@ def login_user(browser,
         try:
             browser.find_element_by_xpath(
                 read_xpath(login_user.__name__, "add_phone_number"))
-            logger.warn(
+            challenge_warn_msg = (
                 "Instagram initiated a challenge before allow your account to login. "
                 "At the moment there isn't a phone number linked to your Instagram "
                 "account. Please, add a phone number to your account, and try again.")
+            logger.warn(challenge_warn_msg)
+            update_activity(browser,
+                            action=None,
+                            state=challenge_warn_msg,
+                            logfolder=logfolder,
+                            logger=logger)
             return False
         except NoSuchElementException:
             pass
@@ -334,7 +400,12 @@ def login_user(browser,
         try:
             browser.find_element_by_xpath(
                 read_xpath(login_user.__name__, "suspicious_login_attempt"))
-            bypass_suspicious_login(browser, bypass_with_mobile)
+            update_activity(browser,
+                            action=None,
+                            state='Trying to solve suspicious attempt login',
+                            logfolder=logfolder,
+                            logger=logger)
+            bypass_suspicious_login(browser, logger, logfolder, bypass_with_mobile)
         except NoSuchElementException:
             pass
 
@@ -343,6 +414,11 @@ def login_user(browser,
         error_alert = browser.find_element_by_xpath(
             read_xpath(login_user.__name__, "error_alert"))
         logger.warn(error_alert.text)
+        update_activity(browser,
+                        action=None,
+                        state=error_alert.text,
+                        logfolder=logfolder,
+                        logger=logger)
         return False
     except NoSuchElementException:
         pass
