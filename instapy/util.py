@@ -428,7 +428,7 @@ def update_activity(browser=None,
             with open(path, "w") as json_file:
                 json.dump(data, json_file, indent=4)
         except Exception:
-            pass
+            logger.warn('Unable to update JSON state file')
 
     # in case is just a state update and there is no server call
     if action is None:

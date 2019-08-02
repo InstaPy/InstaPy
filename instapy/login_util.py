@@ -128,8 +128,9 @@ def bypass_suspicious_login(browser, logger, logfolder, bypass_with_mobile):
         # update connection state
         security_code = data["challenge"]["security_code"]
     except Exception:
-        pass
-    # --
+        logger.info('Security Code not present in {}{}.json file'
+                    .format(logfolder, logger.name))
+
     if security_code is None:
         security_code = input('Type the security code here: ')
 
