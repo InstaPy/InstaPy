@@ -9,7 +9,10 @@ from webdriverdownloader import GeckoDriverDownloader
 # general libs
 import os
 import zipfile
+<<<<<<< HEAD
 import shutil
+=======
+>>>>>>> update browser.py
 from time import sleep
 from os.path import sep
 
@@ -25,11 +28,14 @@ from .settings import Settings
 
 
 def get_geckodriver():
+<<<<<<< HEAD
     # prefer using geckodriver from path
     gecko_path = shutil.which("geckodriver") or shutil.which("geckodriver.exe")
     if gecko_path:
         return gecko_path
 
+=======
+>>>>>>> update browser.py
     asset_path = use_assets()
     gdd = GeckoDriverDownloader(asset_path, asset_path)
     # skips download if already downloaded
@@ -38,12 +44,21 @@ def get_geckodriver():
 
 
 def create_firefox_extension():
+<<<<<<< HEAD
     ext_path = os.path.abspath(os.path.dirname(__file__) + sep + "firefox_extension")
     # safe into assets folder
     zip_file = use_assets() + sep + "extension.xpi"
 
     files = ["manifest.json", "content.js", "arrive.js"]
     with zipfile.ZipFile(zip_file, "w", zipfile.ZIP_DEFLATED, False) as zipf:
+=======
+    ext_path = os.path.abspath(os.path.dirname(__file__) + sep + 'firefox_extension')
+    # safe into assets folder
+    zip_file = use_assets() + sep + 'extension.xpi'
+
+    files = [ 'manifest.json', 'content.js', 'arrive.js' ]
+    with zipfile.ZipFile(zip_file, 'w', zipfile.ZIP_DEFLATED, False) as zipf:
+>>>>>>> update browser.py
         for file in files:
             zipf.write(ext_path + sep + file, file)
 
@@ -127,6 +142,53 @@ def set_selenium_local_session(
         # set mobile viewport (iPhone X)
         browser.set_window_size(375, 812)
 
+    if browser_profile_path is not None:
+        firefox_profile = webdriver.FirefoxProfile(
+            browser_profile_path)
+    else:
+        firefox_profile = webdriver.FirefoxProfile()
+
+    # set English language
+    firefox_profile.set_preference('intl.accept_languages', 'en')
+    firefox_profile.set_preference('general.useragent.override', user_agent)
+
+    if disable_image_load:
+        # permissions.default.image = 2: Disable images load,
+        # this setting can improve pageload & save bandwidth
+        firefox_profile.set_preference('permissions.default.image', 2)
+
+    if proxy_address and proxy_port:
+        firefox_profile.set_preference('network.proxy.type', 1)
+        firefox_profile.set_preference('network.proxy.http',
+                                       proxy_address)
+        firefox_profile.set_preference('network.proxy.http_port',
+                                       proxy_port)
+        firefox_profile.set_preference('network.proxy.ssl',
+                                       proxy_address)
+        firefox_profile.set_preference('network.proxy.ssl_port',
+                                       proxy_port)
+
+    # mute audio while watching stories
+    firefox_profile.set_preference('media.volume_scale', '0.0')
+
+    # prefer user path before downloaded one
+    driver_path = geckodriver_path or get_geckodriver()
+    browser = webdriver.Firefox(firefox_profile=firefox_profile,
+                                executable_path=driver_path,
+                                options=firefox_options)
+
+    # add extenions to hide selenium
+    browser.install_addon(create_firefox_extension(), temporary=True)
+
+    # converts to custom browser
+    # browser = convert_selenium_browser(browser)
+
+    # authenticate with popup alert window
+    if (proxy_username and proxy_password):
+        proxy_authentication(browser,
+                             logger,
+                             proxy_username,
+                             proxy_password)
 
     browser.implicitly_wait(page_delay)
 
@@ -252,7 +314,6 @@ def retry(max_retry_count=3, start_page=None):
         return wrapper
 
     return real_decorator
-
 
 class custom_browser(Remote):
     """ Custom browser instance for manupulation later on """
