@@ -53,6 +53,7 @@
   - [Skip based on Profile Bio](#skip-based-on-profile-bio)
   - [InstaPy Pods](#instapy-pods)
   - [InstaPy Stories](#instapy-stories)
+  - [Create Post](#create-post)
   
  <br />
 
@@ -1257,7 +1258,24 @@ session.story_by_users(['user1', 'user2'])
 
 ---
 
-<br />
+### Create Post
+
+Automate the post creation, set the local file name, description, and you're ready to run it.
+
+```python
+post_description = 'Hello world, #cool #things #happens'
+image_file_path = '/full_path/photo.jpg' # Linux, MacOS
+image_file_path = 'c:/full_path/photo.jpg' # Windows
+session.create_post(post_description, image_file_path)
+```
+
+It will create a new post with the photo at `image_file_path`, and text description of `post_description`.
+
+#### Linux users only: it's required to install three extra libs:
+
+Ubuntu / Debian: sudo apt-get install scrot python3-tk python3-dev
+
+<br /> 
 <br />
 
 ## Third Party Features
