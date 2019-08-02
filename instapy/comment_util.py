@@ -12,6 +12,7 @@ from .util import get_action_delay
 from .util import explicit_wait
 from .util import extract_text_from_element
 from .util import web_address_navigator
+from .event import Event
 
 from .like_util import get_media_edge_comment_string
 
@@ -106,6 +107,7 @@ def comment_image(browser, username, comments, blacklist, logger, logfolder):
         return False, "invalid element state"
 
     logger.info("--> Commented: {}".format(rand_comment.encode('utf-8')))
+    Event().commented(username)
 
     # get the post-comment delay time to sleep
     naply = get_action_delay("comment")

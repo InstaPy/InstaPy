@@ -38,6 +38,7 @@ from .database_engine import get_database
 from .quota_supervisor import quota_supervisor
 from .util import is_follow_me
 from .util import get_epoch_time_diff
+from .event import Event
 
 from selenium.common.exceptions import WebDriverException
 from selenium.common.exceptions import NoSuchElementException
@@ -742,6 +743,7 @@ def follow_user(browser, track, login, user_name, button, blacklist, logger,
 
     # general tasks after a successful follow
     logger.info("--> Followed '{}'!".format(user_name.encode("utf-8")))
+    Event().followed(user_name)
     update_activity(browser,
                     action='follows',
                     state=None,
@@ -1116,7 +1118,7 @@ def get_given_user_following(browser,
         #allfollowing = format_number(
         #    browser.find_element_by_xpath(read_xpath(get_given_user_following.__name__,"all_following")).text)
         allfollowing = format_number(
-            browser.find_element_by_xpath(str(read_xpath(get_given_user_following.__name__,"all_following"))))
+            browser.find_element_by_xpath(read_xpath(get_given_user_following.__name__,"all_following")).text)
 
     except NoSuchElementException:
         try:
@@ -1384,6 +1386,7 @@ def unfollow_user(browser, track, username, person, person_id, button,
 
     # general tasks after a successful unfollow
     logger.info("--> Unfollowed '{}'!".format(person))
+    Event().unfollowed(person)
     update_activity(browser,
                     action='unfollows',
                     state=None,
