@@ -1,7 +1,7 @@
 dist: xenial
 sudo: false
 language: python
-python: "3.6"
+python: "3.7"
 cache: pip
 
 branches:
@@ -16,7 +16,7 @@ script: tox
 stages:
     - name: static analysis
     - name: test
-    - name: deploy to PyPI
+    - name: pypi-prod
       if: type = push AND fork = false AND tag =~ ^\d+\.\d+\.\d+
 
 jobs:
@@ -42,7 +42,7 @@ jobs:
       env: TOXENV=py37
       python: "3.7"
 
-    - stage: deploy to PyPI
+    - stage: pypi-prod
       install: true
       script: skip
       deploy:
