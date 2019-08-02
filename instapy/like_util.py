@@ -17,6 +17,7 @@ from .util import explicit_wait
 from .util import extract_text_from_element
 from .quota_supervisor import quota_supervisor
 from .unfollow_util import get_following_status
+from .event import Event
 
 from selenium.common.exceptions import WebDriverException
 from selenium.common.exceptions import NoSuchElementException
@@ -715,6 +716,7 @@ def like_image(browser, username, blacklist, logger, logfolder, total_liked_img)
 
         if len(liked_elem) == 1:
             logger.info('--> Image Liked!')
+            Event().liked(username)
             update_activity(browser,
                             action='likes',
                             state=None,
@@ -752,6 +754,7 @@ def like_image(browser, username, blacklist, logger, logfolder, total_liked_img)
     return False, "invalid element"
 
 
+
 def verify_liked_image(browser, logger):
     """Check for a ban on likes using the last liked image"""
 
@@ -767,6 +770,7 @@ def verify_liked_image(browser, logger):
             'You are have a BLOCK on likes!'
         )
         return False
+
 
 
 def get_tags(browser, url):
@@ -792,6 +796,7 @@ def get_tags(browser, url):
     tags = findall(r'#\w*', image_text)
 
     return tags
+
 
 
 def get_links(browser, page, logger, media, element):

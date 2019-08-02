@@ -207,13 +207,17 @@ def validate_path(path):
             raise InstaPyError(msg)
 
 
-def get_chromedriver_location():
+def get_chromedriver_location(browser_binary_path=None):
     """ Solve chromedriver access issues """
     CD = Settings.chromedriver_location
 
     if OS_ENV == "windows":
         if not CD.endswith(".exe"):
             CD += ".exe"
+
+    if browser_binary_path:
+        if not file_exists(CD):
+            CD = browser_binary_path
 
     if not file_exists(CD):
         workspace_path = slashen(WORKSPACE["path"], "native")

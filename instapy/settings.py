@@ -83,6 +83,8 @@ class Settings:
     # This is where currently the pods server is hosted
     pods_server_endpoint = 'https://us-central1-instapy-pods.cloudfunctions.net'
 
+
+
 class Storage:
     """ Globally accessible standalone storage """
 
@@ -96,6 +98,5 @@ class Selectors:
     """
 
     likes_dialog_body_xpath = (
-        read_xpath("class_selectors","likes_dialog_body_xpath"))
-
-    likes_dialog_close_xpath = read_xpath("class_selectors","likes_dialog_close_xpath")
+        read_xpath("class_selectors", "likes_dialog_body_xpath"))
+    likes_dialog_close_xpath = read_xpath("class_selectors", "likes_dialog_close_xpath")

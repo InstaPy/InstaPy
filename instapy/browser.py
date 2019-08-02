@@ -34,6 +34,7 @@ def set_selenium_local_session(proxy_address,
                                browser_profile_path,
                                disable_image_load,
                                page_delay,
+                               browser_binary_path,
                                logger):
     """Starts local session for a selenium server.
     Default case scenario."""
@@ -105,7 +106,7 @@ def set_selenium_local_session(proxy_address,
                                  proxy_password)
 
     else:
-        chromedriver_location = get_chromedriver_location()
+        chromedriver_location = get_chromedriver_location(browser_binary_path)
         chrome_options = Options()
         chrome_options.add_argument('--mute-audio')
         chrome_options.add_argument('--dns-prefetch-disable')
