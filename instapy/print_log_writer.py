@@ -30,7 +30,7 @@ def log_follower_num(browser, username, logfolder):
     except WebDriverException:  # handle the possible `entry_data` error
         try:
             browser.execute_script("location.reload()")
-            update_activity()
+            update_activity(browser, state=None)
 
             sleep(1)
             followed_by = browser.execute_script(
@@ -61,7 +61,7 @@ def log_following_num(browser, username, logfolder):
     except WebDriverException:
         try:
             browser.execute_script("location.reload()")
-            update_activity()
+            update_activity(browser, state=None)
 
             sleep(10)
             following_num = browser.execute_script(

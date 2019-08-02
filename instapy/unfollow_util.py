@@ -175,7 +175,7 @@ def get_following_status(browser, track, username, person, person_id, logger,
                                   logger, 7, False)
     if not follow_button:
         browser.execute_script("location.reload()")
-        update_activity()
+        update_activity(browser, state=None)
 
         follow_button = explicit_wait(browser, "VOEL",
                                       [follow_button_XP, "XPath"], logger, 14,
@@ -514,7 +514,7 @@ def unfollow(browser,
 
             click_element(browser, following_link[0])
             # update server calls
-            update_activity()
+            update_activity(browser, state=None)
         except BaseException as e:
             logger.error("following_link error {}".format(str(e)))
             return 0
@@ -743,8 +743,12 @@ def follow_user(browser, track, login, user_name, button, blacklist, logger,
 
     # general tasks after a successful follow
     logger.info("--> Followed '{}'!".format(user_name.encode("utf-8")))
-    update_activity('follows')
     Event().followed(user_name)
+    update_activity(browser,
+                    action='follows',
+                    state=None,
+                    logfolder=logfolder,
+                    logger=logger)
 
     # get user ID to record alongside username
     user_id = get_user_id(browser, track, user_name, logger)
@@ -1062,7 +1066,7 @@ def get_given_user_followers(browser,
             read_xpath(get_given_user_followers.__name__,"followers_link").format(user_name))
         click_element(browser, followers_link[0])
         # update server calls
-        update_activity()
+        update_activity(browser, state=None)
 
     except NoSuchElementException:
         logger.error(
@@ -1125,7 +1129,7 @@ def get_given_user_following(browser,
         except WebDriverException:
             try:
                 browser.execute_script("location.reload()")
-                update_activity()
+                update_activity(browser, state=None)
 
                 allfollowing = browser.execute_script(
                     "return window._sharedData.entry_data."
@@ -1167,7 +1171,7 @@ def get_given_user_following(browser,
             read_xpath(get_given_user_following.__name__,"following_link").format(user_name))
         click_element(browser, following_link[0])
         # update server calls
-        update_activity()
+        update_activity(browser, state=None)
 
     except NoSuchElementException:
         logger.error(
@@ -1382,8 +1386,12 @@ def unfollow_user(browser, track, username, person, person_id, button,
 
     # general tasks after a successful unfollow
     logger.info("--> Unfollowed '{}'!".format(person))
-    update_activity('unfollows')
     Event().unfollowed(person)
+    update_activity(browser,
+                    action='unfollows',
+                    state=None,
+                    logfolder=logfolder,
+                    logger=logger)
     post_unfollow_cleanup("successful", username, person, relationship_data,
                           person_id, logger, logfolder)
 
