@@ -1279,9 +1279,12 @@ session.create_post(post_description, image_file_path)
 
 It will create a new post with the photo at `image_file_path`, and text description of `post_description`.
 
-#### Linux users only: it's required to install three extra libs:
+*Create Post requires some interaction with the Operational System as close a file manager window,
+and Selenium doesn't have access to it. To solve it, we're using PyAutoGUI library, that can
+do these actions. Extra steps are required to install PyAutoGUI because depending on the Operational System,
+there is a different approach to install this library.*
 
-Ubuntu / Debian: sudo apt-get install scrot python3-tk python3-dev
+*Detailed steps to install [PyAutoGUI](https://pyautogui.readthedocs.io/en/latest/install.html).*
 
 <br /> 
 <br />
