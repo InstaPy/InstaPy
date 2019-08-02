@@ -63,7 +63,7 @@ xpath['get_active_users'] = {
     "likes_button": "//div[contains(@class,'Nm9Fw')]/child::button",
     "next_button": "//a[text()='Next']",
     "topCount_elements": "//span[contains(@class,'g47SY')]"
-} #multiline:  next_button
+}
 
 xpath['get_buttons_from_dialog'] = {
     "follow_button":"//button[text()='Follow']",
@@ -203,4 +203,9 @@ xpath['watch_story_for_user'] = {
 xpath['watch_story'] = {
     'next_first': "/html/body/span/section/div/div/section/div[2]/button",
     "next": "/html/body/span/section/div/div/section/div[2]/button[2]"
+}
+
+xpath['likers_from_photo'] = {
+    "liked_counter_button": "//div/article/div[2]/section[2]/div/div/a",
+    "second_counter_button": "//div/article/div[2]/section[2]/div/div/button"
 }

@@ -12,6 +12,7 @@ from .util import get_action_delay
 from .util import explicit_wait
 from .util import extract_text_from_element
 from .util import web_address_navigator
+from .event import Event
 
 from .like_util import get_media_edge_comment_string
 
@@ -82,7 +83,11 @@ def comment_image(browser, username, comments, blacklist, logger, logfolder):
             comment_input[0].send_keys('\b')
             comment_input = get_comment_input(browser)
             comment_input[0].submit()
-            update_activity('comments')
+            update_activity(browser,
+                            action='comments',
+                            state=None,
+                            logfolder=logfolder,
+                            logger=logger)
 
             if blacklist['enabled'] is True:
                 action = 'commented'
@@ -102,6 +107,7 @@ def comment_image(browser, username, comments, blacklist, logger, logfolder):
         return False, "invalid element state"
 
     logger.info("--> Commented: {}".format(rand_comment.encode('utf-8')))
+    Event().commented(username)
 
     # get the post-comment delay time to sleep
     naply = get_action_delay("comment")
@@ -288,7 +294,7 @@ def is_commenting_enabled(browser, logger):
     except WebDriverException:
         try:
             browser.execute_script("location.reload()")
-            update_activity()
+            update_activity(browser, state=None)
 
             comments_disabled = browser.execute_script(
                 "return window._sharedData.entry_data."

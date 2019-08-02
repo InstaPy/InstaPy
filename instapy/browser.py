@@ -66,10 +66,10 @@ def set_selenium_local_session(proxy_address,
         " (KHTML, like Gecko) CriOS/56.0.2924.75 Mobile/14E5239e Safari/602.1"
     )
 
-    firefox_options = Firefox_Options()
-
     # keep user_agent
     Settings.user_agent = user_agent
+
+    firefox_options = Firefox_Options()
 
     if headless_browser:
         firefox_options.add_argument('-headless')

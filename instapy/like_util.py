@@ -17,6 +17,7 @@ from .util import explicit_wait
 from .util import extract_text_from_element
 from .quota_supervisor import quota_supervisor
 from .unfollow_util import get_following_status
+from .event import Event
 
 from selenium.common.exceptions import WebDriverException
 from selenium.common.exceptions import NoSuchElementException
@@ -37,7 +38,7 @@ def get_links_from_feed(browser, amount, num_of_search, logger):
     for i in range(num_of_search + 1):
         browser.execute_script(
             "window.scrollTo(0, document.body.scrollHeight);")
-        update_activity()
+        update_activity(browser, state=None)
         sleep(2)
 
     # get links
@@ -171,7 +172,7 @@ def get_links_for_location(browser,
             for i in range(3):
                 browser.execute_script(
                     "window.scrollTo(0, document.body.scrollHeight);")
-                update_activity()
+                update_activity(browser, state=None)
                 sc_rolled += 1
                 sleep(
                     nap)  # if not slept, and internet speed is low,
@@ -209,7 +210,7 @@ def get_links_for_location(browser,
                         put_sleep += 1
 
                         browser.execute_script("location.reload()")
-                        update_activity()
+                        update_activity(browser, state=None)
                         try_again = 0
                         sleep(10)
 
@@ -338,7 +339,7 @@ def get_links_for_tag(browser,
             for i in range(3):
                 browser.execute_script(
                     "window.scrollTo(0, document.body.scrollHeight);")
-                update_activity()
+                update_activity(browser, state=None)
                 sc_rolled += 1
                 sleep(
                     nap)  # if not slept, and internet speed is low,
@@ -374,7 +375,7 @@ def get_links_for_tag(browser,
                         put_sleep += 1
 
                         browser.execute_script("location.reload()")
-                        update_activity()
+                        update_activity(browser, state=None)
                         try_again = 0
                         sleep(10)
 
@@ -476,7 +477,7 @@ def get_links_for_username(browser,
         browser.execute_script(
             "window.scrollTo(0, document.body.scrollHeight);")
         # update server calls after a scroll request
-        update_activity()
+        update_activity(browser, state=None)
         sleep(0.66)
 
         # using `extend`  or `+=` results reference stay alive which affects
@@ -546,7 +547,7 @@ def check_link(browser, post_link, dont_like, mandatory_words,
     except WebDriverException:  # handle the possible `entry_data` error
         try:
             browser.execute_script("location.reload()")
-            update_activity()
+            update_activity(browser, state=None)
 
             post_page = browser.execute_script(
                 "return window._sharedData.entry_data.PostPage")
@@ -715,7 +716,12 @@ def like_image(browser, username, blacklist, logger, logfolder, total_liked_img)
 
         if len(liked_elem) == 1:
             logger.info('--> Image Liked!')
-            update_activity('likes')
+            Event().liked(username)
+            update_activity(browser,
+                            action='likes',
+                            state=None,
+                            logfolder=logfolder,
+                            logger=logger)
 
             if blacklist['enabled'] is True:
                 action = 'liked'
@@ -748,6 +754,7 @@ def like_image(browser, username, blacklist, logger, logfolder, total_liked_img)
     return False, "invalid element"
 
 
+
 def verify_liked_image(browser, logger):
     """Check for a ban on likes using the last liked image"""
 
@@ -763,6 +770,7 @@ def verify_liked_image(browser, logger):
             'You are have a BLOCK on likes!'
         )
         return False
+
 
 
 def get_tags(browser, url):
@@ -788,6 +796,7 @@ def get_tags(browser, url):
     tags = findall(r'#\w*', image_text)
 
     return tags
+
 
 
 def get_links(browser, page, logger, media, element):
@@ -841,7 +850,7 @@ def verify_liking(browser, max, min, logger):
     except WebDriverException:
         try:
             browser.execute_script("location.reload()")
-            update_activity()
+            update_activity(browser, state=None)
 
             likes_count = browser.execute_script(
                 "return window._sharedData.entry_data."

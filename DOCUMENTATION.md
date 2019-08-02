@@ -50,6 +50,7 @@
   - [Interact by Comments](#interact-by-comments)
   - [Accept pending follow requests](#accept-pending-follow-requests)
   - [Remove outgoing follow requests](#remove-outgoing-follow-requests)
+  - [Skip based on Profile Bio](#skip-based-on-profile-bio)
   - [InstaPy Pods](#instapy-pods)
   - [InstaPy Stories](#instapy-stories)
   
@@ -197,33 +198,26 @@ session.like_by_tags(amount=10, use_smart_hashtags=True)
 
 ```python
 session.set_quota_supervisor(enabled=True, sleep_after=["likes", "comments_d", "follows", "unfollows", "server_calls_h"], sleepyhead=True, stochastic_flow=True, notify_me=True,
-                              peak_likes=(57, 585),
-                               peak_comments=(21, 182),
-                                peak_follows=(48, None),
-                                 peak_unfollows=(35, 402),
-                                  peak_server_calls=(None, 4700))
+                              peak_likes_hourly=57,
+                              peak_likes_daily=585,
+                               peak_comments_hourly=21,
+                               peak_comments_daily=182,
+                                peak_follows_hourly=48,
+                                peak_follows_daily=None,
+                                 peak_unfollows_hourly=35,
+                                 peak_unfollows_daily=402,
+                                  peak_server_calls_hourly=None,
+                                  peak_server_calls_daily=4700)
 ```
 #### Parameters:
 `enabled`: put `True` to **activate** or `False` to **deactivate** supervising any time
 
-
-`peak_likes`: the **first value** indicates the **hourly** and the **second** indicates the **daily** peak value  
-+ _e.g._ in `peak_likes=(66, 700)` - `66` is the **hourly**, and `700` is the **daily** peak value  
-_such as_,
-    + `peak_server_calls=(500, 4745)` will _supervise_ server calls with **hourly** peak of `500` and **daily** peak of `4745`
-    + `peak_likes=(70, None)` will _supervise_ only hourly likes with the peak of `70`
-    + `peak_unfollows=(None, 350)` will _supervise_ only daily unfollows with the peak of `350`
-    + `peak_comments=(None, None)` will not _supervise_ comments at all
 
 If you **don't want to** _supervise_ likes **at all**, simply **remove** `peak_likes` parameter **OR** use `peak_likes=(None, None)`.  
 _Once_ likes **reach** peak, it will **jump** every other like, _yet_, **will do all available actions** (_e.g. follow or unfollow_).  
 + Only `server calls` **does not** jump, it exits the program **once reaches the peak**.
 > Although, you can put server calls to sleep once reaches peak, read `sleep_after` parameter.  
 + _Every action_ will be **jumped** separately after reaching it's peak, _except_ comments. Cos commenting without a like isn't welcomed that's why as like peak is reached, it will jump comments, too.
-
-**Notice**: `peak_likes=(50)` will not work, use `peak_likes=(50, None)` to supervise **hourly** peak and `peak_likes=(None, 50)` for **daily** peak.  
->_Same **form**_ **applies** to **all** actions. Just specify the peaks in desired intervals- **hourly** or **daily** you want to _supervise_.
-
 
 `sleep_after`: is used to put **InstaPy** to _sleep_ **after reaching peak** _rather than_ **jumping the action** (_or exiting- **for** server calls_)  
 _Any action_ can be included `["likes", "comments", "follows", "unfollows", "server_calls"]`.  
@@ -250,7 +244,7 @@ _such as_,
 #### Mini-Examples:
 + Claudio has written **a new 😊 quickstart** script where it **mostly** _put likes and comments_. He wants the program to **comment safely** cos he is _afraid of exceeding_ **hourly** & **daily** comment limits,
 ```python
-session.set_quota_supervisor(enabled=True, peak_comments=(21, 240))
+session.set_quota_supervisor(enabled=True, peak_comments_daily=21, peak_comments_hourly=240)
 ```
 >_That's it! When it reaches the comments peak, it will just jump all of the comments and will again continue to put comments when is available [in the next  hour/day]_.
 
@@ -258,7 +252,7 @@ session.set_quota_supervisor(enabled=True, peak_comments=(21, 240))
     + **wants** the program to **sleep after** reaching **hourly** _server calls_ peak: **adds** `"server_calls_h"` into `sleep_after` parameter
     + **wants** the program to **wake up** _a little bit later_ than real sleep time [once reaches the peaks]: **uses** `sleepyhead=True` parameter
 ```python
-session.set_quota_supervisor(enabled=True, peak_server_calls=(490, None), sleep_after=["server_calls_h"], sleepyhead=True)
+session.set_quota_supervisor(enabled=True, peak_server_calls_daily=490, sleep_after=["server_calls_h"], sleepyhead=True)
 ```
 >_It will sleep after **hourly** server calls reaches its peak given - `490` and **never allow** one more extra request to the server out of the peak and **wake up** when **new hour** comes in WHILST **daily** server calls **will not be** supervised at all- as Alicia wishes_.
 
@@ -267,7 +261,7 @@ session.set_quota_supervisor(enabled=True, peak_server_calls=(490, None), sleep_
     + **wants** QS to _randomize_ his `pre-defined` peak values [at close range] each new _hour_/_day_: **uses** `stochastic_flow=True` parameter
     + **wants** the program to sleep after reaching **hourly** _follow_ peak and **daily** _unfollow_ peak: **adds** `"follows_h"` and `"unfollows_d"`into `sleep_after` parameter
 ```python
-session.set_quota_supervisor(enabled=True, peak_follows=(56, 660), peak_unfollows=(49, 550), sleep_after=["follows_h", "unfollows_d"], stochastic_flow=True, notify_me=True)
+session.set_quota_supervisor(enabled=True, peak_follows_daily=560, peak_follows_hourly=56, peak_unfollows_hourly=49, peak_unfollows_daily=550, sleep_after=["follows_h", "unfollows_d"], stochastic_flow=True, notify_me=True)
 ```
 
 ---
@@ -468,20 +462,20 @@ This will skip all business accounts except the ones that have a category that m
 ### Liking based on the number of existing likes a post has
 ##### This is used to check the number of existing likes a post has and if it _either_ **exceed** the _maximum_ value set OR **does not pass** the _minimum_ value set then it will not like that post
 ```python
-session.set_delimit_liking(enabled=True, max=1005, min=20)
+session.set_delimit_liking(enabled=True, max_likes=1005, min_likes=20)
 ```
 Use `enabled=True` to **activate** and `enabled=False` to **deactivate** it, _any time_  
 `max` is the maximum number of likes to compare  
 `min` is the minimum number of likes to compare
 > You can use **both** _max_ & _min_ values OR **one of them** _as you desire_, just **put** the value of `None` _to the one_ you **don't want to** check for., _e.g._,
 ```python
-session.set_delimit_liking(enabled=True, max=242, min=None)
+session.set_delimit_liking(enabled=True, max_likes=242, min_likes=None)
 ```
 _at this configuration above, it **will not** check number of the existing likes against **minimum** value_
 
 * **_Example_**:  
 ```python
-session.set_delimit_liking(enabled=True, max=500, min=7)
+session.set_delimit_liking(enabled=True, max_likes=500, min_likes=7)
 ```
 _**Now**, if a post has more existing likes than maximum value of `500`, then it will not like that post,
 **similarly**, if that post has less existing likes than the minimum value of `7`, then it will not like that post..._
@@ -490,22 +484,22 @@ _**Now**, if a post has more existing likes than maximum value of `500`, then it
 ### Commenting based on the number of existing comments a post has
 ##### This is used to check the number of existing comments a post has and if it _either_ **exceed** the _maximum_ value set OR **does not pass** the _minimum_ value set then it will not comment on that post
 ```python
-session.set_delimit_commenting(enabled=True, max=32, min=0)
+session.set_delimit_commenting(enabled=True, max_comments=32, min_comments=0)
 ```
 Use `enabled=True` to **activate** and `enabled=False` to **deactivate** it, _any time_  
 `max` is the maximum number of comments to compare  
 `min` is the minimum number of comments to compare
 > You can use **both** _max_ & _min_ values OR **one of them** _as you desire_, just **leave** it out or **put** it to `None` _to the one_ you **don't want to** check for., _e.g._,
 ```python
-session.set_delimit_commenting(enabled=True, min=4)
+session.set_delimit_commenting(enabled=True, min_comments=4)
 # or
-session.set_delimit_commenting(enabled=True, max=None, min=4)
+session.set_delimit_commenting(enabled=True, max_comments=None, min_comments=4)
 ```
 _at this configuration above, it **will not** check number of the existing comments against **maximum** value_
 
 * **_Example_**:  
 ```python
-session.set_delimit_commenting(enabled=True, max=70, min=5)
+session.set_delimit_commenting(enabled=True, max_comments=70, min_comments=5)
 ```
 _**Now**, if a post has more comments than the maximum value of `70`, then it will not comment on that post,
 **similarly**, if that post has less comments than the minimum value of `5`, then it will not comment on that post..._
@@ -610,23 +604,23 @@ session.set_action_delays(enabled=True, like=3)
 ##### Wanna go smarter? - use `random_range(min, max)`  
 By just enabling `randomize` parameter, you can **enjoy** having random sleep delays at desired range, e.g.,
 ```python
-session.set_action_delays(enabled=True, like=5.2, randomize=True, random_range=(70, 140))
+session.set_action_delays(enabled=True, like=5.2, randomize=True, random_range_from=70 random_range_to=140)
 ```
 _There, it will have a **random sleep delay between** `3.64` (_`70`% of `5.2`_) and `7.28`(_`140`% of `5.2`_) seconds _each time_ **after putting a like**._  
-+ You can also put **only the max range** as- `random_range=(None, 200)`  
++ You can also put **only the max range** as- `random_range_from=None, random_range_to=200`  
 Then, the _min range will automatically be_ `100`%- the same time delay itself.  
 And the random sleep delays will be between `5.2` and `10.4` seconds.  
-+ If you put **only the min range** as- `random_range=(70, None)`  
++ If you put **only the min range** as- `random_range_from=70, random_range_to=None`  
 Then, the _max range will automatically be_ `100`%- the same time delay itself.  
 And the random sleep delays will be between `3.64` and `5.2` seconds.  
-+ But if you **put `None` to both** min & max ranges as- `random_range=(None, None)`  
++ But if you **put `None` to both** min & max ranges as- `random_range_from=None, random_range_to=None`  
 Then no randomization will occur and the sleep delay will always be `5.2` seconds.
-+ Heh! You **mistakenly put** min range instead of max range as- `random_range=(100, 70)`?  
++ Heh! You **mistakenly put** min range instead of max range as- `random_range_from=100, random_range_to=70`?  
 No worries. It will automatically take the smaller number as min and the bigger one as max.
 + Make sure to use the values **bigger than `0`** for the `random_rage` percentages.  
-E.g. `random_range=(-10, 140)` is an invalid range and no randomization will happen.
+E.g. `random_range_from=-10, random_range_to=140` is an invalid range and no randomization will happen.
 + You can provide **floating point numbers** as percentages, too!  
-`random_range=(70.7, 200.45)` will work greatly.
+`random_range_from=70.7, random_range_to=200.45` will work greatly.
 
 ###### Note: There is a _minimum_ **default** delay for each action and if you enter a smaller time of delay than the default value, then it will **pick the default value**. You can turn that behaviour off with `safety_match` parameter.
 ```python
@@ -892,23 +886,23 @@ _It will unfollow ~`10` accounts and sleep for ~`10` minutes and then will conti
 _when **track** is `"all"`, it will unfollow **all of the users** in a given list_;
 ```python
 custom_list = ["user_1", "user_2", "user_49", "user332", "user50921", "user_n"]
-session.unfollow_users(amount=84, customList=(True, custom_list, "all"), style="RANDOM", unfollow_after=55*60*60, sleep_delay=600)
+session.unfollow_users(amount=84, custom_list_enabled=True, custom_list=custom_list, custom_list_param="all", style="RANDOM", unfollow_after=55*60*60, sleep_delay=600)
 ```
 _if **track** is `"nonfollowers"`, it will unfollow all of the users in a given list **WHO are not following you back**_;
 ```python
 custom_list = ["user_1", "user_2", "user_49", "user332", "user50921", "user_n"]
-session.unfollow_users(amount=84, customList=(True, custom_list, "nonfollowers"), style="RANDOM", unfollow_after=55*60*60, sleep_delay=600)
+session.unfollow_users(amount=84, custom_list_enabled=True, custom_list=custom_list, custom_list_param="nonfollowers", style="RANDOM", unfollow_after=55*60*60, sleep_delay=600)
 ```
 * **PRO**: `customList` method can take any kind of _iterable container_, such as `list`, `tuple` or `set`.
 
 **2** - Unfollow the users **WHO** was _followed by `InstaPy`_ (_has `2` **track**s- `"all"` and `"nonfollowers"`_):  
 _again, if you like to unfollow **all of the users** followed by InstaPy, use the **track**- `"all"`_;
 ```python
-session.unfollow_users(amount=60, InstapyFollowed=(True, "all"), style="FIFO", unfollow_after=90*60*60, sleep_delay=501)
+session.unfollow_users(amount=60, instapy_followed_enabled=True, instapy_followed_param="all", style="FIFO", unfollow_after=90*60*60, sleep_delay=501)
 ```
 _but if you like you unfollow only the users followed by InstaPy **WHO do not follow you back**, use the **track**- `"nonfollowers"`_;
 ```python
-session.unfollow_users(amount=60, InstapyFollowed=(True, "nonfollowers"), style="FIFO", unfollow_after=90*60*60, sleep_delay=501)
+session.unfollow_users(amount=60, instapy_followed_enabled=True, instapy_followed_param="nonfollowers", style="FIFO", unfollow_after=90*60*60, sleep_delay=501)
 ```
 
 **3** - Unfollow the users **WHO** `do not` _follow you back_:
@@ -935,7 +929,7 @@ By using this, you can unfollow users **only after** following them certain amou
 _it will help to provide **seamless** unfollow activity without the notice of the target user_   
 To use it, just add `unfollow_after` parameter with the _desired time interval_, _e.g._,
 ```python
-session.unfollow_users(amount=94, InstapyFollowed=(True, "all"), style="RANDOM", unfollow_after=48*60*60, sleep_delay=600)
+session.unfollow_users(amount=94, instapy_followed_enabled=True, instapy_followed_param="all", style="RANDOM", unfollow_after=48*60*60, sleep_delay=600)
 ```
 _will unfollow users **only after following them** `48` hours (`2` days)_.  
 * Since `unfollow_after`s value is in _seconds_, you can simply give it `unfollow_after=3600` to unfollow after `3600` seconds.  
@@ -949,7 +943,7 @@ Sleep delay _sets_ the time it will sleep **after** every ~`10` unfollows (_defa
 > **NOTE**: You should know that, _in one RUN_, `unfollow_users` feature can take only one method from all `4` above.  
 That's why, **it is best** to **disable** other `3` methods _while using a one_:
 ```python
-session.unfollow_users(amount=200, customList=(True, ["user1", "user2", "user88", "user200"], "all"), InstapyFollowed=(False, "all"), nonFollowers=False, allFollowing=False, style="FIFO", unfollow_after=22*60*60, sleep_delay=600)
+session.unfollow_users(amount=200, custom_list_enabled=True, custom_list=["user1", "user2", "user88", "user200"], instapy_followed_enabled=False, nonFollowers=False, allFollowing=False, style="FIFO", unfollow_after=22*60*60, sleep_delay=600)
 ```
 _here the unfollow method- **customList** is used_  
 **OR** just keep the method you want to use and remove other 3 methods from the feature
@@ -1221,6 +1215,14 @@ session.remove_follow_requests(amount=200, sleep_delay=600)
  `engagement_mode`:
  Desided engagement mode for your posts. There are three levels of engagement modes 'light', 'normal' and 'heavy'(`normal` by default). Setting engagement_mode to 'light' encourages approximately 10% of pod members to comment on your post, similarly it's around 30% and 90% for 'normal' and 'heavy' modes respectively. Note: Liking, following or any other kind of engagements doesn't follow these modes.
 
+### Skip based on profile bio
+
+```python
+session.set_skip_users(skip_bio_keyword = ['free shipping',' Order', 'visa', 'paypal'])
+```
+
+This will skip all users that have one these keywords on their bio.
+
 ### Activate story watching while interacting
 
 Will add story watching while interacting with users
@@ -1253,7 +1255,7 @@ session.story_by_users(['user1', 'user2'])
 
 ---
 
-<br /> 
+<br />
 <br />
 
 ## Third Party Features
