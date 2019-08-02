@@ -50,6 +50,7 @@
   - [Interact by Comments](#interact-by-comments)
   - [Accept pending follow requests](#accept-pending-follow-requests)
   - [Remove outgoing follow requests](#remove-outgoing-follow-requests)
+  - [Skip based on Profile Bio](#skip-based-on-profile-bio)
   - [InstaPy Pods](#instapy-pods)
   - [InstaPy Stories](#instapy-stories)
   - [Create Post](#create-post)
@@ -1224,6 +1225,14 @@ session.remove_follow_requests(amount=200, sleep_delay=600)
 
  `engagement_mode`:
  Desided engagement mode for your posts. There are three levels of engagement modes 'light', 'normal' and 'heavy'(`normal` by default). Setting engagement_mode to 'light' encourages approximately 10% of pod members to comment on your post, similarly it's around 30% and 90% for 'normal' and 'heavy' modes respectively. Note: Liking, following or any other kind of engagements doesn't follow these modes.
+
+### Skip based on profile bio
+
+```python
+session.set_skip_users(skip_bio_keyword = ['free shipping',' Order', 'visa', 'paypal'])
+```
+
+This will skip all users that have one these keywords on their bio.
 
 ### Activate story watching while interacting
 
