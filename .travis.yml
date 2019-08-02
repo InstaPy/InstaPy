@@ -31,10 +31,6 @@ jobs:
       python: "3.4"
 
     - stage: test
-      env: TOXENV=py35
-      python: "3.5"
-
-    - stage: test
       env: TOXENV=py36
       python: "3.6"
 
