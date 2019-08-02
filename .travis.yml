@@ -23,16 +23,16 @@ jobs:
   fast_finish: true
   include:
     - stage: static analysis
-      env: TOXENV=flake8-37
+      env: TOXENV=flake8
       python: "3.7"
 
     - stage: test
       env: TOXENV=py34
       python: "3.4"
 
-    # - stage: test   # <-- this jobs fails to install googleapis-common-protos
-    #   env: TOXENV=py35
-    #   python: "3.5.2"
+     - stage: test
+       env: TOXENV=py35
+       python: "3.5"
 
     - stage: test
       env: TOXENV=py36

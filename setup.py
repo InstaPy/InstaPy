@@ -83,10 +83,7 @@ setup(
                  ],
     install_requires=dependencies,
     extras_require={
-        "test": ["pytest >= 3.0.0",
-                 "tox",
-                 "flake8",
-                 "black",
+        "test": ["tox",
                  "virtualenv",
                  "tox-venv"]
     },
