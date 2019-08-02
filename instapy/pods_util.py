@@ -3,10 +3,24 @@ import sqlite3
 from .settings import Settings
 from .database_engine import get_database
 
+def get_server_endpoint(topic):
+    if topic=='fashion':
+        return Settings.pods_fashion_server_endpoint
+    elif topic=='food':
+        return Settings.pods_food_server_endpoint
+    elif topic=='travel':
+        return Settings.pods_travel_server_endpoint
+    elif topic=='sports':
+        return Settings.pods_sports_server_endpoint
+    elif topic=='entertainment':
+        return Settings.pods_entertainment_server_endpoint
+    else:
+        return Settings.pods_server_endpoint
+
 def get_recent_posts_from_pods(topic, logger):
     """ fetches all recent posts shared with pods """
     params = {'topic' : topic}
-    r = requests.get(Settings.pods_server_endpoint + '/getRecentPostsV1', params=params)
+    r = requests.get(get_server_endpoint(topic) + '/getRecentPostsV1', params=params)
     try:
         logger.info('Downloaded postids from Pod {}:'.format(topic))
         if r.status_code == 200:
@@ -39,7 +53,7 @@ def group_posts(posts, logger):
 def share_my_post_with_pods(postid, topic, engagement_mode, logger):
     """ share_my_post_with_pod """
     params = { 'postid' : postid, 'topic' : topic, 'mode' : engagement_mode }
-    r = requests.get(Settings.pods_server_endpoint + '/publishMyLatestPost', params=params)
+    r = requests.get(get_server_endpoint(topic) + '/publishMyLatestPost', params=params)
     try:
         logger.info("Publishing to Pods {}".format(postid))
         if r.status_code == 200:

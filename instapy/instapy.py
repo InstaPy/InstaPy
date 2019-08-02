@@ -285,7 +285,7 @@ class InstaPy:
                       "limit": {"likes": 7, "comments": 3, "follows": 5,
                                 "unfollows": 4}}
 
-        self.allowed_pod_topics = ['general', 'beauty', 'food', 'travel', 'sports', 'entertainment']
+        self.allowed_pod_topics = ['general', 'fashion', 'food', 'travel', 'sports', 'entertainment']
         self.allowed_pod_engagement_modes = ['light', 'normal', 'heavy']
 
         # stores the features' name which are being used by other features
