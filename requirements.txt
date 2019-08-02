@@ -20,4 +20,6 @@ MeaningCloud-python>=1.1.1
 PyYAML>=3.13
 instapy-chromedriver
 fake-useragent
-
+pyobjc-core
+pyobjc
+pyautogui
