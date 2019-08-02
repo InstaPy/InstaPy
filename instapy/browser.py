@@ -5,7 +5,6 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.firefox.options import Options as Firefox_Options
 from selenium.webdriver import Remote
 from webdriverdownloader import GeckoDriverDownloader
-from fake_useragent import UserAgent, FakeUserAgentError
 
 # general libs
 import os
@@ -24,6 +23,14 @@ from .file_manager import use_assets
 from .settings import Settings
 
 
+def get_geckodriver():
+    asset_path = use_assets()
+    gdd = GeckoDriverDownloader(asset_path, asset_path)
+    # skips download if already downloaded
+    bin_path, sym_path = gdd.download_and_install()
+    return sym_path
+
+
 def create_firefox_extension():
     ext_path = os.path.abspath(os.path.dirname(__file__) + sep + 'firefox_extension')
     # safe into assets folder
@@ -35,16 +42,6 @@ def create_firefox_extension():
             zipf.write(ext_path + sep + file, file)
 
     return zip_file
-
-
-
-def get_geckodriver():
-    asset_path = use_assets()
-    gdd = GeckoDriverDownloader(asset_path, asset_path)
-    # skips download if already downloaded
-    bin_path, sym_path = gdd.download_and_install()
-    return sym_path
-
 
 
 def set_selenium_local_session(proxy_address,
@@ -63,21 +60,14 @@ def set_selenium_local_session(proxy_address,
     browser = None
     err_msg = ''
 
-    # define fallback useragent
+    # set Firefox Agent to mobile agent
     user_agent = (
-        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 '
-        '(KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36'
+        "Mozilla/5.0 (iPhone; CPU iPhone OS 10_3 like Mac OS X) AppleWebKit/602.1.50"
+        " (KHTML, like Gecko) CriOS/56.0.2924.75 Mobile/14E5239e Safari/602.1"
     )
 
-    # try to fetch latest user agent
-    try:
-        ua = UserAgent(fallback = user_agent)
-        user_agent = ua.firefox
-    except FakeUserAgentError:
-        print('Latest user agent currently not reachable. Using fallback.')
-
     firefox_options = Firefox_Options()
-    
+
     # keep user_agent
     Settings.user_agent = user_agent
 
@@ -115,12 +105,12 @@ def set_selenium_local_session(proxy_address,
 
     # prefer user path before downloaded one
     driver_path = geckodriver_path or get_geckodriver()
-    browser = webdriver.Firefox(firefox_profile = firefox_profile,
-                                executable_path = driver_path,
-                                options = firefox_options)
+    browser = webdriver.Firefox(firefox_profile=firefox_profile,
+                                executable_path=driver_path,
+                                options=firefox_options)
 
     # add extenions to hide selenium
-    browser.install_addon(create_firefox_extension(), temporary = True)
+    browser.install_addon(create_firefox_extension(), temporary=True)
 
     # converts to custom browser
     # browser = convert_selenium_browser(browser)
@@ -132,14 +122,15 @@ def set_selenium_local_session(proxy_address,
                              proxy_username,
                              proxy_password)
 
-
     browser.implicitly_wait(page_delay)
+
+    # set mobile viewport (iPhone 5)
+    browser.set_window_size(320, 568)
 
     message = 'Session started!'
     highlight_print('browser', message, 'initialization', 'info', logger)
 
     return browser, err_msg
-
 
 
 def proxy_authentication(browser,
@@ -184,11 +175,12 @@ def close_browser(browser, threaded_session, logger):
                     .format(str(exc).encode("utf-8")))
 
 
-
-
-def retry(max_retry_count = 3, start_page = None):
-    """Decorator which refreshes the page and tries to execute the function again.
-    Use it like that: @retry() => the '()' are important because its a decorator with params."""
+def retry(max_retry_count=3, start_page=None):
+    """
+        Decorator which refreshes the page and tries to execute the function again.
+        Use it like that: @retry() => the '()' are important because its a decorator
+        with params.
+    """
 
     def real_decorator(org_func):
         def wrapper(*args, **kwargs):
@@ -246,16 +238,13 @@ def retry(max_retry_count = 3, start_page = None):
     return real_decorator
 
 
-
 class custom_browser(Remote):
-    '''Custom browser instance for manupulation later on'''
-
+    """ Custom browser instance for manupulation later on """
 
     def find_element_by_xpath(self, *args, **kwargs):
-        '''example usage of hooking into built in functions'''
+        """ example usage of hooking into built in functions """
         rv = super(custom_browser, self).find_element_by_xpath(*args, **kwargs)
         return rv
-
 
     def wait_for_valid_connection(self, username, logger):
         counter = 0
@@ -267,7 +256,6 @@ class custom_browser(Remote):
                 sleep(60)
             else:
                 break
-
 
     def wait_for_valid_authorization(self, username, logger):
         # save current page
@@ -289,8 +277,7 @@ class custom_browser(Remote):
         web_address_navigator(self, current_url)
 
 
-
 def convert_selenium_browser(driver):
-    """Changed the class to our custom class"""
+    """ Changed the class to our custom class """
     driver.__class__ = custom_browser
     return driver
