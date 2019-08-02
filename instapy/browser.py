@@ -23,6 +23,14 @@ from .file_manager import use_assets
 from .settings import Settings
 
 
+def get_geckodriver():
+    asset_path = use_assets()
+    gdd = GeckoDriverDownloader(asset_path, asset_path)
+    # skips download if already downloaded
+    bin_path, sym_path = gdd.download_and_install()
+    return sym_path
+
+
 def create_firefox_extension():
     ext_path = os.path.abspath(os.path.dirname(__file__) + sep + 'firefox_extension')
     # safe into assets folder
@@ -35,6 +43,7 @@ def create_firefox_extension():
 
     return zip_file
 
+
 def set_selenium_local_session(proxy_address,
                                proxy_port,
                                proxy_username,
@@ -43,6 +52,7 @@ def set_selenium_local_session(proxy_address,
                                browser_profile_path,
                                disable_image_load,
                                page_delay,
+                               geckodriver_path,
                                logger):
     """Starts local session for a selenium server.
     Default case scenario."""
@@ -93,7 +103,11 @@ def set_selenium_local_session(proxy_address,
     # mute audio while watching stories
     firefox_profile.set_preference('media.volume_scale', '0.0')
 
+    # prefer user path before downloaded one
+    driver_path = geckodriver_path or get_geckodriver()
+    print(driver_path)
     browser = webdriver.Firefox(firefox_profile=firefox_profile,
+                                executable_path=driver_path,
                                 options=firefox_options)
 
     # add extenions to hide selenium
