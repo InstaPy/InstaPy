@@ -76,7 +76,7 @@ def get_story_data(browser, elem, action_type, logger, simulate = False):
 
     data = session.get(graphql_query_url, headers=headers)
     response = data.json()
-    update_activity()
+    update_activity(browser, state=None)
 
     reels_cnt = 0
     if response['status'] == 'ok':

@@ -333,7 +333,7 @@ def likers_from_photo(browser, amount=20):
         click_element(browser, element_to_click)
         print("opening likes")
         # update server calls
-        # update_activity()
+        update_activity(browser, state=None)
 
         sleep(1)
 
@@ -345,7 +345,7 @@ def likers_from_photo(browser, amount=20):
         previous_len = -1
         browser.execute_script(
             "arguments[0].scrollTop = arguments[0].scrollHeight", dialog)
-        update_activity()
+        update_activity(browser, state=None)
         sleep(1)
 
         start_time = time.time()
