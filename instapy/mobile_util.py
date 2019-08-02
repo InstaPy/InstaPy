@@ -8,7 +8,7 @@ from time import sleep
 # from instapy.util import web_address_navigator
 from instapy.login_util import dismiss_notification_offer
 from .xpath import read_xpath
-import pyautogui # TODO: ppl will hate me for this
+import pyautogui
 
 
 def create_ig_post(browser, logger, post_description, image_file_path):
@@ -16,7 +16,6 @@ def create_ig_post(browser, logger, post_description, image_file_path):
 
     # close modal screen
     dismiss_notification_offer(browser, logger)
-    import ipdb;ipdb.set_trace()
     try:
         logger.info('Creating new post...')
         # click new post button
@@ -41,5 +40,5 @@ def create_ig_post(browser, logger, post_description, image_file_path):
             read_xpath(create_ig_post.__name__, "final_post_creation_step")).click()
         sleep(3)
         return True
-    except:
+    except Exception:
         return False
