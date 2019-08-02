@@ -1,17 +1,16 @@
 # selenium
 from selenium import webdriver
 from selenium.common.exceptions import WebDriverException
-from selenium.webdriver import DesiredCapabilities
-from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.common.proxy import Proxy, ProxyType
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.firefox.options import Options as Firefox_Options
 from selenium.webdriver import Remote
-from fake_useragent import UserAgent, FakeUserAgentError
+from webdriverdownloader import GeckoDriverDownloader
 
 # general libs
-import re
+import os
+import zipfile
 from time import sleep
+from os.path import sep
 
 # local project
 from .util import interruption_handler
@@ -20,21 +19,40 @@ from .util import emergency_exit
 from .util import get_current_url
 from .util import check_authorization
 from .util import web_address_navigator
+from .file_manager import use_assets
 from .settings import Settings
-from .file_manager import get_chromedriver_location
+
+
+def get_geckodriver():
+    asset_path = use_assets()
+    gdd = GeckoDriverDownloader(asset_path, asset_path)
+    # skips download if already downloaded
+    bin_path, sym_path = gdd.download_and_install()
+    return sym_path
+
+
+def create_firefox_extension():
+    ext_path = os.path.abspath(os.path.dirname(__file__) + sep + 'firefox_extension')
+    # safe into assets folder
+    zip_file = use_assets() + sep + 'extension.xpi'
+
+    files = [ 'manifest.json', 'content.js', 'arrive.js' ]
+    with zipfile.ZipFile(zip_file, 'w', zipfile.ZIP_DEFLATED, False) as zipf:
+        for file in files:
+            zipf.write(ext_path + sep + file, file)
+
+    return zip_file
 
 
 def set_selenium_local_session(proxy_address,
                                proxy_port,
                                proxy_username,
                                proxy_password,
-                               proxy_chrome_extension,
                                headless_browser,
-                               use_firefox,
                                browser_profile_path,
                                disable_image_load,
                                page_delay,
-                               browser_binary_path,
+                               geckodriver_path,
                                logger):
     """Starts local session for a selenium server.
     Default case scenario."""
@@ -42,182 +60,77 @@ def set_selenium_local_session(proxy_address,
     browser = None
     err_msg = ''
 
-    # define fallback useragent
+    # set Firefox Agent to mobile agent
     user_agent = (
-        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 '
-        '(KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36'
+        "Mozilla/5.0 (iPhone; CPU iPhone OS 10_3 like Mac OS X) AppleWebKit/602.1.50"
+        " (KHTML, like Gecko) CriOS/56.0.2924.75 Mobile/14E5239e Safari/602.1"
     )
-
-    # try to fetch latest user agent
-    try:
-        ua = UserAgent(fallback = user_agent)
-        user_agent = ua.firefox if use_firefox else ua.chrome
-    except FakeUserAgentError:
-        print('Latest user agent currently not reachable. Using fallback.')
 
     # keep user_agent
     Settings.user_agent = user_agent
-    if use_firefox:
-        firefox_options = Firefox_Options()
 
-        if headless_browser:
-            firefox_options.add_argument('-headless')
+    firefox_options = Firefox_Options()
 
-        if browser_profile_path is not None:
-            firefox_profile = webdriver.FirefoxProfile(
-                browser_profile_path)
-        else:
-            firefox_profile = webdriver.FirefoxProfile()
+    if headless_browser:
+        firefox_options.add_argument('-headless')
 
-        # set English language
-        firefox_profile.set_preference('intl.accept_languages', 'en')
-        firefox_profile.set_preference('general.useragent.override', user_agent)
-
-        if disable_image_load:
-            # permissions.default.image = 2: Disable images load,
-            # this setting can improve pageload & save bandwidth
-            firefox_profile.set_preference('permissions.default.image', 2)
-
-        if proxy_address and proxy_port:
-            firefox_profile.set_preference('network.proxy.type', 1)
-            firefox_profile.set_preference('network.proxy.http',
-                                           proxy_address)
-            firefox_profile.set_preference('network.proxy.http_port',
-                                           proxy_port)
-            firefox_profile.set_preference('network.proxy.ssl',
-                                           proxy_address)
-            firefox_profile.set_preference('network.proxy.ssl_port',
-                                           proxy_port)
-
-        # mute audio while watching stories
-        firefox_profile.set_preference('media.volume_scale', '0.0')
-
-        browser = webdriver.Firefox(firefox_profile=firefox_profile,
-                                    options=firefox_options)
-
-        # converts to custom browser
-        # browser = convert_selenium_browser(browser)
-
-        # authenticate with popup alert window
-        if (proxy_username and proxy_password):
-            proxy_authentication(browser,
-                                 logger,
-                                 proxy_username,
-                                 proxy_password)
-
+    if browser_profile_path is not None:
+        firefox_profile = webdriver.FirefoxProfile(
+            browser_profile_path)
     else:
-        chromedriver_location = get_chromedriver_location(browser_binary_path)
-        chrome_options = Options()
-        chrome_options.add_argument('--mute-audio')
-        chrome_options.add_argument('--dns-prefetch-disable')
-        chrome_options.add_argument('--lang=en-US')
-        chrome_options.add_argument('--disable-setuid-sandbox')
-        chrome_options.add_argument('--no-sandbox')
-        chrome_options.add_argument('--user-agent={user_agent}'
-                                    .format(user_agent = user_agent))
+        firefox_profile = webdriver.FirefoxProfile()
 
-        # this option implements Chrome Headless, a new (late 2017)
-        # GUI-less browser. chromedriver 2.9 and above required
-        if headless_browser:
-            chrome_options.add_argument('--headless')
+    # set English language
+    firefox_profile.set_preference('intl.accept_languages', 'en')
+    firefox_profile.set_preference('general.useragent.override', user_agent)
 
-            if disable_image_load:
-                chrome_options.add_argument(
-                    '--blink-settings=imagesEnabled=false')
+    if disable_image_load:
+        # permissions.default.image = 2: Disable images load,
+        # this setting can improve pageload & save bandwidth
+        firefox_profile.set_preference('permissions.default.image', 2)
 
-        capabilities = DesiredCapabilities.CHROME
+    if proxy_address and proxy_port:
+        firefox_profile.set_preference('network.proxy.type', 1)
+        firefox_profile.set_preference('network.proxy.http',
+                                       proxy_address)
+        firefox_profile.set_preference('network.proxy.http_port',
+                                       proxy_port)
+        firefox_profile.set_preference('network.proxy.ssl',
+                                       proxy_address)
+        firefox_profile.set_preference('network.proxy.ssl_port',
+                                       proxy_port)
 
-        # Proxy for chrome
-        if proxy_address and proxy_port:
-            prox = Proxy()
-            proxy = ":".join([proxy_address, str(proxy_port)])
-            if headless_browser:
-                chrome_options.add_argument(
-                    '--proxy-server=http://{}'.format(proxy))
-            else:
-                prox.proxy_type = ProxyType.MANUAL
-                prox.http_proxy = proxy
-                prox.socks_proxy = proxy
-                prox.ssl_proxy = proxy
-                prox.add_to_capabilities(capabilities)
+    # mute audio while watching stories
+    firefox_profile.set_preference('media.volume_scale', '0.0')
 
-        # add proxy extension
-        if proxy_chrome_extension and not headless_browser:
-            chrome_options.add_extension(proxy_chrome_extension)
+    # prefer user path before downloaded one
+    driver_path = geckodriver_path or get_geckodriver()
+    browser = webdriver.Firefox(firefox_profile=firefox_profile,
+                                executable_path=driver_path,
+                                options=firefox_options)
 
-        # using saved profile for chrome
-        if browser_profile_path is not None:
-            chrome_options.add_argument(
-                'user-data-dir={}'.format(browser_profile_path))
+    # add extenions to hide selenium
+    browser.install_addon(create_firefox_extension(), temporary=True)
 
-        chrome_prefs = {
-            'intl.accept_languages': 'en-US',
-        }
+    # converts to custom browser
+    # browser = convert_selenium_browser(browser)
 
-        if disable_image_load:
-            chrome_prefs['profile.managed_default_content_settings.images'] = 2
-
-        chrome_options.add_experimental_option('prefs', chrome_prefs)
-        try:
-            browser = webdriver.Chrome(chromedriver_location,
-                                       desired_capabilities=capabilities,
-                                       chrome_options=chrome_options)
-
-            # gets custom instance
-            # browser = convert_selenium_browser(browser)
-
-        except WebDriverException as exc:
-            logger.exception(exc)
-            err_msg = 'ensure chromedriver is installed at {}'.format(
-                Settings.chromedriver_location)
-            return browser, err_msg
-
-        # prevent: Message: unknown error: call function result missing 'value'
-        matches = re.match(r'^(\d+\.\d+)',
-                           browser.capabilities['chrome'][
-                               'chromedriverVersion'])
-        if float(matches.groups()[0]) < Settings.chromedriver_min_version:
-            err_msg = 'chromedriver {} is not supported, expects {}+'.format(
-                float(matches.groups()[0]), Settings.chromedriver_min_version)
-            return browser, err_msg
+    # authenticate with popup alert window
+    if (proxy_username and proxy_password):
+        proxy_authentication(browser,
+                             logger,
+                             proxy_username,
+                             proxy_password)
 
     browser.implicitly_wait(page_delay)
 
-    message = "Session started!"
-    highlight_print('browser', message, "initialization", "info", logger)
-    print('')
+    # set mobile viewport (iPhone 5)
+    browser.set_window_size(320, 568)
+
+    message = 'Session started!'
+    highlight_print('browser', message, 'initialization', 'info', logger)
 
     return browser, err_msg
-
-
-def set_selenium_remote_session(use_firefox,
-                                logger,
-                                selenium_url='',
-                                selenium_driver=None):
-    """
-    Starts remote session for a selenium server.
-    Creates a new selenium driver instance for remote session or uses provided
-    one. Useful for docker setup.
-
-    :param selenium_url: string
-    :param selenium_driver: selenium WebDriver
-    :return: self
-    """
-
-    if selenium_driver:
-        browser = selenium_driver # convert_selenium_browser(selenium_driver)
-    else:
-        desired_caps = DesiredCapabilities.FIREFOX if use_firefox else DesiredCapabilities.CHROME
-        browser = get_remote_browser(
-            command_executor = selenium_url,
-            desired_capabilities=desired_caps
-        )
-
-    message = "Session started!"
-    highlight_print('browser', message, "initialization", "info", logger)
-    print('')
-
-    return browser
 
 
 def proxy_authentication(browser,
@@ -239,9 +152,7 @@ def proxy_authentication(browser,
         logger.warn('Unable to proxy authenticate')
 
 
-def close_browser(browser,
-                  threaded_session,
-                  logger):
+def close_browser(browser, threaded_session, logger):
     with interruption_handler(threaded=threaded_session):
         # delete cookies
         try:
@@ -264,11 +175,12 @@ def close_browser(browser,
                     .format(str(exc).encode("utf-8")))
 
 
-
-
-def retry(max_retry_count = 3, start_page = None):
-    """Decorator which refreshes the page and tries to execute the function again.
-    Use it like that: @retry() => the '()' are important because its a decorator with params."""
+def retry(max_retry_count=3, start_page=None):
+    """
+        Decorator which refreshes the page and tries to execute the function again.
+        Use it like that: @retry() => the '()' are important because its a decorator
+        with params.
+    """
 
     def real_decorator(org_func):
         def wrapper(*args, **kwargs):
@@ -326,16 +238,13 @@ def retry(max_retry_count = 3, start_page = None):
     return real_decorator
 
 
-
 class custom_browser(Remote):
-    '''Custom browser instance for manupulation later on'''
-
+    """ Custom browser instance for manupulation later on """
 
     def find_element_by_xpath(self, *args, **kwargs):
-        '''example usage of hooking into built in functions'''
+        """ example usage of hooking into built in functions """
         rv = super(custom_browser, self).find_element_by_xpath(*args, **kwargs)
         return rv
-
 
     def wait_for_valid_connection(self, username, logger):
         counter = 0
@@ -347,7 +256,6 @@ class custom_browser(Remote):
                 sleep(60)
             else:
                 break
-
 
     def wait_for_valid_authorization(self, username, logger):
         # save current page
@@ -369,17 +277,7 @@ class custom_browser(Remote):
         web_address_navigator(self, current_url)
 
 
-
-def get_remote_browser(command_executor, desired_capabilities):
-    browser = webdriver.Remote(
-        command_executor=command_executor,
-        desired_capabilities=desired_capabilities)
-
-    return browser # convert_selenium_browser(browser)
-
-
-
 def convert_selenium_browser(driver):
-    """Changed the class to our custom class"""
+    """ Changed the class to our custom class """
     driver.__class__ = custom_browser
     return driver

@@ -1,10 +1,8 @@
 """ A file management utility """
 
 import os
-import pkg_resources
 from os.path import expanduser
 from os.path import exists as path_exists
-from os.path import isfile as file_exists
 from os.path import sep as native_slash
 from platform import python_version
 
@@ -12,8 +10,23 @@ from .util import highlight_print
 from .settings import Settings
 from .settings import localize_path
 from .settings import WORKSPACE
-from .settings import OS_ENV
 from .exceptions import InstaPyError
+
+
+def use_workspace():
+    """Get workspace folder"""
+    workspace_path = slashen(WORKSPACE["path"], "native")
+    validate_path(workspace_path)
+    return workspace_path
+
+
+
+def use_assets():
+    """Get asset folder"""
+    assets_path = "{}{}assets".format(use_workspace(), native_slash)
+    validate_path(assets_path)
+    return assets_path
+
 
 
 def get_workspace():
@@ -108,14 +121,6 @@ def update_locations():
     if not Settings.database_location:
         Settings.database_location = localize_path("db", "instapy.db")
 
-    # update chromedriver location
-    if not Settings.chromedriver_location:
-        Settings.chromedriver_location = localize_path(
-            "assets", Settings.specific_chromedriver)
-        if (not Settings.chromedriver_location
-                or not path_exists(Settings.chromedriver_location)):
-            Settings.chromedriver_location = localize_path("assets",
-                                                            "chromedriver")
 
 
 def get_home_path():
@@ -156,6 +161,7 @@ def remove_last_slash(path):
         path = path[:-1]
 
     return path
+
 
 
 def verify_workspace_name(path):
@@ -205,40 +211,6 @@ def validate_path(path):
                                    path,
                                    str(exc).encode("utf-8")))
             raise InstaPyError(msg)
-
-
-def get_chromedriver_location(browser_binary_path=None):
-    """ Solve chromedriver access issues """
-    CD = Settings.chromedriver_location
-
-    if OS_ENV == "windows":
-        if not CD.endswith(".exe"):
-            CD += ".exe"
-
-    if browser_binary_path:
-        if not file_exists(CD):
-            CD = browser_binary_path
-
-    if not file_exists(CD):
-        workspace_path = slashen(WORKSPACE["path"], "native")
-        assets_path = "{}{}assets".format(workspace_path, native_slash)
-        validate_path(assets_path)
-
-        # only import from this package when necessary
-        from instapy_chromedriver import binary_path
-
-        CD = binary_path
-        chrome_version = pkg_resources.get_distribution("instapy_chromedriver").version
-        message = "Using built in instapy-chromedriver executable (version {})".format(chrome_version)
-        highlight_print(Settings.profile["name"],
-                        message,
-                        "workspace",
-                        "info",
-                        Settings.logger)
-
-    # save updated path into settings
-    Settings.chromedriver_location = CD
-    return CD
 
 
 def get_logfolder(username, multi_logs):

@@ -1,5 +1,8 @@
 include README.md
 include LICENSE
 include requirements.txt
+include instapy/firefox_extension/arrive.js
+include instapy/firefox_extension/manifest.json
+include instapy/firefox_extension/content.js
 
 recursive-include instapy/icons *
