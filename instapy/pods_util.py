@@ -4,15 +4,15 @@ from .settings import Settings
 from .database_engine import get_database
 
 def get_server_endpoint(topic):
-    if topic=='fashion':
+    if topic == 'fashion':
         return Settings.pods_fashion_server_endpoint
-    elif topic=='food':
+    elif topic == 'food':
         return Settings.pods_food_server_endpoint
-    elif topic=='travel':
+    elif topic == 'travel':
         return Settings.pods_travel_server_endpoint
-    elif topic=='sports':
+    elif topic == 'sports':
         return Settings.pods_sports_server_endpoint
-    elif topic=='entertainment':
+    elif topic == 'entertainment':
         return Settings.pods_entertainment_server_endpoint
     else:
         return Settings.pods_server_endpoint
