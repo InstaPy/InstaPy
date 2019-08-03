@@ -66,6 +66,11 @@ class Settings:
 
     # This is where currently the pods server is hosted
     pods_server_endpoint = 'https://us-central1-instapy-pods.cloudfunctions.net'
+    pods_fashion_server_endpoint = 'https://us-central1-instapy-pods-fashion.cloudfunctions.net'
+    pods_food_server_endpoint = 'https://us-central1-instapy-pods-food.cloudfunctions.net'
+    pods_travel_server_endpoint = 'https://us-central1-instapy-pods-travel.cloudfunctions.net'
+    pods_sports_server_endpoint = 'https://us-central1-instapy-pods-sports.cloudfunctions.net'
+    pods_entertainment_server_endpoint = 'https://us-central1-instapy-pods-entertainment.cloudfunctions.net'
 
 
 
