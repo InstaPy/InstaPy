@@ -1790,7 +1790,7 @@ cinderella_followers = session.grab_followers(username="Cinderella", amount="ful
 popeye_cinderella_followers = [follower for follower in popeye_followers if follower in cinderella_followers]
 ```
 
-#### `PRO`s:
+#### PROs
 You can **use** this tool to take a **backup** of _your_ **or** _any other user's_ **current** followers.
 
 
@@ -1852,7 +1852,7 @@ gargamel_following = session.grab_following(username="Gargamel", amount="full", 
 lazySmurf_gargamel_following = [following for following in lazySmurf_following if following in gargamel_following]
 ```
 
-#### `PRO`s:
+#### PROs
 You can **use** this tool to take a **backup** of _your_ **or** _any other user's_ **current** following.
 
 
