@@ -20,13 +20,11 @@ def use_workspace():
     return workspace_path
 
 
-
 def use_assets():
     """Get asset folder"""
     assets_path = "{}{}assets".format(use_workspace(), native_slash)
     validate_path(assets_path)
     return assets_path
-
 
 
 def get_workspace():
@@ -39,12 +37,10 @@ def get_workspace():
         home_dir = get_home_path()
         workspace = "{}/{}".format(home_dir, WORKSPACE["name"])
 
-    message = "Workspace in use: \"{}\"".format(workspace)
-    highlight_print(Settings.profile["name"],
-                    message,
-                    "workspace",
-                    "info",
-                    Settings.logger)
+    message = 'Workspace in use: "{}"'.format(workspace)
+    highlight_print(
+        Settings.profile["name"], message, "workspace", "info", Settings.logger
+    )
     update_workspace(workspace)
     update_locations()
     return WORKSPACE
@@ -60,37 +56,39 @@ def set_workspace(path=None):
             if workspace_is_new:
                 update_workspace(path)
                 update_locations()
-                message = "Custom workspace set: \"{}\" :]".format(path)
-                highlight_print(Settings.profile["name"],
-                                message,
-                                "workspace",
-                                "info",
-                                Settings.logger)
+                message = 'Custom workspace set: "{}" :]'.format(path)
+                highlight_print(
+                    Settings.profile["name"],
+                    message,
+                    "workspace",
+                    "info",
+                    Settings.logger,
+                )
 
             else:
                 message = "Given workspace path is identical as current :/"
-                highlight_print(Settings.profile["name"],
-                                message,
-                                "workspace",
-                                "info",
-                                Settings.logger)
+                highlight_print(
+                    Settings.profile["name"],
+                    message,
+                    "workspace",
+                    "info",
+                    Settings.logger,
+                )
 
         else:
             message = "No any custom workspace provided.\t~using existing.."
-            highlight_print(Settings.profile["name"],
-                            message,
-                            "workspace",
-                            "info",
-                            Settings.logger)
+            highlight_print(
+                Settings.profile["name"], message, "workspace", "info", Settings.logger
+            )
 
     else:
-        message = ("Sorry! You can't change workspace after"
-                   " InstaPy has started :>\t~using existing..")
-        highlight_print(Settings.profile["name"],
-                        message,
-                        "workspace",
-                        "info",
-                        Settings.logger)
+        message = (
+            "Sorry! You can't change workspace after"
+            " InstaPy has started :>\t~using existing.."
+        )
+        highlight_print(
+            Settings.profile["name"], message, "workspace", "info", Settings.logger
+        )
 
 
 def update_workspace(latest_path):
@@ -122,13 +120,13 @@ def update_locations():
         Settings.database_location = localize_path("db", "instapy.db")
 
 
-
 def get_home_path():
     """ Get user's home directory """
 
     if python_version() >= "3.5":
         from pathlib import Path
-        home_dir = str(Path.home())   # this method returns slash as dir sep*
+
+        home_dir = str(Path.home())  # this method returns slash as dir sep*
     else:
         home_dir = expanduser("~")
 
@@ -142,14 +140,14 @@ def slashen(path, direction="forward"):
     """ Replace backslashes in paths with forward slashes """
 
     if direction == "forward":
-        path = path.replace('\\', '/')
+        path = path.replace("\\", "/")
 
     elif direction == "backwards":
-        path = path.replace('/', '\\')
+        path = path.replace("/", "\\")
 
     elif direction == "native":
-        path = path.replace('/', str(native_slash))
-        path = path.replace('\\', str(native_slash))
+        path = path.replace("/", str(native_slash))
+        path = path.replace("\\", str(native_slash))
 
     return path
 
@@ -157,11 +155,10 @@ def slashen(path, direction="forward"):
 def remove_last_slash(path):
     """ Remove the last slash in the given path [if any] """
 
-    if path.endswith('/'):
+    if path.endswith("/"):
         path = path[:-1]
 
     return path
-
 
 
 def verify_workspace_name(path):
@@ -169,15 +166,16 @@ def verify_workspace_name(path):
 
     path = slashen(path)
     path = remove_last_slash(path)
-    custom_workspace_name = path.split('/')[-1]
+    custom_workspace_name = path.split("/")[-1]
     default_workspace_name = WORKSPACE["name"]
 
     if default_workspace_name not in custom_workspace_name:
         if default_workspace_name.lower() not in custom_workspace_name.lower():
             path += "/{}".format(default_workspace_name)
         else:
-            nicer_name = (custom_workspace_name.lower().replace(
-                default_workspace_name.lower(), default_workspace_name))
+            nicer_name = custom_workspace_name.lower().replace(
+                default_workspace_name.lower(), default_workspace_name
+            )
             path = path.replace(custom_workspace_name, nicer_name)
 
     return path
@@ -186,15 +184,15 @@ def verify_workspace_name(path):
 def differ_paths(old, new):
     """ Compare old and new paths """
 
-    if old and old.endswith(('\\', '/')):
+    if old and old.endswith(("\\", "/")):
         old = old[:-1]
-        old = old.replace('\\', '/')
+        old = old.replace("\\", "/")
 
-    if new and new.endswith(('\\', '/')):
+    if new and new.endswith(("\\", "/")):
         new = new[:-1]
-        new = new.replace('\\', '/')
+        new = new.replace("\\", "/")
 
-    return (new != old)
+    return new != old
 
 
 def validate_path(path):
@@ -206,21 +204,17 @@ def validate_path(path):
 
         except OSError as exc:
             exc_name = type(exc).__name__
-            msg = ("{} occured while making \"{}\" path!"
-                   "\n\t{}".format(exc_name,
-                                   path,
-                                   str(exc).encode("utf-8")))
+            msg = '{} occured while making "{}" path!' "\n\t{}".format(
+                exc_name, path, str(exc).encode("utf-8")
+            )
             raise InstaPyError(msg)
 
 
 def get_logfolder(username, multi_logs):
     if multi_logs:
-        logfolder = "{0}{1}{2}{1}".format(Settings.log_location,
-                                          native_slash,
-                                          username)
+        logfolder = "{0}{1}{2}{1}".format(Settings.log_location, native_slash, username)
     else:
-        logfolder = (Settings.log_location + native_slash)
+        logfolder = Settings.log_location + native_slash
 
     validate_path(logfolder)
     return logfolder
-
