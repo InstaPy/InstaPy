@@ -23,6 +23,10 @@ jobs:
   fast_finish: true
   include:
     - stage: static analysis
+      env: TOXENV=black
+      python: "3.7"
+
+    - stage: static analysis
       env: TOXENV=flake8
       python: "3.7"
 

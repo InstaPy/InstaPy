@@ -10,11 +10,13 @@ from os import environ as environmental_variables
 from os.path import join as join_path
 
 
-WORKSPACE = {"name": "InstaPy",
-             "path": environmental_variables.get("INSTAPY_WORKSPACE")}
-OS_ENV = ("windows" if platform == "win32"
-          else "osx" if platform == "darwin"
-          else "linux")
+WORKSPACE = {
+    "name": "InstaPy",
+    "path": environmental_variables.get("INSTAPY_WORKSPACE"),
+}
+OS_ENV = (
+    "windows" if platform == "win32" else "osx" if platform == "darwin" else "linux"
+)
 
 
 def localize_path(*args):
@@ -57,21 +59,30 @@ class Settings:
     show_logs = None
 
     user_agent = (
-        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 '
-        '(KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36'
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+        "(KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36"
     )
-    
+
     # state of instantiation of InstaPy
     InstaPy_is_running = False
 
     # This is where currently the pods server is hosted
-    pods_server_endpoint = 'https://us-central1-instapy-pods.cloudfunctions.net'
-    pods_fashion_server_endpoint = 'https://us-central1-instapy-pods-fashion.cloudfunctions.net'
-    pods_food_server_endpoint = 'https://us-central1-instapy-pods-food.cloudfunctions.net'
-    pods_travel_server_endpoint = 'https://us-central1-instapy-pods-travel.cloudfunctions.net'
-    pods_sports_server_endpoint = 'https://us-central1-instapy-pods-sports.cloudfunctions.net'
-    pods_entertainment_server_endpoint = 'https://us-central1-instapy-pods-entertainment.cloudfunctions.net'
-
+    pods_server_endpoint = "https://us-central1-instapy-pods.cloudfunctions.net"
+    pods_fashion_server_endpoint = (
+        "https://us-central1-instapy-pods-fashion.cloudfunctions.net"
+    )
+    pods_food_server_endpoint = (
+        "https://us-central1-instapy-pods-food.cloudfunctions.net"
+    )
+    pods_travel_server_endpoint = (
+        "https://us-central1-instapy-pods-travel.cloudfunctions.net"
+    )
+    pods_sports_server_endpoint = (
+        "https://us-central1-instapy-pods-sports.cloudfunctions.net"
+    )
+    pods_entertainment_server_endpoint = (
+        "https://us-central1-instapy-pods-entertainment.cloudfunctions.net"
+    )
 
 
 class Storage:
