@@ -838,9 +838,9 @@ def get_links(browser, page, logger, media, element):
     return links
 
 
-def verify_liking(browser, max, min, logger):
-    """ Get the amount of existing existing likes and compare it against max
-    & min values defined by user """
+def verify_liking(browser, maximum, minimum, logger):
+    """ Get the amount of existing existing likes and compare it against maximum
+    & minimum values defined by user """
     try:
         likes_count = browser.execute_script(
             "return window._sharedData.entry_data."
@@ -873,12 +873,12 @@ def verify_liking(browser, max, min, logger):
                 logger.info("Failed to check likes' count\n")
                 return True
 
-    if max is not None and likes_count > max:
+    if maximum is not None and likes_count > maximum:
         logger.info(
             "Not liked this post! ~more likes exist off maximum limit at "
             "{}".format(likes_count))
         return False
-    elif min is not None and likes_count < min:
+    elif min is not None and likes_count < minimum:
         logger.info(
             "Not liked this post! ~less likes exist off minumum limit "
             "at {}".format(likes_count)
