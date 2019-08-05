@@ -182,16 +182,7 @@ def bypass_suspicious_login(browser, logger, logfolder, bypass_with_mobile):
         pass
 
 
-def login_user(browser,
-               username,
-               password,
-               logger,
-               logfolder,
-               bypass_with_mobile=False):
-    """Logins the user with the given username and password"""
-    assert username, 'Username not provided'
-    assert password, 'Password not provided'
-
+def check_browser(browser, logfolder, logger):
     # set initial state to offline
     update_activity(browser,
                     action=None,
@@ -257,6 +248,22 @@ def login_user(browser,
                         state='Instagram server is down',
                         logfolder=logfolder,
                         logger=logger)
+        return False
+
+    return True
+
+def login_user(browser,
+               username,
+               password,
+               logger,
+               logfolder,
+               bypass_with_mobile=False):
+    """Logins the user with the given username and password"""
+    assert username, 'Username not provided'
+    assert password, 'Password not provided'
+
+
+    if not check_browser(browser, logfolder, logger):
         return False
 
     ig_homepage = "https://www.instagram.com"
