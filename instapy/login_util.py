@@ -182,16 +182,7 @@ def bypass_suspicious_login(browser, logger, logfolder, bypass_with_mobile):
         pass
 
 
-def login_user(browser,
-               username,
-               password,
-               logger,
-               logfolder,
-               bypass_with_mobile=False):
-    """Logins the user with the given username and password"""
-    assert username, 'Username not provided'
-    assert password, 'Password not provided'
-
+def check_browser(browser, logfolder, logger):
     # set initial state to offline
     update_activity(browser,
                     action=None,
@@ -201,8 +192,8 @@ def login_user(browser,
 
     # check connection status
     try:
-        logger.info('-- Connection Checklist [1/2] (Internet Connection Status)')
-        browser.get("https://www.google.com")
+        logger.info('-- Connection Checklist [1/3] (Internet Connection Status)')
+        browser.get('https://www.google.com')
         logger.info('- Internet Connection Status: ok')
         update_activity(browser,
                         action=None,
@@ -218,18 +209,28 @@ def login_user(browser,
                         logger=logger)
         return False
 
+    # check if hide-selenium extension is running
+    logger.info('-- Connection Checklist [2/3] (Hide Selenium Extension)')
+    webdriver = browser.execute_script('return window.navigator.webdriver')
+    logger.info('- window.navigator.webdriver response: {}'.format(webdriver))
+    if webdriver:
+        logger.warn('- Hide Selenium Extension: error')
+    else:
+        logger.info('- Hide Selenium Extension: ok')
+
+
     # check Instagram.com status
     try:
-        logger.info('-- Connection Checklist [2/2] (Instagram Server Status)')
-        browser.get("https://isitdownorjust.me/instagram-com/")
+        logger.info('-- Connection Checklist [3/3] (Instagram Server Status)')
+        browser.get('https://isitdownorjust.me/instagram-com/')
 
         # collect isitdownorjust.me website information
         website_status = browser.find_element_by_xpath(
-            read_xpath(login_user.__name__, "website_status"))
+            read_xpath(login_user.__name__, 'website_status'))
         response_time = browser.find_element_by_xpath(
-            read_xpath(login_user.__name__, "response_time"))
+            read_xpath(login_user.__name__, 'response_time'))
         response_code = browser.find_element_by_xpath(
-            read_xpath(login_user.__name__, "response_code"))
+            read_xpath(login_user.__name__, 'response_code'))
 
         logger.info('- Instagram WebSite Status: {} '.format(website_status.text))
         logger.info('- Instagram Response Time: {} '.format(response_time.text))
@@ -247,6 +248,22 @@ def login_user(browser,
                         state='Instagram server is down',
                         logfolder=logfolder,
                         logger=logger)
+        return False
+
+    return True
+
+def login_user(browser,
+               username,
+               password,
+               logger,
+               logfolder,
+               bypass_with_mobile=False):
+    """Logins the user with the given username and password"""
+    assert username, 'Username not provided'
+    assert password, 'Password not provided'
+
+
+    if not check_browser(browser, logfolder, logger):
         return False
 
     ig_homepage = "https://www.instagram.com"
