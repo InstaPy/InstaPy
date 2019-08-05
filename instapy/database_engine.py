@@ -56,15 +56,15 @@ def get_database(make=False):
     logger = Settings.logger
     credentials = Settings.profile
 
-    id, name = credentials["id"], credentials['name']
+    profile_id, name = credentials["id"], credentials['name']
     address = validate_database_address()
 
     if not os.path.isfile(address) or make:
         create_database(address, logger, name)
 
-    id = get_profile(name, address, logger) if id is None or make else id
+    profile_id = get_profile(name, address, logger) if profile_id is None or make else profile_id
 
-    return address, id
+    return address, profile_id
 
 
 def create_database(address, logger, name):
@@ -154,11 +154,11 @@ def get_profile(name, address, logger):
             conn.close()
 
     profile = dict(profile)
-    id = profile["id"]
+    profile_id = profile["id"]
     # assign the id to its child in `Settings` class
-    Settings.profile["id"] = id
+    Settings.profile["id"] = profile_id
 
-    return id
+    return profile_id
 
 
 def add_profile(conn, cursor, name):

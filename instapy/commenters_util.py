@@ -266,12 +266,12 @@ def extract_information(browser, username, daysold, max_pic):
     # remove duplicates preserving order (that's why not using set())
     user_commented_list = []
     last = ''
-    for i in range(len(user_commented_total_list)):
-        if username.lower() != user_commented_total_list[i]:
-            if (last != user_commented_total_list[i] and 'p' not in
-                    user_commented_total_list[i]):
-                user_commented_list.append(user_commented_total_list[i])
-            last = user_commented_total_list[i]
+    for index, _ in enumerate(user_commented_total_list):
+        if username.lower() != user_commented_total_list[index]:
+            if (last != user_commented_total_list[index] and 'p' not in
+                    user_commented_total_list[index]):
+                user_commented_list.append(user_commented_total_list[index])
+            last = user_commented_total_list[index]
 
     print("\nGetting list of users who commented on this profile finished: ")
     print(user_commented_list, "\n")
