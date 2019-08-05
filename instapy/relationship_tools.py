@@ -102,7 +102,7 @@ def get_followers(browser,
         )
         web_address_navigator(browser, url)
 
-        """ Get stored graphql queries data to be used """
+        # Get stored graphql queries data to be used
         try:
             filename = '{}graphql_queries.json'.format(logfolder)
             query_date = datetime.today().strftime('%d-%m-%Y')
@@ -689,7 +689,7 @@ def get_fans(browser,
              logfolder):
     """ Find Fans of a given user """
 
-    if username is None or type(username) != str:
+    if username is None or not isinstance(username, str):
         logger.info(
             "Please enter a username to pick Fans  ~leaving out of an "
             "invalid value")
