@@ -330,7 +330,7 @@ def get_icons():
 
 def load_records():
     """ Load the data from local DB file """
-    db, id = get_database()
+    db, profile_id = get_database()
     conn = sqlite3.connect(db)
 
     # fetch live data from database
@@ -341,7 +341,7 @@ def load_records():
                     "WHERE profile_id=:var AND "
                     "STRFTIME('%Y-%m-%d', created) == "
                     "STRFTIME('%Y-%m-%d', 'now', 'localtime')",
-                    {"var": id})
+                    {"var": profile_id})
         daily_data = cur.fetchall()
 
     if daily_data:

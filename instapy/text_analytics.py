@@ -235,10 +235,6 @@ def sentiment_analysis(text, language_of_text, logger):
             "score_tag"]:
             # if text has a question mark & its polarity is neither negative
             # nor none, then label it neutral
-            # @todo: polarity is assigned but never used
-            if sentiment["score_tag"] not in ["N", "N+", "NONE"]:
-                if '?' in text:
-                    polarity = "NEU"
             return sentiment
 
         else:

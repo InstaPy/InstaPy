@@ -65,12 +65,11 @@ def set_automated_followed_pool(username, unfollow_after, logger, logfolder, del
 
                 entries = row[0].split(' ~ ')
                 sz = len(entries)
-                """
-                Data entry styles [historically]:
-                    user,   # oldest
-                    datetime ~ user,   # after `unfollow_after` was introduced
-                    datetime ~ user ~ user_id,   # after `user_id` was added
-                """
+                
+                # Data entry styles [historically]:
+                #    user,   # oldest
+                #    datetime ~ user,   # after `unfollow_after` was introduced
+                #    datetime ~ user ~ user_id,   # after `user_id` was added
                 if sz == 1:
                     time_stamp = None
                     user = entries[0]
@@ -1250,7 +1249,7 @@ def follow_restriction(operation, username, limit, logger):
 
     try:
         # get a DB and start a connection
-        db, id = get_database()
+        db, profile_id = get_database()
         conn = sqlite3.connect(db)
 
         with conn:
@@ -1260,7 +1259,7 @@ def follow_restriction(operation, username, limit, logger):
             cur.execute(
                 "SELECT * FROM followRestriction WHERE profile_id=:id_var "
                 "AND username=:name_var",
-                {"id_var": id, "name_var": username})
+                {"id_var": profile_id, "name_var": username})
             data = cur.fetchone()
             follow_data = dict(data) if data else None
 
@@ -1270,13 +1269,13 @@ def follow_restriction(operation, username, limit, logger):
                     cur.execute(
                         "INSERT INTO followRestriction (profile_id, "
                         "username, times) VALUES (?, ?, ?)",
-                        (id, username, 1))
+                        (profile_id, username, 1))
                 else:
                     # update the existing record
                     follow_data["times"] += 1
                     sql = "UPDATE followRestriction set times = ? WHERE " \
                           "profile_id=? AND username = ?"
-                    cur.execute(sql, (follow_data["times"], id, username))
+                    cur.execute(sql, (follow_data["times"], profile_id, username))
 
                 # commit the latest changes
                 conn.commit()
