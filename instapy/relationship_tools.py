@@ -47,9 +47,7 @@ def get_followers(
     web_address_navigator(browser, user_link)
 
     # Get followers count
-    followers_count, _ = get_relationship_counts(
-        browser, username, logger
-    )
+    followers_count, _ = get_relationship_counts(browser, username, logger)
 
     if grab != "full" and grab > followers_count:
         logger.info(
