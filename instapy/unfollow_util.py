@@ -65,7 +65,7 @@ def set_automated_followed_pool(username, unfollow_after, logger, logfolder, del
 
                 entries = row[0].split(' ~ ')
                 sz = len(entries)
-                
+
                 # Data entry styles [historically]:
                 #    user,   # oldest
                 #    datetime ~ user,   # after `unfollow_after` was introduced
