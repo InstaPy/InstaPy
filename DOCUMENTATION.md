@@ -1210,7 +1210,7 @@ session.remove_follow_requests(amount=200, sleep_delay=600)
  `topic`:  
  Topic of the posts to be interacted with. `general` by default.
 
-  > Note :  Topics allowed are {'general', 'beauty', 'food', 'travel', 'sports', 'entertainment'}. But it is highly recomended to use 'general' till we gain sufficient users in each of the topics.
+  > Note :  Topics allowed are {'general', 'fashion', 'food', 'travel', 'sports', 'entertainment'}.
 
  `engagement_mode`:
  Desided engagement mode for your posts. There are three levels of engagement modes 'light', 'normal' and 'heavy'(`normal` by default). Setting engagement_mode to 'light' encourages approximately 10% of pod members to comment on your post, similarly it's around 30% and 90% for 'normal' and 'heavy' modes respectively. Note: Liking, following or any other kind of engagements doesn't follow these modes.
@@ -1223,7 +1223,9 @@ session.set_skip_users(skip_bio_keyword = ['free shipping',' Order', 'visa', 'pa
 
 This will skip all users that have one these keywords on their bio.
 
-### Activate story watching while interacting
+### Instapy Stories
+
+#### Watching Stories with interact
 
 Will add story watching while interacting with users
 
@@ -1237,7 +1239,7 @@ session.set_do_story(enabled = True, percentage = 70, simulate = True)
 
   Please note: `simulate = False` is the safest settings as it fully disables all additional, simulated interactions
 
-### Watch stories by Tags
+#### Watch stories by Tags
 
 Will watch up to 20 stories published with specified tags.
 
@@ -1245,7 +1247,7 @@ Will watch up to 20 stories published with specified tags.
 session.story_by_tags(['tag1', 'tag2'])
 ```
 
-### Watch stories from users
+#### Watch stories from users
 
 Take a list of users and watch their stories.
 
@@ -1788,7 +1790,7 @@ cinderella_followers = session.grab_followers(username="Cinderella", amount="ful
 popeye_cinderella_followers = [follower for follower in popeye_followers if follower in cinderella_followers]
 ```
 
-#### `PRO`s:
+#### PROs
 You can **use** this tool to take a **backup** of _your_ **or** _any other user's_ **current** followers.
 
 
@@ -1850,7 +1852,7 @@ gargamel_following = session.grab_following(username="Gargamel", amount="full", 
 lazySmurf_gargamel_following = [following for following in lazySmurf_following if following in gargamel_following]
 ```
 
-#### `PRO`s:
+#### PROs
 You can **use** this tool to take a **backup** of _your_ **or** _any other user's_ **current** following.
 
 
