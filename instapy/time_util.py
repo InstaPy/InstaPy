@@ -46,16 +46,13 @@ def get_time(labels):
 
     for label in labels:
         if label == "this_minute":
-            results.append(datetime.now()
-                           .strftime("%M"))
+            results.append(datetime.now().strftime("%M"))
 
         if label == "this_hour":
-            results.append(datetime.now()
-                           .strftime("%H"))
+            results.append(datetime.now().strftime("%H"))
 
         elif label == "today":
-            results.append(datetime.now()
-                           .strftime("%Y-%m-%d"))
+            results.append(datetime.now().strftime("%Y-%m-%d"))
 
     results = results if len(results) > 1 else results[0]
 

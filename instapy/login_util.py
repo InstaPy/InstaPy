@@ -35,10 +35,7 @@ def bypass_suspicious_login(browser, logger, logfolder, bypass_with_mobile):
             read_xpath(bypass_suspicious_login.__name__, "close_button")
         )
 
-        (ActionChains(browser)
-         .move_to_element(close_button)
-         .click()
-         .perform())
+        (ActionChains(browser).move_to_element(close_button).click().perform())
 
         # update server calls
         update_activity(browser, state=None)
@@ -49,12 +46,10 @@ def bypass_suspicious_login(browser, logger, logfolder, bypass_with_mobile):
     try:
         # click on "This was me" button if challenge page was called
         this_was_me_button = browser.find_element_by_xpath(
-            read_xpath(bypass_suspicious_login.__name__, "this_was_me_button"))
+            read_xpath(bypass_suspicious_login.__name__, "this_was_me_button")
+        )
 
-        (ActionChains(browser)
-         .move_to_element(this_was_me_button)
-         .click()
-         .perform())
+        (ActionChains(browser).move_to_element(this_was_me_button).click().perform())
 
         # update server calls
         update_activity(browser, state=None)
@@ -65,7 +60,8 @@ def bypass_suspicious_login(browser, logger, logfolder, bypass_with_mobile):
 
     try:
         choice = browser.find_element_by_xpath(
-            read_xpath(bypass_suspicious_login.__name__, "choice")).text
+            read_xpath(bypass_suspicious_login.__name__, "choice")
+        ).text
 
     except NoSuchElementException:
         try:
@@ -80,8 +76,10 @@ def bypass_suspicious_login(browser, logger, logfolder, bypass_with_mobile):
                 ).text
 
             except Exception:
-                print("Unable to locate email or phone button, maybe "
-                      "bypass_suspicious_login=True isn't needed anymore.")
+                print(
+                    "Unable to locate email or phone button, maybe "
+                    "bypass_suspicious_login=True isn't needed anymore."
+                )
                 return False
 
     if bypass_with_mobile:
@@ -93,26 +91,21 @@ def bypass_suspicious_login(browser, logger, logfolder, bypass_with_mobile):
             read_xpath(bypass_suspicious_login.__name__, "bypass_with_mobile_button")
         )
 
-        (ActionChains(browser)
-         .move_to_element(mobile_button)
-         .click()
-         .perform())
+        (ActionChains(browser).move_to_element(mobile_button).click().perform())
 
         sleep(5)
 
     send_security_code_button = browser.find_element_by_xpath(
-        read_xpath(bypass_suspicious_login.__name__, "send_security_code_button"))
+        read_xpath(bypass_suspicious_login.__name__, "send_security_code_button")
+    )
 
-    (ActionChains(browser)
-     .move_to_element(send_security_code_button)
-     .click()
-     .perform())
+    (ActionChains(browser).move_to_element(send_security_code_button).click().perform())
 
     # update server calls
     update_activity(browser, state=None)
 
-    print('Instagram detected an unusual login attempt')
-    print('A security code was sent to your {}'.format(choice))
+    print("Instagram detected an unusual login attempt")
+    print("A security code was sent to your {}".format(choice))
 
     # --
     security_code = None
@@ -128,21 +121,24 @@ def bypass_suspicious_login(browser, logger, logfolder, bypass_with_mobile):
         # update connection state
         security_code = data["challenge"]["security_code"]
     except Exception:
-        logger.info('Security Code not present in {}{}.json file'
-                    .format(logfolder, logger.name))
+        logger.info(
+            "Security Code not present in {}{}.json file".format(logfolder, logger.name)
+        )
 
     if security_code is None:
-        security_code = input('Type the security code here: ')
+        security_code = input("Type the security code here: ")
 
     security_code_field = browser.find_element_by_xpath(
         read_xpath(bypass_suspicious_login.__name__, "security_code_field")
     )
 
-    (ActionChains(browser)
-     .move_to_element(security_code_field)
-     .click()
-     .send_keys(security_code)
-     .perform())
+    (
+        ActionChains(browser)
+        .move_to_element(security_code_field)
+        .click()
+        .send_keys(security_code)
+        .perform()
+    )
 
     # update server calls for both 'click' and 'send_keys' actions
     for _ in range(2):
@@ -152,10 +148,12 @@ def bypass_suspicious_login(browser, logger, logfolder, bypass_with_mobile):
         read_xpath(bypass_suspicious_login.__name__, "submit_security_code_button")
     )
 
-    (ActionChains(browser)
-     .move_to_element(submit_security_code_button)
-     .click()
-     .perform())
+    (
+        ActionChains(browser)
+        .move_to_element(submit_security_code_button)
+        .click()
+        .perform()
+    )
 
     # update server calls
     update_activity(browser, state=None)
@@ -168,13 +166,17 @@ def bypass_suspicious_login(browser, logger, logfolder, bypass_with_mobile):
         )
 
         if wrong_login is not None:
-            wrong_login_msg = ('Wrong security code! Please check the code Instagram'
-                               'sent you and try again.')
-            update_activity(browser,
-                            action=None,
-                            state=wrong_login_msg,
-                            logfolder=logfolder,
-                            logger=logger)
+            wrong_login_msg = (
+                "Wrong security code! Please check the code Instagram"
+                "sent you and try again."
+            )
+            update_activity(
+                browser,
+                action=None,
+                state=wrong_login_msg,
+                logfolder=logfolder,
+                logger=logger,
+            )
             print(wrong_login_msg)
 
     except NoSuchElementException:
@@ -184,84 +186,93 @@ def bypass_suspicious_login(browser, logger, logfolder, bypass_with_mobile):
 
 def check_browser(browser, logfolder, logger):
     # set initial state to offline
-    update_activity(browser,
-                    action=None,
-                    state='trying to connect',
-                    logfolder=logfolder,
-                    logger=logger)
+    update_activity(
+        browser,
+        action=None,
+        state="trying to connect",
+        logfolder=logfolder,
+        logger=logger,
+    )
 
     # check connection status
     try:
-        logger.info('-- Connection Checklist [1/3] (Internet Connection Status)')
-        browser.get('https://www.google.com')
-        logger.info('- Internet Connection Status: ok')
-        update_activity(browser,
-                        action=None,
-                        state='Internet connection is ok',
-                        logfolder=logfolder,
-                        logger=logger)
+        logger.info("-- Connection Checklist [1/3] (Internet Connection Status)")
+        browser.get("https://www.google.com")
+        logger.info("- Internet Connection Status: ok")
+        update_activity(
+            browser,
+            action=None,
+            state="Internet connection is ok",
+            logfolder=logfolder,
+            logger=logger,
+        )
     except Exception:
-        logger.warn('- Internet Connection Status: error')
-        update_activity(browser,
-                        action=None,
-                        state='There is an issue with the internet connection',
-                        logfolder=logfolder,
-                        logger=logger)
+        logger.warn("- Internet Connection Status: error")
+        update_activity(
+            browser,
+            action=None,
+            state="There is an issue with the internet connection",
+            logfolder=logfolder,
+            logger=logger,
+        )
         return False
 
     # check if hide-selenium extension is running
-    logger.info('-- Connection Checklist [2/3] (Hide Selenium Extension)')
-    webdriver = browser.execute_script('return window.navigator.webdriver')
-    logger.info('- window.navigator.webdriver response: {}'.format(webdriver))
+    logger.info("-- Connection Checklist [2/3] (Hide Selenium Extension)")
+    webdriver = browser.execute_script("return window.navigator.webdriver")
+    logger.info("- window.navigator.webdriver response: {}".format(webdriver))
     if webdriver:
-        logger.warn('- Hide Selenium Extension: error')
+        logger.warn("- Hide Selenium Extension: error")
     else:
-        logger.info('- Hide Selenium Extension: ok')
-
+        logger.info("- Hide Selenium Extension: ok")
 
     # check Instagram.com status
     try:
-        logger.info('-- Connection Checklist [3/3] (Instagram Server Status)')
-        browser.get('https://isitdownorjust.me/instagram-com/')
+        logger.info("-- Connection Checklist [3/3] (Instagram Server Status)")
+        browser.get("https://isitdownorjust.me/instagram-com/")
 
         # collect isitdownorjust.me website information
         website_status = browser.find_element_by_xpath(
-            read_xpath(login_user.__name__, 'website_status'))
+            read_xpath(login_user.__name__, "website_status")
+        )
         response_time = browser.find_element_by_xpath(
-            read_xpath(login_user.__name__, 'response_time'))
+            read_xpath(login_user.__name__, "response_time")
+        )
         response_code = browser.find_element_by_xpath(
-            read_xpath(login_user.__name__, 'response_code'))
+            read_xpath(login_user.__name__, "response_code")
+        )
 
-        logger.info('- Instagram WebSite Status: {} '.format(website_status.text))
-        logger.info('- Instagram Response Time: {} '.format(response_time.text))
-        logger.info('- Instagram Reponse Code: {}'.format(response_code.text))
-        logger.info('- Instagram Server Status: ok')
-        update_activity(browser,
-                        action=None,
-                        state='Instagram servers are running correctly',
-                        logfolder=logfolder,
-                        logger=logger)
+        logger.info("- Instagram WebSite Status: {} ".format(website_status.text))
+        logger.info("- Instagram Response Time: {} ".format(response_time.text))
+        logger.info("- Instagram Reponse Code: {}".format(response_code.text))
+        logger.info("- Instagram Server Status: ok")
+        update_activity(
+            browser,
+            action=None,
+            state="Instagram servers are running correctly",
+            logfolder=logfolder,
+            logger=logger,
+        )
     except Exception:
-        logger.warn('- Instagram Server Status: error')
-        update_activity(browser,
-                        action=None,
-                        state='Instagram server is down',
-                        logfolder=logfolder,
-                        logger=logger)
+        logger.warn("- Instagram Server Status: error")
+        update_activity(
+            browser,
+            action=None,
+            state="Instagram server is down",
+            logfolder=logfolder,
+            logger=logger,
+        )
         return False
 
     return True
 
-def login_user(browser,
-               username,
-               password,
-               logger,
-               logfolder,
-               bypass_with_mobile=False):
-    """Logins the user with the given username and password"""
-    assert username, 'Username not provided'
-    assert password, 'Password not provided'
 
+def login_user(
+    browser, username, password, logger, logfolder, bypass_with_mobile=False
+):
+    """Logins the user with the given username and password"""
+    assert username, "Username not provided"
+    assert password, "Password not provided"
 
     if not check_browser(browser, logfolder, logger):
         return False
@@ -272,8 +283,9 @@ def login_user(browser,
 
     # try to load cookie from username
     try:
-        for cookie in pickle.load(open('{0}{1}_cookie.pkl'
-                                       .format(logfolder, username), 'rb')):
+        for cookie in pickle.load(
+            open("{0}{1}_cookie.pkl".format(logfolder, username), "rb")
+        ):
             browser.add_cookie(cookie)
             cookie_loaded = True
     except (WebDriverException, OSError, IOError):
@@ -284,11 +296,9 @@ def login_user(browser,
 
     # cookie has been LOADED, so the user SHOULD be logged in
     # check if the user IS logged in
-    login_state = check_authorization(browser,
-                                      username,
-                                      "activity counts",
-                                      logger,
-                                      False)
+    login_state = check_authorization(
+        browser, username, "activity counts", logger, False
+    )
     if login_state is True:
         dismiss_notification_offer(browser, logger)
         return True
@@ -296,13 +306,15 @@ def login_user(browser,
     # if user is still not logged in, then there is an issue with the cookie
     # so go create a new cookie..
     if cookie_loaded:
-        print("Issue with cookie for user {}. Creating "
-              "new cookie...".format(username))
+        print(
+            "Issue with cookie for user {}. Creating " "new cookie...".format(username)
+        )
 
     # Check if the first div is 'Create an Account' or 'Log In'
     try:
         login_elem = browser.find_element_by_xpath(
-            read_xpath(login_user.__name__, "login_elem"))
+            read_xpath(login_user.__name__, "login_elem")
+        )
     except NoSuchElementException:
         print("Login A/B test detected! Trying another string...")
         try:
@@ -314,10 +326,7 @@ def login_user(browser,
 
     if login_elem is not None:
         try:
-            (ActionChains(browser)
-             .move_to_element(login_elem)
-             .click()
-             .perform())
+            (ActionChains(browser).move_to_element(login_elem).click().perform())
         except MoveTargetOutOfBoundsException:
             login_elem.click()
 
@@ -333,16 +342,18 @@ def login_user(browser,
     explicit_wait(browser, "TC", login_page_title, logger)
 
     # wait until the 'username' input element is located and visible
-    input_username_XP = read_xpath(login_user.__name__,"input_username_XP")
+    input_username_XP = read_xpath(login_user.__name__, "input_username_XP")
     explicit_wait(browser, "VOEL", [input_username_XP, "XPath"], logger)
 
     input_username = browser.find_element_by_xpath(input_username_XP)
 
-    (ActionChains(browser)
-     .move_to_element(input_username)
-     .click()
-     .send_keys(username)
-     .perform())
+    (
+        ActionChains(browser)
+        .move_to_element(input_username)
+        .click()
+        .send_keys(username)
+        .perform()
+    )
 
     # update server calls for both 'click' and 'send_keys' actions
     for _ in range(2):
@@ -352,24 +363,29 @@ def login_user(browser,
 
     #  password
     input_password = browser.find_elements_by_xpath(
-        read_xpath(login_user.__name__,"input_password"))
+        read_xpath(login_user.__name__, "input_password")
+    )
 
     if not isinstance(password, str):
         password = str(password)
 
-    (ActionChains(browser)
-     .move_to_element(input_password[0])
-     .click()
-     .send_keys(password)
-     .perform())
+    (
+        ActionChains(browser)
+        .move_to_element(input_password[0])
+        .click()
+        .send_keys(password)
+        .perform()
+    )
 
     sleep(1)
 
-    (ActionChains(browser)
-     .move_to_element(input_password[0])
-     .click()
-     .send_keys(Keys.ENTER)
-     .perform())
+    (
+        ActionChains(browser)
+        .move_to_element(input_password[0])
+        .click()
+        .send_keys(Keys.ENTER)
+        .perform()
+    )
 
     # update server calls for both 'click' and 'send_keys' actions
     for _ in range(4):
@@ -379,18 +395,21 @@ def login_user(browser,
     dismiss_notification_offer(browser, logger)
 
     # check for login error messages and display it in the logs
-    if ('instagram.com/challenge' in browser.current_url):
+    if "instagram.com/challenge" in browser.current_url:
         # check if account is disabled by Instagram,
         # or there is an active challenge to solve
         try:
             account_disabled = browser.find_element_by_xpath(
-                read_xpath(login_user.__name__, "account_disabled"))
+                read_xpath(login_user.__name__, "account_disabled")
+            )
             logger.warn(account_disabled.text)
-            update_activity(browser,
-                            action=None,
-                            state=account_disabled.text,
-                            logfolder=logfolder,
-                            logger=logger)
+            update_activity(
+                browser,
+                action=None,
+                state=account_disabled.text,
+                logfolder=logfolder,
+                logger=logger,
+            )
             return False
         except NoSuchElementException:
             pass
@@ -398,17 +417,21 @@ def login_user(browser,
         # in case the user doesnt have a phone number linked to the Instagram account
         try:
             browser.find_element_by_xpath(
-                read_xpath(login_user.__name__, "add_phone_number"))
+                read_xpath(login_user.__name__, "add_phone_number")
+            )
             challenge_warn_msg = (
                 "Instagram initiated a challenge before allow your account to login. "
                 "At the moment there isn't a phone number linked to your Instagram "
-                "account. Please, add a phone number to your account, and try again.")
+                "account. Please, add a phone number to your account, and try again."
+            )
             logger.warn(challenge_warn_msg)
-            update_activity(browser,
-                            action=None,
-                            state=challenge_warn_msg,
-                            logfolder=logfolder,
-                            logger=logger)
+            update_activity(
+                browser,
+                action=None,
+                state=challenge_warn_msg,
+                logfolder=logfolder,
+                logger=logger,
+            )
             return False
         except NoSuchElementException:
             pass
@@ -416,12 +439,15 @@ def login_user(browser,
         # try to initiate security code challenge
         try:
             browser.find_element_by_xpath(
-                read_xpath(login_user.__name__, "suspicious_login_attempt"))
-            update_activity(browser,
-                            action=None,
-                            state='Trying to solve suspicious attempt login',
-                            logfolder=logfolder,
-                            logger=logger)
+                read_xpath(login_user.__name__, "suspicious_login_attempt")
+            )
+            update_activity(
+                browser,
+                action=None,
+                state="Trying to solve suspicious attempt login",
+                logfolder=logfolder,
+                logger=logger,
+            )
             bypass_suspicious_login(browser, logger, logfolder, bypass_with_mobile)
         except NoSuchElementException:
             pass
@@ -429,13 +455,16 @@ def login_user(browser,
     # check for wrong username or password message, and show it to the user
     try:
         error_alert = browser.find_element_by_xpath(
-            read_xpath(login_user.__name__, "error_alert"))
+            read_xpath(login_user.__name__, "error_alert")
+        )
         logger.warn(error_alert.text)
-        update_activity(browser,
-                        action=None,
-                        state=error_alert.text,
-                        logfolder=logfolder,
-                        logger=logger)
+        update_activity(
+            browser,
+            action=None,
+            state=error_alert.text,
+            logfolder=logfolder,
+            logger=logger,
+        )
         return False
     except NoSuchElementException:
         pass
@@ -444,11 +473,13 @@ def login_user(browser,
     explicit_wait(browser, "PFL", [], logger, 5)
 
     # Check if user is logged-in (If there's two 'nav' elements)
-    nav = browser.find_elements_by_xpath(read_xpath(login_user.__name__,"nav"))
+    nav = browser.find_elements_by_xpath(read_xpath(login_user.__name__, "nav"))
     if len(nav) == 2:
         # create cookie for username
-        pickle.dump(browser.get_cookies(), open(
-            '{0}{1}_cookie.pkl'.format(logfolder, username), 'wb'))
+        pickle.dump(
+            browser.get_cookies(),
+            open("{0}{1}_cookie.pkl".format(logfolder, username), "wb"),
+        )
         return True
     else:
         return False
@@ -456,12 +487,13 @@ def login_user(browser,
 
 def dismiss_get_app_offer(browser, logger):
     """ Dismiss 'Get the Instagram App' page after a fresh login """
-    offer_elem = read_xpath(dismiss_get_app_offer.__name__,"offer_elem")
-    dismiss_elem = read_xpath(dismiss_get_app_offer.__name__,"dismiss_elem")
+    offer_elem = read_xpath(dismiss_get_app_offer.__name__, "offer_elem")
+    dismiss_elem = read_xpath(dismiss_get_app_offer.__name__, "dismiss_elem")
 
     # wait a bit and see if the 'Get App' offer rises up
     offer_loaded = explicit_wait(
-        browser, "VOEL", [offer_elem, "XPath"], logger, 5, False)
+        browser, "VOEL", [offer_elem, "XPath"], logger, 5, False
+    )
 
     if offer_loaded:
         dismiss_elem = browser.find_element_by_xpath(dismiss_elem)
@@ -470,12 +502,15 @@ def dismiss_get_app_offer(browser, logger):
 
 def dismiss_notification_offer(browser, logger):
     """ Dismiss 'Turn on Notifications' offer on session start """
-    offer_elem_loc = read_xpath(dismiss_notification_offer.__name__,"offer_elem_loc")
-    dismiss_elem_loc = read_xpath(dismiss_notification_offer.__name__,"dismiss_elem_loc")
+    offer_elem_loc = read_xpath(dismiss_notification_offer.__name__, "offer_elem_loc")
+    dismiss_elem_loc = read_xpath(
+        dismiss_notification_offer.__name__, "dismiss_elem_loc"
+    )
 
     # wait a bit and see if the 'Turn on Notifications' offer rises up
     offer_loaded = explicit_wait(
-        browser, "VOEL", [offer_elem_loc, "XPath"], logger, 4, False)
+        browser, "VOEL", [offer_elem_loc, "XPath"], logger, 4, False
+    )
 
     if offer_loaded:
         dismiss_elem = browser.find_element_by_xpath(dismiss_elem_loc)

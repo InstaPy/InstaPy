@@ -2,6 +2,7 @@
 
 from setuptools import setup
 from os import path
+
 # io.open is needed for projects that support Python 2.7
 # It ensures open() defaults to text mode with universal newlines,
 # and accepts an argument to specify the text encoding
@@ -25,9 +26,7 @@ with open("requirements.txt") as f:
 
 documentation = readall("README.md")
 metadata = dict(
-    re.findall(
-        r"""__([a-z]+)__ = "([^"]+)""", readall("instapy", "__init__.py")
-    )
+    re.findall(r"""__([a-z]+)__ = "([^"]+)""", readall("instapy", "__init__.py"))
 )
 
 setup(
@@ -36,7 +35,7 @@ setup(
     description=summary,
     long_description=documentation,
     long_description_content_type="text/markdown",
-    author=u"Tim Großmann",
+    author="Tim Großmann",
     author_email="contact.timgrossmann@gmail.com",
     maintainer="InstaPy Community at Github",
     license="GPLv3",
@@ -48,49 +47,46 @@ setup(
         "Bug Reports": (project_homepage + "/issues"),
         "Funding": "https://www.paypal.me/supportInstaPy",
         "Say Thanks!": "http://saythanks.io/to/uluQulu",
-        "Source": (project_homepage + "/tree/master/instapy")
+        "Source": (project_homepage + "/tree/master/instapy"),
     },
     packages=["instapy"],
     # include_package_data=True,  # <- packs every data file in the package
-    package_data={   # we need only the files below:
-        "instapy": ["icons/Windows/*.ico",
-                    "icons/Linux/*.png",
-                    "icons/Mac/*.icns",
-                    "firefox_extension/*"]
+    package_data={  # we need only the files below:
+        "instapy": [
+            "icons/Windows/*.ico",
+            "icons/Linux/*.png",
+            "icons/Mac/*.icns",
+            "firefox_extension/*",
+        ]
     },
     keywords=(
         "instapy python instagram automation \
          marketing promotion bot selenium"
     ),
-    classifiers=["Development Status :: 4 - Beta",
-                 "Environment :: Console",
-                 "Environment :: Win32 (MS Windows)",
-                 "Environment :: MacOS X",
-                 "Environment :: Web Environment",
-                 "Intended Audience :: End Users/Desktop",
-                 "Intended Audience :: Developers",
-                 "Operating System :: Microsoft :: Windows",
-                 "Operating System :: POSIX :: Linux",
-                 "Operating System :: MacOS :: MacOS X",
-                 "Operating System :: Unix",
-                 "Programming Language :: Python",
-                 "Programming Language :: JavaScript",
-                 "Programming Language :: SQL",
-                 "Topic :: Utilities",
-                 "Topic :: Software Development :: Build Tools",
-                 "Programming Language :: Python :: 3",
-                 "Natural Language :: English"
-                 ],
+    classifiers=[
+        "Development Status :: 4 - Beta",
+        "Environment :: Console",
+        "Environment :: Win32 (MS Windows)",
+        "Environment :: MacOS X",
+        "Environment :: Web Environment",
+        "Intended Audience :: End Users/Desktop",
+        "Intended Audience :: Developers",
+        "Operating System :: Microsoft :: Windows",
+        "Operating System :: POSIX :: Linux",
+        "Operating System :: MacOS :: MacOS X",
+        "Operating System :: Unix",
+        "Programming Language :: Python",
+        "Programming Language :: JavaScript",
+        "Programming Language :: SQL",
+        "Topic :: Utilities",
+        "Topic :: Software Development :: Build Tools",
+        "Programming Language :: Python :: 3",
+        "Natural Language :: English",
+    ],
     install_requires=dependencies,
-    extras_require={
-        "test": ["tox",
-                 "virtualenv",
-                 "tox-venv"]
-    },
+    extras_require={"test": ["tox", "virtualenv", "tox-venv"]},
     python_requires=">=3, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*",
     platforms=["win32", "linux", "linux2", "darwin"],
     zip_safe=False,
-    entry_points={
-        "console_scripts": []
-    }
+    entry_points={"console_scripts": []},
 )

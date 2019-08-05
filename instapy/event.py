@@ -1,10 +1,10 @@
 class Event:
-    '''Event Singleton Class
+    """Event Singleton Class
 
     How to use example:
     from .event import Event
     Event().profile_data_updated(400, 312)
-    '''
+    """
 
     singleton = None
     callbacks = dict()
@@ -18,7 +18,8 @@ class Event:
         pass
 
     def fire_callbacks(self, function_name, *args, **kwargs):
-        if function_name not in self.callbacks: return
+        if function_name not in self.callbacks:
+            return
         for callback in self.callbacks[function_name]:
             callback(*args, **kwargs)
 
@@ -30,7 +31,12 @@ class Event:
 
     # place custom events below
     def profile_data_updated(self, username, followers_count, following_count):
-        self.fire_callbacks(self.profile_data_updated.__name__, username, followers_count, following_count)
+        self.fire_callbacks(
+            self.profile_data_updated.__name__,
+            username,
+            followers_count,
+            following_count,
+        )
 
     def commented(self, username):
         self.fire_callbacks(self.commented.__name__, username)
