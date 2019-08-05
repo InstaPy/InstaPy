@@ -145,7 +145,7 @@ def bypass_suspicious_login(browser, logger, logfolder, bypass_with_mobile):
      .perform())
 
     # update server calls for both 'click' and 'send_keys' actions
-    for i in range(2):
+    for _ in range(2):
         update_activity(browser, state=None)
 
     submit_security_code_button = browser.find_element_by_xpath(
@@ -355,7 +355,7 @@ def login_user(browser,
      .perform())
 
     # update server calls for both 'click' and 'send_keys' actions
-    for i in range(4):
+    for _ in range(4):
         update_activity(browser, state=None)
 
     dismiss_get_app_offer(browser, logger)

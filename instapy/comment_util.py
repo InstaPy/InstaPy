@@ -116,10 +116,10 @@ def comment_image(browser, username, comments, blacklist, logger, logfolder):
     return True, "success"
 
 
-def verify_commenting(browser, max, min, mand_words, logger):
+def verify_commenting(browser, maximum, minimum, mand_words, logger):
     """
      Get the amount of existing existing comments and
-    compare it against max & min values defined by user
+    compare it against maximum & minimum values defined by user
     """
 
     commenting_state, msg = is_commenting_enabled(browser, logger)
@@ -132,14 +132,14 @@ def verify_commenting(browser, max, min, mand_words, logger):
         disapproval_reason = "--> Not commenting! {}".format(msg)
         return False, disapproval_reason
 
-    if max is not None and comments_count > max:
+    if maximum is not None and comments_count > maximum:
         disapproval_reason = (
             "Not commented on this post! ~more comments exist"
             " off maximum limit at {}"
             .format(comments_count))
         return False, disapproval_reason
 
-    elif min is not None and comments_count < min:
+    elif minimum is not None and comments_count < minimum:
         disapproval_reason = (
             "Not commented on this post! ~less comments exist"
             " off minumum limit at {}"
