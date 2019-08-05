@@ -266,7 +266,7 @@ def extract_information(browser, username, daysold, max_pic):
     # remove duplicates preserving order (that's why not using set())
     user_commented_list = []
     last = ''
-    for index, value in enumerate(user_commented_total_list):
+    for index, _ in enumerate(user_commented_total_list):
         if username.lower() != user_commented_total_list[index]:
             if (last != user_commented_total_list[index] and 'p' not in
                     user_commented_total_list[index]):
