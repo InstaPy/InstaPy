@@ -47,7 +47,7 @@ def get_followers(
     web_address_navigator(browser, user_link)
 
     # Get followers count
-    followers_count, following_count = get_relationship_counts(
+    followers_count, _ = get_relationship_counts(
         browser, username, logger
     )
 
