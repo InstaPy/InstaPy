@@ -3,6 +3,24 @@ The **goal** of this file is explaining to the users of our project the notable 
 
 _The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html)_.
 
+## [0.6.0] - 2019-**-**
+### Added
+- Firefox Extension which hides Selenium
+- black code formatter
+- mobile user agent
+
+### Breaking Changes
+- removed chromedriver
+- signature changes:
+  - set_action_delays(random_range) -> (random_range_from, random_range_to)
+  - set_delemit_liking(max, min) ->(max_likes, min_likes)
+  - set_delemit_commenting(max, min) ->(max_comments, min_comments)
+  - unfollow_users(customList, instapyfollowed) -> (custom_list_enabled, custom_list, custom_list_param, instapy_followed_enabled, instapy_followed_param)
+  - set_quota_supervisor(peak_) ->(peak_hourly, peak*_daily)
+
+### Fixed
+
+
 ## [0.5.8] - 2019-08-01
 ### Added
 - skip user based on profile bio
