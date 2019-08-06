@@ -18,7 +18,7 @@ xpath["bypass_suspicious_login"] = {
 }
 
 xpath["class_selectors"] = {
-    "likes_dialog_body_xpath": "//h1[text()='Likes']/../../following-sibling::div/div",
+    "likes_dialog_body_xpath": "//main",
     "likes_dialog_close_xpath": "//span[contains(@aria-label, 'Close')]",
 }
 
