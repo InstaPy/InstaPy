@@ -1720,7 +1720,6 @@ def verify_action(
                         confirm_unfollow(browser)
 
                     sleep(4)
-
                 elif retry_count == 3:
                     logger.warning(
                         "Phew! Last {0} is not verified."
@@ -1730,7 +1729,6 @@ def verify_action(
                     sleep(210)
                     return False, "temporary block"
 
-        # if retry_count == 2:
         logger.info("Last {} is verified after reloading the page!".format(action))
 
     return True, "success"
