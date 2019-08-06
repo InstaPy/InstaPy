@@ -9,6 +9,7 @@ from webdriverdownloader import GeckoDriverDownloader
 # general libs
 import os
 import zipfile
+import shutil
 from time import sleep
 from os.path import sep
 
@@ -24,6 +25,11 @@ from .settings import Settings
 
 
 def get_geckodriver():
+    # prefer using geckodriver from path
+    gecko_path = shutil.which("geckodriver") or shutil.which("geckodriver.exe")
+    if gecko_path:
+        return gecko_path
+
     asset_path = use_assets()
     gdd = GeckoDriverDownloader(asset_path, asset_path)
     # skips download if already downloaded
