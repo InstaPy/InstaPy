@@ -183,7 +183,9 @@ def get_following_status(
 
     # wait until the follow button is located and visible, then get it
     try:
-        browser.find_element_by_xpath(read_xpath(get_following_status.__name__, "follow_button_XP"))
+        browser.find_element_by_xpath(
+            read_xpath(get_following_status.__name__, "follow_button_XP")
+        )
         follow_button_XP = read_xpath(get_following_status.__name__, "follow_button_XP")
     except NoSuchElementException:
         try:
@@ -211,8 +213,6 @@ def get_following_status(
 
     # get follow status
     following_status = follow_button.text
-
-
 
     return following_status, follow_button
 
@@ -1710,7 +1710,7 @@ def verify_action(
                 if retry_count == 1:
                     reload_webpage(browser)
                     sleep(4)
-                    
+
                 elif retry_count == 2:
                     # handle it!
                     # try to do the action one more time!
