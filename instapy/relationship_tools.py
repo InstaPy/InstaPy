@@ -27,6 +27,7 @@ def get_followers(
     logfolder,
 ):
     """ Get entire list of followers using graphql queries. """
+
     if username not in relationship_data:
         relationship_data.update({username: {"all_following": [], "all_followers": []}})
 
@@ -74,20 +75,12 @@ def get_followers(
     )
 
     user_data = {}
-
-    use_firefox = Settings.use_firefox
-
-    if use_firefox:
-        graphql_endpoint = "view-source:https://www.instagram.com/graphql" "/query/"
-    else:
-        graphql_endpoint = "https://www.instagram.com/graphql/query/"
-
+    graphql_endpoint = "view-source:https://www.instagram.com/graphql" "/query/"
     graphql_followers = (
         graphql_endpoint + "?query_hash=37479f2b8209594dde7facb0d904896a"
     )
 
     all_followers = []
-
     variables = {}
     user_data["id"] = browser.execute_script(
         "return window._sharedData.entry_data.ProfilePage[0]." "graphql.user.id"
