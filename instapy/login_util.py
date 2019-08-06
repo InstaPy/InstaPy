@@ -230,7 +230,7 @@ def check_browser(browser, logfolder, logger):
     try:
         logger.info("-- Connection Checklist [3/3] (Instagram Server Status)")
         browser.get("https://isitdownorjust.me/instagram-com/")
-
+        sleep(2)
         # collect isitdownorjust.me website information
         website_status = browser.find_element_by_xpath(
             read_xpath(login_user.__name__, "website_status")
