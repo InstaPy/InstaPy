@@ -182,9 +182,23 @@ def get_following_status(
             return "UNAVAILABLE", None
 
     # wait until the follow button is located and visible, then get it
+    try:
+        browser.find_element_by_xpath(
+            read_xpath(get_following_status.__name__, "follow_button_XP")
+        )
+        follow_button_XP = read_xpath(get_following_status.__name__, "follow_button_XP")
+    except NoSuchElementException:
+        try:
+            follow_button = browser.find_elements_by_xpath(
+                read_xpath(get_following_status.__name__, "follow_span_XP_following")
+            )
+            return "Following", follow_button
+        except:
+            return "UNAVAILABLE", None
     follow_button = explicit_wait(
         browser, "VOEL", [follow_button_XP, "XPath"], logger, 7, False
     )
+
     if not follow_button:
         browser.execute_script("location.reload()")
         update_activity(browser, state=None)
@@ -1693,6 +1707,7 @@ def verify_action(
             else:
                 if retry_count == 1:
                     reload_webpage(browser)
+                    sleep(4)
 
                 elif retry_count == 2:
                     # handle it!
@@ -1703,7 +1718,6 @@ def verify_action(
                         confirm_unfollow(browser)
 
                     sleep(4)
-
                 elif retry_count == 3:
                     logger.warning(
                         "Phew! Last {0} is not verified."
@@ -1713,8 +1727,7 @@ def verify_action(
                     sleep(210)
                     return False, "temporary block"
 
-        if retry_count == 2:
-            logger.info("Last {} is verified after reloading the page!".format(action))
+        logger.info("Last {} is verified after reloading the page!".format(action))
 
     return True, "success"
 
