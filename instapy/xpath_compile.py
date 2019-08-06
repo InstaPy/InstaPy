@@ -83,7 +83,8 @@ xpath["get_following_status"] = {
                                   text()='Requested' or \
                                   text()='Follow' or \
                                   text()='Follow Back' or \
-                                  text()='Unblock']"
+                                  text()='Unblock']",
+    "follow_span_XP_following": "//span[contains(@aria-label, 'Following')]"
 }
 
 xpath["get_follow_requests"] = {
