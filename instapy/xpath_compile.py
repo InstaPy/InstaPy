@@ -65,7 +65,7 @@ xpath["get_buttons_from_dialog"] = {
 }
 
 xpath["get_comment_input"] = {
-    "comment_input": '//textarea[@placeholder = "Add a comment…"]',
+    "comment_input": "//form/textarea",
     "placeholder": '//input[@placeholder = "Add a comment…"]',
 }
 

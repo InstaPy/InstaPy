@@ -13,16 +13,15 @@ from .util import explicit_wait
 from .util import extract_text_from_element
 from .util import web_address_navigator
 from .event import Event
-
 from .like_util import get_media_edge_comment_string
-
 from .quota_supervisor import quota_supervisor
+from .xpath import read_xpath
 
 from selenium.common.exceptions import WebDriverException
 from selenium.common.exceptions import InvalidElementStateException
 from selenium.common.exceptions import NoSuchElementException
-
-from .xpath import read_xpath
+from selenium.webdriver.common.action_chains import ActionChains
+from selenium.webdriver.common.keys import Keys
 
 
 def get_comment_input(browser):
@@ -70,26 +69,39 @@ def comment_image(browser, username, comments, blacklist, logger, logfolder):
     rand_comment = emoji.emojize(rand_comment, use_aliases=True)
 
     open_comment_section(browser, logger)
+    # wait, to avoid crash
+    sleep(3)
     comment_input = get_comment_input(browser)
 
     try:
         if len(comment_input) > 0:
-            comment_input[0].clear()
+            # wait, to avoid crash
+            sleep(2)
             comment_input = get_comment_input(browser)
             # below, an extra space is added to force
             # the input box to update the reactJS core
-            comment_to_be_sent = rand_comment + " "
+            comment_to_be_sent = rand_comment
 
-            browser.execute_script(
-                "arguments[0].value = arguments[1];",
-                comment_input[0],
-                comment_to_be_sent,
+            # wait, to avoid crash
+            sleep(2)
+            # click on textarea/comment box and enter comment
+            (
+                ActionChains(browser)
+                .move_to_element(comment_input[0])
+                .click()
+                .send_keys(comment_to_be_sent)
+                .perform()
             )
-            # below, it also will remove that extra space added above
-            # COS '\b' is a backspace char in ASCII
-            comment_input[0].send_keys("\b")
-            comment_input = get_comment_input(browser)
-            comment_input[0].submit()
+            # wait, to avoid crash
+            sleep(2)
+            # post comment / <enter>
+            (
+                ActionChains(browser)
+                .move_to_element(comment_input[0])
+                .send_keys(Keys.ENTER)
+                .perform()
+            )
+
             update_activity(
                 browser,
                 action="comments",
