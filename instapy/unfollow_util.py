@@ -190,11 +190,9 @@ def get_following_status(
             follow_button = browser.find_elements_by_xpath(
                 read_xpath(get_following_status.__name__, "follow_span_XP_following")
             )
-            print("here2")
             return "Following", follow_button
         except:
             return "UNAVAILABLE", None
-    print("here")
     follow_button = explicit_wait(
         browser, "VOEL", [follow_button_XP, "XPath"], logger, 7, False
     )
@@ -1695,7 +1693,6 @@ def verify_action(
             following_status, follow_button = get_following_status(
                 browser, track, username, person, person_id, logger, logfolder
             )
-            print("retry_count={}, following_status {}, follow_button={}".format(retry_count, following_status,follow_button))
             if following_status in post_action_text_correct:
                 button_change = True
             elif following_status in post_action_text_fail:
@@ -1708,7 +1705,6 @@ def verify_action(
                 return False, "unexpected"
 
             if button_change:
-                print("we break here")
                 break
             else:
                 if retry_count == 1:
