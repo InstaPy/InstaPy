@@ -131,7 +131,7 @@ xpath["get_source_link"] = {
     "video": '//video[@class="tWeCl"]',
 }
 
-xpath["get_users_through_dialog"] = {"find_dialog_box": "//body/div[3]/div/div[2]"}
+xpath["get_users_through_dialog"] = {"find_dialog_box": "//section/main/div[2]"}
 
 xpath["is_private_profile"] = {"is_private": '//h2[@class="_kcrwx"]'}
 
@@ -168,8 +168,8 @@ xpath["login_user"] = {
 xpath["open_comment_section"] = {"comment_elem": "//button/span[@aria-label='Comment']"}
 
 xpath["unfollow"] = {
-    "following_link": "//section//ul//li[3]",
-    "find_dialog_box": "//div[text()='Following']/../../../following-sibling::div",
+    "following_link": "//ul/li[3]/a/span",
+    "find_dialog_box": "//section/main/div[2]",
 }
 
 xpath["watch_story_for_tag"] = {"explore_stories": "//section/main/header/div[1]/div"}

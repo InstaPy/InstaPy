@@ -64,8 +64,8 @@ def set_selenium_local_session(
 
     # set Firefox Agent to mobile agent
     user_agent = (
-        "Mozilla/5.0 (iPhone; CPU iPhone OS 10_3 like Mac OS X) AppleWebKit/602.1.50"
-        " (KHTML, like Gecko) CriOS/56.0.2924.75 Mobile/14E5239e Safari/602.1"
+        "Mozilla/5.0 (iPhone; CPU iPhone OS 12_1 like Mac OS X) AppleWebKit/605.1.15 "
+        "(KHTML, like Gecko) FxiOS/18.1 Mobile/16B92 Safari/605.1.15"
     )
 
     # keep user_agent
@@ -82,7 +82,7 @@ def set_selenium_local_session(
         firefox_profile = webdriver.FirefoxProfile()
 
     # set English language
-    firefox_profile.set_preference("intl.accept_languages", "en")
+    firefox_profile.set_preference("intl.accept_languages", "en-US")
     firefox_profile.set_preference("general.useragent.override", user_agent)
 
     if disable_image_load:
@@ -120,8 +120,8 @@ def set_selenium_local_session(
 
     browser.implicitly_wait(page_delay)
 
-    # set mobile viewport (iPhone 5)
-    browser.set_window_size(320, 568)
+    # set mobile viewport (iPhone X)
+    browser.set_window_size(375, 812)
 
     message = "Session started!"
     highlight_print("browser", message, "initialization", "info", logger)

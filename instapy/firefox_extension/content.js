@@ -48,21 +48,6 @@ WebGLRenderingContext.prototype.getParameter = parameter => {
   });
 });
 
-// -- pass retina image test
-// store the existing descriptor
-var elementDescriptor = Object.getOwnPropertyDescriptor(HTMLElement.prototype, 'offsetHeight');
-
-// redefine the property with a patched descriptor
-Object.defineProperty(HTMLDivElement.prototype, 'offsetHeight', {
-  ...elementDescriptor,
-  get: () => {
-    if (this.id === 'modernizr') {
-        return 1;
-    }
-    return elementDescriptor.get.apply(this);
-  },
-});
-
 // -- pass permissions test
 var originalQuery = window.navigator.permissions.query;
 window.navigator.permissions.query = parameters => (
@@ -75,6 +60,6 @@ window.navigator.permissions.query = parameters => (
 document.arrive('head', () => {
   var script = document.createElement('script');
   script.innerHTML = customScript;
-  script.type = 'text/javascript'
+  script.type = 'text/javascript';
   document.head.insertBefore(script, document.head.children[0]);
 });
