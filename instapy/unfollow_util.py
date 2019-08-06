@@ -975,7 +975,7 @@ def get_users_through_dialog(
                     if (quick_amount == 1 or i != (quick_amount - 1)) and (
                         not pts_printed or not abort
                     ):
-                    simulated_list.extend(quick_follow)
+                        simulated_list.extend(quick_follow)
 
             simulator_counter = 0
 
