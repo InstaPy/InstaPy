@@ -16,7 +16,7 @@ _The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
   - set_delemit_liking(max, min) ->(max_likes, min_likes)
   - set_delemit_commenting(max, min) ->(max_comments, min_comments)
   - unfollow_users(customList, instapyfollowed) -> (custom_list_enabled, custom_list, custom_list_param, instapy_followed_enabled, instapy_followed_param)
-  - set_quota_supervisor(peak_) ->(peak_hourly, peak*_daily)
+  - set_quota_supervisor(peak_*) ->(peak_*_hourly, peak_*_daily)
 
 ### Fixed
 
