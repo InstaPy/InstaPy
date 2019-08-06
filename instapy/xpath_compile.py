@@ -91,7 +91,7 @@ xpath["get_follow_requests"] = {
     "view_more_button": "//button[text()='View More']",
 }
 
-xpath["get_given_user_followers"] = {"followers_link": '//a[@href="/{}/followers/"]'}
+xpath["get_given_user_followers"] = {"followers_link": "//ul/li[2]/a/span"}
 
 xpath["get_given_user_following"] = {
     "all_following": "//a[contains(@href,'following')]/span",

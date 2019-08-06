@@ -1138,12 +1138,10 @@ def get_given_user_followers(
 
     # locate element to user's followers
     try:
-        followers_link = browser.find_elements_by_xpath(
-            read_xpath(get_given_user_followers.__name__, "followers_link").format(
-                user_name
-            )
+        followers_link = browser.find_element_by_xpath(
+            read_xpath(get_given_user_followers.__name__, "followers_link")
         )
-        click_element(browser, followers_link[0])
+        click_element(browser, followers_link)
         # update server calls
         update_activity(browser, state=None)
 
