@@ -650,36 +650,34 @@ def get_active_users(browser, username, posts, boundary, logger):
         try:
             checked_posts += 1
             sleep_actual(2)
+
             try:
-                likers_count = browser.execute_script(
-                    "return window._sharedData.entry_data.ProfilePage[0]"
-                    ".graphql.user.edge_saved_media.count"
-                )
-            except WebDriverException:
-                try:
-                    likers_count = browser.find_element_by_xpath(
-                        read_xpath(get_active_users.__name__, "likers_count")
-                    ).text
-                    if likers_count:  # prevent an empty string scenarios
-                        likers_count = format_number(likers_count)
-                    else:
-                        logger.info(
-                            "Failed to get likers count on your post {}  "
-                            "~empty string".format(count)
-                        )
-                        likers_count = None
-                except NoSuchElementException:
+                likers_count = browser.find_element_by_xpath(
+                    read_xpath(get_active_users.__name__, "likers_count")
+                ).text
+                if likers_count:  # prevent an empty string scenarios
+                    likers_count = format_number(likers_count)
+                    # liked by 'username' AND 165 others (166 in total)
+                    likers_count += 1
+                else:
                     logger.info(
-                        "Failed to get likers count on your post {}".format(count)
+                        "Failed to get likers count on your post {}  "
+                        "~empty string".format(count)
                     )
                     likers_count = None
+            except NoSuchElementException:
+                logger.info("Failed to get likers count on your post {}".format(count))
+                likers_count = None
             try:
-                likes_button = browser.find_element_by_xpath(
+                likes_button = browser.find_elements_by_xpath(
                     read_xpath(get_active_users.__name__, "likes_button")
                 )
 
                 if likes_button != []:
-                    # likes_button = likes_button[0]
+                    if likes_button[1] is not None:
+                        likes_button = likes_button[1]
+                    else:
+                        likes_button = likes_button[0]
                     click_element(browser, likes_button)
                     sleep_actual(3)
                 else:
@@ -693,18 +691,9 @@ def get_active_users(browser, username, posts, boundary, logger):
                 if checked_posts >= total_posts:
                     break
                 # if not reached posts(parameter) value, continue (but load next post)
-                if count != posts + 1:
-                    try:
-                        # click close button
-                        close_dialog_box(browser)
-
-                        # click next button
-                        next_button = browser.find_element_by_xpath(
-                            read_xpath(get_active_users.__name__, "next_button")
-                        )
-                        click_element(browser, next_button)
-                    except Exception:
-                        logger.error("Unable to go to next profile post")
+                browser.back()
+                # go to next post
+                count += 1
                 continue
 
             # get a reference to the 'Likes' dialog box
@@ -727,21 +716,28 @@ def get_active_users(browser, username, posts, boundary, logger):
                 )
             else:
                 amount = None
-
+            tmp_scroll_height = 0
+            user_list_len = -1
             while scroll_it is not False and boundary != 0:
-                scroll_it = browser.execute_script(
+                scroll_height = browser.execute_script(
                     """
-                    var div = arguments[0];
-                    if (div.offsetHeight + div.scrollTop < div.scrollHeight) {
-                        div.scrollTop = div.scrollHeight;
-                        return true;}
-                    else {
-                        return false;}
-                    """,
-                    dialog,
+                    let main = document.getElementsByTagName('main')
+                    return main[0].scrollHeight
+                    """
                 )
+                # check if it should keep scrolling down or exit
+                if (
+                    scroll_height >= tmp_scroll_height
+                    and len(user_list) > user_list_len
+                ):
+                    tmp_scroll_height = scroll_height
+                    user_list_len = len(user_list)
+                    scroll_it = True
+                else:
+                    scroll_it = False
 
                 if scroll_it is True:
+                    scroll_it = browser.execute_script("window.scrollBy(0, 1000)")
                     update_activity(browser, state=None)
 
                 if sc_rolled > 91 or too_many_requests > 1:  # old value 100
@@ -778,9 +774,8 @@ def get_active_users(browser, username, posts, boundary, logger):
                     ) or boundary is None:
 
                         if try_again <= 1:  # can increase the amount of tries
-                            print("\n")
                             logger.info(
-                                "Cor! Failed to get the desired amount of "
+                                "Failed to get the desired amount of "
                                 "usernames but trying again.."
                                 "\t|> post:{}  |> attempt: {}\n".format(
                                     posts, try_again + 1
@@ -910,7 +905,7 @@ def scroll_bottom(browser, element, range_int):
 
     for _ in range(int(range_int / 2)):
         # scroll down the page by 1000 pixels every time
-        browser.execute_script("window.scrollBy(0,1000)")
+        browser.execute_script("window.scrollBy(0, 1000)")
         # update server calls
         update_activity(browser, state=None)
         sleep(1)

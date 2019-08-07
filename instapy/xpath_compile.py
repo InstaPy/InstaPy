@@ -4,11 +4,12 @@
 xpath = {}
 
 xpath["bypass_suspicious_login"] = {
-    "bypass_with_mobile_choice": "//label[@for='choice_0']",
+    "bypass_with_mobile_choice": "(//button)[2]",
     "bypass_with_mobile_button": "//label[@for='choice_0']",
     "choice": "//label[@for='choice_1']",
     "choice_no_such_element": "//label[@class='_q0nt5']",
     "choice_exception": "//label[@class='_q0nt5 _a7z3k']",
+    "choice_exception2": "//label",
     "close_button": "[text()='Close']",
     "security_code_field": "//input[@id='security_code']",
     "send_security_code_button": "//button[text()='Send Security Code']",
@@ -53,8 +54,8 @@ xpath["find_user_id"] = {"meta_XP": "//meta[@property='instapp:owner_user_id']"}
 
 xpath["get_active_users"] = {
     "profile_posts": "(//div[contains(@class, '_9AhH0')])[{}]",
-    "likers_count": "//div[contains(@class,'Nm9Fw')]/child::button/span",
-    "likes_button": "(//div[@class='Nm9Fw']/a)[2]",
+    "likers_count": "//section/div/div/a/span",
+    "likes_button": "//div[@class='Nm9Fw']/a",
     "next_button": "//a[text()='Next']",
     "topCount_elements": "//span[contains(@class,'g47SY')]",
 }

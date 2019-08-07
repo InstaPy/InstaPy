@@ -23,7 +23,7 @@ from selenium.common.exceptions import MoveTargetOutOfBoundsException
 from .xpath import read_xpath
 
 
-def bypass_suspicious_login(browser, logger, logfolder, bypass_with_mobile):
+def bypass_suspicious_login(browser, logger, logfolder):
     """Bypass suspicious loggin attempt verification. This should be only
     enabled
     when there isn't available cookie for the username, otherwise it will and
@@ -74,23 +74,16 @@ def bypass_suspicious_login(browser, logger, logfolder, bypass_with_mobile):
                 choice = browser.find_element_by_xpath(
                     read_xpath(bypass_suspicious_login.__name__, "choice_exception")
                 ).text
-
             except Exception:
-                print("Unable to bypass Login Challenge")
-                return False
-
-    if bypass_with_mobile:
-        choice = browser.find_element_by_xpath(
-            read_xpath(bypass_suspicious_login.__name__, "bypass_with_mobile_choice")
-        ).text
-
-        mobile_button = browser.find_element_by_xpath(
-            read_xpath(bypass_suspicious_login.__name__, "bypass_with_mobile_button")
-        )
-
-        (ActionChains(browser).move_to_element(mobile_button).click().perform())
-
-        sleep(5)
+                try:
+                    choice = browser.find_element_by_xpath(
+                        read_xpath(
+                            bypass_suspicious_login.__name__, "choice_exception2"
+                        )
+                    ).text
+                except Exception:
+                    print("Unable to bypass Login Challenge")
+                    return False
 
     send_security_code_button = browser.find_element_by_xpath(
         read_xpath(bypass_suspicious_login.__name__, "send_security_code_button")
@@ -264,9 +257,7 @@ def check_browser(browser, logfolder, logger):
     return True
 
 
-def login_user(
-    browser, username, password, logger, logfolder, bypass_with_mobile=False
-):
+def login_user(browser, username, password, logger, logfolder):
     """Logins the user with the given username and password"""
     assert username, "Username not provided"
     assert password, "Password not provided"
@@ -445,7 +436,7 @@ def login_user(
                 logfolder=logfolder,
                 logger=logger,
             )
-            bypass_suspicious_login(browser, logger, logfolder, bypass_with_mobile)
+            bypass_suspicious_login(browser, logger, logfolder)
         except NoSuchElementException:
             pass
 

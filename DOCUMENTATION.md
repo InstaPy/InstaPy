@@ -1677,12 +1677,9 @@ the terminal.
 
 The Security Code is send to your email by Instagram.
 
-If you want to bypass the Security Code Challenge with your phone number, set `bypass_with_mobile` to `True`.
-
 ```python
 InstaPy(username=insta_username,
-        password=insta_password,
-        bypass_with_mobile=True)
+        password=insta_password)
 ```
 
 ### Use a proxy

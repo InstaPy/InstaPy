@@ -114,7 +114,6 @@ class InstaPy:
         proxy_address: str = None,
         proxy_port: str = None,
         disable_image_load: bool = False,
-        bypass_with_mobile: bool = False,
         multi_logs: bool = True,
         log_handler=None,  # TODO function type ?
         geckodriver_path: str = None,
@@ -129,7 +128,6 @@ class InstaPy:
         proxy_address = cli_args.proxy_address or proxy_address
         proxy_port = cli_args.proxy_port or proxy_port
         disable_image_load = cli_args.disable_image_load or disable_image_load
-        bypass_with_mobile = cli_args.bypass_with_mobile or bypass_with_mobile
         split_db = cli_args.split_db or split_db
 
         Settings.InstaPy_is_running = True
@@ -148,7 +146,6 @@ class InstaPy:
 
         self.browser = None
         self.page_delay = page_delay
-        self.bypass_with_mobile = bypass_with_mobile
         self.disable_image_load = disable_image_load
 
         # choose environment over static typed credentials
@@ -400,12 +397,7 @@ class InstaPy:
         self.browser.implicitly_wait(temporary_page_delay)
 
         if not login_user(
-            self.browser,
-            self.username,
-            self.password,
-            self.logger,
-            self.logfolder,
-            self.bypass_with_mobile,
+            self.browser, self.username, self.password, self.logger, self.logfolder
         ):
             message = (
                 "Unable to login to Instagram! "

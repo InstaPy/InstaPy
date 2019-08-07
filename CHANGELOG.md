@@ -16,7 +16,8 @@ _The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 - Fix follow_user_followers
 - Fix comment_image feature
 - Update dont_unfollow_active_users to Mobile Mode
-- Fix scroll down function
+- Fix scroll down (util) function
+- Remove bypass_by_mobile, it will auto detect the mobile if required now
 
 ### Breaking Changes
 
