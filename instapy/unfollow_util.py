@@ -299,7 +299,7 @@ def unfollow(
 
         elif InstapyFollowed is True:
             logger.info("Unfollowing the users followed by InstaPy\n")
-            unfollow_list = list(automatedFollowedPool["eligible"].keys()) 
+            unfollow_list = list(automatedFollowedPool["eligible"].keys())
 
         elif nonFollowers is True:
             logger.info("Unfollowing the users who do not follow back\n")
