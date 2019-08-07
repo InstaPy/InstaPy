@@ -148,7 +148,6 @@ def get_following_status(
     browser, track, username, person, person_id, logger, logfolder
 ):
     """ Verify if you are following the user in the loaded page """
-
     if person == username:
         return "OWNER", None
 
@@ -162,7 +161,6 @@ def get_following_status(
         "Couldn't access the profile page of '{}'!\t~might have changed the"
         " username".format(person)
     )
-
     # check if the page is available
     valid_page = is_page_available(browser, logger)
     if not valid_page:
@@ -180,7 +178,6 @@ def get_following_status(
         else:
             logger.error(failure_msg.format(person.encode("utf-8")))
             return "UNAVAILABLE", None
-
     # wait until the follow button is located and visible, then get it
     try:
         browser.find_element_by_xpath(
@@ -189,7 +186,7 @@ def get_following_status(
         follow_button_XP = read_xpath(get_following_status.__name__, "follow_button_XP")
     except NoSuchElementException:
         try:
-            follow_button = browser.find_elements_by_xpath(
+            follow_button = browser.find_element_by_xpath(
                 read_xpath(get_following_status.__name__, "follow_span_XP_following")
             )
             return "Following", follow_button
@@ -302,7 +299,7 @@ def unfollow(
 
         elif InstapyFollowed is True:
             logger.info("Unfollowing the users followed by InstaPy\n")
-            unfollow_list = list(automatedFollowedPool["eligible"].keys())
+            unfollow_list = list(automatedFollowedPool["eligible"].keys()) 
 
         elif nonFollowers is True:
             logger.info("Unfollowing the users who do not follow back\n")
@@ -1437,15 +1434,13 @@ def unfollow_user(
     logfolder,
 ):
     """ Unfollow a user either from the profile or post page or dialog box """
-    # list of available tracks to unfollow in: ["profile", "post" "dialog"]
-
+    # list of available tracks to unfollow in: ["profile", "post" "dialog]
     # check action availability
     if quota_supervisor("unfollows") == "jump":
         return False, "jumped"
 
     if track in ["profile", "post"]:
         # Method of unfollowing from a user's profile page or post page
-
         if track == "profile":
             user_link = "https://www.instagram.com/{}/".format(person)
             web_address_navigator(browser, user_link)
