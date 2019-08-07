@@ -611,19 +611,6 @@ def get_active_users(browser, username, posts, boundary, logger):
         posts if total_posts is None else total_posts if posts > total_posts else posts
     )
 
-    # click latest post
-    try:
-        latest_posts = browser.find_elements_by_xpath(
-            read_xpath(get_active_users.__name__, "latest_posts")
-        )
-        # avoid no posts
-        if latest_posts:
-            latest_post = latest_posts[0]
-            click_element(browser, latest_post)
-    except (NoSuchElementException, WebDriverException):
-        logger.warning("Failed to click on the latest post to grab active likers!\n")
-        return []
-
     active_users = []
     sc_rolled = 0
     start_time = time.time()
@@ -649,6 +636,19 @@ def get_active_users(browser, username, posts, boundary, logger):
     count = 1
     checked_posts = 0
     while count <= posts:
+        # load next post
+        try:
+            latest_post = browser.find_element_by_xpath(
+                read_xpath(get_active_users.__name__, "profile_posts").format(count)
+            )
+            # avoid no posts
+            if latest_post:
+                click_element(browser, latest_post)
+        except (NoSuchElementException, WebDriverException):
+            logger.warning(
+                "Failed to click on the latest post to grab active likers!"
+            )
+            return []
         try:
             checked_posts += 1
             sleep_actual(2)
@@ -676,12 +676,12 @@ def get_active_users(browser, username, posts, boundary, logger):
                     )
                     likers_count = None
             try:
-                likes_button = browser.find_elements_by_xpath(
+                likes_button = browser.find_element_by_xpath(
                     read_xpath(get_active_users.__name__, "likes_button")
                 )
 
                 if likes_button != []:
-                    likes_button = likes_button[0]
+                    # likes_button = likes_button[0]
                     click_element(browser, likes_button)
                     sleep_actual(3)
                 else:
@@ -817,12 +817,7 @@ def get_active_users(browser, username, posts, boundary, logger):
             try:
                 # click close button
                 close_dialog_box(browser)
-                # click next button
-                next_button = browser.find_element_by_xpath(
-                    read_xpath(get_active_users.__name__, "next_button")
-                )
-                click_element(browser, next_button)
-
+                browser.back()
             except Exception:
                 logger.error("Unable to go to next profile post")
         count += 1

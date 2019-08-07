@@ -15,6 +15,7 @@ _The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 - Fix follow_likers feature
 - Fix follow_user_followers
 - Fix comment_image feature
+- Update dont_unfollow_active_users to Mobile Mode
 
 ### Breaking Changes
 
