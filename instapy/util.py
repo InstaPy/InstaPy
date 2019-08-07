@@ -645,9 +645,7 @@ def get_active_users(browser, username, posts, boundary, logger):
             if latest_post:
                 click_element(browser, latest_post)
         except (NoSuchElementException, WebDriverException):
-            logger.warning(
-                "Failed to click on the latest post to grab active likers!"
-            )
+            logger.warning("Failed to click on the latest post to grab active likers!")
             return []
         try:
             checked_posts += 1
