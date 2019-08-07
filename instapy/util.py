@@ -909,9 +909,8 @@ def scroll_bottom(browser, element, range_int):
         range_int = 50
 
     for _ in range(int(range_int / 2)):
-        browser.execute_script(
-            "arguments[0].scrollTop = arguments[0].scrollHeight", element
-        )
+        # scroll down the page by 1000 pixels every time
+        browser.execute_script("window.scrollBy(0,1000)")
         # update server calls
         update_activity(browser, state=None)
         sleep(1)

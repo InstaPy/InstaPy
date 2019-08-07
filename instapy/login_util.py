@@ -76,10 +76,7 @@ def bypass_suspicious_login(browser, logger, logfolder, bypass_with_mobile):
                 ).text
 
             except Exception:
-                print(
-                    "Unable to locate email or phone button, maybe "
-                    "bypass_suspicious_login=True isn't needed anymore."
-                )
+                print("Unable to bypass Login Challenge")
                 return False
 
     if bypass_with_mobile:
