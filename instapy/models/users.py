@@ -4,10 +4,8 @@ User model for interactions user attributes and perform action on users
 """
 from ..util  import get_relationship_counts, get_number_of_posts, find_user_id, web_address_navigator
 from ..unfollow_util import follow_user, unfollow_user
-
 from ..relationship_tools import get_following as get_following_original
 from ..relationship_tools import get_followers as get_followers_original
-from ..relationship_tools import get_fans as get_fans_original
 
 
 class User(object):
@@ -22,7 +20,7 @@ class User(object):
         elif self.link and not self.name:
             self.name = self.link.rstrip("/").rsplit("/", 1)[-1]
 
-        self.text = text
+        self.text = text # TODO: retrieve bio from user profile
         self.post_count = post_count
         self.follower_count = follower_count
         self.following_count = following_count
@@ -160,7 +158,7 @@ class User(object):
         )
 
         following = set()
-        for raw_followed in raw_following[offset:]:
+        for raw_followed in raw_following[offset:offset+limit]:
             follower = User(name=raw_followed)
             following.add(follower)
 
@@ -187,12 +185,9 @@ class User(object):
         )
 
         followers = set()
-        for raw_follower in raw_followers[offset:]:
+        for raw_follower in raw_followers[offset:offset+limit]:
             follower = User(name=raw_follower)
             followers.add(follower)
 
         print(" - returning {0} of the total {1}".format(len(followers), self.follower_count))
         return followers
-
-
-

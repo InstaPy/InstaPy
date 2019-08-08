@@ -65,12 +65,11 @@ if __name__ == "__main__":
     )
 
     with smart_run(session):
-        # test_init("https://www.instagram.com/nathanleeallen/", "nathanleeallen", session)
-        # test_values("https://www.instagram.com/nathanleeallen/", session)
-        # test_follow("https://www.instagram.com/nathanleeallen/", session)
+        test_init("https://www.instagram.com/nathanleeallen/", "nathanleeallen", session)
+        test_values("https://www.instagram.com/nathanleeallen/", session)
+        test_follow("https://www.instagram.com/nathanleeallen/", session)
 
         test_following("https://www.instagram.com/nathanleeallen/", session)
-
         test_followers("https://www.instagram.com/nathanleeallen/", session)
 
     print("[+] all tests done")

@@ -8,12 +8,13 @@ from enum import Enum
 
 from .. import InstaPy, smart_run
 from ..like_util import get_links_for_tag, like_image
-from ..commenters_util import extract_post_info
+from ..commenters_util import extract_post_info, users_liked
 from ..comment_util import get_comments_count, is_commenting_enabled, comment_image, open_comment_section
 from ..util import web_address_navigator, get_current_url, explicit_wait, extract_text_from_element
 from ..xpath import read_xpath
 
 from .comments import Comment
+from .users import User
 
 
 class Post(object):
@@ -209,3 +210,24 @@ class Post(object):
             comments.add(comment)
 
         return comments
+
+
+    def get_likers(self, session, offset=0, limit=None):
+        print("[+] get post likers")
+        self.show(session)
+
+        if not limit:
+            limit = self.count_likes(session) - offset
+
+        raw_likers = users_liked(session.browser, self.link, amount=limit + offset)
+
+        likers = set()
+        for raw_liker in raw_likers[offset:offset+limit]:
+            liker = User(name=raw_liker)
+            likers.add(liker)
+
+        print(" - returning {0} of the total {1}".format(len(likers), self.like_count))
+        return likers
+
+
+

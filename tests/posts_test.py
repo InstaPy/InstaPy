@@ -5,7 +5,7 @@ Tests related to comments
 
 import os
 from instapy import InstaPy, smart_run
-from instapy.models import Post, Comment
+from instapy.models import Post, Comment, User
 
 def test_values(link, session):
     post = Post(link=link)
@@ -25,6 +25,14 @@ def test_comments(link, session):
     assert type(post.count_comments(session)) == int, "Comment count should be a number"
 
 
+def test_likers(link, session):
+    post = Post(link=link)
+
+    likers = post.get_likers(session, offset=2, limit=10)
+    for liker in likers:
+        assert type(liker) == User, "Likers should be a set of User objects"
+
+
 if __name__ == "__main__":
     """ Main entry point for tests """
     username = os.environ["INSTAGRAM_USERNAME"]
@@ -38,9 +46,9 @@ if __name__ == "__main__":
     )
 
     with smart_run(session):
-        test_values("https://www.instagram.com/p/B04q16ZHd-X/", session)
-        test_comments("https://www.instagram.com/p/B04q16ZHd-X/", session)
-
+        # test_values("https://www.instagram.com/p/B04q16ZHd-X/", session)
+        # test_comments("https://www.instagram.com/p/B04q16ZHd-X/", session)
+        test_likers("https://www.instagram.com/p/B04q16ZHd-X/", session)
 
 
     print("[+] all tests done")
