@@ -1,0 +1,46 @@
+#!/usr/bin/env python3
+"""
+Tests related to comments
+"""
+
+import os
+from instapy import InstaPy, smart_run
+from instapy.models import Post, Comment
+
+def test_values(link, session):
+    post = Post(link=link)
+
+    assert type(post.count_likes(session)) == int, "Like count should be a number"
+    assert type(post.count_comments(session)) == int, "Comment count should be a number"
+
+
+def test_comments(link, session):
+    post = Post(link=link)
+    comments = post.get_comments(session, offset=3, limit=None, randomize=False)
+
+    for comment in comments:
+        print(comment)
+
+    assert type(post.count_likes(session)) == int, "Like count should be a number"
+    assert type(post.count_comments(session)) == int, "Comment count should be a number"
+
+
+if __name__ == "__main__":
+    """ Main entry point for tests """
+    username = os.environ["INSTAGRAM_USERNAME"]
+    password = os.environ["INSTAGRAM_PASSWORD"]
+
+    session = InstaPy(
+        username=username,
+        password=password,
+        headless_browser=False,
+        show_logs=True
+    )
+
+    with smart_run(session):
+        test_values("https://www.instagram.com/p/B04q16ZHd-X/", session)
+        test_comments("https://www.instagram.com/p/B04q16ZHd-X/", session)
+
+
+
+    print("[+] all tests done")
