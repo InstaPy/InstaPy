@@ -292,6 +292,9 @@ class InstaPy:
         self.aborting = False
         self.start_time = time.time()
 
+        # proxy address
+        self.proxy_address = proxy_address
+
         # assign logger
         self.show_logs = show_logs
         Settings.show_logs = show_logs or None
@@ -397,7 +400,12 @@ class InstaPy:
         self.browser.implicitly_wait(temporary_page_delay)
 
         if not login_user(
-            self.browser, self.username, self.password, self.logger, self.logfolder
+            self.browser,
+            self.username,
+            self.password,
+            self.logger,
+            self.logfolder,
+            self.proxy_address,
         ):
             message = (
                 "Unable to login to Instagram! "

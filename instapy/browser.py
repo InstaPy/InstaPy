@@ -137,6 +137,14 @@ def set_selenium_local_session(
 
 def proxy_authentication(browser, logger, proxy_username, proxy_password):
     """ Authenticate proxy using popup alert window """
+
+    # FIXME: https://github.com/SeleniumHQ/selenium/issues/7239
+    # this feauture is not working anymore due to the Selenium bug report above
+    logger.warn(
+        "Proxy Authentication is not working anymore due to the Selenium bug "
+        "report: https://github.com/SeleniumHQ/selenium/issues/7239"
+    )
+
     try:
         # sleep(1) is enough, sleep(2) is to make sure we
         # give time to the popup windows

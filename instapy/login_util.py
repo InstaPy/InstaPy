@@ -174,7 +174,7 @@ def bypass_suspicious_login(browser, logger, logfolder):
         pass
 
 
-def check_browser(browser, logfolder, logger):
+def check_browser(browser, logfolder, logger, proxy_address):
     # set initial state to offline
     update_activity(
         browser,
@@ -187,15 +187,35 @@ def check_browser(browser, logfolder, logger):
     # check connection status
     try:
         logger.info("-- Connection Checklist [1/3] (Internet Connection Status)")
-        browser.get("https://www.google.com")
-        logger.info("- Internet Connection Status: ok")
-        update_activity(
-            browser,
-            action=None,
-            state="Internet connection is ok",
-            logfolder=logfolder,
-            logger=logger,
-        )
+        browser.get("view-source:https://api.myip.com/")
+        pre = browser.find_element_by_tag_name("pre").text
+        current_ip_info = json.loads(pre)
+        if proxy_address is not None and proxy_address != current_ip_info["ip"]:
+            logger.warn("- Proxy is set, but it's not working properly")
+            logger.warn(
+                '- Expected Proxy IP is "{}", and the current IP is "{}"'.format(
+                    proxy_address, current_ip_info["ip"]
+                )
+            )
+            logger.warn("- Try again or disable the Proxy Address on your setup")
+            logger.warn("- Aborting connection...")
+            return False
+        else:
+            logger.info("- Internet Connection Status: ok")
+            logger.info(
+                '- Current IP is "{}" and it\'s from "{}/{}"'.format(
+                    current_ip_info["ip"],
+                    current_ip_info["country"],
+                    current_ip_info["cc"],
+                )
+            )
+            update_activity(
+                browser,
+                action=None,
+                state="Internet connection is ok",
+                logfolder=logfolder,
+                logger=logger,
+            )
     except Exception:
         logger.warn("- Internet Connection Status: error")
         update_activity(
@@ -257,12 +277,12 @@ def check_browser(browser, logfolder, logger):
     return True
 
 
-def login_user(browser, username, password, logger, logfolder):
+def login_user(browser, username, password, logger, logfolder, proxy_address):
     """Logins the user with the given username and password"""
     assert username, "Username not provided"
     assert password, "Password not provided"
 
-    if not check_browser(browser, logfolder, logger):
+    if not check_browser(browser, logfolder, logger, proxy_address):
         return False
 
     ig_homepage = "https://www.instagram.com"
