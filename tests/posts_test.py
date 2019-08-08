@@ -46,9 +46,8 @@ if __name__ == "__main__":
     )
 
     with smart_run(session):
-        # test_values("https://www.instagram.com/p/B04q16ZHd-X/", session)
-        # test_comments("https://www.instagram.com/p/B04q16ZHd-X/", session)
+        test_values("https://www.instagram.com/p/B04q16ZHd-X/", session)
+        test_comments("https://www.instagram.com/p/B04q16ZHd-X/", session)
         test_likers("https://www.instagram.com/p/B04q16ZHd-X/", session)
-
 
     print("[+] all tests done")
