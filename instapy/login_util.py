@@ -227,18 +227,9 @@ def check_browser(browser, logfolder, logger, proxy_address):
         )
         return False
 
-    # check if hide-selenium extension is running
-    logger.info("-- Connection Checklist [2/3] (Hide Selenium Extension)")
-    webdriver = browser.execute_script("return window.navigator.webdriver")
-    logger.info("- window.navigator.webdriver response: {}".format(webdriver))
-    if webdriver:
-        logger.warn("- Hide Selenium Extension: error")
-    else:
-        logger.info("- Hide Selenium Extension: ok")
-
     # check Instagram.com status
     try:
-        logger.info("-- Connection Checklist [3/3] (Instagram Server Status)")
+        logger.info("-- Connection Checklist [2/3] (Instagram Server Status)")
         browser.get("https://isitdownorjust.me/instagram-com/")
         sleep(2)
         # collect isitdownorjust.me website information
@@ -274,6 +265,16 @@ def check_browser(browser, logfolder, logger, proxy_address):
         )
         return False
 
+    # check if hide-selenium extension is running
+    logger.info("-- Connection Checklist [3/3] (Hide Selenium Extension)")
+    webdriver = browser.execute_script("return window.navigator.webdriver")
+    logger.info("- window.navigator.webdriver response: {}".format(webdriver))
+    if webdriver:
+        logger.warn("- Hide Selenium Extension: error")
+    else:
+        logger.info("- Hide Selenium Extension: ok")
+
+    # everything is ok, then continue(True)
     return True
 
 
