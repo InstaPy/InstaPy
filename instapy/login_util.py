@@ -110,7 +110,7 @@ def bypass_suspicious_login(browser, bypass_with_mobile):
 
     print('Instagram detected an unusual login attempt')
     print('A security code was sent to your {}'.format(choice))
-    security_code = input('Type the security code here: ')
+    security_code = raw_input('Type the security code here: ')
 
     security_code_field = browser.find_element_by_xpath(
         read_xpath(bypass_suspicious_login.__name__, "security_code_field")
