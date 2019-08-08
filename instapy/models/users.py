@@ -5,6 +5,10 @@ User model for interactions user attributes and perform action on users
 from ..util  import get_relationship_counts, get_number_of_posts, find_user_id, web_address_navigator
 from ..unfollow_util import follow_user, unfollow_user
 
+from ..relationship_tools import get_following as get_following_original
+from ..relationship_tools import get_followers as get_followers_original
+from ..relationship_tools import get_fans as get_fans_original
+
 
 class User(object):
 
@@ -135,6 +139,60 @@ class User(object):
 
         print(" - unfollowed {0}: {1}".format(self.name, unfollow_state))
         return unfollow_state
+
+
+    def get_following(self, session, offset=0, limit=None, live_match=False, store_locally=True):
+        print("[+] get user following")
+        self.show(session)
+
+        if not limit:
+            limit = self.count_following(session) - offset
+
+        raw_following = get_following_original(
+            session.browser,
+            self.name,
+            limit + offset,
+            session.relationship_data,
+            live_match,
+            store_locally,
+            session.logger,
+            session.logfolder,
+        )
+
+        following = set()
+        for raw_followed in raw_following[offset:]:
+            follower = User(name=raw_followed)
+            following.add(follower)
+
+        print(" - returning {0} of the total {1}".format(len(following), self.following_count))
+        return following
+
+
+    def get_followers(self, session, offset=0, limit=None, live_match=False, store_locally=True):
+        print("[+] get user followers")
+        self.show(session)
+
+        if not limit:
+            limit = self.count_followers(session) - offset
+
+        raw_followers = get_followers_original(
+            session.browser,
+            self.name,
+            limit + offset,
+            session.relationship_data,
+            live_match,
+            store_locally,
+            session.logger,
+            session.logfolder,
+        )
+
+        followers = set()
+        for raw_follower in raw_followers[offset:]:
+            follower = User(name=raw_follower)
+            followers.add(follower)
+
+        print(" - returning {0} of the total {1}".format(len(followers), self.follower_count))
+        return followers
 
 
 

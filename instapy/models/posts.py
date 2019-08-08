@@ -145,6 +145,7 @@ class Post(object):
             like_image(session.browser, session.username, session.blacklist, session.logger, session.logfolder, 1)
 
 
+    # TODO: implement
     def unlike(self, session, verify=False):
         print("[+] unlike post")
         print("NOT YET IMPLEMENTED")
@@ -163,7 +164,7 @@ class Post(object):
 
 
     # Retrieve all comments form a post
-    # TODO: everything, including scroll for more comments and handle exceptions
+    # TODO: scroll for more comments and handle exceptions
     def get_comments(self, session, offset=0, limit=None, randomize=False):
         print("[+] retrieving comments")
         self.show(session)

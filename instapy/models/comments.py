@@ -16,9 +16,11 @@ class Comment(object):
         self.like_count = like_count
         self.reply_count = reply_count
 
+
     # Used for working with sets
     def __hash__(self):
         return hash(self.link + self.user + self.text)
+
 
     # Used for working with sets
     def __eq__(self, other):
@@ -27,8 +29,31 @@ class Comment(object):
         else:
             return False
 
+
     def __repr__(self):
         return "Comment({0}, {1}, {2}, {3}, {4}, {5})".format(hash(self), self.link, self.user, self.text, self.like_count, self.reply_count)
 
+
     def __str__(self):
         return repr(self)
+
+
+    # TODO: implement
+    def like(self, session, verify=False):
+        print("[+] like comment")
+        print("NOT YET IMPLEMENTED")
+        pass
+
+
+    # TODO: implement
+    def unlike(self, session, verify=False):
+        print("[+] unlike comment")
+        print("NOT YET IMPLEMENTED")
+        pass
+
+
+    # TODO: implement
+    def reply(self, reply=None, verify=False):
+        print("[+] reply to comment")
+        print("NOT YET IMPLEMENTED")
+        pass

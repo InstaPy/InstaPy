@@ -34,6 +34,24 @@ def test_follow(link, session):
     assert unfollowing, "State should be False after unfollowing"
 
 
+def test_following(link, session):
+    user = User(link=link)
+
+    following = user.get_following(session, offset=2, limit=10)
+
+    for followed in following:
+        assert type(followed) == User, "Following should be a set of User objects"
+
+
+def test_followers(link, session):
+    user = User(link=link)
+
+    followers = user.get_followers(session, offset=2, limit=10)
+    for follower in followers:
+        assert type(follower) == User, "Followers should be a set of User objects"
+
+
+
 if __name__ == "__main__":
     """ Main entry point for tests """
     username = os.environ["INSTAGRAM_USERNAME"]
@@ -47,8 +65,12 @@ if __name__ == "__main__":
     )
 
     with smart_run(session):
-        test_init("https://www.instagram.com/nathanleeallen/", "nathanleeallen", session)
-        test_values("https://www.instagram.com/nathanleeallen/", session)
-        test_follow("https://www.instagram.com/nathanleeallen/", session)
+        # test_init("https://www.instagram.com/nathanleeallen/", "nathanleeallen", session)
+        # test_values("https://www.instagram.com/nathanleeallen/", session)
+        # test_follow("https://www.instagram.com/nathanleeallen/", session)
+
+        test_following("https://www.instagram.com/nathanleeallen/", session)
+
+        test_followers("https://www.instagram.com/nathanleeallen/", session)
 
     print("[+] all tests done")
