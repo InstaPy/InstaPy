@@ -2,7 +2,7 @@
 """
 Comment model for interactions comment attributes and perform action on comments
 """
-
+from .users import User
 
 class Comment(object):
 
@@ -57,3 +57,12 @@ class Comment(object):
         print("[+] reply to comment")
         print("NOT YET IMPLEMENTED")
         pass
+
+
+    def get_user(self, session):
+        print("[+] get comment user")
+        return User(name=self.user)
+
+
+
+
