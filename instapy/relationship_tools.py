@@ -415,7 +415,7 @@ def get_fans(browser, username, relationship_data, live_match,
     # get `Followers` data
     all_followers = get_followers(browser,username,"full",relationship_data,live_match,store_locally,logger,logfolder)
     # get `Following` data
-    all_following =get_following(browser,username,"full",relationship_data,live_match,store_locally,logger,logfolder)
+    all_following = get_following(browser,username,"full",relationship_data,live_match,store_locally,logger,logfolder)
 
     # using this approach we can preserve the order of elements to be used
     # with `FIFO`, `LIFO` or `RANDOM` styles
