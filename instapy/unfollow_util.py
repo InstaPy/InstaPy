@@ -846,12 +846,13 @@ def follow_user(browser, track, login, user_name, button, blacklist, logger, log
 
     return True, "success"
 
+
 def scroll_to_bottom_of_followers_list(browser):
     browser.execute_script("window.scrollTo(0, document.body.scrollHeight)")
     return
 
 
-def get_profile_followers_with_graphql(
+def get_users_through_dialog_with_graphql(
     browser,
     login,
     user_name,
@@ -867,16 +868,29 @@ def get_profile_followers_with_graphql(
     logger,
     logfolder,
 ):
+
+    # TODO: 
+    # simulation
+    # random
+    # move this function to relationship_tools ?
+    logger.warn(
+        "this is a work in progress, testing get_users_through_dialog_with_graphql (dev branch)"
+    )
     user_id = browser.execute_script(
         "return window._sharedData.entry_data.ProfilePage[0].graphql.user.id"
     )
+
     query_hash = get_query_hash(browser)
     # check if hash is present
     if query_hash is None:
         logger.info("Unable to locate GraphQL query hash")
 
-    # TODO: find the first GraphQL url/call to replace it here
-    browser.get("""view-source:https://www.instagram.com/graphql/query/?query_hash=c76146de99bb02f6415203be841dd25a&variables={"id":"188965","include_reel":true,"fetch_mutual":false,"first":19,"after":"QVFEeE5SdXJaU0M1Tjc3SklaSndGVDZNOEF5LVkwWFJuTEZxcHgtcGszY21sRUdxbVZ3NWt2SWRubFgyOUFwdTdjMjZWYUJNSEJKYXQzQy1ZV3dWa0p3dQ=="}""")
+    graphql_query_URL = ("view-source:https://www.instagram.com/graphql/query/?query_hash={}".format(query_hash))
+    variables = {"id": str(user_id), "include_reel": "true", "fetch_mutual": "true", "first": 50}
+    url = "{}&variables={}".format(graphql_query_URL, str(json.dumps(variables)))
+
+    web_address_navigator(browser, url)
+
     pre = browser.find_element_by_tag_name("pre")
     # set JSON object
     data = json.loads(pre.text)
@@ -891,11 +905,6 @@ def get_profile_followers_with_graphql(
 
     has_next_page = data['data']['user']['edge_followed_by']['page_info']['has_next_page']
 
-    # base url
-    graphql_query_URL = (
-        "https://www.instagram.com/graphql/query/?query_hash" "={}".format(query_hash)
-    )
-
     while(has_next_page and len(followers_list) <= amount):
         # server call interval
         sleep(2)
@@ -904,7 +913,7 @@ def get_profile_followers_with_graphql(
         end_cursor = data['data']['user']['edge_followed_by']['page_info']['end_cursor']
 
         # url variables
-        variables = {"id": str(user_id), "include_reel": "true", "fetch_mutual": "false", "first": 19, "after": end_cursor}
+        variables = {"id": str(user_id), "include_reel": "true", "fetch_mutual": "true", "first": 50, "after": end_cursor}
         url = "{}&variables={}".format(graphql_query_URL, str(json.dumps(variables)))
         browser.get("view-source:{}".format(url))
         pre = browser.find_element_by_tag_name("pre")
@@ -920,12 +929,18 @@ def get_profile_followers_with_graphql(
 
         # check if there is next page
         has_next_page = data['data']['user']['edge_followed_by']['page_info']['has_next_page']
+
     print(followers_list)
+    return followers_list, []
 
 
 def get_query_hash(browser):
-    browser.get("https://www.instagram.com/static/bundles/es6/Consumer.js/1f67555edbd3.js")
+    """ Load Instagram JS file and find query hash code """
+    link = "https://www.instagram.com/static/bundles/es6/Consumer.js/1f67555edbd3.js"
+    web_address_navigator(browser, link)
     page_source = browser.page_source
+    # locate pattern value from JS file
+    # sequence of 32 words and/or numbers just before ,n=" value
     hash = re.search('[a-z0-9]{32}(?=",n=")', page_source)[0]
     return hash
 
@@ -1246,7 +1261,7 @@ def get_given_user_followers(
 
     channel = "Follow"
     # person_list, simulated_list = get_users_through_dialog(
-    person_list, simulated_list = get_profile_followers_with_graphql(
+    person_list, simulated_list = get_users_through_dialog_with_graphql(
         browser,
         login,
         user_name,
