@@ -159,7 +159,7 @@ class User(object):
         )
 
         following = set()
-        start = min(offset+limit, len(raw_following))
+        start = min(offset, len(raw_following))
         last = min(offset+limit, len(raw_following))
         for raw_followed in raw_following[start:last]:
             follower = User(name=raw_followed)
@@ -188,7 +188,7 @@ class User(object):
         )
 
         followers = set()
-        start = min(offset+limit, len(raw_followers))
+        start = min(offset, len(raw_followers))
         last = min(offset+limit, len(raw_followers))
         for raw_follower in raw_followers[start:last]:
             follower = User(name=raw_follower)
@@ -222,7 +222,7 @@ class User(object):
 
         posts = set()
 
-        start = min(offset+limit, len(raw_links))
+        start = min(offset, len(raw_links))
         last = min(offset+limit, len(raw_links))
         for raw_link in raw_links[start:last]:
             post = Post(link=raw_link)

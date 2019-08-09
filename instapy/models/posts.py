@@ -7,10 +7,11 @@ from datetime import datetime
 from enum import Enum
 
 from .. import InstaPy, smart_run
+from ..unfollow_util import follow_user, unfollow_user
 from ..like_util import get_links_for_tag, like_image
 from ..commenters_util import extract_post_info, users_liked
 from ..comment_util import get_comments_count, is_commenting_enabled, comment_image, open_comment_section
-from ..util import web_address_navigator, get_current_url, explicit_wait, extract_text_from_element
+from ..util import web_address_navigator, get_current_url, explicit_wait, extract_text_from_element, find_user_id
 from ..xpath import read_xpath
 
 from .comments import Comment
@@ -29,6 +30,7 @@ class Post(object):
     def __init__(self, link=None, type=None, user=None):
         self.link = link
         self.type = type
+        self.user = user
 
         self.like_count = None
         self.comment_count = None
@@ -144,24 +146,72 @@ class Post(object):
             comment_image(session.browser, session.username, session.comments, session.blacklist, session.logger, session.logfolder)
 
 
-    def get_user(self, session):
-        print("[+] retrieving user")
+    def follow(self, session):
+        print("[+] follow user")
         self.show(session)
 
-        post_page = session.browser.execute_script(
-            "return window._sharedData.entry_data.PostPage"
-        )
+        user = self.get_user(session)
+        user_id = find_user_id(session.browser, "post", user.name, session.logger)
 
-        graphql = "graphql" in post_page[0]
-        if graphql:
-            media = post_page[0]["graphql"]["shortcode_media"]
-            username = media["owner"]["username"]
+        follow_state, msg = follow_user(
+                    session.browser,
+                    "post",
+                    session.username,
+                    user.name,
+                    None,
+                    session.blacklist,
+                    session.logger,
+                    session.logfolder,
+                )
 
-        else:
-            media = post_page[0]["media"]
-            username = media["owner"]["username"]
+        print(" - followed {0}: {1}".format(self.name, follow_state))
+        return follow_state
 
-        return User(name=username)
+
+    def unfollow(self, session):
+        print("[+] unfollow user")
+        self.show(session)
+
+        user = self.get_user(session)
+        user_id = find_user_id(session.browser, "post", user.name, session.logger)
+        unfollow_state, msg = unfollow_user(
+                            session.browser,
+                            "post",
+                            session.username,
+                            user.name,
+                            user_id,
+                            None,
+                            session.relationship_data,
+                            session.logger,
+                            session.logfolder,
+                        )
+
+        print(" - unfollowed {0}: {1}".format(self.name, unfollow_state))
+        return unfollow_state
+
+
+    def get_user(self, session, refresh=False):
+        print("[+] retrieving user")
+
+        if not self.user or refresh:
+            self.show(session)
+
+            post_page = session.browser.execute_script(
+                "return window._sharedData.entry_data.PostPage"
+            )
+
+            graphql = "graphql" in post_page[0]
+            if graphql:
+                media = post_page[0]["graphql"]["shortcode_media"]
+                username = media["owner"]["username"]
+
+            else:
+                media = post_page[0]["media"]
+                username = media["owner"]["username"]
+
+            self.user = username
+
+        return User(name=self.user)
 
 
     # Retrieve all comments form a post
@@ -185,12 +235,13 @@ class Post(object):
         comments_block = session.browser.find_elements_by_xpath(comments_block_XPath)
 
         comments = set()
-        start = min(offset+limit, len(comments_block))
+        start = min(offset, len(comments_block))
         last = min(offset+limit, len(comments_block))
         for comment_line in comments_block[start:last]:
+            comment_links = comment_line.find_elements_by_tag_name("a")
 
             # Commenter
-            commenter_elem = comment_line.find_elements_by_tag_name("a")[1]
+            commenter_elem = comment_links[1]
             commenter = extract_text_from_element(commenter_elem)
 
             # Text
@@ -198,9 +249,13 @@ class Post(object):
             text = extract_text_from_element(comment_elem)
 
             # Likes count
-            like_elem = comment_line.find_elements_by_tag_name("a")[2]
-            like_text = extract_text_from_element(like_elem)
-            like_count = int(like_text.split(" ")[0])
+            if len(comment_links) >= 3:
+                like_elem = comment_links[2]
+                like_text = extract_text_from_element(like_elem)
+                like_count = int(like_text.split(" ")[0])
+
+            else:
+                like_count = 0
 
             # Timestamp
             timestamp_elem = comment_line.find_element_by_tag_name("time")
@@ -210,6 +265,8 @@ class Post(object):
             # Make our comment object
             comment = Comment(link=link, user=commenter, text=text, like_count=like_count, timestamp=timestamp)
             comments.add(comment)
+
+            print(comment)
 
         return comments
 
@@ -224,7 +281,7 @@ class Post(object):
         raw_likers = users_liked(session.browser, self.link, amount=limit + offset)
 
         likers = set()
-        start = min(offset+limit, len(raw_likers))
+        start = min(offset, len(raw_likers))
         last = min(offset+limit, len(raw_likers))
         for raw_liker in raw_likers[start:last]:
             liker = User(name=raw_liker)
