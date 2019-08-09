@@ -164,7 +164,7 @@ class Post(object):
                     session.logfolder,
                 )
 
-        print(" - followed {0}: {1}".format(self.name, follow_state))
+        print(" - followed {0}: {1}".format(self.user, follow_state))
         return follow_state
 
 
@@ -186,7 +186,7 @@ class Post(object):
                             session.logfolder,
                         )
 
-        print(" - unfollowed {0}: {1}".format(self.name, unfollow_state))
+        print(" - unfollowed {0}: {1}".format(self.user, unfollow_state))
         return unfollow_state
 
 
