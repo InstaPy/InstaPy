@@ -3,6 +3,7 @@
 User model for interactions user attributes and perform action on users
 """
 from ..util  import get_relationship_counts, get_number_of_posts, find_user_id, web_address_navigator
+from ..like_util import get_links_for_username
 from ..unfollow_util import follow_user, unfollow_user
 from ..relationship_tools import get_following as get_following_original
 from ..relationship_tools import get_followers as get_followers_original
@@ -158,11 +159,13 @@ class User(object):
         )
 
         following = set()
-        for raw_followed in raw_following[offset:offset+limit]:
+        start = min(offset+limit, len(raw_following))
+        last = min(offset+limit, len(raw_following))
+        for raw_followed in raw_following[start:last]:
             follower = User(name=raw_followed)
             following.add(follower)
 
-        print(" - returning {0} of the total {1}".format(len(following), self.following_count))
+        print(" - returning {0} of the total {1}".format(len(following), self.count_following(session)))
         return following
 
 
@@ -185,9 +188,45 @@ class User(object):
         )
 
         followers = set()
-        for raw_follower in raw_followers[offset:offset+limit]:
+        start = min(offset+limit, len(raw_followers))
+        last = min(offset+limit, len(raw_followers))
+        for raw_follower in raw_followers[start:last]:
             follower = User(name=raw_follower)
             followers.add(follower)
 
-        print(" - returning {0} of the total {1}".format(len(followers), self.follower_count))
+        print(" - returning {0} of the total {1}".format(len(followers), self.count_followers(session)))
         return followers
+
+
+    def get_posts(self, session, offset=0, limit=None):
+        # avoid curcular dependencies
+        from .posts import Post
+
+        print("[+] get user posts")
+        self.show(session)
+
+        if not limit:
+            limit = self.count_followers(session) - offset
+
+        raw_links = get_links_for_username(
+            session.browser,
+            session.username,
+            self.name,
+            limit + offset,
+            session.logger,
+            session.logfolder,
+            randomize=False,
+            media=None,
+            taggedImages=False,
+        )
+
+        posts = set()
+
+        start = min(offset+limit, len(raw_links))
+        last = min(offset+limit, len(raw_links))
+        for raw_link in raw_links[start:last]:
+            post = Post(link=raw_link)
+            posts.add(post)
+
+        print(" - returning {0} of the total {1}".format(len(posts), self.count_posts(session)))
+        return posts

@@ -51,6 +51,14 @@ def test_followers(link, session):
         assert type(follower) == User, "Followers should be a set of User objects"
 
 
+def test_posts(link, session):
+    user = User(link=link)
+
+    posts = user.get_posts(session, offset=2, limit=10)
+    for post in posts:
+        assert type(post) == Post, "Posts should be a set of Post objects"
+
+
 
 if __name__ == "__main__":
     """ Main entry point for tests """
@@ -71,5 +79,6 @@ if __name__ == "__main__":
 
         test_following("https://www.instagram.com/nathanleeallen/", session)
         test_followers("https://www.instagram.com/nathanleeallen/", session)
+        test_posts("https://www.instagram.com/nathanleeallen/", session)
 
     print("[+] all tests done")

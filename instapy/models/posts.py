@@ -77,26 +77,6 @@ class Post(object):
         print(" - {0} likes".format(self.like_count))
         return self.like_count
 
-    def count_likes(self, session, refresh=False):
-        print("[+] counting likes")
-
-        if not self.like_count or refresh:
-            self.show(session)
-
-            count = session.browser.execute_script(
-                "return window._sharedData.entry_data."
-                "PostPage[0].graphql.shortcode_media.edge_media_preview_like"
-                ".count"
-            )
-
-            if not count:
-                count = 0
-
-            self.like_count = count
-
-        print(" - {0} likes".format(self.like_count))
-        return self.like_count
-
 
     def count_comments(self, session, refresh=False):
         print("[+] counting comments")
@@ -164,6 +144,26 @@ class Post(object):
             comment_image(session.browser, session.username, session.comments, session.blacklist, session.logger, session.logfolder)
 
 
+    def get_user(self, session):
+        print("[+] retrieving user")
+        self.show(session)
+
+        post_page = session.browser.execute_script(
+            "return window._sharedData.entry_data.PostPage"
+        )
+
+        graphql = "graphql" in post_page[0]
+        if graphql:
+            media = post_page[0]["graphql"]["shortcode_media"]
+            username = media["owner"]["username"]
+
+        else:
+            media = post_page[0]["media"]
+            username = media["owner"]["username"]
+
+        return User(name=username)
+
+
     # Retrieve all comments form a post
     # TODO: scroll for more comments and handle exceptions
     def get_comments(self, session, offset=0, limit=None, randomize=False):
@@ -175,7 +175,6 @@ class Post(object):
 
         open_comment_section(session.browser, session.logger)
         link = get_current_url(session.browser)
-        comments = set()
         time.sleep(3)
 
         # Comments block
@@ -185,7 +184,10 @@ class Post(object):
         explicit_wait(session.browser, "PFL", [], session.logger, 10)
         comments_block = session.browser.find_elements_by_xpath(comments_block_XPath)
 
-        for comment_line in comments_block[offset:]:
+        comments = set()
+        start = min(offset+limit, len(comments_block))
+        last = min(offset+limit, len(comments_block))
+        for comment_line in comments_block[start:last]:
 
             # Commenter
             commenter_elem = comment_line.find_elements_by_tag_name("a")[1]
@@ -222,7 +224,9 @@ class Post(object):
         raw_likers = users_liked(session.browser, self.link, amount=limit + offset)
 
         likers = set()
-        for raw_liker in raw_likers[offset:offset+limit]:
+        start = min(offset+limit, len(raw_likers))
+        last = min(offset+limit, len(raw_likers))
+        for raw_liker in raw_likers[start:last]:
             liker = User(name=raw_liker)
             likers.add(liker)
 

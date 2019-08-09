@@ -14,15 +14,18 @@ def test_values(link, session):
     assert type(post.count_comments(session)) == int, "Comment count should be a number"
 
 
+def test_user(link, session):
+    post = Post(link=link)
+    user = post.get_user(session)
+
+    assert type(user) == User, "Post user should be a User objects"
+
 def test_comments(link, session):
     post = Post(link=link)
     comments = post.get_comments(session, offset=3, limit=None, randomize=False)
 
     for comment in comments:
-        print(comment)
-
-    assert type(post.count_likes(session)) == int, "Like count should be a number"
-    assert type(post.count_comments(session)) == int, "Comment count should be a number"
+        assert type(comment) == Comment, "Comments should be a set of Comment objects"
 
 
 def test_likers(link, session):
@@ -47,7 +50,8 @@ if __name__ == "__main__":
 
     with smart_run(session):
         test_values("https://www.instagram.com/p/B04q16ZHd-X/", session)
-        test_comments("https://www.instagram.com/p/B04q16ZHd-X/", session)
-        test_likers("https://www.instagram.com/p/B04q16ZHd-X/", session)
+        test_user("https://www.instagram.com/p/B04q16ZHd-X/", session)
+        # test_comments("https://www.instagram.com/p/B04q16ZHd-X/", session)
+        # test_likers("https://www.instagram.com/p/B04q16ZHd-X/", session)
 
     print("[+] all tests done")
