@@ -1,11 +1,13 @@
 """ Module which handles the follow features like unfollowing and following """
-from datetime import datetime, timedelta
+
 import time
 import os
 import random
 import json
 import csv
 import sqlite3
+import re
+from datetime import datetime, timedelta
 from math import ceil
 
 from .time_util import sleep
@@ -845,12 +847,113 @@ def follow_user(browser, track, login, user_name, button, blacklist, logger, log
     return True, "success"
 
 
-def scroll_to_bottom_of_followers_list(browser, element):
-    sleep(2)
-    # FIXME: its loading too much
+def scroll_to_bottom_of_followers_list(browser):
     browser.execute_script("window.scrollTo(0, document.body.scrollHeight)")
-    sleep(1)
     return
+
+
+def get_users_through_dialog_with_graphql(
+    browser,
+    login,
+    user_name,
+    amount,
+    users_count,
+    randomize,
+    dont_include,
+    blacklist,
+    follow_times,
+    simulation,
+    channel,
+    jumps,
+    logger,
+    logfolder,
+):
+
+    # TODO:
+    # simulation?
+    # move it to relationship_tools
+    real_amount = amount
+    if randomize and amount >= 3:
+        # expanding the population for better sampling distribution
+        amount = amount * 1.9
+
+    # move this function to relationship_tools ?
+    logger.warn(
+        "this is a work in progress, testing get_users_through_dialog_with_graphql (dev branch)"
+    )
+    user_id = browser.execute_script(
+        "return window._sharedData.entry_data.ProfilePage[0].graphql.user.id"
+    )
+
+    query_hash = get_query_hash(browser)
+    # check if hash is present
+    if query_hash is None:
+        logger.info("Unable to locate GraphQL query hash")
+
+    graphql_query_URL = ("view-source:https://www.instagram.com/graphql/query/?query_hash={}".format(query_hash))
+    variables = {"id": str(user_id), "include_reel": "true", "fetch_mutual": "true", "first": 50}
+    url = "{}&variables={}".format(graphql_query_URL, str(json.dumps(variables)))
+
+    web_address_navigator(browser, url)
+
+    pre = browser.find_element_by_tag_name("pre")
+    # set JSON object
+    data = json.loads(pre.text)
+    # get all followers of current page
+    followers_page = data['data']['user']['edge_followed_by']['edges']
+    followers_list = []
+
+    # iterate over page size and add users to the list
+    for follower in followers_page:
+        # get follower name
+        followers_list.append(follower['node']['username'])
+
+    has_next_page = data['data']['user']['edge_followed_by']['page_info']['has_next_page']
+
+    while(has_next_page and len(followers_list) <= amount):
+        # server call interval
+        sleep(random.randint(2, 6))
+
+        # get next page reference
+        end_cursor = data['data']['user']['edge_followed_by']['page_info']['end_cursor']
+
+        # url variables
+        variables = {"id": str(user_id), "include_reel": "true", "fetch_mutual": "true", "first": 50, "after": end_cursor}
+        url = "{}&variables={}".format(graphql_query_URL, str(json.dumps(variables)))
+        browser.get("view-source:{}".format(url))
+        pre = browser.find_element_by_tag_name("pre")
+        # response to JSON object
+        data = json.loads(pre.text)
+
+        # get all followers of current page
+        followers_page = data['data']['user']['edge_followed_by']['edges']
+        # iterate over page size and add users to the list
+        for follower in followers_page:
+            # get follower name
+            followers_list.append(follower['node']['username'])
+
+        # check if there is next page
+        has_next_page = data['data']['user']['edge_followed_by']['page_info']['has_next_page']
+
+    # shuffle it if randomize is enable
+    if randomize:
+        random.shuffle(followers_list)
+
+    # get real amount
+    followers_list = random.sample(followers_list, real_amount)
+    print(followers_list)
+    return followers_list, []
+
+
+def get_query_hash(browser):
+    """ Load Instagram JS file and find query hash code """
+    link = "https://www.instagram.com/static/bundles/es6/Consumer.js/1f67555edbd3.js"
+    web_address_navigator(browser, link)
+    page_source = browser.page_source
+    # locate pattern value from JS file
+    # sequence of 32 words and/or numbers just before ,n=" value
+    hash = re.search('[a-z0-9]{32}(?=",n=")', page_source)[0]
+    return hash
 
 
 def get_users_through_dialog(
@@ -873,7 +976,7 @@ def get_users_through_dialog(
     real_amount = amount
     if randomize and amount >= 3:
         # expanding the population for better sampling distribution
-        amount = amount * 3
+        amount = amount * 1.9
 
     if amount > int(users_count * 0.85):  # taking 85 percent of possible amounts is
         # a safe study
@@ -884,11 +987,6 @@ def get_users_through_dialog(
     # find dialog box
     dialog_address = read_xpath(get_users_through_dialog.__name__, "find_dialog_box")
     dialog = browser.find_element_by_xpath(dialog_address)
-
-    # scroll to end of follower list to initiate first load which hides the
-    # suggestions
-
-    scroll_to_bottom_of_followers_list(browser, dialog)
 
     buttons = get_buttons_from_dialog(dialog, channel)
 
@@ -902,31 +1000,41 @@ def get_users_through_dialog(
 
     # scroll down if the generated list of user to follow is not enough to
     # follow amount set
+    print('--')
+    print(total_list)
+    print(amount)
+    print('--')
+
     while (total_list < amount) and not abort:
-        before_scroll = total_list
-        for i in range(4):
-            scroll_bottom(browser, dialog, 2)
-            sc_rolled += 1
-            simulator_counter += 1
-            buttons = get_buttons_from_dialog(dialog, channel)
-            total_list = len(buttons)
-            progress_tracker(total_list, amount, start_time, logger)
+        progress_tracker(total_list, amount, start_time, logger)
+        scroll_to_bottom_of_followers_list(browser)
+        print('--')
+        print(total_list)
+        print('--')
+        print('sleeping...')
+        sleep(2)
+        # before_scroll = total_list
+        # sc_rolled += 1
+        # simulator_counter += 1
+        buttons = get_buttons_from_dialog(dialog, channel)
+        total_list = len(buttons)
+        progress_tracker(total_list, amount, start_time, logger)
 
-        abort = before_scroll == total_list
-        if abort:
-            if total_list < real_amount:
-                logger.info("Failed to load desired amount of users!\n")
+        # abort = before_scroll == total_list
+        # if abort:
+        #     if total_list < real_amount:
+        #         logger.info("Failed to load desired amount of users!\n")
 
-        if sc_rolled > 85:  # you may want to use up to 100
-            if total_list < amount:
-                logger.info(
-                    "Too many requests sent!  attempt: {}  |  gathered "
-                    "links: {}"
-                    "\t~sleeping a bit".format(try_again + 1, total_list)
-                )
-                sleep(random.randint(600, 655))
-                try_again += 1
-                sc_rolled = 0
+        # if sc_rolled > 85:  # you may want to use up to 100
+        #     if total_list < amount:
+        #         logger.info(
+        #             "Too many requests sent!  attempt: {}  |  gathered "
+        #             "links: {}"
+        #             "\t~sleeping a bit".format(try_again + 1, total_list)
+        #         )
+        #         sleep(random.randint(600, 655))
+        #         try_again += 1
+        #         sc_rolled = 0
 
         # Will follow a little bit of users in order to simulate real
         # interaction
@@ -975,7 +1083,8 @@ def get_users_through_dialog(
                         simulated_list.extend(quick_follow)
 
             simulator_counter = 0
-
+    # browser.back()
+    print('saindo..')
     person_list = dialog_username_extractor(buttons)
 
     if randomize:
@@ -1014,6 +1123,7 @@ def dialog_username_extractor(buttons):
 
                 person_list.append(elements_by_tag_name)
             except IndexError:
+                print('how many?')
                 pass  # Element list is too short to have a [1] element
 
     return person_list
@@ -1161,7 +1271,8 @@ def get_given_user_followers(
         return [], []
 
     channel = "Follow"
-    person_list, simulated_list = get_users_through_dialog(
+    # person_list, simulated_list = get_users_through_dialog(
+    person_list, simulated_list = get_users_through_dialog_with_graphql(
         browser,
         login,
         user_name,
@@ -1710,7 +1821,7 @@ def verify_action(
                     sleep(4)
                 elif retry_count == 3:
                     logger.warning(
-                        "Phew! Last {0} is not verified."
+                        "Last {0} is not verified."
                         "\t~'{1}' might be temporarily blocked "
                         "from {0}ing\n".format(action, username)
                     )

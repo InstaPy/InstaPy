@@ -80,12 +80,12 @@ xpath["get_comments_on_post"] = {
 xpath["get_cord_location"] = {"json_text": "//body"}
 
 xpath["get_following_status"] = {
-    "follow_button_XP": "//button[text()='Following' or \
+    "follow_button_XP": "(//button)[2][text()='Following' or \
                                   text()='Requested' or \
                                   text()='Follow' or \
                                   text()='Follow Back' or \
                                   text()='Unblock']",
-    "follow_span_XP_following": "//span[contains(@aria-label, 'Following')]",
+    "follow_span_XP_following": "//button/div/span[contains(@aria-label, 'Following')]",
 }
 
 xpath["get_follow_requests"] = {
