@@ -869,9 +869,14 @@ def get_users_through_dialog_with_graphql(
     logfolder,
 ):
 
-    # TODO: 
-    # simulation
-    # random
+    # TODO:
+    # simulation?
+    # move it to relationship_tools
+    real_amount = amount
+    if randomize and amount >= 3:
+        # expanding the population for better sampling distribution
+        amount = amount * 1.9
+
     # move this function to relationship_tools ?
     logger.warn(
         "this is a work in progress, testing get_users_through_dialog_with_graphql (dev branch)"
@@ -907,7 +912,7 @@ def get_users_through_dialog_with_graphql(
 
     while(has_next_page and len(followers_list) <= amount):
         # server call interval
-        sleep(2)
+        sleep(random.randint(2, 6))
 
         # get next page reference
         end_cursor = data['data']['user']['edge_followed_by']['page_info']['end_cursor']
@@ -930,6 +935,12 @@ def get_users_through_dialog_with_graphql(
         # check if there is next page
         has_next_page = data['data']['user']['edge_followed_by']['page_info']['has_next_page']
 
+    # shuffle it if randomize is enable
+    if randomize:
+        random.shuffle(followers_list)
+
+    # get real amount
+    followers_list = random.sample(followers_list, real_amount)
     print(followers_list)
     return followers_list, []
 
@@ -1810,7 +1821,7 @@ def verify_action(
                     sleep(4)
                 elif retry_count == 3:
                     logger.warning(
-                        "Phew! Last {0} is not verified."
+                        "Last {0} is not verified."
                         "\t~'{1}' might be temporarily blocked "
                         "from {0}ing\n".format(action, username)
                     )
