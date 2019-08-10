@@ -151,8 +151,6 @@ class Post(object):
         self.show(session)
 
         user = self.get_user(session)
-        user_id = find_user_id(session.browser, "post", user.name, session.logger)
-
         follow_state, msg = follow_user(
                     session.browser,
                     "post",
@@ -238,19 +236,24 @@ class Post(object):
         start = min(offset, len(comments_block))
         last = min(offset+limit, len(comments_block))
         for comment_line in comments_block[start:last]:
-            comment_links = comment_line.find_elements_by_tag_name("a")
+            comment_links = comment_line.find_elements_by_css_selector("div > div > div > a")
 
             # Commenter
-            commenter_elem = comment_links[1]
+            commenter_elem = comment_line.find_element_by_css_selector("h3 > a")
             commenter = extract_text_from_element(commenter_elem)
 
             # Text
             comment_elem = comment_line.find_elements_by_tag_name("span")[0]
             text = extract_text_from_element(comment_elem)
 
+            # Fallback if poster own comment
+            if not text:
+                comment_elem = comment_line.find_elements_by_tag_name("span")[1]
+                text = extract_text_from_element(comment_elem)
+
             # Likes count
-            if len(comment_links) >= 3:
-                like_elem = comment_links[2]
+            if len(comment_links) == 2:
+                like_elem = comment_links[1]
                 like_text = extract_text_from_element(like_elem)
                 like_count = int(like_text.split(" ")[0])
 
