@@ -87,7 +87,9 @@ with smart_run(session):
             # Follow poster
             if random.randint(0, 100) <= POST_FOLLOW_PERCENTAGE:
                 print(" - following post user")
-                post.follow(session)
+                # post.follow(session)
+                user = post.get_user(session)
+                user.follow(session)
 
             # Comment on post
             if random.randint(0, 100) <= POST_COMMENT_PERCENTAGE:
