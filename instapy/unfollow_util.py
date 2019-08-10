@@ -869,18 +869,13 @@ def get_users_through_dialog_with_graphql(
     logfolder,
 ):
 
-    # TODO:
-    # simulation?
-    # move it to relationship_tools
+    # TODO: simulation implmentation
+
     real_amount = amount
     if randomize and amount >= 3:
         # expanding the population for better sampling distribution
         amount = amount * 1.9
 
-    # move this function to relationship_tools ?
-    logger.warn(
-        "this is a work in progress, testing get_users_through_dialog_with_graphql (dev branch)"
-    )
     user_id = browser.execute_script(
         "return window._sharedData.entry_data.ProfilePage[0].graphql.user.id"
     )
@@ -935,6 +930,54 @@ def get_users_through_dialog_with_graphql(
         # check if there is next page
         has_next_page = data['data']['user']['edge_followed_by']['page_info']['has_next_page']
 
+        # simulation
+        # TODO: this needs to be rewrited
+        # if (
+        #     simulation["enabled"] is True
+        #     and simulation["percentage"] >= random.randint(1, 100)
+        #     and (
+        #         simulator_counter > random.randint(5, 17)
+        #         or abort is True
+        #         or total_list >= amount
+        #         or sc_rolled == random.randint(3, 5)
+        #     )
+        #     and len(buttons) > 0
+        # ):
+
+        #     quick_amount = 1 if not total_list >= amount else random.randint(1, 4)
+
+        #     for i in range(0, quick_amount):
+        #         quick_index = random.randint(0, len(buttons) - 1)
+        #         quick_button = buttons[quick_index]
+        #         quick_username = dialog_username_extractor(quick_button)
+
+        #         if quick_username and quick_username[0] not in simulated_list:
+        #             if not pts_printed:
+        #                 if total_list >= amount:
+        #                     pts_printed = True
+
+        #             logger.info("Simulated follow : {}".format(len(simulated_list) + 1))
+
+        #             quick_follow = follow_through_dialog(
+        #                 browser,
+        #                 login,
+        #                 quick_username,
+        #                 quick_button,
+        #                 quick_amount,
+        #                 dont_include,
+        #                 blacklist,
+        #                 follow_times,
+        #                 jumps,
+        #                 logger,
+        #                 logfolder,
+        #             )
+        #             if (quick_amount == 1 or i != (quick_amount - 1)) and (
+        #                 not pts_printed or not abort
+        #             ):
+        #                 simulated_list.extend(quick_follow)
+
+        #     simulator_counter = 0
+
     # shuffle it if randomize is enable
     if randomize:
         random.shuffle(followers_list)
@@ -954,150 +997,6 @@ def get_query_hash(browser):
     # sequence of 32 words and/or numbers just before ,n=" value
     hash = re.search('[a-z0-9]{32}(?=",n=")', page_source)[0]
     return hash
-
-
-def get_users_through_dialog(
-    browser,
-    login,
-    user_name,
-    amount,
-    users_count,
-    randomize,
-    dont_include,
-    blacklist,
-    follow_times,
-    simulation,
-    channel,
-    jumps,
-    logger,
-    logfolder,
-):
-    sleep(2)
-    real_amount = amount
-    if randomize and amount >= 3:
-        # expanding the population for better sampling distribution
-        amount = amount * 1.9
-
-    if amount > int(users_count * 0.85):  # taking 85 percent of possible amounts is
-        # a safe study
-        amount = int(users_count * 0.85)
-    try_again = 0
-    sc_rolled = 0
-
-    # find dialog box
-    dialog_address = read_xpath(get_users_through_dialog.__name__, "find_dialog_box")
-    dialog = browser.find_element_by_xpath(dialog_address)
-
-    buttons = get_buttons_from_dialog(dialog, channel)
-
-    abort = False
-    person_list = []
-    total_list = len(buttons)
-    simulated_list = []
-    simulator_counter = 0
-    start_time = time.time()
-    pts_printed = False
-
-    # scroll down if the generated list of user to follow is not enough to
-    # follow amount set
-    print('--')
-    print(total_list)
-    print(amount)
-    print('--')
-
-    while (total_list < amount) and not abort:
-        progress_tracker(total_list, amount, start_time, logger)
-        scroll_to_bottom_of_followers_list(browser)
-        print('--')
-        print(total_list)
-        print('--')
-        print('sleeping...')
-        sleep(2)
-        # before_scroll = total_list
-        # sc_rolled += 1
-        # simulator_counter += 1
-        buttons = get_buttons_from_dialog(dialog, channel)
-        total_list = len(buttons)
-        progress_tracker(total_list, amount, start_time, logger)
-
-        # abort = before_scroll == total_list
-        # if abort:
-        #     if total_list < real_amount:
-        #         logger.info("Failed to load desired amount of users!\n")
-
-        # if sc_rolled > 85:  # you may want to use up to 100
-        #     if total_list < amount:
-        #         logger.info(
-        #             "Too many requests sent!  attempt: {}  |  gathered "
-        #             "links: {}"
-        #             "\t~sleeping a bit".format(try_again + 1, total_list)
-        #         )
-        #         sleep(random.randint(600, 655))
-        #         try_again += 1
-        #         sc_rolled = 0
-
-        # Will follow a little bit of users in order to simulate real
-        # interaction
-        if (
-            simulation["enabled"] is True
-            and simulation["percentage"] >= random.randint(1, 100)
-            and (
-                simulator_counter > random.randint(5, 17)
-                or abort is True
-                or total_list >= amount
-                or sc_rolled == random.randint(3, 5)
-            )
-            and len(buttons) > 0
-        ):
-
-            quick_amount = 1 if not total_list >= amount else random.randint(1, 4)
-
-            for i in range(0, quick_amount):
-                quick_index = random.randint(0, len(buttons) - 1)
-                quick_button = buttons[quick_index]
-                quick_username = dialog_username_extractor(quick_button)
-
-                if quick_username and quick_username[0] not in simulated_list:
-                    if not pts_printed:
-                        if total_list >= amount:
-                            pts_printed = True
-
-                    logger.info("Simulated follow : {}".format(len(simulated_list) + 1))
-
-                    quick_follow = follow_through_dialog(
-                        browser,
-                        login,
-                        quick_username,
-                        quick_button,
-                        quick_amount,
-                        dont_include,
-                        blacklist,
-                        follow_times,
-                        jumps,
-                        logger,
-                        logfolder,
-                    )
-                    if (quick_amount == 1 or i != (quick_amount - 1)) and (
-                        not pts_printed or not abort
-                    ):
-                        simulated_list.extend(quick_follow)
-
-            simulator_counter = 0
-    # browser.back()
-    print('saindo..')
-    person_list = dialog_username_extractor(buttons)
-
-    if randomize:
-        random.shuffle(person_list)
-
-    person_list = person_list[: (real_amount - len(simulated_list))]
-
-    for user in simulated_list:  # add simulated users to the `person_list`
-        # in random index
-        if user not in person_list:
-            person_list.insert(random.randint(0, abs(len(person_list) - 1)), user)
-
-    return person_list, simulated_list
 
 
 def dialog_username_extractor(buttons):
