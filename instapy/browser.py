@@ -11,7 +11,6 @@ from fake_useragent import UserAgent, FakeUserAgentError
 
 # general libs
 import re
-from time import sleep
 
 # local project
 from .util import interruption_handler
@@ -22,6 +21,7 @@ from .util import check_authorization
 from .util import web_address_navigator
 from .settings import Settings
 from .file_manager import get_chromedriver_location
+from .time_util import sleep
 
 
 def set_selenium_local_session(proxy_address,
