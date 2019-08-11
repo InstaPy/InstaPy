@@ -269,8 +269,6 @@ class Post(object):
             comment = Comment(link=link, user=commenter, text=text, like_count=like_count, timestamp=timestamp)
             comments.add(comment)
 
-            print(comment)
-
         return comments
 
 

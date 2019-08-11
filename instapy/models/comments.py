@@ -3,6 +3,9 @@
 Comment model for interactions comment attributes and perform action on comments
 """
 from .users import User
+from ..like_util import like_comment
+from ..util import web_address_navigator
+
 
 class Comment(object):
 
@@ -38,11 +41,15 @@ class Comment(object):
         return repr(self)
 
 
-    # TODO: implement
+    def show(self, session):
+        web_address_navigator(session.browser, self.link)
+
+
     def like(self, session, verify=False):
         print("[+] like comment")
-        print("NOT YET IMPLEMENTED")
-        pass
+
+        self.show(session)
+        like_comment(session.browser, self.text, session.logger)
 
 
     # TODO: implement
