@@ -30,6 +30,7 @@ from .util import click_visibly
 from .util import get_action_delay
 from .util import truncate_float
 from .util import progress_tracker
+from .util import get_query_hash
 from .print_log_writer import log_followed_pool
 from .print_log_writer import log_uncertain_unfollowed_pool
 from .print_log_writer import log_record_all_unfollowed
@@ -986,17 +987,6 @@ def get_users_through_dialog_with_graphql(
     followers_list = random.sample(followers_list, real_amount)
     print(followers_list)
     return followers_list, []
-
-
-def get_query_hash(browser):
-    """ Load Instagram JS file and find query hash code """
-    link = "https://www.instagram.com/static/bundles/es6/Consumer.js/1f67555edbd3.js"
-    web_address_navigator(browser, link)
-    page_source = browser.page_source
-    # locate pattern value from JS file
-    # sequence of 32 words and/or numbers just before ,n=" value
-    hash = re.search('[a-z0-9]{32}(?=",n=")', page_source)[0]
-    return hash
 
 
 def dialog_username_extractor(buttons):
