@@ -56,11 +56,11 @@ class InstaPyTelegramBot:
     ):
         self._logger = logging.getLogger()
 
-        self.token(token)
-        self.telegram_username(telegram_username)
-        self.instapy_session(instapy_session)
-        self.debug(debug)
-        self.proxy(proxy)
+        self.token=token
+        self.telegram_username=telegram_username
+        self.instapy_session=instapy_session
+        self.debug=debug
+        self.proxy=proxy
 
         # launch the telegram bot already if everything is ready at init
         if (
@@ -140,7 +140,10 @@ class InstaPyTelegramBot:
         """
         self._debug = value
         if self._debug is True:
-            logger.setLevel(logging.DEBUG)
+            if self._logger is None:
+                self._logger = logging.getLogger()
+
+            self._logger.setLevel(logging.DEBUG)
 
     @property
     def proxy(self):
