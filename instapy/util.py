@@ -2382,6 +2382,14 @@ def take_rotative_screenshot(browser, logfolder, logger):
     next_screenshot += 1
 
 
+def get_query_hash(browser):
+    # Return Graph QL Query Hash - Thanks @converge
+    browser.get("https://www.instagram.com/static/bundles/es6/Consumer.js/1f67555edbd3.js")
+    page_source = browser.page_source
+    hash = re.search('[a-z0-9]{32}(?=",n=")', page_source)[0]
+    return hash
+
+
 class CustomizedArgumentParser(ArgumentParser):
     """
      Subclass ArgumentParser in order to turn off
