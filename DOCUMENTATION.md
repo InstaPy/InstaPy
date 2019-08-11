@@ -1673,6 +1673,11 @@ from instapy import InstaPyTelegramBot
                           bypass_with_mobile=True)
                           
         telegram = InstaPyTelegramBot(token='insert_real_token_here', telegram_username='my_username', instapy_session=session)
+
+        # if you want to receive the information when the session ends
+        # just add the following before your session.end()
+        telegram.end()
+        session.end()
 ````
 
 Additional parameters:
