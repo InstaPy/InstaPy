@@ -48,19 +48,19 @@ class InstaPyTelegramBot:
 
     def __init__(
         self,
-        init_token="",
-        init_telegram_username="",
-        init_instapy_session=None,
-        init_debug=True,
-        init_proxy=None,
+        token="",
+        telegram_username="",
+        instapy_session=None,
+        debug=True,
+        proxy=None,
     ):
         self._logger = logging.getLogger()
 
-        self.token(init_token)
-        self.telegram_username(init_telegram_username)
-        self.instapy_session(init_instapy_session)
-        self.debug(init_debug)
-        self.proxy(init_proxy)
+        self.token(token)
+        self.telegram_username(telegram_username)
+        self.instapy_session(instapy_session)
+        self.debug(debug)
+        self.proxy(proxy)
 
         # launch the telegram bot already if everything is ready at init
         if (
