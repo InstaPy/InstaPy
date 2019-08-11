@@ -61,7 +61,7 @@
   - [Text Analytics](#text-analytics)
     - [Yandex Translate API](#yandex-translate-api)
     - [MeaningCloud Sentiment Analysis API](#meaningcloud-sentiment-analysis-api)
-
+  - [Integration with Telegram](#telegram-integration)
  <br />
 
 - **[Instance Settings](#instance-settings)**
@@ -1647,7 +1647,45 @@ _Now that text is gonna be labeled **inappropriate** COS its polarity is `"P"` w
 This project uses MeaningCloud™ (http://www.meaningcloud.com) for Text Analytics.
 
 ---
+###Telegram Integration
 
+This feature allows to connect your InstaPy session with a Telegram bot and send commands
+to the InstaPy session
+
+####Prerequisites
+You will need to create a token, for this go into your Telegram App and talk with @fatherbot.
+You will also need to set your username as it is checked to ensure that you are authorized to 
+access the InstaPy session, to do so go to Settings -> Profile -> Username.
+
+####Supported actions
+There are 3 supported actions:
+  - /start : verify that the telegram bot and the Instapy Sessions are connected together
+    will respond the allowed actions
+  - /report : will gather and show the current session statistics
+  - /stop: will set the aborting flag to True
+
+####Examples
+```python
+        session = InstaPy(username=insta_username,
+                          password=insta_password,
+                          bypass_with_mobile=True)
+                          
+        telegram = InstaPyTelegramBot(token='insert_real_token_here', telegram_username='my_username', instapy_session=session)
+````
+
+Additional parameters:
+   - debug=True if you want low level telegram debug information
+   - proxy if you need one, here is the structure that needs to be passed
+    
+```python 
+    {
+         'proxy_url': 'http://PROXY_HOST:PROXY_PORT/',
+         # Optional, if you need authentication:
+         'username': 'PROXY_USER',
+         'password': 'PROXY_PASS',
+     }
+```
+   
 <br /> 
 <br />
 
