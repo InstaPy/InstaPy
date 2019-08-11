@@ -18,6 +18,7 @@ _The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 - Update dont_unfollow_active_users to Mobile Mode
 - Fix scroll down (util) function
 - Remove bypass_by_mobile, it will auto detect the mobile if required now
+- Update profile scrapping to use GraphQL (get_users_through_dialog_with_graphql)
 
 ### Breaking Changes
 
