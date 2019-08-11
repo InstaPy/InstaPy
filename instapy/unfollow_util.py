@@ -1,6 +1,5 @@
 """ Module which handles the follow features like unfollowing and following """
 
-import time
 import os
 import random
 import json
@@ -576,7 +575,7 @@ def unfollow(
             return 0
 
         # scroll down the page to get sufficient amount of usernames
-        get_users_through_dialog(
+        get_users_through_dialog_with_graphql(
             browser,
             None,
             username,
@@ -886,8 +885,15 @@ def get_users_through_dialog_with_graphql(
     if query_hash is None:
         logger.info("Unable to locate GraphQL query hash")
 
-    graphql_query_URL = ("view-source:https://www.instagram.com/graphql/query/?query_hash={}".format(query_hash))
-    variables = {"id": str(user_id), "include_reel": "true", "fetch_mutual": "true", "first": 50}
+    graphql_query_URL = "view-source:https://www.instagram.com/graphql/query/?query_hash={}".format(
+        query_hash
+    )
+    variables = {
+        "id": str(user_id),
+        "include_reel": "true",
+        "fetch_mutual": "true",
+        "first": 50,
+    }
     url = "{}&variables={}".format(graphql_query_URL, str(json.dumps(variables)))
 
     web_address_navigator(browser, url)
@@ -896,25 +902,33 @@ def get_users_through_dialog_with_graphql(
     # set JSON object
     data = json.loads(pre.text)
     # get all followers of current page
-    followers_page = data['data']['user']['edge_followed_by']['edges']
+    followers_page = data["data"]["user"]["edge_followed_by"]["edges"]
     followers_list = []
 
     # iterate over page size and add users to the list
     for follower in followers_page:
         # get follower name
-        followers_list.append(follower['node']['username'])
+        followers_list.append(follower["node"]["username"])
 
-    has_next_page = data['data']['user']['edge_followed_by']['page_info']['has_next_page']
+    has_next_page = data["data"]["user"]["edge_followed_by"]["page_info"][
+        "has_next_page"
+    ]
 
-    while(has_next_page and len(followers_list) <= amount):
+    while has_next_page and len(followers_list) <= amount:
         # server call interval
         sleep(random.randint(2, 6))
 
         # get next page reference
-        end_cursor = data['data']['user']['edge_followed_by']['page_info']['end_cursor']
+        end_cursor = data["data"]["user"]["edge_followed_by"]["page_info"]["end_cursor"]
 
         # url variables
-        variables = {"id": str(user_id), "include_reel": "true", "fetch_mutual": "true", "first": 50, "after": end_cursor}
+        variables = {
+            "id": str(user_id),
+            "include_reel": "true",
+            "fetch_mutual": "true",
+            "first": 50,
+            "after": end_cursor,
+        }
         url = "{}&variables={}".format(graphql_query_URL, str(json.dumps(variables)))
         browser.get("view-source:{}".format(url))
         pre = browser.find_element_by_tag_name("pre")
@@ -922,14 +936,16 @@ def get_users_through_dialog_with_graphql(
         data = json.loads(pre.text)
 
         # get all followers of current page
-        followers_page = data['data']['user']['edge_followed_by']['edges']
+        followers_page = data["data"]["user"]["edge_followed_by"]["edges"]
         # iterate over page size and add users to the list
         for follower in followers_page:
             # get follower name
-            followers_list.append(follower['node']['username'])
+            followers_list.append(follower["node"]["username"])
 
         # check if there is next page
-        has_next_page = data['data']['user']['edge_followed_by']['page_info']['has_next_page']
+        has_next_page = data["data"]["user"]["edge_followed_by"]["page_info"][
+            "has_next_page"
+        ]
 
         # simulation
         # TODO: this needs to be rewrited
@@ -1012,7 +1028,7 @@ def dialog_username_extractor(buttons):
 
                 person_list.append(elements_by_tag_name)
             except IndexError:
-                print('how many?')
+                print("how many?")
                 pass  # Element list is too short to have a [1] element
 
     return person_list
@@ -1160,7 +1176,6 @@ def get_given_user_followers(
         return [], []
 
     channel = "Follow"
-    # person_list, simulated_list = get_users_through_dialog(
     person_list, simulated_list = get_users_through_dialog_with_graphql(
         browser,
         login,
@@ -1286,7 +1301,7 @@ def get_given_user_following(
         return [], []
 
     channel = "Follow"
-    person_list, simulated_list = get_users_through_dialog(
+    person_list, simulated_list = get_users_through_dialog_with_graphql(
         browser,
         login,
         user_name,
