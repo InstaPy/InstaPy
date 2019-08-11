@@ -46,7 +46,14 @@ class InstaPyTelegramBot:
     _chat_id = None
     _context = None
 
-    def __init__(self, init_token="", init_telegram_username="", init_instapy_session=None, init_debug=True, init_proxy=None):
+    def __init__(
+        self,
+        init_token="",
+        init_telegram_username="",
+        init_instapy_session=None,
+        init_debug=True,
+        init_proxy=None,
+    ):
         self._logger = logging.getLogger()
 
         self.token(init_token)
@@ -125,7 +132,7 @@ class InstaPyTelegramBot:
         return self._debug
 
     @debug.setter
-    def debug(self,value):
+    def debug(self, value):
         """
         sets the debug if needed
         :param debug:
@@ -151,7 +158,7 @@ class InstaPyTelegramBot:
         :return:
         """
         self._proxy = value
-        #should add some tests on _proxy to verify it is setup correctly
+        # should add some tests on _proxy to verify it is setup correctly
 
     def telegram_bot(self):
         """
@@ -176,7 +183,10 @@ class InstaPyTelegramBot:
 
         if self._proxy is not None:
             updater = Updater(
-                token=self._token, use_context=True, user_sig_handler=self.end, request_kwargs=self._proxy
+                token=self._token,
+                use_context=True,
+                user_sig_handler=self.end,
+                request_kwargs=self._proxy,
             )
         else:
             updater = Updater(
@@ -232,7 +242,7 @@ class InstaPyTelegramBot:
 
     def _stop(self, update, context):
         """
-        should stop the bot in the future
+        should stop the bot
         :param update:
         :param context:
         :return:
@@ -240,7 +250,10 @@ class InstaPyTelegramBot:
         self._chat_id = update.message.chat_id
         self._context = context
         if self._check_authorized(update, context):
-            print("nothing")
+            self._instapy_session.aborting = True
+            context.bot.send_message(
+                chat_id=update.message.chat_id, text="InstaPy session abort set\n"
+            )
 
     @staticmethod
     def _unknown(update, context):
@@ -322,7 +335,7 @@ class InstaPyTelegramBot:
             self._instapy_session.stories_watched,
             self._instapy_session.reels_watched,
             self._instapy_session.inap_img,
-            self._instapy_session.not_valid_users
+            self._instapy_session.not_valid_users,
         ]
 
         sessional_run_time = self._instapy_session.run_time()
@@ -334,7 +347,6 @@ class InstaPyTelegramBot:
             else "{} hours".format(truncate_float(sessional_run_time / 60 / 60, 2))
         )
         run_time_msg = "[Session lasted {}]".format(run_time_info)
-
 
         if any(stat for stat in stats):
             return (
@@ -364,7 +376,7 @@ class InstaPyTelegramBot:
                     self._instapy_session.not_valid_users,
                     self._instapy_session.stories_watched,
                     self._instapy_session.reels_watched,
-                    run_time_msg
+                    run_time_msg,
                 )
             )
         else:
@@ -379,11 +391,9 @@ class InstaPyTelegramBot:
         tidy up things
         :return:
         """
-        #send one last message to the user reporting the session
+        # send one last message to the user reporting the session
         if (self._chat_id is not None) and (self._context is not None):
-            context.bot.send_message(
-                chat_id=self._chat_id, text=self._live_report()
-            )
+            context.bot.send_message(chat_id=self._chat_id, text=self._live_report())
         self._updater.stop()
         self._token = ""
         self._telegram_username = ""
