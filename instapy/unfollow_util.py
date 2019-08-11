@@ -5,7 +5,6 @@ import random
 import json
 import csv
 import sqlite3
-import re
 from datetime import datetime, timedelta
 from math import ceil
 
