@@ -1,7 +1,7 @@
 # flake8: noqa
 
 from .instapy import InstaPy
-from .instapy import InstaPyTelegramBot
+from .telegram_util import InstaPyTelegramBot
 from .util import smart_run
 from .settings import Settings
 from .file_manager import set_workspace
