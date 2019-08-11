@@ -10,7 +10,6 @@ from math import ceil
 
 from .time_util import sleep
 from .util import delete_line_from_file
-from .util import scroll_bottom
 from .util import format_number
 from .util import update_activity
 from .util import add_user_to_blacklist
