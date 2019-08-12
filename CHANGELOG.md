@@ -12,13 +12,6 @@ _The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 - Black code formatter
 - Mobile user agent
 - Mobile Mode to enable mobile features
-- Fix follow_likers feature
-- Fix follow_user_followers
-- Fix comment_image feature
-- Update dont_unfollow_active_users to Mobile Mode
-- Fix scroll down (util) function
-- Remove bypass_by_mobile, it will auto detect the mobile if required now
-- Update profile scrapping to use GraphQL (get_users_through_dialog_with_graphql)
 
 ### Breaking Changes
 
@@ -31,6 +24,14 @@ _The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
   - set*quota_supervisor(peak*_) ->(peak\_\_\_hourly, peak_\*\_daily)
 
 ### Fixed
+
+- Fix follow_likers feature
+- Fix follow_user_followers
+- Fix comment_image feature
+- Update dont_unfollow_active_users to Mobile Mode
+- Fix scroll down (util) function
+- Remove bypass_by_mobile, it will auto detect the mobile if required now
+- Update profile scrapping to use GraphQL (get_users_through_dialog_with_graphql)
 
 ## [0.5.8] - 2019-08-01
 
