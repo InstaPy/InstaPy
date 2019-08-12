@@ -11,7 +11,6 @@ from .util import get_relationship_counts
 from .util import interruption_handler
 from .util import truncate_float
 from .util import progress_tracker
-from .settings import Settings
 
 from selenium.common.exceptions import NoSuchElementException
 
