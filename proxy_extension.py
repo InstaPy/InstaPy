@@ -5,10 +5,10 @@ import os
 def create_proxy_extension(proxy):
     """ takes proxy looks like login:password@ip:port """
 
-    ip = proxy.split('@')[1].split(':')[0]
-    port = int(proxy.split(':')[-1])
-    login = proxy.split(':')[0]
-    password = proxy.split('@')[0].split(':')[1]
+    ip = proxy.split("@")[1].split(":")[0]
+    port = int(proxy.split(":")[-1])
+    login = proxy.split(":")[0]
+    password = proxy.split("@")[0].split(":")[1]
 
     manifest_json = """
         {
@@ -58,15 +58,20 @@ def create_proxy_extension(proxy):
                     {urls: ["<all_urls>"]},
                     ['blocking']
         );
-    """ % (ip, port, login, password)
+    """ % (
+        ip,
+        port,
+        login,
+        password,
+    )
 
-    dir_path = 'assets/chrome_extensions'
+    dir_path = "assets/chrome_extensions"
 
     if not os.path.exists(dir_path):
         os.makedirs(dir_path)
 
-    pluginfile = '%s/proxy_auth_%s:%s.zip' % (dir_path, ip, port)
-    with zipfile.ZipFile(pluginfile, 'w') as zp:
+    pluginfile = "%s/proxy_auth_%s:%s.zip" % (dir_path, ip, port)
+    with zipfile.ZipFile(pluginfile, "w") as zp:
         zp.writestr("manifest.json", manifest_json)
         zp.writestr("background.js", background_js)
 

@@ -3,12 +3,28 @@ import sqlite3
 from .settings import Settings
 from .database_engine import get_database
 
+
+def get_server_endpoint(topic):
+    if topic == "fashion":
+        return Settings.pods_fashion_server_endpoint
+    elif topic == "food":
+        return Settings.pods_food_server_endpoint
+    elif topic == "travel":
+        return Settings.pods_travel_server_endpoint
+    elif topic == "sports":
+        return Settings.pods_sports_server_endpoint
+    elif topic == "entertainment":
+        return Settings.pods_entertainment_server_endpoint
+    else:
+        return Settings.pods_server_endpoint
+
+
 def get_recent_posts_from_pods(topic, logger):
     """ fetches all recent posts shared with pods """
-    params = {'topic' : topic}
-    r = requests.get(Settings.pods_server_endpoint + '/getRecentPostsV1', params=params)
+    params = {"topic": topic}
+    r = requests.get(get_server_endpoint(topic) + "/getRecentPostsV1", params=params)
     try:
-        logger.info('Downloaded postids from Pod {}:'.format(topic))
+        logger.info("Downloaded postids from Pod {}:".format(topic))
         if r.status_code == 200:
             logger.info(r.json())
             return r.json()
@@ -16,8 +32,9 @@ def get_recent_posts_from_pods(topic, logger):
             logger.error(r.text)
             return []
     except Exception as err:
-        logger.error('Could not get postids from pod {} - {}'.format(topic, err))
+        logger.error("Could not get postids from pod {} - {}".format(topic, err))
         return []
+
 
 def group_posts(posts, logger):
     light_post_ids = []
@@ -25,21 +42,24 @@ def group_posts(posts, logger):
     heavy_post_ids = []
     for postobj in posts:
         try:
-            if(postobj['mode'] == 'light'):
+            if postobj["mode"] == "light":
                 light_post_ids.append(postobj)
-            elif(postobj['mode'] == 'heavy'):
+            elif postobj["mode"] == "heavy":
                 heavy_post_ids.append(postobj)
             else:
                 normal_post_ids.append(postobj)
         except Exception as err:
-                logger.error("Failed with Error {}, please upgrade your instapy".format(err))
-                normal_post_ids.append(postobj)
+            logger.error(
+                "Failed with Error {}, please upgrade your instapy".format(err)
+            )
+            normal_post_ids.append(postobj)
     return light_post_ids, normal_post_ids, heavy_post_ids
+
 
 def share_my_post_with_pods(postid, topic, engagement_mode, logger):
     """ share_my_post_with_pod """
-    params = { 'postid' : postid, 'topic' : topic, 'mode' : engagement_mode }
-    r = requests.get(Settings.pods_server_endpoint + '/publishMyLatestPost', params=params)
+    params = {"postid": postid, "topic": topic, "mode": engagement_mode}
+    r = requests.get(get_server_endpoint(topic) + "/publishMyLatestPost", params=params)
     try:
         logger.info("Publishing to Pods {}".format(postid))
         if r.status_code == 200:
@@ -51,6 +71,7 @@ def share_my_post_with_pods(postid, topic, engagement_mode, logger):
     except Exception as err:
         logger.error(err)
         return False
+
 
 def share_with_pods_restriction(operation, postid, limit, logger):
     """ Keep track of already shared posts """
@@ -66,7 +87,8 @@ def share_with_pods_restriction(operation, postid, limit, logger):
             cur.execute(
                 "SELECT * FROM shareWithPodsRestriction WHERE profile_id=:id_var "
                 "AND postid=:name_var",
-                {"id_var": id, "name_var": postid})
+                {"id_var": id, "name_var": postid},
+            )
             data = cur.fetchone()
             share_data = dict(data) if data else None
 
@@ -76,12 +98,15 @@ def share_with_pods_restriction(operation, postid, limit, logger):
                     cur.execute(
                         "INSERT INTO shareWithPodsRestriction (profile_id, "
                         "postid, times) VALUES (?, ?, ?)",
-                        (id, postid, 1))
+                        (id, postid, 1),
+                    )
                 else:
                     # update the existing record
                     share_data["times"] += 1
-                    sql = "UPDATE shareWithPodsRestriction set times = ? WHERE " \
-                          "profile_id=? AND postid = ?"
+                    sql = (
+                        "UPDATE shareWithPodsRestriction set times = ? WHERE "
+                        "profile_id=? AND postid = ?"
+                    )
                     cur.execute(sql, (share_data["times"], id, postid))
 
                 # commit the latest changes
@@ -95,21 +120,26 @@ def share_with_pods_restriction(operation, postid, limit, logger):
                     return False
 
                 else:
-                    exceed_msg = "" if share_data[
-                                           "times"] == limit else "more than "
-                    logger.info("---> {} has already been shared with pods {}{} times"
-                                .format(postid, exceed_msg, str(limit)))
+                    exceed_msg = "" if share_data["times"] == limit else "more than "
+                    logger.info(
+                        "---> {} has already been shared with pods {}{} times".format(
+                            postid, exceed_msg, str(limit)
+                        )
+                    )
                     return True
 
     except Exception as exc:
         logger.error(
             "Dap! Error occurred with share Restriction:\n\t{}".format(
-                str(exc).encode("utf-8")))
+                str(exc).encode("utf-8")
+            )
+        )
 
     finally:
         if conn:
             # close the open connection
             conn.close()
+
 
 def comment_restriction(operation, postid, limit, logger):
     """ Keep track of already shared posts """
@@ -125,7 +155,8 @@ def comment_restriction(operation, postid, limit, logger):
             cur.execute(
                 "SELECT * FROM commentRestriction WHERE profile_id=:id_var "
                 "AND postid=:name_var",
-                {"id_var": id, "name_var": postid})
+                {"id_var": id, "name_var": postid},
+            )
             data = cur.fetchone()
             share_data = dict(data) if data else None
 
@@ -135,12 +166,15 @@ def comment_restriction(operation, postid, limit, logger):
                     cur.execute(
                         "INSERT INTO commentRestriction (profile_id, "
                         "postid, times) VALUES (?, ?, ?)",
-                        (id, postid, 1))
+                        (id, postid, 1),
+                    )
                 else:
                     # update the existing record
                     share_data["times"] += 1
-                    sql = "UPDATE commentRestriction set times = ? WHERE " \
-                          "profile_id=? AND postid = ?"
+                    sql = (
+                        "UPDATE commentRestriction set times = ? WHERE "
+                        "profile_id=? AND postid = ?"
+                    )
                     cur.execute(sql, (share_data["times"], id, postid))
 
                 # commit the latest changes
@@ -154,19 +188,22 @@ def comment_restriction(operation, postid, limit, logger):
                     return False
 
                 else:
-                    exceed_msg = "" if share_data[
-                                           "times"] == limit else "more than "
-                    logger.info("---> {} has been commented on {}{} times"
-                                .format(postid, exceed_msg, str(limit)))
+                    exceed_msg = "" if share_data["times"] == limit else "more than "
+                    logger.info(
+                        "---> {} has been commented on {}{} times".format(
+                            postid, exceed_msg, str(limit)
+                        )
+                    )
                     return True
 
     except Exception as exc:
         logger.error(
             "Dap! Error occurred with comment Restriction:\n\t{}".format(
-                str(exc).encode("utf-8")))
+                str(exc).encode("utf-8")
+            )
+        )
 
     finally:
         if conn:
             # close the open connection
             conn.close()
-
