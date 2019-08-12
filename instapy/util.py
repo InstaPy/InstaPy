@@ -2370,11 +2370,11 @@ def take_rotative_screenshot(browser, logfolder, logger):
     global next_screenshot
 
     if next_screenshot == 1:
-        browser.save_screenshot("{}{}_1.png".format(logfolder, logger.name))
+        browser.save_screenshot("{}screenshot_1.png".format(logfolder))
     elif next_screenshot == 2:
-        browser.save_screenshot("{}{}_2.png".format(logfolder, logger.name))
+        browser.save_screenshot("{}screenshot_2.png".format(logfolder))
     else:
-        browser.save_screenshot("{}{}_3.png".format(logfolder, logger.name))
+        browser.save_screenshot("{}screenshot_3.png".format(logfolder))
         next_screenshot = 0
         # sum +1 next
 

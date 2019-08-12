@@ -12,6 +12,8 @@ _The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 - Black code formatter
 - Mobile user agent
 - Mobile Mode to enable mobile features
+- Screen shots (rotative screen shots are taken and saved in your InstaPy user folder)
+- Connection State
 
 ### Breaking Changes
 
