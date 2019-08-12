@@ -2382,15 +2382,18 @@ def take_rotative_screenshot(browser, logfolder):
     next_screenshot += 1
 
 
-def get_query_hash(browser):
+def get_query_hash(browser, logger):
     """ Load Instagram JS file and find query hash code """
     link = "https://www.instagram.com/static/bundles/es6/Consumer.js/1f67555edbd3.js"
     web_address_navigator(browser, link)
     page_source = browser.page_source
     # locate pattern value from JS file
     # sequence of 32 words and/or numbers just before ,n=" value
-    hash = re.search('[a-z0-9]{32}(?=",n=")', page_source)[0]
-    return hash
+    hash = re.findall('[a-z0-9]{32}(?=",n=")', page_source)
+    if hash:
+        return hash[0]
+    else:
+        logger.warn("Query Hash not found")
 
 
 class CustomizedArgumentParser(ArgumentParser):

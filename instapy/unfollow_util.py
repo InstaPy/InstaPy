@@ -877,7 +877,7 @@ def get_users_through_dialog_with_graphql(
         "return window._sharedData.entry_data.ProfilePage[0].graphql.user.id"
     )
 
-    query_hash = get_query_hash(browser)
+    query_hash = get_query_hash(browser, logger)
     # check if hash is present
     if query_hash is None:
         logger.info("Unable to locate GraphQL query hash")
