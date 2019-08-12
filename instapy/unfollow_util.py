@@ -562,6 +562,9 @@ def unfollow(
         # get_users_through_dialog_with_graphql function will return two values
         # (have a look on how get_given_user_followers is using it)
         logger.info("Unfollowing the users you are following")
+        logger.warn("all Following option is not working at the moment, leaving...")
+        return 0
+
         # unfollow from profile
         try:
             following_link = browser.find_elements_by_xpath(

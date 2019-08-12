@@ -348,12 +348,8 @@ def get_following(
 
     user_data = {}
 
-    use_firefox = Settings.use_firefox
-
-    if use_firefox:
-        graphql_endpoint = "view-source:https://www.instagram.com/graphql" "/query/"
-    else:
-        graphql_endpoint = "https://www.instagram.com/graphql/query/"
+    # FIXME: use util.py:get_query_hash to get the hash code
+    graphql_endpoint = "view-source:https://www.instagram.com/graphql" "/query/"
 
     graphql_following = (
         graphql_endpoint + "?query_hash=58712303d941c6855d4e888c5f0cd22f"
