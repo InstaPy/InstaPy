@@ -454,12 +454,12 @@ def update_activity(
 
     # take screen shot
     if browser and logfolder and logger:
-        take_rotative_screenshot(browser, logfolder, logger)
+        take_rotative_screenshot(browser, logfolder)
 
     # update state to JSON file
     if state and logfolder and logger:
         try:
-            path = "{}{}.json".format(logfolder, logger.name)
+            path = "{}state.json".format(logfolder)
             data = {}
             # check if file exists and has content
             if os.path.isfile(path) and os.path.getsize(path) > 0:
@@ -2363,7 +2363,7 @@ def get_bounding_box(
     return bbox
 
 
-def take_rotative_screenshot(browser, logfolder, logger):
+def take_rotative_screenshot(browser, logfolder):
     """
         Make a sequence of screenshots, based on hour:min:secs
     """
