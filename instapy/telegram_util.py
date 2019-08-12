@@ -2,7 +2,7 @@
 A fully functional TelegramBot to get info on an instapy run
 or to control the instapy bot
 
-you will need to create your token on the telegram app and speak with @fatherbot
+you will need to create your token on the telegram app and speak with @botfather
 you will need to have a username (go to settings -> profile -> Username
 """
 
@@ -21,30 +21,13 @@ from telegram.error import (
 )
 import logging
 import requests
+import os
 
 
 class InstaPyTelegramBot:
     """
     Class to handle the instapy telegram bot
     """
-
-    # internal variables declaration
-    _token = ""
-    _telegram_username = ""
-    _instapy_session = None
-    _logger = None
-    _updater = None
-    _debug = False
-    _proxy = None
-    # should be of type:
-    # _proxy = {
-    #     'proxy_url': 'http://PROXY_HOST:PROXY_PORT/',
-    #     # Optional, if you need authentication:
-    #     'username': 'PROXY_USER',
-    #     'password': 'PROXY_PASS',
-    # }
-    _chat_id = None
-    _context = None
 
     def __init__(
         self,
@@ -54,74 +37,45 @@ class InstaPyTelegramBot:
         debug=True,
         proxy=None,
     ):
-        self._logger = logging.getLogger()
+        # import pdb; pdb.set_trace()
+        # private properties
+        self.__logger = logging.getLogger()
+        self.__chat_id = None
+        self.__updater = None
+        self.__context = None
 
+        # public properties
         self.token = token
         self.telegram_username = telegram_username
         self.instapy_session = instapy_session
         self.debug = debug
         self.proxy = proxy
+        # should be of type:
+        # proxy = {
+        #     'proxy_url': 'http://PROXY_HOST:PROXY_PORT/',
+        #     # Optional, if you need authentication:
+        #     'username': 'PROXY_USER',
+        #     'password': 'PROXY_PASS',
+
+        # see if we have a pre-existing chat_id from another run
+        if self.instapy_session is not None:
+            try:
+                telegramfile = open(
+                    "{}telegram_chat_id.txt".format(self.instapy_session.logfolder)
+                )
+            except OSError:
+                self.__chat_id = None
+            else:
+                with telegramfile:
+                    self.__chat_id = telegramfile.read()
 
         # launch the telegram bot already if everything is ready at init
         if (
-            (self._token != "")
-            and (self._telegram_username != "")
-            and (self._instapy_session is not None)
+            (self.token != "")
+            and (self.telegram_username != "")
+            and (self.instapy_session is not None)
         ):
             self.telegram_bot()
-
-    @property
-    def telegram_username(self):
-        """
-        we need the telegram_username to secure the access to the bot
-        and prevent others to use it. Only the declared telegram_username can
-        issue commands
-        :return:
-        """
-        return self._telegram_username
-
-    @telegram_username.setter
-    def telegram_username(self, value):
-        """
-        setting the telegram_username if needed
-        :param value:
-        :return:
-        """
-        self._telegram_username = value
-
-    @property
-    def instapy_session(self):
-        """
-        we will need the session_id to access the live_results
-        :return:
-        """
-        return self._instapy_session
-
-    @instapy_session.setter
-    def instapy_session(self, value):
-        """
-        sets the session_id if needed
-        :param value:
-        :return:
-        """
-        self._instapy_session = value
-
-    @property
-    def token(self):
-        """
-        the token given by the @fatherbot
-        :return:
-        """
-        return self._token
-
-    @token.setter
-    def token(self, value):
-        """
-        sets the token if needed
-        :param token:
-        :return:
-        """
-        self._token = value
 
     @property
     def debug(self):
@@ -140,65 +94,49 @@ class InstaPyTelegramBot:
         """
         self._debug = value
         if self._debug is True:
-            if self._logger is None:
-                self._logger = logging.getLogger()
+            if self.__logger is None:
+                self.__logger = logging.getLogger()
 
-            self._logger.setLevel(logging.DEBUG)
-
-    @property
-    def proxy(self):
-        """
-        return the proxy
-        :return:
-        """
-        return self._proxy
-
-    @proxy.setter
-    def proxy(self, value):
-        """
-        sets the proxy
-        :param value:
-        :return:
-        """
-        self._proxy = value
-        # should add some tests on _proxy to verify it is setup correctly
+            self.__logger.setLevel(logging.DEBUG)
 
     def telegram_bot(self):
         """
-        Funtion to initialize a telegram bot that you can talk to to control your InstaPy Bot
+        Funtion to initialize a telegram bot that you can talk to and control your InstaPy Bot
         :return:
         """
-        if self._token == "":
-            self._logger.warning("You need to set token for InstaPyTelegramBot to work")
+        if self.token == "":
+            self.__logger.warning(
+                "You need to set token for InstaPyTelegramBot to work"
+            )
             return
-        if self._telegram_username == "":
-            self._logger.warning(
+        if self.telegram_username == "":
+            self.__logger.warning(
                 "You need to set telegram_username for InstaPyTelegramBot to work"
             )
             return
-        if self._instapy_session is None:
-            self._logger.warning(
+        if self.instapy_session is None:
+            self.__logger.warning(
                 "You need to set instapy_session for InstaPyTelegramBot to work"
             )
             return
 
         self._clean_web_hooks()
 
-        if self._proxy is not None:
+        if self.proxy is not None:
             updater = Updater(
-                token=self._token,
+                token=self.token,
                 use_context=True,
                 user_sig_handler=self.end,
-                request_kwargs=self._proxy,
+                request_kwargs=self.proxy,
             )
         else:
             updater = Updater(
-                token=self._token, use_context=True, user_sig_handler=self.end
+                token=self.token, use_context=True, user_sig_handler=self.end
             )
-        self._updater = updater
+        self.__updater = updater
 
         dispatcher = updater.dispatcher
-
+        self.__context = dispatcher
         dispatcher.add_error_handler(self._error_callback)
         start_handler = CommandHandler("start", self._start)
         dispatcher.add_handler(start_handler)
@@ -209,6 +147,20 @@ class InstaPyTelegramBot:
         unknown_handler = MessageHandler(Filters.command, self._unknown)
         dispatcher.add_handler(unknown_handler)
         updater.start_polling()
+        if self.__chat_id is not None:
+            # session was restored, send a message saying that instapy session is starting
+            self.__context.bot.send_message(
+                self.__chat_id, text="Telegram session restored, InstaPy starting\n"
+            )
+
+    @staticmethod
+    def telegram_delete_session(session):
+        """
+        function to force delete the telegram_chat_id.txt file that is in the logs folder
+        :param session: the instapy session
+        :return:
+        """
+        os.remove("{}telegram_chat_id.txt".format(session.logfolder))
 
     def _start(self, update, context):
         """
@@ -217,16 +169,15 @@ class InstaPyTelegramBot:
         :param context:
         :return:
         """
-        self._chat_id = update.message.chat_id
-        self._context = context
+        self.__chat_id = update.message.chat_id
         if self._check_authorized(update, context):
+            with open(
+                "{}telegram_chat_id.txt".format(self.instapy_session.logfolder), "w"
+            ) as telegramfile:
+                telegramfile.write(str(self.__chat_id))
+
             context.bot.send_message(
-                chat_id=update.message.chat_id,
-                text="I am your Instapy Bot \n"
-                + " Recognized actions are:\n"
-                + "   - /start (this command) \n"
-                + "   - /report (a live report from the bot\n"
-                + "   - /stop (force stop the bot)\n",
+                chat_id=update.message.chat_id, text="Bot initialized sucessfully!\n"
             )
 
     def _report(self, update, context):
@@ -236,8 +187,7 @@ class InstaPyTelegramBot:
         :param context:
         :return:
         """
-        self._chat_id = update.message.chat_id
-        self._context = context
+        self.__chat_id = update.message.chat_id
         if self._check_authorized(update, context):
             context.bot.send_message(
                 chat_id=update.message.chat_id, text=self._live_report()
@@ -250,10 +200,9 @@ class InstaPyTelegramBot:
         :param context:
         :return:
         """
-        self._chat_id = update.message.chat_id
-        self._context = context
+        self.__chat_id = update.message.chat_id
         if self._check_authorized(update, context):
-            self._instapy_session.aborting = True
+            self.instapy_session.aborting = True
             context.bot.send_message(
                 chat_id=update.message.chat_id, text="InstaPy session abort set\n"
             )
@@ -269,6 +218,13 @@ class InstaPyTelegramBot:
                 chat_id=update.message.chat_id,
                 text="Sorry I don't understand that command",
             )
+            context.bot.send_message(
+                chat_id=update.message.chat_id,
+                text=" Recognized actions are:\n"
+                + "   - /start (initialize bot) \n"
+                + "   - /report (a live report from the bot)\n"
+                + "   - /stop (force stop the bot)\n",
+            )
 
     def _check_authorized(self, update, context):
         """
@@ -277,8 +233,8 @@ class InstaPyTelegramBot:
         :param context:
         :return:
         """
-        if update.message.from_user.username != self._telegram_username:
-            self._logger.warning(
+        if update.message.from_user.username != self.telegram_username:
+            self.__logger.warning(
                 "unauthorized access from {}".format(update.message.from_user)
             )
             context.bot.send_message(
@@ -296,31 +252,32 @@ class InstaPyTelegramBot:
         :return:
         """
         r = requests.get(
-            "https://api.telegram.org/bot{}/deleteWebhook".format(self._token)
+            "https://api.telegram.org/bot{}/deleteWebhook".format(self.token)
         )
 
         if r.json()["ok"] is not True:
-            self._logger.warning("unable to remove webhook! Wrong token?")
+            self.__logger.warning("unable to remove webhook! Wrong token?")
 
-    def _error_callback(bot, update, error):
+    @staticmethod
+    def _error_callback(_, update, error):
         try:
             raise error
         except Unauthorized:
-            self._logger.warning("TELEGRAM ERROR {} update={}".format(error, update))
+            self.__logger.warning("TELEGRAM ERROR {} update={}".format(error, update))
         except BadRequest:
             # handle malformed requests - read more below!
-            self._logger.warning("TELEGRAM ERROR {} update={}".format(error, update))
+            self.__logger.warning("TELEGRAM ERROR {} update={}".format(error, update))
         except TimedOut:
             # handle slow connection problems
-            self._logger.warning("TELEGRAM ERROR {} update={}".format(error, update))
+            self.__logger.warning("TELEGRAM ERROR {} update={}".format(error, update))
         except NetworkError:
             # handle other connection problems
-            self._logger.warning("TELEGRAM ERROR {} update={}".format(error, update))
-        except ChatMigrated as e:
+            self.__logger.warning("TELEGRAM ERROR {} update={}".format(error, update))
+        except ChatMigrated as _:
             # the chat_id of a group has changed, use e.new_chat_id instead
-            self._logger.warning("TELEGRAM ERROR {} update={}".format(error, update))
+            self.__logger.warning("TELEGRAM ERROR {} update={}".format(error, update))
         except TelegramError:
-            self._logger.warning("TELEGRAM ERROR {} update={}".format(error, update))
+            self.__logger.warning("TELEGRAM ERROR {} update={}".format(error, update))
             # handle all other telegram related errors
 
     def _live_report(self):
@@ -329,19 +286,19 @@ class InstaPyTelegramBot:
         :return:
         """
         stats = [
-            self._instapy_session.liked_img,
-            self._instapy_session.already_liked,
-            self._instapy_session.commented,
-            self._instapy_session.followed,
-            self._instapy_session.already_followed,
-            self._instapy_session.unfollowed,
-            self._instapy_session.stories_watched,
-            self._instapy_session.reels_watched,
-            self._instapy_session.inap_img,
-            self._instapy_session.not_valid_users,
+            self.instapy_session.liked_img,
+            self.instapy_session.already_liked,
+            self.instapy_session.commented,
+            self.instapy_session.followed,
+            self.instapy_session.already_followed,
+            self.instapy_session.unfollowed,
+            self.instapy_session.stories_watched,
+            self.instapy_session.reels_watched,
+            self.instapy_session.inap_img,
+            self.instapy_session.not_valid_users,
         ]
 
-        sessional_run_time = self._instapy_session.run_time()
+        sessional_run_time = self.instapy_session.run_time()
         run_time_info = (
             "{} seconds".format(sessional_run_time)
             if sessional_run_time < 60
@@ -367,18 +324,18 @@ class InstaPyTelegramBot:
                 "|> WATCHED {} story(ies)\n"
                 "|> WATCHED {} reel(s)\n"
                 "\n{}".format(
-                    self._instapy_session.liked_img,
-                    self._instapy_session.already_liked,
-                    self._instapy_session.commented,
-                    self._instapy_session.followed,
-                    self._instapy_session.already_followed,
-                    self._instapy_session.unfollowed,
-                    self._instapy_session.liked_comments,
-                    self._instapy_session.replied_to_comments,
-                    self._instapy_session.inap_img,
-                    self._instapy_session.not_valid_users,
-                    self._instapy_session.stories_watched,
-                    self._instapy_session.reels_watched,
+                    self.instapy_session.liked_img,
+                    self.instapy_session.already_liked,
+                    self.instapy_session.commented,
+                    self.instapy_session.followed,
+                    self.instapy_session.already_followed,
+                    self.instapy_session.unfollowed,
+                    self.instapy_session.liked_comments,
+                    self.instapy_session.replied_to_comments,
+                    self.instapy_session.inap_img,
+                    self.instapy_session.not_valid_users,
+                    self.instapy_session.stories_watched,
+                    self.instapy_session.reels_watched,
                     run_time_msg,
                 )
             )
@@ -394,12 +351,18 @@ class InstaPyTelegramBot:
         tidy up things
         :return:
         """
+        # keep the chat_id session for future reference
+        # so we don't need to send a message each time InstaPy restart to the bot
+        # and we can keep on getting messages when the sessions finishes
+
         # send one last message to the user reporting the session
-        if (self._chat_id is not None) and (self._context is not None):
-            self._context.bot.send_message(chat_id=self._chat_id, text=self._live_report())
-        self._updater.stop()
-        self._token = ""
-        self._telegram_username = ""
-        self._instapy_session = None
-        self._chat_id = None
-        self._context = None
+        if (self.__chat_id is not None) and (self.__context is not None):
+            self.__context.bot.send_message(
+                chat_id=self.__chat_id, text=self._live_report()
+            )
+        self.__updater.stop()
+        self.token = ""
+        self.telegram_username = ""
+        self.instapy_session = None
+        self.__chat_id = None
+        self.__context = None
