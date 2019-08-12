@@ -100,7 +100,7 @@ def bypass_suspicious_login(browser, logger, logfolder):
     # --
     security_code = None
     try:
-        path = "{}{}.json".format(logfolder, logger.name)
+        path = "{}state.json".format(logfolder)
         data = {}
         # check if file exists and has content
         if os.path.isfile(path) and os.path.getsize(path) > 0:
@@ -111,9 +111,7 @@ def bypass_suspicious_login(browser, logger, logfolder):
         # update connection state
         security_code = data["challenge"]["security_code"]
     except Exception:
-        logger.info(
-            "Security Code not present in {}{}.json file".format(logfolder, logger.name)
-        )
+        logger.info("Security Code not present in {}state.json file".format(logfolder))
 
     if security_code is None:
         security_code = input("Type the security code here: ")

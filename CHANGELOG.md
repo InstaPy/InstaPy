@@ -4,7 +4,21 @@ The **goal** of this file is explaining to the users of our project the notable 
 
 _The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html)_.
 
-## [0.6.0] - 2019-**-**
+## [0.6.1] - 2019-08-12
+
+### Added
+
+- Add log information about the non-working feature (unfollow with All Following option enabled)
+
+### Fixed
+
+- Fix an issue with screen shot file creation
+- Fix an issue with JSON file state creation
+- Fix Get Query Hash function to work on all Python 3.x versions
+- Fix Unfollow with option nonFollowers
+
+
+## [0.6.0] - 2019-08-12
 
 ### Added
 
@@ -12,13 +26,8 @@ _The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 - Black code formatter
 - Mobile user agent
 - Mobile Mode to enable mobile features
-- Fix follow_likers feature
-- Fix follow_user_followers
-- Fix comment_image feature
-- Update dont_unfollow_active_users to Mobile Mode
-- Fix scroll down (util) function
-- Remove bypass_by_mobile, it will auto detect the mobile if required now
-- Update profile scrapping to use GraphQL (get_users_through_dialog_with_graphql)
+- Screen shots (rotative screen shots are taken and saved in your InstaPy user folder)
+- Connection State
 
 ### Breaking Changes
 
@@ -31,6 +40,14 @@ _The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
   - set*quota_supervisor(peak*_) ->(peak\_\_\_hourly, peak_\*\_daily)
 
 ### Fixed
+
+- Fix follow_likers feature
+- Fix follow_user_followers
+- Fix comment_image feature
+- Update dont_unfollow_active_users to Mobile Mode
+- Fix scroll down (util) function
+- Remove bypass_by_mobile, it will auto detect the mobile if required now
+- Update profile scrapping to use GraphQL (get_users_through_dialog_with_graphql)
 
 ## [0.5.8] - 2019-08-01
 

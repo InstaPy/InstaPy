@@ -454,12 +454,12 @@ def update_activity(
 
     # take screen shot
     if browser and logfolder and logger:
-        take_rotative_screenshot(browser, logfolder, logger)
+        take_rotative_screenshot(browser, logfolder)
 
     # update state to JSON file
     if state and logfolder and logger:
         try:
-            path = "{}{}.json".format(logfolder, logger.name)
+            path = "{}state.json".format(logfolder)
             data = {}
             # check if file exists and has content
             if os.path.isfile(path) and os.path.getsize(path) > 0:
@@ -2363,18 +2363,18 @@ def get_bounding_box(
     return bbox
 
 
-def take_rotative_screenshot(browser, logfolder, logger):
+def take_rotative_screenshot(browser, logfolder):
     """
         Make a sequence of screenshots, based on hour:min:secs
     """
     global next_screenshot
 
     if next_screenshot == 1:
-        browser.save_screenshot("{}{}_1.png".format(logfolder, logger.name))
+        browser.save_screenshot("{}screenshot_1.png".format(logfolder))
     elif next_screenshot == 2:
-        browser.save_screenshot("{}{}_2.png".format(logfolder, logger.name))
+        browser.save_screenshot("{}screenshot_2.png".format(logfolder))
     else:
-        browser.save_screenshot("{}{}_3.png".format(logfolder, logger.name))
+        browser.save_screenshot("{}screenshot_3.png".format(logfolder))
         next_screenshot = 0
         # sum +1 next
 
@@ -2382,15 +2382,18 @@ def take_rotative_screenshot(browser, logfolder, logger):
     next_screenshot += 1
 
 
-def get_query_hash(browser):
+def get_query_hash(browser, logger):
     """ Load Instagram JS file and find query hash code """
     link = "https://www.instagram.com/static/bundles/es6/Consumer.js/1f67555edbd3.js"
     web_address_navigator(browser, link)
     page_source = browser.page_source
     # locate pattern value from JS file
     # sequence of 32 words and/or numbers just before ,n=" value
-    hash = re.search('[a-z0-9]{32}(?=",n=")', page_source)[0]
-    return hash
+    hash = re.findall('[a-z0-9]{32}(?=",n=")', page_source)
+    if hash:
+        return hash[0]
+    else:
+        logger.warn("Query Hash not found")
 
 
 class CustomizedArgumentParser(ArgumentParser):

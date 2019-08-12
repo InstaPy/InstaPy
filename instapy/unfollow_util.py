@@ -557,7 +557,14 @@ def unfollow(
         except BaseException as e:
             logger.error("Unfollow loop error:  {}\n".format(str(e)))
     elif allFollowing is True:
+        # FIXME: this is not working since last get_users_through_dialog_with_graphql update,
+        # now we're using graphql, the dialog is not required anymore, and
+        # get_users_through_dialog_with_graphql function will return two values
+        # (have a look on how get_given_user_followers is using it)
         logger.info("Unfollowing the users you are following")
+        logger.warn("all Following option is not working at the moment, leaving...")
+        return 0
+
         # unfollow from profile
         try:
             following_link = browser.find_elements_by_xpath(
@@ -877,7 +884,7 @@ def get_users_through_dialog_with_graphql(
         "return window._sharedData.entry_data.ProfilePage[0].graphql.user.id"
     )
 
-    query_hash = get_query_hash(browser)
+    query_hash = get_query_hash(browser, logger)
     # check if hash is present
     if query_hash is None:
         logger.info("Unable to locate GraphQL query hash")
