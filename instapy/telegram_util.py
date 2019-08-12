@@ -396,7 +396,7 @@ class InstaPyTelegramBot:
         """
         # send one last message to the user reporting the session
         if (self._chat_id is not None) and (self._context is not None):
-            context.bot.send_message(chat_id=self._chat_id, text=self._live_report())
+            self._context.bot.send_message(chat_id=self._chat_id, text=self._live_report())
         self._updater.stop()
         self._token = ""
         self._telegram_username = ""
