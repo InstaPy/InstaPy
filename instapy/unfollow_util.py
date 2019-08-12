@@ -557,6 +557,10 @@ def unfollow(
         except BaseException as e:
             logger.error("Unfollow loop error:  {}\n".format(str(e)))
     elif allFollowing is True:
+        # FIXME: this is not working since last get_users_through_dialog_with_graphql update,
+        # now we're using graphql, the dialog is not required anymore, and
+        # get_users_through_dialog_with_graphql function will return two values
+        # (have a look on how get_given_user_followers is using it)
         logger.info("Unfollowing the users you are following")
         # unfollow from profile
         try:
