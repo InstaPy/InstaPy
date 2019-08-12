@@ -1659,8 +1659,9 @@ access the InstaPy session, to do so go to Settings -> Profile -> Username.
 
 ####Supported actions
 There are 3 supported actions:
-  - /start : verify that the telegram bot and the Instapy Sessions are connected together
-    will respond the allowed actions
+  - /start : will start the interaction between the bot and instapy. Please note: that the telegram bot 
+  cannot send you messages until you first send it a /start message. The bot will store the chat_id in the logs folder
+  file telegram_chat_id.txt to be reused in further sessions (so you have to actually do /start just one time)
   - /report : will gather and show the current session statistics
   - /stop: will set the aborting flag to True
 
