@@ -9,10 +9,7 @@ from webdriverdownloader import GeckoDriverDownloader
 # general libs
 import os
 import zipfile
-<<<<<<< HEAD
 import shutil
-=======
->>>>>>> update browser.py
 from time import sleep
 from os.path import sep
 
@@ -28,14 +25,11 @@ from .settings import Settings
 
 
 def get_geckodriver():
-<<<<<<< HEAD
     # prefer using geckodriver from path
     gecko_path = shutil.which("geckodriver") or shutil.which("geckodriver.exe")
     if gecko_path:
         return gecko_path
 
-=======
->>>>>>> update browser.py
     asset_path = use_assets()
     gdd = GeckoDriverDownloader(asset_path, asset_path)
     # skips download if already downloaded
@@ -44,21 +38,12 @@ def get_geckodriver():
 
 
 def create_firefox_extension():
-<<<<<<< HEAD
     ext_path = os.path.abspath(os.path.dirname(__file__) + sep + "firefox_extension")
     # safe into assets folder
     zip_file = use_assets() + sep + "extension.xpi"
 
     files = ["manifest.json", "content.js", "arrive.js"]
     with zipfile.ZipFile(zip_file, "w", zipfile.ZIP_DEFLATED, False) as zipf:
-=======
-    ext_path = os.path.abspath(os.path.dirname(__file__) + sep + 'firefox_extension')
-    # safe into assets folder
-    zip_file = use_assets() + sep + 'extension.xpi'
-
-    files = [ 'manifest.json', 'content.js', 'arrive.js' ]
-    with zipfile.ZipFile(zip_file, 'w', zipfile.ZIP_DEFLATED, False) as zipf:
->>>>>>> update browser.py
         for file in files:
             zipf.write(ext_path + sep + file, file)
 
