@@ -6,7 +6,10 @@ xpath = {}
 xpath["bypass_suspicious_login"] = {
     "bypass_with_mobile_choice": "(//button)[2]",
     "bypass_with_mobile_button": "//label[@for='choice_0']",
-    "choice": "//label[@for='choice_1']",
+    "choice0": "//label[@for='choice_0']",
+    "choice1": "//label[@for='choice_1']",
+    "choice0box": "//label[@for='choice_0']//div",
+    "choice1box": "//label[@for='choice_1']//div",
     "choice_no_such_element": "//label[@class='_q0nt5']",
     "choice_exception": "//label[@class='_q0nt5 _a7z3k']",
     "choice_exception2": "//label",
