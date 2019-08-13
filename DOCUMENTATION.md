@@ -1278,11 +1278,7 @@ there is a different approach to install this library.*
 
 *Detailed steps to install [PyAutoGUI](https://pyautogui.readthedocs.io/en/latest/install.html).*
 
-<<<<<<< HEAD
 <br /> 
-=======
-<br />
->>>>>>> f270b0e88207f281670909e38fa35e55bc14c0b3
 <br />
 
 ## Third Party Features

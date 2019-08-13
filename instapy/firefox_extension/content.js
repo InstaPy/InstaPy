@@ -30,23 +30,24 @@ WebGLRenderingContext.prototype.getParameter = parameter => {
 };
 
 // -- mock image size = 0
-['height', 'width'].forEach(property => {
-  // store the existing descriptor
-  var imageDescriptor = Object.getOwnPropertyDescriptor(HTMLImageElement.prototype, property);
+// FIXME: this is blocking my create_post feature
+// ['height', 'width'].forEach(property => {
+//   // store the existing descriptor
+//   var imageDescriptor = Object.getOwnPropertyDescriptor(HTMLImageElement.prototype, property);
 
-  // redefine the property with a patched descriptor
-  Object.defineProperty(HTMLImageElement.prototype, property, {
-    ...imageDescriptor,
-    get: () => {
-      // return an arbitrary non-zero dimension if the image failed to load
-      if (this.complete && this.naturalHeight == 0) {
-        return 20;
-      }
-      // otherwise, return the actual dimension
-      return imageDescriptor.get.apply(this);
-    },
-  });
-});
+//   // redefine the property with a patched descriptor
+//   Object.defineProperty(HTMLImageElement.prototype, property, {
+//     ...imageDescriptor,
+//     get: () => {
+//       // return an arbitrary non-zero dimension if the image failed to load
+//       if (this.complete && this.naturalHeight == 0) {
+//         return 20;
+//       }
+//       // otherwise, return the actual dimension
+//       return imageDescriptor.get.apply(this);
+//     },
+//   });
+// });
 
 // -- pass permissions test
 var originalQuery = window.navigator.permissions.query;
