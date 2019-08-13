@@ -192,13 +192,13 @@ class User(object):
             self.session.logfolder,
         )
 
-        following = set()
+        following_set = set()
         start = min(offset, len(raw_following))
         last = min(offset+limit, len(raw_following))
         for raw_followed in raw_following[start:last]:
-            following.add(User(name=raw_followed))
+            following_set.add(User(name=raw_followed))
 
-        print(" - returning {0} of the total {1}".format(len(following), self.count_following(session)))
+        print(" - returning {0} of the total {1}".format(len(following_set), self.count_following(session)))
         return following
 
 
@@ -230,7 +230,7 @@ class User(object):
         for raw_follower in raw_followers[start:last]:
             followers_set.add(User(name=raw_follower, session=session))
 
-        print(" - returning {0} of the total {1}".format(len(followers), self.followers))
+        print(" - returning {0} of the total {1}".format(len(followers_set), self.followers))
         return followers
 
 
@@ -267,7 +267,7 @@ class User(object):
         for raw_link in raw_links[start:last]:
             posts_set.add(Post(link=raw_link, session=session))
 
-        print(" - returning {0} of the total {1}".format(len(posts), self.posts))
+        print(" - returning {0} of the total {1}".format(len(posts_set), self.posts))
         return posts
 
     def _navigate(self):
