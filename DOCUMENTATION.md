@@ -1693,6 +1693,16 @@ Additional parameters:
          'password': 'PROXY_PASS',
      }
 ```
+
+####Additional functionality
+you can use 
+```python
+telegram.send_message(text="this is a message")
+```
+
+So you are able to send additional message inside your script if needed. Remember that the telegram bot
+is not able to send messages as long as you haven't done at least one /start
+
    
 <br /> 
 <br />

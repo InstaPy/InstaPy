@@ -153,6 +153,19 @@ class InstaPyTelegramBot:
                 self.__chat_id, text="Telegram session restored, InstaPy starting\n"
             )
 
+    def send_message(self, text=""):
+        """
+        function to be able to send messages from anywhere else in the instapy code
+        :param text: the text of the message you want to send
+        remember we cannot send_messages if we don't have the chat_id
+        to get the chat_id, user has to send at little one /start to the bot
+        :return:
+        """
+        if (self.__chat_id is None) and (self.__context is None):
+            raise TelegramError
+        else:
+            self.__context.bot.send_message(chat_id=self.__chat_id, text=text)
+
     @staticmethod
     def telegram_delete_session(session):
         """
