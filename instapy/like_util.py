@@ -302,6 +302,9 @@ def get_links_for_tag(browser, tag, amount, skip_top_posts, randomize, media, lo
             )
             possible_posts = None
 
+    if skip_top_posts: 
+        amount = amount + 9
+
     logger.info(
         "desired amount: {}  |  top posts [{}]: {}  |  possible posts: "
         "{}".format(
@@ -395,6 +398,9 @@ def get_links_for_tag(browser, tag, amount, skip_top_posts, randomize, media, lo
         raise
 
     sleep(4)
+
+    if skip_top_posts: 
+        del links[0:9]
 
     if randomize is True:
         random.shuffle(links)
