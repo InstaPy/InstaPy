@@ -1274,7 +1274,7 @@ def highlight_print(
         lower_char = None
 
     if upper_char and (show_logs or priority == "workspace"):
-        print("\n{}".format(upper_char * int(ceil(output_len / len(upper_char)))))
+        print("{}".format(upper_char * int(ceil(output_len / len(upper_char)))))
 
     if level == "info":
         if logger:

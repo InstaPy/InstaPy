@@ -24,6 +24,7 @@ except ModuleNotFoundError:
     pass
 
 # import InstaPy modules
+from . import __version__
 from .clarifai_util import check_image
 from .comment_util import comment_image
 from .comment_util import verify_commenting
@@ -120,7 +121,7 @@ class InstaPy:
         split_db: bool = False,
         bypass_security_challenge_using: str = "email",
     ):
-
+        print("InstaPy Version: {}".format(__version__))
         cli_args = parse_cli_args()
         username = cli_args.username or username
         password = cli_args.password or password
@@ -321,6 +322,7 @@ class InstaPy:
             )
             if len(err_msg) > 0:
                 raise InstaPyError(err_msg)
+
 
     def get_instapy_logger(self, show_logs: bool, log_handler=None):
         """
