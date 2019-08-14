@@ -254,6 +254,67 @@ def check_browser(browser, logfolder, logger, proxy_address):
     return True
 
 
+def enter_username_password(browser, username, password, logger):
+
+    # Enter username and password and logs the user in
+    # Sometimes the element name isn't 'Username' and 'Password'
+    # (valid for placeholder too)
+
+    # wait until it navigates to the login page
+    login_page_title = "Login"
+    explicit_wait(browser, "TC", login_page_title, logger)
+
+    # wait until the 'username' input element is located and visible
+    input_username_XP = read_xpath(login_user.__name__, "input_username_XP")
+    explicit_wait(browser, "VOEL", [input_username_XP, "XPath"], logger)
+
+    input_username = browser.find_element_by_xpath(input_username_XP)
+
+    (
+        ActionChains(browser)
+        .move_to_element(input_username)
+        .click()
+        .send_keys(username)
+        .perform()
+    )
+
+    # update server calls for both 'click' and 'send_keys' actions
+    for _ in range(2):
+        update_activity(browser, state=None)
+
+    sleep(1)
+
+    #  password
+    input_password = browser.find_elements_by_xpath(
+        read_xpath(login_user.__name__, "input_password")
+    )
+
+    if not isinstance(password, str):
+        password = str(password)
+
+    (
+        ActionChains(browser)
+        .move_to_element(input_password[0])
+        .click()
+        .send_keys(password)
+        .perform()
+    )
+
+    sleep(1)
+
+    (
+        ActionChains(browser)
+        .move_to_element(input_password[0])
+        .click()
+        .send_keys(Keys.ENTER)
+        .perform()
+    )
+
+    # update server calls for both 'click' and 'send_keys' actions
+    for _ in range(4):
+        update_activity(browser, state=None)
+
+
 def login_user(
     browser,
     username,
@@ -326,63 +387,7 @@ def login_user(
         # update server calls
         update_activity(browser, state=None)
 
-    # Enter username and password and logs the user in
-    # Sometimes the element name isn't 'Username' and 'Password'
-    # (valid for placeholder too)
-
-    # wait until it navigates to the login page
-    login_page_title = "Login"
-    explicit_wait(browser, "TC", login_page_title, logger)
-
-    # wait until the 'username' input element is located and visible
-    input_username_XP = read_xpath(login_user.__name__, "input_username_XP")
-    explicit_wait(browser, "VOEL", [input_username_XP, "XPath"], logger)
-
-    input_username = browser.find_element_by_xpath(input_username_XP)
-
-    (
-        ActionChains(browser)
-        .move_to_element(input_username)
-        .click()
-        .send_keys(username)
-        .perform()
-    )
-
-    # update server calls for both 'click' and 'send_keys' actions
-    for _ in range(2):
-        update_activity(browser, state=None)
-
-    sleep(1)
-
-    #  password
-    input_password = browser.find_elements_by_xpath(
-        read_xpath(login_user.__name__, "input_password")
-    )
-
-    if not isinstance(password, str):
-        password = str(password)
-
-    (
-        ActionChains(browser)
-        .move_to_element(input_password[0])
-        .click()
-        .send_keys(password)
-        .perform()
-    )
-
-    sleep(1)
-
-    (
-        ActionChains(browser)
-        .move_to_element(input_password[0])
-        .click()
-        .send_keys(Keys.ENTER)
-        .perform()
-    )
-
-    # update server calls for both 'click' and 'send_keys' actions
-    for _ in range(4):
-        update_activity(browser, state=None)
+    enter_username_password(browser, username, password, logger)
 
     dismiss_get_app_offer(browser, logger)
     dismiss_notification_offer(browser, logger)
@@ -445,6 +450,65 @@ def login_user(
         except NoSuchElementException:
             pass
 
+    # Returned to log in screen, result of authentication in the App
+    try:
+        login_elem = browser.find_element_by_xpath(
+            read_xpath(login_user.__name__, "login_elem")
+        )
+        if login_elem is not None:
+            print("Authentication required in the Instagram App")
+            try:
+                (ActionChains(browser).move_to_element(login_elem).click().perform())
+            except MoveTargetOutOfBoundsException:
+                login_elem.click()
+
+            # update server calls
+            update_activity(browser, state=None)
+
+            enter_username_password(browser, username, password, logger)
+
+            try:
+                security_code_field = browser.find_element_by_xpath(
+                    read_xpath(bypass_suspicious_login.__name__, "second_security_code_field")
+                )
+
+                if security_code_field is not None:
+                    security_code = input("Type the security code here: ")
+
+                    (
+                        ActionChains(browser)
+                        .move_to_element(security_code_field)
+                        .click()
+                        .send_keys(security_code)
+                        .perform()
+                    )
+
+                    # update server calls for both 'click' and 'send_keys' actions
+                    for _ in range(2):
+                        update_activity(browser, state=None)
+
+                    submit_security_code_button = browser.find_element_by_xpath(
+                        read_xpath(bypass_suspicious_login.__name__, "second_submit_security_code_button")
+                    )
+
+                    (
+                        ActionChains(browser)
+                        .move_to_element(submit_security_code_button)
+                        .click()
+                        .perform()
+                    )
+
+                    # update server calls
+                    update_activity(browser, state=None)
+
+                    dismiss_save_login_info(browser, logger)
+            except Exception:
+                return False
+
+    except NoSuchElementException:
+        #  Normal functionality
+        pass
+
     # check for wrong username or password message, and show it to the user
     try:
         error_alert = browser.find_element_by_xpath(
@@ -476,6 +540,20 @@ def login_user(
         return True
     else:
         return False
+
+
+def dismiss_save_login_info(browser, logger):
+    """ Dismiss 'Save Your Login Info' page after a fresh login """
+    try:
+        save_info_elem = read_xpath(dismiss_save_login_info.__name__, "save_info")
+
+        if save_info_elem is not None:
+            dismiss_elem = browser.find_element_by_xpath(read_xpath(dismiss_save_login_info.__name__, "dismiss_elem"))
+            (ActionChains(browser).move_to_element(dismiss_elem).click().perform())
+
+    except Exception:
+        # Page not displayed
+        pass
 
 
 def dismiss_get_app_offer(browser, logger):

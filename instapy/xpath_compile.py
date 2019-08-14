@@ -9,6 +9,8 @@ xpath["bypass_suspicious_login"] = {
     "send_security_code_button": "//button[text()='Send Security Code']",
     "security_code_field": "//input[@id='security_code']",
     "submit_security_code_button": "//button[text()='Submit']",
+    "second_security_code_field": "//input[@aria-label='Security Code']",
+    "second_submit_security_code_button": "//button[text()='Confirm']",
     "wrong_login": "//p[text()='Please check the code we sent you and try again.']",
 }
 
@@ -24,6 +26,11 @@ xpath["class_selectors"] = {
 xpath["confirm_unfollow"] = {"button_xp": "//button[text()='Unfollow']"}
 
 xpath["dialog_username_extractor"] = {"person": "../../*"}
+
+xpath["dismiss_save_login_info"] = {
+        "save_info": "//button[text()='Save Info']",
+        "dismiss_elem": "//button[text()='Not Now']",
+        }
 
 xpath["dismiss_get_app_offer"] = {
     "offer_elem": "//*[contains(text(), 'Get App')]",
