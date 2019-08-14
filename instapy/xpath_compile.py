@@ -4,21 +4,16 @@
 xpath = {}
 
 xpath["bypass_suspicious_login"] = {
-    "bypass_with_mobile_choice": "(//button)[2]",
-    "bypass_with_mobile_button": "//label[@for='choice_0']",
-    "choice0": "//label[@for='choice_0']",
-    "choice1": "//label[@for='choice_1']",
-    "choice0box": "//label[@for='choice_0']//div",
-    "choice1box": "//label[@for='choice_1']//div",
-    "choice_no_such_element": "//label[@class='_q0nt5']",
-    "choice_exception": "//label[@class='_q0nt5 _a7z3k']",
-    "choice_exception2": "//label",
-    "close_button": "[text()='Close']",
-    "security_code_field": "//input[@id='security_code']",
+    "bypass_with_sms_option": "//label[contains(text(),'Phone:')]",
+    "bypass_with_email_option": "//label[contains(text(),'Email:')]",
     "send_security_code_button": "//button[text()='Send Security Code']",
+    "security_code_field": "//input[@id='security_code']",
     "submit_security_code_button": "//button[text()='Submit']",
-    "this_was_me_button": "//button[@name='choice'][text()='This Was Me']",
     "wrong_login": "//p[text()='Please check the code we sent you and try again.']",
+}
+
+xpath["dismiss_this_was_me"] = {
+    "this_was_me_button": "//button[@name='choice'][text()='This Was Me']"
 }
 
 xpath["class_selectors"] = {

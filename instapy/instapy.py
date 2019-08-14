@@ -118,7 +118,7 @@ class InstaPy:
         log_handler=None,  # TODO function type ?
         geckodriver_path: str = None,
         split_db: bool = False,
-        security_code_to_phone: bool = True,
+        bypass_security_challenge_using: str = "email",
     ):
 
         cli_args = parse_cli_args()
@@ -148,7 +148,7 @@ class InstaPy:
         self.browser = None
         self.page_delay = page_delay
         self.disable_image_load = disable_image_load
-        self.security_code_to_phone = security_code_to_phone
+        self.bypass_security_challenge_using = bypass_security_challenge_using
 
         # choose environment over static typed credentials
         self.username = os.environ.get("INSTA_USER") or username
@@ -408,7 +408,7 @@ class InstaPy:
             self.logger,
             self.logfolder,
             self.proxy_address,
-            self.security_code_to_phone,
+            self.bypass_security_challenge_using,
         ):
             message = (
                 "Unable to login to Instagram! "

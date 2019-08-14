@@ -1675,11 +1675,14 @@ InstaPy detects automatically if the Security Code Challenge
 is active, if yes, it will ask you for the Security Code on
 the terminal.
 
-The Security Code is send to your email by Instagram.
+The Security Code is send to your Email or SMS by Instagram, Email is the defaul option, but you can choose SMS also with:
+
+`bypass_security_challenge_using='sms'` or `bypass_security_challenge_using='email'`
 
 ```python
 InstaPy(username=insta_username,
-        password=insta_password)
+        password=insta_password,
+        bypass_security_challenge_using='sms')
 ```
 
 ### Use a proxy
