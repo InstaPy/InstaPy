@@ -37,12 +37,15 @@ def get_recent_posts_from_pods(topic, logger):
 
 
 def group_posts(posts, logger):
+    no_comments_post_ids = []
     light_post_ids = []
     normal_post_ids = []
     heavy_post_ids = []
     for postobj in posts:
         try:
-            if postobj["mode"] == "light":
+            if postobj["mode"] == "no_comments":
+                no_comments_post_ids.append(postobj)
+            elif postobj["mode"] == "light":
                 light_post_ids.append(postobj)
             elif postobj["mode"] == "heavy":
                 heavy_post_ids.append(postobj)
@@ -53,7 +56,7 @@ def group_posts(posts, logger):
                 "Failed with Error {}, please upgrade your instapy".format(err)
             )
             normal_post_ids.append(postobj)
-    return light_post_ids, normal_post_ids, heavy_post_ids
+    return no_comments_post_ids, light_post_ids, normal_post_ids, heavy_post_ids
 
 
 def share_my_post_with_pods(postid, topic, engagement_mode, logger):
