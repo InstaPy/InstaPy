@@ -323,7 +323,6 @@ class InstaPy:
             if len(err_msg) > 0:
                 raise InstaPyError(err_msg)
 
-
     def get_instapy_logger(self, show_logs: bool, log_handler=None):
         """
         Handles the creation and retrieval of loggers to avoid

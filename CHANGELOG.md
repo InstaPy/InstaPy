@@ -9,6 +9,7 @@ _The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 ### Added
 
 - New bypass challenge approach (choose sms or email option)
+- Show InstaPy version on initialization
 
 
 ## [0.6.1] - 2019-08-12
