@@ -789,7 +789,7 @@ def verify_liked_image(browser, logger):
         return True
     else:
         logger.info(
-            "-------- WARNING! Image was NOT liked! " "You are have a BLOCK on likes!"
+            "-------- WARNING! Image was NOT liked! " "You have a BLOCK on likes!"
         )
         return False
 
