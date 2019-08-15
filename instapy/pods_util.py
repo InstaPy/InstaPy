@@ -1,7 +1,12 @@
+import random
 import requests
 import sqlite3
+
 from .settings import Settings
 from .database_engine import get_database
+from .like_util import like_image
+from .like_util import check_link
+from .util import web_address_navigator
 
 
 def get_server_endpoint(topic):
@@ -40,6 +45,7 @@ def group_posts(posts, logger):
     light_post_ids = []
     normal_post_ids = []
     heavy_post_ids = []
+
     for postobj in posts:
         try:
             if postobj["mode"] == "light":
@@ -207,3 +213,59 @@ def comment_restriction(operation, postid, limit, logger):
         if conn:
             # close the open connection
             conn.close()
+
+
+# def engage_with_posts(browser, pod_posts):
+def engage_with_posts(
+    browser,
+    pod_posts,
+    blacklist,
+    username,
+    dont_like,
+    mandatory_words,
+    mandatory_language,
+    is_mandatory_character,
+    mandatory_character,
+    check_character_set,
+    ignore_if_contains,
+    logger,
+    logfolder
+):
+    liked_img = 0
+    for pod_post in pod_posts:
+        try:
+            pod_post_id = pod_post["postid"]
+            post_link = "https://www.instagram.com/p/{}".format(pod_post_id)
+            web_address_navigator(browser, post_link)
+
+            inappropriate, user_name, is_video, reason, scope = check_link(
+                browser,
+                post_link,  # ok
+                dont_like,
+                mandatory_words,
+                mandatory_language,
+                is_mandatory_character,
+                mandatory_character,
+                check_character_set,
+                ignore_if_contains,
+                logger,
+            )
+
+            if not inappropriate and user_name != username:
+                like_state, msg = like_image(
+                    browser,
+                    user_name,
+                    blacklist,
+                    logger,
+                    logfolder,
+                    liked_img,
+                )
+
+                if like_state is True:
+                    liked_img += 1
+
+                elif msg == "block on likes":
+                    break
+
+        except Exception as err:
+            logger.error("Failed for {} with Error {}".format(pod_post, err))

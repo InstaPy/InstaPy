@@ -89,6 +89,7 @@ from .pods_util import get_recent_posts_from_pods
 from .pods_util import share_my_post_with_pods
 from .pods_util import share_with_pods_restriction
 from .pods_util import comment_restriction
+from .pods_util import engage_with_posts
 
 from .xpath import read_xpath
 
@@ -5661,12 +5662,6 @@ class InstaPy:
             )
             return self
 
-        if self.comments is not None and len(self.comments) < 10:
-            self.logger.error(
-                "You have too few comments, please set at least 10 distinct comments to avoid looking suspicious."
-            )
-            return self
-
         user_link = "https://www.instagram.com/{}/".format(self.username)
         web_address_navigator(self.browser, user_link)
         try:
@@ -5743,29 +5738,16 @@ class InstaPy:
 
             light_posts, normal_posts, heavy_posts = group_posts(pod_posts, self.logger)
 
-            self.logger.error("light_posts : {} ".format(light_posts))
-            self.logger.error("normal_posts : {} ".format(normal_posts))
-            self.logger.error("heavy_posts : {} ".format(heavy_posts))
+            self.logger.info("light_posts : {} ".format(light_posts))
+            self.logger.info("normal_posts : {} ".format(normal_posts))
+            self.logger.info("heavy_posts : {} ".format(heavy_posts))
 
-            self.engage_with_posts(light_posts, 10)
-            self.engage_with_posts(normal_posts, 30)
-            self.engage_with_posts(heavy_posts, 90)
-
-        except Exception as err:
-            self.logger.error(err)
-
-        return self
-
-    def engage_with_posts(self, pod_posts, modespecific_comment_percentage):
-        for pod_post in pod_posts:
-            try:
-                pod_post_id = pod_post["postid"]
-                post_link = "https://www.instagram.com/p/{}".format(pod_post_id)
-                web_address_navigator(self.browser, post_link)
-
-                inappropriate, user_name, is_video, reason, scope = check_link(
+            if len(light_posts) > 0:
+                engage_with_posts(
                     self.browser,
-                    post_link,
+                    light_posts,
+                    self.blacklist,
+                    self.username,
                     self.dont_like,
                     self.mandatory_words,
                     self.mandatory_language,
@@ -5774,65 +5756,45 @@ class InstaPy:
                     self.check_character_set,
                     self.ignore_if_contains,
                     self.logger,
+                    self.logfolder
+                )
+            if len(normal_posts) > 0:
+                engage_with_posts(
+                    self.browser,
+                    normal_posts,
+                    self.blacklist,
+                    self.username,
+                    self.dont_like,
+                    self.mandatory_words,
+                    self.mandatory_language,
+                    self.is_mandatory_character,
+                    self.mandatory_character,
+                    self.check_character_set,
+                    self.ignore_if_contains,
+                    self.logger,
+                    self.logfolder
+                )
+            if len(heavy_posts) > 0:
+                engage_with_posts(
+                    self.browser,
+                    heavy_posts,
+                    self.blacklist,
+                    self.username,
+                    self.dont_like,
+                    self.mandatory_words,
+                    self.mandatory_language,
+                    self.is_mandatory_character,
+                    self.mandatory_character,
+                    self.check_character_set,
+                    self.ignore_if_contains,
+                    self.logger,
+                    self.logfolder
                 )
 
-                if user_name != self.username:
-                    follow_state, msg = follow_user(
-                        self.browser,
-                        "post",
-                        self.username,
-                        user_name,
-                        None,
-                        self.blacklist,
-                        self.logger,
-                        self.logfolder,
-                    )
+        except Exception as err:
+            self.logger.error(err)
 
-                    self.dont_include.add(user_name)
-
-                if not inappropriate and user_name != self.username:
-                    pods_like_percent = max(90, min(100, self.like_percentage))
-                    liking = random.randint(0, 100) <= pods_like_percent
-                    commenting = (
-                        random.randint(0, 100) <= modespecific_comment_percentage
-                    )
-
-                    if liking:
-                        like_state, msg = like_image(
-                            self.browser,
-                            user_name,
-                            self.blacklist,
-                            self.logger,
-                            self.logfolder,
-                            self.liked_img,
-                        )
-
-                        if like_state is True:
-                            self.liked_img += 1
-
-                        elif msg == "block on likes":
-                            break
-
-                    commenting_restricted = comment_restriction(
-                        "read", pod_post_id, self.comment_times, self.logger
-                    )
-
-                    if commenting and not commenting_restricted:
-                        comments = self.fetch_smart_comments(is_video, temp_comments=[])
-
-                        comment_state, msg = comment_image(
-                            self.browser,
-                            user_name,
-                            comments,
-                            self.blacklist,
-                            self.logger,
-                            self.logfolder,
-                        )
-                        if comment_state:
-                            comment_restriction("write", pod_post_id, None, self.logger)
-
-            except Exception as err:
-                self.logger.error("Failed for {} with Error {}".format(pod_post, err))
+        return self
 
     def story_by_tags(self, tags: list = None):
         """ Watch stories for specific tag(s) """
