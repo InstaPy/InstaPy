@@ -5737,7 +5737,9 @@ class InstaPy:
             else:
                 pod_posts = random.sample(pod_posts, nposts)
 
-            no_comments_posts, light_posts, normal_posts, heavy_posts = group_posts(pod_posts, self.logger)
+            no_comments_posts, light_posts, normal_posts, heavy_posts = group_posts(
+                pod_posts, self.logger
+            )
 
             self.logger.error("no_comments_posts : {} ".format(no_comments_posts))
             self.logger.error("light_posts : {} ".format(light_posts))
