@@ -65,7 +65,7 @@ def group_posts(posts, logger):
 def share_my_post_with_pods(postid, topic, engagement_mode, logger):
     """ share_my_post_with_pod """
     params = {"postid": postid, "topic": topic, "mode": engagement_mode}
-    r = requests.get(get_server_endpoint(topic) + "/publishMyLatestPost", params=params)
+    r = requests.get(get_server_endpoint(topic) + "/publishPost", params=params)
     try:
         logger.info("Publishing to Pods {}".format(postid))
         if r.status_code == 200:

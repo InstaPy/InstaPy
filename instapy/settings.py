@@ -58,16 +58,14 @@ class Settings:
     # store the parameter for global access
     show_logs = None
 
-    user_agent = (
-        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
-        "(KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36"
-    )
-
     # state of instantiation of InstaPy
     InstaPy_is_running = False
 
     # This is where currently the pods server is hosted
-    pods_server_endpoint = "https://us-central1-instapy-pods.cloudfunctions.net"
+    pods_server_endpoint = (
+        "https://us-central1-pod-server-c50a3.cloudfunctions.net/"
+    )
+    # pods_server_endpoint = "https://us-central1-instapy-pods.cloudfunctions.net"
     pods_fashion_server_endpoint = (
         "https://us-central1-instapy-pods-fashion.cloudfunctions.net"
     )
