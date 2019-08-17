@@ -427,8 +427,8 @@ class InstaPy:
         # try to save account progress
         try:
             save_account_progress(self.browser, self.username, self.logger)
-        except Exception:
-            self.logger.warning("Unable to save account progress, skipping data update")
+        except Exception as e:
+            self.logger.warning("Unable to save account progress, skipping data update "+ str(e))
 
         # logs only followers/following numbers when able to login,
         # to speed up the login process and avoid loading profile

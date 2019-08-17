@@ -43,8 +43,8 @@ xpath["extract_information"] = {
 
 xpath["extract_post_info"] = {
     "comment_list": "//div/ul",
-    "comments": "li",
-    "load_more_comments_element": "//div/ul/li[2]/button",
+    "comments": "//li[@role='menuitem']",
+    "load_more_comments_element": "//div/ul/li/div/button",
     "load_more_comments_element_alt": "//div/ul/li[1]/button",
 }
 
@@ -115,7 +115,7 @@ xpath["get_links_for_tag"] = {
 }
 
 xpath["get_number_of_posts"] = {
-    "num_of_posts_txt": "//section/main/div/header/section/ul/li[1]/span/span",
+    "num_of_posts_txt": "//section/main/div/ul/li[1]/span/span",
     "num_of_posts_txt_no_such_element": "//section/div[3]/div/header/section/ul/li[1]/span/span",
 }
 

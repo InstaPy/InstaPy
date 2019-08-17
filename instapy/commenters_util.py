@@ -19,6 +19,7 @@ from .util import scroll_bottom
 from .util import get_users_from_dialog
 from .util import progress_tracker
 from .util import close_dialog_box
+from .util import get_current_url
 
 from selenium.common.exceptions import NoSuchElementException
 
@@ -38,77 +39,67 @@ def remove_duplicates_preserving_order(seq):
     seen_add = seen.add
     return [x for x in seq if not (x in seen or seen_add(x))]
 
+def check_exists_by_tag_name(element, tag_name):
+    try:
+        element.find_element_by_tag_name(tag_name)
+    except NoSuchElementException:
+        return False
+    return True
 
 def extract_post_info(browser):
     """Get the information from the current post"""
+    web_address_navigator(browser, get_current_url(browser) + "comments/")
     comments = []
-
     user_commented_list = []
-    if browser.find_element_by_xpath(
+    last_comment_count = 0
+    # load all hidden comments
+    while check_exists_by_xpath(
+            browser,
+            read_xpath(extract_post_info.__name__, "load_more_comments_element")
+        ):
+            load_more_comments_element = browser.find_element_by_xpath(
+                read_xpath(extract_post_info.__name__, "load_more_comments_element")
+            )
+            click_element(browser, load_more_comments_element)
+            sleep(0.5)
+            #get comment list
+            comment_list = browser.find_element_by_xpath(
+                read_xpath(extract_post_info.__name__, "comment_list")
+            )
+            comments = comment_list.find_elements_by_xpath(
+                read_xpath(extract_post_info.__name__, "comments")
+            )
+            #check instagram comment load bug
+            if len(comments) == last_comment_count:
+                break
+            if (len(comments) - last_comment_count) < 3:
+                break
+            last_comment_count = len(comments)
+
+    #get all comment list
+    comment_list = browser.find_element_by_xpath(
         read_xpath(extract_post_info.__name__, "comment_list")
-    ):
-        comment_list = browser.find_element_by_xpath(
-            read_xpath(extract_post_info.__name__, "comment_list")
-        )
-        comments = comment_list.find_elements_by_tag_name(
-            read_xpath(extract_post_info.__name__, "comments")
-        )
+    )
+    comments = comment_list.find_elements_by_xpath(
+        read_xpath(extract_post_info.__name__, "comments")
+    )
 
-        if len(comments) > 1:
-            # load hidden comments
-            more_comments = 0
+    #get all commenter list
+    try:
+        for comm in comments:
+            user_commented = (
+                comm.find_element_by_tag_name("a")
+                .get_attribute("href")
+                .split("/")
+            )
+            print("Found commenter: " + user_commented[3])
+            user_commented_list.append(user_commented[3])
 
-            while " comments" in comments[1].text:
-                more_comments += 1
-                print("loading more comments.")
-                load_more_comments_element = browser.find_element_by_xpath(
-                    read_xpath(extract_post_info.__name__, "load_more_comments_element")
-                )
-                click_element(browser, load_more_comments_element)
-                # comment_list = post.find_element_by_tag_name('ul')
-                comments = comment_list.find_elements_by_tag_name("li")
+    except Exception as e:
+        print("cant get comments"+ str(e))
 
-                if more_comments > 10:
-                    print("Won't load more than that, moving on..")
-                    break
-
-            # if post autor didnt write description, more comments text is
-            # in first comment
-            if more_comments == 0:
-                while " comments" in comments[0].text:
-                    more_comments += 1
-                    print("loading more comments.")
-                    load_more_comments_element = browser.find_element_by_xpath(
-                        read_xpath(
-                            extract_post_info.__name__, "load_more_comments_element_alt"
-                        )
-                    )
-                    click_element(browser, load_more_comments_element)
-                    # comment_list = post.find_element_by_tag_name('ul')
-                    comments = comment_list.find_elements_by_tag_name("li")
-
-                    if more_comments > 10:
-                        print("Won't load more than that, moving on..")
-                        break
-
-            # adding who commented into user_commented_list
-            try:
-                for comm in comments:
-                    user_commented = (
-                        comm.find_element_by_tag_name("a")
-                        .get_attribute("href")
-                        .split("/")
-                    )
-                    user_commented_list.append(user_commented[3])
-
-            except Exception:
-                print("cant get comments")
-
-        print(len(user_commented_list), " comments.")
     date_time = browser.find_element_by_tag_name("time").get_attribute("datetime")
-
     return user_commented_list, date_time
-
 
 def extract_information(browser, username, daysold, max_pic):
     """Get all the information for the given username"""
@@ -120,8 +111,8 @@ def extract_information(browser, username, daysold, max_pic):
         # we don't need to scroll more than is max number of posts we want
         # to extract
 
-    except Exception:
-        print("\nError: Couldn't get user profile. Moving on..")
+    except Exception as e:
+        print("\nError: Couldn't get user profile. Moving on.."+str(e))
         return []
 
     # PROFILE SCROLLING AND HARVESTING LINKS
@@ -228,6 +219,7 @@ def extract_information(browser, username, daysold, max_pic):
                         sleep(2)
 
                 previouslen = len(links2)
+                body_elem = browser.find_element_by_tag_name("body")
                 body_elem.send_keys(Keys.END)
                 sleep(1.5)
 
@@ -269,8 +261,8 @@ def extract_information(browser, username, daysold, max_pic):
                 sleep(3)
                 break
             sleep(1)
-        except NoSuchElementException:
-            print("- Could not get information from post: " + link)
+        except NoSuchElementException as e:
+            print("- Could not get information from post: " + link + " " + str(e))
 
     # PREPARE THE USER LIST TO EXPORT
     # sorts the list by frequencies, so users who comment the most are at
