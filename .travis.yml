@@ -1,7 +1,7 @@
 dist: xenial
 sudo: false
 language: python
-python: "3.6"
+python: "3.7"
 cache: pip
 
 branches:
@@ -16,23 +16,23 @@ script: tox
 stages:
     - name: static analysis
     - name: test
-    - name: deploy to PyPI
+    - name: pypi-prod
       if: type = push AND fork = false AND tag =~ ^\d+\.\d+\.\d+
 
 jobs:
   fast_finish: true
   include:
     - stage: static analysis
-      env: TOXENV=flake8-37
+      env: TOXENV=black
+      python: "3.7"
+
+    - stage: static analysis
+      env: TOXENV=flake8
       python: "3.7"
 
     - stage: test
       env: TOXENV=py34
       python: "3.4"
-
-    # - stage: test   # <-- this jobs fails to install googleapis-common-protos
-    #   env: TOXENV=py35
-    #   python: "3.5.2"
 
     - stage: test
       env: TOXENV=py36
@@ -42,7 +42,7 @@ jobs:
       env: TOXENV=py37
       python: "3.7"
 
-    - stage: deploy to PyPI
+    - stage: pypi-prod
       install: true
       script: skip
       deploy:

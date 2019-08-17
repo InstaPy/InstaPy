@@ -1,6 +1,7 @@
 # pylint file
 googlecl-pylint.rc.txt
 assets/chromedriver
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
