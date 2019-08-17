@@ -316,9 +316,6 @@ def get_links_for_tag(browser, tag, amount, skip_top_posts, randomize, media, lo
     )
 
     if possible_posts is not None:
-        possible_posts = (
-            possible_posts if not skip_top_posts else possible_posts - len(top_posts)
-        )
         amount = possible_posts if amount > possible_posts else amount
     # sometimes pages do not have the correct amount of posts as it is
     # written there, it may be cos of some posts is deleted but still keeps
