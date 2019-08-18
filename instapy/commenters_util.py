@@ -19,7 +19,6 @@ from .util import scroll_bottom
 from .util import get_users_from_dialog
 from .util import progress_tracker
 from .util import close_dialog_box
-from .util import get_current_url
 
 from selenium.common.exceptions import NoSuchElementException
 
@@ -40,17 +39,9 @@ def remove_duplicates_preserving_order(seq):
     return [x for x in seq if not (x in seen or seen_add(x))]
 
 
-def check_exists_by_tag_name(element, tag_name):
-    try:
-        element.find_element_by_tag_name(tag_name)
-    except NoSuchElementException:
-        return False
-    return True
-
-
 def extract_post_info(browser):
     """Get the information from the current post"""
-    web_address_navigator(browser, get_current_url(browser) + "comments/")
+    web_address_navigator(browser, browser.current_url + "comments/")
     comments = []
     user_commented_list = []
     last_comment_count = 0
