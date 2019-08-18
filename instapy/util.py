@@ -440,6 +440,33 @@ def getUserData(
         return data
 
 
+def get_state(logfolder, logger):
+    """ Return user state JSON object """
+    try:
+        path = "{}state.json".format(logfolder)
+        data = {}
+        # check if file exists and has content
+        if os.path.isfile(path) and os.path.getsize(path) > 0:
+            # load JSON file
+            with open(path, "r") as json_file:
+                data = json.load(json_file)
+        return data
+    except Exception:
+        logger.warn("Unable to update JSON state file")
+
+
+def set_state(logfolder, logger, new_state):
+    """ Receive a new state and persist it on JSON state file"""
+    # update state to JSON file
+    try:
+        path = "{}state.json".format(logfolder)
+        # write to JSON file
+        with open(path, "w") as json_file:
+            json.dump(new_state, json_file, indent=4)
+    except Exception:
+        logger.warn("Unable to update JSON state file")
+
+
 def update_activity(
     browser=None, action="server_calls", state=None, logfolder=None, logger=None
 ):

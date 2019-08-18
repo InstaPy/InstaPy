@@ -81,6 +81,8 @@ class Settings:
     pods_entertainment_server_endpoint = (
         "https://us-central1-instapy-pods-entertainment.cloudfunctions.net"
     )
+    # pods setup
+    pods_daily_interaction_limit = 20
 
 
 class Storage:

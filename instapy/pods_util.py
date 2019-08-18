@@ -1,12 +1,15 @@
 import random
 import requests
 import sqlite3
+from datetime import datetime
 
 from .settings import Settings
 from .database_engine import get_database
 from .like_util import like_image
 from .like_util import check_link
 from .util import web_address_navigator
+from .util import get_state
+from .util import set_state
 
 
 def get_server_endpoint(topic):
@@ -232,7 +235,10 @@ def engage_with_posts(
     logfolder
 ):
     liked_img = 0
+
     for pod_post in pod_posts:
+        if (not check_pods_interaction_daily_limit(logfolder, logger)):
+            return False
         try:
             pod_post_id = pod_post["postid"]
             post_link = "https://www.instagram.com/p/{}".format(pod_post_id)
@@ -262,6 +268,8 @@ def engage_with_posts(
                 )
 
                 if like_state is True:
+                    # increase pods daily interaction
+                    add_one_pod_daily_interaction(logfolder, logger)
                     liked_img += 1
 
                 elif msg == "block on likes":
@@ -269,3 +277,47 @@ def engage_with_posts(
 
         except Exception as err:
             logger.error("Failed for {} with Error {}".format(pod_post, err))
+
+
+def check_pods_interaction_daily_limit(logfolder, logger):
+    """ Check if its possible to like posts based on daily restrictions """
+    today = datetime.now().strftime("%Y-%m-%d")
+    # get current state
+    state = get_state(logfolder, logger)
+    pods_last_interaction_day = ''
+    try:
+        pods_last_interaction_day = state['pods']['pods_last_interaction_day']
+        pods_daily_interaction_count = state['pods']['pods_daily_interaction_count']
+    except KeyError:
+        pass
+
+    # new data and there no interactions made for this day
+    if (pods_last_interaction_day == '' or pods_last_interaction_day != today):
+        # set_state()
+        state['pods'] = {
+            'pods_last_interaction_day': today, 'pods_daily_interaction_count': 0
+        }
+        # update state
+        set_state(logfolder, logger, state)
+        return True
+    elif (pods_last_interaction_day == today and pods_daily_interaction_count < Settings.pods_daily_interaction_limit):
+        return True
+    else:
+        # limit reached, do not like it!
+        logger.info('Daily interaction limit ({}) with posts from Pod reached! Skipping liking Posts from Pod today.'.format(Settings.pods_daily_interaction_limit))
+        return False
+
+
+def add_one_pod_daily_interaction(logfolder, logger):
+    """ Increase Pod Daily Interaction """
+    state = get_state(logfolder, logger)
+    try:
+        pods_daily_interaction_count = state['pods']['pods_daily_interaction_count']
+        pods_daily_interaction_count += 1
+        state['pods'] = {
+                'pods_last_interaction_day': state['pods']['pods_last_interaction_day'],
+                'pods_daily_interaction_count': pods_daily_interaction_count
+        }
+        set_state(logfolder, logger, state)
+    except KeyError:
+        logger.warn('Unable to update pod daily interaction count')
