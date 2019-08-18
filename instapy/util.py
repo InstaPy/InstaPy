@@ -1026,9 +1026,7 @@ def get_number_of_posts(browser):
         num_of_posts = getUserData(
             "graphql.user.edge_owner_to_timeline_media.count", browser
         )
-        print(num_of_posts + " = num_of_posts")
-    except WebDriverException as e:
-        print(e)
+    except WebDriverException:
         try:
             num_of_posts_txt = browser.find_element_by_xpath(
                 read_xpath(get_number_of_posts.__name__, "num_of_posts_txt")
