@@ -120,8 +120,8 @@ xpath["get_number_of_posts"] = {
 }
 
 xpath["get_relationship_counts"] = {
-    "following_count": "//a[contains(@href,'following')]/span",
-    "followers_count": "//a[contains(@href,'followers')]/span",
+    "following_count": "//a[contains(@href,'following') and not(contains(@href,'mutual'))]/span",
+    "followers_count": "//a[contains(@href,'followers') and not(contains(@href,'mutual'))]/span",
     "topCount_elements": "//span[contains(@class,'g47SY')]",
 }
 
