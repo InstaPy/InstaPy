@@ -39,12 +39,14 @@ def remove_duplicates_preserving_order(seq):
     seen_add = seen.add
     return [x for x in seq if not (x in seen or seen_add(x))]
 
+
 def check_exists_by_tag_name(element, tag_name):
     try:
         element.find_element_by_tag_name(tag_name)
     except NoSuchElementException:
         return False
     return True
+
 
 def extract_post_info(browser):
     """Get the information from the current post"""
@@ -54,29 +56,28 @@ def extract_post_info(browser):
     last_comment_count = 0
     # load all hidden comments
     while check_exists_by_xpath(
-            browser,
+        browser, read_xpath(extract_post_info.__name__, "load_more_comments_element")
+    ):
+        load_more_comments_element = browser.find_element_by_xpath(
             read_xpath(extract_post_info.__name__, "load_more_comments_element")
-        ):
-            load_more_comments_element = browser.find_element_by_xpath(
-                read_xpath(extract_post_info.__name__, "load_more_comments_element")
-            )
-            click_element(browser, load_more_comments_element)
-            sleep(0.5)
-            #get comment list
-            comment_list = browser.find_element_by_xpath(
-                read_xpath(extract_post_info.__name__, "comment_list")
-            )
-            comments = comment_list.find_elements_by_xpath(
-                read_xpath(extract_post_info.__name__, "comments")
-            )
-            #check instagram comment load bug
-            if len(comments) == last_comment_count:
-                break
-            if (len(comments) - last_comment_count) < 3:
-                break
-            last_comment_count = len(comments)
+        )
+        click_element(browser, load_more_comments_element)
+        sleep(0.5)
+        # get comment list
+        comment_list = browser.find_element_by_xpath(
+            read_xpath(extract_post_info.__name__, "comment_list")
+        )
+        comments = comment_list.find_elements_by_xpath(
+            read_xpath(extract_post_info.__name__, "comments")
+        )
+        # check instagram comment load bug
+        if len(comments) == last_comment_count:
+            break
+        if (len(comments) - last_comment_count) < 3:
+            break
+        last_comment_count = len(comments)
 
-    #get all comment list
+    # get all comment list
     comment_list = browser.find_element_by_xpath(
         read_xpath(extract_post_info.__name__, "comment_list")
     )
@@ -84,22 +85,21 @@ def extract_post_info(browser):
         read_xpath(extract_post_info.__name__, "comments")
     )
 
-    #get all commenter list
+    # get all commenter list
     try:
         for comm in comments:
             user_commented = (
-                comm.find_element_by_tag_name("a")
-                .get_attribute("href")
-                .split("/")
+                comm.find_element_by_tag_name("a").get_attribute("href").split("/")
             )
             print("Found commenter: " + user_commented[3])
             user_commented_list.append(user_commented[3])
 
     except Exception as e:
-        print("cant get comments"+ str(e))
+        print("cant get comments" + str(e))
 
     date_time = browser.find_element_by_tag_name("time").get_attribute("datetime")
     return user_commented_list, date_time
+
 
 def extract_information(browser, username, daysold, max_pic):
     """Get all the information for the given username"""
@@ -112,7 +112,7 @@ def extract_information(browser, username, daysold, max_pic):
         # to extract
 
     except Exception as e:
-        print("\nError: Couldn't get user profile. Moving on.."+str(e))
+        print("\nError: Couldn't get user profile. Moving on.." + str(e))
         return []
 
     # PROFILE SCROLLING AND HARVESTING LINKS

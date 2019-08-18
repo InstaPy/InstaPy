@@ -332,7 +332,9 @@ def validate_username(
     # skip private
     if skip_private:
         try:
-            browser.find_element_by_xpath("//*[contains(text(), 'This Account is Private')]")
+            browser.find_element_by_xpath(
+                "//*[contains(text(), 'This Account is Private')]"
+            )
             is_private = True
         except NoSuchElementException:
             is_private = False
@@ -1019,15 +1021,15 @@ def username_url_to_username(username_url):
 def get_number_of_posts(browser):
     """Get the number of posts from the profile screen"""
     try:
-        num_of_posts = getUserData("graphql.user.edge_owner_to_timeline_media.count", browser)
+        num_of_posts = getUserData(
+            "graphql.user.edge_owner_to_timeline_media.count", browser
+        )
         print(num_of_posts + " = num_of_posts")
     except WebDriverException as e:
         print(e)
         try:
             num_of_posts_txt = browser.find_element_by_xpath(
-                read_xpath(
-                    get_number_of_posts.__name__, "num_of_posts_txt"
-                )
+                read_xpath(get_number_of_posts.__name__, "num_of_posts_txt")
             ).text
 
         except NoSuchElementException:
