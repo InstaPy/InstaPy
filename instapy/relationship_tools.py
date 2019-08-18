@@ -82,7 +82,8 @@ def get_followers(
     all_followers = []
     variables = {}
     user_data["id"] = browser.execute_script(
-        "return window._sharedData.entry_data.ProfilePage[0]." "graphql.user.id"
+        "return window.__additionalData[Object.keys(window.__additionalData)[0]].data."
+        "graphql.user.id"
     )
 
     variables["id"] = user_data["id"]
@@ -358,7 +359,8 @@ def get_following(
 
     variables = {}
     user_data["id"] = browser.execute_script(
-        "return window._sharedData.entry_data.ProfilePage[0]." "graphql.user.id"
+        "return window.__additionalData[Object.keys(window.__additionalData)[0]].data."
+        "graphql.user.id"
     )
 
     variables["id"] = user_data["id"]

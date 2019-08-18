@@ -429,7 +429,9 @@ def validate_username(
 
 
 def getUserData(
-    query, browser, basequery="return window._sharedData.entry_data.ProfilePage[0]."
+    query,
+    browser,
+    basequery="return window.__additionalData[Object.keys(window.__additionalData)[0]].data.",
 ):
     try:
         data = browser.execute_script(basequery + query)
@@ -1573,7 +1575,7 @@ def get_username(browser, track, logger):
 def find_user_id(browser, track, username, logger):
     """  Find the user ID from the loaded page """
     if track in ["dialog", "profile"]:
-        query = "return window._sharedData.entry_data.ProfilePage[0].graphql.user.id"
+        query = "return window.__additionalData[Object.keys(window.__additionalData)[0]].data.graphql.user.id"
 
     elif track == "post":
         query = (
