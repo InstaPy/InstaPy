@@ -440,7 +440,9 @@ def getUserData(
         browser.execute_script("location.reload()")
         update_activity(browser, state=None)
 
-        data = browser.execute_script(basequery + query)
+        data = browser.execute_script(
+            "return window._sharedData." "entry_data.ProfilePage[0]." + query
+        )
         return data
 
 
@@ -1594,7 +1596,11 @@ def find_user_id(browser, track, username, logger):
             browser.execute_script("location.reload()")
             update_activity(browser, state=None)
 
-            user_id = browser.execute_script(query)
+            user_id = browser.execute_script(
+                "return window._sharedData."
+                "entry_data.ProfilePage[0]."
+                "graphql.user.id"
+            )
 
         except WebDriverException:
             if track == "post":
