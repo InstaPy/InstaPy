@@ -4,18 +4,16 @@
 xpath = {}
 
 xpath["bypass_suspicious_login"] = {
-    "bypass_with_mobile_choice": "(//button)[2]",
-    "bypass_with_mobile_button": "//label[@for='choice_0']",
-    "choice": "//label[@for='choice_1']",
-    "choice_no_such_element": "//label[@class='_q0nt5']",
-    "choice_exception": "//label[@class='_q0nt5 _a7z3k']",
-    "choice_exception2": "//label",
-    "close_button": "[text()='Close']",
-    "security_code_field": "//input[@id='security_code']",
+    "bypass_with_sms_option": "//label[contains(text(),'Phone:')]",
+    "bypass_with_email_option": "//label[contains(text(),'Email:')]",
     "send_security_code_button": "//button[text()='Send Security Code']",
+    "security_code_field": "//input[@id='security_code']",
     "submit_security_code_button": "//button[text()='Submit']",
-    "this_was_me_button": "//button[@name='choice'][text()='This Was Me']",
     "wrong_login": "//p[text()='Please check the code we sent you and try again.']",
+}
+
+xpath["dismiss_this_was_me"] = {
+    "this_was_me_button": "//button[@name='choice'][text()='This Was Me']"
 }
 
 xpath["class_selectors"] = {
@@ -80,7 +78,7 @@ xpath["get_comments_on_post"] = {
 xpath["get_cord_location"] = {"json_text": "//body"}
 
 xpath["get_following_status"] = {
-    "follow_button_XP": "(//button)[2][text()='Following' or \
+    "follow_button_XP": "//button[text()='Following' or \
                                   text()='Requested' or \
                                   text()='Follow' or \
                                   text()='Follow Back' or \
@@ -155,8 +153,8 @@ xpath["like_from_image"] = {
 xpath["login_user"] = {
     "input_password": "//input[@name='password']",
     "input_username_XP": "//input[@name='username']",
-    "login_elem": "//a[text()='Log in']",
-    "login_elem_no_such_exception": "//a[text()='Log In']",
+    "login_elem": "//button[text()='Log In']",
+    "login_elem_no_such_exception": "//a[text()='Log in']",
     "nav": "//nav",
     "website_status": "//span[@id='status']",
     "response_time": "//span[@id='response']",

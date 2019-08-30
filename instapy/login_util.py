@@ -23,81 +23,59 @@ from selenium.common.exceptions import MoveTargetOutOfBoundsException
 from .xpath import read_xpath
 
 
-def bypass_suspicious_login(browser, logger, logfolder):
-    """Bypass suspicious loggin attempt verification. This should be only
-    enabled
-    when there isn't available cookie for the username, otherwise it will and
-    shows "Unable to locate email or phone button" message, folollowed by
-    CRITICAL - Wrong login data!"""
+def bypass_suspicious_login(
+    browser, logger, logfolder, bypass_security_challenge_using
+):
+    """ Bypass suspicious loggin attempt verification. """
+
     # close sign up Instagram modal if available
-    try:
-        close_button = browser.find_element_by_xpath(
-            read_xpath(bypass_suspicious_login.__name__, "close_button")
-        )
+    dismiss_get_app_offer(browser, logger)
+    dismiss_notification_offer(browser, logger)
+    dismiss_this_was_me(browser)
 
-        (ActionChains(browser).move_to_element(close_button).click().perform())
-
-        # update server calls
-        update_activity(browser, state=None)
-
-    except NoSuchElementException:
-        pass
-
-    try:
-        # click on "This was me" button if challenge page was called
-        this_was_me_button = browser.find_element_by_xpath(
-            read_xpath(bypass_suspicious_login.__name__, "this_was_me_button")
-        )
-
-        (ActionChains(browser).move_to_element(this_was_me_button).click().perform())
-
-        # update server calls
-        update_activity(browser, state=None)
-
-    except NoSuchElementException:
-        # no verification needed
-        pass
-
-    try:
-        choice = browser.find_element_by_xpath(
-            read_xpath(bypass_suspicious_login.__name__, "choice")
-        ).text
-
-    except NoSuchElementException:
+    option = None
+    if bypass_security_challenge_using == "sms":
         try:
-            choice = browser.find_element_by_xpath(
-                read_xpath(bypass_suspicious_login.__name__, "choice_no_such_element")
-            ).text
+            option = browser.find_element_by_xpath(
+                read_xpath(bypass_suspicious_login.__name__, "bypass_with_sms_option")
+            )
+        except NoSuchElementException:
+            logger.warn(
+                "Unable to choose ({}) option to bypass the challenge".format(
+                    bypass_security_challenge_using.upper()
+                )
+            )
 
-        except Exception:
-            try:
-                choice = browser.find_element_by_xpath(
-                    read_xpath(bypass_suspicious_login.__name__, "choice_exception")
-                ).text
-            except Exception:
-                try:
-                    choice = browser.find_element_by_xpath(
-                        read_xpath(
-                            bypass_suspicious_login.__name__, "choice_exception2"
-                        )
-                    ).text
-                except Exception:
-                    print("Unable to bypass Login Challenge")
-                    return False
+    if bypass_security_challenge_using == "email":
+        try:
+            option = browser.find_element_by_xpath(
+                read_xpath(bypass_suspicious_login.__name__, "bypass_with_email_option")
+            )
+        except NoSuchElementException:
+            logger.warn(
+                "Unable to choose ({}) option to bypass the challenge".format(
+                    bypass_security_challenge_using.upper()
+                )
+            )
 
+    # click on your option
+    (ActionChains(browser).move_to_element(option).click().perform())
+    # next button click will miss the DOM reference for this element, so ->
+    option_text = option.text
+
+    # click on security code
     send_security_code_button = browser.find_element_by_xpath(
         read_xpath(bypass_suspicious_login.__name__, "send_security_code_button")
     )
-
     (ActionChains(browser).move_to_element(send_security_code_button).click().perform())
 
     # update server calls
     update_activity(browser, state=None)
 
     print("Instagram detected an unusual login attempt")
-    print("A security code was sent to your {}".format(choice))
+    print('Check Instagram App for "Suspicious Login attempt" prompt')
+    print("A security code was sent to your {}".format(option_text))
 
-    # --
     security_code = None
     try:
         path = "{}state.json".format(logfolder)
@@ -276,7 +254,15 @@ def check_browser(browser, logfolder, logger, proxy_address):
     return True
 
 
-def login_user(browser, username, password, logger, logfolder, proxy_address):
+def login_user(
+    browser,
+    username,
+    password,
+    logger,
+    logfolder,
+    proxy_address,
+    security_code_to_phone,
+):
     """Logins the user with the given username and password"""
     assert username, "Username not provided"
     assert password, "Password not provided"
@@ -455,7 +441,7 @@ def login_user(browser, username, password, logger, logfolder, proxy_address):
                 logfolder=logfolder,
                 logger=logger,
             )
-            bypass_suspicious_login(browser, logger, logfolder)
+            bypass_suspicious_login(browser, logger, logfolder, security_code_to_phone)
         except NoSuchElementException:
             pass
 
@@ -522,3 +508,17 @@ def dismiss_notification_offer(browser, logger):
     if offer_loaded:
         dismiss_elem = browser.find_element_by_xpath(dismiss_elem_loc)
         click_element(browser, dismiss_elem)
+
+
+def dismiss_this_was_me(browser):
+    try:
+        # click on "This was me" button if challenge page was called
+        this_was_me_button = browser.find_element_by_xpath(
+            read_xpath(dismiss_this_was_me.__name__, "this_was_me_button")
+        )
+        (ActionChains(browser).move_to_element(this_was_me_button).click().perform())
+        # update server calls
+        update_activity(browser, state=None)
+    except NoSuchElementException:
+        # no verification needed
+        pass

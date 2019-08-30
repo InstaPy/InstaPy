@@ -601,10 +601,10 @@ You can also customize the sleep delay of _e.g._ **only the likes**:
 session.set_action_delays(enabled=True, like=3)
 ```
 
-##### Wanna go smarter? - use `random_range(min, max)`  
+##### Wanna go smarter? - use `random_range_from` and `random_range_to`  
 By just enabling `randomize` parameter, you can **enjoy** having random sleep delays at desired range, e.g.,
 ```python
-session.set_action_delays(enabled=True, like=5.2, randomize=True, random_range_from=70 random_range_to=140)
+session.set_action_delays(enabled=True, like=5.2, randomize=True, random_range_from=70, random_range_to=140)
 ```
 _There, it will have a **random sleep delay between** `3.64` (_`70`% of `5.2`_) and `7.28`(_`140`% of `5.2`_) seconds _each time_ **after putting a like**._  
 + You can also put **only the max range** as- `random_range_from=None, random_range_to=200`  
@@ -1675,11 +1675,14 @@ InstaPy detects automatically if the Security Code Challenge
 is active, if yes, it will ask you for the Security Code on
 the terminal.
 
-The Security Code is send to your email by Instagram.
+The Security Code is send to your Email or SMS by Instagram, Email is the defaul option, but you can choose SMS also with:
+
+`bypass_security_challenge_using='sms'` or `bypass_security_challenge_using='email'`
 
 ```python
 InstaPy(username=insta_username,
-        password=insta_password)
+        password=insta_password,
+        bypass_security_challenge_using='sms')
 ```
 
 ### Use a proxy
