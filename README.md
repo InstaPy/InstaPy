@@ -40,6 +40,7 @@ Implemented in Python using the Selenium module.<p>
 ## Table of contents
 - [How to install and run InstaPy](#installation)
   * [Installing InstaPy](#installation)
+  * [Running Instapy](#running-instapy)
   * [Updating InstaPy](#updating-instapy)
   * [Guides and tutorials](#guides)
     * [Video tutorials](#video-tutorials)
@@ -59,13 +60,18 @@ pip install instapy
 ```
 __Important:__ depending on your system, make sure to use `pip3` and `python3` instead.
 
-<br />
+
 **That's it! 🚀**   
 If you're on Ubuntu, read the specific guide on [Installing on Ubuntu (64-Bit)](https://github.com/InstaPy/instapy-docs/blob/master/How_Tos/How_To_DO_Ubuntu_on_Digital_Ocean.md). If you're on a Raspberry Pi, read the [Installing on RaspberryPi](https://github.com/InstaPy/instapy-docs/blob/master/How_Tos/How_to_Raspberry.md) guide instead.
 
+>If you would like to install a specific version of Instapy you may do so with:
+>```elm
+>pip install instapy==0.1.1
+>```
 
+#### Running Instapy
 
-<br />
+To run InstaPy, you'll need to run the **[quickstart](https://github.com/InstaPy/instapy-quickstart)** script you've just downloaded.
 
 - [Here is the easiest **quickstart** script you can use](https://github.com/InstaPy/instapy-quickstart/blob/master/quickstart.py)  
 
@@ -81,7 +87,7 @@ Or you can [pass them using the Command Line Interface (CLI)](#pass-arguments-by
 > If you've used _InstaPy_ before installing it by **pip**, you have to move your _old_ data to the new **workspace** folder for once.
 [Read how to do this here](./DOCUMENTATION.md#migrating-your-data-to-the-workspace-folder).
 
-To run InstaPy, you'll need to run the **[quickstart](https://github.com/InstaPy/instapy-quickstart)** script you've just downloaded.
+Once you have your **quickstart** script configured you can execute the script with the following commands.
 
 ```elm
 python quickstart.py
@@ -138,14 +144,14 @@ A list of **all features** of InstaPy [can be found here](./DOCUMENTATION.md).
 
 ## Support
 
-### Do you need help ?
+### Do you need help?
 If you should encounter any issue, please first [search for similar issues](https://github.com/timgrossmann/InstaPy/issues) and only if you can't find any, create a new issue or use the [discord channel](https://discord.gg/FDETsht) for help.
 
 <a href="https://discord.gg/FDETsht">
   <img hspace="3" alt="Discord channel" src="https://camo.githubusercontent.com/e4a739df27356a78e9cae2e2dda642d118567e7c/68747470733a2f2f737465616d63646e2d612e616b616d616968642e6e65742f737465616d636f6d6d756e6974792f7075626c69632f696d616765732f636c616e732f32373039303534312f386464356339303766326130656563623733646336613437373666633961323538373865626364642e706e67" width=214/>
 </a>
 
-### Do you want to support us ?
+### Do you want to support us?
 
 <a href="https://opencollective.com/instapy/donate" target="_blank">
   <img align="left" hspace="10" src="https://opencollective.com/instapy/contribute/button@2x.png?color=blue" width=300 />
