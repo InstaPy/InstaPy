@@ -704,7 +704,12 @@ class InstaPy:
                         self.smart_hashtags.append(item["tag"])
 
                 elif sort == "random":
-                    random_tags = random.sample(data["results"], limit)
+                    if len(data["results"]) < limit:
+                        random_tags = random.sample(
+                            data["results"], len(data["results"])
+                        )
+                    else:
+                        random_tags = random.sample(data["results"], limit)
                     for item in random_tags:
                         self.smart_hashtags.append(item["tag"])
 
