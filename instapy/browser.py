@@ -7,7 +7,6 @@ from selenium.webdriver import Remote
 from webdriverdownloader import GeckoDriverDownloader
 
 # general libs
-import re
 import os
 import zipfile
 import shutil
