@@ -11,7 +11,6 @@ import re
 import os
 import zipfile
 import shutil
-from time import sleep
 from os.path import sep
 
 # local project
@@ -23,21 +22,7 @@ from .util import check_authorization
 from .util import web_address_navigator
 from .file_manager import use_assets
 from .settings import Settings
-from .file_manager import get_chromedriver_location
 from .time_util import sleep
-
-
-def set_selenium_local_session(proxy_address,
-                               proxy_port,
-                               proxy_username,
-                               proxy_password,
-                               proxy_chrome_extension,
-                               headless_browser,
-                               use_firefox,
-                               browser_profile_path,
-                               disable_image_load,
-                               page_delay,
-                               logger):
 
 
 def get_geckodriver():
