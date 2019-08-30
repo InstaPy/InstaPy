@@ -1213,7 +1213,7 @@ session.remove_follow_requests(amount=200, sleep_delay=600)
   > Note :  Topics allowed are {'general', 'fashion', 'food', 'travel', 'sports', 'entertainment'}.
 
  `engagement_mode`:
- Desided engagement mode for your posts. There are three levels of engagement modes 'light', 'normal' and 'heavy'(`normal` by default). Setting engagement_mode to 'light' encourages approximately 10% of pod members to comment on your post, similarly it's around 30% and 90% for 'normal' and 'heavy' modes respectively. Note: Liking, following or any other kind of engagements doesn't follow these modes.
+ Desided engagement mode for your posts. There are four levels of engagement modes 'no_comments', 'light', 'normal' and 'heavy'(`normal` by default). Setting engagement_mode to 'no_comments' makes you receive zero comments on your posts from pod members, 'light' encourages approximately 10% of pod members to comment on your post, similarly it's around 30% and 90% for 'normal' and 'heavy' modes respectively. Note: Liking, following or any other kind of engagements doesn't follow these modes.
 
 ### Skip based on profile bio
 
