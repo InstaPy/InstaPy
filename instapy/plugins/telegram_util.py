@@ -6,7 +6,7 @@ you will need to create your token on the telegram app and speak with @botfather
 you will need to have a username (go to settings -> profile -> Username
 """
 
-from .util import truncate_float
+from ..util import truncate_float
 from telegram.ext import Updater
 from telegram.ext import CommandHandler
 from telegram.ext import MessageHandler
