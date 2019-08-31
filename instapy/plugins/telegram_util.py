@@ -220,7 +220,7 @@ class InstaPyTelegramBot:
                 chat_id=update.message.chat_id, text="InstaPy session abort set\n"
             )
 
-    def _unknown(self,update, context):
+    def _unknown(self, update, context):
         """
         trap all others commands as unknown
         :return:
