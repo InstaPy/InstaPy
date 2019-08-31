@@ -57,6 +57,7 @@ setup(
             "icons/Linux/*.png",
             "icons/Mac/*.icns",
             "firefox_extension/*",
+            "plugins/*",
         ]
     },
     keywords=(
