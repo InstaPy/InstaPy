@@ -10,7 +10,6 @@ from webdriverdownloader import GeckoDriverDownloader
 import os
 import zipfile
 import shutil
-from time import sleep
 from os.path import sep
 
 # local project
@@ -22,6 +21,7 @@ from .util import check_authorization
 from .util import web_address_navigator
 from .file_manager import use_assets
 from .settings import Settings
+from .time_util import sleep
 
 
 def get_geckodriver():
