@@ -220,8 +220,7 @@ class InstaPyTelegramBot:
                 chat_id=update.message.chat_id, text="InstaPy session abort set\n"
             )
 
-    @staticmethod
-    def _unknown(update, context):
+    def _unknown(self,update, context):
         """
         trap all others commands as unknown
         :return:
@@ -271,8 +270,7 @@ class InstaPyTelegramBot:
         if r.json()["ok"] is not True:
             self.__logger.warning("unable to remove webhook! Wrong token?")
 
-    @staticmethod
-    def _error_callback(_, update, error):
+    def _error_callback(self, update, error):
         try:
             raise error
         except Unauthorized:
