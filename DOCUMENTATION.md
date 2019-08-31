@@ -1667,7 +1667,7 @@ There are 3 supported actions:
 
 ####Examples
 ```python
-from instapy import InstaPyTelegramBot
+from instapy.plugins import InstaPyTelegramBot
 
         session = InstaPy(username=insta_username,
                           password=insta_password,
