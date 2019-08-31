@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """
 User model for interactions user attributes and perform action on users
 """
