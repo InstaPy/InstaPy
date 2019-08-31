@@ -1647,17 +1647,17 @@ _Now that text is gonna be labeled **inappropriate** COS its polarity is `"P"` w
 This project uses MeaningCloud™ (http://www.meaningcloud.com) for Text Analytics.
 
 ---
-###Telegram Integration
+### Telegram Integration
 
 This feature allows to connect your InstaPy session with a Telegram bot and send commands
 to the InstaPy session
 
-####Prerequisites
+#### Prerequisites
 You will need to create a token, for this go into your Telegram App and talk with @fatherbot.
 You will also need to set your username as it is checked to ensure that you are authorized to 
 access the InstaPy session, to do so go to Settings -> Profile -> Username.
 
-####Supported actions
+#### Supported actions
 There are 3 supported actions:
   - /start : will start the interaction between the bot and instapy. Please note: that the telegram bot 
   cannot send you messages until you first send it a /start message. The bot will store the chat_id in the logs folder
@@ -1665,7 +1665,7 @@ There are 3 supported actions:
   - /report : will gather and show the current session statistics
   - /stop: will set the aborting flag to True
 
-####Examples
+#### Examples
 ```python
 from instapy.plugins import InstaPyTelegramBot
 
@@ -1694,7 +1694,7 @@ Additional parameters:
      }
 ```
 
-####Additional functionality
+#### Additional functionality
 you can use 
 ```python
 telegram.send_message(text="this is a message")
