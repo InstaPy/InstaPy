@@ -879,10 +879,14 @@ def get_users_through_dialog_with_graphql(
     if randomize and amount >= 3:
         # expanding the population for better sampling distribution
         amount = amount * 1.9
-
-    user_id = browser.execute_script(
-        "return window._sharedData.entry_data.ProfilePage[0].graphql.user.id"
-    )
+    try:
+        user_id = browser.execute_script(
+            "return window.__additionalData[Object.keys(window.__additionalData)[0]].data.graphql.user.id"
+        )
+    except WebDriverException:
+        user_id = browser.execute_script(
+            "return window._sharedData." "entry_data.ProfilePage[0]." "graphql.user.id"
+        )
 
     query_hash = get_query_hash(browser, logger)
     # check if hash is present
@@ -1236,8 +1240,8 @@ def get_given_user_following(
     except NoSuchElementException:
         try:
             allfollowing = browser.execute_script(
-                "return window._sharedData.entry_data."
-                "ProfilePage[0].graphql.user.edge_follow.count"
+                "return window.__additionalData[Object.keys(window.__additionalData)[0]].data."
+                "graphql.user.edge_follow.count"
             )
 
         except WebDriverException:
@@ -1246,8 +1250,9 @@ def get_given_user_following(
                 update_activity(browser, state=None)
 
                 allfollowing = browser.execute_script(
-                    "return window._sharedData.entry_data."
-                    "ProfilePage[0].graphql.user.edge_follow.count"
+                    "return window._sharedData."
+                    "entry_data.ProfilePage[0]."
+                    "graphql.user.edge_follow.count"
                 )
 
             except WebDriverException:

@@ -12,7 +12,7 @@ from .util import interruption_handler
 from .util import truncate_float
 from .util import progress_tracker
 
-from selenium.common.exceptions import NoSuchElementException
+from selenium.common.exceptions import NoSuchElementException, WebDriverException
 
 
 def get_followers(
@@ -81,9 +81,15 @@ def get_followers(
 
     all_followers = []
     variables = {}
-    user_data["id"] = browser.execute_script(
-        "return window._sharedData.entry_data.ProfilePage[0]." "graphql.user.id"
-    )
+    try:
+        user_data["id"] = browser.execute_script(
+            "return window.__additionalData[Object.keys(window.__additionalData)[0]].data."
+            "graphql.user.id"
+        )
+    except WebDriverException:
+        user_data["id"] = browser.execute_script(
+            "return window._sharedData." "entry_data.ProfilePage[0]." "graphql.user.id"
+        )
 
     variables["id"] = user_data["id"]
     variables["first"] = 50
@@ -357,9 +363,16 @@ def get_following(
     all_following = []
 
     variables = {}
-    user_data["id"] = browser.execute_script(
-        "return window._sharedData.entry_data.ProfilePage[0]." "graphql.user.id"
-    )
+
+    try:
+        user_data["id"] = browser.execute_script(
+            "return window.__additionalData[Object.keys(window.__additionalData)[0]].data."
+            "graphql.user.id"
+        )
+    except WebDriverException:
+        user_data["id"] = browser.execute_script(
+            "return window._sharedData." "entry_data.ProfilePage[0]." "graphql.user.id"
+        )
 
     variables["id"] = user_data["id"]
     variables["first"] = 50
