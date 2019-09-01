@@ -19,6 +19,7 @@ _The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 - Able to use Domains as a Proxy
 - jsonschema requrements version
 - skip_top_posts function
+- Backup plan for graphql additional / shared data
 
 
 ## [0.6.2] - 2019-08-30
