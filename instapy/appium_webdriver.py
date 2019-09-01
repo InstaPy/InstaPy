@@ -10,17 +10,19 @@ class AppiumWebDriver():
     Appium WebDriver class
     """
 
-    def __init__(self, devicename: str='',devicetimeout: int=600):
+    def __init__(self, devicename: str='',adb_path: str='',devicetimeout: int=600):
 
         super().__init__()
+        self.adb_path = adb_path
 
         __desired_caps = {}
         _driver = None
 
+        devices = self._adb_list_devices(self.adb_path)
 
-        if devicename != '':
+        if any(devicename in device for device in devices):
+            self.devicename = devicename
             __desired_caps['platformName'] = 'Android'
-            #todo: use python adb to do a adb devices and double check that we have a match
             __desired_caps['deviceName'] = devicename
             __desired_caps['appPackage'] = 'com.instagram.android'
             __desired_caps['appActivity'] = 'com.instagram.mainactivity.MainActivity'
@@ -32,12 +34,14 @@ class AppiumWebDriver():
             __desired_caps['newCommandTimeout'] = devicetimeout
 
             try:
-                _driver = webdriver.Remote('http://localhost:4723/wd/hub', desired_caps)
+                _driver = webdriver.Remote('http://localhost:4723/wd/hub', __desired_caps)
             except:
-                self.logger.error("Could not create webdriver, is Appium running?")
+                #self.logger.error("Could not create webdriver, is Appium running?")
+                print("Could not create webdriver; please make sure Appium is running")
 
         else:
-            self.logger.error("Invalid Device Name")
+            #self.logger.error("Invalid Device Name")
+            print("Invalid Device Name. \nList of available devices: {}".format(', '.join(devices)))
 
     @property
     def driver(self):
@@ -52,13 +56,11 @@ class AppiumWebDriver():
         console_output = subprocess.check_output([adb_path, 'devices']).splitlines()
         devices = []
 
-        print('List of available devices:')
         for line in console_output[1:]:
             line = line.decode("utf-8")
             if line != '':
                 device = line.split('\t')[0] # Not sure if \\ is only for windows; have to check
                 devices.append(device)
-                print(device)
         return devices
 
 
