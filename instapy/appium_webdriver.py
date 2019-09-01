@@ -24,6 +24,7 @@ class AppiumWebDriver():
             __desired_caps['deviceName'] = devicename
             __desired_caps['appPackage'] = 'com.instagram.android'
             __desired_caps['appActivity'] = 'com.instagram.mainactivity.MainActivity'
+            __desired_caps['automationName'] = 'UiAutomator2'
             __desired_caps['noReset'] = True
             __desired_caps['fullReset'] = False
             __desired_caps['unicodeKeyboard'] = True
