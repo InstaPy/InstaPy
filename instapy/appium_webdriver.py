@@ -4,6 +4,8 @@ Class to define everything needed to work with Appium
 
 from appium import webdriver
 import subprocess
+import os
+import sys
 
 class AppiumWebDriver():
     """
@@ -16,7 +18,7 @@ class AppiumWebDriver():
         self.adb_path = adb_path
 
         __desired_caps = {}
-        _driver = None
+        self._driver = None
 
         devices = self._adb_list_devices(self.adb_path)
 
@@ -34,7 +36,7 @@ class AppiumWebDriver():
             __desired_caps['newCommandTimeout'] = devicetimeout
 
             try:
-                _driver = webdriver.Remote('http://localhost:4723/wd/hub', __desired_caps)
+                self._driver = webdriver.Remote('http://localhost:4723/wd/hub', __desired_caps)
             except:
                 #self.logger.error("Could not create webdriver, is Appium running?")
                 print("Could not create webdriver; please make sure Appium is running")
@@ -45,7 +47,15 @@ class AppiumWebDriver():
 
     @property
     def driver(self):
-        return _driver
+        return self._driver
+
+    def _get_adb_path(self):
+        """
+        protected function to get the installation path of adb
+        :return:
+        """
+        # todo: programatically get path to adb
+        return path
 
     def _adb_list_devices(self,adb_path: str=''):
         """
