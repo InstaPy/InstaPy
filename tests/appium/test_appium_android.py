@@ -1,16 +1,27 @@
 from appium import webdriver
 from appium.webdriver.common.touch_action import TouchAction
+import argparse
 
 from time import sleep
 
-insta_username = ''
-insta_password = ''
+parser = argparse.ArgumentParser(description='Code for testing appium features.')
+parser.add_argument('--username', help='instagram username for login', default='abc')
+parser.add_argument('--password', help='instagram password for login', default='123')
+parser.add_argument('--devicename', help='simulated device', default='emulator-5554')
+
+args = parser.parse_args()
+
+insta_username = args.username
+insta_password = args.password
+devicename = args.devicename
+
 desired_caps = {}
 
 desired_caps['platformName'] = 'Android'
-desired_caps['deviceName'] = 'emulator-5554'
+desired_caps['deviceName'] = devicename
 desired_caps['appPackage'] = 'com.instagram.android'
 desired_caps['appActivity'] = 'com.instagram.mainactivity.MainActivity'
+desired_caps['automationName'] = 'UiAutomator2'
 desired_caps['noReset'] = True
 desired_caps['fullReset'] = False
 desired_caps['unicodeKeyboard'] = True

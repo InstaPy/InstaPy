@@ -8,6 +8,7 @@ This guide describes how to setup an enviroment for testing the new appium insta
 2.  Download and install [appium](https://github.com/appium/appium-desktop/releases/tag/v1.13.0)
 3.  Download and install [Andriod Studio](https://developer.android.com/studio)
 4.  Download [instagrams' apk](https://apkpure.com/instagram/com.instagram.android/download/169474968-APK?from=variants%2Fversion)
+    Note: make sure to map the correct apk variant with the CPU/ABI flavor of your android device
 5. Start a new Android Studio (AS) project:
 	- Launch AS
 	- Start new AS project
@@ -19,7 +20,7 @@ This guide describes how to setup an enviroment for testing the new appium insta
 7. Create a new emulator in the AVD manager
 8.  Go to the android studio terminal (bottom of the screen): `cd C:\Users\YOUR NAME HERE\AppData\Local\Android\Sdk\platform-tools`  or whatever path you have to the `platform-tools` folder
 9. Install the instagram apk: `adb install [INSERT THE PATH TO YOUR DOWNLOADED INSTAGRAM APK]`
-10.  Add the `ANDROID_HOME` variable to your enviromental varibles with path being the path to `[FULL PATH HERE]/Sdk/` mentioned in earlier steps
+10.  Add the `ANDROID_HOME` variable to your environment variables with path being the path to `[FULL PATH HERE]/Sdk/` mentioned in earlier steps
 11. Start your appium server with default settings
 12. Launch the emulator
 13. Give it time for the emulator to setup everything (AS will stop showing messages in the bottom)
