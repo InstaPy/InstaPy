@@ -585,7 +585,8 @@ def check_link(
         # double {{ allows us to call .format here:
         owner_comments = browser.execute_script(
             """
-            latest_comments = window.__additionalData[Object.keys(window.__additionalData)[0]].data.graphql.shortcode_media.{}.edges;
+            latest_comments = window.__additionalData[Object.keys(window.__additionalData)[0]];
+            latest_comments = latest_comments.data.graphql.shortcode_media.{}.edges;
             if (latest_comments === undefined) {{
                 latest_comments = Array();
                 owner_comments = latest_comments
@@ -865,8 +866,8 @@ def verify_liking(browser, maximum, minimum, logger):
     & minimum values defined by user """
     try:
         likes_count = browser.execute_script(
-            "return window.__additionalData[Object.keys(window.__additionalData)[0]].data.graphql.shortcode_media.edge_media_preview_like"
-            ".count"
+            "return window.__additionalData[Object.keys(window.__additionalData)[0]].data"
+            ".graphql.shortcode_media.edge_media_preview_like.count"
         )
 
     except WebDriverException:
