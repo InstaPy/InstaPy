@@ -555,7 +555,7 @@ def check_link(
     # Check if the Post is Valid/Exists
     try:
         post_page = browser.execute_script(
-            "return window._sharedData.entry_data.PostPage"
+            "return window.__additionalData[Object.keys(window.__additionalData)[0]].data"
         )
 
     except WebDriverException:  # handle the possible `entry_data` error
@@ -564,7 +564,7 @@ def check_link(
             update_activity(browser, state=None)
 
             post_page = browser.execute_script(
-                "return window._sharedData.entry_data.PostPage"
+                "return window.__additionalData[Object.keys(window.__additionalData)[0]].data"
             )
 
         except WebDriverException:
@@ -575,9 +575,9 @@ def check_link(
         return True, None, None, "Unavailable Page", "Failure"
 
     # Gets the description of the post's link and checks for the dont_like tags
-    graphql = "graphql" in post_page[0]
+    graphql = "graphql" in post_page
     if graphql:
-        media = post_page[0]["graphql"]["shortcode_media"]
+        media = post_page["graphql"]["shortcode_media"]
         is_video = media["is_video"]
         user_name = media["owner"]["username"]
         image_text = media["edge_media_to_caption"]["edges"]
@@ -588,8 +588,8 @@ def check_link(
         # double {{ allows us to call .format here:
         owner_comments = browser.execute_script(
             """
-            latest_comments = window._sharedData.entry_data.PostPage[
-            0].graphql.shortcode_media.{}.edges;
+            latest_comments = window.__additionalData[Object.keys(window.__additionalData)[0]];
+            latest_comments = latest_comments.data.graphql.shortcode_media.{}.edges;
             if (latest_comments === undefined) {{
                 latest_comments = Array();
                 owner_comments = latest_comments
@@ -805,12 +805,12 @@ def get_tags(browser, url):
     web_address_navigator(browser, url)
 
     graphql = browser.execute_script(
-        "return ('graphql' in window._sharedData.entry_data.PostPage[0])"
+        "return ('graphql' in window.__additionalData[Object.keys(window.__additionalData)[0]].data)"
     )
 
     if graphql:
         image_text = browser.execute_script(
-            "return window._sharedData.entry_data.PostPage[0].graphql."
+            "return window.__additionalData[Object.keys(window.__additionalData)[0]].data.graphql."
             "shortcode_media.edge_media_to_caption.edges[0].node.text"
         )
 
@@ -869,9 +869,8 @@ def verify_liking(browser, maximum, minimum, logger):
     & minimum values defined by user """
     try:
         likes_count = browser.execute_script(
-            "return window._sharedData.entry_data."
-            "PostPage[0].graphql.shortcode_media.edge_media_preview_like"
-            ".count"
+            "return window.__additionalData[Object.keys(window.__additionalData)[0]].data"
+            ".graphql.shortcode_media.edge_media_preview_like.count"
         )
 
     except WebDriverException:
