@@ -3,26 +3,24 @@ Class to define everything needed to work with Appium
 """
 
 from appium import webdriver
-import subprocess
-import os
-import sys
+from adb.client import Client as AdbClient
 
 class AppiumWebDriver():
     """
     Appium WebDriver class
     """
 
-    def __init__(self, devicename: str='',adb_path: str='',devicetimeout: int=600):
+    def __init__(self, devicename: str='',devicetimeout: int=600,
+     client_host: str="127.0.0.1",client_port: int=5037):
 
         super().__init__()
-        self.adb_path = adb_path
-
-        __desired_caps = {}
+        self.adb_client = AdbClient(host=client_host, port=client_port)
+        self.adb_devices = self._get_adb_devices()
         self._driver = None
 
-        devices = self._adb_list_devices(self.adb_path)
+        __desired_caps = {}
 
-        if any(devicename in device for device in devices):
+        if any(devicename in device for device in self.adb_devices):
             self.devicename = devicename
             __desired_caps['platformName'] = 'Android'
             __desired_caps['deviceName'] = devicename
@@ -49,28 +47,16 @@ class AppiumWebDriver():
     def driver(self):
         return self._driver
 
-    def _get_adb_path(self):
-        """
-        protected function to get the installation path of adb
-        :return:
-        """
-        # todo: programatically get path to adb
-        return path
-
-    def _adb_list_devices(self,adb_path: str=''):
+    def _get_adb_devices(self):
         """
         protected function to check the current running simulators
         :return:
         """
-
-        console_output = subprocess.check_output([adb_path, 'devices']).splitlines()
         devices = []
 
-        for line in console_output[1:]:
-            line = line.decode("utf-8")
-            if line != '':
-                device = line.split('\t')[0] # Not sure if \\ is only for windows; have to check
-                devices.append(device)
+        for device in self.adb_client.devices():
+            devices.append(device.serial)
+
         return devices
 
 

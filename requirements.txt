@@ -19,3 +19,4 @@ regex>=2018.11.22
 MeaningCloud-python>=1.1.1
 PyYAML>=3.13
 webdriverdownloader
+pure-python-adb>=0.1.7
