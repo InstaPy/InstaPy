@@ -6,12 +6,22 @@ import time
 from datetime import datetime
 from enum import Enum
 
-from .. import InstaPy, smart_run
 from ..unfollow_util import follow_user, unfollow_user
-from ..like_util import get_links_for_tag, like_image
-from ..commenters_util import extract_post_info, users_liked
-from ..comment_util import get_comments_count, is_commenting_enabled, comment_image, open_comment_section
-from ..util import web_address_navigator, get_current_url, explicit_wait, extract_text_from_element, find_user_id
+from ..like_util import like_image
+from ..commenters_util import users_liked
+from ..comment_util import (
+    get_comments_count,
+    is_commenting_enabled,
+    comment_image,
+    open_comment_section,
+)
+from ..util import (
+    web_address_navigator,
+    get_current_url,
+    explicit_wait,
+    extract_text_from_element,
+    find_user_id,
+)
 from ..xpath import read_xpath
 
 from .comments import Comment
@@ -19,13 +29,10 @@ from .users import User
 
 
 class Post(object):
-
-
     class Types(Enum):
         PHOTO = 0
         CAROUSEL = 1
         VIDEO = 2
-
 
     def __init__(self, link=None, type=None, user=None):
         self.link = link
@@ -35,10 +42,8 @@ class Post(object):
         self.like_count = None
         self.comment_count = None
 
-
     def __hash__(self):
         return hash(self.link)
-
 
     def __eq__(self, other):
         if isinstance(other, type(self)):
@@ -46,18 +51,14 @@ class Post(object):
         else:
             return False
 
-
     def __repr__(self):
         return "Post({0}, {1}, {2})".format(hash(self), self.type, self.link)
-
 
     def __str__(self):
         return repr(self)
 
-
     def show(self, session):
         web_address_navigator(session.browser, self.link)
-
 
     def count_likes(self, session, refresh=False):
         print("[+] counting likes")
@@ -79,7 +80,6 @@ class Post(object):
         print(" - {0} likes".format(self.like_count))
         return self.like_count
 
-
     def count_comments(self, session, refresh=False):
         print("[+] counting comments")
 
@@ -87,7 +87,9 @@ class Post(object):
             self.show(session)
 
             # Check commenting is available
-            commenting_state, msg = is_commenting_enabled(session.browser, session.logger)
+            commenting_state, msg = is_commenting_enabled(
+                session.browser, session.logger
+            )
 
             if commenting_state:
                 count, msg = get_comments_count(session.browser, session.logger)
@@ -102,13 +104,11 @@ class Post(object):
 
         return self.comment_count
 
-
     def populate(self, session):
         print("[+] populating post values")
         self.show(session)
         self.count_likes(session, refresh=False)
         self.count_comments(session, refresh=False)
-
 
     def refresh(self, session):
         print("[+] refreshing post values")
@@ -116,17 +116,29 @@ class Post(object):
         self.count_likes(session, refresh=True)
         self.count_comments(session, refresh=True)
 
-
     def like(self, session, verify=False):
         print("[+] liking post")
         self.show(session)
 
         if verify:
-            like_image(session.browser, session.username, session.blacklist, session.logger, session.logfolder, 0)
+            like_image(
+                session.browser,
+                session.username,
+                session.blacklist,
+                session.logger,
+                session.logfolder,
+                0,
+            )
 
         else:
-            like_image(session.browser, session.username, session.blacklist, session.logger, session.logfolder, 1)
-
+            like_image(
+                session.browser,
+                session.username,
+                session.blacklist,
+                session.logger,
+                session.logfolder,
+                1,
+            )
 
     # TODO: implement
     def unlike(self, session, verify=False):
@@ -134,17 +146,29 @@ class Post(object):
         print("NOT YET IMPLEMENTED")
         pass
 
-
     def comment(self, session, comment=None):
         print("[+] comment on post")
         self.show(session)
 
         if comment:
-            comment_image(session.browser, session.username, [comment], session.blacklist, session.logger, session.logfolder)
+            comment_image(
+                session.browser,
+                session.username,
+                [comment],
+                session.blacklist,
+                session.logger,
+                session.logfolder,
+            )
 
         else:
-            comment_image(session.browser, session.username, session.comments, session.blacklist, session.logger, session.logfolder)
-
+            comment_image(
+                session.browser,
+                session.username,
+                session.comments,
+                session.blacklist,
+                session.logger,
+                session.logfolder,
+            )
 
     def follow(self, session):
         print("[+] follow user")
@@ -152,19 +176,18 @@ class Post(object):
 
         user = self.get_user(session)
         follow_state, msg = follow_user(
-                    session.browser,
-                    "post",
-                    session.username,
-                    user.name,
-                    None,
-                    session.blacklist,
-                    session.logger,
-                    session.logfolder,
-                )
+            session.browser,
+            "post",
+            session.username,
+            user.name,
+            None,
+            session.blacklist,
+            session.logger,
+            session.logfolder,
+        )
 
         print(" - followed {0}: {1}".format(self.user, follow_state))
         return follow_state
-
 
     def unfollow(self, session):
         print("[+] unfollow user")
@@ -173,20 +196,19 @@ class Post(object):
         user = self.get_user(session)
         user_id = find_user_id(session.browser, "post", user.name, session.logger)
         unfollow_state, msg = unfollow_user(
-                            session.browser,
-                            "post",
-                            session.username,
-                            user.name,
-                            user_id,
-                            None,
-                            session.relationship_data,
-                            session.logger,
-                            session.logfolder,
-                        )
+            session.browser,
+            "post",
+            session.username,
+            user.name,
+            user_id,
+            None,
+            session.relationship_data,
+            session.logger,
+            session.logfolder,
+        )
 
         print(" - unfollowed {0}: {1}".format(self.user, unfollow_state))
         return unfollow_state
-
 
     def get_user(self, session, refresh=False):
         print("[+] retrieving user")
@@ -211,7 +233,6 @@ class Post(object):
 
         return User(name=self.user)
 
-
     # Retrieve all comments form a post
     # TODO: scroll for more comments and handle exceptions
     def get_comments(self, session, offset=0, limit=None, randomize=False):
@@ -234,9 +255,11 @@ class Post(object):
 
         comments = set()
         start = min(offset, len(comments_block))
-        last = min(offset+limit, len(comments_block))
+        last = min(offset + limit, len(comments_block))
         for comment_line in comments_block[start:last]:
-            comment_links = comment_line.find_elements_by_css_selector("div > div > div > a")
+            comment_links = comment_line.find_elements_by_css_selector(
+                "div > div > div > a"
+            )
 
             # Commenter
             commenter_elem = comment_line.find_element_by_css_selector("h3 > a")
@@ -262,15 +285,20 @@ class Post(object):
 
             # Timestamp
             timestamp_elem = comment_line.find_element_by_tag_name("time")
-            timestamp_string = timestamp_elem.get_attribute('datetime')
+            timestamp_string = timestamp_elem.get_attribute("datetime")
             timestamp = datetime.strptime(timestamp_string, "%Y-%m-%dT%H:%M:%S.%fZ")
 
             # Make our comment object
-            comment = Comment(link=link, user=commenter, text=text, like_count=like_count, timestamp=timestamp)
+            comment = Comment(
+                link=link,
+                user=commenter,
+                text=text,
+                like_count=like_count,
+                timestamp=timestamp,
+            )
             comments.add(comment)
 
         return comments
-
 
     def get_likers(self, session, offset=0, limit=None):
         print("[+] get post likers")
@@ -283,13 +311,10 @@ class Post(object):
 
         likers = set()
         start = min(offset, len(raw_likers))
-        last = min(offset+limit, len(raw_likers))
+        last = min(offset + limit, len(raw_likers))
         for raw_liker in raw_likers[start:last]:
             liker = User(name=raw_liker)
             likers.add(liker)
 
         print(" - returning {0} of the total {1}".format(len(likers), self.like_count))
         return likers
-
-
-
