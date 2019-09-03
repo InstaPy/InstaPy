@@ -8,7 +8,9 @@ This guide describes how to setup an enviroment for testing the new appium insta
 2.  Download and install [appium](https://github.com/appium/appium-desktop/releases/tag/v1.13.0)
 3.  Download and install [Andriod Studio](https://developer.android.com/studio)
 4.  Download [instagrams' apk](https://apkpure.com/instagram/com.instagram.android/download/169474968-APK?from=variants%2Fversion)
+    
     Note: make sure to map the correct apk variant with the CPU/ABI flavor of your android device
+
 5. Start a new Android Studio (AS) project:
 	- Launch AS
 	- Start new AS project
