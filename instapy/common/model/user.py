@@ -4,19 +4,19 @@ User model for interactions user attributes and perform action on users
 
 
 class User(object):
-    def __init__(self, link=None, name=None, session=None):
+    def __init__(self, username=None):
         # text=None, post_count=None, follower_count=None, following_count=None):
-        self.link = link
-        self.name = name
-        self.session = session
+        self.username = username
 
         self._posts = None
         self._following = None
         self._followers = None
+        self._full_name_header = None
+        self._description = None
 
     # Used for working with sets
     def __hash__(self):
-        return hash(self.link)
+        return hash(self.username)
 
     # Used for working with sets
     def __eq__(self, other):
@@ -26,8 +26,8 @@ class User(object):
             return False
 
     def __repr__(self):
-        return "User({0}, {1}, {2}, {3}, {4}, {5})".format(
-            hash(self), self.link, self.name, self.posts, self.followers, self.following
+        return "User({}, {}, {}, {}, {},{},{})".format(
+            hash(self), self.username, self._posts, self._followers, self._following, self._description,self._full_name_header
         )
 
     def __str__(self):
@@ -60,9 +60,14 @@ class User(object):
 
         return self._following
 
-    def populate(self):
+    def populate(self,posts,following,followers,header,desc):
         """
          load the data into the User object
          :param session:
          :return:
          """
+         self._posts = posts
+         self._followers = followers
+         self._following = following
+         self._full_name_header = header
+         self._description = desc
