@@ -27,6 +27,10 @@ This guide describes how to setup an enviroment for testing the new appium insta
 14. Make sure you enter the right device name on your test file (You can find it by running `adb devices` in the android terminal) along with your instagram credentials
 15. Test your script
 
+# Running Android on Raspberry Pi
+
+[See here](https://www.raspberrypi.org/magpi/android-raspberry-pi/)
+
 ## Disclaimers & Requirements
 
 - If you are trying to use development tools, make sure you have JDK 8 or below 
