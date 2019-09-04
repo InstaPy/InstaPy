@@ -6,7 +6,7 @@ from appium import webdriver
 from adb.client import Client as AdbClient
 
 
-class AppiumWebDriver:
+class AppiumWebDriver():
     """
     Appium WebDriver class
     """
@@ -41,7 +41,7 @@ class AppiumWebDriver:
 
             try:
                 self._driver = webdriver.Remote(
-                    "http://localhost:4723/wd/hub", __desired_caps
+                    "http://{}:4723/wd/hub".format(client_host), __desired_caps
                 )
             except:
                 # self.logger.error("Could not create webdriver, is Appium running?")
