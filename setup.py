@@ -57,6 +57,11 @@ setup(
             "icons/Linux/*.png",
             "icons/Mac/*.icns",
             "firefox_extension/*",
+            "drivers/*",
+            "drivers/appium_endpoints/*",
+            "drivers/selenium_endpoints/*",
+	    "common/*",
+            "common/model/*",
         ]
     },
     keywords=(
