@@ -1,3 +1,7 @@
+"""
+Class to define the specific actions for the Common class to work with Appium
+"""
+
 from instapy.common.model import Common
 
 class AppiumCommon(Common):

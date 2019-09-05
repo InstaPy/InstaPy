@@ -19,7 +19,6 @@ class AppiumWebDriver():
         client_port: int = 5037,
     ):
 
-        super().__init__()
         self.adb_client = AdbClient(host=client_host, port=client_port)
         self.adb_devices = self._get_adb_devices()
         self._driver = None
