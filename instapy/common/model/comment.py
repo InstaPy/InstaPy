@@ -2,29 +2,21 @@
 """
 Comment model for interactions comment attributes and perform action on comments
 """
-from .users import User
-from ..like_util import like_comment
-from ..util import web_address_navigator
+from .user import User
+from .common import Common
 
 
-class Comment(object):
-    def __init__(
-        self,
-        link=None,
-        user=None,
-        text=None,
-        timestamp=None,
-        like_count=None,
-        reply_count=None,
-    ):
-        self.link = link
+class Comment(Common):
+    def __init__(self, driver = None, user=None, text=None, timestamp=None, like_count=None, reply_count=None):
 
-        self.user = user
-        self.text = text
-        self.timestamp = timestamp
+        self._driver = driver
 
-        self.like_count = like_count
-        self.reply_count = reply_count
+        self._user = user
+        self._text = text
+        self._timestamp = timestamp
+
+        self._like_count = like_count
+        self._reply_count = reply_count
 
     # Used for working with sets
     def __hash__(self):
@@ -50,27 +42,116 @@ class Comment(object):
     def __str__(self):
         return repr(self)
 
-    def show(self, session):
-        web_address_navigator(session.browser, self.link)
+    @property
+    def user(self):
+        """
+        getter for User object representing the User who made the comment
+        :return: User
+        """
+        if _user is None:
+            _user = self.get_user()
 
-    def like(self, session, verify=False):
-        print("[+] like comment")
+        return _user
 
-        self.show(session)
-        like_comment(session.browser, self.text, session.logger)
+    @property
+    def text(self):
+        """
+        getter for comment text
+        :return:
+        """
+        if self._text is None:
+            self._text = self.get_text()
 
-    # TODO: implement
-    def unlike(self, session, verify=False):
-        print("[+] unlike comment")
-        print("NOT YET IMPLEMENTED")
+        return self._text
+
+    @property
+    def timestamp(self):
+        """
+        getter for timestamp of comment
+        :return:
+        """
+
+        if _timestamp is None:
+            self._timestamp = self.get_timestamp()
+
+        return self._timestamp
+
+    @property
+    def like_count(self):
+        """
+        getter for the amount of likes on the comment
+        :return:
+        """
+
+        if _like_count is None:
+            self._like_count = self.get_like_count()
+
+        return self._like_count
+
+    @property
+    def reply_count(self):
+        """
+        getter for the amount of replies on the comment
+        :return:
+        """
+
+        if _reply_count is None:
+            self._reply_count = self.get_reply_count()
+
+        return self._reply_count
+
+    def like(self):
+        """
+        Abstract function to be defined by the driver
+        """
         pass
 
     # TODO: implement
-    def reply(self, reply=None, verify=False):
-        print("[+] reply to comment")
-        print("NOT YET IMPLEMENTED")
+    def unlike(self):
+        """
+        Abstract function to be defined by the driver
+        """
         pass
 
-    def get_user(self, session):
-        print("[+] get comment user")
-        return User(name=self.user)
+    # TODO: implement
+    def reply(self, reply=None):
+        """
+        Abstract function to be defined by the driver
+        """
+        pass
+
+    def get_user(self):
+        """
+        Abstract function to be defined by the driver
+        """
+        pass
+
+    def get_text(self):
+        """
+        Abstract function to be defined by the driver
+        """
+        pass
+
+    def get_timestamp(self):
+        """
+        Abstract function to be defined by the driver
+        """
+        pass
+
+    def get_like_count(self):
+        """
+        Abstract function to be defined by the driver
+        """
+        pass
+
+    def get_comment_count(self):
+        """
+        Abstract function to be defined by the driver
+        """
+        pass
+
+    def get_reply_count(self):
+        """
+        Abstract function to be defined by the driver
+        """
+        pass
