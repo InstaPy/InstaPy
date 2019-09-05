@@ -2,9 +2,9 @@
 Class to define the specific actions for the User class to work with Appium
 """
 from instapy.common.model import User
-from .common import Common
+from .appium_common import AppiumCommon
 
-class AppiumUser(User,Common):
+class AppiumUser(User,AppiumCommon):
     """"
     Implementation class for User
     """
