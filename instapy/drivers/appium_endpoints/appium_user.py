@@ -9,7 +9,7 @@ class AppiumUser(User,AppiumCommon):
     Implementation class for User
     """
     def find_and_populate_user(self, driver,user):
-        if Common.search_user(user.username):
+        if Common.go_user(user.username):
             self.populate(get_post_count(driver),get_following_count(driver),
                             get_follower_count(driver),get_full_name(driver),get_bio(driver))
 

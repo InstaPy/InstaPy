@@ -26,3 +26,10 @@ class Common(object):
         :return:
         """
         pass
+
+    def go_user(self):
+        """
+        Abstract function to be defined by the driver
+        :return:
+        """
+        pass
