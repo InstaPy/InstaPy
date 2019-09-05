@@ -4,11 +4,12 @@ User model for interactions user attributes and perform action on users
 
 
 class User(object):
-    def __init__(self, username=None, post_count=None, follower_count=None, following_count=None, full_name=None, bio=None ):
+
+    def __init__(self, driver=None, username=None, post_count=None, follower_count=None, following_count=None, full_name=None, bio=None ):
         """
         init
         """
-
+        self._driver = driver
         self.username = username
         self._post_count = post_count
         self._follower_count = follower_count

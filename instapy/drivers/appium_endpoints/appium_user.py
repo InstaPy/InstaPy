@@ -28,30 +28,28 @@ class AppiumUser(User,Common):
             self.populate(get_post_count(driver),get_following_count(driver),
                             get_follower_count(driver),get_full_name(driver),get_bio(driver))
 
-    @staticmethod
-    def get_following_count(driver):
-        return int(driver.find_element_by_id("com.instagram.android:id/row_profile_header_textview_following_count").getText())
+    
+    def get_following_count(self):
+        return int(self._driver.find_element_by_id("com.instagram.android:id/row_profile_header_textview_following_count").getText())
 
-    @staticmethod
-    def get_follower_count(driver):
-        return int(driver.find_element_by_id("com.instagram.android:id/row_profile_header_textview_followers_count").getText())
+    def get_follower_count(self):
+        return int(self._driver.find_element_by_id("com.instagram.android:id/row_profile_header_textview_followers_count").getText())
 
-    @staticmethod
-    def get_post_count(driver):
-        return int(driver.find_element_by_id("com.instagram.android:id/row_profile_header_textview_post_count").getText())
+    def get_post_count(self):
+        return int(self._driver.find_element_by_id("com.instagram.android:id/row_profile_header_textview_post_count").getText())
 
-    @staticmethod
-    def get_full_name(driver):
-        return driver.find_element_by_id("com.instagram.android:id/profile_header_full_name").getText()
 
-    @staticmethod
-    def get_bio(driver):
+    def get_full_name(self):
+        return self._driver.find_element_by_id("com.instagram.android:id/profile_header_full_name").getText()
+
+
+    def get_bio(self):
         """
 
         :param driver:
         :return:
         """
-        return driver.find_element_by_id("com.instagram.android:id/profile_header_bio_text").getText()
+        return self._driver.find_element_by_id("com.instagram.android:id/profile_header_bio_text").getText()
 
 
 
