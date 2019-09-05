@@ -32,7 +32,7 @@ class User(Common):
 
     def __repr__(self):
         return "User({}, {}, {}, {}, {},{},{})".format(
-            hash(self), self.username, self._posts, self._followers, self._following, self._description,self._full_name_header
+            hash(self), self.username, self.post_count, self.follower_count, self.following_count, self.full_name, self.bio
         )
 
     def __str__(self):

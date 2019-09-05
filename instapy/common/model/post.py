@@ -30,7 +30,7 @@ class Post(Common):
             return False
 
     def __repr__(self):
-        return "Post({0}, {1}, {2})".format(hash(self), self.type, self.link)
+        return "Post({0}, {1})".format(hash(self), self.type)
 
     def __str__(self):
         return repr(self)

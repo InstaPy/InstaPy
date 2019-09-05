@@ -20,7 +20,7 @@ class Comment(Common):
 
     # Used for working with sets
     def __hash__(self):
-        return hash(self.link + self.user + self.text)
+        return hash( self.user + self.text + self.timestamp)
 
     # Used for working with sets
     def __eq__(self, other):
@@ -32,9 +32,9 @@ class Comment(Common):
     def __repr__(self):
         return "Comment({0}, {1}, {2}, {3}, {4}, {5})".format(
             hash(self),
-            self.link,
             self.user,
             self.text,
+            self.timestamp,
             self.like_count,
             self.reply_count,
         )
