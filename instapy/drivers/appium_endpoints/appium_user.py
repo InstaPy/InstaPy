@@ -28,7 +28,7 @@ class AppiumUser(User,Common):
             self.populate(get_post_count(driver),get_following_count(driver),
                             get_follower_count(driver),get_full_name(driver),get_bio(driver))
 
-    
+
     def get_following_count(self):
         return int(self._driver.find_element_by_id("com.instagram.android:id/row_profile_header_textview_following_count").getText())
 
