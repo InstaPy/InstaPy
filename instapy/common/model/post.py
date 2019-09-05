@@ -6,7 +6,7 @@ Post model for interactions posts attributes and perform action on posts
 from .comment import Comment
 from .user import User
 from .common import Common
-
+from enum import Enum
 
 class Post(Common):
     class Types(Enum):
@@ -83,4 +83,3 @@ class Post(Common):
     #     self.show(session)
     #     self.count_likes(session, refresh=True)
     #     self.count_comments(session, refresh=True)
-

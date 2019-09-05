@@ -18,16 +18,16 @@ class AppiumCommon(Common):
         profile = self.driver.find_elements_by_xpath("//android.widget.FrameLayout[@content-desc='Profile' and @index=4]")
         driver.click(profile[0])
 
-    def go_user(self,username):
+    def go_user(self,user):
 
         try:
-            self._go_search(self)
+            self._go_search()
         except:
             print("error")
             return False
 
         elem = self.driver.find_element_by_id("com.instagram.android:id/action_bar_search_edit_text")
-        elem.set_value(username)
+        elem.set_value(user.username)
 
         found_users = self.driver.find_elements_by_xpath("//android.widget.TextView[@resource-id='com.instagram.android:id/row_search_user_username']")
 
@@ -46,4 +46,3 @@ class AppiumCommon(Common):
 
         elem = self.driver.find_elements_by_xpath("//android.widget.FrameLayout[@content-desc='Search and Explore' and @index=1]")
         self.driver.click(elem)
-
