@@ -36,7 +36,7 @@ class User():
             return False
 
     def __repr__(self):
-        return "User({}, {}, {}, {}, {},{},{})".format(
+        return "User information: \n\thash (id): {}, \n\tusername: {}, \n\tpost count: {}, \n\tfollower count: {}, \n\tfollowing count: {}, \n\tfull name: {},\n\tbio: {}".format(
             hash(self), self.username, self.post_count, self.follower_count, self.following_count, self.full_name, self.bio
         )
 
