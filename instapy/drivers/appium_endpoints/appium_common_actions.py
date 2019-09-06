@@ -2,12 +2,15 @@
 Class to define the specific actions for the Common class to work with Appium
 """
 
+from instapy.common.model import CommonActions
+
 class AppiumCommonActions(CommonActions):
     """
     class for all the common actions (not related to user, comment, post, story)
     """
 
-    def go_profile(self,driver):
+    @classmethod
+    def go_profile(cls,driver):
         """
 
         :param driver:
@@ -16,10 +19,11 @@ class AppiumCommonActions(CommonActions):
         profile = driver.find_elements_by_xpath("//android.widget.FrameLayout[@content-desc='Profile' and @index=4]")
         driver.click(profile[0])
 
-    def go_user(self,driver,user):
+    @classmethod
+    def go_user(cls,driver,user):
 
         try:
-            self._go_search()
+            cls._go_search()
         except:
             print("error")
             return False
@@ -40,7 +44,8 @@ class AppiumCommonActions(CommonActions):
         # if the list is not null then we should click on it to go to that user
 
 
-    def _go_search(self,driver):
+    @classmethod
+    def _go_search(cls,driver):
 
         elem = driver.find_elements_by_xpath("//android.widget.FrameLayout[@content-desc='Search and Explore' and @index=1]")
         driver.click(elem)

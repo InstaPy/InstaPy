@@ -3,7 +3,7 @@ User class: its intended as a class to ONLY store data about an user;
 it performs no actions; if actions are needed, they will be performed
 through the AppiumUserActions or SeleniumUserActions static class.
 """
-..
+
 class User():
 
     def __init__(self,username: str,
@@ -57,7 +57,7 @@ class User():
         Getter for follower_count (self.follower_count will call this function automatically)
         :return:
         """
-        return self._follower
+        return self._follower_count
 
     @property
     def following_count(self):
@@ -65,7 +65,7 @@ class User():
         Getter for following_count (self.following_count will call this function automatically)
         :return:
         """
-        return self._following
+        return self._following_count
 
     @property
     def bio(self):

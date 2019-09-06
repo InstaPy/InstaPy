@@ -1,5 +1,6 @@
 from instapy.drivers import AppiumWebDriver
-from instapy.drivers.appium_endpoints.appium_user import AppiumUser
+from instapy.drivers.appium_endpoints.appium_user_actions import AppiumUserActions
+from instapy.common.model.user import User
 import argparse
 
 # from instapy.drivers.appium_endpoints import user_actions
@@ -9,5 +10,6 @@ args = parser.parse_args()
 insta_username = args.username
 
 AppiumWebDriver.construct_webdriver(devicename="emulator-5554")
-#user = AppiumUser(username=insta_username)
-#print(user)
+user = User(username=insta_username)
+user = AppiumUserActions.find_and_populate_user(AppiumWebDriver.get_driver(),user)
+print(user)

@@ -4,6 +4,7 @@ Class to define everything needed to work with Appium
 
 from appium import webdriver
 from adb.client import Client as AdbClient
+from time import sleep
 
 
 class AppiumWebDriver():
@@ -50,6 +51,8 @@ class AppiumWebDriver():
                 driver = webdriver.Remote(
                     "http://{}:4723/wd/hub".format(client_host), __desired_caps
                 )
+                print("Succesfully connected to the {} device!".format(self.devicename))
+                sleep(5)
             except:
                 # self.logger.error("Could not create webdriver, is Appium running?")
                 print("Could not create webdriver; please make sure Appium is running")
@@ -73,6 +76,15 @@ class AppiumWebDriver():
             devices.append(device.serial)
 
         return devices
+
+    @classmethod
+    def get_driver(cls):
+        """
+        wrapper for find_element by_xpath
+        :param xpath:
+        :return:
+        """
+        return cls.driver
 
     @classmethod
     def find_element_by_xpath(cls,xpath: str = ""):
