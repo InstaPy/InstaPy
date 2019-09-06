@@ -6,7 +6,7 @@ from .common import Common
 
 class User(Common):
 
-    def __init__(self, driver=None, username=None, post_count=None, follower_count=None, following_count=None, full_name=None, bio=None ):
+    def __init__(self,username: str,driver=None, post_count=None, follower_count=None, following_count=None, full_name=None, bio=None ):
         """
         init
         """
