@@ -2,9 +2,7 @@
 Class to define the specific actions for the Common class to work with Appium
 """
 
-from instapy.common.model import Common
-
-class AppiumCommonActions(Common):
+class AppiumCommonActions(CommonActions):
     """
     class for all the common actions (not related to user, comment, post, story)
     """

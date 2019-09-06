@@ -1,10 +1,18 @@
 """
-User model for interactions user attributes and perform action on users
+User class: its intended as a class to ONLY store data about an user;
+it performs no actions; if actions are needed, they will be performed
+through the AppiumUserActions or SeleniumUserActions static class.
 """
-
+..
 class User():
 
-    def __init__(self,username: str, post_count=None, follower_count=None, following_count=None, full_name=None, bio=None ):
+    def __init__(self,username: str,
+                 post_count: int = None,
+                 follower_count: int = None,
+                 following_count: int = None,
+                 full_name: str = None,
+                 bio: str = None ):
+
         """
         init
         """
@@ -41,10 +49,6 @@ class User():
         Getter for post_count (self.post_count will call this function automatically)
         :return:
         """
-
-        if self._post_count is None:
-            self.get_post_count()
-
         return self._post_count
 
     @property
@@ -53,10 +57,6 @@ class User():
         Getter for follower_count (self.follower_count will call this function automatically)
         :return:
         """
-
-        if self._follower is None:
-            self.get_follower()
-
         return self._follower
 
     @property
@@ -65,10 +65,6 @@ class User():
         Getter for following_count (self.following_count will call this function automatically)
         :return:
         """
-
-        if self._following is None:
-            self.get_following_count()
-
         return self._following
 
     @property
@@ -77,10 +73,6 @@ class User():
         Getter for the bio
         :return:
         """
-
-        if self._bio is None:
-            self.get_bio()
-
         return self._bio
 
     @property
@@ -89,10 +81,6 @@ class User():
         Getter for the header description
         :return:
         """
-
-        if self._full_name is None:
-            self.get_full_name()
-
         return self._full_name
 
     def populate(self,post_count=0,following_count=0,follower_count=0,full_name="",bio=""):
@@ -105,38 +93,3 @@ class User():
         self._following_count = following_count
         self._full_name = full_name
         self._bio = bio
-
-    def get_post_count(self):
-        """
-        Abstract, to be implemented by the driver
-        :return:
-        """
-        pass
-
-    def get_follower_count(self):
-        """
-        Abstract to be implemented by the driver
-        :return:
-        """
-        pass
-
-    def get_following_count(self):
-        """
-        Abstract to be implemented by the driver
-        :return:
-        """
-        pass
-
-    def get_bio(self):
-        """
-        Abstract to be implemented by the driver
-        :return:
-        """
-        pass
-
-    def get_full_name(self):
-        """
-        Abstract to be implemented by the driver
-        :return:
-        """
-        pass

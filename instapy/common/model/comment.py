@@ -2,9 +2,6 @@
 """
 Comment model for interactions comment attributes and perform action on comments
 """
-from .user import User
-from .common import Common
-
 
 class Comment():
     def __init__(self, user=None, text=None, timestamp=None, like_count=None, reply_count=None):
