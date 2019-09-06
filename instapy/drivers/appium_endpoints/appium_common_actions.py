@@ -46,6 +46,7 @@ class AppiumCommonActions(CommonActions):
 
     @classmethod
     def _go_search(cls,driver):
-
+        print('here')
         elem = driver.find_elements_by_xpath("//android.widget.FrameLayout[@content-desc='Search and Explore' and @index=1]")
-        driver.click(elem)
+        print(elem[0])
+        driver.click(elem[0])

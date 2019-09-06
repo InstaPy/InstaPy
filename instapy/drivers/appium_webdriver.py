@@ -52,7 +52,7 @@ class AppiumWebDriver():
                     "http://{}:4723/wd/hub".format(client_host), __desired_caps
                 )
                 print("Succesfully connected to the {} device!".format(self.devicename))
-                sleep(5)
+                sleep(10)
             except:
                 # self.logger.error("Could not create webdriver, is Appium running?")
                 print("Could not create webdriver; please make sure Appium is running")
