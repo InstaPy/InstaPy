@@ -11,6 +11,15 @@ class AppiumWebDriver():
     Appium WebDriver class
     """
 
+    driver = None
+
+    @classmethod
+    def construct_webdriver(cls,devicename: str = "",devicetimeout: int = 600,client_host: str = "127.0.0.1",client_port: int = 5037,):
+        if cls.driver is None:
+            cls.driver = AppiumWebDriver(devicename,devicetimeout,client_host,client_port)
+        else:
+            pass
+
     def __init__(
         self,
         devicename: str = "",
@@ -21,7 +30,6 @@ class AppiumWebDriver():
 
         self.adb_client = AdbClient(host=client_host, port=client_port)
         self.adb_devices = self._get_adb_devices()
-        self._driver = None
 
         __desired_caps = {}
 
@@ -39,7 +47,7 @@ class AppiumWebDriver():
             __desired_caps["newCommandTimeout"] = devicetimeout
 
             try:
-                self._driver = webdriver.Remote(
+                driver = webdriver.Remote(
                     "http://{}:4723/wd/hub".format(client_host), __desired_caps
                 )
             except:
@@ -54,10 +62,6 @@ class AppiumWebDriver():
                 )
             )
 
-    @property
-    def driver(self):
-        return self._driver
-
     def _get_adb_devices(self):
         """
         protected function to check the current running simulators
@@ -70,31 +74,35 @@ class AppiumWebDriver():
 
         return devices
 
-    def find_element_by_xpath(self, xpath: str = ""):
+    @classmethod
+    def find_element_by_xpath(cls,xpath: str = ""):
         """
         wrapper for find_element by_xpath
         :param xpath:
         :return:
         """
-        return self.driver.find_element_by_xpath(xpath)
+        return cls.driver.find_element_by_xpath(xpath)
 
-    def find_element_by_id(self, resource_id: str = ""):
+    @classmethod
+    def find_element_by_id(cls,resource_id: str = ""):
         """
         wrapper for find_element_by_id
         :param resource_id:
         :return:
         """
-        return self.driver.find_element_by_id(resource_id)
+        return cls.driver.find_element_by_id(resource_id)
 
-    def find_element_by_uiautomator(self, uiautomator: str = ""):
+    @classmethod
+    def find_element_by_uiautomator(cls,uiautomator: str = ""):
         """
         wrapper for find_element_by_android_uiautomator
         :param uiautomator:
         :return:
         """
-        return self.driver.find_element_by_android_uiautomator(uiautomator)
+        return cls.driver.find_element_by_android_uiautomator(uiautomator)
 
-    def click(self, webelem):
+    @staticmethod
+    def click(webelem):
         """
         wrapper for element clicking
         :param webelem:
