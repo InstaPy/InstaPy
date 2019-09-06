@@ -11,5 +11,5 @@ insta_username = args.username
 
 AppiumWebDriver.construct_webdriver(devicename="emulator-5554")
 user = User(username=insta_username)
-user = AppiumUserActions.find_and_populate_user(AppiumWebDriver.get_driver(),user)
+user = AppiumUserActions.find_and_populate_user(user)
 print(user)

@@ -13,11 +13,12 @@ class AppiumWebDriver():
     """
 
     driver = None
+    appiumwebdriver = None
 
     @classmethod
     def construct_webdriver(cls,devicename: str = "",devicetimeout: int = 600,client_host: str = "127.0.0.1",client_port: int = 5037):
-        if cls.driver is None:
-            cls.driver = AppiumWebDriver(devicename,devicetimeout,client_host,client_port)
+        if cls.driver is None or cls.appiumwebdriver is None:
+            cls.appiumwebdriver = AppiumWebDriver(devicename,devicetimeout,client_host,client_port)
         else:
             pass
 
@@ -48,7 +49,7 @@ class AppiumWebDriver():
             __desired_caps["newCommandTimeout"] = devicetimeout
 
             try:
-                driver = webdriver.Remote(
+                AppiumWebDriver.driver = webdriver.Remote(
                     "http://{}:4723/wd/hub".format(client_host), __desired_caps
                 )
                 print("Succesfully connected to the {} device!".format(self.devicename))

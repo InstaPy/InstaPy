@@ -3,6 +3,7 @@ Class to define the specific actions for the Common class to work with Appium
 """
 
 from instapy.common.model import CommonActions
+from instapy.drivers.appium_webdriver import AppiumWebDriver
 
 class AppiumCommonActions(CommonActions):
     """
@@ -10,17 +11,17 @@ class AppiumCommonActions(CommonActions):
     """
 
     @classmethod
-    def go_profile(cls,driver):
+    def go_profile(cls):
         """
 
         :param driver:
         :return:
         """
-        profile = driver.find_elements_by_xpath("//android.widget.FrameLayout[@content-desc='Profile' and @index=4]")
-        driver.click(profile[0])
+        profile = AppiumWebDriver.driver.find_elements_by_xpath("//android.widget.FrameLayout[@content-desc='Profile' and @index=4]")
+        AppiumWebDriver.driver.click(profile[0])
 
     @classmethod
-    def go_user(cls,driver,user):
+    def go_user(cls,user):
 
         try:
             cls._go_search()
@@ -28,10 +29,10 @@ class AppiumCommonActions(CommonActions):
             print("error")
             return False
 
-        elem = driver.find_element_by_id("com.instagram.android:id/action_bar_search_edit_text")
+        elem = AppiumWebDriver.driver.find_element_by_id("com.instagram.android:id/action_bar_search_edit_text")
         elem.set_value(user.username)
 
-        found_users = driver.find_elements_by_xpath("//android.widget.TextView[@resource-id='com.instagram.android:id/row_search_user_username']")
+        found_users = AppiumWebDriver.driver.find_elements_by_xpath("//android.widget.TextView[@resource-id='com.instagram.android:id/row_search_user_username']")
 
         for f_user in found_users:
             if f_user.getText() == user.username:
@@ -45,8 +46,8 @@ class AppiumCommonActions(CommonActions):
 
 
     @classmethod
-    def _go_search(cls,driver):
+    def _go_search(cls):
         print('here')
-        elem = driver.find_elements_by_xpath("//android.widget.FrameLayout[@content-desc='Search and Explore' and @index=1]")
+        elem = AppiumWebDriver.driver.find_elements_by_xpath("//android.widget.FrameLayout[@content-desc='Search and Explore' and @index=1]")
         print(elem[0])
-        driver.click(elem[0])
+        AppiumWebDriver.driver.click(elem[0])
