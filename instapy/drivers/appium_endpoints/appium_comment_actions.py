@@ -1,10 +1,7 @@
 """
 Class to define the specific actions for the Comment class to work with Appium
 """
-
-from instapy.common.model.comment import Comment
-
-class AppiumComment(Comment):
+class AppiumCommentActions():
 
     def like(self):
         """

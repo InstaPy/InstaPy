@@ -4,14 +4,10 @@ Common base class for User, Post, Comment
 Manipulate common attributes to all classes
 """
 
-class Common(object):
+class CommonActions(object):
 
-    def __init__(self, driver = None):
-        self._driver = driver
-
-    @property
-    def driver(self):
-        return self._driver
+    def __init__(self):
+        pass
 
     def go_home(self):
         """

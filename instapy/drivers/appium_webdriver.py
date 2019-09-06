@@ -14,7 +14,7 @@ class AppiumWebDriver():
     driver = None
 
     @classmethod
-    def construct_webdriver(cls,devicename: str = "",devicetimeout: int = 600,client_host: str = "127.0.0.1",client_port: int = 5037,):
+    def construct_webdriver(cls,devicename: str = "",devicetimeout: int = 600,client_host: str = "127.0.0.1",client_port: int = 5037):
         if cls.driver is None:
             cls.driver = AppiumWebDriver(devicename,devicetimeout,client_host,client_port)
         else:

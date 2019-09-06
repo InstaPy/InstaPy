@@ -8,15 +8,14 @@ from .user import User
 from .common import Common
 from enum import Enum
 
-class Post(Common):
+class Post():
     class Types(Enum):
         PHOTO = 0
         CAROUSEL = 1
         VIDEO = 2
 
-    def __init__(self, driver = None, like_count = None, comment_count = None):
+    def __init__(self, like_count = None, comment_count = None):
 
-        self._driver = driver
         self._like_count = like_count
         self._comment_count = comment_count
 

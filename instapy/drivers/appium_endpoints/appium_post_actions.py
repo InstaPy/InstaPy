@@ -2,12 +2,7 @@
 Class to define the specific actions for the AppiumPost class to work with Appium
 """
 
-from instapy.common.model.post import Post
-from instapy.common.model.comment import Comment
-from instapy.common.model.user import User
-from .common import Common
-
-class AppiumPost(Post, Common):
+class AppiumPostActions():
 
     def __init__(self):
         """
@@ -64,4 +59,3 @@ class AppiumPost(Post, Common):
         # TODO: implement
 
         # return users
-

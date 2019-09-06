@@ -2,15 +2,12 @@
 User model for interactions user attributes and perform action on users
 """
 
-from .common import Common
+class User():
 
-class User(Common):
-
-    def __init__(self,username: str,driver=None, post_count=None, follower_count=None, following_count=None, full_name=None, bio=None ):
+    def __init__(self,username: str, post_count=None, follower_count=None, following_count=None, full_name=None, bio=None ):
         """
         init
         """
-        self._driver = driver
         self.username = username
         self._post_count = post_count
         self._follower_count = follower_count

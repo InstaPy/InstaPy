@@ -6,10 +6,9 @@ from .user import User
 from .common import Common
 
 
-class Comment(Common):
-    def __init__(self, driver = None, user=None, text=None, timestamp=None, like_count=None, reply_count=None):
+class Comment():
+    def __init__(self, user=None, text=None, timestamp=None, like_count=None, reply_count=None):
 
-        self._driver = driver
 
         self._user = user
         self._text = text
