@@ -487,6 +487,7 @@ def get_links_for_username(
 
         # using `extend`  or `+=` results reference stay alive which affects
         # previous assignment (can use `copy()` for it)
+        main_elem = browser.find_element_by_tag_name("article")
         links = links + get_links(browser, person, logger, media, main_elem)
         links = sorted(set(links), key=links.index)
 
@@ -738,6 +739,7 @@ def like_image(browser, username, blacklist, logger, logfolder, total_liked_img)
     if len(like_elem) == 1:
         # sleep real quick right before clicking the element
         sleep(2)
+        like_elem = browser.find_elements_by_xpath(like_xpath)
         click_element(browser, like_elem[0])
         # check now we have unlike instead of like
         liked_elem = browser.find_elements_by_xpath(unlike_xpath)
@@ -825,6 +827,7 @@ def get_tags(browser, url):
 
 
 def get_links(browser, page, logger, media, element):
+    links = []
     # Get image links in scope from hashtag, location and other pages
     link_elems = element.find_elements_by_xpath('//a[starts-with(@href, "/p/")]')
     sleep(2)

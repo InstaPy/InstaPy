@@ -20,7 +20,7 @@ from .util import get_users_from_dialog
 from .util import progress_tracker
 from .util import close_dialog_box
 
-from selenium.common.exceptions import NoSuchElementException
+from selenium.common.exceptions import NoSuchElementException, StaleElementReferenceException
 
 from .xpath import read_xpath
 
@@ -214,7 +214,7 @@ def extract_information(browser, username, daysold, max_pic):
                 body_elem.send_keys(Keys.END)
                 sleep(1.5)
 
-    except NoSuchElementException as err:
+    except (NoSuchElementException, StaleElementReferenceException) as err:
         print(
             "\n- Something went terribly wrong\n - Stopping everything and "
             "moving on with what I have\n"
