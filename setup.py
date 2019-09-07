@@ -58,8 +58,8 @@ setup(
             "icons/Mac/*.icns",
             "firefox_extension/*",
             "drivers/*",
-            "drivers/appium_endpoints/*",
-            "drivers/selenium_endpoints/*",
+            "drivers/appium_actions/*",
+            "drivers/selenium_actions/*",
 	    "common/*",
             "common/model/*",
         ]

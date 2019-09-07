@@ -1,5 +1,5 @@
 from instapy.drivers import AppiumWebDriver
-from instapy.drivers.appium_endpoints.appium_user_actions import AppiumUserActions
+from instapy.drivers.appium_actions.appium_user_actions import AppiumUserActions
 from instapy.common.model.user import User
 import argparse
 

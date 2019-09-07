@@ -1,7 +1,7 @@
 """
 Class to define the specific actions for the User class to work with Appium
 """
-from instapy.drivers.appium_endpoints.appium_common_actions import AppiumCommonActions
+from instapy.drivers.appium_actions.appium_common_actions import AppiumCommonActions
 from instapy.drivers.appium_webdriver import AppiumWebDriver
 
 class AppiumUserActions():
@@ -16,30 +16,6 @@ class AppiumUserActions():
                             cls.get_follower_count(),cls.get_full_name(),cls.get_bio())
 
         return user
-
-    # Probably not right place for this
-    @classmethod
-    def _cleanup_count(cls,count: str=None):
-        if ',' in count:
-            return count.replace(',','')
-        else:
-            minus_one = False
-            if '.' in count:
-                minus_one = True
-                count = count.replace('.','')
-            if 'K' in count:
-                if minus_one:
-                    count = count.replace('K','00')
-                else:
-                    count = count.replace('K','000')
-                return count
-            elif 'M' in count:
-                if minus_one:
-                    count = count.replace('M','00000')
-                else:
-                    count = count.replace('K','000000')
-                return count
-            return count
 
     @classmethod
     def get_following_count(cls):
