@@ -3,6 +3,7 @@ Class to define the specific actions for the legacy engine
 """
 
 from instapy.common import Logger
+from instapy.drivers import Actions
 from instapy import InstaPy
 
 # ideally
@@ -61,7 +62,7 @@ class LegacyEngine(object):
             if instapy.quotient_breach:
                 break
 
-            posts = instapy.user.get_posts(username, photos_grab_amount, randomize)
+            posts = Actions.get_posts(username, photos_grab_amount, randomize)
 
             # sleep(1)
             if not isinstance(posts, list):
@@ -129,7 +130,7 @@ class LegacyEngine(object):
         inap_img = instapy.inap_img - inap_img_init
 
         # print results
-        Loggerogger.info("Followed: {}".format(followed_all))
+        Logger.info("Followed: {}".format(followed_all))
         Logger.info("Already followed: {}".format(already_followed))
         Logger.info("Not valid users: {}".format(not_valid_users))
 
