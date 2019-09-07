@@ -21,7 +21,6 @@ class LegacyEngine(object):
                       photos_grab_amount: int = 3,
                       follow_likers_per_photo: int = 3,
                       randomize: bool = True,
-                      sleep_delay: int = 600,
                       interact: bool = False,
                       ):
 
