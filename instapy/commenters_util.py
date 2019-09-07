@@ -20,7 +20,10 @@ from .util import get_users_from_dialog
 from .util import progress_tracker
 from .util import close_dialog_box
 
-from selenium.common.exceptions import NoSuchElementException, StaleElementReferenceException
+from selenium.common.exceptions import (
+    NoSuchElementException,
+    StaleElementReferenceException,
+)
 
 from .xpath import read_xpath
 
