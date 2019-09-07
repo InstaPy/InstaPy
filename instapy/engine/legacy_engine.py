@@ -61,7 +61,7 @@ class LegacyEngine(object):
             if instapy.quotient_breach:
                 break
 
-            posts = User.get_posts(username, photos_grab_amount, randomize)
+            posts = instapy.user.get_posts(username, photos_grab_amount, randomize)
 
             # sleep(1)
             if not isinstance(posts, list):
