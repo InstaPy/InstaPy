@@ -822,7 +822,7 @@ def get_tags(browser, url):
             "window.insta_data = window._sharedData.entry_data.PostPage[0]"
         )
 
-    graphql = browser.execute_script("return ('graphql' in data)")
+    graphql = browser.execute_script("return ('graphql' in window.insta_data)")
 
     if graphql:
         image_text = browser.execute_script(
