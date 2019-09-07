@@ -552,7 +552,7 @@ def check_link(
     # Check URL of the webpage, if it already is post's page, then do not
     # navigate to it again
     web_address_navigator(browser, post_link)
-
+    
     # Check if the Post is Valid/Exists
     try:
         post_page = browser.execute_script(
@@ -565,7 +565,7 @@ def check_link(
             update_activity(browser, state=None)
 
             post_page = browser.execute_script(
-                "return window.__additionalData[Object.keys(window.__additionalData)[0]].data"
+                "return window._sharedData.entry_data.PostPage[0]"
             )
 
         except WebDriverException:
@@ -587,10 +587,17 @@ def check_link(
         location_name = location["name"] if location else None
         media_edge_string = get_media_edge_comment_string(media)
         # double {{ allows us to call .format here:
+        try:
+            browser.execute_script(
+                "window.insta_data = window.__additionalData[Object.keys(window.__additionalData)[0]].data"
+            )
+        except WebDriverException:
+            browser.execute_script(
+                "window.insta_data = window._sharedData.entry_data.PostPage[0]"
+            )
         owner_comments = browser.execute_script(
             """
-            latest_comments = window.__additionalData[Object.keys(window.__additionalData)[0]];
-            latest_comments = latest_comments.data.graphql.shortcode_media.{}.edges;
+            latest_comments = window.insta_data.graphql.shortcode_media.{}.edges;
             if (latest_comments === undefined) {{
                 latest_comments = Array();
                 owner_comments = latest_comments
@@ -806,19 +813,28 @@ def get_tags(browser, url):
     # then do not navigate to it again
     web_address_navigator(browser, url)
 
+    try:
+        browser.execute_script(
+            "window.insta_data = window.__additionalData[Object.keys(window.__additionalData)[0]].data"
+        )
+    except WebDriverException:
+        browser.execute_script(
+            "window.insta_data = window._sharedData.entry_data.PostPage[0]"
+        )
+
     graphql = browser.execute_script(
-        "return ('graphql' in window.__additionalData[Object.keys(window.__additionalData)[0]].data)"
+        "return ('graphql' in data)"
     )
 
     if graphql:
         image_text = browser.execute_script(
-            "return window.__additionalData[Object.keys(window.__additionalData)[0]].data.graphql."
+            "return window.insta_data.graphql."
             "shortcode_media.edge_media_to_caption.edges[0].node.text"
         )
 
     else:
         image_text = browser.execute_script(
-            "return window._sharedData.entry_data." "PostPage[0].media.caption.text"
+            "return window.insta_data.media.caption.text"
         )
 
     tags = findall(r"#\w*", image_text)
@@ -828,12 +844,10 @@ def get_tags(browser, url):
 
 def get_links(browser, page, logger, media, element):
     links = []
-    # Get image links in scope from hashtag, location and other pages
-    link_elems = element.find_elements_by_xpath('//a[starts-with(@href, "/p/")]')
-    sleep(2)
-    links = []
-
     try:
+        # Get image links in scope from hashtag, location and other pages
+        link_elems = element.find_elements_by_xpath('//a[starts-with(@href, "/p/")]')
+        sleep(2)
         if link_elems:
             for link_elem in link_elems:
                 try:

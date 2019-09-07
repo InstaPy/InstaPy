@@ -66,8 +66,8 @@ def is_private_profile(browser, logger, following=True):
     is_private = None
     try:
         is_private = browser.execute_script(
-            "return window._sharedData.entry_data."
-            "ProfilePage[0].graphql.user.is_private"
+            "return window.__additionalData[Object.keys(window.__additionalData)[0]]."
+            "data.graphql.user.is_private"
         )
 
     except WebDriverException:
