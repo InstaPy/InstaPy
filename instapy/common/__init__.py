@@ -2,3 +2,5 @@
 
 """
 """
+
+from .logger import Logger

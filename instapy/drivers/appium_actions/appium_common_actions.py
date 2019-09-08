@@ -6,7 +6,7 @@ from instapy.common.model import CommonActions
 from instapy.drivers.appium_webdriver import AppiumWebDriver
 from time import sleep
 
-class AppiumCommonActions(CommonActions):
+class AppiumCommonActions(object):
     """
     class for all the common actions (not related to user, comment, post, story)
     """

@@ -19,13 +19,15 @@ class Logger(object):
     should contain all the function used throughout the code related to logging
     """
 
+    __logger = None
+
     def __init__(self, username: str='', logfolder: str='', show_logs: bool=False, log_handler=None):
         self.username = username
         self.logfolder = logfolder
         self.show_logs = show_logs
 
-        self.__logger = logging.getLogger(self.username)
-        self.__logger.setLevel(logging.DEBUG)
+        _logger = logging.getLogger(self.username)
+        _logger.setLevel(logging.DEBUG)
         file_handler = logging.FileHandler("{}general.log".format(self.logfolder))
         file_handler.setLevel(logging.DEBUG)
         extra = {"username": self.username}
@@ -34,29 +36,49 @@ class Logger(object):
             datefmt="%Y-%m-%d %H:%M:%S",
         )
         file_handler.setFormatter(logger_formatter)
-        self.__logger.addHandler(file_handler)
+        _logger.addHandler(file_handler)
 
         # add custom user handler if given
         if log_handler:
-            self.__logger.addHandler(log_handler)
+            _logger.addHandler(log_handler)
 
         if self.show_logs is True:
             console_handler = logging.StreamHandler()
             console_handler.setLevel(logging.DEBUG)
             console_handler.setFormatter(logger_formatter)
-            self.__logger.addHandler(console_handler)
+            _logger.addHandler(console_handler)
 
-        self.__logger = logging.LoggerAdapter(self.__logger, extra)
+        self.__logger = logging.LoggerAdapter(_logger, extra)
 
+    @property
+    def logger(self):
+        return self.__logger
 
-    def highlight_print(self,
+    @classmethod
+    def getLogger(cls):
+        return cls.__logger
+
+    @classmethod
+    def info(cls, message: str=""):
+        cls.__logger.info(message)
+
+    @classmethod
+    def error(cls, message: str=""):
+        cls.__logger.error(message)
+
+    @classmethod
+    def warning(cls, message: str=""):
+        cls.__logger.warning(message)
+
+    @classmethod
+    def highlight_print(cls,
              message=None, priority=None, level=None
     ):
         """ Print headers in a highlighted style """
         # can add other highlighters at other priorities enriching this function
 
         # find the number of chars needed off the length of the logger message
-        output_len = 28 + len(self.username) + 3 + len(message) if self.__logger else len(message)
+        output_len = 28 + len(cls.username) + 3 + len(message) if cls.__logger else len(message)
 
         if priority in ["initialization", "end"]:
             # OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO

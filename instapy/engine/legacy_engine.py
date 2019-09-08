@@ -142,4 +142,4 @@ class LegacyEngine(object):
             Logger.info("Commented: {}".format(commented))
             Logger.info("Inappropriate: {}".format(inap_img))
 
-        return cls
+        return followed_all
