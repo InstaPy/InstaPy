@@ -302,6 +302,9 @@ def get_links_for_tag(browser, tag, amount, skip_top_posts, randomize, media, lo
             )
             possible_posts = None
 
+    if skip_top_posts:
+        amount = amount + 9
+
     logger.info(
         "desired amount: {}  |  top posts [{}]: {}  |  possible posts: "
         "{}".format(
@@ -313,9 +316,6 @@ def get_links_for_tag(browser, tag, amount, skip_top_posts, randomize, media, lo
     )
 
     if possible_posts is not None:
-        possible_posts = (
-            possible_posts if not skip_top_posts else possible_posts - len(top_posts)
-        )
         amount = possible_posts if amount > possible_posts else amount
     # sometimes pages do not have the correct amount of posts as it is
     # written there, it may be cos of some posts is deleted but still keeps
@@ -395,6 +395,9 @@ def get_links_for_tag(browser, tag, amount, skip_top_posts, randomize, media, lo
         raise
 
     sleep(4)
+
+    if skip_top_posts:
+        del links[0:9]
 
     if randomize is True:
         random.shuffle(links)
@@ -484,6 +487,7 @@ def get_links_for_username(
 
         # using `extend`  or `+=` results reference stay alive which affects
         # previous assignment (can use `copy()` for it)
+        main_elem = browser.find_element_by_tag_name("article")
         links = links + get_links(browser, person, logger, media, main_elem)
         links = sorted(set(links), key=links.index)
 
@@ -552,7 +556,7 @@ def check_link(
     # Check if the Post is Valid/Exists
     try:
         post_page = browser.execute_script(
-            "return window._sharedData.entry_data.PostPage"
+            "return window.__additionalData[Object.keys(window.__additionalData)[0]].data"
         )
 
     except WebDriverException:  # handle the possible `entry_data` error
@@ -561,7 +565,7 @@ def check_link(
             update_activity(browser, state=None)
 
             post_page = browser.execute_script(
-                "return window._sharedData.entry_data.PostPage"
+                "return window._sharedData.entry_data.PostPage[0]"
             )
 
         except WebDriverException:
@@ -572,9 +576,9 @@ def check_link(
         return True, None, None, "Unavailable Page", "Failure"
 
     # Gets the description of the post's link and checks for the dont_like tags
-    graphql = "graphql" in post_page[0]
+    graphql = "graphql" in post_page
     if graphql:
-        media = post_page[0]["graphql"]["shortcode_media"]
+        media = post_page["graphql"]["shortcode_media"]
         is_video = media["is_video"]
         user_name = media["owner"]["username"]
         image_text = media["edge_media_to_caption"]["edges"]
@@ -583,10 +587,17 @@ def check_link(
         location_name = location["name"] if location else None
         media_edge_string = get_media_edge_comment_string(media)
         # double {{ allows us to call .format here:
+        try:
+            browser.execute_script(
+                "window.insta_data = window.__additionalData[Object.keys(window.__additionalData)[0]].data"
+            )
+        except WebDriverException:
+            browser.execute_script(
+                "window.insta_data = window._sharedData.entry_data.PostPage[0]"
+            )
         owner_comments = browser.execute_script(
             """
-            latest_comments = window._sharedData.entry_data.PostPage[
-            0].graphql.shortcode_media.{}.edges;
+            latest_comments = window.insta_data.graphql.shortcode_media.{}.edges;
             if (latest_comments === undefined) {{
                 latest_comments = Array();
                 owner_comments = latest_comments
@@ -735,6 +746,7 @@ def like_image(browser, username, blacklist, logger, logfolder, total_liked_img)
     if len(like_elem) == 1:
         # sleep real quick right before clicking the element
         sleep(2)
+        like_elem = browser.find_elements_by_xpath(like_xpath)
         click_element(browser, like_elem[0])
         # check now we have unlike instead of like
         liked_elem = browser.find_elements_by_xpath(unlike_xpath)
@@ -801,19 +813,26 @@ def get_tags(browser, url):
     # then do not navigate to it again
     web_address_navigator(browser, url)
 
-    graphql = browser.execute_script(
-        "return ('graphql' in window._sharedData.entry_data.PostPage[0])"
-    )
+    try:
+        browser.execute_script(
+            "window.insta_data = window.__additionalData[Object.keys(window.__additionalData)[0]].data"
+        )
+    except WebDriverException:
+        browser.execute_script(
+            "window.insta_data = window._sharedData.entry_data.PostPage[0]"
+        )
+
+    graphql = browser.execute_script("return ('graphql' in window.insta_data)")
 
     if graphql:
         image_text = browser.execute_script(
-            "return window._sharedData.entry_data.PostPage[0].graphql."
+            "return window.insta_data.graphql."
             "shortcode_media.edge_media_to_caption.edges[0].node.text"
         )
 
     else:
         image_text = browser.execute_script(
-            "return window._sharedData.entry_data." "PostPage[0].media.caption.text"
+            "return window.insta_data.media.caption.text"
         )
 
     tags = findall(r"#\w*", image_text)
@@ -822,12 +841,11 @@ def get_tags(browser, url):
 
 
 def get_links(browser, page, logger, media, element):
-    # Get image links in scope from hashtag, location and other pages
-    link_elems = element.find_elements_by_xpath('//a[starts-with(@href, "/p/")]')
-    sleep(2)
     links = []
-
     try:
+        # Get image links in scope from hashtag, location and other pages
+        link_elems = element.find_elements_by_xpath('//a[starts-with(@href, "/p/")]')
+        sleep(2)
         if link_elems:
             for link_elem in link_elems:
                 try:
@@ -866,9 +884,8 @@ def verify_liking(browser, maximum, minimum, logger):
     & minimum values defined by user """
     try:
         likes_count = browser.execute_script(
-            "return window._sharedData.entry_data."
-            "PostPage[0].graphql.shortcode_media.edge_media_preview_like"
-            ".count"
+            "return window.__additionalData[Object.keys(window.__additionalData)[0]].data"
+            ".graphql.shortcode_media.edge_media_preview_like.count"
         )
 
     except WebDriverException:

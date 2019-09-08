@@ -66,8 +66,8 @@ def is_private_profile(browser, logger, following=True):
     is_private = None
     try:
         is_private = browser.execute_script(
-            "return window._sharedData.entry_data."
-            "ProfilePage[0].graphql.user.is_private"
+            "return window.__additionalData[Object.keys(window.__additionalData)[0]]."
+            "data.graphql.user.is_private"
         )
 
     except WebDriverException:
@@ -332,10 +332,12 @@ def validate_username(
     # skip private
     if skip_private:
         try:
-            is_private = getUserData("graphql.user.is_private", browser)
-        except WebDriverException:
-            logger.error("~cannot get if user is private")
-            return False, "---> Sorry, couldn't get if user is private\n"
+            browser.find_element_by_xpath(
+                "//*[contains(text(), 'This Account is Private')]"
+            )
+            is_private = True
+        except NoSuchElementException:
+            is_private = False
         if is_private and (random.randint(0, 100) <= skip_private_percentage):
             return False, "{} is private account, by default skip\n".format(username)
 
@@ -427,7 +429,9 @@ def validate_username(
 
 
 def getUserData(
-    query, browser, basequery="return window._sharedData.entry_data.ProfilePage[" "0]."
+    query,
+    browser,
+    basequery="return window.__additionalData[Object.keys(window.__additionalData)[0]].data.",
 ):
     try:
         data = browser.execute_script(basequery + query)
@@ -436,7 +440,9 @@ def getUserData(
         browser.execute_script("location.reload()")
         update_activity(browser, state=None)
 
-        data = browser.execute_script(basequery + query)
+        data = browser.execute_script(
+            "return window._sharedData." "entry_data.ProfilePage[0]." + query
+        )
         return data
 
 
@@ -1019,18 +1025,13 @@ def username_url_to_username(username_url):
 def get_number_of_posts(browser):
     """Get the number of posts from the profile screen"""
     try:
-        num_of_posts = browser.execute_script(
-            "return window._sharedData.entry_data."
-            "ProfilePage[0].graphql.user.edge_owner_to_timeline_media.count"
+        num_of_posts = getUserData(
+            "graphql.user.edge_owner_to_timeline_media.count", browser
         )
-
     except WebDriverException:
-
         try:
             num_of_posts_txt = browser.find_element_by_xpath(
-                read_xpath(
-                    get_number_of_posts.__name__, "num_of_posts_txt_no_such_element"
-                )
+                read_xpath(get_number_of_posts.__name__, "num_of_posts_txt")
             ).text
 
         except NoSuchElementException:
@@ -1067,7 +1068,7 @@ def get_relationship_counts(browser, username, logger):
             followers_count = format_number(
                 browser.find_element_by_xpath(
                     str(read_xpath(get_relationship_counts.__name__, "followers_count"))
-                )
+                ).text
             )
         except NoSuchElementException:
             try:
@@ -1115,7 +1116,7 @@ def get_relationship_counts(browser, username, logger):
             following_count = format_number(
                 browser.find_element_by_xpath(
                     str(read_xpath(get_relationship_counts.__name__, "following_count"))
-                )
+                ).text
             )
 
         except NoSuchElementException:
@@ -1574,7 +1575,7 @@ def get_username(browser, track, logger):
 def find_user_id(browser, track, username, logger):
     """  Find the user ID from the loaded page """
     if track in ["dialog", "profile"]:
-        query = "return window._sharedData.entry_data.ProfilePage[" "0].graphql.user.id"
+        query = "return window.__additionalData[Object.keys(window.__additionalData)[0]].data.graphql.user.id"
 
     elif track == "post":
         query = (
@@ -1595,7 +1596,11 @@ def find_user_id(browser, track, username, logger):
             browser.execute_script("location.reload()")
             update_activity(browser, state=None)
 
-            user_id = browser.execute_script(query)
+            user_id = browser.execute_script(
+                "return window._sharedData."
+                "entry_data.ProfilePage[0]."
+                "graphql.user.id"
+            )
 
         except WebDriverException:
             if track == "post":

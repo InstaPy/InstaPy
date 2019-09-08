@@ -24,8 +24,7 @@ def log_follower_num(browser, username, logfolder):
 
     try:
         followed_by = browser.execute_script(
-            "return window._sharedData."
-            "entry_data.ProfilePage[0]."
+            "return window.__additionalData[Object.keys(window.__additionalData)[0]].data."
             "graphql.user.edge_followed_by.count"
         )
 
@@ -58,8 +57,7 @@ def log_following_num(browser, username, logfolder):
 
     try:
         following_num = browser.execute_script(
-            "return window._sharedData."
-            "entry_data.ProfilePage[0]."
+            "return window.__additionalData[Object.keys(window.__additionalData)[0]].data."
             "graphql.user.edge_follow.count"
         )
 

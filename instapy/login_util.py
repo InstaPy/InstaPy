@@ -1,6 +1,7 @@
 """Module only used for the login part of the script"""
 # import built-in & third-party modules
 import pickle
+import socket
 import os
 import json
 from selenium.webdriver.common.action_chains import ActionChains
@@ -166,7 +167,10 @@ def check_browser(browser, logfolder, logger, proxy_address):
         browser.get("view-source:https://api.myip.com/")
         pre = browser.find_element_by_tag_name("pre").text
         current_ip_info = json.loads(pre)
-        if proxy_address is not None and proxy_address != current_ip_info["ip"]:
+        if (
+            proxy_address is not None
+            and socket.gethostbyname(proxy_address) != current_ip_info["ip"]
+        ):
             logger.warn("- Proxy is set, but it's not working properly")
             logger.warn(
                 '- Expected Proxy IP is "{}", and the current IP is "{}"'.format(

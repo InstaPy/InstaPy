@@ -1,5 +1,4 @@
 dist: xenial
-sudo: false
 language: python
 python: "3.7"
 cache: pip
@@ -9,7 +8,7 @@ branches:
     - legacy
     - experimental
 
-install: pip install tox tox-venv
+install: pip install tox
 
 script: tox
 
@@ -35,12 +34,24 @@ jobs:
       python: "3.4"
 
     - stage: test
+      env: TOXENV=py35
+      python: "3.5"
+
+    - stage: test
       env: TOXENV=py36
       python: "3.6"
 
     - stage: test
       env: TOXENV=py37
       python: "3.7"
+
+    - stage: test
+      env: TOXENV=py38
+      python: "3.8-dev"
+
+    - stage: test
+      env: TOXENV=py38
+      python: "nightly"
 
     - stage: pypi-prod
       install: true
@@ -57,6 +68,10 @@ jobs:
           branches:
             only:
               - master
+
+  allow_failures:
+    - python: "3.8-dev"
+    - python: "nightly"
 
 after_success:
   - wget https://raw.githubusercontent.com/DiscordHooks/travis-ci-discord-webhook/master/send.sh

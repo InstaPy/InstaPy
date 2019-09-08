@@ -287,7 +287,7 @@ class InstaPy:
             "sports",
             "entertainment",
         ]
-        self.allowed_pod_engagement_modes = ["light", "normal", "heavy"]
+        self.allowed_pod_engagement_modes = ["no_comments", "light", "normal", "heavy"]
 
         # stores the features' name which are being used by other features
         self.internal_usage = {}
@@ -427,8 +427,10 @@ class InstaPy:
         # try to save account progress
         try:
             save_account_progress(self.browser, self.username, self.logger)
-        except Exception:
-            self.logger.warning("Unable to save account progress, skipping data update")
+        except Exception as e:
+            self.logger.warning(
+                "Unable to save account progress, skipping data update " + str(e)
+            )
 
         # logs only followers/following numbers when able to login,
         # to speed up the login process and avoid loading profile
@@ -704,7 +706,12 @@ class InstaPy:
                         self.smart_hashtags.append(item["tag"])
 
                 elif sort == "random":
-                    random_tags = random.sample(data["results"], limit)
+                    if len(data["results"]) < limit:
+                        random_tags = random.sample(
+                            data["results"], len(data["results"])
+                        )
+                    else:
+                        random_tags = random.sample(data["results"], limit)
                     for item in random_tags:
                         self.smart_hashtags.append(item["tag"])
 
@@ -5741,12 +5748,16 @@ class InstaPy:
             else:
                 pod_posts = random.sample(pod_posts, nposts)
 
-            light_posts, normal_posts, heavy_posts = group_posts(pod_posts, self.logger)
+            no_comments_posts, light_posts, normal_posts, heavy_posts = group_posts(
+                pod_posts, self.logger
+            )
 
+            self.logger.error("no_comments_posts : {} ".format(no_comments_posts))
             self.logger.error("light_posts : {} ".format(light_posts))
             self.logger.error("normal_posts : {} ".format(normal_posts))
             self.logger.error("heavy_posts : {} ".format(heavy_posts))
 
+            self.engage_with_posts(no_comments_posts, 0)
             self.engage_with_posts(light_posts, 10)
             self.engage_with_posts(normal_posts, 30)
             self.engage_with_posts(heavy_posts, 90)

@@ -61,7 +61,7 @@
   - [Text Analytics](#text-analytics)
     - [Yandex Translate API](#yandex-translate-api)
     - [MeaningCloud Sentiment Analysis API](#meaningcloud-sentiment-analysis-api)
-
+  - [Integration with Telegram](#telegram-integration)
  <br />
 
 - **[Instance Settings](#instance-settings)**
@@ -1213,7 +1213,7 @@ session.remove_follow_requests(amount=200, sleep_delay=600)
   > Note :  Topics allowed are {'general', 'fashion', 'food', 'travel', 'sports', 'entertainment'}.
 
  `engagement_mode`:
- Desided engagement mode for your posts. There are three levels of engagement modes 'light', 'normal' and 'heavy'(`normal` by default). Setting engagement_mode to 'light' encourages approximately 10% of pod members to comment on your post, similarly it's around 30% and 90% for 'normal' and 'heavy' modes respectively. Note: Liking, following or any other kind of engagements doesn't follow these modes.
+ Desided engagement mode for your posts. There are four levels of engagement modes 'no_comments', 'light', 'normal' and 'heavy'(`normal` by default). Setting engagement_mode to 'no_comments' makes you receive zero comments on your posts from pod members, 'light' encourages approximately 10% of pod members to comment on your post, similarly it's around 30% and 90% for 'normal' and 'heavy' modes respectively. Note: Liking, following or any other kind of engagements doesn't follow these modes.
 
 ### Skip based on profile bio
 
@@ -1647,7 +1647,63 @@ _Now that text is gonna be labeled **inappropriate** COS its polarity is `"P"` w
 This project uses MeaningCloud™ (http://www.meaningcloud.com) for Text Analytics.
 
 ---
+### Telegram Integration
 
+This feature allows to connect your InstaPy session with a Telegram bot and send commands
+to the InstaPy session
+
+#### Prerequisites
+You will need to create a token, for this go into your Telegram App and talk with @fatherbot.
+You will also need to set your username as it is checked to ensure that you are authorized to 
+access the InstaPy session, to do so go to Settings -> Profile -> Username.
+
+#### Supported actions
+There are 3 supported actions:
+  - /start : will start the interaction between the bot and instapy. Please note: that the telegram bot 
+  cannot send you messages until you first send it a /start message. The bot will store the chat_id in the logs folder
+  file telegram_chat_id.txt to be reused in further sessions (so you have to actually do /start just one time)
+  - /report : will gather and show the current session statistics
+  - /stop: will set the aborting flag to True
+
+#### Examples
+```python
+from instapy.plugins import InstaPyTelegramBot
+
+        session = InstaPy(username=insta_username,
+                          password=insta_password,
+                          bypass_with_mobile=True)
+                          
+        telegram = InstaPyTelegramBot(token='insert_real_token_here', telegram_username='my_username', instapy_session=session)
+
+        # if you want to receive the information when the session ends
+        # just add the following before your session.end()
+        telegram.end()
+        session.end()
+````
+
+Additional parameters:
+   - debug=True if you want low level telegram debug information
+   - proxy if you need one, here is the structure that needs to be passed
+    
+```python 
+    {
+         'proxy_url': 'http://PROXY_HOST:PROXY_PORT/',
+         # Optional, if you need authentication:
+         'username': 'PROXY_USER',
+         'password': 'PROXY_PASS',
+     }
+```
+
+#### Additional functionality
+you can use 
+```python
+telegram.send_message(text="this is a message")
+```
+
+So you are able to send additional message inside your script if needed. Remember that the telegram bot
+is not able to send messages as long as you haven't done at least one /start
+
+   
 <br /> 
 <br />
 

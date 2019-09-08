@@ -57,6 +57,7 @@ setup(
             "icons/Linux/*.png",
             "icons/Mac/*.icns",
             "firefox_extension/*",
+            "plugins/*",
         ]
     },
     keywords=(
@@ -81,6 +82,10 @@ setup(
         "Topic :: Utilities",
         "Topic :: Software Development :: Build Tools",
         "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3.4",
+        "Programming Language :: Python :: 3.5",
+        "Programming Language :: Python :: 3.6",
+        "Programming Language :: Python :: 3.7",
         "Natural Language :: English",
     ],
     install_requires=dependencies,

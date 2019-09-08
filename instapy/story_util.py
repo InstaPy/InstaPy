@@ -26,18 +26,29 @@ def get_story_data(browser, elem, action_type, logger, simulate=False):
     if action_type == "user":
         try:
             reel_id = browser.execute_script(
-                "return window._sharedData.entry_data." "ProfilePage[0].graphql.user.id"
+                "return window.__additionalData[Object.keys(window.__additionalData)[0]].data.graphql.user.id"
             )
             # correct formating for elem_id
             elem_id = '"' + reel_id + '"'
             # and elem needs to be nothing
             elem = ""
         except WebDriverException:
-            logger.error(
-                "---> Sorry, this page isn't available!\t~either "
-                + "link is broken or page is removed\n"
-            )
-            return {"status": "not_ok", "reels_cnt": 0}
+            try:
+                reel_id = browser.execute_script(
+                    "return window._sharedData."
+                    "entry_data.ProfilePage[0]."
+                    "graphql.user.id"
+                )
+                # correct formating for elem_id
+                elem_id = '"' + reel_id + '"'
+                # and elem needs to be nothing
+                elem = ""
+            except WebDriverException:
+                logger.error(
+                    "---> Sorry, this page isn't available!\t~either "
+                    + "link is broken or page is removed\n"
+                )
+                return {"status": "not_ok", "reels_cnt": 0}
     else:
         reel_id = "tag:{}".format(elem)
 
