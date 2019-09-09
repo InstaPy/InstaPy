@@ -9,7 +9,7 @@ etc...
 from instapy.drivers.appium_actions import AppiumCommonActions
 from instapy.drivers.appium_actions import AppiumUserActions
 from instapy.drivers.appium_actions import AppiumPostActions
-from instapy.drivers.appium_action import AppiumCommentActions
+from instapy.drivers.appium_actions import AppiumCommentActions
 
 
 class AppiumActions(AppiumCommonActions):

@@ -42,7 +42,6 @@ class WebDriver(object):
                 kwargs.get("headless_browser") or Settings.headless_browser,
                 kwargs.get("browser_profile_path") or Settings.browser_profile_path,
                 kwargs.get("disable_image_load") or Settings.disable_image_load,
-                kwargs.get("page_delay") or Settings.page_delay,
                 kwargs.get("geckodriver_path") or Settings.geckodriver_path,
             )
             self.actions = SeleniumActions()

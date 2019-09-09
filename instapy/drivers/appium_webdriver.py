@@ -2,6 +2,7 @@
 Class to define everything needed to work with Appium
 """
 
+# libraries import
 from appium import webdriver
 from adb.client import Client as AdbClient
 from time import sleep
