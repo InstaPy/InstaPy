@@ -14,6 +14,7 @@ import logging.handlers
 
 import drivers.actions
 
+
 class Logger(object):
     """
     should contain all the function used throughout the code related to logging
@@ -21,7 +22,13 @@ class Logger(object):
 
     __logger = None
 
-    def __init__(self, username: str='', logfolder: str='', show_logs: bool=False, log_handler=None):
+    def __init__(
+        self,
+        username: str = "",
+        logfolder: str = "",
+        show_logs: bool = False,
+        log_handler=None,
+    ):
         self.username = username
         self.logfolder = logfolder
         self.show_logs = show_logs
@@ -59,26 +66,26 @@ class Logger(object):
         return cls.__logger
 
     @classmethod
-    def info(cls, message: str=""):
+    def info(cls, message: str = ""):
         cls.__logger.info(message)
 
     @classmethod
-    def error(cls, message: str=""):
+    def error(cls, message: str = ""):
         cls.__logger.error(message)
 
     @classmethod
-    def warning(cls, message: str=""):
+    def warning(cls, message: str = ""):
         cls.__logger.warning(message)
 
     @classmethod
-    def highlight_print(cls,
-             message=None, priority=None, level=None
-    ):
+    def highlight_print(cls, message=None, priority=None, level=None):
         """ Print headers in a highlighted style """
         # can add other highlighters at other priorities enriching this function
 
         # find the number of chars needed off the length of the logger message
-        output_len = 28 + len(cls.username) + 3 + len(message) if cls.__logger else len(message)
+        output_len = (
+            28 + len(cls.username) + 3 + len(message) if cls.__logger else len(message)
+        )
 
         if priority in ["initialization", "end"]:
             # OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
@@ -143,7 +150,6 @@ class Logger(object):
         if lower_char and (self.show_logs or priority == "workspace"):
             print("{}".format(lower_char * int(ceil(output_len / len(lower_char)))))
 
-
     @staticmethod
     def get_log_time():
         """ this method will keep same format for all recored"""
@@ -151,12 +157,9 @@ class Logger(object):
 
         return log_time
 
-
     def log_follower_num(self, driver):
         """Prints and logs the current number of followers to
         a seperate file"""
-
-
 
         try:
             user = driver.go_user(self.username)
@@ -167,7 +170,9 @@ class Logger(object):
             followed_by = None
 
         with open("{}followerNum.txt".format(logfolder), "a") as numFile:
-            numFile.write("{:%Y-%m-%d %H:%M} {}\n".format(datetime.now(), followed_by or 0))
+            numFile.write(
+                "{:%Y-%m-%d %H:%M} {}\n".format(datetime.now(), followed_by or 0)
+            )
 
         return followed_by
 
@@ -213,10 +218,12 @@ class Logger(object):
         a seperate file"""
         try:
             with open(
-                    "{0}{1}_followedPool.csv".format(logfolder, login), "a+"
+                "{0}{1}_followedPool.csv".format(logfolder, login), "a+"
             ) as followPool:
                 with interruption_handler():
-                    followPool.write("{} ~ {} ~ {},\n".format(logtime, followed, user_id))
+                    followPool.write(
+                        "{} ~ {} ~ {},\n".format(logtime, followed, user_id)
+                    )
 
         except BaseException as e:
             logger.error("log_followed_pool error {}".format(str(e)))
@@ -225,12 +232,14 @@ class Logger(object):
         log_record_all_followed(login, followed, logger, logfolder, logtime, user_id)
 
     @staticmethod
-    def log_uncertain_unfollowed_pool(login, person, logger, logfolder, logtime, user_id):
+    def log_uncertain_unfollowed_pool(
+        login, person, logger, logfolder, logtime, user_id
+    ):
         """Prints and logs the uncertain unfollowed to
         a seperate file"""
         try:
             with open(
-                    "{0}{1}_uncertain_unfollowedPool.csv".format(logfolder, login), "a+"
+                "{0}{1}_uncertain_unfollowedPool.csv".format(logfolder, login), "a+"
             ) as followPool:
                 with interruption_handler():
                     followPool.write("{} ~ {} ~ {},\n".format(logtime, person, user_id))
@@ -243,7 +252,7 @@ class Logger(object):
         a seperate file"""
         try:
             with open(
-                    "{0}{1}_record_all_unfollowed.csv".format(logfolder, login), "a+"
+                "{0}{1}_record_all_unfollowed.csv".format(logfolder, login), "a+"
             ) as followPool:
                 with interruption_handler():
                     followPool.write("{},\n".format(unfollowed))
@@ -255,9 +264,11 @@ class Logger(object):
         """logs all followed ever to a pool that will never be erase"""
         try:
             with open(
-                    "{0}{1}_record_all_followed.csv".format(logfolder, login), "a+"
+                "{0}{1}_record_all_followed.csv".format(logfolder, login), "a+"
             ) as followPool:
                 with interruption_handler():
-                    followPool.write("{} ~ {} ~ {},\n".format(logtime, followed, user_id))
+                    followPool.write(
+                        "{} ~ {} ~ {},\n".format(logtime, followed, user_id)
+                    )
         except BaseException as e:
             logger.error("log_record_all_followed_pool error {}".format(str(e)))

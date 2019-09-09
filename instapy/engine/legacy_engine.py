@@ -14,16 +14,16 @@ class LegacyEngine(object):
     by instapy
     """
 
-
     @classmethod
-    def follow_likers(cls,
-                      instapy: InstaPy,
-                      usernames: list,
-                      photos_grab_amount: int = 3,
-                      follow_likers_per_photo: int = 3,
-                      randomize: bool = True,
-                      interact: bool = False,
-                      ):
+    def follow_likers(
+        cls,
+        instapy: InstaPy,
+        usernames: list,
+        photos_grab_amount: int = 3,
+        follow_likers_per_photo: int = 3,
+        randomize: bool = True,
+        interact: bool = False,
+    ):
 
         """ Follows users' likers """
         # TODO: replace with something better
@@ -94,7 +94,7 @@ class LegacyEngine(object):
                         followed_new += 1
                         Logger.info("Total Follow: {}\n".format(str(followed_all)))
 
-                        instapy.action_delay(action='follow')
+                        instapy.action_delay(action="follow")
 
                         # to delete this code, just kept to validate for the moment
                         # Take a break after a good following

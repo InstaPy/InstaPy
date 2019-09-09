@@ -7,24 +7,27 @@ from .appium_webdriver import AppiumWebDriver
 from .appium_actions import AppiumActions
 from instapy.common import Settings
 
+
 class WebDriver(object):
     driver = None
     actions = None
 
-    APPIUM_DRIVER="appium-driver"
-    SELENIUM_DRIVER="selenium-driver"
+    APPIUM_DRIVER = "appium-driver"
+    SELENIUM_DRIVER = "selenium-driver"
 
-    def __init__(self, type: str='', **kwargs):
+    def __init__(self, type: str = "", **kwargs):
         """
 
         :param type: the choice of driver to use
         """
         if type == self.APPIUM_DRIVER:
 
-            self.driver = AppiumWebDriver(kwargs.get("devicename") or Settings.devicename,
-                                          kwargs.get("devicetimeout") or Settings.devicetimeout,
-                                          kwargs.get("client_host") or Settings.client_host,
-                                          kwargs.get("client_port") or Settings.client_port)
+            self.driver = AppiumWebDriver(
+                kwargs.get("devicename") or Settings.devicename,
+                kwargs.get("devicetimeout") or Settings.devicetimeout,
+                kwargs.get("client_host") or Settings.client_host,
+                kwargs.get("client_port") or Settings.client_port,
+            )
             self.actions = AppiumActions()
 
         if type == self.SELENIUM_DRIVER:
@@ -40,5 +43,3 @@ class WebDriver(object):
                 kwargs.get("geckodriver_path") or Settings.geckodriver_path,
             )
             self.actions = SeleniumActions()
-
-

@@ -7,18 +7,26 @@ from adb.client import Client as AdbClient
 from time import sleep
 
 
-class AppiumWebDriver():
+class AppiumWebDriver:
     """
     Appium WebDriver class
     """
 
     driver = None
-    webdriver_instance = None # might not be needed
+    webdriver_instance = None  # might not be needed
 
     @classmethod
-    def construct_webdriver(cls,devicename: str = "",devicetimeout: int = 600,client_host: str = "127.0.0.1",client_port: int = 5037):
+    def construct_webdriver(
+        cls,
+        devicename: str = "",
+        devicetimeout: int = 600,
+        client_host: str = "127.0.0.1",
+        client_port: int = 5037,
+    ):
         if cls.driver is None or cls.webdriver_instance is None:
-            cls.webdriver_instance = AppiumWebDriver(devicename,devicetimeout,client_host,client_port)
+            cls.webdriver_instance = AppiumWebDriver(
+                devicename, devicetimeout, client_host, client_port
+            )
         else:
             pass
 
@@ -57,18 +65,18 @@ class AppiumWebDriver():
             except:
                 # self.logger.error("Could not create webdriver, is Appium running?")
                 print("Could not create webdriver; please make sure Appium is running")
-                quit() # TODO: nicer way of exiting
+                quit()  # TODO: nicer way of exiting
 
         else:
             # self.logger.error("Invalid Device Name")
-            devices = ''
+            devices = ""
 
             print(
                 "Invalid Device Name. \nList of available devices: [{}]".format(
                     ", ".join(self.adb_devices)
                 )
             )
-            quit() # TODO: nicer way of exiting
+            quit()  # TODO: nicer way of exiting
 
     def _get_adb_devices(self):
         """
@@ -92,7 +100,7 @@ class AppiumWebDriver():
         return cls.driver
 
     @classmethod
-    def find_elements_by_xpath(cls,xpath: str = ""):
+    def find_elements_by_xpath(cls, xpath: str = ""):
         """
         wrapper for find_element by_xpath
         :param xpath:
@@ -101,7 +109,7 @@ class AppiumWebDriver():
         return cls.driver.find_elements_by_xpath(xpath)
 
     @classmethod
-    def find_element_by_id(cls,resource_id: str = ""):
+    def find_element_by_id(cls, resource_id: str = ""):
         """
         wrapper for find_element_by_id
         :param resource_id:
@@ -110,7 +118,7 @@ class AppiumWebDriver():
         return cls.driver.find_element_by_id(resource_id)
 
     @classmethod
-    def find_element_by_uiautomator(cls,uiautomator: str = ""):
+    def find_element_by_uiautomator(cls, uiautomator: str = ""):
         """
         wrapper for find_element_by_android_uiautomator
         :param uiautomator:

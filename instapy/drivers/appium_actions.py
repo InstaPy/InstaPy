@@ -11,6 +11,7 @@ from instapy.drivers.appium_actions import AppiumUserActions
 from instapy.drivers.appium_actions import AppiumPostActions
 from instapy.drivers.appium_action import AppiumCommentActions
 
+
 class AppiumActions(AppiumCommonActions):
     user = None
     post = None
@@ -25,5 +26,3 @@ class AppiumActions(AppiumCommonActions):
     def construct_actions(cls):
         if cls.user is None or cls.post is None or cls.comment is None:
             _ = AppiumActions()
-
-
