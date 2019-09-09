@@ -1,21 +1,15 @@
 def _cleanup_count(count: str=None):
+    """
+    transform the string given on followers/following into int
+    :param count:
+    :return:
+    """
     if ',' in count:
-        return count.replace(',','')
+        return int(count.replace(',',''))
     else:
-        minus_one = False
-        if '.' in count:
-            minus_one = True
-            count = count.replace('.','')
         if 'K' in count:
-            if minus_one:
-                count = count.replace('K','00')
-            else:
-                count = count.replace('K','000')
-            return count
+            count = count.replace('K','')
+            return int(float(count)*1000)
         elif 'M' in count:
-            if minus_one:
-                count = count.replace('M','00000')
-            else:
-                count = count.replace('K','000000')
-            return count
-        return count
+            count = count.replace('M','')
+            return int(float(count)*1000000)
