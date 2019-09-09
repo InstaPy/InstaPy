@@ -83,11 +83,11 @@ class User():
         """
         return self._full_name
 
-    def populate(self,post_count=0,following_count=0,follower_count=0,full_name="",bio=""):
+    def populate(self,username, post_count=0,following_count=0,follower_count=0,full_name="",bio=""):
         """
          load the data into the User object
          """
-
+        self.username = username
         self._post_count = post_count
         self._follower_count = follower_count
         self._following_count = following_count
