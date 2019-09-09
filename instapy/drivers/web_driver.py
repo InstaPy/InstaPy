@@ -3,8 +3,11 @@ The generic driver encapsulating the correct implemented driver we need
 for the current session
 """
 
+# class imports
 from .appium_webdriver import AppiumWebDriver
 from .appium_actions import AppiumActions
+from .selenium_webdriver import SeleniumWebDriver
+from .selenium_actions import SeleniumActions
 from instapy.common import Settings
 
 

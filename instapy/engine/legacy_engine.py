@@ -2,9 +2,12 @@
 Class to define the specific actions for the legacy engine
 """
 
+# class import
 from instapy.common import Logger
-from instapy.drivers import WebDriver
 from instapy import InstaPy
+
+# libraries import
+import random
 
 # ideally
 # class LegacyEngine(Engine):
@@ -62,7 +65,9 @@ class LegacyEngine(object):
             if instapy.settings.quotient_breach:
                 break
 
-            posts = instapy.driver.user.get_posts(username, photos_grab_amount, randomize)
+            posts = instapy.driver.user.get_posts(
+                username, photos_grab_amount, randomize
+            )
 
             # sleep(1)
             if not isinstance(posts, list):
@@ -86,7 +91,6 @@ class LegacyEngine(object):
                         )
                         break
 
-
                     followed = instapy.driver.liker.follow()
                     if interact:
                         # have an interact function that do it
@@ -97,7 +101,6 @@ class LegacyEngine(object):
                         followed_all += 1
                         followed_new += 1
                         Logger.info("Total Follow: {}\n".format(str(followed_all)))
-
 
         Logger.info("Finished following Likers!\n")
 
