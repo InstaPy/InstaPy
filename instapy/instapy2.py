@@ -28,7 +28,13 @@ from pyvirtualdisplay import Display
 
 
 class InstaPy2:
-    """Class to be instantiated to use in script"""
+    """Class to be instantiated to use in script
+        has 3 subclasses that are instantiated
+        .settings contains all the set_ parameters and functions
+        .stats contains all the current numbers for current session
+        .driver the correct instantiated webdriver in use for that session
+        .logger the Logger instance
+    """
 
     def __init__(self, driver_type: str = WebDriver.SELENIUM_DRIVER, **kwargs):
         print("InstaPy Version: {}".format(__version__))
@@ -121,6 +127,11 @@ class InstaPy2:
             )
 
         get_database(make=True)  # IMPORTANT: think twice before relocating
+
+        #stats
+        self.stats = Stats()
+
+
 
     def use_assets(self):
         """Get asset folder"""
