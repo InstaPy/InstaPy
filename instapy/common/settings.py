@@ -5,11 +5,11 @@ By design, import no any other local module inside this file.
 Vice verse, it'd produce circular dependent imports.
 """
 
-#objects import
+# objects import
 from instapy.common import Logger
 from instapy.drivers import WebDriver
 
-#libraries import
+# libraries import
 import os
 import json
 import random
@@ -17,6 +17,7 @@ import requests
 from math import radians
 from math import degrees as rad2deg
 from math import cos
+
 
 class Settings:
     """ Globally accessible settings throughout whole project """
@@ -165,9 +166,7 @@ class Settings:
          hashtags is in the description, the image will be liked"""
 
         if not isinstance(tags, list):
-            Logger.warning(
-                "Unable to use your set_mandatory_words " "configuration!"
-            )
+            Logger.warning("Unable to use your set_mandatory_words " "configuration!")
         else:
             cls.mandatory_words = tags
 
@@ -308,9 +307,7 @@ class Settings:
         for location in locations:
             lat, lon = WebDriver.actions.search(location)
 
-            bbox = cls._get_bounding_box(
-                lat, lon, half_side_in_miles=radius
-            )
+            bbox = cls._get_bounding_box(lat, lon, half_side_in_miles=radius)
             bbox_url = "{},{},{},{}&zoom={}".format(
                 bbox["lon_min"],
                 bbox["lat_min"],
@@ -342,10 +339,9 @@ class Settings:
                 )
             )
 
-
     @staticmethod
     def _get_bounding_box(
-            latitude_in_degrees, longitude_in_degrees, half_side_in_miles
+        latitude_in_degrees, longitude_in_degrees, half_side_in_miles
     ):
         if half_side_in_miles == 0:
             Logger.error("Check your Radius its lower then 0")

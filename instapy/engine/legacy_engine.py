@@ -47,15 +47,14 @@ class LegacyEngine(object):
             photos_grab_amount = 12
 
         followed_all = 0
-        followed_new = 0
 
         # hold the current global values for differentiating at the end
-        already_followed_init = instapy.settings.already_followed
-        not_valid_users_init = instapy.setting.not_valid_users
-        liked_init = instapy.settings.liked_img
-        already_liked_init = instapy.settings.already_liked
-        commented_init = instapy.settings.commented
-        inap_img_init = instapy.settings.inap_img
+        already_followed_init = instapy.stats.already_followed
+        not_valid_users_init = instapy.stats.not_valid_users
+        liked_init = instapy.stats.liked_img
+        already_liked_init = instapy.stats.already_liked
+        commented_init = instapy.stats.commented
+        inap_img_init = instapy.stats.inap_img
 
         # relax_point = random.randint(7, 14)  # you can use some plain value
         # `10` instead of this quitely randomized score
@@ -91,26 +90,40 @@ class LegacyEngine(object):
                         )
                         break
 
-                    followed = instapy.driver.liker.follow()
-                    if interact:
-                        # have an interact function that do it
-                        # cls.interact(liker) !will activate later
-                        pass
+                    followed = liker.follow()
 
                     if followed > 0:
                         followed_all += 1
-                        followed_new += 1
                         Logger.info("Total Follow: {}\n".format(str(followed_all)))
+
+                        if interact:
+                            (
+                                commented,
+                                liked,
+                                not_valid_users,
+                                already_liked,
+                                inap_img,
+                            ) = liker.interact()
+
+                            instapy.stats.commented += commented
+                            instapy.stats.liked += liked
+                            instapy.stats.not_valid_users += not_valid_users
+                            instapy.stats.already_liked += already_liked
+                            instapy.stats.inap_img += inap_img
+
+                    if followed == 0:
+                        # have an interact function that do it
+                        instapy.stats.already_followed += 1
 
         Logger.info("Finished following Likers!\n")
 
         # find the feature-wide action sizes by taking a difference
-        already_followed = instapy.settings.already_followed - already_followed_init
-        not_valid_users = instapy.settings.not_valid_users - not_valid_users_init
-        liked = instapy.settings.liked_img - liked_init
-        already_liked = instapy.settings.already_liked - already_liked_init
-        commented = instapy.settings.commented - commented_init
-        inap_img = instapy.settings.inap_img - inap_img_init
+        already_followed = instapy.stats.already_followed - already_followed_init
+        not_valid_users = instapy.stats.not_valid_users - not_valid_users_init
+        liked = instapy.stats.liked_img - liked_init
+        already_liked = instapy.stats.already_liked - already_liked_init
+        commented = instapy.stats.commented - commented_init
+        inap_img = instapy.stats.inap_img - inap_img_init
 
         # print results
         Logger.info("Followed: {}".format(followed_all))
