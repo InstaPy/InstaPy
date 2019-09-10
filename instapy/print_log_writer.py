@@ -24,24 +24,13 @@ def log_follower_num(browser, username, logfolder):
 
     try:
         followed_by = browser.execute_script(
-            "return window.__additionalData[Object.keys(window.__additionalData)[0]].data."
+            "return window._sharedData."
+            "entry_data.ProfilePage[0]."
             "graphql.user.edge_followed_by.count"
         )
 
     except WebDriverException:  # handle the possible `entry_data` error
-        try:
-            browser.execute_script("location.reload()")
-            update_activity(browser, state=None)
-
-            sleep(1)
-            followed_by = browser.execute_script(
-                "return window._sharedData."
-                "entry_data.ProfilePage[0]."
-                "graphql.user.edge_followed_by.count"
-            )
-
-        except WebDriverException:
-            followed_by = None
+        followed_by = None
 
     with open("{}followerNum.txt".format(logfolder), "a") as numFile:
         numFile.write("{:%Y-%m-%d %H:%M} {}\n".format(datetime.now(), followed_by or 0))
@@ -57,24 +46,13 @@ def log_following_num(browser, username, logfolder):
 
     try:
         following_num = browser.execute_script(
-            "return window.__additionalData[Object.keys(window.__additionalData)[0]].data."
+            "return window._sharedData."
+            "entry_data.ProfilePage[0]."
             "graphql.user.edge_follow.count"
         )
 
     except WebDriverException:
-        try:
-            browser.execute_script("location.reload()")
-            update_activity(browser, state=None)
-
-            sleep(10)
-            following_num = browser.execute_script(
-                "return window._sharedData."
-                "entry_data.ProfilePage[0]."
-                "graphql.user.edge_follow.count"
-            )
-
-        except WebDriverException:
-            following_num = None
+        following_num = None
 
     with open("{}followingNum.txt".format(logfolder), "a") as numFile:
         numFile.write(
