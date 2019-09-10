@@ -124,8 +124,7 @@ def get_links_for_location(
 
     try:
         possible_posts = browser.execute_script(
-            "return window._sharedData.entry_data."
-            "LocationsPage[0].graphql.location.edge_location_to_media.count"
+            "return window._sharedData.entry_data.LocationsPage[0].graphql.location.edge_location_to_media.count"
         )
 
     except WebDriverException:
@@ -277,8 +276,7 @@ def get_links_for_tag(browser, tag, amount, skip_top_posts, randomize, media, lo
 
     try:
         possible_posts = browser.execute_script(
-            "return window._sharedData.entry_data."
-            "TagPage[0].graphql.hashtag.edge_hashtag_to_media.count"
+            "return window._sharedData.entry_data.TagPage[0].graphql.hashtag.edge_hashtag_to_media.count"
         )
 
     except WebDriverException:
@@ -556,20 +554,11 @@ def check_link(
     # Check if the Post is Valid/Exists
     try:
         post_page = browser.execute_script(
-            "return window.__additionalData[Object.keys(window.__additionalData)[0]].data"
+            "return window._sharedData.entry_data.PostPage[0]"
         )
-
     except WebDriverException:  # handle the possible `entry_data` error
-        try:
-            browser.execute_script("location.reload()")
-            update_activity(browser, state=None)
+        post_page = None
 
-            post_page = browser.execute_script(
-                "return window._sharedData.entry_data.PostPage[0]"
-            )
-
-        except WebDriverException:
-            post_page = None
 
     if post_page is None:
         logger.warning("Unavailable Page: {}".format(post_link.encode("utf-8")))
@@ -595,6 +584,8 @@ def check_link(
             browser.execute_script(
                 "window.insta_data = window._sharedData.entry_data.PostPage[0]"
             )
+            
+            
         owner_comments = browser.execute_script(
             """
             latest_comments = window.insta_data.graphql.shortcode_media.{}.edges;
@@ -620,8 +611,7 @@ def check_link(
         image_text = media["caption"]
         owner_comments = browser.execute_script(
             """
-            latest_comments = window._sharedData.entry_data.PostPage[
-            0].media.comments.nodes;
+            latest_comments = window._sharedData.entry_data.PostPage[0].media.comments.nodes;
             if (latest_comments === undefined) {
                 latest_comments = Array();
                 owner_comments = latest_comments
@@ -823,11 +813,10 @@ def get_tags(browser, url):
         )
 
     graphql = browser.execute_script("return ('graphql' in window.insta_data)")
-
+    
     if graphql:
         image_text = browser.execute_script(
-            "return window.insta_data.graphql."
-            "shortcode_media.edge_media_to_caption.edges[0].node.text"
+            "return window.insta_data.graphql.shortcode_media.edge_media_to_caption.edges[0].node.text"
         )
 
     else:
@@ -884,19 +873,15 @@ def verify_liking(browser, maximum, minimum, logger):
     & minimum values defined by user """
     try:
         likes_count = browser.execute_script(
-            "return window.__additionalData[Object.keys(window.__additionalData)[0]].data"
-            ".graphql.shortcode_media.edge_media_preview_like.count"
+            "return window.__additionalData[Object.keys(window.__additionalData)[0]].data.graphql.shortcode_media.edge_media_preview_like.count"
         )
-
     except WebDriverException:
         try:
-            browser.execute_script("location.reload()")
-            update_activity(browser, state=None)
+            #browser.execute_script("location.reload()")
+            #update_activity(browser, state=None)
 
             likes_count = browser.execute_script(
-                "return window._sharedData.entry_data."
-                "PostPage[0].graphql.shortcode_media.edge_media_preview_like"
-                ".count"
+                "return window._sharedData.entry_data.PostPage[0].graphql.shortcode_media.edge_media_preview_like.count"
             )
 
         except WebDriverException:
@@ -921,7 +906,7 @@ def verify_liking(browser, maximum, minimum, logger):
             "{}".format(likes_count)
         )
         return False
-    elif min is not None and likes_count < minimum:
+    elif minimum is not None and likes_count < minimum:
         logger.info(
             "Not liked this post! ~less likes exist off minumum limit "
             "at {}".format(likes_count)

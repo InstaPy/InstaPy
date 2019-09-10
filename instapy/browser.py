@@ -5,11 +5,15 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.firefox.options import Options as Firefox_Options
 from selenium.webdriver import Remote
 from webdriverdownloader import GeckoDriverDownloader
+from selenium.common.exceptions import SessionNotCreatedException
 
 # general libs
 import os
+import platform
+import subprocess
 import zipfile
 import shutil
+from time import sleep
 from os.path import sep
 
 # local project
@@ -21,7 +25,6 @@ from .util import check_authorization
 from .util import web_address_navigator
 from .file_manager import use_assets
 from .settings import Settings
-from .time_util import sleep
 
 
 def get_geckodriver():
@@ -70,8 +73,8 @@ def set_selenium_local_session(
 
     # set Firefox Agent to mobile agent
     user_agent = (
-        "Mozilla/5.0 (iPhone; CPU iPhone OS 12_1 like Mac OS X) AppleWebKit/605.1.15 "
-        "(KHTML, like Gecko) FxiOS/18.1 Mobile/16B92 Safari/605.1.15"
+        "Mozilla/5.0 (iPhone; CPU iPhone OS 12_2 like Mac OS X) AppleWebKit/605.1.15 "
+        "(KHTML, like Gecko) Version/12.1 Mobile/15E148 Safari/604.1"
     )
 
     # keep user_agent
@@ -108,11 +111,24 @@ def set_selenium_local_session(
 
     # prefer user path before downloaded one
     driver_path = geckodriver_path or get_geckodriver()
-    browser = webdriver.Firefox(
-        firefox_profile=firefox_profile,
-        executable_path=driver_path,
-        options=firefox_options,
-    )
+    try:
+        browser = webdriver.Firefox(
+            firefox_profile=firefox_profile,
+            executable_path=driver_path,
+            options=firefox_options,
+        )
+    except SessionNotCreatedException:
+        print("Unable to locate the default Firefox binary path, trying to find it...")
+        firefox_binary_path = get_firefox_binary_path()
+        if firefox_binary_path is None:
+            print("Unable to start Firefox, is it installed?")
+        else:
+            browser = webdriver.Firefox(
+                firefox_binary=firefox_binary_path,
+                firefox_profile=firefox_profile,
+                executable_path=driver_path,
+                options=firefox_options,
+            )
 
     # add extenions to hide selenium
     browser.install_addon(create_firefox_extension(), temporary=True)
@@ -293,3 +309,40 @@ def convert_selenium_browser(driver):
     """ Changed the class to our custom class """
     driver.__class__ = custom_browser
     return driver
+
+
+def get_firefox_binary_path():
+    """ Set Firefox binary path based on Operational System """
+
+    firefox_path = None
+    system = platform.system().lower()
+
+    if system == "darwin":
+        firefox_path = "/Applications/Firefox.app/Contents/MacOS/firefox"
+    elif system == "windows":
+        firefox_path = "C:\\Program Files\\Mozilla Firefox\\firefox.exe"
+    else:
+        # Linux
+        firefox_path = "/usr/bin/firefox"
+
+    if os.path.isfile(firefox_path):
+        print("Firefox is installed at: {}".format(firefox_path))
+        get_firefox_version(firefox_path)
+        return firefox_path
+    else:
+        print(
+            "Firefox isnt installed, it should be installed at: {}".format(firefox_path)
+        )
+        return None
+
+
+def get_firefox_version(firefox_path):
+    """ Get Firefox version """
+    check_firefox = subprocess.Popen(
+        [firefox_path, "--version"], stdout=subprocess.PIPE, stderr=subprocess.STDOUT
+    )
+    stdout, stderr = check_firefox.communicate()
+
+    print("Firefox version: {}".format(stdout.decode("utf-8")))
+    if stderr:
+        print("Error: ".format(stderr))

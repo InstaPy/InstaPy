@@ -441,7 +441,7 @@ def getUserData(
         update_activity(browser, state=None)
 
         data = browser.execute_script(
-            "return window._sharedData." "entry_data.ProfilePage[0]." + query
+            "return window._sharedData.entry_data.ProfilePage[0]." + query
         )
         return data
 
@@ -592,8 +592,7 @@ def get_active_users(browser, username, posts, boundary, logger):
 
     try:
         total_posts = browser.execute_script(
-            "return window._sharedData.entry_data."
-            "ProfilePage[0].graphql.user.edge_owner_to_timeline_media.count"
+            "return window._sharedData.entry_data.ProfilePage[0].graphql.user.edge_owner_to_timeline_media.count"
         )
     except WebDriverException:
         try:
@@ -1059,8 +1058,7 @@ def get_relationship_counts(browser, username, logger):
 
     try:
         followers_count = browser.execute_script(
-            "return window._sharedData.entry_data."
-            "ProfilePage[0].graphql.user.edge_followed_by.count"
+            "return window._sharedData.entry_data.ProfilePage[0].graphql.user.edge_followed_by.count"
         )
 
     except WebDriverException:
@@ -1076,8 +1074,7 @@ def get_relationship_counts(browser, username, logger):
                 update_activity(browser, state=None)
 
                 followers_count = browser.execute_script(
-                    "return window._sharedData.entry_data."
-                    "ProfilePage[0].graphql.user.edge_followed_by.count"
+                    "return window._sharedData.entry_data.ProfilePage[0].graphql.user.edge_followed_by.count"
                 )
 
             except WebDriverException:
@@ -1107,8 +1104,7 @@ def get_relationship_counts(browser, username, logger):
 
     try:
         following_count = browser.execute_script(
-            "return window._sharedData.entry_data."
-            "ProfilePage[0].graphql.user.edge_follow.count"
+            "return window._sharedData.entry_data.ProfilePage[0].graphql.user.edge_follow.count"
         )
 
     except WebDriverException:
@@ -1125,8 +1121,7 @@ def get_relationship_counts(browser, username, logger):
                 update_activity(browser, state=None)
 
                 following_count = browser.execute_script(
-                    "return window._sharedData.entry_data."
-                    "ProfilePage[0].graphql.user.edge_follow.count"
+                    "return window._sharedData.entry_data.ProfilePage[0].graphql.user.edge_follow.count"
                 )
 
             except WebDriverException:
@@ -1579,8 +1574,7 @@ def find_user_id(browser, track, username, logger):
 
     elif track == "post":
         query = (
-            "return window._sharedData.entry_data.PostPage["
-            "0].graphql.shortcode_media.owner.id"
+            "return window._sharedData.entry_data.PostPage[0].graphql.shortcode_media.owner.id"
         )
         meta_XP = read_xpath(find_user_id.__name__, "meta_XP")
 
@@ -1597,9 +1591,7 @@ def find_user_id(browser, track, username, logger):
             update_activity(browser, state=None)
 
             user_id = browser.execute_script(
-                "return window._sharedData."
-                "entry_data.ProfilePage[0]."
-                "graphql.user.id"
+                "return window._sharedData.entry_data.ProfilePage[0].graphql.user.id"
             )
 
         except WebDriverException:

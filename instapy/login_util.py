@@ -449,6 +449,9 @@ def login_user(
         except NoSuchElementException:
             pass
 
+    if "instagram.com/accounts/onetap" in browser.current_url:
+        browser.get("https://instagram.com")
+        
     # check for wrong username or password message, and show it to the user
     try:
         error_alert = browser.find_element_by_xpath(
