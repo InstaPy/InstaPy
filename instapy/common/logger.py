@@ -2,17 +2,17 @@
 Class to define the Logger
 """
 
+# import helpers
+from ..util import interruption_handler
+
+# import libraries
 from datetime import datetime
-
-from .time_util import sleep
-from .util import interruption_handler
-from .util import web_address_navigator
-from .util import update_activity
-
 import logging
 import logging.handlers
+from math import ceil
 
-import drivers.actions
+# import drivers.actions
+from instapy.drivers import WebDriver
 
 
 class Logger(object):
@@ -126,28 +126,28 @@ class Logger(object):
             upper_char = " ._. "
             lower_char = None
 
-        if upper_char and (self.show_logs or priority == "workspace"):
+        if upper_char and (cls.show_logs or priority == "workspace"):
             print("{}".format(upper_char * int(ceil(output_len / len(upper_char)))))
 
         if level == "info":
-            if self.__logger:
-                self.__logger.info(message)
+            if cls.logger:
+                cls.logger.info(message)
             else:
                 print(message)
 
         elif level == "warning":
-            if self.__logger:
-                self.__logger.warning(message)
+            if cls.logger:
+                cls.logger.warning(message)
             else:
                 print(message)
 
         elif level == "critical":
-            if self.__logger:
-                self.__logger.critical(message)
+            if cls.logger:
+                cls.logger.critical(message)
             else:
                 print(message)
 
-        if lower_char and (self.show_logs or priority == "workspace"):
+        if lower_char and (cls.show_logs or priority == "workspace"):
             print("{}".format(lower_char * int(ceil(output_len / len(lower_char)))))
 
     @staticmethod
@@ -157,68 +157,51 @@ class Logger(object):
 
         return log_time
 
-    def log_follower_num(self, driver):
+    @classmethod
+    def log_follower_num(cls):
         """Prints and logs the current number of followers to
         a seperate file"""
 
         try:
-            user = driver.go_user(self.username)
-            user.populate()
+            user = WebDriver.go_user(cls.username)
             followed_by = user.get_follower_count()
 
-        except WebDriverException:  # handle the possible `entry_data` error
+        except:  # handle the possible `entry_data` error
             followed_by = None
 
-        with open("{}followerNum.txt".format(logfolder), "a") as numFile:
+        with open("{}followerNum.txt".format(cls.logfolder), "a") as numFile:
             numFile.write(
                 "{:%Y-%m-%d %H:%M} {}\n".format(datetime.now(), followed_by or 0)
             )
 
         return followed_by
 
-    @staticmethod
-    def log_following_num(browser, username, logfolder):
+    @classmethod
+    def log_following_num(cls):
         """Prints and logs the current number of followers to
         a seperate file"""
-        user_link = "https://www.instagram.com/{}".format(username)
-        web_address_navigator(browser, user_link)
 
         try:
-            following_num = browser.execute_script(
-                "return window._sharedData."
-                "entry_data.ProfilePage[0]."
-                "graphql.user.edge_follow.count"
-            )
+            user = WebDriver.go_user(cls.username)
+            following_num = user.get_following_count()
 
-        except WebDriverException:
-            try:
-                browser.execute_script("location.reload()")
-                update_activity(browser, state=None)
+        except:
+            following_num = None
 
-                sleep(10)
-                following_num = browser.execute_script(
-                    "return window._sharedData."
-                    "entry_data.ProfilePage[0]."
-                    "graphql.user.edge_follow.count"
-                )
-
-            except WebDriverException:
-                following_num = None
-
-        with open("{}followingNum.txt".format(logfolder), "a") as numFile:
+        with open("{}followingNum.txt".format(cls.logfolder), "a") as numFile:
             numFile.write(
                 "{:%Y-%m-%d %H:%M} {}\n".format(datetime.now(), following_num or 0)
             )
 
         return following_num
 
-    @staticmethod
-    def log_followed_pool(login, followed, logger, logfolder, logtime, user_id):
+    @classmethod
+    def log_followed_pool(cls, followed, logtime, user_id):
         """Prints and logs the followed to
-        a seperate file"""
+        a separate file"""
         try:
             with open(
-                "{0}{1}_followedPool.csv".format(logfolder, login), "a+"
+                "{0}{1}_followedPool.csv".format(cls.logfolder, cls.username), "a+"
             ) as followPool:
                 with interruption_handler():
                     followPool.write(
@@ -226,49 +209,52 @@ class Logger(object):
                     )
 
         except BaseException as e:
-            logger.error("log_followed_pool error {}".format(str(e)))
+            cls.logger.error("log_followed_pool error {}".format(str(e)))
 
         # We save all followed to a pool that will never be erase
-        log_record_all_followed(login, followed, logger, logfolder, logtime, user_id)
+        cls.log_record_all_followed(followed, logtime, user_id)
 
-    @staticmethod
-    def log_uncertain_unfollowed_pool(
-        login, person, logger, logfolder, logtime, user_id
-    ):
+    @classmethod
+    def log_uncertain_unfollowed_pool(cls, person, logtime, user_id):
         """Prints and logs the uncertain unfollowed to
         a seperate file"""
         try:
             with open(
-                "{0}{1}_uncertain_unfollowedPool.csv".format(logfolder, login), "a+"
+                "{0}{1}_uncertain_unfollowedPool.csv".format(
+                    cls.logfolder, cls.username
+                ),
+                "a+",
             ) as followPool:
                 with interruption_handler():
                     followPool.write("{} ~ {} ~ {},\n".format(logtime, person, user_id))
         except BaseException as e:
-            logger.error("log_uncertain_unfollowed_pool error {}".format(str(e)))
+            cls.logger.error("log_uncertain_unfollowed_pool error {}".format(str(e)))
 
-    @staticmethod
-    def log_record_all_unfollowed(login, unfollowed, logger, logfolder):
+    @classmethod
+    def log_record_all_unfollowed(cls, unfollowed):
         """logs all unfollowed ever to
         a seperate file"""
         try:
             with open(
-                "{0}{1}_record_all_unfollowed.csv".format(logfolder, login), "a+"
+                "{0}{1}_record_all_unfollowed.csv".format(cls.logfolder, cls.username),
+                "a+",
             ) as followPool:
                 with interruption_handler():
                     followPool.write("{},\n".format(unfollowed))
         except BaseException as e:
-            logger.error("log_record_all_unfollowed_pool error {}".format(str(e)))
+            cls.logger.error("log_record_all_unfollowed_pool error {}".format(str(e)))
 
-    @staticmethod
-    def log_record_all_followed(login, followed, logger, logfolder, logtime, user_id):
+    @classmethod
+    def log_record_all_followed(cls, followed, logtime, user_id):
         """logs all followed ever to a pool that will never be erase"""
         try:
             with open(
-                "{0}{1}_record_all_followed.csv".format(logfolder, login), "a+"
+                "{0}{1}_record_all_followed.csv".format(cls.logfolder, cls.username),
+                "a+",
             ) as followPool:
                 with interruption_handler():
                     followPool.write(
                         "{} ~ {} ~ {},\n".format(logtime, followed, user_id)
                     )
         except BaseException as e:
-            logger.error("log_record_all_followed_pool error {}".format(str(e)))
+            cls.logger.error("log_record_all_followed_pool error {}".format(str(e)))

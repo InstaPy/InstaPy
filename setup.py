@@ -60,7 +60,7 @@ setup(
             "drivers/*",
             "drivers/appium_actions/*",
             "drivers/selenium_actions/*",
-	    "common/*",
+	        "common/*",
             "common/model/*",
         ]
     },

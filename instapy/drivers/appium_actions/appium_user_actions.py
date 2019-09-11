@@ -1,8 +1,9 @@
 """
 Class to define the specific actions for the User class to work with Appium
 """
-from instapy.drivers.appium_actions.appium_common_actions import AppiumCommonActions
+from instapy.drivers.appium_actions import AppiumCommonActions
 from instapy.drivers.appium_webdriver import AppiumWebDriver
+from instapy.drivers.appium_actions import AppiumPostActions
 
 
 class AppiumUserActions:
@@ -24,33 +25,30 @@ class AppiumUserActions:
 
     @classmethod
     def get_following_count(cls):
-        return int(
-            cls._cleanup_count(
-                AppiumWebDriver.find_element_by_id(
-                    "com.instagram.android:id/row_profile_header_textview_following_count"
-                ).text
-            )
+        return cls._cleanup_count(
+            AppiumWebDriver.find_element_by_id(
+                "com.instagram.android:id/row_profile_header_textview_following_count"
+            ).text
         )
+
 
     @classmethod
     def get_follower_count(cls):
-        return int(
-            cls._cleanup_count(
-                AppiumWebDriver.find_element_by_id(
-                    "com.instagram.android:id/row_profile_header_textview_followers_count"
-                ).text
-            )
+        return cls._cleanup_count(
+            AppiumWebDriver.find_element_by_id(
+                "com.instagram.android:id/row_profile_header_textview_followers_count"
+            ).text
         )
+
 
     @classmethod
     def get_post_count(cls):
-        return int(
-            cls._cleanup_count(
-                AppiumWebDriver.find_element_by_id(
-                    "com.instagram.android:id/row_profile_header_textview_post_count"
-                ).text
-            )
+        return cls._cleanup_count(
+            AppiumWebDriver.find_element_by_id(
+                "com.instagram.android:id/row_profile_header_textview_post_count"
+            ).text
         )
+
 
     @classmethod
     def get_full_name(cls):
@@ -70,13 +68,46 @@ class AppiumUserActions:
         ).text
 
     @classmethod
-    def get_posts(cls, username, post_grab_amount, randomize):
+    def get_posts_likers(cls, username, post_grab_amount, likers_per_post_amount, randomize):
         """"
 
         :param username: the username to find and load
         :param post_grab_amount amount of posts to grab
+        :param likers_per_post_amount amount of likers per post to grab
         :param randomize: if true takes randomly, otherwise return the post_grab_amount latest post
         :return: posts
         """
 
-        return posts
+        users=[]
+        todo = post_grab_amount
+        if AppiumCommonActions.go_user(username):
+            AppiumCommonActions.swipe(1200)
+
+            if randomize is False:
+                # then we should just take the first posts
+                while todo > 0:
+                    elems=AppiumWebDriver.find_elements_by_xpath("")
+
+                    if len(elems) > post_grab_amount:
+                        elems = elems[:post_grab_amount]
+
+                    for elem in elems:
+                        # go into the post
+                        elem.click()
+                        users.add(AppiumPostActions.get_likers(likers_per_post_amount))
+
+                    todo -= len(elems)
+                    AppiumCommonActions.swipe(200)
+
+
+            else:
+                # TODO: find a nice way to randomly select posts
+                Logger.error("not implemented yet")
+
+            return users
+
+        else:
+            Logger.error("User {} does not exist".format(username))
+
+        return users
+

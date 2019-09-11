@@ -2,6 +2,9 @@
 Class to define everything needed to work with Appium
 """
 
+#class import
+from instapy.common import Logger
+
 # libraries import
 from appium import webdriver
 from adb.client import Client as AdbClient
@@ -15,6 +18,7 @@ class AppiumWebDriver:
 
     driver = None
     webdriver_instance = None  # might not be needed
+    DISPLAYSIZE = None
 
     @classmethod
     def construct_webdriver(
@@ -28,8 +32,6 @@ class AppiumWebDriver:
             cls.webdriver_instance = AppiumWebDriver(
                 devicename, devicetimeout, client_host, client_port
             )
-        else:
-            pass
 
     def __init__(
         self,
@@ -58,21 +60,20 @@ class AppiumWebDriver:
             __desired_caps["newCommandTimeout"] = devicetimeout
 
             try:
-                AppiumWebDriver.driver = webdriver.Remote(
+                self.driver = webdriver.Remote(
                     "http://{}:4723/wd/hub".format(client_host), __desired_caps
                 )
-                print("Succesfully connected to: {}".format(self.devicename))
+                Logger.info("Succesfully connected to: {}".format(self.devicename))
+                self.DISPLAYSIZE = driver.get_window_size()
                 sleep(10)
             except:
                 # self.logger.error("Could not create webdriver, is Appium running?")
-                print("Could not create webdriver; please make sure Appium is running")
+                Logger.error("Could not create webdriver; please make sure Appium is running")
                 quit()  # TODO: nicer way of exiting
 
         else:
-            # self.logger.error("Invalid Device Name")
-            devices = ""
 
-            print(
+            Logger.error(
                 "Invalid Device Name. \nList of available devices: [{}]".format(
                     ", ".join(self.adb_devices)
                 )
