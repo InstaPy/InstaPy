@@ -62,6 +62,7 @@ setup(
             "drivers/selenium_actions/*",
 	        "common/*",
             "common/model/*",
+            "engine/*",
         ]
     },
     keywords=(

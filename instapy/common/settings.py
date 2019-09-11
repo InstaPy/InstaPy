@@ -7,7 +7,7 @@ Vice verse, it'd produce circular dependent imports.
 
 # objects import
 from instapy.common import Logger
-from instapy.drivers import WebDriver
+# from instapy.drivers import WebDriver
 
 # libraries import
 import os
@@ -64,6 +64,11 @@ class Settings:
     pods_entertainment_server_endpoint = (
         "https://us-central1-instapy-pods-entertainment.cloudfunctions.net"
     )
+
+    devicename = None
+    devicetimeout = None
+    client_host = None
+    client_port = None
 
     @classmethod
     def set_action_delays(
@@ -296,48 +301,48 @@ class Settings:
         # delete duplicated tags
         cls.smart_hashtags = list(set(cls.smart_hashtags))
 
-    @classmethod
-    def set_smart_location_hashtags(
-        cls, locations: list, radius: int = 10, limit: int = 3, log_tags: bool = True
-    ):
-        """Generate smart hashtags based on https://displaypurposes.com/map"""
-        if locations is None:
-            Logger.error("set_smart_location_hashtags is misconfigured")
-
-        for location in locations:
-            lat, lon = WebDriver.actions.search(location)
-
-            bbox = cls._get_bounding_box(lat, lon, half_side_in_miles=radius)
-            bbox_url = "{},{},{},{}&zoom={}".format(
-                bbox["lon_min"],
-                bbox["lat_min"],
-                bbox["lon_max"],
-                bbox["lat_max"],
-                radius,
-            )
-            url = "https://query.displaypurposes.com/local/?bbox={}".format(bbox_url)
-
-            req = requests.get(url)
-            data = json.loads(req.text)
-            if int(data["count"]) == 0:
-                Logger.warning("Too few results for {} location".format(location))
-                continue
-
-            count = limit if limit < data["count"] else data["count"]
-            i = 0
-            tags = []
-            while i < count:
-                cls.smart_location_hashtags.append(data["tags"][i]["tag"])
-                i += 1
-
-        cls.smart_location_hashtags = list(set(cls.smart_location_hashtags))
-
-        if log_tags is True:
-            Logger.info(
-                "[smart location hashtag generated: {}]\n".format(
-                    cls.smart_location_hashtags
-                )
-            )
+    # @classmethod
+    # def set_smart_location_hashtags(
+    #     cls, locations: list, radius: int = 10, limit: int = 3, log_tags: bool = True
+    # ):
+    #     """Generate smart hashtags based on https://displaypurposes.com/map"""
+    #     if locations is None:
+    #         Logger.error("set_smart_location_hashtags is misconfigured")
+    #
+    #     for location in locations:
+    #         lat, lon = WebDriver.actions.search(location)
+    #
+    #         bbox = cls._get_bounding_box(lat, lon, half_side_in_miles=radius)
+    #         bbox_url = "{},{},{},{}&zoom={}".format(
+    #             bbox["lon_min"],
+    #             bbox["lat_min"],
+    #             bbox["lon_max"],
+    #             bbox["lat_max"],
+    #             radius,
+    #         )
+    #         url = "https://query.displaypurposes.com/local/?bbox={}".format(bbox_url)
+    #
+    #         req = requests.get(url)
+    #         data = json.loads(req.text)
+    #         if int(data["count"]) == 0:
+    #             Logger.warning("Too few results for {} location".format(location))
+    #             continue
+    #
+    #         count = limit if limit < data["count"] else data["count"]
+    #         i = 0
+    #         tags = []
+    #         while i < count:
+    #             cls.smart_location_hashtags.append(data["tags"][i]["tag"])
+    #             i += 1
+    #
+    #     cls.smart_location_hashtags = list(set(cls.smart_location_hashtags))
+    #
+    #     if log_tags is True:
+    #         Logger.info(
+    #             "[smart location hashtag generated: {}]\n".format(
+    #                 cls.smart_location_hashtags
+    #             )
+    #         )
 
     @staticmethod
     def _get_bounding_box(

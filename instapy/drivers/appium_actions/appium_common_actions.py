@@ -2,7 +2,6 @@
 Class to define the specific actions for the Common class to work with Appium
 """
 # class import
-from instapy.common.model import CommonActions
 from instapy.drivers.appium_webdriver import AppiumWebDriver
 from instapy.common import Logger
 

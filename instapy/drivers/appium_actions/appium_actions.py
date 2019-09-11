@@ -6,10 +6,10 @@ specific method are callable by AppiumActions.user.method
 etc...
 """
 
-from instapy.drivers.appium_actions import AppiumCommonActions
-from instapy.drivers.appium_actions import AppiumUserActions
-from instapy.drivers.appium_actions import AppiumPostActions
-from instapy.drivers.appium_actions import AppiumCommentActions
+from .appium_common_actions import  AppiumCommonActions
+from .appium_user_actions import AppiumUserActions
+from .appium_post_actions import AppiumPostActions
+from .appium_comment_actions import AppiumCommentActions
 
 
 class AppiumActions(AppiumCommonActions):

@@ -6,10 +6,10 @@ specific method are callable by SeleniumActions.user.method
 etc...
 """
 
-from instapy.drivers.selenium_actions import SeleniumCommonActions
-from instapy.drivers.selenium_actions import SeleniumUserActions
-from instapy.drivers.selenium_actions import SeleniumPostActions
-from instapy.drivers.selenium_actions import SeleniumCommentActions
+from .selenium_common_actions import  SeleniumCommonActions
+from .selenium_user_actions import SeleniumUserActions
+from .selenium_post_actions import SeleniumPostActions
+from .selenium_comment_actions import SeleniumCommentActions
 
 
 class SeleniumActions(SeleniumCommonActions):

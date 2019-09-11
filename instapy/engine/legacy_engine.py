@@ -4,7 +4,7 @@ Class to define the specific actions for the legacy engine
 
 # class import
 from instapy.common import Logger
-from instapy import InstaPy
+from instapy import InstaPy2
 
 # libraries import
 import random
@@ -20,7 +20,7 @@ class LegacyEngine(object):
     @classmethod
     def follow_likers(
         cls,
-        instapy: InstaPy,
+        instapy: InstaPy2,
         usernames: list,
         photos_grab_amount: int = 3,
         follow_likers_per_photo: int = 3,

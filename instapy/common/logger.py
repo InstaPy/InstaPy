@@ -3,7 +3,7 @@ Class to define the Logger
 """
 
 # import helpers
-from ..util import interruption_handler
+from .helper_functions import interruption_handler
 
 # import libraries
 from datetime import datetime
@@ -12,7 +12,6 @@ import logging.handlers
 from math import ceil
 
 # import drivers.actions
-from instapy.drivers import WebDriver
 
 
 class Logger(object):
@@ -157,104 +156,3 @@ class Logger(object):
 
         return log_time
 
-    @classmethod
-    def log_follower_num(cls):
-        """Prints and logs the current number of followers to
-        a seperate file"""
-
-        try:
-            user = WebDriver.go_user(cls.username)
-            followed_by = user.get_follower_count()
-
-        except:  # handle the possible `entry_data` error
-            followed_by = None
-
-        with open("{}followerNum.txt".format(cls.logfolder), "a") as numFile:
-            numFile.write(
-                "{:%Y-%m-%d %H:%M} {}\n".format(datetime.now(), followed_by or 0)
-            )
-
-        return followed_by
-
-    @classmethod
-    def log_following_num(cls):
-        """Prints and logs the current number of followers to
-        a seperate file"""
-
-        try:
-            user = WebDriver.go_user(cls.username)
-            following_num = user.get_following_count()
-
-        except:
-            following_num = None
-
-        with open("{}followingNum.txt".format(cls.logfolder), "a") as numFile:
-            numFile.write(
-                "{:%Y-%m-%d %H:%M} {}\n".format(datetime.now(), following_num or 0)
-            )
-
-        return following_num
-
-    @classmethod
-    def log_followed_pool(cls, followed, logtime, user_id):
-        """Prints and logs the followed to
-        a separate file"""
-        try:
-            with open(
-                "{0}{1}_followedPool.csv".format(cls.logfolder, cls.username), "a+"
-            ) as followPool:
-                with interruption_handler():
-                    followPool.write(
-                        "{} ~ {} ~ {},\n".format(logtime, followed, user_id)
-                    )
-
-        except BaseException as e:
-            cls.logger.error("log_followed_pool error {}".format(str(e)))
-
-        # We save all followed to a pool that will never be erase
-        cls.log_record_all_followed(followed, logtime, user_id)
-
-    @classmethod
-    def log_uncertain_unfollowed_pool(cls, person, logtime, user_id):
-        """Prints and logs the uncertain unfollowed to
-        a seperate file"""
-        try:
-            with open(
-                "{0}{1}_uncertain_unfollowedPool.csv".format(
-                    cls.logfolder, cls.username
-                ),
-                "a+",
-            ) as followPool:
-                with interruption_handler():
-                    followPool.write("{} ~ {} ~ {},\n".format(logtime, person, user_id))
-        except BaseException as e:
-            cls.logger.error("log_uncertain_unfollowed_pool error {}".format(str(e)))
-
-    @classmethod
-    def log_record_all_unfollowed(cls, unfollowed):
-        """logs all unfollowed ever to
-        a seperate file"""
-        try:
-            with open(
-                "{0}{1}_record_all_unfollowed.csv".format(cls.logfolder, cls.username),
-                "a+",
-            ) as followPool:
-                with interruption_handler():
-                    followPool.write("{},\n".format(unfollowed))
-        except BaseException as e:
-            cls.logger.error("log_record_all_unfollowed_pool error {}".format(str(e)))
-
-    @classmethod
-    def log_record_all_followed(cls, followed, logtime, user_id):
-        """logs all followed ever to a pool that will never be erase"""
-        try:
-            with open(
-                "{0}{1}_record_all_followed.csv".format(cls.logfolder, cls.username),
-                "a+",
-            ) as followPool:
-                with interruption_handler():
-                    followPool.write(
-                        "{} ~ {} ~ {},\n".format(logtime, followed, user_id)
-                    )
-        except BaseException as e:
-            cls.logger.error("log_record_all_followed_pool error {}".format(str(e)))

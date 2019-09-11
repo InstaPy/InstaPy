@@ -1,9 +1,9 @@
 """
 Class to define the specific actions for the User class to work with Appium
 """
-from instapy.drivers.appium_actions import AppiumCommonActions
-from instapy.drivers.appium_webdriver import AppiumWebDriver
-from instapy.drivers.appium_actions import AppiumPostActions
+from .appium_common_actions import AppiumCommonActions
+from ..appium_webdriver import AppiumWebDriver
+from .appium_post_actions import AppiumPostActions
 
 
 class AppiumUserActions:

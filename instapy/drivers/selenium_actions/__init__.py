@@ -1,4 +1,1 @@
-from .Selenium_common_actions import SeleniumCommonActions
-from .Selenium_user_actions import SeleniumUserActions
-from .Selenium_post_actions import SeleniumPostActions
-from .Selenium_comment_actions import SeleniumCommentActions
+from .selenium_actions import SeleniumActions
