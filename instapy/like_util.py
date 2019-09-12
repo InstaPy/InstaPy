@@ -125,7 +125,8 @@ def get_links_for_location(
 
     try:
         possible_posts = browser.execute_script(
-            "return window._sharedData.entry_data.LocationsPage[0].graphql.location.edge_location_to_media.count"
+            "return window._sharedData.entry_data.LocationsPage[0]"
+            ".graphql.location.edge_location_to_media.count"
         )
 
     except WebDriverException:
@@ -277,7 +278,8 @@ def get_links_for_tag(browser, tag, amount, skip_top_posts, randomize, media, lo
 
     try:
         possible_posts = browser.execute_script(
-            "return window._sharedData.entry_data.TagPage[0].graphql.hashtag.edge_hashtag_to_media.count"
+            "return window._sharedData.entry_data.TagPage[0]"
+            ".graphql.hashtag.edge_hashtag_to_media.count"
         )
 
     except WebDriverException:
@@ -650,7 +652,7 @@ def check_link(
 
     logger.info("Image from: {}".format(user_name.encode("utf-8")))
     logger.info("Link: {}".format(post_link.encode("utf-8")))
-    logger.info("Description: {}".format(image_text.encode("utf-8")))
+    # logger.info("Description: {}".format(image_text.encode("utf-8")))
 
     # Check if mandatory character set, before adding the location to the text
     if mandatory_language:
@@ -819,7 +821,8 @@ def get_tags(browser, url):
 
     if graphql:
         image_text = browser.execute_script(
-            "return window.insta_data.graphql.shortcode_media.edge_media_to_caption.edges[0].node.text"
+            "return window.insta_data"
+            ".graphql.shortcode_media.edge_media_to_caption.edges[0].node.text"
         )
 
     else:
