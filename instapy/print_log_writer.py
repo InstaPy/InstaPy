@@ -1,7 +1,5 @@
 """Module only used to log the number of followers to a file"""
 from datetime import datetime
-
-from .time_util import sleep
 from .util import interruption_handler
 from .util import web_address_navigator
 
