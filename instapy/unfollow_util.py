@@ -1246,8 +1246,8 @@ def get_given_user_following(
 
         except WebDriverException:
             try:
-                browser.execute_script("location.reload()")
-                update_activity(browser, state=None)
+                # browser.execute_script("location.reload()")
+                # update_activity(browser, state=None)
 
                 allfollowing = browser.execute_script(
                     "return window._sharedData."

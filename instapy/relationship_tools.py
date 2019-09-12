@@ -955,9 +955,8 @@ def store_active_unfollowers(username, active_unfollowers, logger, logfolder):
     """ Store active Unfollowers data in a local storage at generated date """
     generation_date = datetime.today().strftime("%d-%m-%Y")
     active_unfollowers_size = len(active_unfollowers)
-    file_directory = (
-        "{}/relationship_data/{}"
-        "/unfollowers/active_unfollowers/".format(logfolder, username)
+    file_directory = "{}/relationship_data/{}" "/unfollowers/active_unfollowers/".format(
+        logfolder, username
     )
     file_name = "{}{}~active~{}".format(
         file_directory, generation_date, active_unfollowers_size

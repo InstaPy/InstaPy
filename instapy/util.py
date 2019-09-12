@@ -141,25 +141,14 @@ def validate_username(
             )
 
         except WebDriverException:
-            try:
-                browser.execute_script("location.reload()")
-                update_activity(browser, state=None)
-
-                username = browser.execute_script(
-                    "return window._sharedData.entry_data."
-                    "PostPage[0].graphql.shortcode_media.owner.username"
-                )
-
-            except WebDriverException:
-                logger.error(
-                    "Username validation failed!\t~cannot get the post "
-                    "owner's username"
-                )
-                inap_msg = (
-                    "---> Sorry, this page isn't available!\t~either "
-                    "link is broken or page is removed\n"
-                )
-                return False, inap_msg
+            logger.error(
+                "Username validation failed!\t~cannot get the post " "owner's username"
+            )
+            inap_msg = (
+                "---> Sorry, this page isn't available!\t~either "
+                "link is broken or page is removed\n"
+            )
+            return False, inap_msg
 
     else:
         username = username_or_link  # if there is no `/` in
@@ -170,9 +159,8 @@ def validate_username(
         return False, inap_msg
 
     if username in ignore_users:
-        inap_msg = (
-            "---> '{}' is in the `ignore_users` list\t~skipping "
-            "user\n".format(username)
+        inap_msg = "---> '{}' is in the `ignore_users` list\t~skipping " "user\n".format(
+            username
         )
         return False, inap_msg
 
@@ -441,7 +429,7 @@ def getUserData(
         update_activity(browser, state=None)
 
         data = browser.execute_script(
-            "return window._sharedData." "entry_data.ProfilePage[0]." + query
+            "return window._sharedData.entry_data.ProfilePage[0]." + query
         )
         return data
 
@@ -592,8 +580,7 @@ def get_active_users(browser, username, posts, boundary, logger):
 
     try:
         total_posts = browser.execute_script(
-            "return window._sharedData.entry_data."
-            "ProfilePage[0].graphql.user.edge_owner_to_timeline_media.count"
+            "return window._sharedData.entry_data.ProfilePage[0].graphql.user.edge_owner_to_timeline_media.count"
         )
     except WebDriverException:
         try:
@@ -1059,8 +1046,7 @@ def get_relationship_counts(browser, username, logger):
 
     try:
         followers_count = browser.execute_script(
-            "return window._sharedData.entry_data."
-            "ProfilePage[0].graphql.user.edge_followed_by.count"
+            "return window._sharedData.entry_data.ProfilePage[0].graphql.user.edge_followed_by.count"
         )
 
     except WebDriverException:
@@ -1076,8 +1062,7 @@ def get_relationship_counts(browser, username, logger):
                 update_activity(browser, state=None)
 
                 followers_count = browser.execute_script(
-                    "return window._sharedData.entry_data."
-                    "ProfilePage[0].graphql.user.edge_followed_by.count"
+                    "return window._sharedData.entry_data.ProfilePage[0].graphql.user.edge_followed_by.count"
                 )
 
             except WebDriverException:
@@ -1107,8 +1092,7 @@ def get_relationship_counts(browser, username, logger):
 
     try:
         following_count = browser.execute_script(
-            "return window._sharedData.entry_data."
-            "ProfilePage[0].graphql.user.edge_follow.count"
+            "return window._sharedData.entry_data.ProfilePage[0].graphql.user.edge_follow.count"
         )
 
     except WebDriverException:
@@ -1125,8 +1109,7 @@ def get_relationship_counts(browser, username, logger):
                 update_activity(browser, state=None)
 
                 following_count = browser.execute_script(
-                    "return window._sharedData.entry_data."
-                    "ProfilePage[0].graphql.user.edge_follow.count"
+                    "return window._sharedData.entry_data.ProfilePage[0].graphql.user.edge_follow.count"
                 )
 
             except WebDriverException:
@@ -1578,10 +1561,7 @@ def find_user_id(browser, track, username, logger):
         query = "return window.__additionalData[Object.keys(window.__additionalData)[0]].data.graphql.user.id"
 
     elif track == "post":
-        query = (
-            "return window._sharedData.entry_data.PostPage["
-            "0].graphql.shortcode_media.owner.id"
-        )
+        query = "return window._sharedData.entry_data.PostPage[0].graphql.shortcode_media.owner.id"
         meta_XP = read_xpath(find_user_id.__name__, "meta_XP")
 
     failure_message = "Failed to get the user ID of '{}' from {} page!".format(
@@ -1597,9 +1577,7 @@ def find_user_id(browser, track, username, logger):
             update_activity(browser, state=None)
 
             user_id = browser.execute_script(
-                "return window._sharedData."
-                "entry_data.ProfilePage[0]."
-                "graphql.user.id"
+                "return window._sharedData.entry_data.ProfilePage[0].graphql.user.id"
             )
 
         except WebDriverException:
@@ -1736,8 +1714,8 @@ def get_username_from_id(browser, user_id, logger):
 
     query_hash = "42323d64886122307be10013ad2dcc44"  # earlier-
     # "472f257a40c653c64c666ce877d59d2b"
-    graphql_query_URL = (
-        "https://www.instagram.com/graphql/query/?query_hash" "={}".format(query_hash)
+    graphql_query_URL = "https://www.instagram.com/graphql/query/?query_hash" "={}".format(
+        query_hash
     )
     variables = {"id": str(user_id), "first": 1}
     post_url = "{}&variables={}".format(graphql_query_URL, str(json.dumps(variables)))

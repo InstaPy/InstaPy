@@ -42,6 +42,14 @@ def remove_duplicates_preserving_order(seq):
     return [x for x in seq if not (x in seen or seen_add(x))]
 
 
+def check_exists_by_tag_name(element, tag_name):
+    try:
+        element.find_element_by_tag_name(tag_name)
+    except NoSuchElementException:
+        return False
+    return True
+
+
 def extract_post_info(browser):
     """Get the information from the current post"""
     web_address_navigator(browser, browser.current_url + "comments/")

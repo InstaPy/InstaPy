@@ -374,7 +374,7 @@ def login_user(
         .perform()
     )
 
-    sleep(1)
+    sleep(3)
 
     (
         ActionChains(browser)
@@ -448,6 +448,9 @@ def login_user(
             bypass_suspicious_login(browser, logger, logfolder, security_code_to_phone)
         except NoSuchElementException:
             pass
+
+    # if "instagram.com/accounts/onetap" in browser.current_url:
+    #    browser.get("https://instagram.com")
 
     # check for wrong username or password message, and show it to the user
     try:

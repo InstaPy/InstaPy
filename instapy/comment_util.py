@@ -322,8 +322,8 @@ def is_commenting_enabled(browser, logger):
 
     except WebDriverException:
         try:
-            browser.execute_script("location.reload()")
-            update_activity(browser, state=None)
+            # browser.execute_script("location.reload()")
+            # update_activity(browser, state=None)
 
             comments_disabled = browser.execute_script(
                 "return window._sharedData.entry_data."
