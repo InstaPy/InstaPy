@@ -3,7 +3,6 @@
 import time
 from datetime import datetime, timedelta
 from math import ceil
-from typing import List
 import random
 from sys import platform
 from platform import python_version
@@ -3040,7 +3039,7 @@ class InstaPy:
         return self
 
     def interact_user_followers(
-        self, usernames: List[str], amount: int = 10, randomize: bool = False
+        self, usernames: list, amount: int = 10, randomize: bool = False
     ):
         """
         Interact with the people that a given user is followed by.
