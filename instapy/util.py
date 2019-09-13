@@ -1838,29 +1838,22 @@ def smart_run(session, threaded=False):
     try:
         session.login()
         yield
+    except NoSuchElementException:
+        # The problem is with a change in IG page layout
+        log_file = "{}.html".format(time.strftime("%Y%m%d-%H%M%S"))
+        file_path = os.path.join(gettempdir(), log_file)
 
-    except (Exception, KeyboardInterrupt) as exc:
-        if isinstance(exc, NoSuchElementException):
-            # the problem is with a change in IG page layout
+        with open(file_path, "wb") as fp:
+            fp.write(session.browser.page_source.encode("utf-8"))
 
-            log_file = "{}.html".format(time.strftime("%Y%m%d-%H%M%S"))
-            file_path = os.path.join(gettempdir(), log_file)
-            with open(file_path, "wb") as fp:
-                fp.write(session.browser.page_source.encode("utf-8"))
-            print(
-                "{0}\nIf raising an issue, "
-                "please also upload the file located at:\n{1}\n{0}".format(
-                    "*" * 70, file_path
-                )
+        print(
+            "{0}\nIf raising an issue, "
+            "please also upload the file located at:\n{1}\n{0}".format(
+                "*" * 70, file_path
             )
-
-        # provide full stacktrace (else than external interrupt)
-        if isinstance(exc, KeyboardInterrupt):
-            clean_exit("You have exited successfully.")
-
-        else:
-            raise
-
+        )
+    except KeyboardInterrupt:
+        clean_exit("You have exited successfully.")
     finally:
         session.end(threaded_session=threaded)
 
