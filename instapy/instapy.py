@@ -5917,3 +5917,4 @@ class InstaPy:
                 if reels > 0:
                     self.stories_watched += 1
                     self.reels_watched += reels
+                    
