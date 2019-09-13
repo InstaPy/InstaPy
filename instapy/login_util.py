@@ -466,6 +466,9 @@ def login_user(
     except NoSuchElementException:
         pass
 
+    if "instagram.com/accounts/onetap" in browser.current_url:
+        browser.get("https://instagram.com")
+
     # wait until page fully load
     explicit_wait(browser, "PFL", [], logger, 5)
 
