@@ -107,7 +107,7 @@ class InstaPy:
         nogui: bool = False,
         selenium_local_session: bool = True,
         browser_profile_path: str = None,
-        page_delay: int = 60,
+        page_delay: int = 25,
         show_logs: bool = True,
         headless_browser: bool = False,
         proxy_username: str = None,
@@ -141,7 +141,7 @@ class InstaPy:
         self.nogui = nogui
         if self.nogui:
             if not platform.startswith("win32"):
-                self.display = Display(visible=0, size=(1920, 1080))
+                self.display = Display(visible=0, size=(800, 600))
                 self.display.start()
             else:
                 raise InstaPyError("The 'nogui' parameter isn't supported on Windows.")
@@ -1523,11 +1523,9 @@ class InstaPy:
 
                             if self.use_clarifai and (following or commenting):
                                 try:
-                                    (
-                                        checked_img,
-                                        temp_comments,
-                                        clarifai_tags,
-                                    ) = self.query_clarifai()
+                                    checked_img, temp_comments, clarifai_tags = (
+                                        self.query_clarifai()
+                                    )
 
                                 except Exception as err:
                                     self.logger.error(
@@ -1736,11 +1734,9 @@ class InstaPy:
 
                         if self.use_clarifai:
                             try:
-                                (
-                                    checked_img,
-                                    temp_comments,
-                                    clarifai_tags,
-                                ) = self.query_clarifai()
+                                checked_img, temp_comments, clarifai_tags = (
+                                    self.query_clarifai()
+                                )
 
                             except Exception as err:
                                 self.logger.error("Image check error: {}".format(err))
@@ -1969,11 +1965,9 @@ class InstaPy:
 
                             if self.use_clarifai and (following or commenting):
                                 try:
-                                    (
-                                        checked_img,
-                                        temp_comments,
-                                        clarifai_tags,
-                                    ) = self.query_clarifai()
+                                    checked_img, temp_comments, clarifai_tags = (
+                                        self.query_clarifai()
+                                    )
 
                                 except Exception as err:
                                     self.logger.error(
@@ -2269,11 +2263,9 @@ class InstaPy:
 
                             if self.use_clarifai and (following or commenting):
                                 try:
-                                    (
-                                        checked_img,
-                                        temp_comments,
-                                        clarifai_tags,
-                                    ) = self.query_clarifai()
+                                    checked_img, temp_comments, clarifai_tags = (
+                                        self.query_clarifai()
+                                    )
 
                                 except Exception as err:
                                     self.logger.error(
@@ -2570,11 +2562,9 @@ class InstaPy:
 
                                 if self.use_clarifai and commenting:
                                     try:
-                                        (
-                                            checked_img,
-                                            temp_comments,
-                                            clarifai_tags,
-                                        ) = self.query_clarifai()
+                                        checked_img, temp_comments, clarifai_tags = (
+                                            self.query_clarifai()
+                                        )
 
                                     except Exception as err:
                                         self.logger.error(
@@ -3051,6 +3041,15 @@ class InstaPy:
     def interact_user_followers(
         self, usernames: list, amount: int = 10, randomize: bool = False
     ):
+        """
+        Interact with the people that a given user is followed by.
+
+        set_do_comment, set_do_follow and set_do_like are applicable.
+
+        :param usernames: List of users to interact with their followers.
+        :param amount: Amount of followers to interact with.
+        :param randomize: If followers should be chosen randomly.
+        """
 
         if self.aborting:
             return self
@@ -3090,7 +3089,7 @@ class InstaPy:
                 break
 
             self.logger.info(
-                "User '{}' [{}/{}]".format(user, index + 1, len(usernames))
+                "User '{}' [{}/{}]".format((user), index + 1, len(usernames))
             )
             try:
                 person_list, simulated_list = get_given_user_followers(
@@ -3137,11 +3136,11 @@ class InstaPy:
                     break
 
                 self.logger.info(
-                    "User '{}' [{}/{}]".format(person, index + 1, len(person_list))
+                    "User '{}' [{}/{}]".format((person), index + 1, len(person_list))
                 )
 
                 validation, details = self.validate_user_call(person)
-                if validation is not True:
+                if not validation:
                     self.logger.info(details)
                     not_valid_users += 1
 
@@ -3162,7 +3161,7 @@ class InstaPy:
                             self.logger,
                             self.logfolder,
                         )
-                        if unfollow_state is True:
+                        if unfollow_state:
                             simulated_unfollow += 1
 
                     continue
@@ -3170,7 +3169,7 @@ class InstaPy:
                 # Do interactions if any
                 do_interact = random.randint(0, 100) <= self.user_interact_percentage
 
-                if do_interact is False:
+                if not do_interact:
                     self.logger.info(
                         "Skipping user '{}' due to the interaction "
                         "percentage of {}".format(person, self.user_interact_percentage)
@@ -3266,7 +3265,7 @@ class InstaPy:
                 break
 
             self.logger.info(
-                "User '{}' [{}/{}]".format(user, index + 1, len(usernames))
+                "User '{}' [{}/{}]".format((user), index + 1, len(usernames))
             )
             try:
                 person_list, simulated_list = get_given_user_following(
@@ -3312,7 +3311,7 @@ class InstaPy:
                     break
 
                 self.logger.info(
-                    "User '{}' [{}/{}]".format(person, index + 1, len(person_list))
+                    "User '{}' [{}/{}]".format((person), index + 1, len(person_list))
                 )
 
                 validation, details = self.validate_user_call(person)
@@ -3440,7 +3439,7 @@ class InstaPy:
                 break
 
             self.logger.info(
-                "User '{}' [{}/{}]".format(user, index + 1, len(usernames))
+                "User '{}' [{}/{}]".format((user), index + 1, len(usernames))
             )
 
             try:
@@ -3627,7 +3626,7 @@ class InstaPy:
                 break
 
             self.logger.info(
-                "User '{}' [{}/{}]".format(user, index + 1, len(usernames))
+                "User '{}' [{}/{}]".format((user), index + 1, len(usernames))
             )
             try:
                 person_list, simulated_list = get_given_user_following(
@@ -5071,8 +5070,9 @@ class InstaPy:
         ]
 
         if self.following_num and self.followed_by:
-            owner_relationship_info = "On session start was FOLLOWING {} users" " & had {} FOLLOWERS".format(
-                self.following_num, self.followed_by
+            owner_relationship_info = (
+                "On session start was FOLLOWING {} users"
+                " & had {} FOLLOWERS".format(self.following_num, self.followed_by)
             )
         else:
             owner_relationship_info = ""
@@ -5470,8 +5470,8 @@ class InstaPy:
                             and reply
                             and text_analysis_state is True
                         ):
-                            do_reply_to_comment = self.reply_to_comments_percent >= random.randint(
-                                0, 100
+                            do_reply_to_comment = (
+                                self.reply_to_comments_percent >= random.randint(0, 100)
                             )
 
                             comment_replies_base = self.comment_replies + (
