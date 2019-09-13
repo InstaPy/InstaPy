@@ -66,15 +66,18 @@ def is_private_profile(browser, logger, following=True):
     is_private = None
     try:
         is_private = browser.execute_script(
-            "return window._sharedData.entry_data."
-            "ProfilePage[0].graphql.user.is_private"
+            "return window.__additionalData[Object.keys(window.__additionalData)[0]]."
+            "data.graphql.user.is_private"
         )
 
     except WebDriverException:
         try:
+            browser.execute_script("location.reload()")
+            update_activity(browser, state=None)
+
             is_private = browser.execute_script(
-                "return window.__additionalData[Object.keys(window.__additionalData)[0]]."
-                "data.graphql.user.is_private"
+                "return window._sharedData.entry_data."
+                "ProfilePage[0].graphql.user.is_private"
             )
 
         except WebDriverException:
@@ -138,14 +141,25 @@ def validate_username(
             )
 
         except WebDriverException:
-            logger.error(
-                "Username validation failed!\t~cannot get the post " "owner's username"
-            )
-            inap_msg = (
-                "---> Sorry, this page isn't available!\t~either "
-                "link is broken or page is removed\n"
-            )
-            return False, inap_msg
+            try:
+                browser.execute_script("location.reload()")
+                update_activity(browser, state=None)
+
+                username = browser.execute_script(
+                    "return window._sharedData.entry_data."
+                    "PostPage[0].graphql.shortcode_media.owner.username"
+                )
+
+            except WebDriverException:
+                logger.error(
+                    "Username validation failed!\t~cannot get the post "
+                    "owner's username"
+                )
+                inap_msg = (
+                    "---> Sorry, this page isn't available!\t~either "
+                    "link is broken or page is removed\n"
+                )
+                return False, inap_msg
 
     else:
         username = username_or_link  # if there is no `/` in
@@ -156,8 +170,9 @@ def validate_username(
         return False, inap_msg
 
     if username in ignore_users:
-        inap_msg = "---> '{}' is in the `ignore_users` list\t~skipping " "user\n".format(
-            username
+        inap_msg = (
+            "---> '{}' is in the `ignore_users` list\t~skipping "
+            "user\n".format(username)
         )
         return False, inap_msg
 
@@ -414,16 +429,19 @@ def validate_username(
 
 
 def getUserData(
-    query, browser, basequery="return window._sharedData.entry_data.ProfilePage[0]."
+    query,
+    browser,
+    basequery="return window.__additionalData[Object.keys(window.__additionalData)[0]].data.",
 ):
-
     try:
         data = browser.execute_script(basequery + query)
         return data
     except WebDriverException:
+        browser.execute_script("location.reload()")
+        update_activity(browser, state=None)
+
         data = browser.execute_script(
-            "return window.__additionalData[Object.keys(window.__additionalData)[0]].data."
-            + query
+            "return window._sharedData." "entry_data.ProfilePage[0]." + query
         )
         return data
 
@@ -908,11 +926,13 @@ def click_element(browser, element, tryNum=0):
     2. element.send_keys("\n")
     3. browser.execute_script("document.getElementsByClassName('" +
     element.get_attribute("class") + "')[0].click()")
+
     I'm guessing all three have their advantages/disadvantages
     Before committing over this code, you MUST justify your change
     and potentially adding an 'if' statement that applies to your
     specific case. See the following issue for more details
     https://github.com/timgrossmann/InstaPy/issues/1232
+
     explaination of the following recursive function:
       we will attempt to click the element given, if an error is thrown
       we know something is wrong (element not in view, element doesn't
@@ -980,7 +1000,9 @@ def format_number(number):
     """
     Format number. Remove the unused comma. Replace the concatenation with
     relevant zeros. Remove the dot.
+
     :param number: str
+
     :return: int
     """
     formatted_num = number.replace(",", "")
@@ -1048,27 +1070,40 @@ def get_relationship_counts(browser, username, logger):
                     str(read_xpath(get_relationship_counts.__name__, "followers_count"))
                 ).text
             )
-
-            topCount_elements = browser.find_elements_by_xpath(
-                read_xpath(get_relationship_counts.__name__, "topCount_elements")
-            )
-
-            if topCount_elements:
-                followers_count = format_number(topCount_elements[1].text)
-
-            else:
-                logger.info(
-                    "Failed to get followers count of '{}'  ~empty "
-                    "list".format(username.encode("utf-8"))
-                )
-                followers_count = None
-
         except NoSuchElementException:
-            logger.error(
-                "Error occurred during getting the followers count "
-                "of '{}'\n".format(username.encode("utf-8"))
-            )
-            followers_count = None
+            try:
+                browser.execute_script("location.reload()")
+                update_activity(browser, state=None)
+
+                followers_count = browser.execute_script(
+                    "return window._sharedData.entry_data."
+                    "ProfilePage[0].graphql.user.edge_followed_by.count"
+                )
+
+            except WebDriverException:
+                try:
+                    topCount_elements = browser.find_elements_by_xpath(
+                        read_xpath(
+                            get_relationship_counts.__name__, "topCount_elements"
+                        )
+                    )
+
+                    if topCount_elements:
+                        followers_count = format_number(topCount_elements[1].text)
+
+                    else:
+                        logger.info(
+                            "Failed to get followers count of '{}'  ~empty "
+                            "list".format(username.encode("utf-8"))
+                        )
+                        followers_count = None
+
+                except NoSuchElementException:
+                    logger.error(
+                        "Error occurred during getting the followers count "
+                        "of '{}'\n".format(username.encode("utf-8"))
+                    )
+                    followers_count = None
 
     try:
         following_count = browser.execute_script(
@@ -1084,26 +1119,40 @@ def get_relationship_counts(browser, username, logger):
                 ).text
             )
 
-            topCount_elements = browser.find_elements_by_xpath(
-                read_xpath(get_relationship_counts.__name__, "topCount_elements")
-            )
-
-            if topCount_elements:
-                following_count = format_number(topCount_elements[2].text)
-
-            else:
-                logger.info(
-                    "Failed to get following count of '{}'  ~empty "
-                    "list".format(username.encode("utf-8"))
-                )
-            following_count = None
-
         except NoSuchElementException:
-            logger.error(
-                "\nError occurred during getting the following count "
-                "of '{}'\n".format(username.encode("utf-8"))
-            )
-            following_count = None
+            try:
+                browser.execute_script("location.reload()")
+                update_activity(browser, state=None)
+
+                following_count = browser.execute_script(
+                    "return window._sharedData.entry_data."
+                    "ProfilePage[0].graphql.user.edge_follow.count"
+                )
+
+            except WebDriverException:
+                try:
+                    topCount_elements = browser.find_elements_by_xpath(
+                        read_xpath(
+                            get_relationship_counts.__name__, "topCount_elements"
+                        )
+                    )
+
+                    if topCount_elements:
+                        following_count = format_number(topCount_elements[2].text)
+
+                    else:
+                        logger.info(
+                            "Failed to get following count of '{}'  ~empty "
+                            "list".format(username.encode("utf-8"))
+                        )
+                        following_count = None
+
+                except (NoSuchElementException, IndexError):
+                    logger.error(
+                        "\nError occurred during getting the following count "
+                        "of '{}'\n".format(username.encode("utf-8"))
+                    )
+                    following_count = None
 
     Event().profile_data_updated(username, followers_count, following_count)
     return followers_count, following_count
@@ -1453,7 +1502,16 @@ def check_authorization(browser, username, method, logger, notify=True):
             )
 
         except WebDriverException:
-            activity_counts = None
+            try:
+                browser.execute_script("location.reload()")
+                update_activity(browser, state=None)
+
+                activity_counts = browser.execute_script(
+                    "return window._sharedData.activity_counts"
+                )
+
+            except WebDriverException:
+                activity_counts = None
 
         # if user is not logged in, `activity_counts_new` will be `None`- JS
         # `null`
@@ -1463,7 +1521,14 @@ def check_authorization(browser, username, method, logger, notify=True):
             )
 
         except WebDriverException:
-            activity_counts_new = None
+            try:
+                browser.execute_script("location.reload()")
+                activity_counts_new = browser.execute_script(
+                    "return window._sharedData.config.viewer"
+                )
+
+            except WebDriverException:
+                activity_counts_new = None
 
         if activity_counts is None and activity_counts_new is None:
             if notify is True:
@@ -1528,6 +1593,9 @@ def find_user_id(browser, track, username, logger):
 
     except WebDriverException:
         try:
+            browser.execute_script("location.reload()")
+            update_activity(browser, state=None)
+
             user_id = browser.execute_script(
                 "return window._sharedData."
                 "entry_data.ProfilePage[0]."
@@ -1583,6 +1651,7 @@ def new_tab(browser):
 def explicit_wait(browser, track, ec_params, logger, timeout=35, notify=True):
     """
     Explicitly wait until expected condition validates
+
     :param browser: webdriver instance
     :param track: short name of the expected condition
     :param ec_params: expected condition specific parameters - [param1, param2]
@@ -1667,8 +1736,8 @@ def get_username_from_id(browser, user_id, logger):
 
     query_hash = "42323d64886122307be10013ad2dcc44"  # earlier-
     # "472f257a40c653c64c666ce877d59d2b"
-    graphql_query_URL = "https://www.instagram.com/graphql/query/?query_hash" "={}".format(
-        query_hash
+    graphql_query_URL = (
+        "https://www.instagram.com/graphql/query/?query_hash" "={}".format(query_hash)
     )
     variables = {"id": str(user_id), "first": 1}
     post_url = "{}&variables={}".format(graphql_query_URL, str(json.dumps(variables)))
@@ -1712,6 +1781,7 @@ def get_username_from_id(browser, user_id, logger):
     """  method using private API
     #logger.info("Trying to find the username from the given user ID by a
     quick API call")
+
     #req = requests.get(u"https://i.instagram.com/api/v1/users/{}/info/"
     #                   .format(user_id))
     #if req:
@@ -1726,8 +1796,10 @@ def get_username_from_id(browser, user_id, logger):
     # method using graphql 'Follow' endpoint
     logger.info("Trying to find the username from the given user ID "
                 "by using the GraphQL Follow endpoint")
+
     user_link_by_id = ("https://www.instagram.com/web/friendships/{}/follow/"
                        .format(user_id))
+
     web_address_navigator(browser, user_link_by_id)
     username = get_username(browser, "profile", logger)
     """
@@ -1996,6 +2068,7 @@ def has_any_letters(text):
 def save_account_progress(browser, username, logger):
     """
     Check account current progress and update database
+
     Args:
         :browser: web driver
         :username: Account to be updated
@@ -2224,8 +2297,10 @@ def parse_cli_args():
     ```parser.add_argument("--is-debug",
                            default=False,
                            type=lambda x: (str(x).capitalize() == "True"))```
+
     So that, you can pass bool values explicitly from CLI,
     ```python quickstart.py --is-debug True```
+
     NOTE: This style is the easiest of it and currently not being used.
     """
 
@@ -2330,6 +2405,7 @@ class CustomizedArgumentParser(ArgumentParser):
     """
      Subclass ArgumentParser in order to turn off
     the abbreviation matching on older pythons.
+
     `allow_abbrev` parameter was added by Python 3.5 to do it.
     Thanks to @paul.j3 - https://bugs.python.org/msg204678 for this solution.
     """
@@ -2339,6 +2415,7 @@ class CustomizedArgumentParser(ArgumentParser):
          Default of this method searches through all possible prefixes
         of the option string and all actions in the parser for possible
         interpretations.
+
         To view the original source of this method, running,
         ```
         import inspect; import argparse; inspect.getsourcefile(argparse)
