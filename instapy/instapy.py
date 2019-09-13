@@ -164,7 +164,7 @@ class InstaPy:
             Settings.database_location = localize_path(
                 "db", "instapy_{}.db".format(self.username)
             )
-            
+
         self.want_check_browser = want_check_browser
 
         self.do_comment = False
@@ -414,7 +414,7 @@ class InstaPy:
             self.logfolder,
             self.proxy_address,
             self.bypass_security_challenge_using,
-            self.want_check_browser
+            self.want_check_browser,
         ):
             message = (
                 "Unable to login to Instagram! "

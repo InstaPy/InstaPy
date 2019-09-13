@@ -266,7 +266,7 @@ def login_user(
     logfolder,
     proxy_address,
     security_code_to_phone,
-    want_check_browser
+    want_check_browser,
 ):
     """Logins the user with the given username and password"""
     assert username, "Username not provided"
