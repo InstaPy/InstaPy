@@ -1,7 +1,5 @@
-""" Custom Exceptions """
+"""Custom Exceptions"""
 
 
 class InstaPyError(Exception):
-    """ General error for InstaPy exceptions """
-
-    pass
+    """General error for InstaPy exceptions"""
