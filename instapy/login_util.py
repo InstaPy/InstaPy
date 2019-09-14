@@ -374,7 +374,7 @@ def login_user(
         .perform()
     )
 
-    sleep(3)
+    sleep(1)
 
     (
         ActionChains(browser)
@@ -449,9 +449,6 @@ def login_user(
         except NoSuchElementException:
             pass
 
-    # if "instagram.com/accounts/onetap" in browser.current_url:
-    #    browser.get("https://instagram.com")
-
     # check for wrong username or password message, and show it to the user
     try:
         error_alert = browser.find_element_by_xpath(
@@ -468,6 +465,9 @@ def login_user(
         return False
     except NoSuchElementException:
         pass
+
+    if "instagram.com/accounts/onetap" in browser.current_url:
+        browser.get("https://instagram.com")
 
     # wait until page fully load
     explicit_wait(browser, "PFL", [], logger, 5)
