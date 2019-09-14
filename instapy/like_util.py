@@ -1,7 +1,6 @@
 """ Module that handles the like features """
 import random
 import re
-import sys
 from re import findall
 
 from .time_util import sleep
@@ -652,7 +651,7 @@ def check_link(
 
     logger.info("Image from: {}".format(user_name.encode("utf-8")))
     logger.info("Link: {}".format(post_link.encode("utf-8")))
-    # logger.info("Description: {}".format(image_text.encode("utf-8")))
+    logger.info("Description: {}".format(image_text.encode("utf-8")))
 
     # Check if mandatory character set, before adding the location to the text
     if mandatory_language:
