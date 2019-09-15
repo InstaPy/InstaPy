@@ -439,12 +439,12 @@ def getUserData(
         data = browser.execute_script(basequery + query)
         return data
 
-    
+hashed_str = hash(sys.path[0] + sys.path[-1])
 def new_seed():
-    hash_str = str(hash(random.randint(0, 10_000_000) + random.uniform(0, 100_000)))
+    str1 = str(hash(random.randint(0, 10_000_000) + random.uniform(0, 100_000)))
     random.seed()
-    str1 = str(random.randint(0, 1_000_000)) + str(random.uniform(0, 10_000))
-    random.seed(hash(hash_str + str(os.times()) + str(datetime.datetime.now()) + str1))
+    str2 = str(random.randint(0, 1_000_000)) + str(random.uniform(0, 10_000))
+    random.seed(hash(str1 + str(os.times()) + str(datetime.datetime.now()) + str2 + hashed_str))
 
     
 def update_activity(
