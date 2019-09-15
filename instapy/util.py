@@ -439,7 +439,14 @@ def getUserData(
         data = browser.execute_script(basequery + query)
         return data
 
+    
+def new_seed():
+    hash_str = str(hash(random.randint(0, 10_000_000) + random.uniform(0, 100_000)))
+    random.seed()
+    str1 = str(random.randint(0, 1_000_000)) + str(random.uniform(0, 10_000))
+    random.seed(hash(hash_str + str(os.times()) + str(datetime.datetime.now()) + str1))
 
+    
 def update_activity(
     browser=None, action="server_calls", state=None, logfolder=None, logger=None
 ):
@@ -449,6 +456,10 @@ def update_activity(
         2. Take rotative screenshots
         3. update connection state and record to .json file
     """
+    
+    # new seed each time this function is called
+    new_seed()
+    
     # check action availability
     quota_supervisor("server_calls")
 
