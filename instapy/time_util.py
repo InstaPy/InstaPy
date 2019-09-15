@@ -4,6 +4,8 @@ from datetime import datetime
 from random import gauss
 from random import uniform
 
+from .util import new_seed
+
 # Amount of variance to be introduced
 # i.e. random time will be in the range: TIME +/- STDEV %
 STDEV = 0.5
@@ -29,6 +31,9 @@ def set_sleep_percentage(percentage):
 
 
 def sleep(t, custom_percentage=None):
+    # new seed each time this function is called
+    new_seed()
+    
     if custom_percentage is None:
         custom_percentage = sleep_percentage
     time = randomize_time(t) * custom_percentage
