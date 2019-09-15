@@ -1318,8 +1318,8 @@ class InstaPy:
             self.skip_non_business,
             self.skip_business_percentage,
             self.skip_business_categories,
-            self.skip_bio_keyword,
             self.dont_skip_business_categories,
+            self.skip_bio_keyword,
             self.logger,
             self.logfolder,
         )
