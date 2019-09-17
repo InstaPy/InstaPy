@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://i.imgur.com/sJzfZsL.jpg" width="150">
+  <img src="https://i.imgur.com/sJzfZsL.jpg" width="154">
   <h1 align="center">InstaPy</h1>
   <p align="center">Tooling that <b>automates</b> your social media interactions to “farm” Likes, Comments, and Followers on Instagram
 Implemented in Python using the Selenium module.<p>
@@ -79,8 +79,8 @@ To run InstaPy, you'll need to run the **[quickstart](https://github.com/InstaPy
 
 You can put in your account details now by passing the username and password parameters to the `InstaPy()` function in your **quickstart** script, like so: 
 ```python
-InstaPy(username="abc", 
-        password="123")
+InstaPy(username="abcd", 
+        password="1234")
 ```
 Or you can [pass them using the Command Line Interface (CLI)](#pass-arguments-by-cli).
 
@@ -92,7 +92,7 @@ Once you have your **quickstart** script configured you can execute the script w
 ```elm
 python quickstart.py
 -- or
-python quickstart.py --username abc --password 123
+python quickstart.py --username abcd --password 1234
 ```
 
 InstaPy will now open a browser window and start working.
@@ -154,7 +154,7 @@ If you should encounter any issue, please first [search for similar issues](http
 ### Do you want to support us?
 
 <a href="https://opencollective.com/instapy/donate" target="_blank">
-  <img align="left" hspace="10" src="https://opencollective.com/instapy/contribute/button@2x.png?color=blue" width=300 />
+  <img align="left" hspace="11" src="https://opencollective.com/instapy/contribute/button@2x.png?color=blue" width=300 />
 </a>
 
 <a href="https://www.paypal.me/supportInstaPy">
