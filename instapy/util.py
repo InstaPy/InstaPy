@@ -30,6 +30,7 @@ from selenium.webdriver.common.by import By
 
 from .time_util import sleep
 from .time_util import sleep_actual
+from .time_util import new_seed
 from .database_engine import get_database
 from .quota_supervisor import quota_supervisor
 from .settings import Settings
@@ -438,13 +439,6 @@ def getUserData(
 
         data = browser.execute_script(basequery + query)
         return data
-
-    
-path_str = sys.path[0] + os.get_exec_path()[0] + sys.path[-1] + os.get_exec_path()[-1] + str(os.getpid())
-
-
-def new_seed():
-    random.seed(str(random.randint(0, 1_000_000)) + str(os.times()) + str(datetime.datetime.now()) + path_str)
 
     
 def update_activity(
