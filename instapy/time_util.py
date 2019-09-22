@@ -6,16 +6,15 @@ from random import uniform
 from random import randint
 from random import seed
 from sys import path
-from os import get_exec_path()
-from os import getpid()
-from os import times()
+from os import get_exec_path
+from os import getpid
+from os import times
 
 # Amount of variance to be introduced
 # i.e. random time will be in the range: TIME +/- STDEV %
 STDEV = 0.5
 sleep_percentage = 1
 sleep_percentage = sleep_percentage * uniform(0.9, 1.1)
-
 
 path_str = path[0] + get_exec_path()[0] + path[-1] + get_exec_path()[-1] + str(getpid())
 
