@@ -1,5 +1,5 @@
 from .xpath_compile import xpath
-from .util import new_seed
+from .time_util import new_seed
 
 
 
