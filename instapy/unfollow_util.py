@@ -291,7 +291,12 @@ def unfollow(
         )
         amount = allfollowing
 
-    if customList is True or InstapyFollowed is True or nonFollowers is True or allFollowing is True:
+    if (
+        customList is True
+        or InstapyFollowed is True
+        or nonFollowers is True
+        or allFollowing is True
+    ):
 
         if nonFollowers is True:
             InstapyFollowed = False
@@ -380,15 +385,15 @@ def unfollow(
         elif allFollowing is True:
             logger.info("Unfollowing the users you are following")
             unfollow_list = get_following(
-                    browser,
-                    username,
-                    "full",
-                    relationship_data,
-                    False,
-                    True,
-                    logger,
-                    logfolder,
-                )
+                browser,
+                username,
+                "full",
+                relationship_data,
+                False,
+                True,
+                logger,
+                logfolder,
+            )
 
         if len(unfollow_list) < 1:
             logger.info("There are no any users available to unfollow")
