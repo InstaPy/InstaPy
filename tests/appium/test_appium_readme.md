@@ -24,6 +24,7 @@ This guide describes how to setup an enviroment for testing the new appium insta
 8. Install the instagram apk: `adb install [INSERT THE PATH TO YOUR DOWNLOADED INSTAGRAM APK]`
 
 9. Add the `ANDROID_HOME` variable to your environment variables with path being the path to `[FULL PATH HERE]/Sdk/` mentioned in earlier steps
+For Ubuntu: Dont use the symbol '~' in the path, because the appium parser doesnt seem to recognize it.
 
 10. Start your appium server with default settings
 
