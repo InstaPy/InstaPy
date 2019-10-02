@@ -1,22 +1,15 @@
 """OS Modules environ method to get the setup vars from the Environment"""
 # import built-in & third-party modules
-import time
+import time, random, os, csv, json, random, requests, logging, unicodedata
 from datetime import datetime, timedelta
 from math import ceil
-import random
 from sys import platform
 from platform import python_version
-import os
-import csv
-import json
-import requests
 from selenium import webdriver
 from selenium.webdriver import DesiredCapabilities
-import logging
 import logging.handlers
 from contextlib import contextmanager
 from copy import deepcopy
-import unicodedata
 
 try:
     from pyvirtualdisplay import Display
