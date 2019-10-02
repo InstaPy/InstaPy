@@ -1686,12 +1686,13 @@ Additional parameters:
    - proxy if you need one, here is the structure that needs to be passed
     
 ```python 
-    {
+    example_proxy = {
          'proxy_url': 'http://PROXY_HOST:PROXY_PORT/',
          # Optional, if you need authentication:
          'username': 'PROXY_USER',
          'password': 'PROXY_PASS',
      }
+     telegram = InstaPytelegramBot(... , proxy=example_proxy)
 ```
 
 #### Additional functionality
