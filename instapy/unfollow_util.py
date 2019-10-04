@@ -292,6 +292,9 @@ def unfollow(
 
     if customList is True or InstapyFollowed is True or nonFollowers is True:
 
+        if nonFollowers is True:
+            InstapyFollowed = False
+
         if customList is True:
             logger.info("Unfollowing from the list of pre-defined usernames\n")
             unfollow_list = customList_data

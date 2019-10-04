@@ -921,7 +921,7 @@ def verify_liking(browser, maximum, minimum, logger):
             "{}".format(likes_count)
         )
         return False
-    elif min is not None and likes_count < minimum:
+    elif minimum is not None and likes_count < minimum:
         logger.info(
             "Not liked this post! ~less likes exist off minumum limit "
             "at {}".format(likes_count)

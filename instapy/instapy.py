@@ -1318,8 +1318,8 @@ class InstaPy:
             self.skip_non_business,
             self.skip_business_percentage,
             self.skip_business_categories,
-            self.skip_bio_keyword,
             self.dont_skip_business_categories,
+            self.skip_bio_keyword,
             self.logger,
             self.logfolder,
         )
@@ -3041,6 +3041,15 @@ class InstaPy:
     def interact_user_followers(
         self, usernames: list, amount: int = 10, randomize: bool = False
     ):
+        """
+        Interact with the people that a given user is followed by.
+
+        set_do_comment, set_do_follow and set_do_like are applicable.
+
+        :param usernames: List of users to interact with their followers.
+        :param amount: Amount of followers to interact with.
+        :param randomize: If followers should be chosen randomly.
+        """
 
         if self.aborting:
             return self
@@ -3131,7 +3140,7 @@ class InstaPy:
                 )
 
                 validation, details = self.validate_user_call(person)
-                if validation is not True:
+                if not validation:
                     self.logger.info(details)
                     not_valid_users += 1
 
@@ -3152,7 +3161,7 @@ class InstaPy:
                             self.logger,
                             self.logfolder,
                         )
-                        if unfollow_state is True:
+                        if unfollow_state:
                             simulated_unfollow += 1
 
                     continue
@@ -3160,7 +3169,7 @@ class InstaPy:
                 # Do interactions if any
                 do_interact = random.randint(0, 100) <= self.user_interact_percentage
 
-                if do_interact is False:
+                if not do_interact:
                     self.logger.info(
                         "Skipping user '{}' due to the interaction "
                         "percentage of {}".format(person, self.user_interact_percentage)
