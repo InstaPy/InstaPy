@@ -762,7 +762,6 @@ class InstaPy:
 
             count = limit if limit < data["count"] else data["count"]
             i = 0
-            tags = []
             while i < count:
                 self.smart_location_hashtags.append(data["tags"][i]["tag"])
                 i += 1
