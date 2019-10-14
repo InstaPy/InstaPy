@@ -621,7 +621,7 @@ def check_link(
         )
 
     else:
-        media = post_page[0]["media"]
+        media = post_page[0]["shortcode_media"]
         is_video = media["is_video"]
         user_name = media["owner"]["username"]
         image_text = media["caption"]
