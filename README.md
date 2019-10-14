@@ -34,7 +34,7 @@ Implemented in Python using the Selenium module.<p>
 
 
 **Newsletter: [Sign Up for the Newsletter here!](http://eepurl.com/cZbV_v)**   
-**Offical Video Guide: [Get it here!](https://www.udemy.com/instapy-guide/?couponCode=INSTAPY_OFFICIAL)**
+**Official Video Guide: [Get it here!](https://www.udemy.com/instapy-guide/?couponCode=INSTAPY_OFFICIAL)**
 
 
 ## Table of contents
