@@ -416,7 +416,7 @@ def validate_username(
             logger.error("~cannot get user bio")
             return False, "---> Sorry, couldn't get get user bio " "account active\n"
         for bio_keyword in skip_bio_keyword:
-            if map(lambda x:x.lower(),bio_keyword) in map(lambda x:x.lower(),profile_bio):
+            if map(lambda x: x.lower(), bio_keyword) in map(lambda x: x.lower(), profile_bio):
                 return (
                     False,
                     "{} has a bio keyword of {}, by default skip\n".format(
