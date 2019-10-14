@@ -33,6 +33,7 @@ from .print_log_writer import log_record_all_unfollowed
 from .print_log_writer import get_log_time
 from .relationship_tools import get_followers
 from .relationship_tools import get_nonfollowers
+from .relationship_tools import get_following
 from .database_engine import get_database
 from .quota_supervisor import quota_supervisor
 from .util import is_follow_me
@@ -290,7 +291,12 @@ def unfollow(
         )
         amount = allfollowing
 
-    if customList is True or InstapyFollowed is True or nonFollowers is True:
+    if (
+        customList is True
+        or InstapyFollowed is True
+        or nonFollowers is True
+        or allFollowing is True
+    ):
 
         if nonFollowers is True:
             InstapyFollowed = False
@@ -375,6 +381,18 @@ def unfollow(
             logger.info(
                 "Total {} users available to unfollow  ~didn't pass "
                 "`unfollow_after`: {}\n".format(len(unfollow_list), len(non_eligible))
+            )
+        elif allFollowing is True:
+            logger.info("Unfollowing the users you are following")
+            unfollow_list = get_following(
+                browser,
+                username,
+                "full",
+                relationship_data,
+                False,
+                True,
+                logger,
+                logfolder,
             )
 
         if len(unfollow_list) < 1:
@@ -559,201 +577,6 @@ def unfollow(
                     continue
         except BaseException as e:
             logger.error("Unfollow loop error:  {}\n".format(str(e)))
-    elif allFollowing is True:
-        # FIXME: this is not working since last get_users_through_dialog_with_graphql update,
-        # now we're using graphql, the dialog is not required anymore, and
-        # get_users_through_dialog_with_graphql function will return two values
-        # (have a look on how get_given_user_followers is using it)
-        logger.info("Unfollowing the users you are following")
-        logger.warn("all Following option is not working at the moment, leaving...")
-        return 0
-
-        # unfollow from profile
-        try:
-            following_link = browser.find_elements_by_xpath(
-                read_xpath(unfollow.__name__, "following_link")
-            )
-
-            click_element(browser, following_link[0])
-            # update server calls
-            update_activity(browser, state=None)
-        except BaseException as e:
-            logger.error("following_link error {}".format(str(e)))
-            return 0
-
-        # scroll down the page to get sufficient amount of usernames
-        get_users_through_dialog_with_graphql(
-            browser,
-            None,
-            username,
-            amount,
-            allfollowing,
-            False,
-            None,
-            None,
-            None,
-            {"enabled": False, "percentage": 0},
-            "Unfollow",
-            jumps,
-            logger,
-            logfolder,
-        )
-
-        # find dialog box
-        dialog = browser.find_element_by_xpath(
-            read_xpath(unfollow.__name__, "find_dialog_box")
-        )
-
-        sleep(3)
-
-        # get persons, unfollow buttons, and length of followed pool
-        person_list_a = dialog.find_elements_by_tag_name("a")
-        person_list = []
-
-        for person in person_list_a:
-
-            if person and hasattr(person, "text") and person.text:
-                person_list.append(person.text)
-
-        follow_buttons = dialog.find_elements_by_tag_name("button")
-
-        # re-generate person list to unfollow according to the
-        # `unfollow_after` parameter
-        user_info = list(zip(follow_buttons, person_list))
-        non_eligible = []
-        not_found = []
-
-        for button, person in user_info:
-            if person not in automatedFollowedPool["all"].keys():
-                not_found.append(person)
-            elif (
-                person in automatedFollowedPool["all"].keys()
-                and person not in automatedFollowedPool["eligible"].keys()
-            ):
-                non_eligible.append(person)
-
-        user_info = [pair for pair in user_info if pair[1] not in non_eligible]
-        logger.info(
-            "Total {} users available to unfollow"
-            "  ~not found in 'followedPool.csv': {}  |  didn't pass "
-            "`unfollow_after`: {}".format(
-                len(user_info), len(not_found), len(non_eligible)
-            )
-        )
-
-        if len(user_info) < 1:
-            logger.info("There are no any users to unfollow")
-            return 0
-        elif len(user_info) < amount:
-            logger.info(
-                "Could not grab requested amount of usernames to unfollow:  "
-                "{}/{}  ~using available amount".format(len(user_info), amount)
-            )
-            amount = len(user_info)
-
-        if style == "LIFO":
-            user_info = list(reversed(user_info))
-        elif style == "RANDOM":
-            random.shuffle(user_info)
-
-        # unfollow loop
-        try:
-            hasSlept = False
-
-            for button, person in user_info:
-                if unfollowNum >= amount:
-                    logger.info(
-                        "--> Total unfollowNum reached it's amount given: {}".format(
-                            unfollowNum
-                        )
-                    )
-                    break
-
-                if jumps["consequent"]["unfollows"] >= jumps["limit"]["unfollows"]:
-                    logger.warning(
-                        "--> Unfollow quotient reached its peak!\t~leaving "
-                        "Unfollow-Users activity\n"
-                    )
-                    break
-
-                if (
-                    unfollowNum != 0
-                    and hasSlept is False
-                    and unfollowNum % 10 == 0
-                    and sleep_delay not in [0, None]
-                ):
-                    logger.info(
-                        "sleeping for about {} min\n".format(int(sleep_delay / 60))
-                    )
-                    sleep(sleep_delay)
-                    hasSlept = True
-                    pass
-
-                if person not in dont_include:
-                    logger.info(
-                        "Ongoing Unfollow [{}/{}]: now unfollowing '{}'...".format(
-                            unfollowNum + 1, amount, person.encode("utf-8")
-                        )
-                    )
-
-                    person_id = (
-                        automatedFollowedPool["all"][person]["id"]
-                        if person in automatedFollowedPool["all"].keys()
-                        else False
-                    )
-
-                    try:
-                        unfollow_state, msg = unfollow_user(
-                            browser,
-                            "dialog",
-                            username,
-                            person,
-                            person_id,
-                            button,
-                            relationship_data,
-                            logger,
-                            logfolder,
-                        )
-                    except Exception as exc:
-                        logger.error(
-                            "Unfollow loop error:\n\n{}\n\n".format(
-                                str(exc).encode("utf-8")
-                            )
-                        )
-
-                    if unfollow_state is True:
-                        unfollowNum += 1
-                        # reset jump counter after a successful unfollow
-                        jumps["consequent"]["unfollows"] = 0
-
-                    elif msg == "jumped":
-                        # will break the loop after certain consecutive jumps
-                        jumps["consequent"]["unfollows"] += 1
-
-                    elif msg in ["temporary block", "not connected", "not logged in"]:
-                        # break the loop in extreme conditions to prevent
-                        # misbehaviours
-                        logger.warning(
-                            "There is a serious issue: '{}'!\t~leaving "
-                            "Unfollow-Users activity".format(msg)
-                        )
-                        break
-
-                    # To only sleep once until there is the next unfollow
-                    if hasSlept:
-                        hasSlept = False
-
-                else:
-                    logger.info(
-                        "Not unfollowing '{}'!  ~user is in the "
-                        "whitelist\n".format(person)
-                    )
-
-        except Exception as exc:
-            logger.error(
-                "Unfollow loop error:\n\n{}\n\n".format(str(exc).encode("utf-8"))
-            )
-
     else:
         logger.info(
             "Please select a proper unfollow method!  ~leaving unfollow " "activity\n"
