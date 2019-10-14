@@ -121,6 +121,7 @@ class InstaPy:
         geckodriver_path: str = None,
         split_db: bool = False,
         bypass_security_challenge_using: str = "email",
+        want_check_browser: bool = True,
     ):
         print("InstaPy Version: {}".format(__version__))
         cli_args = parse_cli_args()
@@ -132,6 +133,7 @@ class InstaPy:
         proxy_port = cli_args.proxy_port or proxy_port
         disable_image_load = cli_args.disable_image_load or disable_image_load
         split_db = cli_args.split_db or split_db
+        want_check_browser = cli_args.want_check_browser or want_check_browser
 
         Settings.InstaPy_is_running = True
         # workspace must be ready before anything
@@ -163,6 +165,8 @@ class InstaPy:
             Settings.database_location = localize_path(
                 "db", "instapy_{}.db".format(self.username)
             )
+
+        self.want_check_browser = want_check_browser
 
         self.do_comment = False
         self.comment_percentage = 0
@@ -411,6 +415,7 @@ class InstaPy:
             self.logfolder,
             self.proxy_address,
             self.bypass_security_challenge_using,
+            self.want_check_browser,
         ):
             message = (
                 "Unable to login to Instagram! "
