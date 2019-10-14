@@ -1,6 +1,6 @@
 """OS Modules environ method to get the setup vars from the Environment"""
 # import built-in & third-party modules
-import time, random, os, csv, json, random, requests, logging, unicodedata
+import time, random, os, csv, json, requests, logging, unicodedata
 from datetime import datetime, timedelta
 from math import ceil
 from sys import platform
