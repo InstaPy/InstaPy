@@ -164,7 +164,7 @@ def check_browser(browser, logfolder, logger, proxy_address):
     # check connection status
     try:
         logger.info("-- Connection Checklist [1/3] (Internet Connection Status)")
-        browser.get("view-source:https://api.myip.com/")
+        browser.get("view-source:https://ip4.seeip.org/geoip")
         pre = browser.find_element_by_tag_name("pre").text
         current_ip_info = json.loads(pre)
         if (
@@ -186,7 +186,7 @@ def check_browser(browser, logfolder, logger, proxy_address):
                 '- Current IP is "{}" and it\'s from "{}/{}"'.format(
                     current_ip_info["ip"],
                     current_ip_info["country"],
-                    current_ip_info["cc"],
+                    current_ip_info["country_code"],
                 )
             )
             update_activity(
