@@ -165,6 +165,13 @@ If you should encounter any issue, please first [search for similar issues](http
 Check out this short guide on [how to start contributing!](https://github.com/InstaPy/instapy-docs/blob/master/CONTRIBUTORS.md).
 
 ## Credits
+
+### Community
+An active and supportive community is what every open-source project needs to sustain. Together we reached every continent and most of the countries in the world!   
+Thank you all for being part of the InstaPy community ✌️
+
+![InstaPy reach](https://i.imgur.com/XkxHcM7r.png)
+
 ### Contributors
 
 This project exists thanks to all the people who contribute. [[Contribute](https://github.com/timgrossmann/InstaPy/wiki/How-to-Contribute)].
