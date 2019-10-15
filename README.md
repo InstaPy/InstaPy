@@ -82,7 +82,7 @@ You can put in your account details now by passing the username and password par
 InstaPy(username="abcd", 
         password="1234")
 ```
-Or you can [pass them using the Command Line Interface (CLI)](#pass-arguments-by-cli).
+Or you can [pass them using the Command Line Interface (CLI)](./DOCUMENTATION.md#pass-arguments-by-cli).
 
 > If you've used _InstaPy_ before installing it by **pip**, you have to move your _old_ data to the new **workspace** folder for once.
 [Read how to do this here](./DOCUMENTATION.md#migrating-your-data-to-the-workspace-folder).
