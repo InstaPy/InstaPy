@@ -154,8 +154,10 @@ If you should encounter any issue, please first [search for similar issues](http
 ### Do you want to support us?
 
 <a href="https://opencollective.com/instapy/donate" target="_blank">
-  <img align="left" hspace="11" src="https://opencollective.com/instapy/contribute/button@2x.png?color=blue" width=300 />
+  <img hspace="11" src="https://opencollective.com/instapy/contribute/button@2x.png?color=blue" width=300 />
 </a>
+
+<br />
 
 **Help build InstaPy!**      
 Check out this short guide on [how to start contributing!](https://github.com/InstaPy/instapy-docs/blob/master/CONTRIBUTORS.md).
