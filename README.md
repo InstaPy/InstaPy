@@ -157,10 +157,6 @@ If you should encounter any issue, please first [search for similar issues](http
   <img align="left" hspace="11" src="https://opencollective.com/instapy/contribute/button@2x.png?color=blue" width=300 />
 </a>
 
-<a href="https://www.paypal.me/supportInstaPy">
-  <img hspace="14" alt="paypalme" src="http://codeinpython.com/tutorials/wp-content/uploads/2017/09/PayPal-ME-300x300.jpg.png" width=100 />
-</a>
-
 **Help build InstaPy!**      
 Check out this short guide on [how to start contributing!](https://github.com/InstaPy/instapy-docs/blob/master/CONTRIBUTORS.md).
 
