@@ -1,22 +1,15 @@
 """OS Modules environ method to get the setup vars from the Environment"""
 # import built-in & third-party modules
-import time
+import time, random, os, csv, json, requests, logging, unicodedata
 from datetime import datetime, timedelta
 from math import ceil
-import random
 from sys import platform
 from platform import python_version
-import os
-import csv
-import json
-import requests
 from selenium import webdriver
 from selenium.webdriver import DesiredCapabilities
-import logging
 import logging.handlers
 from contextlib import contextmanager
 from copy import deepcopy
-import unicodedata
 
 try:
     from pyvirtualdisplay import Display
@@ -29,6 +22,7 @@ from .clarifai_util import check_image
 from .comment_util import comment_image
 from .comment_util import verify_commenting
 from .comment_util import get_comments_on_post
+from .constants import MEDIA_PHOTO, MEDIA_VIDEO
 from .like_util import check_link
 from .like_util import verify_liking
 from .like_util import get_links_for_tag
@@ -120,6 +114,7 @@ class InstaPy:
         geckodriver_path: str = None,
         split_db: bool = False,
         bypass_security_challenge_using: str = "email",
+        want_check_browser: bool = True,
     ):
         print("InstaPy Version: {}".format(__version__))
         cli_args = parse_cli_args()
@@ -131,6 +126,7 @@ class InstaPy:
         proxy_port = cli_args.proxy_port or proxy_port
         disable_image_load = cli_args.disable_image_load or disable_image_load
         split_db = cli_args.split_db or split_db
+        want_check_browser = cli_args.want_check_browser or want_check_browser
 
         Settings.InstaPy_is_running = True
         # workspace must be ready before anything
@@ -162,6 +158,8 @@ class InstaPy:
             Settings.database_location = localize_path(
                 "db", "instapy_{}.db".format(self.username)
             )
+
+        self.want_check_browser = want_check_browser
 
         self.do_comment = False
         self.comment_percentage = 0
@@ -410,6 +408,7 @@ class InstaPy:
             self.logfolder,
             self.proxy_address,
             self.bypass_security_challenge_using,
+            self.want_check_browser,
         ):
             message = (
                 "Unable to login to Instagram! "
@@ -496,7 +495,7 @@ class InstaPy:
         if self.aborting:
             return self
 
-        if media not in [None, "Photo", "Video"]:
+        if media not in [None, MEDIA_PHOTO, MEDIA_VIDEO]:
             self.logger.warning('Unkown media type! Treating as "any".')
             media = None
 
@@ -756,7 +755,6 @@ class InstaPy:
 
             count = limit if limit < data["count"] else data["count"]
             i = 0
-            tags = []
             while i < count:
                 self.smart_location_hashtags.append(data["tags"][i]["tag"])
                 i += 1
@@ -5142,7 +5140,7 @@ class InstaPy:
 
             return self
 
-        if media in ["Photo", "Video"]:
+        if media in [MEDIA_PHOTO, MEDIA_VIDEO]:
             attr = "{}_comment_replies".format(media.lower())
             setattr(self, attr, replies)
 
@@ -5251,7 +5249,7 @@ class InstaPy:
         if not isinstance(usernames, list):
             usernames = [usernames]
 
-        if media not in ["Photo", "Video", None]:
+        if media not in [MEDIA_PHOTO, MEDIA_VIDEO, None]:
             self.logger.warning(
                 "Unkown media type- '{}' set at"
                 " Interact-By-Comments!\t~treating as any..".format(media)

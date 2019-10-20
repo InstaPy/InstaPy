@@ -34,7 +34,7 @@ Implemented in Python using the Selenium module.<p>
 
 
 **Newsletter: [Sign Up for the Newsletter here!](http://eepurl.com/cZbV_v)**   
-**Offical Video Guide: [Get it here!](https://www.udemy.com/instapy-guide/?couponCode=INSTAPY_OFFICIAL)**
+**Official Video Guide: [Get it here!](https://www.udemy.com/instapy-guide/?couponCode=INSTAPY_OFFICIAL)**
 
 
 ## Table of contents
@@ -82,7 +82,7 @@ You can put in your account details now by passing the username and password par
 InstaPy(username="abcd", 
         password="1234")
 ```
-Or you can [pass them using the Command Line Interface (CLI)](#pass-arguments-by-cli).
+Or you can [pass them using the Command Line Interface (CLI)](./DOCUMENTATION.md#pass-arguments-by-cli).
 
 > If you've used _InstaPy_ before installing it by **pip**, you have to move your _old_ data to the new **workspace** folder for once.
 [Read how to do this here](./DOCUMENTATION.md#migrating-your-data-to-the-workspace-folder).
@@ -154,12 +154,10 @@ If you should encounter any issue, please first [search for similar issues](http
 ### Do you want to support us?
 
 <a href="https://opencollective.com/instapy/donate" target="_blank">
-  <img align="left" hspace="11" src="https://opencollective.com/instapy/contribute/button@2x.png?color=blue" width=300 />
+  <img hspace="11" src="https://opencollective.com/instapy/contribute/button@2x.png?color=blue" width=300 />
 </a>
 
-<a href="https://www.paypal.me/supportInstaPy">
-  <img hspace="14" alt="paypalme" src="http://codeinpython.com/tutorials/wp-content/uploads/2017/09/PayPal-ME-300x300.jpg.png" width=100 />
-</a>
+<br />
 
 **Help build InstaPy!**      
 Check out this short guide on [how to start contributing!](https://github.com/InstaPy/instapy-docs/blob/master/CONTRIBUTORS.md).

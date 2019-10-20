@@ -67,6 +67,7 @@
 - **[Instance Settings](#instance-settings)**
   - [Running on a Headless Browser](#running-on-a-headless-browser)
   - [Bypass Suspicious Login Attempt](#bypass-suspicious-login-attempt)
+  - [Running internet connection checks](#running-internet-connection-checks)
   - [Use a proxy](#use-a-proxy)
   - [Running in threads](#running-in-threads)
   
@@ -1765,6 +1766,18 @@ session = InstaPy(username=insta_username,
                   proxy_port=4444)
 ```
 
+### Running internet connection checks
+InstaPy performs a few checks online, including you connection and the availability of Instagram servers. These checks sometimes fail because Instapy uses third party services to perform these checks. Nevertheless, you can override these checks with this variable: `want_check_browser`.
+
+`want_check_browser` default is True, you can set it to false at session start. Recommend to do this if experiencing connection errors.
+
+example:
+```python
+session = InstaPy(username=insta_username,
+                  password=insta_password,
+                  want_check_browser=False)
+```
+
 ### Running in threads
 If you're running InstaPy in threads and get exception `ValueError: signal only works in main thread` , you have to properly close the session.
 There is two ways to do it:
@@ -1785,6 +1798,8 @@ session.login()
 # some activity here ...
 session.end(threaded_session=True)
 ```
+
+
 
 ---
 

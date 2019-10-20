@@ -2285,6 +2285,12 @@ def parse_cli_args():
         action="store_true",
         default=None,
     )
+    parser.add_argument(
+        "-wcb",
+        "--want_check_browser",
+        help="Check connectivity before connecting to Instagram",
+        default=None,
+    )
 
     """ Style below can convert strings into booleans:
     ```parser.add_argument("--is-debug",

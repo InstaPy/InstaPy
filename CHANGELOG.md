@@ -3,6 +3,25 @@
 The **goal** of this file is explaining to the users of our project the notable changes _relevant to them_ that occurred _between_ commits.
 
 _The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html)_.
+
+
+## [0.6.5] - 2019-10-20
+
+### Added
+
+- Additional CLI-Argument for connection checks
+
+### Changed
+
+- Post types now as Enum in separate file
+
+### Fixed
+
+- Internet connection checks
+- Small typos in documentation
+- Firefox Proxy error
+
+
 ## [0.6.4] - 2019-09-15
 
 ### Fixed
@@ -18,7 +37,7 @@ _The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 - Improved documentation
 - Added "no_comments" for Pods
-- Improve Tox / Travis testing
+- Improved Tox / Travis testing
 - Improved random sleep delay
 - Telegram support
 

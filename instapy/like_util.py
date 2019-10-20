@@ -3,6 +3,7 @@ import random
 import re
 from re import findall
 
+from .constants import MEDIA_PHOTO, MEDIA_CAROUSEL, MEDIA_ALL_TYPES
 from .time_util import sleep
 from .util import format_number
 from .util import add_user_to_blacklist
@@ -83,14 +84,16 @@ def get_main_element(browser, link_elems, skip_top_posts):
 def get_links_for_location(
     browser, location, amount, logger, media=None, skip_top_posts=True
 ):
-    """Fetches the number of links specified
-    by amount and returns a list of links"""
+    """
+    Fetches the number of links specified by amount and returns a list of links
+    """
+
     if media is None:
         # All known media types
-        media = ["Photo", "Carousel", "Video"]
-    elif media == "Photo":
+        media = MEDIA_ALL_TYPES
+    elif media == MEDIA_PHOTO:
         # Include posts with multiple images in it
-        media = ["Photo", "Carousel"]
+        media = [MEDIA_PHOTO, MEDIA_CAROUSEL]
     else:
         # Make it an array to use it in the following part
         media = [media]
@@ -235,14 +238,16 @@ def get_links_for_location(
 
 
 def get_links_for_tag(browser, tag, amount, skip_top_posts, randomize, media, logger):
-    """Fetches the number of links specified
-    by amount and returns a list of links"""
+    """
+    Fetches the number of links specified by amount and returns a list of links
+    """
+
     if media is None:
         # All known media types
-        media = ["Photo", "Carousel", "Video"]
-    elif media == "Photo":
+        media = MEDIA_ALL_TYPES
+    elif media == MEDIA_PHOTO:
         # Include posts with multiple images in it
-        media = ["Photo", "Carousel"]
+        media = [MEDIA_PHOTO, MEDIA_CAROUSEL]
     else:
         # Make it an array to use it in the following part
         media = [media]
@@ -416,14 +421,16 @@ def get_links_for_username(
     media=None,
     taggedImages=False,
 ):
-    """Fetches the number of links specified
-    by amount and returns a list of links"""
+    """
+    Fetches the number of links specified by amount and returns a list of links
+    """
+
     if media is None:
         # All known media types
-        media = ["Photo", "Carousel", "Video"]
-    elif media == "Photo":
+        media = MEDIA_ALL_TYPES
+    elif media == MEDIA_PHOTO:
         # Include posts with multiple images in it
-        media = ["Photo", "Carousel"]
+        media = [MEDIA_PHOTO, MEDIA_CAROUSEL]
     else:
         # Make it an array to use it in the following part
         media = [media]
@@ -614,7 +621,7 @@ def check_link(
         )
 
     else:
-        media = post_page[0]["media"]
+        media = post_page[0]["shortcode_media"]
         is_video = media["is_video"]
         user_name = media["owner"]["username"]
         image_text = media["caption"]
@@ -854,7 +861,7 @@ def get_links(browser, page, logger, media, element):
                         "//a[@href='/p/" + post_href.split("/")[-2] + "/']/child::div"
                     )
 
-                    if len(post_elem) == 1 and "Photo" in media:
+                    if len(post_elem) == 1 and MEDIA_PHOTO in media:
                         # Single photo
                         links.append(post_href)
 
