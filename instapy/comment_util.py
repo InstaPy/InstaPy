@@ -245,6 +245,7 @@ def get_comments_on_post(
     commenters = []
     # wait for page fully load [IMPORTANT!]
     explicit_wait(browser, "PFL", [], logger, 10)
+    sleep(3) # extra sleep just to wait DOM finish load - very important!
 
     try:
         all_comment_like_buttons = browser.find_elements_by_xpath(
