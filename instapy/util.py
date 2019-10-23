@@ -33,6 +33,7 @@ from .time_util import sleep_actual
 from .database_engine import get_database
 from .quota_supervisor import quota_supervisor
 from .settings import Settings
+from .public_tools import truncate_float
 
 from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import WebDriverException

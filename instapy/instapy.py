@@ -47,11 +47,11 @@ from .util import web_address_navigator
 from .util import interruption_handler
 from .util import highlight_print
 from .util import dump_record_activity
-from .util import truncate_float
 from .util import save_account_progress
 from .util import parse_cli_args
 from .util import get_cord_location
 from .util import get_bounding_box
+from .public_tools import truncate_float
 from .unfollow_util import get_given_user_followers
 from .unfollow_util import get_given_user_following
 from .unfollow_util import unfollow

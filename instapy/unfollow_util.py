@@ -25,7 +25,7 @@ from .util import is_page_available
 from .util import reload_webpage
 from .util import click_visibly
 from .util import get_action_delay
-from .util import truncate_float
+from .public_tools import truncate_float
 from .util import get_query_hash
 from .print_log_writer import log_followed_pool
 from .print_log_writer import log_uncertain_unfollowed_pool

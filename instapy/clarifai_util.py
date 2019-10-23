@@ -5,6 +5,7 @@ from clarifai.rest import Workflow
 from selenium.common.exceptions import NoSuchElementException
 
 from .xpath import read_xpath
+from .public_tools import truncate_float as tf
 
 
 def check_image(
