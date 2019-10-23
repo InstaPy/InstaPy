@@ -2662,7 +2662,8 @@ class InstaPy:
             if story:
                 self.story_by_users([username])
 
-            if liked_img < amount:
+            if liked_img < amount and links:
+                # if no links, then will be no likes, so no need for this block
                 self.logger.info("-------------")
                 self.logger.info(
                     "--> Given amount not fullfilled, image pool " "reached its end\n"
