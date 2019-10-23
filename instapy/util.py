@@ -33,6 +33,7 @@ from .time_util import sleep_actual
 from .database_engine import get_database
 from .quota_supervisor import quota_supervisor
 from .settings import Settings
+from .clarifai_util import match_demographics_filters
 from .public_tools import truncate_float
 
 from selenium.common.exceptions import NoSuchElementException
@@ -424,6 +425,15 @@ def validate_username(
                         username, bio_keyword
                     ),
                 )
+
+    # match demographics info per profile pictue
+    profile_pic_URL, pp_msg = get_profile_pic_URL(browser, username, logger)
+    if profile_pic_URL is not None:
+        match = match_demographics_filters(username, profile_pic_URL, logger)
+        if match is None:
+            return True, "Demographics unrecognizable"
+        elif match == False:
+            return False, "Demographics mismatch"
 
     # if everything is ok
     return True, "Valid user"
