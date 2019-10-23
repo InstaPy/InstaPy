@@ -294,8 +294,9 @@ def get_comments_on_post(
 
     else:
         comment_data = list(zip(commenters, comments))
-        if randomize is True:
-            random.shuffle(comment_data)
+        if randomize:
+            for i in range(3):
+                random.shuffle(comment_data)
 
         if len(comment_data) < orig_amount:
             logger.info(
