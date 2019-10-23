@@ -662,6 +662,7 @@ class InstaPy:
             self.clarifai_api_key = os.environ.get("CLARIFAI_API_KEY")
         elif api_key is not None:
             self.clarifai_api_key = api_key
+        Settings.clarifai_config.update(API_key=self.clarifai_api_key)
 
         self.clarifai_models = models
         self.clarifai_workflow = workflow
