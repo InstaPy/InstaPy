@@ -2400,6 +2400,7 @@ class InstaPy:
                 self.quotient_breach = True if not standalone else False
                 break
 
+            print('')  # add for good looks and readability in console
             self.logger.info("Username [{}/{}]".format(index + 1, len(usernames)))
             self.logger.info("--> {}".format(username.encode("utf-8")))
 
