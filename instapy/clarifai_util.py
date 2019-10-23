@@ -6,6 +6,7 @@ from clarifai.rest import Image as ClImage
 from selenium.common.exceptions import NoSuchElementException
 
 from .xpath import read_xpath
+from .settings import Settings
 from .public_tools import truncate_float as tf
 
 
@@ -346,4 +347,120 @@ def get_demographics_predictions(username, source_link, logger):
     }
 
     return predictions
+
+
+def match_demographics_filters(username, source_link, logger):
+    """ Match the demographcis predictions with user's choices """
+    demographics_config = Settings.demographics_config
+
+    if demographics_config and demographics_config["enabled"]:
+        demographics_predictions = get_demographics_predictions(username,
+                                                                source_link,
+                                                                logger)
+        if demographics_predictions is None:
+            if demographics_config["unrecognizable"] == "disallow":
+                return False
+            else:
+                return None
+        else:
+            predicted_multicultural_probablities = demographics_predictions[
+                "predicted_multicultural_probablities"]
+            dominant_appearances = [
+                key for key, value
+                in predicted_multicultural_probablities.items()
+                if value == max(predicted_multicultural_probablities.values())
+            ]
+            dominant_appearance = " or ".join(dominant_appearances)
+            dominant_appearance_probablity = predicted_multicultural_probablities[
+                                                dominant_appearances[0]]
+
+            # Debug lines below - print all demographics info:
+            # logger.info("{}'s demographics:"
+            #             "\n\tGender: {}\t|> Probablity: {}"
+            #             "\n\tAge: {}\t|> Probablity: {}"
+            #             "\n\tMulticultural appearance: {}\t|> Probablity: {}"
+            #             .format(
+            #                 username,
+            #                 demographics_predictions["predicted_gender"],
+            #                 tf(demographics_predictions["predicted_gender_probablity"], 2),
+            #                 demographics_predictions["predicted_age"],
+            #                 tf(demographics_predictions["predicted_age_probablity"], 2),
+            #                 dominant_appearance,
+            #                 tf(dominant_appearance_probablity, 2)
+            #             )
+            #             )
+
+        if demographics_config["gender"]:
+            if (demographics_predictions["predicted_gender"]
+                    != demographics_config["gender"]):
+                logger.info("Gender mismatch! User is predicted to be a {}."
+                            .format(demographics_predictions["predicted_gender"]))
+                return False
+
+            if (demographics_config["gender_probablity"] and
+                (demographics_predictions["predicted_gender_probablity"]
+                    < demographics_config["gender_probablity"])):
+                logger.info("Gender mismatch! User is less likely predicted to be a {}."
+                            "\t~probability: {}"
+                            .format(demographics_predictions["predicted_gender"],
+                                    tf(demographics_predictions["predicted_gender_probablity"], 2)))
+                return False
+
+        if demographics_config["age"]:
+            if demographics_config["age"] > 0:
+                if demographics_predictions["predicted_age"] < demographics_config["age"]:
+                    logger.info("Age mismatch! User's age is predicted to be {}"
+                                .format(demographics_predictions["predicted_age"]))
+                    return False
+            elif demographics_config["age"] < 0:
+                if demographics_predictions["predicted_age"] > demographics_config["age"]*-1:
+                    logger.info("Age mismatch! User's age is predicted to be {}"
+                                .format(abs(demographics_predictions["predicted_age"])))
+                    return False
+
+            if (demographics_config["age_probablity"] and
+                (demographics_predictions["predicted_age"] == demographics_config["age"])
+                and (demographics_predictions["predicted_age_probablity"]
+                    < demographics_config["age_probablity"])):
+                logger.info("Age mismatch! User's age is less likely predicted to be {} yo"
+                            "\t~probability: {}"
+                            .format(abs(demographics_config["age"]),
+                                    tf(demographics_predictions["predicted_age_probablity"], 2)))
+                return False
+
+        if demographics_config["multicultural"]:
+            has_appearance = any(a in dominant_appearances for
+                                 a in demographics_config["multicultural"])
+
+            if demographics_config["multicultural_probablity"]:
+                # any appearance user provided must match at given probablity or mismatches
+                for appearance in demographics_config["multicultural"]:
+                    if predicted_multicultural_probablities[appearance] >= \
+                           demographics_config["multicultural_probablity"]:
+                       return True
+
+                if has_appearance:
+                    logger.info("Multicul. appear. mismatch!"
+                                " User is predicted to look like the {} the most,"
+                                " but probablity is still insufficient: {}"
+                                .format(dominant_appearance,
+                                        tf(dominant_appearance_probablity, 2)))
+                else:
+                    logger.info("Multicul. appear. mismatch!"
+                                " User is predicted to look like the {}"
+                                "\t~probablity: {}"
+                                .format(dominant_appearance,
+                                        tf(dominant_appearance_probablity, 2)))
+                return False
+
+            else:
+                if has_appearance:
+                    return True
+                else:
+                    logger.info("Multicultural appearance mismatch!"
+                                " User is predicted to look like the {}"
+                                .format(dominant_appearance))
+                    return False
+
+    return True
 
