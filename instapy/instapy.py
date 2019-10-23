@@ -4267,6 +4267,42 @@ class InstaPy:
         except Exception:
             self.logger.info("Campaign {} first run".format(campaign))
 
+    def set_demographics_filters(self,
+                                 enabled: bool = False,
+                                 gender: str = None,
+                                 gender_probablity: float = 0.66, # hint: be above half
+                                 age: int = None,
+                                 age_probablity: float = 0.49,
+                                 multicultural: list = [],
+                                 multicultural_probablity: float = 0.35,
+                                 unrecognizable: str = "allow"  # "allow"/"disallow"
+                                 ):
+            """ Set configuration to filtrate users based on predictions off demographics concepts.
+                Used services:
+                    - Clarifai / Predict API / Demographics model
+                    - Others services, e.g., predict per bio info (proposed for future).
+            """
+
+            if gender or age or multicultural:
+                Settings.demographics_config.update(
+                    enabled=enabled,
+                    gender=gender,
+                    gender_probablity=gender_probablity,
+                    age=age,
+                    age_probablity=age_probablity,
+                    multicultural=multicultural,
+                    multicultural_probablity=multicultural_probablity,
+                    unrecognizable=unrecognizable
+                )
+
+            elif enabled:
+                # turn off Demographics service if not enabled or wrongly configured
+                self.logger.info(
+                    "To filtrate users based on demographics predictions, please provide any concept!"
+                    "\t~filtration inactivated"
+                )
+                Settings.demographics_config.update(enabled=False)
+
     def grab_followers(
         self,
         username: str = None,
