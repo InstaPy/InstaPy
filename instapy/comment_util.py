@@ -20,6 +20,7 @@ from .xpath import read_xpath
 from selenium.common.exceptions import WebDriverException
 from selenium.common.exceptions import InvalidElementStateException
 from selenium.common.exceptions import NoSuchElementException
+from selenium.common.exceptions import StaleElementReferenceException
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.keys import Keys
 
@@ -268,7 +269,13 @@ def get_comments_on_post(
                     continue
 
                 comment_elem = comment_line.find_elements_by_tag_name("span")[0]
-                comment = extract_text_from_element(comment_elem)
+
+                try:
+                    comment = extract_text_from_element(comment_elem)
+                except StaleElementReferenceException:
+                    logger.exception("Heh! Stale here :X")
+                    comment = None
+
                 if comment:
                     comments.append(comment)
                 else:
