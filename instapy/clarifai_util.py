@@ -2,6 +2,7 @@
 the image for invalid content"""
 from clarifai.rest import ClarifaiApp
 from clarifai.rest import Workflow
+from clarifai.rest import Image as ClImage
 from selenium.common.exceptions import NoSuchElementException
 
 from .xpath import read_xpath
@@ -250,3 +251,99 @@ def get_clarifai_tags(clarifai_response, probability):
             results.append(str([x for x in concept.keys()][0]))
 
     return results
+
+
+def get_demographics_predictions(username, source_link, logger):
+    """ Get demographics predictions from Clarifai service """
+
+    clarifai_api_key = Settings.clarifai_config["API_key"]
+
+    clarifai_api = ClarifaiApp(api_key=clarifai_api_key)
+    model = clarifai_api.models.get("demographics")
+    image = ClImage(url=source_link)
+    response = model.predict([image])
+
+    if response["status"]["code"] != 10000:
+        logger.info(
+            "Failed to get predicted demographics data from Clarifai!")
+        return None
+
+    # full data per face
+    output_data = response["outputs"][0]["data"]
+    if output_data:
+        face = output_data["regions"][0]["data"]["face"]
+    else:
+        logger.info("Demographics unfiltrated!"
+                    " No human face is recognized in {}'s profile pic."
+                    .format(username))
+        return None
+
+    # get gender predictions
+    genders = face["gender_appearance"]["concepts"]
+    for gender in genders:
+        if gender["name"] == "feminine":
+            feminine_probablity = gender["value"]
+        elif gender["name"] == "masculine":
+            masculine_probablity = gender["value"]
+
+    predicted_gender = ("feminine" if feminine_probablity
+                        > masculine_probablity else "masculine")
+    predicted_gender_probablity = (feminine_probablity if predicted_gender
+                                   == "feminine" else masculine_probablity)
+
+    # get age predictions
+    ages = face["age_appearance"]["concepts"]
+    predicted_age_probablity = 0
+    for age in ages:
+        if age["value"] > predicted_age_probablity:
+            predicted_age = int(age["name"])
+            predicted_age_probablity = age["value"]
+
+    # get multicultural appearance predictions
+    multiculturals = face["multicultural_appearance"]["concepts"]
+    for multicultural in multiculturals:
+        if multicultural["name"] == "white":
+            predicted_white_probablity = multicultural["value"]
+        if multicultural["name"] == "asian":
+            predicted_asian_probablity = multicultural["value"]
+        if multicultural["name"] == "hispanic, latino, or spanish origin":
+            predicted_hispanic_probablity = multicultural["value"]
+            predicted_latino_probablity = multicultural["value"]
+            predicted_spanish_origin_probablity = multicultural["value"]
+        if multicultural["name"] == "black or african american":
+            predicted_black_probablity = multicultural["value"]
+            predicted_african_american_probablity = multicultural["value"]
+        if multicultural["name"] == "middle eastern or north african":
+            predicted_middle_eastern_probablity = multicultural["value"]
+            predicted_north_african_probablity = multicultural["value"]
+        if multicultural["name"] == "american indian or alaska native":
+            predicted_american_indian_probablity = multicultural["value"]
+            predicted_alaska_native_probablity = multicultural["value"]
+        if multicultural["name"] == "native hawaiian or pacific islander":
+            predicted_native_hawaiian_probablity = multicultural["value"]
+            predicted_pacific_islander_probablity = multicultural["value"]
+
+    predictions = {
+        "predicted_gender": predicted_gender,
+        "predicted_gender_probablity": predicted_gender_probablity,
+        "predicted_age": predicted_age,
+        "predicted_age_probablity": predicted_age_probablity,
+        "predicted_multicultural_probablities": {
+            "white": predicted_white_probablity,
+            "asian": predicted_asian_probablity,
+            "hispanic": predicted_hispanic_probablity,
+            "latino": predicted_latino_probablity,
+            "spanish origin": predicted_spanish_origin_probablity,
+            "black": predicted_black_probablity,
+            "african american": predicted_african_american_probablity,
+            "middle eastern": predicted_middle_eastern_probablity,
+            "north african": predicted_north_african_probablity,
+            "american indian": predicted_american_indian_probablity,
+            "alaska native": predicted_alaska_native_probablity,
+            "native hawaiian": predicted_native_hawaiian_probablity,
+            "pacific islander": predicted_pacific_islander_probablity
+        }
+    }
+
+    return predictions
+
