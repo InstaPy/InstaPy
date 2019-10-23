@@ -2385,7 +2385,7 @@ class InstaPy:
 
         total_liked_img = 0
         already_liked = 0
-        inap_img = 0
+        total_inap_img = 0
         commented = 0
         followed = 0
         already_followed = 0
@@ -2483,6 +2483,7 @@ class InstaPy:
 
             # Reset like counter for every username
             liked_img = 0
+            inap_img = 0
 
             for i, link in enumerate(links[:amount]):
                 if self.jumps["consequent"]["likes"] >= self.jumps["limit"]["likes"]:
@@ -2627,6 +2628,7 @@ class InstaPy:
                         self.logger.info(
                             "--> Image not liked: {}".format(reason.encode("utf-8"))
                         )
+                        total_inap_img += 1
                         inap_img += 1
 
                 except NoSuchElementException as err:
@@ -2668,7 +2670,7 @@ class InstaPy:
 
         if len(usernames) > 1:
             # final words
-            interacted_media_size = len(usernames) * amount - inap_img
+            interacted_media_size = len(usernames) * amount - total_inap_img
             self.logger.info(
                 "Finished interacting on total of {} images from {} users! xD\n".format(
                     interacted_media_size, len(usernames)
@@ -2681,7 +2683,7 @@ class InstaPy:
             self.logger.info("Commented: {}".format(commented))
             self.logger.info("Followed: {}".format(followed))
             self.logger.info("Already Followed: {}".format(already_followed))
-            self.logger.info("Inappropriate: {}".format(inap_img))
+            self.logger.info("Inappropriate: {}".format(total_inap_img))
             self.logger.info("Not valid users: {}\n".format(not_valid_users))
 
         self.liked_img += total_liked_img
@@ -2689,7 +2691,7 @@ class InstaPy:
         self.commented += commented
         self.followed += followed
         self.already_followed += already_followed
-        self.inap_img += inap_img
+        self.inap_img += total_inap_img
         self.not_valid_users += not_valid_users
 
         return self
