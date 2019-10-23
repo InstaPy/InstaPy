@@ -5403,15 +5403,17 @@ class InstaPy:
                     self.logger.info("No interaction did happen.\n")
                     continue
 
-                # like the post before interacting on comments
-                image_like_state, msg = like_image(
-                    self.browser,
-                    user_name,
-                    self.blacklist,
-                    self.logger,
-                    self.logfolder,
-                    self.liked_img,
-                )
+                # navigate backwards to see the post and forwards again
+                with navigate_back_and_forth(self.browser):
+                    # like the post before interacting on comments
+                    image_like_state, msg = like_image(
+                        self.browser,
+                        user_name,
+                        self.blacklist,
+                        self.logger,
+                        self.logfolder,
+                        self.liked_img,
+                    )
                 if image_like_state is True:
                     like_failures_tracker["consequent"]["post_likes"] = 0
                     self.liked_img += 1
