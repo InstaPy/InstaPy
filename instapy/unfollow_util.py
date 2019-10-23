@@ -1569,7 +1569,11 @@ def verify_action(
                     sleep(210)
                     return False, "temporary block"
 
-        logger.info("Last {} is verified after reloading the page!".format(action))
+        if retry_count == 1:
+            logger.info("Last {} is verified!".format(action))
+        if retry_count == 2:
+            logger.info("Last {} is verified after reloading the page!".format(action))
+
 
     return True, "success"
 
