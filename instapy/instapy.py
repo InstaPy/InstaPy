@@ -2150,7 +2150,7 @@ class InstaPy:
                     continue
 
             try:
-                links = get_links_for_username(
+                links, links_msg = get_links_for_username(
                     self.browser,
                     self.username,
                     username,
@@ -2458,7 +2458,7 @@ class InstaPy:
                     break
 
             try:
-                links = get_links_for_username(
+                links, links_msg = get_links_for_username(
                     self.browser,
                     self.username,
                     username,
@@ -2469,10 +2469,14 @@ class InstaPy:
                     media,
                 )
             except NoSuchElementException:
-                self.logger.error("Element not found, skipping this username")
-                continue
+                self.logger.error("Element not found! Can't interact on posts.")
+                links = None
 
-            if links is False:
+            if links_msg == "private" and following:
+                # if the user is private, then allow following without other actions
+                # this empty list will will cause the 'for' loop auto break easily
+                links = []
+            elif not links:
                 continue
 
             # Reset like counter for every username
@@ -2781,7 +2785,7 @@ class InstaPy:
                     break
 
             try:
-                links = get_links_for_username(
+                links, links_msg = get_links_for_username(
                     self.browser,
                     self.username,
                     username,
@@ -5298,7 +5302,7 @@ class InstaPy:
             per_user_used_replies = []
 
             try:
-                links = get_links_for_username(
+                links, links_msg = get_links_for_username(
                     self.browser,
                     self.username,
                     username,

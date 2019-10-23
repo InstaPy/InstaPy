@@ -422,9 +422,9 @@ def get_links_for_username(
     taggedImages=False,
 ):
     """
-    Fetches the number of links specified by amount and returns a list of links
+    Fetches the number of links specified by amount
+    and returns a list of links alongside short state message
     """
-
     if media is None:
         # All known media types
         media = MEDIA_ALL_TYPES
@@ -450,7 +450,7 @@ def get_links_for_username(
             "Instagram error: The link you followed may be broken, or the "
             "page may have been removed..."
         )
-        return False
+        return False, "inaccessible"
 
     # if private user, we can get links only if we following
     following_status, _ = get_following_status(
@@ -470,7 +470,7 @@ def get_links_for_username(
         or (following_status == "Blocked")
     ):
         logger.info("This user is private and we are not following")
-        return False
+        return False, "private"
 
     # Get links
     links = []
@@ -513,7 +513,7 @@ def get_links_for_username(
     if randomize is True:
         random.shuffle(links)
 
-    return links[:amount]
+    return links[:amount], "success"
 
 
 def get_media_edge_comment_string(media):
