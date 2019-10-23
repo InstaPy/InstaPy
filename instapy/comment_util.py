@@ -247,7 +247,11 @@ def get_comments_on_post(
         all_comment_like_buttons = browser.find_elements_by_xpath(
             like_button_full_XPath
         )
-        if all_comment_like_buttons:
+        comment_unlike_buttons = browser.find_elements_by_xpath(
+                unlike_button_full_XPath
+        )
+
+        if all_comment_like_buttons or comments_count > len(comment_unlike_buttons):
             comments_block = browser.find_elements_by_xpath(comments_block_XPath)
             for comment_line in comments_block:
                 commenter_elem = comment_line.find_element_by_xpath(
@@ -272,9 +276,6 @@ def get_comments_on_post(
                     continue
 
         else:
-            comment_unlike_buttons = browser.find_elements_by_xpath(
-                unlike_button_full_XPath
-            )
             if comment_unlike_buttons:
                 logger.info(
                     "There are {} comments on this post and all "
