@@ -51,6 +51,7 @@ from .util import save_account_progress
 from .util import parse_cli_args
 from .util import get_cord_location
 from .util import get_bounding_box
+from .util import navigate_back_and_forth
 from .public_tools import truncate_float
 from .unfollow_util import get_given_user_followers
 from .unfollow_util import get_given_user_following

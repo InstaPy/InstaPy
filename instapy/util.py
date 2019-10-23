@@ -2423,3 +2423,16 @@ class CustomizedArgumentParser(ArgumentParser):
         will give the location of the 'argparse.py' file that have this method.
         """
         return []
+
+@contextmanager
+def navigate_back_and_forth(browser):
+    try:
+        # navigate backwards
+        browser.execute_script("window.history.go(-1)")
+        sleep(1)
+        yield
+
+    finally:
+        # navigate forwards
+        browser.execute_script("window.history.go(1)")
+        sleep(1)
