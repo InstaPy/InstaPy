@@ -89,9 +89,13 @@ def is_private_profile(browser, logger, following=True):
     if is_private and not following:
         logger.info("Is private account you're not following.")
         body_elem = browser.find_element_by_tag_name("body")
-        is_private = body_elem.find_element_by_xpath(
-            read_xpath(is_private_profile.__name__, "is_private")
-        )
+        try:
+            is_private = body_elem.find_element_by_xpath(
+                read_xpath(is_private_profile.__name__, "is_private")
+            )
+        except NoSuchElementException:
+            logger.error("Element not found! Can't get privateness element.")
+            is_private = None
 
     return is_private
 
