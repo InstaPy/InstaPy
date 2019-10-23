@@ -206,7 +206,7 @@ def verify_commenting(browser, maximum, minimum, mand_words, logger):
 
 def get_comments_on_post(
     browser, owner, poster, amount, post_link, ignore_users, randomize, logger
-):
+    ):
     """ Fetch comments data on posts """
 
     web_address_navigator(browser, post_link)
@@ -226,6 +226,8 @@ def get_comments_on_post(
     if not comments_count:
         logger.info(msg)
         return None
+    elif comments_count < orig_amount:
+        amount = comments_count
 
     # get comments & commenters information
 
