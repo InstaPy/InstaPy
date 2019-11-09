@@ -114,7 +114,7 @@ class InstaPy:
         geckodriver_path: str = None,
         split_db: bool = False,
         bypass_security_challenge_using: str = "email",
-        want_check_browser: bool = True,
+        want_check_browser: bool = False,
     ):
         print("InstaPy Version: {}".format(__version__))
         cli_args = parse_cli_args()
