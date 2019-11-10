@@ -114,7 +114,7 @@ class InstaPy:
         geckodriver_path: str = None,
         split_db: bool = False,
         bypass_security_challenge_using: str = "email",
-        want_check_browser: bool = False
+        want_check_browser: bool = True,
     ):
         print("InstaPy Version: {}".format(__version__))
         cli_args = parse_cli_args()
@@ -1521,9 +1521,11 @@ class InstaPy:
 
                             if self.use_clarifai and (following or commenting):
                                 try:
-                                    checked_img, temp_comments, clarifai_tags = (
-                                        self.query_clarifai()
-                                    )
+                                    (
+                                        checked_img, 
+                                        temp_comments, 
+                                        clarifai_tags 
+                                    ) = self.query_clarifai()
 
                                 except Exception as err:
                                     self.logger.error(
@@ -1732,9 +1734,11 @@ class InstaPy:
 
                         if self.use_clarifai:
                             try:
-                                checked_img, temp_comments, clarifai_tags = (
-                                    self.query_clarifai()
-                                )
+                                (
+                                    checked_img, 
+                                    temp_comments, 
+                                    clarifai_tags 
+                                ) = self.query_clarifai()
 
                             except Exception as err:
                                 self.logger.error("Image check error: {}".format(err))
@@ -1963,9 +1967,11 @@ class InstaPy:
 
                             if self.use_clarifai and (following or commenting):
                                 try:
-                                    checked_img, temp_comments, clarifai_tags = (
-                                        self.query_clarifai()
-                                    )
+                                    (
+                                        checked_img, 
+                                        temp_comments, 
+                                        clarifai_tags 
+                                    ) = self.query_clarifai()
 
                                 except Exception as err:
                                     self.logger.error(
@@ -2261,9 +2267,11 @@ class InstaPy:
 
                             if self.use_clarifai and (following or commenting):
                                 try:
-                                    checked_img, temp_comments, clarifai_tags = (
-                                        self.query_clarifai()
-                                    )
+                                    (
+                                        checked_img, 
+                                        temp_comments, 
+                                        clarifai_tags 
+                                    ) = self.query_clarifai()
 
                                 except Exception as err:
                                     self.logger.error(
@@ -2560,9 +2568,11 @@ class InstaPy:
 
                                 if self.use_clarifai and commenting:
                                     try:
-                                        checked_img, temp_comments, clarifai_tags = (
-                                            self.query_clarifai()
-                                        )
+                                        (
+                                            checked_img, 
+                                            temp_comments, 
+                                            clarifai_tags 
+                                        ) = self.query_clarifai()
 
                                     except Exception as err:
                                         self.logger.error(
