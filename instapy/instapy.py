@@ -1522,9 +1522,9 @@ class InstaPy:
                             if self.use_clarifai and (following or commenting):
                                 try:
                                     (
-                                        checked_img, 
-                                        temp_comments, 
-                                        clarifai_tags 
+                                        checked_img,
+                                        temp_comments,
+                                        clarifai_tags,
                                     ) = self.query_clarifai()
 
                                 except Exception as err:
@@ -1735,9 +1735,9 @@ class InstaPy:
                         if self.use_clarifai:
                             try:
                                 (
-                                    checked_img, 
-                                    temp_comments, 
-                                    clarifai_tags 
+                                    checked_img,
+                                    temp_comments,
+                                    clarifai_tags,
                                 ) = self.query_clarifai()
 
                             except Exception as err:
@@ -1968,9 +1968,9 @@ class InstaPy:
                             if self.use_clarifai and (following or commenting):
                                 try:
                                     (
-                                        checked_img, 
-                                        temp_comments, 
-                                        clarifai_tags 
+                                        checked_img,
+                                        temp_comments,
+                                        clarifai_tags,
                                     ) = self.query_clarifai()
 
                                 except Exception as err:
@@ -2268,9 +2268,9 @@ class InstaPy:
                             if self.use_clarifai and (following or commenting):
                                 try:
                                     (
-                                        checked_img, 
-                                        temp_comments, 
-                                        clarifai_tags 
+                                        checked_img,
+                                        temp_comments,
+                                        clarifai_tags,
                                     ) = self.query_clarifai()
 
                                 except Exception as err:
@@ -2569,9 +2569,9 @@ class InstaPy:
                                 if self.use_clarifai and commenting:
                                     try:
                                         (
-                                            checked_img, 
-                                            temp_comments, 
-                                            clarifai_tags 
+                                            checked_img,
+                                            temp_comments,
+                                            clarifai_tags,
                                         ) = self.query_clarifai()
 
                                     except Exception as err:
