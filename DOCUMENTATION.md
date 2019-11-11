@@ -1767,15 +1767,15 @@ session = InstaPy(username=insta_username,
 ```
 
 ### Running internet connection checks
-InstaPy performs a few checks online, including you connection and the availability of Instagram servers. These checks sometimes fail because Instapy uses third party services to perform these checks. Nevertheless, you can override these checks with this variable: `want_check_browser`.
+InstaPy can perform a few checks online, including you connection and the availability of Instagram servers. These checks sometimes fail because Instapy uses third party services to perform these checks. If this should be the case. you can override these checks with this variable: `want_check_browser`.
 
-`want_check_browser` default is True, you can set it to false at session start. Recommend to do this if experiencing connection errors.
+`want_check_browser` default is False, you can set it to True at session start. Recommend to do this if you want to add additional checks for the connection to the web and Instagram.
 
 example:
 ```python
 session = InstaPy(username=insta_username,
                   password=insta_password,
-                  want_check_browser=False)
+                  want_check_browser=True)
 ```
 
 ### Running in threads
