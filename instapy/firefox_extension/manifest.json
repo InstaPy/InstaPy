@@ -1,0 +1,17 @@
+{
+  "manifest_version": 2,
+  "name": "hide selenium",
+  "version": "1.0.0",
+  "applications": {
+    "gecko": {
+      "id": "instapy@rocks"
+    }
+  },
+  "content_scripts": [
+    {
+      "matches": ["*://*/*"],
+      "js": ["arrive.js", "content.js"],
+      "run_at": "document_start"
+    }
+  ]
+}
