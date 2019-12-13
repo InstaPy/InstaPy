@@ -1574,7 +1574,6 @@ def verify_action(
         if retry_count == 2:
             logger.info("Last {} is verified after reloading the page!".format(action))
 
-
     return True, "success"
 
 

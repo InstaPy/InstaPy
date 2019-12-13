@@ -74,7 +74,7 @@ xpath["get_comment_input"] = {
     See its use case below: ".//h3/a"
 """
 xpath["get_comments_on_post"] = {
-    "commenter_elem": ".//h3/a",   # see Hint 1
+    "commenter_elem": ".//h3/a",  # see Hint 1
     "comments_block": "//div/div/h3/../../../..",
     "view_all_comments_root": "//div/div/h3/../../../../../..",
     "load_more_comments_root": "//div/div/h3/../../../../../../..",

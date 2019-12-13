@@ -352,8 +352,9 @@ def validate_username(
         profile_pic, pp_msg = get_profile_pic_URL(browser, username, logger)
         if pp_msg == "failure":
             return False, "---> Sorry, couldn't get if user profile pic url\n"
-        elif (pp_msg == "default"
-                and (random.randint(0, 100) <= skip_no_profile_pic_percentage)):
+        elif pp_msg == "default" and (
+            random.randint(0, 100) <= skip_no_profile_pic_percentage
+        ):
             return False, "{} has default instagram profile picture\n".format(username)
 
     # skip business
@@ -2419,8 +2420,10 @@ def get_profile_pic_URL(browser, username, logger):
         logger.error("~cannot get the post profile pic url")
         return None, "failure"
 
-    if (profile_pic in default_profile_pic_instagram
-            or str(profile_pic).find("11906329_960233084022564_1448528159_a.jpg") > 0):
+    if (
+        profile_pic in default_profile_pic_instagram
+        or str(profile_pic).find("11906329_960233084022564_1448528159_a.jpg") > 0
+    ):
         return None, "default"
 
     return profile_pic, "success"

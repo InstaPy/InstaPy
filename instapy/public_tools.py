@@ -30,4 +30,3 @@ def truncate_float(number, precision, round=False):
         short_float = float(int(number * operate_on)) / operate_on
 
     return short_float
-

@@ -206,7 +206,7 @@ def verify_commenting(browser, maximum, minimum, mand_words, logger):
 
 def get_comments_on_post(
     browser, owner, poster, amount, post_link, ignore_users, randomize, logger
-    ):
+):
     """ Fetch comments data on posts """
 
     web_address_navigator(browser, post_link)
@@ -245,14 +245,14 @@ def get_comments_on_post(
     commenters = []
     # wait for page fully load [IMPORTANT!]
     explicit_wait(browser, "PFL", [], logger, 10)
-    sleep(3) # extra sleep just to wait DOM finish load - very important!
+    sleep(3)  # extra sleep just to wait DOM finish load - very important!
 
     try:
         all_comment_like_buttons = browser.find_elements_by_xpath(
             like_button_full_XPath
         )
         comment_unlike_buttons = browser.find_elements_by_xpath(
-                unlike_button_full_XPath
+            unlike_button_full_XPath
         )
 
         if all_comment_like_buttons or comments_count > len(comment_unlike_buttons):
@@ -265,24 +265,30 @@ def get_comments_on_post(
             while len(comments_block) < amount:
                 if vmc_attempts == 0:
                     if len(comments_block) < orig_amount:
-                        logger.info("Sorry.. Failed to load requested amount of comments.")
+                        logger.info(
+                            "Sorry.. Failed to load requested amount of comments."
+                        )
                     break
                 try:
                     if not view_all_done:
                         view_all_comments_root = browser.find_element_by_xpath(
-                            read_xpath(get_comments_on_post.__name__, "view_all_comments_root")
+                            read_xpath(
+                                get_comments_on_post.__name__, "view_all_comments_root"
+                            )
                         )
-                        view_all_comments_button = (
-                            view_all_comments_root.find_elements_by_tag_name("button")[0]
-                        )
+                        view_all_comments_button = view_all_comments_root.find_elements_by_tag_name(
+                            "button"
+                        )[
+                            0
+                        ]
                     else:
                         load_more_comments_root = browser.find_element_by_xpath(
-                            read_xpath(get_comments_on_post.__name__, "load_more_comments_root")
-                        )
-                        load_more_comments_button_e = (
-                            load_more_comments_root.find_elements_by_xpath(
-                                "//span[@aria-label='Load more comments']"
+                            read_xpath(
+                                get_comments_on_post.__name__, "load_more_comments_root"
                             )
+                        )
+                        load_more_comments_button_e = load_more_comments_root.find_elements_by_xpath(
+                            "//span[@aria-label='Load more comments']"
                         )
                         if load_more_comments_button_e:
                             load_more_comments_button = load_more_comments_button_e[0]
@@ -291,8 +297,9 @@ def get_comments_on_post(
                             sleep(2)
                             continue
 
-                    if ((view_all_comments_button and not view_all_done)
-                            or load_more_comments_button):
+                    if (
+                        view_all_comments_button and not view_all_done
+                    ) or load_more_comments_button:
                         if not view_all_done:
                             mc_button = view_all_comments_button
                             view_all_done = True
@@ -300,7 +307,9 @@ def get_comments_on_post(
                             mc_button = load_more_comments_button
                         click_element(browser, mc_button)
                         sleep(2)  # wait to load page
-                        comments_block = browser.find_elements_by_xpath(comments_block_XPath)
+                        comments_block = browser.find_elements_by_xpath(
+                            comments_block_XPath
+                        )
                         logger.info("Loaded {} comments..".format(len(comments_block)))
                     else:
                         vmc_attempts -= 1

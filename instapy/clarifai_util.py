@@ -265,8 +265,7 @@ def get_demographics_predictions(username, source_link, logger):
     response = model.predict([image])
 
     if response["status"]["code"] != 10000:
-        logger.info(
-            "Failed to get predicted demographics data from Clarifai!")
+        logger.info("Failed to get predicted demographics data from Clarifai!")
         return None
 
     # full data per face
@@ -274,9 +273,10 @@ def get_demographics_predictions(username, source_link, logger):
     if output_data:
         face = output_data["regions"][0]["data"]["face"]
     else:
-        logger.info("Demographics unfiltrated!"
-                    " No human face is recognized in {}'s profile pic."
-                    .format(username))
+        logger.info(
+            "Demographics unfiltrated!"
+            " No human face is recognized in {}'s profile pic.".format(username)
+        )
         return None
 
     # get gender predictions
@@ -287,10 +287,12 @@ def get_demographics_predictions(username, source_link, logger):
         elif gender["name"] == "masculine":
             masculine_probablity = gender["value"]
 
-    predicted_gender = ("feminine" if feminine_probablity
-                        > masculine_probablity else "masculine")
-    predicted_gender_probablity = (feminine_probablity if predicted_gender
-                                   == "feminine" else masculine_probablity)
+    predicted_gender = (
+        "feminine" if feminine_probablity > masculine_probablity else "masculine"
+    )
+    predicted_gender_probablity = (
+        feminine_probablity if predicted_gender == "feminine" else masculine_probablity
+    )
 
     # get age predictions
     ages = face["age_appearance"]["concepts"]
@@ -342,8 +344,8 @@ def get_demographics_predictions(username, source_link, logger):
             "american indian": predicted_american_indian_probablity,
             "alaska native": predicted_alaska_native_probablity,
             "native hawaiian": predicted_native_hawaiian_probablity,
-            "pacific islander": predicted_pacific_islander_probablity
-        }
+            "pacific islander": predicted_pacific_islander_probablity,
+        },
     }
 
     return predictions
@@ -354,9 +356,9 @@ def match_demographics_filters(username, source_link, logger):
     demographics_config = Settings.demographics_config
 
     if demographics_config and demographics_config["enabled"]:
-        demographics_predictions = get_demographics_predictions(username,
-                                                                source_link,
-                                                                logger)
+        demographics_predictions = get_demographics_predictions(
+            username, source_link, logger
+        )
         if demographics_predictions is None:
             if demographics_config["unrecognizable"] == "disallow":
                 return False
@@ -364,15 +366,17 @@ def match_demographics_filters(username, source_link, logger):
                 return None
         else:
             predicted_multicultural_probablities = demographics_predictions[
-                "predicted_multicultural_probablities"]
+                "predicted_multicultural_probablities"
+            ]
             dominant_appearances = [
-                key for key, value
-                in predicted_multicultural_probablities.items()
+                key
+                for key, value in predicted_multicultural_probablities.items()
                 if value == max(predicted_multicultural_probablities.values())
             ]
             dominant_appearance = " or ".join(dominant_appearances)
             dominant_appearance_probablity = predicted_multicultural_probablities[
-                                                dominant_appearances[0]]
+                dominant_appearances[0]
+            ]
 
             # Debug lines below - print all demographics info:
             # logger.info("{}'s demographics:"
@@ -391,76 +395,116 @@ def match_demographics_filters(username, source_link, logger):
             #             )
 
         if demographics_config["gender"]:
-            if (demographics_predictions["predicted_gender"]
-                    != demographics_config["gender"]):
-                logger.info("Gender mismatch! User is predicted to be a {}."
-                            .format(demographics_predictions["predicted_gender"]))
+            if (
+                demographics_predictions["predicted_gender"]
+                != demographics_config["gender"]
+            ):
+                logger.info(
+                    "Gender mismatch! User is predicted to be a {}.".format(
+                        demographics_predictions["predicted_gender"]
+                    )
+                )
                 return False
 
-            if (demographics_config["gender_probablity"] and
-                (demographics_predictions["predicted_gender_probablity"]
-                    < demographics_config["gender_probablity"])):
-                logger.info("Gender mismatch! User is less likely predicted to be a {}."
-                            "\t~probability: {}"
-                            .format(demographics_predictions["predicted_gender"],
-                                    tf(demographics_predictions["predicted_gender_probablity"], 2)))
+            if demographics_config["gender_probablity"] and (
+                demographics_predictions["predicted_gender_probablity"]
+                < demographics_config["gender_probablity"]
+            ):
+                logger.info(
+                    "Gender mismatch! User is less likely predicted to be a {}."
+                    "\t~probability: {}".format(
+                        demographics_predictions["predicted_gender"],
+                        tf(demographics_predictions["predicted_gender_probablity"], 2),
+                    )
+                )
                 return False
 
         if demographics_config["age"]:
             if demographics_config["age"] > 0:
-                if demographics_predictions["predicted_age"] < demographics_config["age"]:
-                    logger.info("Age mismatch! User's age is predicted to be {}"
-                                .format(demographics_predictions["predicted_age"]))
+                if (
+                    demographics_predictions["predicted_age"]
+                    < demographics_config["age"]
+                ):
+                    logger.info(
+                        "Age mismatch! User's age is predicted to be {}".format(
+                            demographics_predictions["predicted_age"]
+                        )
+                    )
                     return False
             elif demographics_config["age"] < 0:
-                if demographics_predictions["predicted_age"] > demographics_config["age"]*-1:
-                    logger.info("Age mismatch! User's age is predicted to be {}"
-                                .format(abs(demographics_predictions["predicted_age"])))
+                if (
+                    demographics_predictions["predicted_age"]
+                    > demographics_config["age"] * -1
+                ):
+                    logger.info(
+                        "Age mismatch! User's age is predicted to be {}".format(
+                            abs(demographics_predictions["predicted_age"])
+                        )
+                    )
                     return False
 
-            if (demographics_config["age_probablity"] and
-                (demographics_predictions["predicted_age"] == demographics_config["age"])
-                and (demographics_predictions["predicted_age_probablity"]
-                    < demographics_config["age_probablity"])):
-                logger.info("Age mismatch! User's age is less likely predicted to be {} yo"
-                            "\t~probability: {}"
-                            .format(abs(demographics_config["age"]),
-                                    tf(demographics_predictions["predicted_age_probablity"], 2)))
+            if (
+                demographics_config["age_probablity"]
+                and (
+                    demographics_predictions["predicted_age"]
+                    == demographics_config["age"]
+                )
+                and (
+                    demographics_predictions["predicted_age_probablity"]
+                    < demographics_config["age_probablity"]
+                )
+            ):
+                logger.info(
+                    "Age mismatch! User's age is less likely predicted to be {} yo"
+                    "\t~probability: {}".format(
+                        abs(demographics_config["age"]),
+                        tf(demographics_predictions["predicted_age_probablity"], 2),
+                    )
+                )
                 return False
 
         if demographics_config["multicultural"]:
-            has_appearance = any(a in dominant_appearances for
-                                 a in demographics_config["multicultural"])
+            has_appearance = any(
+                a in dominant_appearances for a in demographics_config["multicultural"]
+            )
 
             if demographics_config["multicultural_probablity"]:
                 # any appearance user provided must match at given probablity or mismatches
                 for appearance in demographics_config["multicultural"]:
-                    if predicted_multicultural_probablities[appearance] >= \
-                           demographics_config["multicultural_probablity"]:
-                       return True
+                    if (
+                        predicted_multicultural_probablities[appearance]
+                        >= demographics_config["multicultural_probablity"]
+                    ):
+                        return True
 
                 if has_appearance:
-                    logger.info("Multicul. appear. mismatch!"
-                                " User is predicted to look like the {} the most,"
-                                " but probablity is still insufficient: {}"
-                                .format(dominant_appearance,
-                                        tf(dominant_appearance_probablity, 2)))
+                    logger.info(
+                        "Multicul. appear. mismatch!"
+                        " User is predicted to look like the {} the most,"
+                        " but probablity is still insufficient: {}".format(
+                            dominant_appearance, tf(dominant_appearance_probablity, 2)
+                        )
+                    )
                 else:
-                    logger.info("Multicul. appear. mismatch!"
-                                " User is predicted to look like the {}"
-                                "\t~probablity: {}"
-                                .format(dominant_appearance,
-                                        tf(dominant_appearance_probablity, 2)))
+                    logger.info(
+                        "Multicul. appear. mismatch!"
+                        " User is predicted to look like the {}"
+                        "\t~probablity: {}".format(
+                            dominant_appearance, tf(dominant_appearance_probablity, 2)
+                        )
+                    )
                 return False
 
             else:
                 if has_appearance:
                     return True
                 else:
-                    logger.info("Multicultural appearance mismatch!"
-                                " User is predicted to look like the {}"
-                                .format(dominant_appearance))
+                    logger.info(
+                        "Multicultural appearance mismatch!"
+                        " User is predicted to look like the {}".format(
+                            dominant_appearance
+                        )
+                    )
                     return False
 
     return True
-
