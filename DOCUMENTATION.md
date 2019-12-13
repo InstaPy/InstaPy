@@ -327,7 +327,11 @@ session.set_demographics_filters(enabled=True,
 
 #### Notes
 - Currently, it works only by the profile picture of the user to recognize demographics information.  
-- It uses Clarifai's Predict API's Demographics model inside to recognize demographics info by profile pictures.  
+- It uses Clarifai's Predict API's Demographics model inside to recognize demographics info by profile pictures. So make sure you also enable Clarifai and set its API key beforehand:
+```python
+session.set_use_clarifai(enabled=True, api_key="I AM AN API KEY ;)")
+session.set_demographics_filters(...)
+```
 - In future, it can also maybe support detecting or verifying demographics info by using the bio at user's profile page, etc.
 
 
