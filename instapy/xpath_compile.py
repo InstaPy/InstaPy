@@ -131,7 +131,8 @@ xpath["get_source_link"] = {
     "video": '//video[@class="tWeCl"]',
 }
 
-xpath["get_users_through_dialog"] = {"find_dialog_box": "//section/main/div[2]"}
+xpath["get_users_through_dialog"] = {"find_dialog_box": "//body/div[4]/div/div[2]"}
+
 
 xpath["is_private_profile"] = {"is_private": '//h2[@class="_kcrwx"]'}
 
