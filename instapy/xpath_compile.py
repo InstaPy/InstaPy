@@ -142,10 +142,10 @@ xpath["like_comment"] = {
 }
 
 xpath["like_image"] = {
-    "like": """/html/body/div[1]/section/main/div/div/article/div[2]
-    /section[1]/span[1]/button[*[local-name()='svg']/@aria-label='Like']""",
-    "unlike": """/html/body/div[1]/section/main/div/div/article/div[2]
-    /section[1]/span[1]/button[*[local-name()='svg']/@aria-label='Unlike']""",
+    "like": """/html/body/div[1]/section/main/div/div/article/div[2]/section[1]/span[1]
+    /button[*[local-name()='svg']/@aria-label='Like']""",
+    "unlike": """/html/body/div[1]/section/main/div/div/article/div[2]/section[1]/span[1]
+    /button[*[local-name()='svg']/@aria-label='Unlike']""",
 }
 
 xpath["like_from_image"] = {
@@ -167,7 +167,9 @@ xpath["login_user"] = {
     "error_alert": "//p[@id='slfErrorAlert']",
 }
 
-xpath["open_comment_section"] = {"comment_elem": "//button[*[local-name()='svg']/@aria-label='Comment']"}
+xpath["open_comment_section"] = {
+    "comment_elem": "//button[*[local-name()='svg']/@aria-label='Comment']"
+}
 
 xpath["unfollow"] = {
     "following_link": "//ul/li[3]/a/span",
