@@ -133,7 +133,6 @@ xpath["get_source_link"] = {
 
 xpath["get_users_through_dialog"] = {"find_dialog_box": "//body/div[4]/div/div[2]"}
 
-
 xpath["is_private_profile"] = {"is_private": '//h2[@class="_kcrwx"]'}
 
 xpath["like_comment"] = {
@@ -142,9 +141,10 @@ xpath["like_comment"] = {
     "comment_like_button": "..",
 }
 
-xpath["like_image"] = { "like": "/html/body/div[1]/section/main/div/div/article/div[2]/section[1]/span[1]/button[*[local-name()='svg']/@aria-label='Like']",
-                        "unlike": "/html/body/div[1]/section/main/div/div/article/div[2]/section[1]/span[1]/button[*[local-name()='svg']/@aria-label='Unlike']",
-                        }
+xpath["like_image"] = {
+    "like": "/html/body/div[1]/section/main/div/div/article/div[2]/section[1]/span[1]/button[*[local-name()='svg']/@aria-label='Like']",
+    "unlike": "/html/body/div[1]/section/main/div/div/article/div[2]/section[1]/span[1]/button[*[local-name()='svg']/@aria-label='Unlike']",
+}
 
 xpath["like_from_image"] = {
     "main_article": "//main//article//div//div[1]//div[1]//a[1]"
