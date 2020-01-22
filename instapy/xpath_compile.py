@@ -142,8 +142,10 @@ xpath["like_comment"] = {
 }
 
 xpath["like_image"] = {
-    "like": "/html/body/div[1]/section/main/div/div/article/div[2]/section[1]/span[1]/button[*[local-name()='svg']/@aria-label='Like']",
-    "unlike": "/html/body/div[1]/section/main/div/div/article/div[2]/section[1]/span[1]/button[*[local-name()='svg']/@aria-label='Unlike']",
+    "like": """/html/body/div[1]/section/main/div/div/article/div[2]/section[1]/span[1]/button
+    [*[local-name()='svg']/@aria-label='Like']""",
+    "unlike": """/html/body/div[1]/section/main/div/div/article/div[2]/section[1]/span[1]/button
+    [*[local-name()='svg']/@aria-label='Unlike']""",
 }
 
 xpath["like_from_image"] = {
