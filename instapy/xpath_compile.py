@@ -65,7 +65,7 @@ xpath["get_buttons_from_dialog"] = {
 
 xpath["get_comment_input"] = {
     "comment_input": "//form/textarea",
-    "placeholder": '//input[@placeholder = "Add a comment…"]',
+    "placeholder": '//textarea[@Placeholder = "Add a comment…"]',
 }
 
 xpath["get_comments_on_post"] = {
@@ -133,7 +133,6 @@ xpath["get_source_link"] = {
 
 xpath["get_users_through_dialog"] = {"find_dialog_box": "//body/div[4]/div/div[2]"}
 
-
 xpath["is_private_profile"] = {"is_private": '//h2[@class="_kcrwx"]'}
 
 xpath["like_comment"] = {
@@ -143,8 +142,8 @@ xpath["like_comment"] = {
 }
 
 xpath["like_image"] = {
-    "like": "//section/span/button/span[@aria-label='Like']",
-    "unlike": "//section/span/button/span[@aria-label='Unlike']",
+    "like": "//section/span/button[*[local-name()='svg']/@aria-label='Like']",
+    "unlike": "//section/span/button[*[local-name()='svg']/@aria-label='Unlike']",
 }
 
 xpath["like_from_image"] = {
@@ -166,7 +165,9 @@ xpath["login_user"] = {
     "error_alert": "//p[@id='slfErrorAlert']",
 }
 
-xpath["open_comment_section"] = {"comment_elem": "//button/span[@aria-label='Comment']"}
+xpath["open_comment_section"] = {
+    "comment_elem": "//button[*[local-name()='svg']/@aria-label='Comment']"
+}
 
 xpath["unfollow"] = {
     "following_link": "//ul/li[3]/a/span",
