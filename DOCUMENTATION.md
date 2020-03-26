@@ -728,11 +728,11 @@ session.follow_by_tags(['tag1', 'tag2'], amount=10)
 ```
 
 #### Parameters:
- `tags`: The tags that will be searched for and posts will be liked from
+ `tags`: The tags that will be searched for and authors of the posts will be followed.
 
-  `amount`: The amount of posts that will be liked
+  `amount`: The amount of posts that the author of the post will be followed
 
-  `skip_top_posts`: Determines whether the first 9 top posts should be liked or not (default is True)
+  `skip_top_posts`: Determines whether the first 9 top users of posts should be followed or not (default is True)
 
   `use_smart_hashtags`: Make use of the [smart hashtag feature]()
 
@@ -740,9 +740,9 @@ session.follow_by_tags(['tag1', 'tag2'], amount=10)
 
   `interact`: Defines whether the users of the given post should also be interacted with (needs `set_user_interact` to be also set)
 
-  `randomize`: Determines whether the first `amount` of posts should be liked or a random selection.
+  `randomize`: Determines whether the first `amount` of post authors should be liked or a random selection.
 
-  `media`: Determines which media should be liked, Photo or Video (default is `None` which is all)
+  `media`: Determines which media should be considered, Photo or Video (default is `None` which is all)
 
 
 ### Follow by Locations
