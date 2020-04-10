@@ -4,6 +4,12 @@
 import random
 import emoji
 
+import colorama
+from colorama import Fore, Back
+
+colorama.init(autoreset=True)
+
+
 from .time_util import sleep
 from .util import update_activity
 from .util import add_user_to_blacklist
@@ -38,7 +44,7 @@ def get_comment_input(browser):
 
 
 def open_comment_section(browser, logger):
-    missing_comment_elem_warning = (
+    missing_comment_elem_warning = (Back.RED + 
         "--> Comment Button Not Found!"
         "\t~may cause issues with browser windows of smaller widths"
     )
@@ -116,19 +122,19 @@ def comment_image(browser, username, comments, blacklist, logger, logfolder):
                     username, blacklist["campaign"], action, logger, logfolder
                 )
         else:
-            logger.warning(
+            logger.warning(Back.RED + 
                 "--> Comment Action Likely Failed!" "\t~comment Element was not found"
             )
             return False, "commenting disabled"
 
     except InvalidElementStateException:
-        logger.warning(
+        logger.warning(Back.RED + 
             "--> Comment Action Likely Failed!"
             "\t~encountered `InvalidElementStateException` :/"
         )
         return False, "invalid element state"
 
-    logger.info("--> Commented: {}".format(rand_comment.encode("utf-8")))
+    logger.info(Fore.GREEN + "--> Commented: {}".format(rand_comment.encode("utf-8")))
     Event().commented(username)
 
     # get the post-comment delay time to sleep
@@ -146,23 +152,23 @@ def verify_commenting(browser, maximum, minimum, mand_words, logger):
 
     commenting_state, msg = is_commenting_enabled(browser, logger)
     if commenting_state is not True:
-        disapproval_reason = "--> Not commenting! {}".format(msg)
+        disapproval_reason = Fore.RED + "--> Not commenting! {}".format(msg)
         return False, disapproval_reason
 
     comments_count, msg = get_comments_count(browser, logger)
     if comments_count is None:
-        disapproval_reason = "--> Not commenting! {}".format(msg)
+        disapproval_reason = Fore.RED + "--> Not commenting! {}".format(msg)
         return False, disapproval_reason
 
     if maximum is not None and comments_count > maximum:
-        disapproval_reason = (
+        disapproval_reason = (Fore.RED + 
             "Not commented on this post! ~more comments exist"
             " off maximum limit at {}".format(comments_count)
         )
         return False, disapproval_reason
 
     elif minimum is not None and comments_count < minimum:
-        disapproval_reason = (
+        disapproval_reason = (Fore.RED + 
             "Not commented on this post! ~less comments exist"
             " off minumum limit at {}".format(comments_count)
         )
@@ -337,7 +343,7 @@ def is_commenting_enabled(browser, logger):
             return False, "Failure"
 
     if comments_disabled is True:
-        msg = "Comments are disabled for this post."
+        msg = Fore.RED + "Comments are disabled for this post."
         return False, msg
 
     return True, "Success"
@@ -363,7 +369,7 @@ def get_comments_count(browser, logger):
             )
 
         except Exception as e:
-            msg = "Failed to get comments' count!\n\t{}".format(str(e).encode("utf-8"))
+            msg = Fore.RED + "Failed to get comments' count!\n\t{}".format(str(e).encode("utf-8"))
             return None, msg
 
     if not comments_count:

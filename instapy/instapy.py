@@ -10,6 +10,10 @@ from selenium.webdriver import DesiredCapabilities
 import logging.handlers
 from contextlib import contextmanager
 from copy import deepcopy
+import colorama
+from colorama import Fore, Back
+
+colorama.init(autoreset=True)
 
 try:
     from pyvirtualdisplay import Display
@@ -140,7 +144,7 @@ class InstaPy:
                 self.display = Display(visible=0, size=(800, 600))
                 self.display.start()
             else:
-                raise InstaPyError("The 'nogui' parameter isn't supported on Windows.")
+                raise InstaPyError(Back.RED + "The 'nogui' parameter isn't supported on Windows.")
 
         self.browser = None
         self.page_delay = page_delay
@@ -718,7 +722,7 @@ class InstaPy:
                     for item in self.smart_hashtags:
                         print("[smart hashtag generated: {}]".format(item))
             else:
-                print("Too few results for #{} tag".format(tag))
+                print(Back.RED + "Too few results for #{} tag".format(tag))
 
         # delete duplicated tags
         self.smart_hashtags = list(set(self.smart_hashtags))
@@ -899,7 +903,7 @@ class InstaPy:
                 random.shuffle(commenters)
                 for commenter in commenters[:amount]:
                     if self.quotient_breach:
-                        self.logger.warning(
+                        self.logger.warning(Back.YELLOW + 
                             "--> Follow quotient reached its peak!"
                             "\t~leaving Follow-Commenters activity\n"
                         )
@@ -935,7 +939,7 @@ class InstaPy:
                             pass
 
             else:
-                self.logger.info("Noone commented, noone to follow.\n")
+                self.logger.info(Back.BLUE + "Noone commented, noone to follow.\n")
 
             sleep(1)
 
@@ -951,14 +955,14 @@ class InstaPy:
 
         # print results
         self.logger.info("Followed: {}".format(followed_all))
-        self.logger.info("Already followed: {}".format(already_followed))
+        self.logger.info(Fore.MAGENTA + "Already followed: {}".format(already_followed))
         self.logger.info("Not valid users: {}".format(not_valid_users))
 
         if interact is True:
             print("")
             # print results out of interactions
             self.logger.info("Liked: {}".format(liked))
-            self.logger.info("Already Liked: {}".format(already_liked))
+            self.logger.info(Fore.MAGENTA + "Already Liked: {}".format(already_liked))
             self.logger.info("Commented: {}".format(commented))
             self.logger.info("Inappropriate: {}".format(inap_img))
 
@@ -1027,7 +1031,7 @@ class InstaPy:
 
                 for liker in likers[:follow_likers_per_photo]:
                     if self.quotient_breach:
-                        self.logger.warning(
+                        self.logger.warning(Back.YELLOW + 
                             "--> Follow quotient reached its peak!"
                             "\t~leaving Follow-Likers activity\n"
                         )
@@ -1074,14 +1078,14 @@ class InstaPy:
 
         # print results
         self.logger.info("Followed: {}".format(followed_all))
-        self.logger.info("Already followed: {}".format(already_followed))
+        self.logger.info(Fore.MAGENTA + "Already followed: {}".format(already_followed))
         self.logger.info("Not valid users: {}".format(not_valid_users))
 
         if interact is True:
             print("")
             # print results out of interactions
             self.logger.info("Liked: {}".format(liked))
-            self.logger.info("Already Liked: {}".format(already_liked))
+            self.logger.info(Fore.MAGENTA + "Already Liked: {}".format(already_liked))
             self.logger.info("Commented: {}".format(commented))
             self.logger.info("Inappropriate: {}".format(inap_img))
 
@@ -1132,7 +1136,7 @@ class InstaPy:
 
         for acc_to_follow in followlist:
             if self.jumps["consequent"]["follows"] >= self.jumps["limit"]["follows"]:
-                self.logger.warning(
+                self.logger.warning(Back.YELLOW + 
                     "--> Follow quotient reached its peak!\t~leaving "
                     "Follow-By-Tags activity\n"
                 )
@@ -1227,7 +1231,7 @@ class InstaPy:
                             # revert back to original `self.do_follow` value
                             self.do_follow = original_do_follow
 
-                elif msg == "already followed":
+                elif msg == Fore.MAGENTA + "already followed":
                     already_followed += 1
 
                 elif msg == "jumped":
@@ -1241,7 +1245,7 @@ class InstaPy:
             self.logger.info("Finished following by List!\n")
             # print summary
             self.logger.info("Followed: {}".format(followed_all))
-            self.logger.info("Already followed: {}".format(already_followed))
+            self.logger.info(Fore.MAGENTA + "Already followed: {}".format(already_followed))
             self.logger.info("Not valid users: {}".format(not_valid_users))
 
             if interact is True:
@@ -1254,7 +1258,7 @@ class InstaPy:
 
                 # print the summary out of interactions
                 self.logger.info("Liked: {}".format(liked))
-                self.logger.info("Already Liked: {}".format(already_liked))
+                self.logger.info(Fore.MAGENTA + "Already Liked: {}".format(already_liked))
                 self.logger.info("Commented: {}".format(commented))
                 self.logger.info("Inappropriate: {}".format(inap_img))
 
@@ -1490,7 +1494,7 @@ class InstaPy:
                         validation, details = self.validate_user_call(user_name)
 
                         if validation is not True:
-                            self.logger.info("--> Not a valid user: {}".format(details))
+                            self.logger.info(Back.RED + "--> Not a valid user: {}".format(details))
                             not_valid_users += 1
                             continue
                         else:
@@ -1572,7 +1576,7 @@ class InstaPy:
                                     self.logger.info(disapproval_reason)
 
                             else:
-                                self.logger.info("--> Not commented")
+                                self.logger.info(Fore.RED + "--> Not commented")
                                 sleep(1)
 
                             # following
@@ -1600,10 +1604,10 @@ class InstaPy:
                                     followed += 1
 
                             else:
-                                self.logger.info("--> Not following")
+                                self.logger.info(Fore.RED + "--> Not following")
                                 sleep(1)
 
-                        elif msg == "already liked":
+                        elif msg == Fore.MAGENTA + "already liked":
                             already_liked += 1
 
                         elif msg == "block on likes":
@@ -1615,7 +1619,7 @@ class InstaPy:
                             self.jumps["consequent"]["likes"] += 1
 
                     else:
-                        self.logger.info(
+                        self.logger.info(Fore.RED + 
                             "--> Image not liked: {}".format(reason.encode("utf-8"))
                         )
                         inap_img += 1
@@ -1625,7 +1629,7 @@ class InstaPy:
 
             self.logger.info("Location: {}".format(location.encode("utf-8")))
             self.logger.info("Liked: {}".format(liked_img))
-            self.logger.info("Already Liked: {}".format(already_liked))
+            self.logger.info(Fore.MAGENTA + "Already Liked: {}".format(already_liked))
             self.logger.info("Commented: {}".format(commented))
             self.logger.info("Followed: {}".format(followed))
             self.logger.info("Inappropriate: {}".format(inap_img))
@@ -1715,7 +1719,7 @@ class InstaPy:
                             web_address_navigator(self.browser, link)
 
                         # try to comment
-                        self.logger.info(
+                        self.logger.info(Fore.RED + 
                             "--> Image not liked: Likes are disabled for the "
                             "'Comment-By-Locations' feature"
                         )
@@ -1808,7 +1812,7 @@ class InstaPy:
                                                 followed += 1
 
                                         else:
-                                            self.logger.info("--> Not following")
+                                            self.logger.info(Fore.RED + "--> Not following")
                                             sleep(1)
 
                                 elif msg == "jumped":
@@ -1820,11 +1824,11 @@ class InstaPy:
                                 self.logger.info(disapproval_reason)
 
                         else:
-                            self.logger.info("--> Not commented")
+                            self.logger.info(Fore.RED + "--> Not commented")
                             sleep(1)
 
                     else:
-                        self.logger.info(
+                        self.logger.info(Fore.RED + 
                             "--> Image not commented: {}".format(reason.encode("utf-8"))
                         )
                         inap_img += 1
@@ -2018,7 +2022,7 @@ class InstaPy:
                                     self.logger.info(disapproval_reason)
 
                             else:
-                                self.logger.info("--> Not commented")
+                                self.logger.info(Fore.RED + "--> Not commented")
                                 sleep(1)
 
                             # following
@@ -2045,7 +2049,7 @@ class InstaPy:
                                 if follow_state is True:
                                     followed += 1
                             else:
-                                self.logger.info("--> Not following")
+                                self.logger.info(Fore.RED + "--> Not following")
                                 sleep(1)
 
                             # interactions (if any)
@@ -2065,7 +2069,7 @@ class InstaPy:
                                         self.user_interact_media,
                                     )
 
-                        elif msg == "already liked":
+                        elif msg == Fore.MAGENTA + "already liked":
                             already_liked += 1
 
                         elif msg == "block on likes":
@@ -2077,7 +2081,7 @@ class InstaPy:
                             self.jumps["consequent"]["likes"] += 1
 
                     else:
-                        self.logger.info(
+                        self.logger.info(Fore.RED + 
                             "--> Image not liked: {}".format(reason.encode("utf-8"))
                         )
                         inap_img += 1
@@ -2088,7 +2092,7 @@ class InstaPy:
             self.logger.info("Tag: {}".format(tag.encode("utf-8")))
 
         self.logger.info("Liked: {}".format(liked_img))
-        self.logger.info("Already Liked: {}".format(already_liked))
+        self.logger.info(Fore.MAGENTA + "Already Liked: {}".format(already_liked))
         self.logger.info("Commented: {}".format(commented))
         self.logger.info("Followed: {}".format(followed))
         self.logger.info("Inappropriate: {}".format(inap_img))
@@ -2192,7 +2196,7 @@ class InstaPy:
                 if follow_state is True:
                     followed += 1
             else:
-                self.logger.info("--> Not following")
+                self.logger.info(Fore.RED + "--> Not following")
                 sleep(1)
 
             if links is False:
@@ -2317,10 +2321,10 @@ class InstaPy:
                                     self.logger.info(disapproval_reason)
 
                             else:
-                                self.logger.info("--> Not commented")
+                                self.logger.info(Fore.RED + "--> Not commented")
                                 sleep(1)
 
-                        elif msg == "already liked":
+                        elif msg == Fore.MAGENTA + "already liked":
                             already_liked += 1
 
                         elif msg == "block on likes":
@@ -2332,7 +2336,7 @@ class InstaPy:
                             self.jumps["consequent"]["likes"] += 1
 
                     else:
-                        self.logger.info(
+                        self.logger.info(Fore.RED + 
                             "--> Image not liked: {}".format(reason.encode("utf-8"))
                         )
                         inap_img += 1
@@ -2348,7 +2352,7 @@ class InstaPy:
 
         self.logger.info("User: {}".format(username.encode("utf-8")))
         self.logger.info("Liked: {}".format(total_liked_img))
-        self.logger.info("Already Liked: {}".format(already_liked))
+        self.logger.info(Fore.MAGENTA + "Already Liked: {}".format(already_liked))
         self.logger.info("Commented: {}".format(commented))
         self.logger.info("Inappropriate: {}".format(inap_img))
         self.logger.info("Not valid users: {}\n".format(not_valid_users))
@@ -2613,10 +2617,10 @@ class InstaPy:
                                         self.logger.info(disapproval_reason)
 
                                 else:
-                                    self.logger.info("--> Not commented")
+                                    self.logger.info(Fore.RED + "--> Not commented")
                                     sleep(1)
 
-                            elif msg == "already liked":
+                            elif msg == Fore.MAGENTA + "already liked":
                                 already_liked += 1
 
                             elif msg == "block on likes":
@@ -2628,7 +2632,7 @@ class InstaPy:
                                 self.jumps["consequent"]["likes"] += 1
 
                     else:
-                        self.logger.info(
+                        self.logger.info(Fore.RED + 
                             "--> Image not liked: {}".format(reason.encode("utf-8"))
                         )
                         inap_img += 1
@@ -2653,11 +2657,11 @@ class InstaPy:
                 if follow_state is True:
                     followed += 1
 
-                elif msg == "already followed":
+                elif msg == Fore.MAGENTA + "already followed":
                     already_followed += 1
 
             else:
-                self.logger.info("--> Not following")
+                self.logger.info(Fore.RED + "--> Not following")
                 sleep(1)
 
             # watch story if present
@@ -2681,10 +2685,10 @@ class InstaPy:
 
             # print results
             self.logger.info("Liked: {}".format(total_liked_img))
-            self.logger.info("Already Liked: {}".format(already_liked))
+            self.logger.info(Fore.MAGENTA + "Already Liked: {}".format(already_liked))
             self.logger.info("Commented: {}".format(commented))
             self.logger.info("Followed: {}".format(followed))
-            self.logger.info("Already Followed: {}".format(already_followed))
+            self.logger.info(Fore.MAGENTA + "Already Followed: {}".format(already_followed))
             self.logger.info("Inappropriate: {}".format(inap_img))
             self.logger.info("Not valid users: {}\n".format(not_valid_users))
 
@@ -2945,10 +2949,10 @@ class InstaPy:
                                         self.logger.info(disapproval_reason)
 
                                 else:
-                                    self.logger.info("--> Not commented")
+                                    self.logger.info(Fore.RED + "--> Not commented")
                                     sleep(1)
 
-                            elif msg == "already liked":
+                            elif msg == Fore.MAGENTA + "already liked":
                                 already_liked += 1
 
                             elif msg == "block on likes":
@@ -2960,7 +2964,7 @@ class InstaPy:
                                 self.jumps["consequent"]["likes"] += 1
 
                     else:
-                        self.logger.info(
+                        self.logger.info(Fore.RED + 
                             "--> Image not liked: {}".format(reason.encode("utf-8"))
                         )
                         inap_img += 1
@@ -2984,11 +2988,11 @@ class InstaPy:
                 if follow_state is True:
                     followed += 1
 
-                elif msg == "already followed":
+                elif msg == Fore.MAGENTA + "already followed":
                     already_followed += 1
 
             else:
-                self.logger.info("--> Not following")
+                self.logger.info(Fore.RED + "--> Not following")
                 sleep(1)
 
             if liked_img < amount:
@@ -3007,10 +3011,10 @@ class InstaPy:
 
         # print results
         self.logger.info("Liked: {}".format(total_liked_img))
-        self.logger.info("Already Liked: {}".format(already_liked))
+        self.logger.info(Fore.MAGENTA + "Already Liked: {}".format(already_liked))
         self.logger.info("Commented: {}".format(commented))
         self.logger.info("Followed: {}".format(followed))
-        self.logger.info("Already Followed: {}".format(already_followed))
+        self.logger.info(Fore.MAGENTA + "Already Followed: {}".format(already_followed))
         self.logger.info("Inappropriate: {}".format(inap_img))
         self.logger.info("Not valid users: {}\n".format(not_valid_users))
 
@@ -3221,7 +3225,7 @@ class InstaPy:
 
         # print results
         self.logger.info("Liked: {}".format(liked))
-        self.logger.info("Already Liked: {}".format(already_liked))
+        self.logger.info(Fore.MAGENTA + "Already Liked: {}".format(already_liked))
         self.logger.info("Commented: {}".format(commented))
         self.logger.info("Followed: {}".format(followed))
         self.logger.info("Inappropriate: {}".format(inap_img))
@@ -3398,7 +3402,7 @@ class InstaPy:
 
         # print results
         self.logger.info("Liked: {}".format(liked))
-        self.logger.info("Already Liked: {}".format(already_liked))
+        self.logger.info(Fore.MAGENTA + "Already Liked: {}".format(already_liked))
         self.logger.info("Commented: {}".format(commented))
         self.logger.info("Followed: {}".format(followed))
         self.logger.info("Inappropriate: {}".format(inap_img))
@@ -3490,7 +3494,7 @@ class InstaPy:
 
             for index, person in enumerate(person_list):
                 if self.quotient_breach:
-                    self.logger.warning(
+                    self.logger.warning(Back.YELLOW + 
                         "--> Follow quotient reached its peak!"
                         "\t~leaving Follow-User-Followers activity\n"
                     )
@@ -3581,14 +3585,14 @@ class InstaPy:
 
         # print results
         self.logger.info("Followed: {}".format(followed_all))
-        self.logger.info("Already followed: {}".format(already_followed))
+        self.logger.info(Fore.MAGENTA + "Already followed: {}".format(already_followed))
         self.logger.info("Not valid users: {}".format(not_valid_users))
 
         if interact is True:
             print("")
             # print results out of interactions
             self.logger.info("Liked: {}".format(liked))
-            self.logger.info("Already Liked: {}".format(already_liked))
+            self.logger.info(Fore.MAGENTA + "Already Liked: {}".format(already_liked))
             self.logger.info("Commented: {}".format(commented))
             self.logger.info("Inappropriate: {}".format(inap_img))
 
@@ -3676,7 +3680,7 @@ class InstaPy:
 
             for index, person in enumerate(person_list):
                 if self.quotient_breach:
-                    self.logger.warning(
+                    self.logger.warning(Back.YELLOW + 
                         "--> Follow quotient reached its peak!"
                         "\t~leaving Follow-User-Following activity\n"
                     )
@@ -3767,14 +3771,14 @@ class InstaPy:
 
         # print results
         self.logger.info("Followed: {}".format(followed_all))
-        self.logger.info("Already followed: {}".format(already_followed))
+        self.logger.info(Fore.MAGENTA + "Already followed: {}".format(already_followed))
         self.logger.info("Not valid users: {}".format(not_valid_users))
 
         if interact is True:
             print("")
             # print results out of interactions
             self.logger.info("Liked: {}".format(liked))
-            self.logger.info("Already Liked: {}".format(already_liked))
+            self.logger.info(Fore.MAGENTA + "Already Liked: {}".format(already_liked))
             self.logger.info("Commented: {}".format(commented))
             self.logger.info("Inappropriate: {}".format(inap_img))
 
@@ -4112,7 +4116,7 @@ class InstaPy:
                                             self.logger.info(disapproval_reason)
 
                                     else:
-                                        self.logger.info("--> Not commented")
+                                        self.logger.info(Fore.RED + "--> Not commented")
                                         sleep(1)
 
                                     # following
@@ -4141,7 +4145,7 @@ class InstaPy:
                                         if follow_state is True:
                                             followed += 1
                                     else:
-                                        self.logger.info("--> Not following")
+                                        self.logger.info(Fore.RED + "--> Not following")
                                         sleep(1)
 
                                     # interactions (if any)
@@ -4160,7 +4164,7 @@ class InstaPy:
                                     # :P
                                     yield self
 
-                                elif msg == "already liked":
+                                elif msg == Fore.MAGENTA + "already liked":
                                     already_liked += 1
 
                                 elif msg == "block on likes":
@@ -4173,7 +4177,7 @@ class InstaPy:
 
                             elif inappropriate:
                                 inap_img += 1
-                                self.logger.info(
+                                self.logger.info(Fore.RED + 
                                     "--> Image not liked: {}".format(
                                         reason.encode("utf-8")
                                     )
@@ -4208,7 +4212,7 @@ class InstaPy:
                             self.logger.error("Invalid Page: {}".format(err))
 
         self.logger.info("Liked: {}".format(liked_img))
-        self.logger.info("Already Liked: {}".format(already_liked))
+        self.logger.info(Fore.MAGENTA + "Already Liked: {}".format(already_liked))
         self.logger.info("Commented: {}".format(commented))
         self.logger.info("Followed: {}".format(followed))
         self.logger.info("Inappropriate: {}".format(inap_img))
@@ -4529,7 +4533,7 @@ class InstaPy:
                     self.jumps["consequent"]["follows"]
                     >= self.jumps["limit"]["follows"]
                 ):
-                    self.logger.warning(
+                    self.logger.warning(Back.YELLOW + 
                         "--> Follow quotient reached its peak!"
                         "\t~leaving Follow-By-Locations activity\n"
                     )
@@ -4661,7 +4665,7 @@ class InstaPy:
                     self.jumps["consequent"]["follows"]
                     >= self.jumps["limit"]["follows"]
                 ):
-                    self.logger.warning(
+                    self.logger.warning(Back.YELLOW + 
                         "--> Follow quotient reached its peak!"
                         "\t~leaving Follow-By-Tags activity\n"
                     )
@@ -4897,7 +4901,7 @@ class InstaPy:
                                 self.logger.info(disapproval_reason)
 
                         else:
-                            self.logger.info("--> Not commented")
+                            self.logger.info(Fore.RED + "--> Not commented")
                             sleep(1)
 
                         if (
@@ -4923,7 +4927,7 @@ class InstaPy:
                             if follow_state is True:
                                 followed += 1
                         else:
-                            self.logger.info("--> Not following")
+                            self.logger.info(Fore.RED + "--> Not following")
                             sleep(1)
 
                         # check if interaction is expected
@@ -4940,7 +4944,7 @@ class InstaPy:
                                     self.user_interact_media,
                                 )
 
-                    elif msg == "already liked":
+                    elif msg == Fore.MAGENTA + "already liked":
                         already_liked += 1
 
                     elif msg == "block on likes":
@@ -4951,7 +4955,7 @@ class InstaPy:
                         self.jumps["consequent"]["likes"] += 1
 
                 else:
-                    self.logger.info(
+                    self.logger.info(Fore.RED + 
                         "--> Image not liked: {}".format(reason.encode("utf-8"))
                     )
                     inap_img += 1
@@ -4960,7 +4964,7 @@ class InstaPy:
                 self.logger.error("Invalid Page: {}".format(err))
 
         self.logger.info("Liked: {}".format(liked_img))
-        self.logger.info("Already Liked: {}".format(already_liked))
+        self.logger.info(Fore.MAGENTA + "Already Liked: {}".format(already_liked))
         self.logger.info("Commented: {}".format(commented))
         self.logger.info("Followed: {}".format(followed))
         self.logger.info("Inappropriate: {}".format(inap_img))
@@ -5351,7 +5355,7 @@ class InstaPy:
                     like_failures_tracker["consequent"]["post_likes"]
                     >= like_failures_tracker["limit"]["post_likes"]
                 ):
-                    self.logger.warning(
+                    self.logger.warning(Back.RED + 
                         "--> Too many failures to like posts!{}".format(leave_msg)
                     )
                     # this example shows helpful usage of
@@ -5417,7 +5421,7 @@ class InstaPy:
                     like_failures_tracker["consequent"]["post_likes"] = 0
                     self.liked_img += 1
 
-                elif msg == "already liked":
+                elif msg == Fore.MAGENTA + "already liked":
                     self.already_liked += 1
 
                 elif msg == "block on likes":
@@ -5440,7 +5444,7 @@ class InstaPy:
                         like_failures_tracker["consequent"]["comment_likes"]
                         >= like_failures_tracker["limit"]["comment_likes"]
                     ):
-                        self.logger.warning(
+                        self.logger.warning(Back.RED + 
                             "--> Too many failures to like comments!{}".format(
                                 leave_msg
                             )
@@ -5879,7 +5883,7 @@ class InstaPy:
                 # inform user whats happening
                 if len(tags) > 1:
                     self.logger.info("Tag [{}/{}]".format(index + 1, len(tags)))
-                self.logger.info(
+                self.logger.info(Back.BLUE + 
                     "Loading stories with Tag --> {}".format(tag.encode("utf-8"))
                 )
 
@@ -5911,7 +5915,7 @@ class InstaPy:
                 # inform user whats happening
                 if len(users) > 1:
                     self.logger.info("User [{}/{}]".format(index + 1, len(users)))
-                self.logger.info(
+                self.logger.info(Back.BLUE + 
                     "Loading stories with User --> {}".format(user.encode("utf-8"))
                 )
 

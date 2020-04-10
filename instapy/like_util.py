@@ -2,6 +2,11 @@
 import random
 import re
 from re import findall
+import colorama
+from colorama import Fore, Back
+
+
+colorama.init(autoreset=True)
 
 from .constants import MEDIA_PHOTO, MEDIA_CAROUSEL, MEDIA_ALL_TYPES
 from .time_util import sleep
@@ -759,7 +764,7 @@ def like_image(browser, username, blacklist, logger, logfolder, total_liked_img)
         liked_elem = browser.find_elements_by_xpath(unlike_xpath)
 
         if len(liked_elem) == 1:
-            logger.info("--> Image Liked!")
+            logger.info(Fore.GREEN + "--> Image Liked!")
             Event().liked(username)
             update_activity(
                 browser, action="likes", state=None, logfolder=logfolder, logger=logger
@@ -783,16 +788,16 @@ def like_image(browser, username, blacklist, logger, logfolder, total_liked_img)
 
         else:
             # if like not seceded wait for 2 min
-            logger.info("--> Image was not able to get Liked! maybe blocked ?")
+            logger.info(Fore.RED + "--> Image was not able to get Liked! maybe blocked ?")
             sleep(120)
 
     else:
         liked_elem = browser.find_elements_by_xpath(unlike_xpath)
         if len(liked_elem) == 1:
-            logger.info("--> Image already liked!")
+            logger.info(Fore.MAGENTA + "--> Image already liked!")
             return False, "already liked"
 
-    logger.info("--> Invalid Like Element!")
+    logger.info(Back.RED + "--> Invalid Like Element!")
 
     return False, "invalid element"
 
@@ -974,12 +979,12 @@ def like_comment(browser, original_comment_text, logger):
                 )
 
                 if button_change:
-                    logger.info("--> Liked the comment!")
+                    logger.info(Fore.BLUE + "--> Liked the comment!")
                     sleep(random.uniform(1, 2))
                     return True, "success"
 
                 else:
-                    logger.info("--> Unfortunately, comment was not liked.")
+                    logger.info(Fore.RED + "--> Unfortunately, comment was not liked.")
                     sleep(random.uniform(0, 1))
                     return False, "failure"
 
