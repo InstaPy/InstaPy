@@ -41,11 +41,6 @@ from selenium.common.exceptions import TimeoutException
 from .xpath import read_xpath
 from .event import Event
 
-import colorama
-from colorama import Fore, Back
-
-colorama.init(autoreset=True)
-
 default_profile_pic_instagram = [
     "https://instagram.flas1-2.fna.fbcdn.net/vp"
     "/a8539c22ed9fec8e1c43b538b1ebfd1d/5C5A1A7A/t51.2885-19"
@@ -91,7 +86,7 @@ def is_private_profile(browser, logger, following=True):
     # double check with xpath that should work only when we not follwoing a
     # user
     if is_private and not following:
-        logger.info(Back.YELLOW + "Is private account you're not following.")
+        logger.info("Is private account you're not following.")
         body_elem = browser.find_element_by_tag_name("body")
         is_private = body_elem.find_element_by_xpath(
             read_xpath(is_private_profile.__name__, "is_private")
@@ -156,11 +151,11 @@ def validate_username(
                 )
 
             except WebDriverException:
-                logger.error(Back.RED + 
+                logger.error(
                     "Username validation failed!\t~cannot get the post "
                     "owner's username"
                 )
-                inap_msg = (Back.RED + 
+                inap_msg = (
                     "---> Sorry, this page isn't available!\t~either "
                     "link is broken or page is removed\n"
                 )
@@ -171,11 +166,11 @@ def validate_username(
         # `username_or_link`, then it is a `username`
 
     if username == own_username:
-        inap_msg =Fore.YELLOW +  "---> Username '{}' is yours!\t~skipping user\n".format(own_username)
+        inap_msg = "---> Username '{}' is yours!\t~skipping user\n".format(own_username)
         return False, inap_msg
 
     if username in ignore_users:
-        inap_msg = (Fore.YELLOW + 
+        inap_msg = (
             "---> '{}' is in the `ignore_users` list\t~skipping "
             "user\n".format(username)
         )
@@ -227,7 +222,7 @@ def validate_username(
                 else float(following_count) / float(followers_count)
             )
 
-        logger.info(Back.CYAN + 
+        logger.info(
             "User: '{}'  |> followers: {}  |> following: {}  |> relationship "
             "ratio: {}".format(
                 username,
@@ -242,7 +237,7 @@ def validate_username(
         if followers_count or following_count:
             if potency_ratio and not delimit_by_numbers:
                 if relationship_ratio and relationship_ratio < potency_ratio:
-                    inap_msg = (Fore.YELLOW + 
+                    inap_msg = (
                         "'{}' is not a {} with the relationship ratio of {}  "
                         "~skipping user\n".format(
                             username,
@@ -258,7 +253,7 @@ def validate_username(
                 if followers_count:
                     if max_followers:
                         if followers_count > max_followers:
-                            inap_msg = (Back.RED + 
+                            inap_msg = (
                                 "User '{}'s followers count exceeds maximum "
                                 "limit  ~skipping user\n".format(username)
                             )
@@ -266,7 +261,7 @@ def validate_username(
 
                     if min_followers:
                         if followers_count < min_followers:
-                            inap_msg = (Back.RED + 
+                            inap_msg = (
                                 "User '{}'s followers count is less than "
                                 "minimum limit  ~skipping user\n".format(username)
                             )
@@ -275,7 +270,7 @@ def validate_username(
                 if following_count:
                     if max_following:
                         if following_count > max_following:
-                            inap_msg = (Back.RED + 
+                            inap_msg = (
                                 "User '{}'s following count exceeds maximum "
                                 "limit  ~skipping user\n".format(username)
                             )
@@ -283,7 +278,7 @@ def validate_username(
 
                     if min_following:
                         if following_count < min_following:
-                            inap_msg = (Back.RED + 
+                            inap_msg = (
                                 "User '{}'s following count is less than "
                                 "minimum limit  ~skipping user\n".format(username)
                             )
@@ -291,7 +286,7 @@ def validate_username(
 
                 if potency_ratio:
                     if relationship_ratio and relationship_ratio < potency_ratio:
-                        inap_msg = (Back.YELLOW + 
+                        inap_msg = (
                             "'{}' is not a {} with the relationship ratio of "
                             "{}  ~skipping user\n".format(
                                 username,
@@ -319,14 +314,14 @@ def validate_username(
             return False, inap_msg
         if max_posts:
             if number_of_posts > max_posts:
-                inap_msg = (Back.RED + 
+                inap_msg = (
                     "Number of posts ({}) of '{}' exceeds the maximum limit "
                     "given {}\n".format(number_of_posts, username, max_posts)
                 )
                 return False, inap_msg
         if min_posts:
             if number_of_posts < min_posts:
-                inap_msg = (Back.RED + 
+                inap_msg = (
                     "Number of posts ({}) of '{}' is less than the minimum "
                     "limit given {}\n".format(number_of_posts, username, min_posts)
                 )
@@ -638,7 +633,7 @@ def get_active_users(browser, username, posts, boundary, logger):
         "\n".format(boundary)
     )
     # posts argument is the number of posts to collect usernames
-    logger.info(Back.BLUE + 
+    logger.info(
         "Getting active users who liked the latest {} posts:\n  {}".format(
             posts, message
         )
@@ -656,7 +651,7 @@ def get_active_users(browser, username, posts, boundary, logger):
             if latest_post:
                 click_element(browser, latest_post)
         except (NoSuchElementException, WebDriverException):
-            logger.warning(Fore.RED + "Failed to click on the latest post to grab active likers!")
+            logger.warning("Failed to click on the latest post to grab active likers!")
             return []
         try:
             checked_posts += 1
@@ -671,13 +666,13 @@ def get_active_users(browser, username, posts, boundary, logger):
                     # liked by 'username' AND 165 others (166 in total)
                     likers_count += 1
                 else:
-                    logger.info(Fore.RED + 
+                    logger.info(
                         "Failed to get likers count on your post {}  "
                         "~empty string".format(count)
                     )
                     likers_count = None
             except NoSuchElementException:
-                logger.info(Fore.RED + "Failed to get likers count on your post {}".format(count))
+                logger.info("Failed to get likers count on your post {}".format(count))
                 likers_count = None
             try:
                 likes_button = browser.find_elements_by_xpath(
@@ -696,7 +691,7 @@ def get_active_users(browser, username, posts, boundary, logger):
 
             except (IndexError, NoSuchElementException):
                 # Video have no likes button / no posts in page
-                logger.info(Back.YELLOW + "video found, try next post until we run out of posts")
+                logger.info("video found, try next post until we run out of posts")
 
                 # edge case of account having only videos,  or last post is a video.
                 if checked_posts >= total_posts:
@@ -753,7 +748,7 @@ def get_active_users(browser, username, posts, boundary, logger):
 
                 if sc_rolled > 91 or too_many_requests > 1:  # old value 100
                     print("\n")
-                    logger.info(Back.RED + "Too Many Requests sent! ~will sleep some :>\n")
+                    logger.info("Too Many Requests sent! ~will sleep some :>\n")
                     sleep_actual(600)
                     sc_rolled = 0
                     too_many_requests = (
@@ -785,7 +780,7 @@ def get_active_users(browser, username, posts, boundary, logger):
                     ) or boundary is None:
 
                         if try_again <= 1:  # can increase the amount of tries
-                            logger.info(Fore.RED + 
+                            logger.info(
                                 "Failed to get the desired amount of "
                                 "usernames but trying again.."
                                 "\t|> post:{}  |> attempt: {}\n".format(
@@ -800,7 +795,7 @@ def get_active_users(browser, username, posts, boundary, logger):
 
             user_list = get_users_from_dialog(user_list, dialog)
 
-            logger.info(Back.CYAN + 
+            logger.info(
                 "Post {}  |  Likers: found {}, catched {}\n\n".format(
                     count, likers_count, len(user_list)
                 )
@@ -823,7 +818,7 @@ def get_active_users(browser, username, posts, boundary, logger):
                 close_dialog_box(browser)
                 browser.back()
             except Exception:
-                logger.error(Fore.RED + "Unable to go to next profile post")
+                logger.error("Unable to go to next profile post")
         count += 1
 
     real_time = time.time()
@@ -833,7 +828,7 @@ def get_active_users(browser, username, posts, boundary, logger):
     # delete duplicated users
     active_users = list(set(active_users))
 
-    logger.info(Back.CYAN + 
+    logger.info(
         "Gathered total of {} unique active followers from the latest {} "
         "posts in {} minutes and {} seconds".format(
             len(active_users), posts, diff_in_minutes, diff_in_seconds
