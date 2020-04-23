@@ -115,6 +115,7 @@ class InstaPy:
         split_db: bool = False,
         bypass_security_challenge_using: str = "email",
         want_check_browser: bool = True,
+        browser_executable_path: str = None,
     ):
         print("InstaPy Version: {}".format(__version__))
         cli_args = parse_cli_args()
@@ -316,6 +317,7 @@ class InstaPy:
                 disable_image_load,
                 page_delay,
                 geckodriver_path,
+                browser_executable_path,
                 self.logger,
             )
             if len(err_msg) > 0:
