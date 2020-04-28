@@ -2410,7 +2410,7 @@ def file_handling(file):
                 if line != "\n":
                     element = line.strip("\n").lower()
                     # remove spaces
-                    element = "".join(e for e in element if e == " ")
+                    element = "".join(e for e in element if e != " ")
                     elements.append(element)
     except FileNotFoundError:
         return ["FileNotFoundError"]
