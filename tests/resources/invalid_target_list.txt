@@ -1,4 +1,5 @@
-photo grAphy/
+photo  grAphy
 
-&portr/ait
-   miNimali.stic
+portrait
+
+    miNimaListic
