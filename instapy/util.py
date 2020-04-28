@@ -2400,6 +2400,24 @@ def get_query_hash(browser, logger):
         logger.warn("Query Hash not found")
 
 
+def file_handling(file):
+    """ Extracts text file's elements """
+    elements = []
+    try:
+        with open(file, "r") as f:
+            # extract file's lines in list
+            for line in f.readlines():
+                if line != "\n":
+                    element = line.strip("\n").lower()
+                    # remove special characters, punctuation and spaces
+                    element = "".join(e for e in element if e.isalnum())
+                    elements.append(element)
+    except FileNotFoundError:
+        return ["FileNotFoundError"]
+
+    return elements
+
+
 class CustomizedArgumentParser(ArgumentParser):
     """
      Subclass ArgumentParser in order to turn off
