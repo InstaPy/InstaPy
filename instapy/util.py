@@ -2408,9 +2408,7 @@ def file_handling(file):
             # extract file's lines in list
             for line in f.readlines():
                 if line != "\n":
-                    element = line.strip("\n").lower()
-                    # remove special characters, punctuation and spaces
-                    element = "".join(e for e in element if e.isalnum())
+                    element = line.strip("\n").strip().lower()
                     elements.append(element)
     except FileNotFoundError:
         return ["FileNotFoundError"]
