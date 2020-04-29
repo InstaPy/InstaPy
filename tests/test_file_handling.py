@@ -12,12 +12,12 @@ class TestFileHandling(unittest.TestCase):
 
     def test_valid_entries(self):
         """Check file_handling with valid entries"""
-        actual_entries = util.file_handling("test/resources/valid_target_list.txt")
+        actual_entries = util.file_handling("tests/resources/valid_target_list.txt")
         self.assertListEqual(actual_entries, expected_entries)
 
     def test_invalid_entries(self):
         """Check file_handling with invalid entries"""
-        actual_entries = util.file_handling("test/resources/invalid_target_list.txt")
+        actual_entries = util.file_handling("tests/resources/invalid_target_list.txt")
         self.assertListEqual(actual_entries, expected_entries)
 
     def test_invalid_filepath(self):
