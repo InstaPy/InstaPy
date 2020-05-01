@@ -70,6 +70,7 @@
   - [Running internet connection checks](#running-internet-connection-checks)
   - [Use a proxy](#use-a-proxy)
   - [Running in threads](#running-in-threads)
+  - [Choose the browser version](#choose-the-browser-version)
   
  <br />
 
@@ -1799,7 +1800,19 @@ session.login()
 session.end(threaded_session=True)
 ```
 
+### Choose the browser version
+If you have more than one Firefox version on your system or if you are using a portable version you can instruct InstaPy to use that version using the `browser_executable_path` argument in the class initializer.
 
+Specifying the Firefox executable path can also help you if you are getting the following error message:
+
+`selenium.common.exceptions.SessionNotCreatedException: Message: Unable to find a matching set of capabilities`
+
+example on a Windows machine (with the right path also works on Linux and MAC)
+```python
+session = InstaPy(username=insta_username,
+                  password=insta_password,
+                  browser_executable_path=r"D:\Program Files\Mozilla Firefox\firefox.exe")
+```
 
 ---
 
