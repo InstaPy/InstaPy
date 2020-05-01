@@ -127,7 +127,7 @@ pip install instapy -U
 
 ## External Tools:
 
-**[InstaPy Dashboard](https://github.com/converge/instapy-dashboard)**<a name="dashboard" />
+**[InstaPy Dashboard (Deprecated) ](https://github.com/converge/instapy-dashboard)**<a name="dashboard" />
 > InstaPy Dashboard is an Open Source project developed by [@converge](https://github.com/converge/) to visualize Instagram accounts progress and real-time InstaPy logs on the browser.
 
 **[InstaPy GUI](https://github.com/breuerfelix/instapy-gui)**<a name="gui" />
