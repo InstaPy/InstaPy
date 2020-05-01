@@ -25,6 +25,7 @@
   - [Interactions based on the number of followers and/or following a user has](#interactions-based-on-the-number-of-followers-andor-following-a-user-has)
   - [Interactions based on the number of posts a user has](#interactions-based-on-the-number-of-posts-a-user-has)
   - [Custom action delays](#custom-action-delays)
+  - [Target Lists](#target-lists)
   
  <br />
 
@@ -629,6 +630,35 @@ E.g. `random_range_from=-10, random_range_to=140` is an invalid range and no ran
 session.set_action_delays(enabled=True, like=0.15, safety_match=False)
 ```
 _It has been held due to safety considerations. Cos sleeping a respective time after doing actions- for example ~`10` seconds after an unfollow, is very important to avoid possible temporary blocks and if you might enter e.g. `3` seconds for that without realizing the outcome..._
+
+
+### Target Lists
+#### This is used to parse text files containing target lists of users, hashtags, comments etc
+For example:
+```python
+# Like posts based on hashtags
+hashtags = session.target_list("C:\\Users\\......\\hashtags.txt")
+session.like_by_tags(hashtags, amount=10)
+
+# Follow the followers of each given user
+users = session.target_list("C:\\Users\\......\\users.txt")
+session.follow_user_followers(users, amount=10, randomize=False)
+```
+Note that your text file should look like this:
+```
+hashtag1
+hashtag2
+hashtag3
+```
+or
+```
+user1
+user2
+user3
+```
+Functions you can use ```target_list``` with:
+
+```story_by_user```, ```story_by_tag```, ```like_by_tags```, ```follow_by_tags```, ```follow_user_followers```, ```follow_user_following```, ```follow_likers```, ```follow_commenters```, ```follow_by_list```, ```set_skip_users```, ```set_ignore_users```, ```set_dont_include```, ```interact_by_users```, ```interact_by_users_tagged_posts```, ```interact_user_followers```, ```interact_user_following```, ```interact_by_comments```, ```set_comments```, ```set_comment_replies```, ```set_mandatory_words```, ```unfollow_users```
 
 ---
 

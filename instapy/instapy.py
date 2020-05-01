@@ -52,6 +52,7 @@ from .util import save_account_progress
 from .util import parse_cli_args
 from .util import get_cord_location
 from .util import get_bounding_box
+from .util import file_handling
 from .unfollow_util import get_given_user_followers
 from .unfollow_util import get_given_user_following
 from .unfollow_util import unfollow
@@ -5927,3 +5928,13 @@ class InstaPy:
                 if reels > 0:
                     self.stories_watched += 1
                     self.reels_watched += reels
+
+    def target_list(self, file):
+        """ Extracts target list from text file """
+        target_list = file_handling(file)
+
+        if "FileNotFoundError" in target_list:
+            self.logger.warning("No such file or directory: " + file + "\n")
+            return []
+
+        return target_list
