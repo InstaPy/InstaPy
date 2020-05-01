@@ -640,11 +640,12 @@ For example:
 hashtags = session.target_list("C:\\Users\\......\\hashtags.txt")
 session.like_by_tags(hashtags, amount=10)
 
-# Follows the followers of each given user
+# Follow the followers of each given user
 users = session.target_list("C:\\Users\\......\\users.txt")
 session.follow_user_followers(users, amount=10, randomize=False)
 ```
 Functions you can use ```target_list``` with:
+
 ```story_by_user```, ```story_by_tag```, ```like_by_tags```, ```follow_by_tags```, ```follow_user_followers```, ```follow_user_following```, ```follow_likers```, ```follow_commenters```, ```follow_by_list```, ```set_skip_users```, ```set_ignore_users```, ```set_dont_include```, ```interact_by_users```, ```interact_by_users_tagged_posts```, ```interact_user_followers```, ```interact_user_following```, ```interact_by_comments```, ```set_comments```, ```set_comment_replies```, ```set_mandatory_words```, ```unfollow_users```
 
 ---
