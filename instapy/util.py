@@ -33,6 +33,8 @@ from .time_util import sleep_actual
 from .database_engine import get_database
 from .quota_supervisor import quota_supervisor
 from .settings import Settings
+from .clarifai_util import match_demographics_filters
+from .public_tools import truncate_float
 
 from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import WebDriverException
@@ -88,9 +90,13 @@ def is_private_profile(browser, logger, following=True):
     if is_private and not following:
         logger.info("Is private account you're not following.")
         body_elem = browser.find_element_by_tag_name("body")
-        is_private = body_elem.find_element_by_xpath(
-            read_xpath(is_private_profile.__name__, "is_private")
-        )
+        try:
+            is_private = body_elem.find_element_by_xpath(
+                read_xpath(is_private_profile.__name__, "is_private")
+            )
+        except NoSuchElementException:
+            logger.error("Element not found! Can't get privateness element.")
+            is_private = None
 
     return is_private
 
@@ -343,15 +349,12 @@ def validate_username(
 
     # skip no profile pic
     if skip_no_profile_pic:
-        try:
-            profile_pic = getUserData("graphql.user.profile_pic_url", browser)
-        except WebDriverException:
-            logger.error("~cannot get the post profile pic url")
+        profile_pic, pp_msg = get_profile_pic_URL(browser, username, logger)
+        if pp_msg == "failure":
             return False, "---> Sorry, couldn't get if user profile pic url\n"
-        if (
-            profile_pic in default_profile_pic_instagram
-            or str(profile_pic).find("11906329_960233084022564_1448528159_a.jpg") > 0
-        ) and (random.randint(0, 100) <= skip_no_profile_pic_percentage):
+        elif pp_msg == "default" and (
+            random.randint(0, 100) <= skip_no_profile_pic_percentage
+        ):
             return False, "{} has default instagram profile picture\n".format(username)
 
     # skip business
@@ -423,6 +426,15 @@ def validate_username(
                         username, bio_keyword
                     ),
                 )
+
+    # match demographics info per profile pictue
+    profile_pic_URL, pp_msg = get_profile_pic_URL(browser, username, logger)
+    if profile_pic_URL is not None:
+        match = match_demographics_filters(username, profile_pic_URL, logger)
+        if match is None:
+            return True, "Demographics unrecognizable"
+        elif match == False:
+            return False, "Demographics mismatch"
 
     # if everything is ok
     return True, "Valid user"
@@ -2004,31 +2016,6 @@ def extract_text_from_element(elem):
     return text
 
 
-def truncate_float(number, precision, round=False):
-    """ Truncate (shorten) a floating point value at given precision """
-
-    # don't allow a negative precision [by mistake?]
-    precision = abs(precision)
-
-    if round:
-        # python 2.7+ supported method [recommended]
-        short_float = round(number, precision)
-
-        # python 2.6+ supported method
-        """short_float = float("{0:.{1}f}".format(number, precision))
-        """
-
-    else:
-        operate_on = 1  # returns the absolute number (e.g. 11.0 from 11.456)
-
-        for _ in range(precision):
-            operate_on *= 10
-
-        short_float = float(int(number * operate_on)) / operate_on
-
-    return short_float
-
-
 def get_time_until_next_month():
     """ Get total seconds remaining until the next month """
     now = datetime.datetime.now()
@@ -2422,3 +2409,35 @@ class CustomizedArgumentParser(ArgumentParser):
         will give the location of the 'argparse.py' file that have this method.
         """
         return []
+
+
+def get_profile_pic_URL(browser, username, logger):
+    """ Get the URL of the profile picture of user in the loaded profile page """
+
+    try:
+        profile_pic = getUserData("graphql.user.profile_pic_url", browser)
+    except WebDriverException:
+        logger.error("~cannot get the post profile pic url")
+        return None, "failure"
+
+    if (
+        profile_pic in default_profile_pic_instagram
+        or str(profile_pic).find("11906329_960233084022564_1448528159_a.jpg") > 0
+    ):
+        return None, "default"
+
+    return profile_pic, "success"
+
+
+@contextmanager
+def navigate_back_and_forth(browser):
+    try:
+        # navigate backwards
+        browser.execute_script("window.history.go(-1)")
+        sleep(1)
+        yield
+
+    finally:
+        # navigate forwards
+        browser.execute_script("window.history.go(1)")
+        sleep(1)

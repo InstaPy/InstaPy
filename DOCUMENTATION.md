@@ -4,31 +4,33 @@
 - **[Settings](#settings)**
   - [Liking](#liking)
   - [Commenting](#commenting)
-  - [Emoji Support](#emoji-support)
   - [Following](#following)
+  - [Emoji Support](#emoji-support)
   - [Smart Hashtags](#smart-hashtags)
   - [Smart Location Hashtags](#smart-location-hashtags)
   - [Quota Supervisor](#quota-supervisor)
+  - [Demographics Filters: Gender/Age/Multicultural appearance](#demographics-filters-genderagemulticultural-appearance)
   - [Restricting Likes](#restricting-likes)
   - [Ignoring Restrictions](#ignoring-restrictions)
   - [Ignoring Users](#ignoring-users)
   - [Excluding friends](#excluding-friends)
-  - [Mandatory Words](#mandatory-words)
-  - [Mandatory Language](#mandatory-language)
   - [Don't unfollow active users](#dont-unfollow-active-users)
   - [Blacklist Campaign](#blacklist-campaign)
+  - [Mandatory Words](#mandatory-words)
+  - [Mandatory Language](#mandatory-language)
   - [Simulation](#simulation)
   - [Skipping user for private account, no profile picture, business account](#skipping-user-for-private-account-no-profile-picture-business-account)
+  - [Skip based on Profile Bio](#skip-based-on-profile-bio)
   - [Liking based on the number of existing likes a post has](#liking-based-on-the-number-of-existing-likes-a-post-has)
   - [Commenting based on the number of existing comments a post has](#commenting-based-on-the-number-of-existing-comments-a-post-has)
   - [Commenting based on mandatory words in the description or first comment](#commenting-based-on-mandatory-words-in-the-description-or-first-comment)
   - [Interactions based on the number of followers and/or following a user has](#interactions-based-on-the-number-of-followers-andor-following-a-user-has)
   - [Interactions based on the number of posts a user has](#interactions-based-on-the-number-of-posts-a-user-has)
   - [Custom action delays](#custom-action-delays)
-  
+
  <br />
 
-- **[Actions](#actions)**
+- **[Activities](#activities)**
   - [Like by Tags](#like-by-tags)
   - [Like by Feeds](#like-by-feeds)
   - [Like by Locations](#like-by-locations)
@@ -50,14 +52,13 @@
   - [Interact by Comments](#interact-by-comments)
   - [Accept pending follow requests](#accept-pending-follow-requests)
   - [Remove outgoing follow requests](#remove-outgoing-follow-requests)
-  - [Skip based on Profile Bio](#skip-based-on-profile-bio)
   - [InstaPy Pods](#instapy-pods)
   - [InstaPy Stories](#instapy-stories)
-  
+
  <br />
 
 - **[Third Party features](#third-party-features)**
-  - [Clarifai ImageAPI](#clarifai-imageapi)
+  - [Clarifai Predict API](#clarifai-predict-api)
   - [Text Analytics](#text-analytics)
     - [Yandex Translate API](#yandex-translate-api)
     - [MeaningCloud Sentiment Analysis API](#meaningcloud-sentiment-analysis-api)
@@ -270,6 +271,70 @@ session.set_quota_supervisor(enabled=True, peak_follows_daily=560, peak_follows_
 >**Big Hint**: _Find your NEED_ 🤔 _and supervise it!_  
 + _EITHER_ **fully** configure QS to supervise **all** of the _actions_ all time  
 + _OR_ **just** supervise the desired _action_(_s_) in desired _interval_(_s_) [**hourly** and/or **daily**] per your need
+
+
+### Demographics Filters: Gender/Age/Multicultural appearance
+###### Filter users by demographics info to attain a highly dedicated audience
+
+```python
+session.set_demographics_filters(enabled=True,
+                                 gender="feminine",
+                                 gender_probablity=0.70,
+                                 age=-40,
+                                 age_probablity=0.54,
+                                 multicultural= ["middle eastern", "latino"],
+                                 multicultural_probablity=0.27,
+                                 unrecognizable="disallow"
+                                 )
+```
+#### Parameters
+`enabled`  
+: set `True` to **activate** or `False` to **deactivate** filtration any time;
+
+`gender`  
+: target gender as your choice;  
+: choices are _feminine_ and _masculine_;
+
+`gender_probablity`  
+: minimum probablity of the prediction  of the target user's gender;  
+: any value between 0.5 and 0.99 is valid;
+
+`age`  
+: target the age boundary as you like;  
+: positive value means targeting age above that;  
+> E.g. `age=18` means if any user's age is below 18, it will not be interacted.
+  
+: negavtive value means targeting age below that;  
+> E.g. `age=-18` means if any user's age is above 18, it will not be interacted.
+
+`age_probablity`  
+: minimum probablity of the prediction of the target user's age;  
+: any value between 0.01 and 0.99 is valid;  
+
+`multicultural`  
+> If the user's multicultural appearance matches with at least one of your selections, it will be interacted otherwise not.
+  
+: set desired appearances inside a list;  
+: valid appearances are _white_, _asian_, _hispanic_, _latino_, _spanish origin_, _black_, _african american_, _middle eastern_, _north african_, _american indian_, _alaska native_, _natice hawaiian_ and _pacific islander_.
+
+`multicultural_probablity`  
+: minimum probablity of the prediction  of the target user's gender;  
+: any value between 0.01 and 0.99 is valid;
+
+`unrecognizable`  
+> Some user's demographics info is unrecognizable, such as, due to to have a profile photo having no human face or no any recognizable human face.
+  
+: set `"allow"` to interact with the users whose demographcis info is unrecognizable or set `"disallow"` to not interact with them;
+
+#### Notes
+- Currently, it works only by the profile picture of the user to recognize demographics information.  
+- It uses Clarifai's Predict API's Demographics model inside to recognize demographics info by profile pictures. So make sure you also enable Clarifai and set its API key beforehand:
+```python
+session.set_use_clarifai(enabled=True, api_key="I AM AN API KEY ;)")
+session.set_demographics_filters(...)
+```
+- In future, it can also maybe support detecting or verifying demographics info by using the bio at user's profile page, etc.
+
 
 
 ### Restricting Likes
@@ -635,7 +700,7 @@ _It has been held due to safety considerations. Cos sleeping a respective time a
 <br /> 
 <br />
 
-## Actions
+## Activities
 ### Like by Tags
 
 ```python
@@ -1263,7 +1328,7 @@ session.story_by_users(['user1', 'user2'])
 <br />
 
 ## Third Party Features
-### Clarifai ImageAPI
+### Clarifai Predict API
 <img src="https://clarifai.com/cms-assets/20180311184054/Clarifai_Pos.svg" width="200" align="right">
 
 ###### Note: Head over to [https://developer.clarifai.com/signup/](https://developer.clarifai.com/signup/) and create a free account, once you're logged in go to [https://developer.clarifai.com/account/applications/](https://developer.clarifai.com/account/applications/) and create a new application. You can find the client ID and Secret there. You get 5000 API-calls free/month.

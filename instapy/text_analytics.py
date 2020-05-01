@@ -13,7 +13,7 @@ from meaningcloud import SentimentResponse, SentimentRequest
 from .util import deform_emojis
 from .util import has_any_letters
 from .util import get_time_until_next_month
-from .util import truncate_float
+from .public_tools import truncate_float
 from .settings import Settings
 from .time_util import sleep
 

@@ -47,11 +47,12 @@ from .util import web_address_navigator
 from .util import interruption_handler
 from .util import highlight_print
 from .util import dump_record_activity
-from .util import truncate_float
 from .util import save_account_progress
 from .util import parse_cli_args
 from .util import get_cord_location
 from .util import get_bounding_box
+from .util import navigate_back_and_forth
+from .public_tools import truncate_float
 from .unfollow_util import get_given_user_followers
 from .unfollow_util import get_given_user_following
 from .unfollow_util import unfollow
@@ -663,6 +664,7 @@ class InstaPy:
             self.clarifai_api_key = os.environ.get("CLARIFAI_API_KEY")
         elif api_key is not None:
             self.clarifai_api_key = api_key
+        Settings.clarifai_config.update(API_key=self.clarifai_api_key)
 
         self.clarifai_models = models
         self.clarifai_workflow = workflow
@@ -2158,7 +2160,7 @@ class InstaPy:
                     continue
 
             try:
-                links = get_links_for_username(
+                links, links_msg = get_links_for_username(
                     self.browser,
                     self.username,
                     username,
@@ -2394,7 +2396,7 @@ class InstaPy:
 
         total_liked_img = 0
         already_liked = 0
-        inap_img = 0
+        total_inap_img = 0
         commented = 0
         followed = 0
         already_followed = 0
@@ -2409,6 +2411,7 @@ class InstaPy:
                 self.quotient_breach = True if not standalone else False
                 break
 
+            print("")  # add for good looks and readability in console
             self.logger.info("Username [{}/{}]".format(index + 1, len(usernames)))
             self.logger.info("--> {}".format(username.encode("utf-8")))
 
@@ -2468,7 +2471,7 @@ class InstaPy:
                     break
 
             try:
-                links = get_links_for_username(
+                links, links_msg = get_links_for_username(
                     self.browser,
                     self.username,
                     username,
@@ -2479,14 +2482,19 @@ class InstaPy:
                     media,
                 )
             except NoSuchElementException:
-                self.logger.error("Element not found, skipping this username")
-                continue
+                self.logger.error("Element not found! Can't interact on posts.")
+                links = None
 
-            if links is False:
+            if links_msg == "private" and following:
+                # if the user is private, then allow following without other actions
+                # this empty list will will cause the 'for' loop auto break easily
+                links = []
+            elif not links:
                 continue
 
             # Reset like counter for every username
             liked_img = 0
+            inap_img = 0
 
             for i, link in enumerate(links[:amount]):
                 if self.jumps["consequent"]["likes"] >= self.jumps["limit"]["likes"]:
@@ -2633,6 +2641,7 @@ class InstaPy:
                         self.logger.info(
                             "--> Image not liked: {}".format(reason.encode("utf-8"))
                         )
+                        total_inap_img += 1
                         inap_img += 1
 
                 except NoSuchElementException as err:
@@ -2666,7 +2675,8 @@ class InstaPy:
             if story:
                 self.story_by_users([username])
 
-            if liked_img < amount:
+            if liked_img < amount and links:
+                # if no links, then will be no likes, so no need for this block
                 self.logger.info("-------------")
                 self.logger.info(
                     "--> Given amount not fullfilled, image pool " "reached its end\n"
@@ -2674,7 +2684,7 @@ class InstaPy:
 
         if len(usernames) > 1:
             # final words
-            interacted_media_size = len(usernames) * amount - inap_img
+            interacted_media_size = len(usernames) * amount - total_inap_img
             self.logger.info(
                 "Finished interacting on total of {} images from {} users! xD\n".format(
                     interacted_media_size, len(usernames)
@@ -2687,7 +2697,7 @@ class InstaPy:
             self.logger.info("Commented: {}".format(commented))
             self.logger.info("Followed: {}".format(followed))
             self.logger.info("Already Followed: {}".format(already_followed))
-            self.logger.info("Inappropriate: {}".format(inap_img))
+            self.logger.info("Inappropriate: {}".format(total_inap_img))
             self.logger.info("Not valid users: {}\n".format(not_valid_users))
 
         self.liked_img += total_liked_img
@@ -2695,7 +2705,7 @@ class InstaPy:
         self.commented += commented
         self.followed += followed
         self.already_followed += already_followed
-        self.inap_img += inap_img
+        self.inap_img += total_inap_img
         self.not_valid_users += not_valid_users
 
         return self
@@ -2793,7 +2803,7 @@ class InstaPy:
                     break
 
             try:
-                links = get_links_for_username(
+                links, links_msg = get_links_for_username(
                     self.browser,
                     self.username,
                     username,
@@ -4270,6 +4280,43 @@ class InstaPy:
         except Exception:
             self.logger.info("Campaign {} first run".format(campaign))
 
+    def set_demographics_filters(
+        self,
+        enabled: bool = False,
+        gender: str = None,
+        gender_probablity: float = 0.66,  # hint: be above half
+        age: int = None,
+        age_probablity: float = 0.49,
+        multicultural: list = [],
+        multicultural_probablity: float = 0.35,
+        unrecognizable: str = "allow",  # "allow"/"disallow"
+    ):
+        """ Set configuration to filtrate users based on predictions off demographics concepts.
+                Used services:
+                    - Clarifai / Predict API / Demographics model
+                    - Others services, e.g., predict per bio info (proposed for future).
+            """
+
+        if gender or age or multicultural:
+            Settings.demographics_config.update(
+                enabled=enabled,
+                gender=gender,
+                gender_probablity=gender_probablity,
+                age=age,
+                age_probablity=age_probablity,
+                multicultural=multicultural,
+                multicultural_probablity=multicultural_probablity,
+                unrecognizable=unrecognizable,
+            )
+
+        elif enabled:
+            # turn off Demographics service if not enabled or wrongly configured
+            self.logger.info(
+                "To filtrate users based on demographics predictions, please provide any concept!"
+                "\t~filtration inactivated"
+            )
+            Settings.demographics_config.update(enabled=False)
+
     def grab_followers(
         self,
         username: str = None,
@@ -5310,7 +5357,7 @@ class InstaPy:
             per_user_used_replies = []
 
             try:
-                links = get_links_for_username(
+                links, links_msg = get_links_for_username(
                     self.browser,
                     self.username,
                     username,
@@ -5406,15 +5453,17 @@ class InstaPy:
                     self.logger.info("No interaction did happen.\n")
                     continue
 
-                # like the post before interacting on comments
-                image_like_state, msg = like_image(
-                    self.browser,
-                    user_name,
-                    self.blacklist,
-                    self.logger,
-                    self.logfolder,
-                    self.liked_img,
-                )
+                # navigate backwards to see the post and forwards again
+                with navigate_back_and_forth(self.browser):
+                    # like the post before interacting on comments
+                    image_like_state, msg = like_image(
+                        self.browser,
+                        user_name,
+                        self.blacklist,
+                        self.logger,
+                        self.logfolder,
+                        self.liked_img,
+                    )
                 if image_like_state is True:
                     like_failures_tracker["consequent"]["post_likes"] = 0
                     self.liked_img += 1

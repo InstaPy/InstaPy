@@ -20,6 +20,7 @@ from .xpath import read_xpath
 from selenium.common.exceptions import WebDriverException
 from selenium.common.exceptions import InvalidElementStateException
 from selenium.common.exceptions import NoSuchElementException
+from selenium.common.exceptions import StaleElementReferenceException
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.keys import Keys
 
@@ -225,6 +226,8 @@ def get_comments_on_post(
     if not comments_count:
         logger.info(msg)
         return None
+    elif comments_count < orig_amount:
+        amount = comments_count
 
     # get comments & commenters information
 
@@ -242,13 +245,80 @@ def get_comments_on_post(
     commenters = []
     # wait for page fully load [IMPORTANT!]
     explicit_wait(browser, "PFL", [], logger, 10)
+    sleep(3)  # extra sleep just to wait DOM finish load - very important!
 
     try:
         all_comment_like_buttons = browser.find_elements_by_xpath(
             like_button_full_XPath
         )
-        if all_comment_like_buttons:
+        comment_unlike_buttons = browser.find_elements_by_xpath(
+            unlike_button_full_XPath
+        )
+
+        if all_comment_like_buttons or comments_count > len(comment_unlike_buttons):
             comments_block = browser.find_elements_by_xpath(comments_block_XPath)
+
+            vmc_attempts = 2
+            view_all_done = False
+            load_more_comments_button = None
+
+            while len(comments_block) < amount:
+                if vmc_attempts == 0:
+                    if len(comments_block) < orig_amount:
+                        logger.info(
+                            "Sorry.. Failed to load requested amount of comments."
+                        )
+                    break
+                try:
+                    if not view_all_done:
+                        view_all_comments_root = browser.find_element_by_xpath(
+                            read_xpath(
+                                get_comments_on_post.__name__, "view_all_comments_root"
+                            )
+                        )
+                        view_all_comments_button = view_all_comments_root.find_elements_by_tag_name(
+                            "button"
+                        )[
+                            0
+                        ]
+                    else:
+                        load_more_comments_root = browser.find_element_by_xpath(
+                            read_xpath(
+                                get_comments_on_post.__name__, "load_more_comments_root"
+                            )
+                        )
+                        load_more_comments_button_e = load_more_comments_root.find_elements_by_xpath(
+                            "//span[@aria-label='Load more comments']"
+                        )
+                        if load_more_comments_button_e:
+                            load_more_comments_button = load_more_comments_button_e[0]
+                        else:
+                            vmc_attempts -= 1
+                            sleep(2)
+                            continue
+
+                    if (
+                        view_all_comments_button and not view_all_done
+                    ) or load_more_comments_button:
+                        if not view_all_done:
+                            mc_button = view_all_comments_button
+                            view_all_done = True
+                        else:
+                            mc_button = load_more_comments_button
+                        click_element(browser, mc_button)
+                        sleep(2)  # wait to load page
+                        comments_block = browser.find_elements_by_xpath(
+                            comments_block_XPath
+                        )
+                        logger.info("Loaded {} comments..".format(len(comments_block)))
+                    else:
+                        vmc_attempts -= 1
+                        sleep(3)
+
+                except NoSuchElementException:
+                    vmc_attempts -= 1
+                    sleep(3)
+
             for comment_line in comments_block:
                 commenter_elem = comment_line.find_element_by_xpath(
                     read_xpath(get_comments_on_post.__name__, "commenter_elem")
@@ -264,7 +334,13 @@ def get_comments_on_post(
                     continue
 
                 comment_elem = comment_line.find_elements_by_tag_name("span")[0]
-                comment = extract_text_from_element(comment_elem)
+
+                try:
+                    comment = extract_text_from_element(comment_elem)
+                except StaleElementReferenceException:
+                    logger.exception("Heh! Stale here :X")
+                    comment = None
+
                 if comment:
                     comments.append(comment)
                 else:
@@ -272,9 +348,6 @@ def get_comments_on_post(
                     continue
 
         else:
-            comment_unlike_buttons = browser.find_elements_by_xpath(
-                unlike_button_full_XPath
-            )
             if comment_unlike_buttons:
                 logger.info(
                     "There are {} comments on this post and all "
@@ -294,8 +367,9 @@ def get_comments_on_post(
 
     else:
         comment_data = list(zip(commenters, comments))
-        if randomize is True:
-            random.shuffle(comment_data)
+        if randomize:
+            for i in range(3):
+                random.shuffle(comment_data)
 
         if len(comment_data) < orig_amount:
             logger.info(

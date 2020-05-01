@@ -25,7 +25,7 @@ from .util import is_page_available
 from .util import reload_webpage
 from .util import click_visibly
 from .util import get_action_delay
-from .util import truncate_float
+from .public_tools import truncate_float
 from .util import get_query_hash
 from .print_log_writer import log_followed_pool
 from .print_log_writer import log_uncertain_unfollowed_pool
@@ -607,6 +607,8 @@ def follow_user(browser, track, login, user_name, button, blacklist, logger, log
         )
         if following_status in ["Follow", "Follow Back"]:
             click_visibly(browser, follow_button)  # click to follow
+            sleep(3)  # wait for action complete
+
             follow_state, msg = verify_action(
                 browser, "follow", track, login, user_name, None, logger, logfolder
             )
@@ -1567,7 +1569,10 @@ def verify_action(
                     sleep(210)
                     return False, "temporary block"
 
-        logger.info("Last {} is verified after reloading the page!".format(action))
+        if retry_count == 1:
+            logger.info("Last {} is verified!".format(action))
+        if retry_count == 2:
+            logger.info("Last {} is verified after reloading the page!".format(action))
 
     return True, "success"
 

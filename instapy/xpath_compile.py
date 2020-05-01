@@ -68,9 +68,16 @@ xpath["get_comment_input"] = {
     "placeholder": '//textarea[@Placeholder = "Add a comment…"]',
 }
 
+""" Hint 1: When you start your XPath expression with //,
+    it search from root of document ignoring your parent element.
+    You should prepend expression with . (dot)
+    See its use case below: ".//h3/a"
+"""
 xpath["get_comments_on_post"] = {
-    "commenter_elem": "//h3/a",
+    "commenter_elem": ".//h3/a",  # see Hint 1
     "comments_block": "//div/div/h3/../../../..",
+    "view_all_comments_root": "//div/div/h3/../../../../../..",
+    "load_more_comments_root": "//div/div/h3/../../../../../../..",
     "like_button_full_XPath": "//div/span/button/span[@aria-label='Like']",
     "unlike_button_full_XPath": "//div/span/button/span[@aria-label='Unlike']",
 }
@@ -137,7 +144,7 @@ xpath["is_private_profile"] = {"is_private": '//h2[@class="_kcrwx"]'}
 
 xpath["like_comment"] = {
     "comments_block": "//div/div/h3/../../../..",
-    "span_like_elements": "//span[@aria-label='Like']",
+    "span_like_elements": ".//span[@aria-label='Like']",  # using . before // (see Hint 1)
     "comment_like_button": "..",
 }
 

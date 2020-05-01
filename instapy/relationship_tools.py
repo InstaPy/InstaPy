@@ -9,7 +9,7 @@ from .time_util import sleep
 from .util import web_address_navigator
 from .util import get_relationship_counts
 from .util import interruption_handler
-from .util import truncate_float
+from .public_tools import truncate_float
 from .util import progress_tracker
 
 from selenium.common.exceptions import NoSuchElementException, WebDriverException

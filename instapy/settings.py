@@ -84,6 +84,10 @@ class Settings:
         "https://us-central1-instapy-pods-entertainment.cloudfunctions.net"
     )
 
+    # store configuration of demographics filters
+    demographics_config = {}
+    clarifai_config = {}
+
 
 class Storage:
     """ Globally accessible standalone storage """
