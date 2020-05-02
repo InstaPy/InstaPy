@@ -9,6 +9,7 @@ from .time_util import sleep
 from .util import web_address_navigator
 from .util import get_relationship_counts
 from .util import interruption_handler
+from .util import is_private_profile
 from .util import truncate_float
 from .util import progress_tracker
 
@@ -56,7 +57,11 @@ def get_followers(
         )
         grab = followers_count
 
-    # TO-DO: Check if user's account is not private
+    # Check if user's account is not private
+    is_private = is_private_profile(browser, logger)
+    if (is_private is None):
+        logger.info("This user is private, you cannot grab his followers")
+        return False
 
     # sets the amount of usernames to be matched in the next queries
     match = (
