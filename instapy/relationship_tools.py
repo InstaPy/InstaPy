@@ -59,7 +59,7 @@ def get_followers(
 
     # Check if user's account is private
     is_private = is_private_profile(browser, logger)
-    if is_private is None:
+    if is_private is True:
         logger.info("This user is private, you cannot grab his followers")
         return False
 
@@ -341,7 +341,7 @@ def get_following(
 
     # Check if user's account is private
     is_private = is_private_profile(browser, logger)
-    if is_private is None:
+    if is_private is True:
         logger.info("This user is private, you cannot grab his following users")
         return False
 
