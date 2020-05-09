@@ -1,7 +1,5 @@
 """ Module which handles the follow features """
 
-import os
-
 from .util import web_address_navigator
 from .util import get_username_from_id
 from .util import is_page_available
