@@ -4309,6 +4309,7 @@ class InstaPy:
         # Get `followers` data
         grabbed_followers = get_followers(
             self.browser,
+            self.username,
             username,
             amount,
             self.relationship_data,
@@ -4357,6 +4358,7 @@ class InstaPy:
         # get `following` data
         grabbed_following = get_following(
             self.browser,
+            self.username,
             username,
             amount,
             self.relationship_data,
