@@ -5,6 +5,7 @@ import glob
 import random
 import json
 
+from .follow_util import get_following_status
 from .time_util import sleep
 from .util import web_address_navigator
 from .util import get_relationship_counts
@@ -18,6 +19,7 @@ from selenium.common.exceptions import NoSuchElementException, WebDriverExceptio
 
 def get_followers(
     browser,
+    self_username,
     username,
     grab,
     relationship_data,
@@ -57,10 +59,18 @@ def get_followers(
         )
         grab = followers_count
 
-    # Check if user's account is private
-    is_private = is_private_profile(browser, logger)
-    if is_private is True:
-        logger.info("This user is private, you cannot grab his followers")
+    # Check if user's account is private and we don't follow
+    following_status, _ = get_following_status(
+        browser, "profile", self_username, username, None, logger, logfolder
+    )
+
+    is_private = is_private_profile(browser, logger, following_status == "Following")
+    if (
+        is_private is None
+        or (is_private is True and following_status not in ["Following", True])
+        or (following_status == "Blocked")
+    ):
+        logger.info("This user is private and we are not following")
         return False
 
     # sets the amount of usernames to be matched in the next queries
@@ -301,6 +311,7 @@ def get_followers(
 
 def get_following(
     browser,
+    self_username,
     username,
     grab,
     relationship_data,
@@ -339,10 +350,18 @@ def get_following(
         )
         grab = following_count
 
-    # Check if user's account is private
-    is_private = is_private_profile(browser, logger)
-    if is_private is True:
-        logger.info("This user is private, you cannot grab his following users")
+    # Check if user's account is private and we don't follow
+    following_status, _ = get_following_status(
+        browser, "profile", self_username, username, None, logger, logfolder
+    )
+
+    is_private = is_private_profile(browser, logger, following_status == "Following")
+    if (
+        is_private is None
+        or (is_private is True and following_status not in ["Following", True])
+        or (following_status == "Blocked")
+    ):
+        logger.info("This user is private and we are not following")
         return False
 
     # sets the amount of usernames to be matched in the next queries
@@ -629,6 +648,7 @@ def get_unfollowers(
 
     current_followers = get_followers(
         browser,
+        "unneeded",
         username,
         "full",
         relationship_data,
@@ -645,6 +665,7 @@ def get_unfollowers(
     if len(all_unfollowers) > 0:
         current_following = get_following(
             browser,
+            "unneeded",
             username,
             "full",
             relationship_data,
@@ -703,6 +724,7 @@ def get_nonfollowers(
     # get `Followers` data
     all_followers = get_followers(
         browser,
+        "unneeded",
         username,
         "full",
         relationship_data,
@@ -714,6 +736,7 @@ def get_nonfollowers(
     # get `Following` data
     all_following = get_following(
         browser,
+        "unneeded",
         username,
         "full",
         relationship_data,
@@ -762,6 +785,7 @@ def get_fans(
     # get `Followers` data
     all_followers = get_followers(
         browser,
+        "unneeded",
         username,
         "full",
         relationship_data,
@@ -773,6 +797,7 @@ def get_fans(
     # get `Following` data
     all_following = get_following(
         browser,
+        "unneeded",
         username,
         "full",
         relationship_data,
@@ -817,6 +842,7 @@ def get_mutual_following(
     # get `Followers` data
     all_followers = get_followers(
         browser,
+        "unneeded",
         username,
         "full",
         relationship_data,
@@ -828,6 +854,7 @@ def get_mutual_following(
     # get `Following` data
     all_following = get_following(
         browser,
+        "unneeded",
         username,
         "full",
         relationship_data,
