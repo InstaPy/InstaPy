@@ -29,6 +29,7 @@ def get_following_status(
         "Couldn't access the profile page of '{}'!\t~might have changed the"
         " username".format(person)
     )
+
     # check if the page is available
     valid_page = is_page_available(browser, logger)
     if not valid_page:
@@ -42,10 +43,10 @@ def get_following_status(
             if not valid_page:
                 logger.error(failure_msg.format(person_new.encode("utf-8")))
                 return "UNAVAILABLE", None
-
         else:
             logger.error(failure_msg.format(person.encode("utf-8")))
             return "UNAVAILABLE", None
+
     # wait until the follow button is located and visible, then get it
     try:
         browser.find_element_by_xpath(
@@ -85,6 +86,7 @@ def get_following_status(
 def verify_username_by_id(browser, username, person, person_id, logger, logfolder):
     """ Check if the given user has changed username after the time of
     followed """
+
     # try to find the user by ID
     if person_id is None:
         person_id = load_user_id(username, person, logger, logfolder)
@@ -100,10 +102,8 @@ def verify_username_by_id(browser, username, person, person_id, logger, logfolde
                     )
                 )
             return person_new
-
         else:
             logger.info("The user with the ID of '{}' is unreachable".format(person))
-
     else:
         logger.info("The user ID of '{}' doesn't exist in local records".format(person))
 
