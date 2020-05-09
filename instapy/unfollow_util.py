@@ -36,6 +36,7 @@ from .relationship_tools import get_nonfollowers
 from .relationship_tools import get_following
 from .database_engine import get_database
 from .quota_supervisor import quota_supervisor
+from .follow_util import get_following_status
 from .util import is_follow_me
 from .util import get_epoch_time_diff
 from .event import Event
