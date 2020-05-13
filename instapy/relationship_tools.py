@@ -19,14 +19,14 @@ from selenium.common.exceptions import NoSuchElementException, WebDriverExceptio
 
 def get_followers(
     browser,
+    self_username,
     username,
     grab,
     relationship_data,
     live_match,
     store_locally,
     logger,
-    logfolder,
-    self_username: str = None,
+    logfolder
 ):
     """ Get entire list of followers using graphql queries. """
 
@@ -311,14 +311,14 @@ def get_followers(
 
 def get_following(
     browser,
+    self_username,
     username,
     grab,
     relationship_data,
     live_match,
     store_locally,
     logger,
-    logfolder,
-    self_username: str = None,
+    logfolder
 ):
     """ Get entire list of following using graphql queries. """
     if username not in relationship_data:
@@ -604,6 +604,7 @@ def get_following(
 
 def get_unfollowers(
     browser,
+    self_username,
     username,
     compare_by,
     compare_track,
@@ -612,7 +613,7 @@ def get_unfollowers(
     store_locally,
     print_out,
     logger,
-    logfolder,
+    logfolder
 ):
     if compare_by not in ["latest", "day", "month", "year", "earliest"]:
         logger.info(
@@ -648,14 +649,19 @@ def get_unfollowers(
 
     current_followers = get_followers(
         browser,
+        self_username,
         username,
         "full",
         relationship_data,
         live_match,
         store_locally,
         logger,
-        logfolder,
+        logfolder
     )
+
+    # if current_followers is False we have targeted a private account that we don't follow
+    if not current_followers:
+        return False, False
 
     all_unfollowers = [
         follower for follower in prior_followers if follower not in current_followers
@@ -664,13 +670,14 @@ def get_unfollowers(
     if len(all_unfollowers) > 0:
         current_following = get_following(
             browser,
+            self_username,
             username,
             "full",
             relationship_data,
             live_match,
             store_locally,
             logger,
-            logfolder,
+            logfolder
         )
 
         active_unfollowers = [
@@ -708,7 +715,14 @@ def get_unfollowers(
 
 
 def get_nonfollowers(
-    browser, username, relationship_data, live_match, store_locally, logger, logfolder
+    browser,
+    self_username,
+    username,
+    relationship_data,
+    live_match,
+    store_locally,
+    logger,
+    logfolder
 ):
     """ Finds Nonfollowers of a given user """
 
@@ -722,24 +736,31 @@ def get_nonfollowers(
     # get `Followers` data
     all_followers = get_followers(
         browser,
+        self_username,
         username,
         "full",
         relationship_data,
         live_match,
         store_locally,
         logger,
-        logfolder,
+        logfolder
     )
+
+    # if all_followers is False we have targeted a private account that we don't follow
+    if not all_followers:
+        return False
+
     # get `Following` data
     all_following = get_following(
         browser,
+        self_username,
         username,
         "full",
         relationship_data,
         live_match,
         store_locally,
         logger,
-        logfolder,
+        logfolder
     )
 
     # using this approach we can preserve the order of elements to be used
@@ -768,7 +789,14 @@ def get_nonfollowers(
 
 
 def get_fans(
-    browser, username, relationship_data, live_match, store_locally, logger, logfolder
+    browser,
+    self_username,
+    username,
+    relationship_data,
+    live_match,
+    store_locally,
+    logger,
+    logfolder
 ):
     """ Find Fans of a given user """
 
@@ -781,24 +809,31 @@ def get_fans(
     # get `Followers` data
     all_followers = get_followers(
         browser,
+        self_username,
         username,
         "full",
         relationship_data,
         live_match,
         store_locally,
         logger,
-        logfolder,
+        logfolder
     )
+
+    # if all_followers is False we have targeted a private account that we don't follow
+    if not all_followers:
+        return False
+
     # get `Following` data
     all_following = get_following(
         browser,
+        self_username,
         username,
         "full",
         relationship_data,
         live_match,
         store_locally,
         logger,
-        logfolder,
+        logfolder
     )
 
     # using this approach we can preserve the order of elements to be used
@@ -822,7 +857,14 @@ def get_fans(
 
 
 def get_mutual_following(
-    browser, username, relationship_data, live_match, store_locally, logger, logfolder
+    browser,
+    self_username,
+    username,
+    relationship_data,
+    live_match,
+    store_locally,
+    logger,
+    logfolder
 ):
     """ Find Mutual Following of a given user """
 
@@ -836,24 +878,31 @@ def get_mutual_following(
     # get `Followers` data
     all_followers = get_followers(
         browser,
+        self_username,
         username,
         "full",
         relationship_data,
         live_match,
         store_locally,
         logger,
-        logfolder,
+        logfolder
     )
+
+    # if all_followers is False we have targeted a private account that we don't follow
+    if not all_followers:
+        return False
+
     # get `Following` data
     all_following = get_following(
         browser,
+        self_username,
         username,
         "full",
         relationship_data,
         live_match,
         store_locally,
         logger,
-        logfolder,
+        logfolder
     )
 
     # using this approach we can preserve the order of elements to be used
