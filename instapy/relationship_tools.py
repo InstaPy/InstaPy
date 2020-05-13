@@ -26,7 +26,7 @@ def get_followers(
     live_match,
     store_locally,
     logger,
-    logfolder
+    logfolder,
 ):
     """ Get entire list of followers using graphql queries. """
 
@@ -318,7 +318,7 @@ def get_following(
     live_match,
     store_locally,
     logger,
-    logfolder
+    logfolder,
 ):
     """ Get entire list of following using graphql queries. """
     if username not in relationship_data:
@@ -613,7 +613,7 @@ def get_unfollowers(
     store_locally,
     print_out,
     logger,
-    logfolder
+    logfolder,
 ):
     if compare_by not in ["latest", "day", "month", "year", "earliest"]:
         logger.info(
@@ -656,7 +656,7 @@ def get_unfollowers(
         live_match,
         store_locally,
         logger,
-        logfolder
+        logfolder,
     )
 
     # if current_followers is False we have targeted a private account that we don't follow
@@ -677,7 +677,7 @@ def get_unfollowers(
             live_match,
             store_locally,
             logger,
-            logfolder
+            logfolder,
         )
 
         active_unfollowers = [
@@ -722,7 +722,7 @@ def get_nonfollowers(
     live_match,
     store_locally,
     logger,
-    logfolder
+    logfolder,
 ):
     """ Finds Nonfollowers of a given user """
 
@@ -743,7 +743,7 @@ def get_nonfollowers(
         live_match,
         store_locally,
         logger,
-        logfolder
+        logfolder,
     )
 
     # if all_followers is False we have targeted a private account that we don't follow
@@ -760,7 +760,7 @@ def get_nonfollowers(
         live_match,
         store_locally,
         logger,
-        logfolder
+        logfolder,
     )
 
     # using this approach we can preserve the order of elements to be used
@@ -796,7 +796,7 @@ def get_fans(
     live_match,
     store_locally,
     logger,
-    logfolder
+    logfolder,
 ):
     """ Find Fans of a given user """
 
@@ -816,7 +816,7 @@ def get_fans(
         live_match,
         store_locally,
         logger,
-        logfolder
+        logfolder,
     )
 
     # if all_followers is False we have targeted a private account that we don't follow
@@ -833,7 +833,7 @@ def get_fans(
         live_match,
         store_locally,
         logger,
-        logfolder
+        logfolder,
     )
 
     # using this approach we can preserve the order of elements to be used
@@ -864,7 +864,7 @@ def get_mutual_following(
     live_match,
     store_locally,
     logger,
-    logfolder
+    logfolder,
 ):
     """ Find Mutual Following of a given user """
 
@@ -885,7 +885,7 @@ def get_mutual_following(
         live_match,
         store_locally,
         logger,
-        logfolder
+        logfolder,
     )
 
     # if all_followers is False we have targeted a private account that we don't follow
@@ -902,7 +902,7 @@ def get_mutual_following(
         live_match,
         store_locally,
         logger,
-        logfolder
+        logfolder,
     )
 
     # using this approach we can preserve the order of elements to be used
