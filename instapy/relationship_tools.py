@@ -19,7 +19,6 @@ from selenium.common.exceptions import NoSuchElementException, WebDriverExceptio
 
 def get_followers(
     browser,
-    self_username,
     username,
     grab,
     relationship_data,
@@ -27,6 +26,7 @@ def get_followers(
     store_locally,
     logger,
     logfolder,
+    self_username: str = None,
 ):
     """ Get entire list of followers using graphql queries. """
 
@@ -311,7 +311,6 @@ def get_followers(
 
 def get_following(
     browser,
-    self_username,
     username,
     grab,
     relationship_data,
@@ -319,6 +318,7 @@ def get_following(
     store_locally,
     logger,
     logfolder,
+    self_username: str = None,
 ):
     """ Get entire list of following using graphql queries. """
     if username not in relationship_data:
@@ -648,7 +648,6 @@ def get_unfollowers(
 
     current_followers = get_followers(
         browser,
-        "unneeded",
         username,
         "full",
         relationship_data,
@@ -665,7 +664,6 @@ def get_unfollowers(
     if len(all_unfollowers) > 0:
         current_following = get_following(
             browser,
-            "unneeded",
             username,
             "full",
             relationship_data,
@@ -724,7 +722,6 @@ def get_nonfollowers(
     # get `Followers` data
     all_followers = get_followers(
         browser,
-        "unneeded",
         username,
         "full",
         relationship_data,
@@ -736,7 +733,6 @@ def get_nonfollowers(
     # get `Following` data
     all_following = get_following(
         browser,
-        "unneeded",
         username,
         "full",
         relationship_data,
@@ -785,7 +781,6 @@ def get_fans(
     # get `Followers` data
     all_followers = get_followers(
         browser,
-        "unneeded",
         username,
         "full",
         relationship_data,
@@ -797,7 +792,6 @@ def get_fans(
     # get `Following` data
     all_following = get_following(
         browser,
-        "unneeded",
         username,
         "full",
         relationship_data,
@@ -842,7 +836,6 @@ def get_mutual_following(
     # get `Followers` data
     all_followers = get_followers(
         browser,
-        "unneeded",
         username,
         "full",
         relationship_data,
@@ -854,7 +847,6 @@ def get_mutual_following(
     # get `Following` data
     all_following = get_following(
         browser,
-        "unneeded",
         username,
         "full",
         relationship_data,
