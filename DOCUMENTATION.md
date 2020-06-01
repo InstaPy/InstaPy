@@ -126,10 +126,31 @@ session.set_do_like(enabled=True, percentage=70)
 ### Commenting
 
 ```python
-# default enabled=False, ~ every 4th image will be commented on
+# enable comments (by default enabled=False) and set commenting probability to 25% so ~ every 4th image will be commented on
 
 session.set_do_comment(enabled=True, percentage=25)
+```
+``` python
+# Configure a simple list of optional comments, one will be selected at random when commenting:
 session.set_comments(['Awesome', 'Really Cool', 'I like your stuff'])
+
+# Or configure conditional comments as follows:
+# The list ofconditional comments is scanned until the first item that satisfies the mandatory words condition is found 
+# and then the comments associated with that items are used.
+# The mandatory words condition is matched against the description and first comment of the image. The condition is  
+# satisfied if any individual word from the list is found or if all the words from a sub list are found. 
+comments=[
+    # either "icecave" or "ice_cave" will satisfy this:
+    {'mandatory_words': ["icecave", "ice_cave"], 'comments': ["Nice shot. Ice caves are amazing", "Cool. Aren't ice caves just amazing?"]},
+    
+    # either "high_mountain" OR ("high" and "mountain") will satisfy this:
+    {'mandatory_words': ["high_mountain", ["high", "mountain"]], 'comments': ["I just love high mountains"]},
+
+    # Only ("high" and "tide" together) will satisfy this:
+    {'mandatory_words': [["high", "tide"]], 'comments': ["High tides are better than low"]}
+
+]
+session.set_comments(comments)
 
 # you can also set comments for specific media types (Photo / Video)
 
@@ -517,7 +538,8 @@ This feature is helpful when you want to comment only on specific tags.
 ```python
 session.set_delimit_commenting(enabled=True, comments_mandatory_words=['cat', 'dog'])
 ```
-> This will only comment on posts that contain either cat or dog in the post description or first comment.
+> This will only comment on posts that contain **either** cat or dog in the post description or first comment.
+> You can also require sets of words. See the [Commenting](#commenting) section for detains on how to do that 
 
 
 ### Interactions based on the number of followers and/or following a user has
