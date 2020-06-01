@@ -692,7 +692,7 @@ class InstaPy:
 
         for tag in tags:
             req = requests.get(
-                "https://d212rkvo8t62el.cloudfront.net/tag/{}".format(tag)
+                "https://apidisplaypurposes.com/tag/{}".format(tag)
             )
             data = json.loads(req.text)
 
