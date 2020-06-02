@@ -764,7 +764,7 @@ def get_users_through_dialog_with_graphql(
             "after": end_cursor,
         }
         url = "{}&variables={}".format(graphql_query_URL, str(json.dumps(variables)))
-        browser.get("view-source:{}".format(url))
+        browser.get(url)
         pre = browser.find_element_by_tag_name("pre")
         # response to JSON object
         data = json.loads(pre.text)
