@@ -322,7 +322,13 @@ def login_user(
                 read_xpath(login_user.__name__, "login_elem_no_such_exception")
             )
         except NoSuchElementException:
-            return False
+            print("Could not pass the login A/B test. Trying last string...")
+            try:
+                login_elem = browser.find_element_by_xpath(
+                    read_xpath(login_user.__name__, "login_elem_no_such_exception_2")
+                )
+            except NoSuchElementException:
+                return False
 
     if login_elem is not None:
         try:
