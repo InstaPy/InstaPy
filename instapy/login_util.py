@@ -163,7 +163,7 @@ def check_browser(browser, logfolder, logger, proxy_address):
 
     # check connection status
     try:
-        logger.info("-- Connection Checklist [1/3] (Internet Connection Status)")
+        logger.info("-- Connection Checklist [1/2] (Internet Connection Status)")
         browser.get("view-source:https://ip4.seeip.org/geoip")
         pre = browser.find_element_by_tag_name("pre").text
         current_ip_info = json.loads(pre)
@@ -208,7 +208,7 @@ def check_browser(browser, logfolder, logger, proxy_address):
         return False
 
     # check if hide-selenium extension is running
-    logger.info("-- Connection Checklist [3/3] (Hide Selenium Extension)")
+    logger.info("-- Connection Checklist [2/2] (Hide Selenium Extension)")
     webdriver = browser.execute_script("return window.navigator.webdriver")
     logger.info("- window.navigator.webdriver response: {}".format(webdriver))
     if webdriver:
