@@ -127,6 +127,10 @@ def comment_image(browser, username, comments, blacklist, logger, logfolder):
             "\t~encountered `InvalidElementStateException` :/"
         )
         return False, "invalid element state"
+    except WebDriverException as ex:
+        logger.error(ex)
+
+
 
     logger.info("--> Commented: {}".format(rand_comment.encode("utf-8")))
     Event().commented(username)
@@ -216,8 +220,8 @@ def verify_mandatory_words(mand_words, comments, browser, logger,):
         if isinstance(comments[0], dict):
             # The comments definition is a compound definition of conditions and comments
             for compund_comment in comments:
-                 if evaluate_mandatory_words(text, compund_comment['mandatory_words']):
-                     return True, compund_comment['comments'], "Approval"
+                if 'mandatory_words' not in compund_comment or evaluate_mandatory_words(text, compund_comment['mandatory_words']):
+                    return True, compund_comment['comments'], "Approval"
             return False, [], "Coulnd't match the mandatory words in any comment definition"
 
     return True, comments, "Approval"
@@ -395,7 +399,7 @@ def get_comments_count(browser, logger):
     return comments_count, "Success"
 
 
-def process_comments(comments, clarifai_comments, delimit_commenting, max_comments, min_comments, comments_mandatory_words, user_name, blacklist, browser, logger, logfolder):
+def process_comments(comments, clarifai_comments, delimit_commenting, max_comments, min_comments, comments_mandatory_words, user_name, blacklist, browser, logger, logfolder, publish=True):
 
     # comments
     if delimit_commenting:
@@ -430,7 +434,7 @@ def process_comments(comments, clarifai_comments, delimit_commenting, max_commen
         selected_comments = clarifai_comments
 
     # smart commenting
-    if comments:
+    if comments and publish:
         comment_state, msg = comment_image(
             browser,
             user_name,
