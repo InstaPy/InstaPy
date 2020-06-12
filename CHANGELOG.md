@@ -13,6 +13,9 @@ _The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 - A new feature - `target_list()` to parse text files containing target lists of users, hashtags etc.
 
 
+### Changed
+- Remove `view-source` which stops bot from proceeding 
+
 ## [0.6.8] - 2020-01-28
 
 ### Fixed
