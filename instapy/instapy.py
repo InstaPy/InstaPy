@@ -691,9 +691,7 @@ class InstaPy:
             return
 
         for tag in tags:
-            req = requests.get(
-                "https://apidisplaypurposes.com/tag/{}".format(tag)
-            )
+            req = requests.get("https://apidisplaypurposes.com/tag/{}".format(tag))
             data = json.loads(req.text)
 
             if data["tagExists"] is True:
@@ -1542,12 +1540,24 @@ class InstaPy:
                                 and checked_img
                                 and commenting
                             ):
-                                comments = self.comments + (self.video_comments if is_video else self.photo_comments)
-                                success = process_comments(comments, temp_comments, self.delimit_commenting,
-                                                           self.max_comments,
-                                                           self.min_comments, self.comments_mandatory_words,
-                                                           self.username, self.blacklist,
-                                                           self.browser, self.logger, self.logfolder)
+                                comments = self.comments + (
+                                    self.video_comments
+                                    if is_video
+                                    else self.photo_comments
+                                )
+                                success = process_comments(
+                                    comments,
+                                    temp_comments,
+                                    self.delimit_commenting,
+                                    self.max_comments,
+                                    self.min_comments,
+                                    self.comments_mandatory_words,
+                                    self.username,
+                                    self.blacklist,
+                                    self.browser,
+                                    self.logger,
+                                    self.logfolder,
+                                )
 
                                 if success:
                                     commented += 1
@@ -1728,14 +1738,24 @@ class InstaPy:
                             and user_name not in self.dont_include
                             and checked_img
                         ):
-                            comments = self.comments + (self.video_comments if is_video else self.photo_comments)
+                            comments = self.comments + (
+                                self.video_comments if is_video else self.photo_comments
+                            )
 
                             if comments:
-                                success = process_comments(comments, temp_comments, self.delimit_commenting,
-                                                           self.max_comments,
-                                                           self.min_comments, self.comments_mandatory_words,
-                                                           self.username, self.blacklist,
-                                                           self.browser, self.logger, self.logfolder)
+                                success = process_comments(
+                                    comments,
+                                    temp_comments,
+                                    self.delimit_commenting,
+                                    self.max_comments,
+                                    self.min_comments,
+                                    self.comments_mandatory_words,
+                                    self.username,
+                                    self.blacklist,
+                                    self.browser,
+                                    self.logger,
+                                    self.logfolder,
+                                )
 
                                 if success:
                                     commented += 1
@@ -1919,7 +1939,9 @@ class InstaPy:
                             checked_img = True
                             temp_comments = []
 
-                            commenting = random.randint(0, 100) <= self.comment_percentage
+                            commenting = (
+                                random.randint(0, 100) <= self.comment_percentage
+                            )
                             following = random.randint(0, 100) <= self.follow_percentage
 
                             if self.use_clarifai and (following or commenting):
@@ -1942,12 +1964,24 @@ class InstaPy:
                                 and checked_img
                                 and commenting
                             ):
-                                comments = self.comments + (self.video_comments if is_video else self.photo_comments)
-                                success = process_comments(comments, temp_comments, self.delimit_commenting,
-                                                           self.max_comments,
-                                                           self.min_comments, self.comments_mandatory_words,
-                                                           self.username, self.blacklist,
-                                                           self.browser, self.logger, self.logfolder)
+                                comments = self.comments + (
+                                    self.video_comments
+                                    if is_video
+                                    else self.photo_comments
+                                )
+                                success = process_comments(
+                                    comments,
+                                    temp_comments,
+                                    self.delimit_commenting,
+                                    self.max_comments,
+                                    self.min_comments,
+                                    self.comments_mandatory_words,
+                                    self.username,
+                                    self.blacklist,
+                                    self.browser,
+                                    self.logger,
+                                    self.logfolder,
+                                )
 
                                 if success:
                                     commented += 1
@@ -2218,12 +2252,24 @@ class InstaPy:
                                 and checked_img
                                 and commenting
                             ):
-                                comments = self.comments + (self.video_comments if is_video else self.photo_comments)
-                                success = process_comments(comments, temp_comments, self.delimit_commenting,
-                                                           self.max_comments,
-                                                           self.min_comments, self.comments_mandatory_words,
-                                                           self.username, self.blacklist,
-                                                           self.browser, self.logger, self.logfolder)
+                                comments = self.comments + (
+                                    self.video_comments
+                                    if is_video
+                                    else self.photo_comments
+                                )
+                                success = process_comments(
+                                    comments,
+                                    temp_comments,
+                                    self.delimit_commenting,
+                                    self.max_comments,
+                                    self.min_comments,
+                                    self.comments_mandatory_words,
+                                    self.username,
+                                    self.blacklist,
+                                    self.browser,
+                                    self.logger,
+                                    self.logfolder,
+                                )
 
                                 if success:
                                     commented += 1
@@ -2492,12 +2538,23 @@ class InstaPy:
 
                                 if commenting and checked_img:
                                     comments = self.comments + (
-                                        self.video_comments if is_video else self.photo_comments)
-                                    success = process_comments(comments, temp_comments, self.delimit_commenting,
-                                                           self.max_comments,
-                                                           self.min_comments, self.comments_mandatory_words,
-                                                           self.username, self.blacklist,
-                                                           self.browser, self.logger, self.logfolder)
+                                        self.video_comments
+                                        if is_video
+                                        else self.photo_comments
+                                    )
+                                    success = process_comments(
+                                        comments,
+                                        temp_comments,
+                                        self.delimit_commenting,
+                                        self.max_comments,
+                                        self.min_comments,
+                                        self.comments_mandatory_words,
+                                        self.username,
+                                        self.blacklist,
+                                        self.browser,
+                                        self.logger,
+                                        self.logfolder,
+                                    )
 
                                     if success:
                                         commented += 1
@@ -2792,12 +2849,23 @@ class InstaPy:
 
                                 if commenting and checked_img:
                                     comments = self.comments + (
-                                        self.video_comments if is_video else self.photo_comments)
-                                    success = process_comments(comments, temp_comments, self.delimit_commenting,
-                                                               self.max_comments,
-                                                               self.min_comments, self.comments_mandatory_words,
-                                                               self.username, self.blacklist,
-                                                               self.browser, self.logger, self.logfolder)
+                                        self.video_comments
+                                        if is_video
+                                        else self.photo_comments
+                                    )
+                                    success = process_comments(
+                                        comments,
+                                        temp_comments,
+                                        self.delimit_commenting,
+                                        self.max_comments,
+                                        self.min_comments,
+                                        self.comments_mandatory_words,
+                                        self.username,
+                                        self.blacklist,
+                                        self.browser,
+                                        self.logger,
+                                        self.logfolder,
+                                    )
 
                                     if success:
                                         commented += 1
@@ -3937,12 +4005,23 @@ class InstaPy:
                                         and commenting
                                     ):
                                         comments = self.comments + (
-                                            self.video_comments if is_video else self.photo_comments)
-                                        success = process_comments(comments, temp_comments, self.delimit_commenting,
-                                                                   self.max_comments,
-                                                                   self.min_comments, self.comments_mandatory_words,
-                                                                   self.username, self.blacklist,
-                                                                   self.browser, self.logger, self.logfolder)
+                                            self.video_comments
+                                            if is_video
+                                            else self.photo_comments
+                                        )
+                                        success = process_comments(
+                                            comments,
+                                            temp_comments,
+                                            self.delimit_commenting,
+                                            self.max_comments,
+                                            self.min_comments,
+                                            self.comments_mandatory_words,
+                                            self.username,
+                                            self.blacklist,
+                                            self.browser,
+                                            self.logger,
+                                            self.logfolder,
+                                        )
 
                                         if success:
                                             commented += 1
@@ -4699,12 +4778,22 @@ class InstaPy:
                             and checked_img
                             and commenting
                         ):
-                            comments = self.comments + (self.video_comments if is_video else self.photo_comments)
-                            success = process_comments(comments, temp_comments, self.delimit_commenting,
-                                                       self.max_comments,
-                                                       self.min_comments, self.comments_mandatory_words,
-                                                       self.username, self.blacklist,
-                                                       self.browser, self.logger, self.logfolder)
+                            comments = self.comments + (
+                                self.video_comments if is_video else self.photo_comments
+                            )
+                            success = process_comments(
+                                comments,
+                                temp_comments,
+                                self.delimit_commenting,
+                                self.max_comments,
+                                self.min_comments,
+                                self.comments_mandatory_words,
+                                self.username,
+                                self.blacklist,
+                                self.browser,
+                                self.logger,
+                                self.logfolder,
+                            )
 
                             if success:
                                 commented += 1

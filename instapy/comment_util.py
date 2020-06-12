@@ -13,7 +13,6 @@ from .util import explicit_wait
 from .util import extract_text_from_element
 from .util import web_address_navigator
 from .event import Event
-from .like_util import get_media_edge_comment_string
 from .quota_supervisor import quota_supervisor
 from .xpath import read_xpath
 
@@ -170,6 +169,7 @@ def verify_commenting(browser, maximum, minimum, logger):
 
     return True, "Approval"
 
+
 # Evaluate a mandatory words list against a text
 def evaluate_mandatory_words(text, mandatory_words_list):
     for word in mandatory_words_list:
@@ -182,7 +182,10 @@ def evaluate_mandatory_words(text, mandatory_words_list):
                 return True
     return False
 
-def verify_mandatory_words(mand_words, comments, browser, logger,):
+
+def verify_mandatory_words(
+    mand_words, comments, browser, logger,
+):
     if len(mand_words) > 0 or isinstance(comments[0], dict):
         try:
             post_desc = browser.execute_script(
@@ -207,7 +210,13 @@ def verify_mandatory_words(mand_words, comments, browser, logger,):
         if post_desc is None and first_comment is None:
             return False, [], "couldn't get post description and comments"
 
-        text = post_desc if post_desc is not None else '' + ' ' + first_comment if first_comment is not None else ''
+        text = (
+            post_desc
+            if post_desc is not None
+            else "" + " " + first_comment
+            if first_comment is not None
+            else ""
+        )
 
         if len(mand_words) > 0:
             if not evaluate_mandatory_words(text, mand_words):
@@ -216,11 +225,16 @@ def verify_mandatory_words(mand_words, comments, browser, logger,):
         if isinstance(comments[0], dict):
             # The comments definition is a compound definition of conditions and comments
             for compund_comment in comments:
-                 if evaluate_mandatory_words(text, compund_comment['mandatory_words']):
-                     return True, compund_comment['comments'], "Approval"
-            return False, [], "Coulnd't match the mandatory words in any comment definition"
+                if evaluate_mandatory_words(text, compund_comment["mandatory_words"]):
+                    return True, compund_comment["comments"], "Approval"
+            return (
+                False,
+                [],
+                "Coulnd't match the mandatory words in any comment definition",
+            )
 
     return True, comments, "Approval"
+
 
 def get_comments_on_post(
     browser, owner, poster, amount, post_link, ignore_users, randomize, logger
@@ -370,8 +384,8 @@ def get_comments_count(browser, logger):
             ".graphql.shortcode_media.edge_media_preview_comment.count"
         )
 
-        #media_edge_string = get_media_edge_comment_string(media)
-        #comments_count = media[media_edge_string]["count"]
+        # media_edge_string = get_media_edge_comment_string(media)
+        # comments_count = media[media_edge_string]["count"]
 
     except Exception as e:
         try:
@@ -395,18 +409,24 @@ def get_comments_count(browser, logger):
     return comments_count, "Success"
 
 
-def process_comments(comments, clarifai_comments, delimit_commenting, max_comments, min_comments, comments_mandatory_words, user_name, blacklist, browser, logger, logfolder):
+def process_comments(
+    comments,
+    clarifai_comments,
+    delimit_commenting,
+    max_comments,
+    min_comments,
+    comments_mandatory_words,
+    user_name,
+    blacklist,
+    browser,
+    logger,
+    logfolder,
+):
 
     # comments
     if delimit_commenting:
-        (
-            commenting_approved,
-            disapproval_reason,
-        ) = verify_commenting(
-            browser,
-            max_comments,
-            min_comments,
-            logger,
+        (commenting_approved, disapproval_reason,) = verify_commenting(
+            browser, max_comments, min_comments, logger,
         )
     if not commenting_approved:
         logger.info(disapproval_reason)
@@ -416,12 +436,7 @@ def process_comments(comments, clarifai_comments, delimit_commenting, max_commen
         commenting_approved,
         selected_comments,
         disapproval_reason,
-    ) = verify_mandatory_words(
-        comments_mandatory_words,
-        comments,
-        browser,
-        logger,
-    )
+    ) = verify_mandatory_words(comments_mandatory_words, comments, browser, logger,)
     if not commenting_approved:
         logger.info(disapproval_reason)
         return False
@@ -432,11 +447,6 @@ def process_comments(comments, clarifai_comments, delimit_commenting, max_commen
     # smart commenting
     if comments:
         comment_state, msg = comment_image(
-            browser,
-            user_name,
-            selected_comments,
-            blacklist,
-            logger,
-            logfolder,
+            browser, user_name, selected_comments, blacklist, logger, logfolder,
         )
         return comment_state
