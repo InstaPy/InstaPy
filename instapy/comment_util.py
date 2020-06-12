@@ -13,7 +13,6 @@ from .util import explicit_wait
 from .util import extract_text_from_element
 from .util import web_address_navigator
 from .event import Event
-from .like_util import get_media_edge_comment_string
 from .quota_supervisor import quota_supervisor
 from .xpath import read_xpath
 
