@@ -15,6 +15,8 @@ _The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 ### Changed
 - Remove `view-source` which stops bot from proceeding 
+- Remove instagram status check
+
 
 ## [0.6.8] - 2020-01-28
 
