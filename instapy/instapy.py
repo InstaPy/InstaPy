@@ -4705,8 +4705,8 @@ class InstaPy:
                 # cos this method has just one iterator
                 break
 
-            if "https://www.instagram.com/p/" not in url:
-                url = "https://www.instagram.com/p/" + url
+            if "https://www.instagram.com/" not in url:
+                url = "https://www.instagram.com/" + url
 
             self.logger.info("URL [{}/{}]".format(index + 1, len(urls)))
             self.logger.info("--> {}".format(url.encode("utf-8")))
