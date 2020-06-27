@@ -428,9 +428,9 @@ def process_comments(
         (commenting_approved, disapproval_reason,) = verify_commenting(
             browser, max_comments, min_comments, logger,
         )
-    if not commenting_approved:
-        logger.info(disapproval_reason)
-        return False
+        if not commenting_approved:
+            logger.info(disapproval_reason)
+            return False
 
     (
         commenting_approved,
