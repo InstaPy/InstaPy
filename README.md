@@ -124,6 +124,9 @@ pip install instapy -U
 
 **[How to RaspberryPi](https://github.com/InstaPy/instapy-docs/blob/master/How_Tos/How_to_Raspberry.md) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**
 
+**[RealPythons InstaPy Guide](https://realpython.com/instagram-bot-python-instapy/) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**
+
+**[InstaPy : développez vous-même votre bot Instagram !](https://www.yubigeek.com/instapy-bot-instagram/) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**
 
 ## External Tools:
 
