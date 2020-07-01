@@ -25,25 +25,90 @@ class CommentsUtilTests(unittest.TestCase):
     def setUp(self):
         pass
 
-    def test1(self):
+    def test_evaluate_mandatory_words(self):
+        text = "a b c d e f g"
+
+        self.assertTrue(evaluate_mandatory_words(text, ["a", "B", "c"]))
+        self.assertTrue(evaluate_mandatory_words(text, ["a", "B", "z"]))
+        self.assertTrue(evaluate_mandatory_words(text, ["x", "B", "z"]))
+        self.assertFalse(evaluate_mandatory_words(text, ["x", "y", "z"]))
+        self.assertTrue(evaluate_mandatory_words(text, [["a", "f", "e"]]))
+        self.assertTrue(evaluate_mandatory_words(text, ["a", ["x", "y", "z"]]))
+        self.assertTrue(evaluate_mandatory_words(text, [["x", "y", "z"], "a"]))
+        self.assertFalse(evaluate_mandatory_words(text, [["x", "y", "z"], "v"]))
+        self.assertTrue(evaluate_mandatory_words(text, [["a", "b", "d"], "v"]))
+        self.assertTrue(evaluate_mandatory_words(text, [["a", "b", ["d", "x"]], "v"]))
+        self.assertFalse(evaluate_mandatory_words(text, [["a", "z", ["d", "x"]], "v"]))
+        self.assertTrue(evaluate_mandatory_words(text, [["a", "b", [["d", "e"], "x"]]]))
+        self.assertFalse(evaluate_mandatory_words(text, [["a", "b", [["d", "z"], "x"]]]))
+
+    def test_verify_mandatory_words(self):
         browser = BrowserMock(
-            caption="\xe2\x81\xa0\nI'm in awe of the beauty of these glaciers.\xe2\x81\xa0\n. \xe2\x81\xa0\n.\xe2\x81\xa0\n.\xe2\x81\xa0\n#travel #wanderlust #adventure #icelandtravel #travelphotography #landscape #visiticeland #explore #globalwarming #photography #naturephotography #wheniniceland #landscapephotography #beautifuldestinations #traveling #neverstopexploring #nature #naturelovers #outdoors #visualsoflife #stayandwander #wanderlusting #traveltheworld #seetheworld #travelblogger #travelgram #iceland #glacier #hiking #ice",
+            caption="a B c D e F g",
             comment_count=5
         )
         mandatory_comments_words = []
         comments = [
-            {'mandatory_words': ["icecave", "ice_cave"], 'comments': ["Nice shot. Ice caves are amazing", "Cool. Aren't ice caves just amazing?"]},
-            {'mandatory_words': [["iceland", "winter"]], 'comments': ["Great shot. I just love Iceland in the winter", "Cool. Can't beat iceland in winter"]},
-            {'mandatory_words': [["iceland", "waterfall"]], 'comments': ["Nice shot. I just love the waterfalls in Iceland", "Nothing like waterfalls in Iceland", "Nice waterfall!"]},
-            {'mandatory_words': [["landscape", "sunset"]], 'comments': ["Lovely sunset", "Very nice sunset"]},
-            {'mandatory_words': ["landscape", "waterfall"], 'comments': ["Nice waterfall", "What a lovely waterfall"]},
-            {'mandatory_words': [["landscape", "glacier"]], 'comments': ["Nice shot. I just love glaciers!", "Love it. Ain't glaciers just great?"]},
-            {'mandatory_words': [["landscape", "mountain"]], 'comments': ["Nice shot!", "Great shot", "very nice", u"👏👏👏"]},
-            {'mandatory_words': [["landscape", "milkyway"], ["iceland", "milkyway"]], 'comments': ["Nice shot! The night sky is amazing", "Great shot. Love the milky way", "very nice"]},
-            {'comments': ["Very nice!", "Great shot", "very nice", u"👏👏👏"]}
+            {'mandatory_words': ["x", "y", "z"], 'comments': ["1"]},
+            {'mandatory_words': [["x", "y", "z"], "v"], 'comments': ["2"]},
+            {'mandatory_words': [["a", "b", "d"], "v"], 'comments': ["3"]},
+            {'mandatory_words': [["a", "z", ["d", "x"]], "v"], 'comments': ["4"]},
+            {'mandatory_words': [["a", "f", "e"]], 'comments': ["5"]},
+            {'mandatory_words': ["a", "B", "z"], 'comments': ["6"]},
+            {'comments': ["9"]}
         ]
 
         (commenting_approved, selected_comments, disapproval_reason, ) = verify_mandatory_words(mandatory_comments_words, comments, browser, logging)
-        self.assertEqual(commenting_approved, True)
-        self.assertEqual(selected_comments, ["Nice shot. I just love glaciers!", "Love it. Ain't glaciers just great?"])
-        # process_comments
+        self.assertTrue(commenting_approved)
+        self.assertEqual(["3"], selected_comments)
+
+        comments = [
+            {'mandatory_words': ["x", "y", "z"], 'comments': ["1"]},
+            {'mandatory_words': [["x", "y", "z"], "v"], 'comments': ["2"]},
+            {'mandatory_words': [["a", "b", "z"], "v"], 'comments': ["3"]},
+            {'mandatory_words': [["a", "z", ["d", "x"]], "v"], 'comments': ["4"]},
+            {'mandatory_words': [["a", "f", "e"]], 'comments': ["5"]},
+            {'mandatory_words': ["a", "B", "z"], 'comments': ["6"]},
+            {'comments': ["9"]}
+        ]
+        (commenting_approved, selected_comments, disapproval_reason, ) = verify_mandatory_words(mandatory_comments_words, comments, browser, logging)
+        self.assertTrue(commenting_approved)
+        self.assertEqual(["5"], selected_comments)
+
+        comments = [
+            {'mandatory_words': ["x", "y", "z"], 'comments': ["1"]},
+            {'mandatory_words': [["x", "y", "z"], "v"], 'comments': ["2"]},
+            {'mandatory_words': [["a", "b", "z"], "v"], 'comments': ["3"]},
+            {'mandatory_words': [["a", "z", ["d", "x"]], "v"], 'comments': ["4"]},
+            {'mandatory_words': [["a", "f", "z"]], 'comments': ["5"]},
+            {'mandatory_words': ["a", "B", "z"], 'comments': ["6"]},
+            {'comments': ["9"]}
+        ]
+        (commenting_approved, selected_comments, disapproval_reason, ) = verify_mandatory_words(mandatory_comments_words, comments, browser, logging)
+        self.assertTrue(commenting_approved)
+        self.assertEqual(["6"], selected_comments)
+
+        comments = [
+            {'mandatory_words': ["x", "y", "z"], 'comments': ["1"]},
+            {'mandatory_words': [["x", "y", "z"], "v"], 'comments': ["2"]},
+            {'mandatory_words': [["a", "b", "z"], "v"], 'comments': ["3"]},
+            {'mandatory_words': [["a", "z", ["d", "x"]], "v"], 'comments': ["4"]},
+            {'mandatory_words': [["a", "f", "z"]], 'comments': ["5"]},
+            {'mandatory_words': ["x", "Y", "z"], 'comments': ["6"]},
+            {'comments': ["9"]}
+        ]
+        (commenting_approved, selected_comments, disapproval_reason, ) = verify_mandatory_words(mandatory_comments_words, comments, browser, logging)
+        self.assertTrue(commenting_approved)
+        self.assertEqual(["9"], selected_comments)
+
+        comments = [
+            {'mandatory_words': ["x", "y", "z"], 'comments': ["1"]},
+            {'mandatory_words': [["x", "y", "z"], "v"], 'comments': ["2"]},
+            {'mandatory_words': [["a", "b", "z"], "v"], 'comments': ["3"]},
+            {'mandatory_words': [["a", "z", ["d", "x"]], "v"], 'comments': ["4"]},
+            {'mandatory_words': [["a", "f", "z"]], 'comments': ["5"]},
+            {'mandatory_words': ["x", "Y", "z"], 'comments': ["6"]}
+        ]
+        (commenting_approved, selected_comments, disapproval_reason, ) = verify_mandatory_words(mandatory_comments_words, comments, browser, logging)
+        self.assertFalse(commenting_approved)
+        self.assertEqual([], selected_comments)

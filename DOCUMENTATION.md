@@ -134,20 +134,26 @@ session.set_do_comment(enabled=True, percentage=25)
 # Configure a simple list of optional comments, one will be selected at random when commenting:
 session.set_comments(['Awesome', 'Really Cool', 'I like your stuff'])
 
-# Or configure conditional comments as follows:
-# The list ofconditional comments is scanned until the first item that satisfies the mandatory words condition is found 
+# Or configure conditional to provide a more contextual commenting based on the caption of the image:
+# Conditional comments are created as a list of dictionaries, each one contains a definition of mandatory words and a list of comments. 
+# The list of conditional comments is scanned until the first item that satisfies the mandatory words condition is found 
 # and then the comments associated with that items are used.
-# The mandatory words condition is matched against the description and first comment of the image. The condition is  
-# satisfied if any individual word from the list is found or if all the words from a sub list are found. 
+# The mandatory words condition is list of words and may contain additional nested lists of words.
+# The first list defines an "or" condition between the words, so if any of these words exist in the image caption the condition is met.
+# Every nested list of words is switching back and forth between "or" and "and" condition.
+# This can best be understood with an example (pay attention to the nesting of the word lists:
 comments=[
-    # either "icecave" or "ice_cave" will satisfy this:
+    # either "icecave" OR "ice_cave" will satisfy this:
     {'mandatory_words': ["icecave", "ice_cave"], 'comments': ["Nice shot. Ice caves are amazing", "Cool. Aren't ice caves just amazing?"]},
     
-    # either "high_mountain" OR ("high" and "mountain") will satisfy this:
+    # either "high_mountain" OR ("high" AND "mountain") will satisfy this:
     {'mandatory_words': ["high_mountain", ["high", "mountain"]], 'comments': ["I just love high mountains"]},
 
-    # Only ("high" and "tide" together) will satisfy this:
+    # Only ("high" AND "tide" together) will satisfy this:
     {'mandatory_words': [["high", "tide"]], 'comments': ["High tides are better than low"]}
+
+    # Only "summer" AND ("lake" OR "occean") will satisfy this:
+    {'mandatory_words': [["summer", ["lake", "occean"]], 'comments': ["Summer fun"]}
 
 ]
 session.set_comments(comments)

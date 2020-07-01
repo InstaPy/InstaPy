@@ -174,16 +174,29 @@ def verify_commenting(browser, maximum, minimum, logger):
     return True, "Approval"
 
 # Evaluate a mandatory words list against a text
-def evaluate_mandatory_words(text, mandatory_words_list):
-    for word in mandatory_words_list:
-        if isinstance(word, list):
-            # this is a list so we apply an 'AND' condition to all of them
-            if all(w.lower() in text for w in word):
+def evaluate_mandatory_words(text, mandatory_words_list, level=0):
+    if level % 2 == 0:
+        # this is an "or" level so at least one of the words of compound sub-conditions should match
+        for word in mandatory_words_list:
+            if isinstance(word, list):
+                res = evaluate_mandatory_words(text, word, level+1)
+                if res:
+                    return True
+            elif word.lower() in text:
                 return True
-        else:
-            if word.lower() in text:
-                return True
-    return False
+        return False
+    else:
+        # this is an "and" level so all of the words and compound sub-conditions must match
+        for word in mandatory_words_list:
+            if isinstance(word, list):
+                res = evaluate_mandatory_words(text, word, level+1)
+                if not res:
+                    return False
+            elif word.lower() not in text:
+                return False
+        return True
+
+
 
 def verify_mandatory_words(mand_words, comments, browser, logger,):
     if len(mand_words) > 0 or isinstance(comments[0], dict):
