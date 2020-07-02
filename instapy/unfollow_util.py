@@ -55,7 +55,7 @@ def set_automated_followed_pool(
     delay_followbackers,
     pool="followedPool",
 ):
-    """ Generare a user list based on the InstaPy followed usernames """
+    """ Generate a user list based on the InstaPy followed usernames """
     pool_name = "{0}{1}_{2}.csv".format(logfolder, username, pool)
     automatedFollowedPool = {"all": {}, "eligible": {}}
     time_stamp = None
