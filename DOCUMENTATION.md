@@ -114,7 +114,7 @@
 ## Settings
 ### Liking
 This method is only needed for the `interact_by_...` actions.   
-Posts will liked by default when using `like_by_...` actions.
+Posts will be liked by default when using `like_by_...` actions.
 
 ```python
 # ~70% of the by InstaPy viewed posts will be liked
