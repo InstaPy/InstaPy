@@ -20,3 +20,4 @@ MeaningCloud-python>=1.1.1
 PyYAML>=3.13
 webdriverdownloader
 python-telegram-bot>=12.0.0
+
