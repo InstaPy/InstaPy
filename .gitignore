@@ -116,3 +116,7 @@ Pipfile
 
 # Instances
 z_*
+
+# Credentials
+
+*.cred
