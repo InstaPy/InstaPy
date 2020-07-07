@@ -25,7 +25,7 @@ from .xpath import read_xpath
 
 
 def bypass_suspicious_login(
-    browser, logger, logfolder, bypass_security_challenge_using
+        browser, logger, logfolder, bypass_security_challenge_using
 ):
     """ Bypass suspicious loggin attempt verification. """
 
@@ -101,10 +101,10 @@ def bypass_suspicious_login(
 
     (
         ActionChains(browser)
-        .move_to_element(security_code_field)
-        .click()
-        .send_keys(security_code)
-        .perform()
+            .move_to_element(security_code_field)
+            .click()
+            .send_keys(security_code)
+            .perform()
     )
 
     # update server calls for both 'click' and 'send_keys' actions
@@ -117,9 +117,9 @@ def bypass_suspicious_login(
 
     (
         ActionChains(browser)
-        .move_to_element(submit_security_code_button)
-        .click()
-        .perform()
+            .move_to_element(submit_security_code_button)
+            .click()
+            .perform()
     )
 
     # update server calls
@@ -164,17 +164,22 @@ def check_browser(browser, logfolder, logger, proxy_address):
     # check connection status
     try:
         logger.info("-- Connection Checklist [1/2] (Internet Connection Status)")
+        import requests
+        server_main_ip_request=requests.get("https://ip4.seeip.org/geoip")
+        server_main_ip_json=json.loads(server_main_ip_request.text)
         browser.get("view-source:https://ip4.seeip.org/geoip")
         pre = browser.find_element_by_tag_name("pre").text
         current_ip_info = json.loads(pre)
         if (
-            proxy_address is not None
-            and socket.gethostbyname(proxy_address) != current_ip_info["ip"]
+                proxy_address is not None
+                # not work for redirect proxy for example 185.162.235.190:8082
+                # and socket.gethostbyname(proxy_address) != current_ip_info["ip"]
+                and socket.gethostbyname(proxy_address) == server_main_ip_json["ip"]
         ):
             logger.warn("- Proxy is set, but it's not working properly")
             logger.warn(
                 '- Expected Proxy IP is "{}", and the current IP is "{}"'.format(
-                    proxy_address, current_ip_info["ip"]
+                    proxy_address, server_main_ip_json["ip"]
                 )
             )
             logger.warn("- Try again or disable the Proxy Address on your setup")
@@ -221,14 +226,14 @@ def check_browser(browser, logfolder, logger, proxy_address):
 
 
 def login_user(
-    browser,
-    username,
-    password,
-    logger,
-    logfolder,
-    proxy_address,
-    security_code_to_phone,
-    want_check_browser,
+        browser,
+        username,
+        password,
+        logger,
+        logfolder,
+        proxy_address,
+        security_code_to_phone,
+        want_check_browser,
 ):
     """Logins the user with the given username and password"""
     assert username, "Username not provided"
@@ -237,7 +242,7 @@ def login_user(
     # Hotfix - this check crashes more often than not -- plus in not necessary, I can verify my own connection
     if want_check_browser:
         if not check_browser(browser, logfolder, logger, proxy_address):
-            return False
+            return False, "PROXY"
 
     ig_homepage = "https://www.instagram.com"
     web_address_navigator(browser, ig_homepage)
@@ -246,7 +251,7 @@ def login_user(
     # try to load cookie from username
     try:
         for cookie in pickle.load(
-            open("{0}{1}_cookie.pkl".format(logfolder, username), "rb")
+                open("{0}{1}_cookie.pkl".format(logfolder, username), "rb")
         ):
             browser.add_cookie(cookie)
             cookie_loaded = True
@@ -263,7 +268,7 @@ def login_user(
     )
     if login_state is True:
         dismiss_notification_offer(browser, logger)
-        return True
+        return True, None
 
     # if user is still not logged in, then there is an issue with the cookie
     # so go create a new cookie..
@@ -290,7 +295,7 @@ def login_user(
                     read_xpath(login_user.__name__, "login_elem_no_such_exception_2")
                 )
             except NoSuchElementException:
-                return False
+                return False, "LOGIN_ELEM"
 
     if login_elem is not None:
         try:
@@ -317,10 +322,10 @@ def login_user(
 
     (
         ActionChains(browser)
-        .move_to_element(input_username)
-        .click()
-        .send_keys(username)
-        .perform()
+            .move_to_element(input_username)
+            .click()
+            .send_keys(username)
+            .perform()
     )
 
     # update server calls for both 'click' and 'send_keys' actions
@@ -339,20 +344,20 @@ def login_user(
 
     (
         ActionChains(browser)
-        .move_to_element(input_password[0])
-        .click()
-        .send_keys(password)
-        .perform()
+            .move_to_element(input_password[0])
+            .click()
+            .send_keys(password)
+            .perform()
     )
 
     sleep(1)
 
     (
         ActionChains(browser)
-        .move_to_element(input_password[0])
-        .click()
-        .send_keys(Keys.ENTER)
-        .perform()
+            .move_to_element(input_password[0])
+            .click()
+            .send_keys(Keys.ENTER)
+            .perform()
     )
 
     # update server calls for both 'click' and 'send_keys' actions
