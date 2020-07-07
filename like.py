@@ -17,8 +17,7 @@ set_workspace(path=None)
 # get an InstaPy session!
 # set headless_browser=True to run InstaPy in the background
 session = InstaPy(username=insta_username,
-                  password=insta_password,
-                  headless_browser=False)
+                  password=insta_password)
 
 with smart_run(session):
     # activity
