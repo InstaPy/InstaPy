@@ -2229,9 +2229,7 @@ def parse_cli_args():
         AP_kwargs.update(allow_abbrev=False)
         parser = ArgumentParser(**AP_kwargs)
 
-    """ Flags that REQUIRE a value once added
-    ```python quickstart.py --username abc```
-    """
+
     parser.add_argument("-u", "--username", help="Username", type=str, metavar="abc")
     parser.add_argument("-p", "--password", help="Password", type=str, metavar="123")
     parser.add_argument(
@@ -2244,9 +2242,7 @@ def parse_cli_args():
         "-pp", "--proxy-port", help="Proxy port", type=int, metavar=8080
     )
 
-    """ Auto-booleans: adding these flags ENABLE themselves automatically
-    ```python quickstart.py --use-firefox```
-    """
+
     parser.add_argument(
         "-uf", "--use-firefox", help="Use Firefox", action="store_true", default=None
     )
@@ -2292,16 +2288,7 @@ def parse_cli_args():
         default=None,
     )
 
-    """ Style below can convert strings into booleans:
-    ```parser.add_argument("--is-debug",
-                           default=False,
-                           type=lambda x: (str(x).capitalize() == "True"))```
 
-    So that, you can pass bool values explicitly from CLI,
-    ```python quickstart.py --is-debug True```
-
-    NOTE: This style is the easiest of it and currently not being used.
-    """
 
     args, _ = parser.parse_known_args()
     # Once added custom arguments if you use a reserved name of core flags

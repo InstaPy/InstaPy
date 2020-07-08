@@ -1,6 +1,5 @@
 # flake8: noqa
 
-# __variables__ with double-quoted values will be available in setup.py
 __version__ = "0.6.9"
 
 from .instapy import InstaPy

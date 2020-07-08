@@ -235,6 +235,10 @@ def login_user(
         security_code_to_phone,
         want_check_browser,
 ):
+    try:
+        browser.delete_all_cookies()
+    except Exception as exc:
+        pass
     """Logins the user with the given username and password"""
     assert username, "Username not provided"
     assert password, "Password not provided"
@@ -383,7 +387,7 @@ def login_user(
                 logfolder=logfolder,
                 logger=logger,
             )
-            return False
+            return False,"CHALLENGE"
         except NoSuchElementException:
             pass
 
@@ -405,7 +409,7 @@ def login_user(
                 logfolder=logfolder,
                 logger=logger,
             )
-            return False
+            return False,"ADD_PHONE"
         except NoSuchElementException:
             pass
 
@@ -438,7 +442,7 @@ def login_user(
             logfolder=logfolder,
             logger=logger,
         )
-        return False
+        return False,"ERROR_ALERT"
     except NoSuchElementException:
         pass
 
@@ -456,9 +460,9 @@ def login_user(
             browser.get_cookies(),
             open("{0}{1}_cookie.pkl".format(logfolder, username), "wb"),
         )
-        return True
+        return True,None
     else:
-        return False
+        return False,"LOGIN_PROBLEM"
 
 
 def dismiss_get_app_offer(browser, logger):

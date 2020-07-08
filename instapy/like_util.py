@@ -668,7 +668,7 @@ def check_link(
 
     logger.info("Image from: {}".format(user_name.encode("utf-8")))
     logger.info("Link: {}".format(post_link.encode("utf-8")))
-    logger.info("Description: {}".format(image_text.encode("utf-8")))
+    logger.info("Description: {}".format(image_text).replace("\n"," "))
 
     # Check if mandatory character set, before adding the location to the text
     if mandatory_language:
@@ -683,7 +683,7 @@ def check_link(
 
     # Append location to image_text so we can search through both in one go
     if location_name:
-        logger.info("Location: {}".format(location_name.encode("utf-8")))
+        logger.info("Location: {}".format(location_name))
         image_text = image_text + "\n" + location_name
 
     if mandatory_words:

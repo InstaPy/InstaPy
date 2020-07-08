@@ -116,6 +116,7 @@ def set_selenium_local_session(
         firefox_profile=firefox_profile,
         executable_path=driver_path,
         options=firefox_options,
+        service_log_path=None
     )
 
     # add extenions to hide selenium

@@ -208,8 +208,11 @@ def get_following_status(
             logger.error(failure_msg.format(person.encode("utf-8")))
             return None, None
 
-    # get follow status
-    following_status = follow_button.text
+    try:
+        # get follow status
+        following_status = follow_button.text
+    except:
+        return "UNAVAILABLE", None
 
     return following_status, follow_button
 

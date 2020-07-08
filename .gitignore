@@ -7,7 +7,6 @@ __pycache__/
 *.py[cod]
 *$py.class
 
-quickstart.py
 docker_quickstart.py
 
 # C extensions
