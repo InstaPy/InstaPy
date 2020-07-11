@@ -1,5 +1,8 @@
 # Documentation
 
+**InstaPy is being sponsored by the following partner. Please help to support us by taking a look and signing up to a free trial 😊**
+<a href="https://tracking.gitads.io/?repo=InstaPy"> <img src="https://images.gitads.io/InstaPy" alt="GitAds"/> </a>
+
 ### Table of Contents
 - **[Settings](#settings)**
   - [Liking](#liking)
