@@ -306,7 +306,7 @@ def toast_notification(notify, alert, job, interval):
             # DBusException: dbus-display issue on linux boxes
 
             # turn off toast notification for the rest of the session
-            configuration.update(nofity=False)
+            configuration.update(notify=False)
 
 
 def get_icons():
