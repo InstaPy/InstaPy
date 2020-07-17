@@ -1,5 +1,8 @@
 # Documentation
 
+**InstaPy is being sponsored by the following partner. Please help to support us by taking a look and signing up to a free trial 😊**
+<a href="https://tracking.gitads.io/?repo=InstaPy"> <img src="https://images.gitads.io/InstaPy" alt="GitAds"/> </a>
+
 ### Table of Contents
 - **[Settings](#settings)**
   - [Liking](#liking)
@@ -113,7 +116,7 @@
 ## Settings
 ### Liking
 This method is only needed for the `interact_by_...` actions.   
-Posts will liked by default when using `like_by_...` actions.
+Posts will be liked by default when using `like_by_...` actions.
 
 ```python
 # ~70% of the by InstaPy viewed posts will be liked
