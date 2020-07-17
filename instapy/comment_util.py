@@ -12,6 +12,7 @@ from .util import get_action_delay
 from .util import explicit_wait
 from .util import extract_text_from_element
 from .util import web_address_navigator
+from .util import evaluate_mandatory_words
 from .event import Event
 from .quota_supervisor import quota_supervisor
 from .xpath import read_xpath
@@ -173,28 +174,7 @@ def verify_commenting(browser, maximum, minimum, logger):
 
     return True, "Approval"
 
-# Evaluate a mandatory words list against a text
-def evaluate_mandatory_words(text, mandatory_words_list, level=0):
-    if level % 2 == 0:
-        # this is an "or" level so at least one of the words of compound sub-conditions should match
-        for word in mandatory_words_list:
-            if isinstance(word, list):
-                res = evaluate_mandatory_words(text, word, level+1)
-                if res:
-                    return True
-            elif word.lower() in text:
-                return True
-        return False
-    else:
-        # this is an "and" level so all of the words and compound sub-conditions must match
-        for word in mandatory_words_list:
-            if isinstance(word, list):
-                res = evaluate_mandatory_words(text, word, level+1)
-                if not res:
-                    return False
-            elif word.lower() not in text:
-                return False
-        return True
+
 
 
 
