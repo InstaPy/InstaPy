@@ -25,9 +25,12 @@ from selenium.webdriver.common.keys import Keys
 
 
 def get_comment_input(browser):
-    comment_input = browser.find_elements_by_xpath(
-        read_xpath(get_comment_input.__name__, "comment_input")
-    )
+    try:
+        comment_input = browser.find_elements_by_xpath(
+            read_xpath(get_comment_input.__name__, "comment_input")
+        )
+    except:
+        return 0
 
     if len(comment_input) <= 0:
         comment_input = browser.find_elements_by_xpath(
@@ -43,9 +46,12 @@ def open_comment_section(browser, logger):
         "\t~may cause issues with browser windows of smaller widths"
     )
 
-    comment_elem = browser.find_elements_by_xpath(
-        read_xpath(open_comment_section.__name__, "comment_elem")
-    )
+    try:
+        comment_elem = browser.find_elements_by_xpath(
+            read_xpath(open_comment_section.__name__, "comment_elem")
+        )
+    except NoSuchElementException or WebDriverException:
+        return False
 
     if len(comment_elem) > 0:
         try:
@@ -56,6 +62,7 @@ def open_comment_section(browser, logger):
 
     else:
         logger.warning(missing_comment_elem_warning)
+        return False, "invalid element"
 
 
 def comment_image(browser, username, comments, blacklist, logger, logfolder):
@@ -68,7 +75,21 @@ def comment_image(browser, username, comments, blacklist, logger, logfolder):
     rand_comment = emoji.demojize(rand_comment)
     rand_comment = emoji.emojize(rand_comment, use_aliases=True)
 
-    open_comment_section(browser, logger)
+    comment_elem = open_comment_section(browser, logger)
+
+    if comment_elem:
+        if type(comment_elem) == tuple and not comment_elem[0]:
+            logger.warning(
+                "--> Comment Action Likely Failed!" "\t~comment Element was not found"
+            )
+            return False, "commenting disabled"
+
+        if not comment_elem:
+            logger.warning(
+                "--> Comment Action Likely Failed!" "\t~comment Element was not found"
+            )
+            return False, "commenting disabled"
+
     # wait, to avoid crash
     sleep(3)
     comment_input = get_comment_input(browser)
