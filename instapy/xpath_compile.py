@@ -38,7 +38,7 @@ xpath["dismiss_notification_offer"] = {
 xpath["extract_information"] = {
     "close_overlay": "//div/div[@role='dialog']",
     "one_pic_elem": "//section/main/article/div[1]/div/div[10]/div[3]/a/div",
-    "like_element": "//a[@role='button']/span[text()='Like']/..",
+    "like_element": "//section/main/article/div[1]/div/div[10]/div[3]/a/div",
 }
 
 xpath["extract_post_info"] = {
@@ -142,8 +142,8 @@ xpath["like_comment"] = {
 }
 
 xpath["like_image"] = {
-    "like": "//section/span/button[*[local-name()='svg']/@aria-label='Like']",
-    "unlike": "//section/span/button[*[local-name()='svg']/@aria-label='Unlike']",
+    "like": "//button[@class='wpO6b ']//div//*[@aria-label='Like']",
+    "unlike": "//button[@class='wpO6b ']//div//*[@aria-label='Unlike']",
 }
 
 xpath["like_from_image"] = {
@@ -166,7 +166,7 @@ xpath["login_user"] = {
 }
 
 xpath["open_comment_section"] = {
-    "comment_elem": "//button[*[local-name()='svg']/@aria-label='Comment']"
+    "comment_elem": "//span[@class=\"_15y0l\"]//button"
 }
 
 xpath["unfollow"] = {
