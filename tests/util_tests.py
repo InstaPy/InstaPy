@@ -1,5 +1,4 @@
 import unittest
-import logging
 from instapy.util import evaluate_mandatory_words
 
 # Note: This file is using a different name scheme than existing tests
@@ -25,4 +24,6 @@ class UtilsTests(unittest.TestCase):
         self.assertTrue(evaluate_mandatory_words(text, [["a", "b", ["d", "x"]], "v"]))
         self.assertFalse(evaluate_mandatory_words(text, [["a", "z", ["d", "x"]], "v"]))
         self.assertTrue(evaluate_mandatory_words(text, [["a", "b", [["d", "e"], "x"]]]))
-        self.assertFalse(evaluate_mandatory_words(text, [["a", "b", [["d", "z"], "x"]]]))
+        self.assertFalse(
+            evaluate_mandatory_words(text, [["a", "b", [["d", "z"], "x"]]])
+        )
