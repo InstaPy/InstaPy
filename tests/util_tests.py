@@ -1,5 +1,4 @@
 import unittest
-import logging
 from instapy.util import evaluate_mandatory_words
 
 # Note: This file is using a different name scheme than existing tests
