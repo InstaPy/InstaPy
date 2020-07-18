@@ -12,6 +12,7 @@ from .util import get_action_delay
 from .util import explicit_wait
 from .util import extract_text_from_element
 from .util import web_address_navigator
+from .util import evaluate_mandatory_words
 from .event import Event
 from .quota_supervisor import quota_supervisor
 from .xpath import read_xpath
@@ -126,6 +127,10 @@ def comment_image(browser, username, comments, blacklist, logger, logfolder):
             "\t~encountered `InvalidElementStateException` :/"
         )
         return False, "invalid element state"
+    except WebDriverException as ex:
+        logger.error(ex)
+
+
 
     logger.info("--> Commented: {}".format(rand_comment.encode("utf-8")))
     Event().commented(username)
@@ -170,22 +175,10 @@ def verify_commenting(browser, maximum, minimum, logger):
     return True, "Approval"
 
 
-# Evaluate a mandatory words list against a text
-def evaluate_mandatory_words(text, mandatory_words_list):
-    for word in mandatory_words_list:
-        if isinstance(word, list):
-            # this is a list so we apply an 'AND' condition to all of them
-            if all(w.lower() in text for w in word):
-                return True
-        else:
-            if word.lower() in text:
-                return True
-    return False
 
 
-def verify_mandatory_words(
-    mand_words, comments, browser, logger,
-):
+
+def verify_mandatory_words(mand_words, comments, browser, logger,):
     if len(mand_words) > 0 or isinstance(comments[0], dict):
         try:
             post_desc = browser.execute_script(
@@ -225,16 +218,11 @@ def verify_mandatory_words(
         if isinstance(comments[0], dict):
             # The comments definition is a compound definition of conditions and comments
             for compund_comment in comments:
-                if evaluate_mandatory_words(text, compund_comment["mandatory_words"]):
-                    return True, compund_comment["comments"], "Approval"
-            return (
-                False,
-                [],
-                "Coulnd't match the mandatory words in any comment definition",
-            )
+                if 'mandatory_words' not in compund_comment or evaluate_mandatory_words(text, compund_comment['mandatory_words']):
+                    return True, compund_comment['comments'], "Approval"
+            return False, [], "Coulnd't match the mandatory words in any comment definition"
 
     return True, comments, "Approval"
-
 
 def get_comments_on_post(
     browser, owner, poster, amount, post_link, ignore_users, randomize, logger
@@ -421,6 +409,7 @@ def process_comments(
     browser,
     logger,
     logfolder,
+    publish=True,
 ):
 
     # comments
@@ -445,7 +434,7 @@ def process_comments(
         selected_comments = clarifai_comments
 
     # smart commenting
-    if comments:
+    if comments and publish:
         comment_state, msg = comment_image(
             browser, user_name, selected_comments, blacklist, logger, logfolder,
         )

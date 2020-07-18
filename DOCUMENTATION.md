@@ -21,7 +21,7 @@
   - [Don't unfollow active users](#dont-unfollow-active-users)
   - [Blacklist Campaign](#blacklist-campaign)
   - [Simulation](#simulation)
-  - [Skipping user for private account, no profile picture, business account](#skipping-user-for-private-account-no-profile-picture-business-account)
+  - [Skipping user for private account, no profile picture, business account, bio keywords](#skipping-user-for-private-account-no-profile-picture-business-account-bio-keywords)
   - [Liking based on the number of existing likes a post has](#liking-based-on-the-number-of-existing-likes-a-post-has)
   - [Commenting based on the number of existing comments a post has](#commenting-based-on-the-number-of-existing-comments-a-post-has)
   - [Commenting based on mandatory words in the description or first comment](#commenting-based-on-mandatory-words-in-the-description-or-first-comment)
@@ -54,7 +54,6 @@
   - [Interact by Comments](#interact-by-comments)
   - [Accept pending follow requests](#accept-pending-follow-requests)
   - [Remove outgoing follow requests](#remove-outgoing-follow-requests)
-  - [Skip based on Profile Bio](#skip-based-on-profile-bio)
   - [InstaPy Pods](#instapy-pods)
   - [InstaPy Stories](#instapy-stories)
   
@@ -136,27 +135,34 @@ session.set_do_comment(enabled=True, percentage=25)
 ``` python
 # Configure a simple list of optional comments, one will be selected at random when commenting:
 session.set_comments(['Awesome', 'Really Cool', 'I like your stuff'])
+```
 
-# Or configure conditional comments as follows:
-# The list ofconditional comments is scanned until the first item that satisfies the mandatory words condition is found 
-# and then the comments associated with that items are used.
-# The mandatory words condition is matched against the description and first comment of the image. The condition is  
-# satisfied if any individual word from the list is found or if all the words from a sub list are found. 
+Or configure conditional comments to provide a more contextual commenting based on the caption of the image:
+Conditional comments are created as a list of dictionaries, each one contains a definition of 
+[mandatory words](#mandatory-words) and a list of comments. 
+The list of conditional comments is scanned until the first item that satisfies the mandatory words condition is found 
+and then one of the comments associated with that item is selected at random to be used.  
+This can best be understood with an example:
+``` python
 comments=[
-    # either "icecave" or "ice_cave" will satisfy this:
+    # either "icecave" OR "ice_cave" will satisfy this:
     {'mandatory_words': ["icecave", "ice_cave"], 'comments': ["Nice shot. Ice caves are amazing", "Cool. Aren't ice caves just amazing?"]},
     
-    # either "high_mountain" OR ("high" and "mountain") will satisfy this:
+    # either "high_mountain" OR ("high" AND "mountain") will satisfy this:
     {'mandatory_words': ["high_mountain", ["high", "mountain"]], 'comments': ["I just love high mountains"]},
 
-    # Only ("high" and "tide" together) will satisfy this:
+    # Only ("high" AND "tide" together) will satisfy this:
     {'mandatory_words': [["high", "tide"]], 'comments': ["High tides are better than low"]}
+
+    # Only "summer" AND ("lake" OR "occean") will satisfy this:
+    {'mandatory_words': [["summer", ["lake", "occean"]], 'comments': ["Summer fun"]}
 
 ]
 session.set_comments(comments)
+```
 
-# you can also set comments for specific media types (Photo / Video)
-
+You can also set comments for specific media types (Photo / Video)
+``` python
 session.set_comments(['Nice shot!'], media='Photo')
 session.set_comments(['Great Video!'], media='Video')
 
@@ -349,7 +355,27 @@ session.set_mandatory_words(['#food', '#instafood'])
 ```
 
 `.set_mandatory_words` searches the description, location and owner comments for words and
-will like the image if **any** of those words are in there
+will like the image if the mandatory words condition is met.  
+The mandatory words list can be a simple list of words or a nested structure of lists within lists.   
+* When using a simple word list the condition between the words is "OR" so if any of the words from the list exists in 
+the image text it will be matched.   
+* When using a nested list of lists the top level list condition is "OR" and the condition alternates between "AND" 
+and "OR" with every nesting level.
+
+For example:
+~~~
+     # either "icecave" or "ice_cave" will satisfy this:
+     ["icecave", "ice_cave"]
+    
+    # either "high_mountain" OR ("high" AND "mountain") will satisfy this:
+    ["high_mountain", ["high", "mountain"]]
+
+    # Only ("high" AND "tide" together) will satisfy this:
+    [["high", "tide"]]
+
+    # Only "summer" AND ("lake" OR "occean") will satisfy this:
+    [["summer", ["lake", "occean"]]
+~~~
 
 ### Mandatory Language
 
@@ -402,7 +428,7 @@ session.set_simulation(enabled=True, percentage=66)
 ```
 
 
-### Skipping user for private account, no profile picture, business account
+### Skipping user for private account, no profile picture, business account, bio keywords
 
 #### This is used to skip users with certain condition
 ```python
@@ -411,10 +437,12 @@ session.set_skip_users(skip_private=True,
                        skip_no_profile_pic=False,
                        no_profile_pic_percentage=100,
                        skip_business=False,
-		       skip_non_business=False,
+                       skip_non_business=False,
                        business_percentage=100,
                        skip_business_categories=[],
-                       dont_skip_business_categories=[])
+                       dont_skip_business_categories=[],
+                       skip_bio_keyword=[],
+                       mandatory_bio_keywords=[])
 ```
 ##### Skip private account
 **This is done by default**
@@ -444,8 +472,8 @@ You can set a percentage of skipping:
 ```python
 session.set_skip_users(skip_private=True,
                        skip_no_profile_pic=True,
-		               skip_business=True,
-		               business_percentage=100)
+                       skip_business=True,
+                       business_percentage=100)
 ```
 This will skip all users that have business account activated.
 You can set a percentage of skipping:
@@ -458,8 +486,8 @@ You can set a percentage of skipping:
 ```python
 session.set_skip_users(skip_private=True,
                        skip_no_profile_pic=True,
-		       skip_business=True,
-		       skip_business_categories=['Creators & Celebrities'])
+                       skip_business=True,
+                       skip_business_categories=['Creators & Celebrities'])
 ```
 This will skip all business accounts that have category in given list
 **N.B.** In _skip_business_categories_ you can add more than one category
@@ -468,8 +496,8 @@ This will skip all business accounts that have category in given list
 ```python
 session.set_skip_users(skip_private=True,
                        skip_no_profile_pic=True,
-		       skip_business=True,
-		       dont_skip_business_categories=['Creators & Celebrities'])
+                       skip_business=True,
+                       dont_skip_business_categories=['Creators & Celebrities'])
 ```
 This will skip all business accounts except the ones that have a category that matches one item in the list of _dont_skip_business_categories_
 **N.B.** If both _dont_skip_business_categories_ and _skip_business_categories_, InstaPy will skip only business accounts in the list given from _skip_business_categories_.
@@ -484,7 +512,15 @@ This will skip all business accounts except the ones that have a category that m
                         skip_non_business=True,
                         dont_skip_business_categories=['Creators & Celebrities'])
  ```
- Thiw will skip all non business and business accounts except categories in _dont_skip_business_categories_.
+ This will skip all non business and business accounts except categories in _dont_skip_business_categories_.
+
+###### Skip based on bio keywords
+```python
+session.set_skip_users(skip_bio_keyword=["lifestyle"],
+                       mandatory_bio_keywords=["art", "photography"])
+```
+This will skip users that have "lifestyle" and users that don't have "art" or "photography" in their bio or username.
+See the [Mandatory Words](#mandatory-words) section for details on how to define complex mandatory words conditions.  
 
 ### Liking based on the number of existing likes a post has
 ##### This is used to check the number of existing likes a post has and if it _either_ **exceed** the _maximum_ value set OR **does not pass** the _minimum_ value set then it will not like that post
@@ -1271,14 +1307,6 @@ session.remove_follow_requests(amount=200, sleep_delay=600)
 
  `engagement_mode`:
  Desided engagement mode for your posts. There are four levels of engagement modes 'no_comments', 'light', 'normal' and 'heavy'(`normal` by default). Setting engagement_mode to 'no_comments' makes you receive zero comments on your posts from pod members, 'light' encourages approximately 10% of pod members to comment on your post, similarly it's around 30% and 90% for 'normal' and 'heavy' modes respectively. Note: Liking, following or any other kind of engagements doesn't follow these modes.
-
-### Skip based on profile bio
-
-```python
-session.set_skip_users(skip_bio_keyword = ['free shipping',' Order', 'visa', 'paypal'])
-```
-
-This will skip all users that have one these keywords on their bio.
 
 ### Instapy Stories
 
