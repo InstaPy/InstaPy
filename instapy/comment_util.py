@@ -130,8 +130,6 @@ def comment_image(browser, username, comments, blacklist, logger, logfolder):
     except WebDriverException as ex:
         logger.error(ex)
 
-
-
     logger.info("--> Commented: {}".format(rand_comment.encode("utf-8")))
     Event().commented(username)
 
@@ -175,10 +173,9 @@ def verify_commenting(browser, maximum, minimum, logger):
     return True, "Approval"
 
 
-
-
-
-def verify_mandatory_words(mand_words, comments, browser, logger,):
+def verify_mandatory_words(
+    mand_words, comments, browser, logger,
+):
     if len(mand_words) > 0 or isinstance(comments[0], dict):
         try:
             post_desc = browser.execute_script(
@@ -218,11 +215,21 @@ def verify_mandatory_words(mand_words, comments, browser, logger,):
         if isinstance(comments[0], dict):
             # The comments definition is a compound definition of conditions and comments
             for compund_comment in comments:
-                if 'mandatory_words' not in compund_comment or evaluate_mandatory_words(text, compund_comment['mandatory_words']):
-                    return True, compund_comment['comments'], "Approval"
-            return False, [], "Coulnd't match the mandatory words in any comment definition"
+                if (
+                    "mandatory_words" not in compund_comment
+                    or evaluate_mandatory_words(
+                        text, compund_comment["mandatory_words"]
+                    )
+                ):
+                    return True, compund_comment["comments"], "Approval"
+            return (
+                False,
+                [],
+                "Coulnd't match the mandatory words in any comment definition",
+            )
 
     return True, comments, "Approval"
+
 
 def get_comments_on_post(
     browser, owner, poster, amount, post_link, ignore_users, randomize, logger

@@ -94,13 +94,14 @@ def is_private_profile(browser, logger, following=True):
 
     return is_private
 
+
 # Evaluate a mandatory words list against a text
 def evaluate_mandatory_words(text, mandatory_words_list, level=0):
     if level % 2 == 0:
         # this is an "or" level so at least one of the words of compound sub-conditions should match
         for word in mandatory_words_list:
             if isinstance(word, list):
-                res = evaluate_mandatory_words(text, word, level+1)
+                res = evaluate_mandatory_words(text, word, level + 1)
                 if res:
                     return True
             elif word.lower() in text:
@@ -110,12 +111,13 @@ def evaluate_mandatory_words(text, mandatory_words_list, level=0):
         # this is an "and" level so all of the words and compound sub-conditions must match
         for word in mandatory_words_list:
             if isinstance(word, list):
-                res = evaluate_mandatory_words(text, word, level+1)
+                res = evaluate_mandatory_words(text, word, level + 1)
                 if not res:
                     return False
             elif word.lower() not in text:
                 return False
         return True
+
 
 def validate_username(
     browser,
@@ -447,9 +449,10 @@ def validate_username(
                     ),
                 )
         # the mandatory keywords applies to the username as well as the bio text
-        if not evaluate_mandatory_words(username + " " + profile_bio, mandatory_bio_keywords):
+        if not evaluate_mandatory_words(
+            username + " " + profile_bio, mandatory_bio_keywords
+        ):
             return False, "Mandatory bio keywords not found"
-
 
     # if everything is ok
     return True, "Valid user"
