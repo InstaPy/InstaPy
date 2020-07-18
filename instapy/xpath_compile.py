@@ -142,8 +142,8 @@ xpath["like_comment"] = {
 }
 
 xpath["like_image"] = {
-    "like": "//section/span/button[*[local-name()='svg']/@aria-label='Like']",
-    "unlike": "//section/span/button[*[local-name()='svg']/@aria-label='Unlike']",
+    "like": "//section/span/button/div[*[local-name()='svg']/@aria-label='Like']",
+    "unlike": "//section/span/button/div[*[local-name()='svg']/@aria-label='Unlike']",
 }
 
 xpath["like_from_image"] = {
@@ -167,7 +167,7 @@ xpath["login_user"] = {
 }
 
 xpath["open_comment_section"] = {
-    "comment_elem": "//button[*[local-name()='svg']/@aria-label='Comment']"
+    "comment_elem": "//button/div[*[local-name()='svg']/@aria-label='Comment']"
 }
 
 xpath["unfollow"] = {
