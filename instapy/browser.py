@@ -109,6 +109,11 @@ def set_selenium_local_session(
 
     # mute audio while watching stories
     firefox_profile.set_preference("media.volume_scale", "0.0")
+    # prevent  Hide Selenium Extension: error
+    firefox_profile.set_preference('dom.webdriver.enabled', False)
+    firefox_profile.set_preference('useAutomationExtension', False)
+    firefox_profile.set_preference('general.platform.override', 'iPhone')
+    firefox_profile.update_preferences()
 
     # prefer user path before downloaded one
     driver_path = geckodriver_path or get_geckodriver()
