@@ -12,7 +12,8 @@ _The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 ### Changed 
 - Update xpath for like/unlike and comment
-- Fix like_by_feed() xpath
+- Fix `like_by_feed()` xpath
+- `get_like_on_feed()` improve function readability
 
 ### Fixed
 - "UnboundLocalError: local variable 'commenting_approved' referenced before assignment" error when bot tries to comment
