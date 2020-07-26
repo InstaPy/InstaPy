@@ -747,7 +747,7 @@ class InstaPy:
                 bbox["lat_max"],
                 radius,
             )
-            url = "https://query.displaypurposes.com/local/?bbox={}".format(bbox_url)
+            url = "https://displaypurposes.com/local/?bbox={}".format(bbox_url)
 
             req = requests.get(url)
             data = json.loads(req.text)
