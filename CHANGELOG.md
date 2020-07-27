@@ -19,7 +19,8 @@ _The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 - "UnboundLocalError: local variable 'commenting_approved' referenced before assignment" error when bot tries to comment
 - Typo updating configuration object. Changed nofity into notify
 - Add specific firefox preference agent data to prevent error
-- Smart location url 
+- Smart location url
+- Invalid like element issue and crashing when trying to comment on disable comment post.
 
 
 ## [0.6.9] - 2020-06-12
