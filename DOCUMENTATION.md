@@ -1,5 +1,8 @@
 # Documentation
 
+**InstaPy is being sponsored by the following partner. Please help to support us by taking a look and signing up to a free trial 😊**
+<a href="https://tracking.gitads.io/?repo=InstaPy"> <img src="https://images.gitads.io/InstaPy" alt="GitAds"/> </a>
+
 ### Table of Contents
 - **[Settings](#settings)**
   - [Liking](#liking)
@@ -18,13 +21,14 @@
   - [Don't unfollow active users](#dont-unfollow-active-users)
   - [Blacklist Campaign](#blacklist-campaign)
   - [Simulation](#simulation)
-  - [Skipping user for private account, no profile picture, business account](#skipping-user-for-private-account-no-profile-picture-business-account)
+  - [Skipping user for private account, no profile picture, business account, bio keywords](#skipping-user-for-private-account-no-profile-picture-business-account-bio-keywords)
   - [Liking based on the number of existing likes a post has](#liking-based-on-the-number-of-existing-likes-a-post-has)
   - [Commenting based on the number of existing comments a post has](#commenting-based-on-the-number-of-existing-comments-a-post-has)
   - [Commenting based on mandatory words in the description or first comment](#commenting-based-on-mandatory-words-in-the-description-or-first-comment)
   - [Interactions based on the number of followers and/or following a user has](#interactions-based-on-the-number-of-followers-andor-following-a-user-has)
   - [Interactions based on the number of posts a user has](#interactions-based-on-the-number-of-posts-a-user-has)
   - [Custom action delays](#custom-action-delays)
+  - [Target Lists](#target-lists)
   
  <br />
 
@@ -50,7 +54,6 @@
   - [Interact by Comments](#interact-by-comments)
   - [Accept pending follow requests](#accept-pending-follow-requests)
   - [Remove outgoing follow requests](#remove-outgoing-follow-requests)
-  - [Skip based on Profile Bio](#skip-based-on-profile-bio)
   - [InstaPy Pods](#instapy-pods)
   - [InstaPy Stories](#instapy-stories)
   
@@ -70,6 +73,7 @@
   - [Running internet connection checks](#running-internet-connection-checks)
   - [Use a proxy](#use-a-proxy)
   - [Running in threads](#running-in-threads)
+  - [Choose the browser version](#choose-the-browser-version)
   
  <br />
 
@@ -112,7 +116,7 @@
 ## Settings
 ### Liking
 This method is only needed for the `interact_by_...` actions.   
-Posts will liked by default when using `like_by_...` actions.
+Posts will be liked by default when using `like_by_...` actions.
 
 ```python
 # ~70% of the by InstaPy viewed posts will be liked
@@ -124,13 +128,41 @@ session.set_do_like(enabled=True, percentage=70)
 ### Commenting
 
 ```python
-# default enabled=False, ~ every 4th image will be commented on
+# enable comments (by default enabled=False) and set commenting probability to 25% so ~ every 4th image will be commented on
 
 session.set_do_comment(enabled=True, percentage=25)
+```
+``` python
+# Configure a simple list of optional comments, one will be selected at random when commenting:
 session.set_comments(['Awesome', 'Really Cool', 'I like your stuff'])
+```
 
-# you can also set comments for specific media types (Photo / Video)
+Or configure conditional comments to provide a more contextual commenting based on the caption of the image:
+Conditional comments are created as a list of dictionaries, each one contains a definition of 
+[mandatory words](#mandatory-words) and a list of comments. 
+The list of conditional comments is scanned until the first item that satisfies the mandatory words condition is found 
+and then one of the comments associated with that item is selected at random to be used.  
+This can best be understood with an example:
+``` python
+comments=[
+    # either "icecave" OR "ice_cave" will satisfy this:
+    {'mandatory_words': ["icecave", "ice_cave"], 'comments': ["Nice shot. Ice caves are amazing", "Cool. Aren't ice caves just amazing?"]},
+    
+    # either "high_mountain" OR ("high" AND "mountain") will satisfy this:
+    {'mandatory_words': ["high_mountain", ["high", "mountain"]], 'comments': ["I just love high mountains"]},
 
+    # Only ("high" AND "tide" together) will satisfy this:
+    {'mandatory_words': [["high", "tide"]], 'comments': ["High tides are better than low"]}
+
+    # Only "summer" AND ("lake" OR "occean") will satisfy this:
+    {'mandatory_words': [["summer", ["lake", "occean"]], 'comments': ["Summer fun"]}
+
+]
+session.set_comments(comments)
+```
+
+You can also set comments for specific media types (Photo / Video)
+``` python
 session.set_comments(['Nice shot!'], media='Photo')
 session.set_comments(['Great Video!'], media='Video')
 
@@ -323,7 +355,27 @@ session.set_mandatory_words(['#food', '#instafood'])
 ```
 
 `.set_mandatory_words` searches the description, location and owner comments for words and
-will like the image if **any** of those words are in there
+will like the image if the mandatory words condition is met.  
+The mandatory words list can be a simple list of words or a nested structure of lists within lists.   
+* When using a simple word list the condition between the words is "OR" so if any of the words from the list exists in 
+the image text it will be matched.   
+* When using a nested list of lists the top level list condition is "OR" and the condition alternates between "AND" 
+and "OR" with every nesting level.
+
+For example:
+~~~
+     # either "icecave" or "ice_cave" will satisfy this:
+     ["icecave", "ice_cave"]
+    
+    # either "high_mountain" OR ("high" AND "mountain") will satisfy this:
+    ["high_mountain", ["high", "mountain"]]
+
+    # Only ("high" AND "tide" together) will satisfy this:
+    [["high", "tide"]]
+
+    # Only "summer" AND ("lake" OR "occean") will satisfy this:
+    [["summer", ["lake", "occean"]]
+~~~
 
 ### Mandatory Language
 
@@ -376,7 +428,7 @@ session.set_simulation(enabled=True, percentage=66)
 ```
 
 
-### Skipping user for private account, no profile picture, business account
+### Skipping user for private account, no profile picture, business account, bio keywords
 
 #### This is used to skip users with certain condition
 ```python
@@ -385,10 +437,12 @@ session.set_skip_users(skip_private=True,
                        skip_no_profile_pic=False,
                        no_profile_pic_percentage=100,
                        skip_business=False,
-		       skip_non_business=False,
+                       skip_non_business=False,
                        business_percentage=100,
                        skip_business_categories=[],
-                       dont_skip_business_categories=[])
+                       dont_skip_business_categories=[],
+                       skip_bio_keyword=[],
+                       mandatory_bio_keywords=[])
 ```
 ##### Skip private account
 **This is done by default**
@@ -418,8 +472,8 @@ You can set a percentage of skipping:
 ```python
 session.set_skip_users(skip_private=True,
                        skip_no_profile_pic=True,
-		               skip_business=True,
-		               business_percentage=100)
+                       skip_business=True,
+                       business_percentage=100)
 ```
 This will skip all users that have business account activated.
 You can set a percentage of skipping:
@@ -432,8 +486,8 @@ You can set a percentage of skipping:
 ```python
 session.set_skip_users(skip_private=True,
                        skip_no_profile_pic=True,
-		       skip_business=True,
-		       skip_business_categories=['Creators & Celebrities'])
+                       skip_business=True,
+                       skip_business_categories=['Creators & Celebrities'])
 ```
 This will skip all business accounts that have category in given list
 **N.B.** In _skip_business_categories_ you can add more than one category
@@ -442,8 +496,8 @@ This will skip all business accounts that have category in given list
 ```python
 session.set_skip_users(skip_private=True,
                        skip_no_profile_pic=True,
-		       skip_business=True,
-		       dont_skip_business_categories=['Creators & Celebrities'])
+                       skip_business=True,
+                       dont_skip_business_categories=['Creators & Celebrities'])
 ```
 This will skip all business accounts except the ones that have a category that matches one item in the list of _dont_skip_business_categories_
 **N.B.** If both _dont_skip_business_categories_ and _skip_business_categories_, InstaPy will skip only business accounts in the list given from _skip_business_categories_.
@@ -458,7 +512,15 @@ This will skip all business accounts except the ones that have a category that m
                         skip_non_business=True,
                         dont_skip_business_categories=['Creators & Celebrities'])
  ```
- Thiw will skip all non business and business accounts except categories in _dont_skip_business_categories_.
+ This will skip all non business and business accounts except categories in _dont_skip_business_categories_.
+
+###### Skip based on bio keywords
+```python
+session.set_skip_users(skip_bio_keyword=["lifestyle"],
+                       mandatory_bio_keywords=["art", "photography"])
+```
+This will skip users that have "lifestyle" and users that don't have "art" or "photography" in their bio or username.
+See the [Mandatory Words](#mandatory-words) section for details on how to define complex mandatory words conditions.  
 
 ### Liking based on the number of existing likes a post has
 ##### This is used to check the number of existing likes a post has and if it _either_ **exceed** the _maximum_ value set OR **does not pass** the _minimum_ value set then it will not like that post
@@ -515,7 +577,8 @@ This feature is helpful when you want to comment only on specific tags.
 ```python
 session.set_delimit_commenting(enabled=True, comments_mandatory_words=['cat', 'dog'])
 ```
-> This will only comment on posts that contain either cat or dog in the post description or first comment.
+> This will only comment on posts that contain **either** cat or dog in the post description or first comment.
+> You can also require sets of words. See the [Commenting](#commenting) section for detains on how to do that 
 
 
 ### Interactions based on the number of followers and/or following a user has
@@ -629,6 +692,35 @@ session.set_action_delays(enabled=True, like=0.15, safety_match=False)
 ```
 _It has been held due to safety considerations. Cos sleeping a respective time after doing actions- for example ~`10` seconds after an unfollow, is very important to avoid possible temporary blocks and if you might enter e.g. `3` seconds for that without realizing the outcome..._
 
+
+### Target Lists
+#### This is used to parse text files containing target lists of users, hashtags, comments etc
+For example:
+```python
+# Like posts based on hashtags
+hashtags = session.target_list("C:\\Users\\......\\hashtags.txt")
+session.like_by_tags(hashtags, amount=10)
+
+# Follow the followers of each given user
+users = session.target_list("C:\\Users\\......\\users.txt")
+session.follow_user_followers(users, amount=10, randomize=False)
+```
+Note that your text file should look like this:
+```
+hashtag1
+hashtag2
+hashtag3
+```
+or
+```
+user1
+user2
+user3
+```
+Functions you can use ```target_list``` with:
+
+```story_by_user```, ```story_by_tag```, ```like_by_tags```, ```follow_by_tags```, ```follow_user_followers```, ```follow_user_following```, ```follow_likers```, ```follow_commenters```, ```follow_by_list```, ```set_skip_users```, ```set_ignore_users```, ```set_dont_include```, ```interact_by_users```, ```interact_by_users_tagged_posts```, ```interact_user_followers```, ```interact_user_following```, ```interact_by_comments```, ```set_comments```, ```set_comment_replies```, ```set_mandatory_words```, ```unfollow_users```
+
 ---
 
 <br /> 
@@ -734,9 +826,9 @@ session.follow_by_tags(['tag1', 'tag2'], amount=10)
 
   `skip_top_posts`: Determines whether the first 9 top users of posts should be followed or not (default is True)
 
-  `use_smart_hashtags`: Make use of the [smart hashtag feature]()
+  `use_smart_hashtags`: Make use of the [smart hashtag feature](#smart-hashtags)
 
-  `use_smart_location_hashtags`: Make use of the [smart location hashtag feature]()
+  `use_smart_location_hashtags`: Make use of the [smart location hashtag feature](#smart-location-hashtags)
 
   `interact`: Defines whether the users of the given post should also be interacted with (needs `set_user_interact` to be also set)
 
@@ -1215,14 +1307,6 @@ session.remove_follow_requests(amount=200, sleep_delay=600)
 
  `engagement_mode`:
  Desided engagement mode for your posts. There are four levels of engagement modes 'no_comments', 'light', 'normal' and 'heavy'(`normal` by default). Setting engagement_mode to 'no_comments' makes you receive zero comments on your posts from pod members, 'light' encourages approximately 10% of pod members to comment on your post, similarly it's around 30% and 90% for 'normal' and 'heavy' modes respectively. Note: Liking, following or any other kind of engagements doesn't follow these modes.
-
-### Skip based on profile bio
-
-```python
-session.set_skip_users(skip_bio_keyword = ['free shipping',' Order', 'visa', 'paypal'])
-```
-
-This will skip all users that have one these keywords on their bio.
 
 ### Instapy Stories
 
@@ -1799,7 +1883,19 @@ session.login()
 session.end(threaded_session=True)
 ```
 
+### Choose the browser version
+If you have more than one Firefox version on your system or if you are using a portable version you can instruct InstaPy to use that version using the `browser_executable_path` argument in the class initializer.
 
+Specifying the Firefox executable path can also help you if you are getting the following error message:
+
+`selenium.common.exceptions.SessionNotCreatedException: Message: Unable to find a matching set of capabilities`
+
+example on a Windows machine (with the right path also works on Linux and MAC)
+```python
+session = InstaPy(username=insta_username,
+                  password=insta_password,
+                  browser_executable_path=r"D:\Program Files\Mozilla Firefox\firefox.exe")
+```
 
 ---
 

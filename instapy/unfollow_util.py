@@ -55,7 +55,7 @@ def set_automated_followed_pool(
     delay_followbackers,
     pool="followedPool",
 ):
-    """ Generare a user list based on the InstaPy followed usernames """
+    """ Generate a user list based on the InstaPy followed usernames """
     pool_name = "{0}{1}_{2}.csv".format(logfolder, username, pool)
     automatedFollowedPool = {"all": {}, "eligible": {}}
     time_stamp = None
@@ -764,7 +764,7 @@ def get_users_through_dialog_with_graphql(
             "after": end_cursor,
         }
         url = "{}&variables={}".format(graphql_query_URL, str(json.dumps(variables)))
-        browser.get("view-source:{}".format(url))
+        browser.get(url)
         pre = browser.find_element_by_tag_name("pre")
         # response to JSON object
         data = json.loads(pre.text)

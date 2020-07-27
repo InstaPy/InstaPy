@@ -12,8 +12,8 @@ from .util import get_action_delay
 from .util import explicit_wait
 from .util import extract_text_from_element
 from .util import web_address_navigator
+from .util import evaluate_mandatory_words
 from .event import Event
-from .like_util import get_media_edge_comment_string
 from .quota_supervisor import quota_supervisor
 from .xpath import read_xpath
 
@@ -148,6 +148,8 @@ def comment_image(browser, username, comments, blacklist, logger, logfolder):
             "\t~encountered `InvalidElementStateException` :/"
         )
         return False, "invalid element state"
+    except WebDriverException as ex:
+        logger.error(ex)
 
     logger.info("--> Commented: {}".format(rand_comment.encode("utf-8")))
     Event().commented(username)
@@ -159,7 +161,7 @@ def comment_image(browser, username, comments, blacklist, logger, logfolder):
     return True, "success"
 
 
-def verify_commenting(browser, maximum, minimum, mand_words, logger):
+def verify_commenting(browser, maximum, minimum, logger):
     """
      Get the amount of existing existing comments and
     compare it against maximum & minimum values defined by user
@@ -189,11 +191,17 @@ def verify_commenting(browser, maximum, minimum, mand_words, logger):
         )
         return False, disapproval_reason
 
-    if len(mand_words) != 0:
+    return True, "Approval"
+
+
+def verify_mandatory_words(
+    mand_words, comments, browser, logger,
+):
+    if len(mand_words) > 0 or isinstance(comments[0], dict):
         try:
             post_desc = browser.execute_script(
-                "return window._sharedData.entry_data."
-                "PostPage[0].graphql.shortcode_media."
+                "return window.__additionalData[Object.keys(window.__additionalData)[0]].data."
+                "graphql.shortcode_media."
                 "edge_media_to_caption.edges[0]['node']['text']"
             ).lower()
 
@@ -202,26 +210,46 @@ def verify_commenting(browser, maximum, minimum, mand_words, logger):
 
         try:
             first_comment = browser.execute_script(
-                "return window._sharedData.entry_data."
-                "PostPage[0].graphql.shortcode_media."
-                "edge_media_to_comment.edges[0]['node']['text']"
+                "return window.__additionalData[Object.keys(window.__additionalData)[0]].data."
+                "graphql.shortcode_media."
+                "edge_media_to_parent_comment.edges[0]['node']['text']"
             ).lower()
 
         except Exception:
             first_comment = None
 
-        if (
-            post_desc is not None
-            and not any(mand_word.lower() in post_desc for mand_word in mand_words)
-        ) or (
-            first_comment is not None
-            and not any(mand_word.lower() in first_comment for mand_word in mand_words)
-        ):
-            return False, "mandantory words not in post desc"
         if post_desc is None and first_comment is None:
-            return False, "couldn't get post description and comments"
+            return False, [], "couldn't get post description and comments"
 
-    return True, "Approval"
+        text = (
+            post_desc
+            if post_desc is not None
+            else "" + " " + first_comment
+            if first_comment is not None
+            else ""
+        )
+
+        if len(mand_words) > 0:
+            if not evaluate_mandatory_words(text, mand_words):
+                return False, [], "mandatory words not in post desc"
+
+        if isinstance(comments[0], dict):
+            # The comments definition is a compound definition of conditions and comments
+            for compund_comment in comments:
+                if (
+                    "mandatory_words" not in compund_comment
+                    or evaluate_mandatory_words(
+                        text, compund_comment["mandatory_words"]
+                    )
+                ):
+                    return True, compund_comment["comments"], "Approval"
+            return (
+                False,
+                [],
+                "Coulnd't match the mandatory words in any comment definition",
+            )
+
+    return True, comments, "Approval"
 
 
 def get_comments_on_post(
@@ -337,8 +365,8 @@ def is_commenting_enabled(browser, logger):
 
     try:
         comments_disabled = browser.execute_script(
-            "return window._sharedData.entry_data."
-            "PostPage[0].graphql.shortcode_media.comments_disabled"
+            "return window.__additionalData[Object.keys(window.__additionalData)[0]].data"
+            ".graphql.shortcode_media.comments_disabled"
         )
 
     except WebDriverException:
@@ -347,15 +375,15 @@ def is_commenting_enabled(browser, logger):
             update_activity(browser, state=None)
 
             comments_disabled = browser.execute_script(
-                "return window._sharedData.entry_data."
-                "PostPage[0].graphql.shortcode_media.comments_disabled"
+                "return window.__additionalData[Object.keys(window.__additionalData)[0]].data"
+                ".graphql.shortcode_media.comments_disabled"
             )
 
         except Exception as e:
             msg = "Failed to check comments' status for verification!\n\t{}".format(
                 str(e).encode("utf-8")
             )
-            return False, "Failure"
+            return False, msg
 
     if comments_disabled is True:
         msg = "Comments are disabled for this post."
@@ -367,32 +395,75 @@ def is_commenting_enabled(browser, logger):
 def get_comments_count(browser, logger):
     """ Get the number of total comments in the post """
     try:
-        media = browser.execute_script(
-            "return window._sharedData.entry_data."
-            "PostPage[0].graphql.shortcode_media"
+        comments_count = browser.execute_script(
+            "return window.__additionalData[Object.keys(window.__additionalData)[0]].data"
+            ".graphql.shortcode_media.edge_media_preview_comment.count"
         )
 
-        media_edge_string = get_media_edge_comment_string(media)
-        comments_count = media[media_edge_string]["count"]
+        # media_edge_string = get_media_edge_comment_string(media)
+        # comments_count = media[media_edge_string]["count"]
 
     except Exception as e:
         try:
             comments_count = browser.execute_script(
-                "return window._sharedData.entry_data."
-                "PostPage[0].graphql.shortcode_media."
-                "edge_media_preview_comment.count"
+                "return window.__additionalData[Object.keys(window.__additionalData)[0]].data"
+                ".graphql.shortcode_media.edge_media_preview_comment.count"
             )
 
         except Exception as e:
             msg = "Failed to get comments' count!\n\t{}".format(str(e).encode("utf-8"))
             return None, msg
 
-    if not comments_count:
-        if comments_count == 0:
-            msg = "There are no any comments in the post."
-            return 0, msg
-        else:
-            msg = "Couldn't get comments' count."
-            return None, msg
+    # if not comments_count:
+    #     if comments_count == 0:
+    #         msg = "There are no any comments in the post."
+    #         return 0, msg
+    #     else:
+    #         msg = "Couldn't get comments' count."
+    #         return None, msg
 
     return comments_count, "Success"
+
+
+def process_comments(
+    comments,
+    clarifai_comments,
+    delimit_commenting,
+    max_comments,
+    min_comments,
+    comments_mandatory_words,
+    user_name,
+    blacklist,
+    browser,
+    logger,
+    logfolder,
+    publish=True,
+):
+
+    # comments
+    if delimit_commenting:
+        (commenting_approved, disapproval_reason,) = verify_commenting(
+            browser, max_comments, min_comments, logger,
+        )
+        if not commenting_approved:
+            logger.info(disapproval_reason)
+            return False
+
+    (
+        commenting_approved,
+        selected_comments,
+        disapproval_reason,
+    ) = verify_mandatory_words(comments_mandatory_words, comments, browser, logger,)
+    if not commenting_approved:
+        logger.info(disapproval_reason)
+        return False
+
+    if len(clarifai_comments) > 0:
+        selected_comments = clarifai_comments
+
+    # smart commenting
+    if comments and publish:
+        comment_state, msg = comment_image(
+            browser, user_name, selected_comments, blacklist, logger, logfolder,
+        )
+        return comment_state

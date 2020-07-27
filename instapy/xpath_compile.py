@@ -106,7 +106,7 @@ xpath["get_links_for_location"] = {
     "main_elem": "//main/article/div[2]",
 }
 
-xpath["get_links_from_feed"] = {"get_links": "//article/div[2]/div[2]/a"}
+xpath["get_links_from_feed"] = {"get_links": "//article/div[3]/div[2]/a"}
 
 xpath["get_links_for_tag"] = {
     "top_elements": "//main/article/div[1]",
@@ -142,8 +142,8 @@ xpath["like_comment"] = {
 }
 
 xpath["like_image"] = {
-    "like": "//button[@class='wpO6b ']//div//*[@aria-label='Like']",
-    "unlike": "//button[@class='wpO6b ']//div//*[@aria-label='Unlike']",
+    "like": "//button[@class='wpO6b']//div//*[@aria-label='Like']",
+    "unlike": "//button[@class='wpO6b']//div//*[@aria-label='Unlike']",
 }
 
 xpath["like_from_image"] = {
@@ -155,6 +155,7 @@ xpath["login_user"] = {
     "input_username_XP": "//input[@name='username']",
     "login_elem": "//button[text()='Log In']",
     "login_elem_no_such_exception": "//a[text()='Log in']",
+    "login_elem_no_such_exception_2": "//div[text()='Log In']",
     "nav": "//nav",
     "website_status": "//span[@id='status']",
     "response_time": "//span[@id='response']",
@@ -166,7 +167,7 @@ xpath["login_user"] = {
 }
 
 xpath["open_comment_section"] = {
-    "comment_elem": "//span[@class=\"_15y0l\"]//button"
+    "comment_elem": "//button/div[*[local-name()='svg']/@aria-label='Comment']"
 }
 
 xpath["unfollow"] = {
