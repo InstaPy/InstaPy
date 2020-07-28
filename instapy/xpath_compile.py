@@ -106,7 +106,7 @@ xpath["get_links_for_location"] = {
     "main_elem": "//main/article/div[2]",
 }
 
-xpath["get_links_from_feed"] = {"get_links": "//article/div[2]/div[2]/a"}
+xpath["get_links_from_feed"] = {"get_links": "//article/div[3]/div[2]/a"}
 
 xpath["get_links_for_tag"] = {
     "top_elements": "//main/article/div[1]",
@@ -142,8 +142,8 @@ xpath["like_comment"] = {
 }
 
 xpath["like_image"] = {
-    "like": "//section/span/button[*[local-name()='svg']/@aria-label='Like']",
-    "unlike": "//section/span/button[*[local-name()='svg']/@aria-label='Unlike']",
+    "like": "//section/span/button/div[*[local-name()='svg']/@aria-label='Like']",
+    "unlike": "//section/span/button/div[*[local-name()='svg']/@aria-label='Unlike']",
 }
 
 xpath["like_from_image"] = {
@@ -167,7 +167,7 @@ xpath["login_user"] = {
 }
 
 xpath["open_comment_section"] = {
-    "comment_elem": "//button[*[local-name()='svg']/@aria-label='Comment']"
+    "comment_elem": "//button/div[*[local-name()='svg']/@aria-label='Comment']"
 }
 
 xpath["unfollow"] = {

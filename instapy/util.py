@@ -95,6 +95,30 @@ def is_private_profile(browser, logger, following=True):
     return is_private
 
 
+# Evaluate a mandatory words list against a text
+def evaluate_mandatory_words(text, mandatory_words_list, level=0):
+    if level % 2 == 0:
+        # this is an "or" level so at least one of the words of compound sub-conditions should match
+        for word in mandatory_words_list:
+            if isinstance(word, list):
+                res = evaluate_mandatory_words(text, word, level + 1)
+                if res:
+                    return True
+            elif word.lower() in text:
+                return True
+        return False
+    else:
+        # this is an "and" level so all of the words and compound sub-conditions must match
+        for word in mandatory_words_list:
+            if isinstance(word, list):
+                res = evaluate_mandatory_words(text, word, level + 1)
+                if not res:
+                    return False
+            elif word.lower() not in text:
+                return False
+        return True
+
+
 def validate_username(
     browser,
     username_or_link,
@@ -119,6 +143,7 @@ def validate_username(
     skip_business_categories,
     dont_skip_business_categories,
     skip_bio_keyword,
+    mandatory_bio_keywords,
     logger,
     logfolder,
 ):
@@ -408,21 +433,26 @@ def validate_username(
                         ),
                     )
 
-    if len(skip_bio_keyword) != 0:
+    if len(skip_bio_keyword) > 0 or len(mandatory_bio_keywords) > 0:
         # if contain stop words then skip
         try:
-            profile_bio = getUserData("graphql.user.biography", browser)
+            profile_bio = getUserData("graphql.user.biography", browser).lower()
         except WebDriverException:
             logger.error("~cannot get user bio")
             return False, "---> Sorry, couldn't get get user bio " "account active\n"
         for bio_keyword in skip_bio_keyword:
-            if bio_keyword.lower() in profile_bio.lower():
+            if bio_keyword.lower() in profile_bio:
                 return (
                     False,
                     "{} has a bio keyword of {}, by default skip\n".format(
                         username, bio_keyword
                     ),
                 )
+        # the mandatory keywords applies to the username as well as the bio text
+        if not evaluate_mandatory_words(
+            username + " " + profile_bio, mandatory_bio_keywords
+        ):
+            return False, "Mandatory bio keywords not found"
 
     # if everything is ok
     return True, "Valid user"
