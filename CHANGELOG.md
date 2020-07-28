@@ -20,7 +20,7 @@ _The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 - Typo updating configuration object. Changed nofity into notify
 - Add specific firefox preference agent data to prevent error
 - Smart location url 
-
+- Error "Hide Selenium Extension: Error" mentioned in #5304
 
 ## [0.6.9] - 2020-06-12
 
