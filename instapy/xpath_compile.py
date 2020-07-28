@@ -38,7 +38,7 @@ xpath["dismiss_notification_offer"] = {
 xpath["extract_information"] = {
     "close_overlay": "//div/div[@role='dialog']",
     "one_pic_elem": "//section/main/article/div[1]/div/div[10]/div[3]/a/div",
-    "like_element": "//section/main/article/div[1]/div/div[10]/div[3]/a/div",
+    "like_element": "//a[@role='button']/span[text()='Like']/..",
 }
 
 xpath["extract_post_info"] = {
