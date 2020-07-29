@@ -16,15 +16,14 @@ set_workspace(path=None)
 
 # get an InstaPy session!
 # set headless_browser=True to run InstaPy in the background
-session = InstaPy(username=insta_username,
-                  password=insta_password)
+session = InstaPy(username="insta_username", password="insta_password")
 
 with smart_run(session):
     # activity
     session.like_by_tags(["siouxfalls"], amount=10)
     session.like_by_feed(amount=20, randomize=True, unfollow=False, interact=True)
-    session.like_by_locations(['213512618'], amount=10, skip_top_posts=True)
+    session.like_by_locations(["213512618"], amount=10, skip_top_posts=True)
 
     #stories
     session.set_do_story(enabled=True, percentage=70, simulate=True)
-    session.story_by_tags(['siouxfalls'])
+    session.story_by_tags(["siouxfalls"])
