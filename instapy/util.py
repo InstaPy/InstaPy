@@ -1610,7 +1610,7 @@ def find_user_id(browser, track, username, logger):
 
     elif track == "post":
         query = (
-            "return window.__additionalData[Object.keys(window.__additionalData)[0]].data.graphql.shortcode_media.owner.id"
+            "return window._sharedData.entry_data.ProfilePage[0].graphql.user.id"
         )
         meta_XP = read_xpath(find_user_id.__name__, "meta_XP")
 
