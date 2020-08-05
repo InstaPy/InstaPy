@@ -7,12 +7,10 @@ _The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 ## Unreleased
 
 ### Fixed
+- Unfollowing of users that haven't posted anything
 - `get_links` xpath for yet another change
-
-## Unreleased
-
-### Fixed
 - Path for Obtaining user id
+
 
 ## [0.6.10] - 2020-07-30
 

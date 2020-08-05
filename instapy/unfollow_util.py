@@ -180,16 +180,16 @@ def get_following_status(
             return "UNAVAILABLE", None
     # wait until the follow button is located and visible, then get it
     try:
-        browser.find_element_by_xpath(
-            read_xpath(get_following_status.__name__, "follow_button_XP")
+        follow_button = browser.find_element_by_xpath(
+            read_xpath(get_following_status.__name__, "follow_span_XP_following")
         )
-        follow_button_XP = read_xpath(get_following_status.__name__, "follow_button_XP")
+        return "Following", follow_button
     except NoSuchElementException:
         try:
-            follow_button = browser.find_element_by_xpath(
-                read_xpath(get_following_status.__name__, "follow_span_XP_following")
+            browser.find_element_by_xpath(
+                read_xpath(get_following_status.__name__, "follow_button_XP")
             )
-            return "Following", follow_button
+            follow_button_XP = read_xpath(get_following_status.__name__, "follow_button_XP")
         except:
             return "UNAVAILABLE", None
     follow_button = explicit_wait(
