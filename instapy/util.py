@@ -1604,7 +1604,9 @@ def get_username(browser, track, logger):
 
 def find_user_id(browser, track, username, logger):
     """  Find the user ID from the loaded page """
-    logger.info(f"Attempting to find user ID: Track: {track}, Username {username}")
+    logger.info(
+        "Attempting to find user ID: Track: {}, Username {}".format(track, username)
+    )
     if track in ["dialog", "profile"]:
         query = "return window.__additionalData[Object.keys(window.__additionalData)[0]].data.graphql.user.id"
 
