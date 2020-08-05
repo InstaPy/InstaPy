@@ -1609,9 +1609,7 @@ def find_user_id(browser, track, username, logger):
         query = "return window.__additionalData[Object.keys(window.__additionalData)[0]].data.graphql.user.id"
 
     elif track == "post":
-        query = (
-            "return window._sharedData.entry_data.ProfilePage[0].graphql.user.id"
-        )
+        query = "return window._sharedData.entry_data.ProfilePage[0].graphql.user.id"
         meta_XP = read_xpath(find_user_id.__name__, "meta_XP")
 
     failure_message = "Failed to get the user ID of '{}' from {} page!".format(

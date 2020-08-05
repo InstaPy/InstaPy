@@ -189,7 +189,9 @@ def get_following_status(
             browser.find_element_by_xpath(
                 read_xpath(get_following_status.__name__, "follow_button_XP")
             )
-            follow_button_XP = read_xpath(get_following_status.__name__, "follow_button_XP")
+            follow_button_XP = read_xpath(
+                get_following_status.__name__, "follow_button_XP"
+            )
         except:
             return "UNAVAILABLE", None
     follow_button = explicit_wait(
