@@ -435,24 +435,26 @@ def validate_username(
 
     if len(skip_bio_keyword) > 0 or len(mandatory_bio_keywords) > 0:
         # if contain stop words then skip
-        try:
-            profile_bio = getUserData("graphql.user.biography", browser).lower()
-        except WebDriverException:
-            logger.error("~cannot get user bio")
-            return False, "---> Sorry, couldn't get get user bio " "account active\n"
-        for bio_keyword in skip_bio_keyword:
-            if bio_keyword.lower() in profile_bio:
-                return (
-                    False,
-                    "{} has a bio keyword of {}, by default skip\n".format(
-                        username, bio_keyword
-                    ),
-                )
+        if len(skip_bio_keyword) > 0:
+            try:
+                profile_bio = getUserData("graphql.user.biography", browser).lower()
+            except WebDriverException:
+                logger.error("~cannot get user bio")
+                return False, "---> Sorry, couldn't get get user bio " "account active\n"
+            for bio_keyword in skip_bio_keyword:
+                if bio_keyword.lower() in profile_bio:
+                    return (
+                        False,
+                        "{} has a bio keyword of {}, by default skip\n".format(
+                            username, bio_keyword
+                        ),
+                    )
         # the mandatory keywords applies to the username as well as the bio text
-        if not evaluate_mandatory_words(
-            username + " " + profile_bio, mandatory_bio_keywords
-        ):
-            return False, "Mandatory bio keywords not found"
+        if len(mandatory_bio_keywords) > 0:
+            if not evaluate_mandatory_words(
+                username + " " + profile_bio, mandatory_bio_keywords
+            ):
+                return False, "Mandatory bio keywords not found"
 
     # if everything is ok
     return True, "Valid user"
