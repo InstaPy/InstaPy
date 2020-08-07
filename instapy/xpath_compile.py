@@ -185,6 +185,6 @@ xpath["watch_story"] = {
 }
 
 xpath["likers_from_photo"] = {
-    "liked_counter_button": "//div/article/div[2]/section[2]/div/div/a",
+    "liked_counter_button": "//a[contains(@href,'liked_by/')]",
     "second_counter_button": "//div/article/div[2]/section[2]/div/div/button",
 }
