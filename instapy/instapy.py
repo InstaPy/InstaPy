@@ -5871,3 +5871,4 @@ class InstaPy:
             sleep(2)
             buttons = self.browser.find_element_by_xpath('//div[contains(@class,"JI_ht")]/button[@type="button"]').click()
             self.logger.info("Message sent successfully to {} !".format(username))
+            
