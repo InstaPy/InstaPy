@@ -5840,3 +5840,34 @@ class InstaPy:
             return []
 
         return target_list
+    def send_message(self, usernames: list, message):
+        self.selectors = {
+                "home_to_login_button": ".WquS1 a",
+                "username_field": "username",
+                "password_field": "password",
+                "button_login": "._0mzm-",
+                "search_user": "queryBox",
+                "select_user": "._0mzm-",
+                "textarea": "textarea",
+                "send": "button"
+                }
+        if not isinstance(usernames, list):
+            usernames = [usernames]
+        
+        for username in usernames:
+            self.logger.info('Send message {} to {}'.format(message, username))
+            self.browser.get('https://www.instagram.com/direct/new/')
+            self.browser.find_element_by_name(self.selectors['search_user']).send_keys(username)
+            sleep(1)    
+            # Select user
+            elements = self.browser.find_element_by_xpath("//button[contains(@class,'dCJp8')]").click()
+            sleep(0.5)
+            self.browser.find_element_by_xpath("//div[@class='rIacr']").click()
+            
+            # Go to page
+            
+            sleep(1)
+            self.browser.find_elements_by_xpath("*//textarea")[0].send_keys(message)    
+            sleep(2)
+            buttons = self.browser.find_element_by_xpath('//div[contains(@class,"JI_ht")]/button[@type="button"]').click()
+            self.logger.info("Message sent successfully to {} !".format(username))
