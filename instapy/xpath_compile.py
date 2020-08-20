@@ -185,6 +185,6 @@ xpath["watch_story"] = {
 }
 
 xpath["likers_from_photo"] = {
-    "liked_counter_button": "//div/article/div[2]/section[2]/div/div/a",
-    "second_counter_button": "//div/article/div[2]/section[2]/div/div/button",
+    "liked_counter_button": "/html/body/div[1]/section/main/div/div/article/div[3]/section[1]/span[1]/button",
+    "second_counter_button": "/html/body/div[1]/section/main/div/div/article/div[3]/section[2]/div/div[2]/a[2]",
 }
