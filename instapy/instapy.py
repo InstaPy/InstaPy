@@ -1862,8 +1862,7 @@ class InstaPy:
         tags = tags or []
         self.quotient_breach = False
 
-        # if session includes like_by_tags, then randomize the tag list;
-        # just in case the new order is logged
+        # if session includes like_by_tags, then randomize the tag list 
         if use_random_tags is True:
             random.shuffle(tags)
             for i, tag in enumerate(tags):
