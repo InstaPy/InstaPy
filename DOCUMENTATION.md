@@ -735,7 +735,7 @@ session.like_by_tags(['natgeo', 'world'], amount=10)
 ```
 
 #### Parameters:
-  `tags`: The tags that will be searched for and posts will be liked from
+ `tags`: The tags that will be searched for and posts will be liked from
 
   `use_random_tags`: The tags that will be searched for and posts will be randomized
 
