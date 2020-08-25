@@ -1829,6 +1829,7 @@ class InstaPy:
     def like_by_tags(
         self,
         tags: list = None,
+        use_random_tags: bool = False,
         amount: int = 50,
         skip_top_posts: bool = True,
         use_smart_hashtags: bool = False,
@@ -1860,6 +1861,12 @@ class InstaPy:
         tags = [tag.strip() for tag in tags]
         tags = tags or []
         self.quotient_breach = False
+
+        # if session includes like_by_tags, then randomize the tag list 
+        if use_random_tags is True:
+            random.shuffle(tags)
+            for i, tag in enumerate(tags):
+                self.logger.info("Tag list randomized: [{}/{}/{}]".format(i + 1, len(tags), tag))
 
         for index, tag in enumerate(tags):
             if self.quotient_breach:
