@@ -6,6 +6,9 @@ _The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 ## Unreleased
 
+### Added 
+- Use random tag list for `session.like_by_tags`
+
 ### Fixed
 - Unfollowing of users that haven't posted anything
 - `get_links` xpath for yet another change
