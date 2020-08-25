@@ -1738,7 +1738,7 @@ This feature allows to connect your InstaPy session with a Telegram bot and send
 to the InstaPy session
 
 #### Prerequisites
-You will need to create a token, for this go into your Telegram App and talk with @fatherbot.
+You will need to create a token, for this go into your Telegram App and talk with @botfather.
 You will also need to set your username as it is checked to ensure that you are authorized to 
 access the InstaPy session, to do so go to Settings -> Profile -> Username.
 
