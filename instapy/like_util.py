@@ -755,7 +755,8 @@ def like_image(browser, username, blacklist, logger, logfolder, total_liked_img)
         # sleep real quick right before clicking the element
         sleep(2)
         like_elem = browser.find_elements_by_xpath(like_xpath)
-        click_element(browser, like_elem[0])
+        if len(like_elem) > 0:
+            click_element(browser, like_elem[0])
         # check now we have unlike instead of like
         liked_elem = browser.find_elements_by_xpath(unlike_xpath)
 
