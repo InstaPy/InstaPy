@@ -106,7 +106,7 @@ xpath["get_links_for_location"] = {
     "main_elem": "//main/article/div[2]",
 }
 
-xpath["get_links_from_feed"] = {"get_links": "//article/div/div[3]/div[2]/a"}
+xpath["get_links_from_feed"] = {"get_links": "//article/div[3]/div[2]/a"}
 
 xpath["get_links_for_tag"] = {
     "top_elements": "//main/article/div[1]",

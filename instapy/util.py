@@ -984,11 +984,16 @@ def click_element(browser, element, tryNum=0):
 
         if tryNum == 0:
             # try scrolling the element into view
-            browser.execute_script(
-                "document.getElementsByClassName('"
-                + element.get_attribute("class")
-                + "')[0].scrollIntoView({ inline: 'center' });"
-            )
+            try:
+                # This tends to fail because the script fails to get the element class
+                if element.get_attribute("class") != '':
+                    browser.execute_script(
+                        "document.getElementsByClassName('"
+                        + element.get_attribute("class")
+                        + "')[0].scrollIntoView({ inline: 'center' });"
+                    )
+            except Exception:
+                pass
 
         elif tryNum == 1:
             # well, that didn't work, try scrolling to the top and then
@@ -1003,13 +1008,18 @@ def click_element(browser, element, tryNum=0):
         else:
             # try `execute_script` as a last resort
             # print("attempting last ditch effort for click, `execute_script`")
-            browser.execute_script(
-                "document.getElementsByClassName('"
-                + element.get_attribute("class")
-                + "')[0].click()"
-            )
-            # update server calls after last click attempt by JS
-            update_activity(browser, state=None)
+            try:
+                if element.get_attribute("class") != '':
+                    browser.execute_script(
+                        "document.getElementsByClassName('"
+                        + element.get_attribute("class")
+                        + "')[0].click()"
+                    )
+                    # update server calls after last click attempt by JS
+                    update_activity(browser, state=None)
+            except Exception:
+                print("Failed to click an element, giving up now")
+
             # end condition for the recursive function
             return
 
