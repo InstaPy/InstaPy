@@ -10,6 +10,7 @@ _The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 - Unfollowing of users that haven't posted anything
 - `get_links` xpath for yet another change
 - Path for Obtaining user id
+- `like_by_feed()` method
 
 
 ## [0.6.10] - 2020-07-30
