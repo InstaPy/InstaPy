@@ -699,6 +699,7 @@ def get_users_through_dialog_with_graphql(
     jumps,
     logger,
     logfolder,
+    edge_followed_by,
 ):
 
     # TODO: simulation implmentation
@@ -716,10 +717,22 @@ def get_users_through_dialog_with_graphql(
             "return window._sharedData." "entry_data.ProfilePage[0]." "graphql.user.id"
         )
 
-    query_hash = get_query_hash(browser, logger)
+    # There are two query hash, one for followers and following, ie:
+    # t="c76146de99bb02f6415203be841dd25a",n="d04b0a864b4b54837c0d870b0e77e076"
+    if edge_followed_by:
+        # True: User requested session.follow_user_followers
+        edge_type = "edge_followed_by"
+    else:
+        # False: User requested session.follow_user_following
+        edge_type = "edge_follow"
+
+    query_hash = get_query_hash(browser, logger, edge_followed_by)
+
     # check if hash is present
     if query_hash is None:
         logger.info("Unable to locate GraphQL query hash")
+    else:
+        logger.info("GraphQL query hash: [{}]".format(query_hash))
 
     graphql_query_URL = "view-source:https://www.instagram.com/graphql/query/?query_hash={}".format(
         query_hash
@@ -737,8 +750,10 @@ def get_users_through_dialog_with_graphql(
     pre = browser.find_element_by_tag_name("pre")
     # set JSON object
     data = json.loads(pre.text)
-    # get all followers of current page
-    followers_page = data["data"]["user"]["edge_followed_by"]["edges"]
+    # get all followers or following of current page
+    # edge_type: used to check followers or following in JSON
+    #            "edge_followed_by" or "edge_follow"
+    followers_page = data["data"]["user"]["" + edge_type+ ""]["edges"]
     followers_list = []
 
     # iterate over page size and add users to the list
@@ -746,7 +761,7 @@ def get_users_through_dialog_with_graphql(
         # get follower name
         followers_list.append(follower["node"]["username"])
 
-    has_next_page = data["data"]["user"]["edge_followed_by"]["page_info"][
+    has_next_page = data["data"]["user"]["" + edge_type+ ""]["page_info"][
         "has_next_page"
     ]
 
@@ -755,7 +770,7 @@ def get_users_through_dialog_with_graphql(
         sleep(random.randint(2, 6))
 
         # get next page reference
-        end_cursor = data["data"]["user"]["edge_followed_by"]["page_info"]["end_cursor"]
+        end_cursor = data["data"]["user"]["" + edge_type+ ""]["page_info"]["end_cursor"]
 
         # url variables
         variables = {
@@ -765,21 +780,24 @@ def get_users_through_dialog_with_graphql(
             "first": 50,
             "after": end_cursor,
         }
+
         url = "{}&variables={}".format(graphql_query_URL, str(json.dumps(variables)))
         browser.get(url)
         pre = browser.find_element_by_tag_name("pre")
+
         # response to JSON object
         data = json.loads(pre.text)
 
         # get all followers of current page
-        followers_page = data["data"]["user"]["edge_followed_by"]["edges"]
+        followers_page = data["data"]["user"]["" + edge_type+ ""]["edges"]
+
         # iterate over page size and add users to the list
         for follower in followers_page:
             # get follower name
             followers_list.append(follower["node"]["username"])
 
         # check if there is next page
-        has_next_page = data["data"]["user"]["edge_followed_by"]["page_info"][
+        has_next_page = data["data"]["user"]["" + edge_type+ ""]["page_info"][
             "has_next_page"
         ]
 
@@ -837,7 +855,10 @@ def get_users_through_dialog_with_graphql(
 
     # get real amount
     followers_list = random.sample(followers_list, real_amount)
-    print(followers_list)
+
+    for i, user in enumerate(followers_list):
+        logger.info("To be followed: [{}/{}/{}]".format(i + 1, len(followers_list), user))
+
     return followers_list, []
 
 
@@ -1012,6 +1033,7 @@ def get_given_user_followers(
         return [], []
 
     channel = "Follow"
+    edge_followed_by = True
     person_list, simulated_list = get_users_through_dialog_with_graphql(
         browser,
         login,
@@ -1027,6 +1049,7 @@ def get_given_user_followers(
         jumps,
         logger,
         logfolder,
+        edge_followed_by,
     )
 
     return person_list, simulated_list
@@ -1046,6 +1069,21 @@ def get_given_user_following(
     logger,
     logfolder,
 ):
+    """
+    For the given username, follow who they follows.
+
+    :param browser: webdriver instance
+    :param login:
+    :param user_name: given username of account to follow
+    :param amount: the number of followers to follow
+    :param dont_include: ignore these usernames
+    :param randomize: randomly select from users' followers
+    :param blacklist:
+    :param follow_times:
+    :param logger: the logger instance
+    :param logfolder: the logger folder
+    :return: list of user's following
+    """
     user_name = user_name.strip().lower()
 
     user_link = "https://www.instagram.com/{}/".format(user_name)
@@ -1138,6 +1176,7 @@ def get_given_user_following(
         return [], []
 
     channel = "Follow"
+    edge_followed_by = False
     person_list, simulated_list = get_users_through_dialog_with_graphql(
         browser,
         login,
@@ -1153,6 +1192,7 @@ def get_given_user_following(
         jumps,
         logger,
         logfolder,
+        edge_followed_by,
     )
 
     return person_list, simulated_list

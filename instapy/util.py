@@ -2426,14 +2426,27 @@ def take_rotative_screenshot(browser, logfolder):
     next_screenshot += 1
 
 
-def get_query_hash(browser, logger):
-    """ Load Instagram JS file and find query hash code """
+def get_query_hash(browser, logger, edge_followed_by):
+    """
+    Load Instagram JS file and find query hash code
+
+    :param browser: webdriver instance
+    :param logger: the logger instance
+    :param edge_followed_by: query hash flag, edge_followed_by or edge_follow
+    :return: query hash
+    """
     link = "https://www.instagram.com/static/bundles/es6/Consumer.js/1f67555edbd3.js"
     web_address_navigator(browser, link)
     page_source = browser.page_source
+    # There are two query hash, one for followers and following, ie:
+    # t="c76146de99bb02f6415203be841dd25a",n="d04b0a864b4b54837c0d870b0e77e076"
+    if edge_followed_by:
+        pattern_hash = '[a-z0-9]{32}(?=",n=")' # Used to query: edge_followed_by
+    else:
+        pattern_hash = '[a-z0-9]{32}(?=",u=1)' # Used to query: edge_follow
     # locate pattern value from JS file
     # sequence of 32 words and/or numbers just before ,n=" value
-    hash = re.findall('[a-z0-9]{32}(?=",n=")', page_source)
+    hash = re.findall(pattern_hash, page_source)
     if hash:
         return hash[0]
     else:
