@@ -137,7 +137,15 @@ def set_selenium_local_session(
     browser.implicitly_wait(page_delay)
 
     # set mobile viewport (iPhone X)
-    browser.set_window_size(375, 812)
+    try:
+        browser.set_window_size(375, 812)
+    except UnexpectedAlertPresentException as exc:
+        logger.exception(
+            "Unexpected alert on resizing web browser!\n\t"
+            "{}".format(str(exc).encode("utf-8"))
+        )
+        close_browser(browser, False, logger)
+        return browser, 'Unexpected alert on browser resize'
 
     message = "Session started!"
     highlight_print("browser", message, "initialization", "info", logger)
