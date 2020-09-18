@@ -36,8 +36,6 @@ Implemented in Python using the Selenium module.<p>
 **Official Video Guide: [Get it here!](https://www.udemy.com/instapy-guide/?couponCode=INSTAPY_OFFICIAL)**   
 **Guide to Bot Creation: [Learn to Build your own Bots with the Creators of InstaPy](https://www.udemy.com/course/the-complete-guide-to-bot-creation/?referralCode=7418EBB47E11E34D86C9)**
 
-**InstaPy is being sponsored by the following partner. Please help to support us by taking a look and signing up to a free trial 😊**
-<a href="https://tracking.gitads.io/?repo=InstaPy"> <img src="https://images.gitads.io/InstaPy" alt="GitAds"/> </a>
 
 ## Table of contents
 - [How to install and run InstaPy](#installation)
