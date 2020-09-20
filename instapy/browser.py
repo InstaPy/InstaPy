@@ -4,6 +4,7 @@ from selenium.common.exceptions import WebDriverException
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.firefox.options import Options as Firefox_Options
 from selenium.webdriver import Remote
+from selenium.common.exceptions import UnexpectedAlertPresentException
 from webdriverdownloader import GeckoDriverDownloader
 
 # general libs
@@ -61,6 +62,7 @@ def set_selenium_local_session(
     page_delay,
     geckodriver_path,
     browser_executable_path,
+    logfolder,
     logger,
 ):
     """Starts local session for a selenium server.
@@ -110,17 +112,21 @@ def set_selenium_local_session(
     # mute audio while watching stories
     firefox_profile.set_preference("media.volume_scale", "0.0")
 
-    # prevent  Hide Selenium Extension: error
+    # prevent Hide Selenium Extension: error
     firefox_profile.set_preference("dom.webdriver.enabled", False)
     firefox_profile.set_preference("useAutomationExtension", False)
     firefox_profile.set_preference("general.platform.override", "iPhone")
     firefox_profile.update_preferences()
+
+    # geckodriver log in specific user logfolder
+    geckodriver_log = "{}geckodriver.log".format(logfolder)
 
     # prefer user path before downloaded one
     driver_path = geckodriver_path or get_geckodriver()
     browser = webdriver.Firefox(
         firefox_profile=firefox_profile,
         executable_path=driver_path,
+        log_path=geckodriver_log,
         options=firefox_options,
     )
 

@@ -1,13 +1,21 @@
 """OS Modules environ method to get the setup vars from the Environment"""
 # import built-in & third-party modules
-import time, random, os, csv, json, requests, logging, unicodedata
+import time
+import random
+import os
+import csv
+import json
+import requests
+import unicodedata
+import logging
+
 from datetime import datetime, timedelta
 from math import ceil
 from sys import platform
 from platform import python_version
 from selenium import webdriver
 from selenium.webdriver import DesiredCapabilities
-import logging.handlers
+from logging.handlers import RotatingFileHandler
 from contextlib import contextmanager
 from copy import deepcopy
 
@@ -320,6 +328,7 @@ class InstaPy:
                 page_delay,
                 geckodriver_path,
                 browser_executable_path,
+                self.logfolder,
                 self.logger,
             )
             if len(err_msg) > 0:
@@ -338,7 +347,13 @@ class InstaPy:
             # initialize and setup logging system for the InstaPy object
             logger = logging.getLogger(self.username)
             logger.setLevel(logging.DEBUG)
-            file_handler = logging.FileHandler("{}general.log".format(self.logfolder))
+            # log name and format
+            general_log = "{}general.log".format(self.logfolder)
+            file_handler = logging.FileHandler(general_log)
+            # log rotation, 5 logs with 10MB size each one
+            file_handler = RotatingFileHandler(
+                general_log, maxBytes=10*1024*1024, backupCount=5
+            )
             file_handler.setLevel(logging.DEBUG)
             extra = {"username": self.username}
             logger_formatter = logging.Formatter(
@@ -369,8 +384,8 @@ class InstaPy:
     ):
         """
         Starts remote session for a selenium server.
-        Creates a new selenium driver instance for remote session or uses provided
-        one. Useful for docker setup.
+        Creates a new selenium driver instance for remote session or uses
+        provided one. Useful for docker setup.
 
         :param selenium_url: string
         :param selenium_driver: selenium WebDriver
@@ -396,11 +411,11 @@ class InstaPy:
     def login(self):
         """Used to login the user either with the username and password"""
         # InstaPy uses page_delay speed to implicit wait for elements,
-        # here we're decreasing it to 5 seconds instead of the default 25 seconds
-        # to speed up the login process.
+        # here we're decreasing it to 5 seconds instead of the default 25
+        # seconds to speed up the login process.
         #
-        # In short: default page_delay speed took 25 seconds trying to locate every
-        # element, now it's taking 5 seconds.
+        # In short: default page_delay speed took 25 seconds trying to locate
+        # every element, now it's taking 5 seconds.
         temporary_page_delay = 5
         self.browser.implicitly_wait(temporary_page_delay)
 
@@ -1862,7 +1877,7 @@ class InstaPy:
         tags = tags or []
         self.quotient_breach = False
 
-        # if session includes like_by_tags, then randomize the tag list 
+        # if session includes like_by_tags, then randomize the tag list
         if use_random_tags is True:
             random.shuffle(tags)
             for i, tag in enumerate(tags):
