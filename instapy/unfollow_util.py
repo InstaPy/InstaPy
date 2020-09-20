@@ -761,9 +761,7 @@ def get_users_through_dialog_with_graphql(
         # get follower name
         followers_list.append(follower["node"]["username"])
 
-    has_next_page = data["data"]["user"][str(edge_type)]["page_info"][
-        "has_next_page"
-    ]
+    has_next_page = data["data"]["user"][str(edge_type)]["page_info"]["has_next_page"]
 
     while has_next_page and len(followers_list) <= amount:
         # server call interval
@@ -797,9 +795,7 @@ def get_users_through_dialog_with_graphql(
             followers_list.append(follower["node"]["username"])
 
         # check if there is next page
-        has_next_page = data["data"]["user"][str(edge_type)]["page_info"][
-            "has_next_page"
-        ]
+        has_next_page = data["data"]["user"][str(edge_type)]["page_info"]["has_next_page"]
 
         # simulation
         # TODO: this needs to be rewrited
