@@ -1862,11 +1862,13 @@ class InstaPy:
         tags = tags or []
         self.quotient_breach = False
 
-        # if session includes like_by_tags, then randomize the tag list 
+        # if session includes like_by_tags, then randomize the tag list
         if use_random_tags is True:
             random.shuffle(tags)
             for i, tag in enumerate(tags):
-                self.logger.info("Tag list randomized: [{}/{}/{}]".format(i + 1, len(tags), tag))
+                self.logger.info(
+                    "Tag list randomized: [{}/{}/{}]".format(i + 1, len(tags), tag)
+                )
 
         for index, tag in enumerate(tags):
             if self.quotient_breach:

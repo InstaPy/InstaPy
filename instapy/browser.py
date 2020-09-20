@@ -145,7 +145,7 @@ def set_selenium_local_session(
             "{}".format(str(exc).encode("utf-8"))
         )
         close_browser(browser, False, logger)
-        return browser, 'Unexpected alert on browser resize'
+        return browser, "Unexpected alert on browser resize"
 
     message = "Session started!"
     highlight_print("browser", message, "initialization", "info", logger)
