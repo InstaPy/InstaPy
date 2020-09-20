@@ -8,6 +8,7 @@ import json
 import requests
 import unicodedata
 import logging
+import logging.handlers
 
 from datetime import datetime, timedelta
 from math import ceil
