@@ -986,7 +986,7 @@ def click_element(browser, element, tryNum=0):
             # try scrolling the element into view
             try:
                 # This tends to fail because the script fails to get the element class
-                if element.get_attribute("class") != '':
+                if element.get_attribute("class") != "":
                     browser.execute_script(
                         "document.getElementsByClassName('"
                         + element.get_attribute("class")
@@ -1009,7 +1009,7 @@ def click_element(browser, element, tryNum=0):
             # try `execute_script` as a last resort
             # print("attempting last ditch effort for click, `execute_script`")
             try:
-                if element.get_attribute("class") != '':
+                if element.get_attribute("class") != "":
                     browser.execute_script(
                         "document.getElementsByClassName('"
                         + element.get_attribute("class")
@@ -2441,9 +2441,9 @@ def get_query_hash(browser, logger, edge_followed_by):
     # There are two query hash, one for followers and following, ie:
     # t="c76146de99bb02f6415203be841dd25a",n="d04b0a864b4b54837c0d870b0e77e076"
     if edge_followed_by:
-        pattern_hash = '[a-z0-9]{32}(?=",n=")' # Used to query: edge_followed_by
+        pattern_hash = '[a-z0-9]{32}(?=",n=")'  # Used to query: edge_followed_by
     else:
-        pattern_hash = '[a-z0-9]{32}(?=",u=1)' # Used to query: edge_follow
+        pattern_hash = '[a-z0-9]{32}(?=",u=1)'  # Used to query: edge_follow
     # locate pattern value from JS file
     # sequence of 32 words and/or numbers just before ,n=" value
     hash = re.findall(pattern_hash, page_source)
