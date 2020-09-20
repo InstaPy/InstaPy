@@ -1882,7 +1882,9 @@ class InstaPy:
         if use_random_tags is True:
             random.shuffle(tags)
             for i, tag in enumerate(tags):
-                self.logger.info("Tag list randomized: [{}/{}/{}]".format(i + 1, len(tags), tag))
+                self.logger.info(
+                    "Tag list randomized: [{}/{}/{}]".format(i + 1, len(tags), tag)
+                )
 
         for index, tag in enumerate(tags):
             if self.quotient_breach:
