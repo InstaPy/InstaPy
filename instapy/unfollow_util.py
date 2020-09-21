@@ -192,7 +192,7 @@ def get_following_status(
             follow_button_XP = read_xpath(
                 get_following_status.__name__, "follow_button_XP"
             )
-        except:
+        except Exception:
             return "UNAVAILABLE", None
     follow_button = explicit_wait(
         browser, "VOEL", [follow_button_XP, "XPath"], logger, 7, False
@@ -753,7 +753,7 @@ def get_users_through_dialog_with_graphql(
     # get all followers or following of current page
     # edge_type: used to check followers or following in JSON
     #            "edge_followed_by" or "edge_follow"
-    followers_page = data["data"]["user"]["" + edge_type + ""]["edges"]
+    followers_page = data["data"]["user"][str(edge_type)]["edges"]
     followers_list = []
 
     # iterate over page size and add users to the list
@@ -761,18 +761,14 @@ def get_users_through_dialog_with_graphql(
         # get follower name
         followers_list.append(follower["node"]["username"])
 
-    has_next_page = data["data"]["user"]["" + edge_type + ""]["page_info"][
-        "has_next_page"
-    ]
+    has_next_page = data["data"]["user"][str(edge_type)]["page_info"]["has_next_page"]
 
     while has_next_page and len(followers_list) <= amount:
         # server call interval
         sleep(random.randint(2, 6))
 
         # get next page reference
-        end_cursor = data["data"]["user"]["" + edge_type + ""]["page_info"][
-            "end_cursor"
-        ]
+        end_cursor = data["data"]["user"][str(edge_type)]["page_info"]["end_cursor"]
 
         # url variables
         variables = {
@@ -791,7 +787,7 @@ def get_users_through_dialog_with_graphql(
         data = json.loads(pre.text)
 
         # get all followers of current page
-        followers_page = data["data"]["user"]["" + edge_type + ""]["edges"]
+        followers_page = data["data"]["user"][str(edge_type)]["edges"]
 
         # iterate over page size and add users to the list
         for follower in followers_page:
@@ -799,9 +795,7 @@ def get_users_through_dialog_with_graphql(
             followers_list.append(follower["node"]["username"])
 
         # check if there is next page
-        has_next_page = data["data"]["user"]["" + edge_type + ""]["page_info"][
-            "has_next_page"
-        ]
+        has_next_page = data["data"]["user"][str(edge_type)]["page_info"]["has_next_page"]
 
         # simulation
         # TODO: this needs to be rewrited
@@ -859,9 +853,7 @@ def get_users_through_dialog_with_graphql(
     followers_list = random.sample(followers_list, real_amount)
 
     for i, user in enumerate(followers_list):
-        logger.info(
-            "To be followed: [{}/{}/{}]".format(i + 1, len(followers_list), user)
-        )
+        logger.info("To be followed: [{}/{}/{}]".format(i + 1, len(followers_list), user))
 
     return followers_list, []
 
