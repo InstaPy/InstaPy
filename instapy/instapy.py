@@ -353,7 +353,7 @@ class InstaPy:
             file_handler = logging.FileHandler(general_log)
             # log rotation, 5 logs with 10MB size each one
             file_handler = RotatingFileHandler(
-                general_log, maxBytes=10*1024*1024, backupCount=5
+                general_log, maxBytes=10 * 1024 * 1024, backupCount=5
             )
             file_handler.setLevel(logging.DEBUG)
             extra = {"username": self.username}

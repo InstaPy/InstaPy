@@ -795,7 +795,9 @@ def get_users_through_dialog_with_graphql(
             followers_list.append(follower["node"]["username"])
 
         # check if there is next page
-        has_next_page = data["data"]["user"][str(edge_type)]["page_info"]["has_next_page"]
+        has_next_page = data["data"]["user"][str(edge_type)]["page_info"][
+            "has_next_page"
+        ]
 
         # simulation
         # TODO: this needs to be rewrited
@@ -853,7 +855,9 @@ def get_users_through_dialog_with_graphql(
     followers_list = random.sample(followers_list, real_amount)
 
     for i, user in enumerate(followers_list):
-        logger.info("To be followed: [{}/{}/{}]".format(i + 1, len(followers_list), user))
+        logger.info(
+            "To be followed: [{}/{}/{}]".format(i + 1, len(followers_list), user)
+        )
 
     return followers_list, []
 
