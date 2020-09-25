@@ -8,13 +8,13 @@ LIKE_TAG_CLASS = "coreSpriteHeartOpen"
 
 def get_like_on_feed(browser, amount):
     """
-        browser - the selenium browser element
-        amount - total amount of likes to perform
+    browser - the selenium browser element
+    amount - total amount of likes to perform
 
-        --------------------------------------
-        The function takes in the total amount of likes to perform
-        and then sends buttons to be liked, if it has run out of like
-        buttons it will perform a scroll
+    --------------------------------------
+    The function takes in the total amount of likes to perform
+    and then sends buttons to be liked, if it has run out of like
+    buttons it will perform a scroll
     """
     assert 1 <= amount
 

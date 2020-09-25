@@ -209,9 +209,9 @@ def close_browser(browser, threaded_session, logger):
 
 def retry(max_retry_count=3, start_page=None):
     """
-        Decorator which refreshes the page and tries to execute the function again.
-        Use it like that: @retry() => the '()' are important because its a decorator
-        with params.
+    Decorator which refreshes the page and tries to execute the function again.
+    Use it like that: @retry() => the '()' are important because its a decorator
+    with params.
     """
 
     def real_decorator(org_func):

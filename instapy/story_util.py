@@ -173,8 +173,8 @@ def get_story_data(browser, elem, action_type, logger, simulate=False):
 
 def watch_story(browser, elem, logger, action_type, simulate=False):
     """
-        Load Stories, and watch it until there is no more stores
-        to watch for the related element
+    Load Stories, and watch it until there is no more stores
+    to watch for the related element
     """
 
     # make sure we work with a lower case elem

@@ -588,8 +588,8 @@ def unfollow(
 
 
 def follow_user(browser, track, login, user_name, button, blacklist, logger, logfolder):
-    """ Follow a user either from the profile page or post page or dialog
-    box """
+    """Follow a user either from the profile page or post page or dialog
+    box"""
     # list of available tracks to follow in: ["profile", "post" "dialog"]
 
     # check action availability
@@ -734,8 +734,10 @@ def get_users_through_dialog_with_graphql(
     else:
         logger.info("GraphQL query hash: [{}]".format(query_hash))
 
-    graphql_query_URL = "view-source:https://www.instagram.com/graphql/query/?query_hash={}".format(
-        query_hash
+    graphql_query_URL = (
+        "view-source:https://www.instagram.com/graphql/query/?query_hash={}".format(
+            query_hash
+        )
     )
     variables = {
         "id": str(user_id),
@@ -1245,8 +1247,8 @@ def dump_follow_restriction(profile_name, logger, logfolder):
 
 
 def follow_restriction(operation, username, limit, logger):
-    """ Keep track of the followed users and help avoid excessive follow of
-    the same user """
+    """Keep track of the followed users and help avoid excessive follow of
+    the same user"""
 
     try:
         # get a DB and start a connection
@@ -1516,8 +1518,8 @@ def get_user_id(browser, track, username, logger):
 
 
 def verify_username_by_id(browser, username, person, person_id, logger, logfolder):
-    """ Check if the given user has changed username after the time of
-    followed """
+    """Check if the given user has changed username after the time of
+    followed"""
     # try to find the user by ID
     if person_id is None:
         person_id = load_user_id(username, person, logger, logfolder)

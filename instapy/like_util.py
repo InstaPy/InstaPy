@@ -889,8 +889,8 @@ def get_links(browser, page, logger, media, element):
 
 
 def verify_liking(browser, maximum, minimum, logger):
-    """ Get the amount of existing existing likes and compare it against maximum
-    & minimum values defined by user """
+    """Get the amount of existing existing likes and compare it against maximum
+    & minimum values defined by user"""
     try:
         likes_count = browser.execute_script(
             "return window.__additionalData[Object.keys(window.__additionalData)[0]].data"
