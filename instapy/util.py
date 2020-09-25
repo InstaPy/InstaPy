@@ -480,10 +480,10 @@ def update_activity(
     browser=None, action="server_calls", state=None, logfolder=None, logger=None
 ):
     """
-        1. Record every Instagram server call (page load, content load, likes,
-        comments, follows, unfollow)
-        2. Take rotative screenshots
-        3. update connection state and record to .json file
+    1. Record every Instagram server call (page load, content load, likes,
+    comments, follows, unfollow)
+    2. Take rotative screenshots
+    3. update connection state and record to .json file
     """
     # check action availability
     quota_supervisor("server_calls")
@@ -969,7 +969,7 @@ def click_element(browser, element, tryNum=0):
       exist, ...). on each attempt try and move the screen around in
       various ways. if all else fails, programmically click the button
       using `execute_script` in the browser.
-      """
+    """
 
     try:
         # use Selenium's built in click function
@@ -1249,8 +1249,8 @@ def interruption_handler(
     notify=None,
     logger=None,
 ):
-    """ Handles external interrupt, usually initiated by the user like
-    KeyboardInterrupt with CTRL+C """
+    """Handles external interrupt, usually initiated by the user like
+    KeyboardInterrupt with CTRL+C"""
     if notify is not None and logger is not None:
         logger.warning(notify)
 
@@ -1469,8 +1469,8 @@ def ping_server(host, logger):
 
 
 def emergency_exit(browser, username, logger):
-    """ Raise emergency if the is no connection to server OR if user is not
-    logged in """
+    """Raise emergency if the is no connection to server OR if user is not
+    logged in"""
     server_address = "instagram.com"
     connection_state = ping_server(server_address, logger)
     if connection_state is False:
@@ -1668,8 +1668,8 @@ def find_user_id(browser, track, username, logger):
 
 @contextmanager
 def new_tab(browser):
-    """ USE once a host tab must remain untouched and yet needs extra data-
-    get from guest tab """
+    """USE once a host tab must remain untouched and yet needs extra data-
+    get from guest tab"""
     try:
         # add a guest tab
         browser.execute_script("window.open()")
@@ -2409,7 +2409,7 @@ def get_bounding_box(
 
 def take_rotative_screenshot(browser, logfolder):
     """
-        Make a sequence of screenshots, based on hour:min:secs
+    Make a sequence of screenshots, based on hour:min:secs
     """
     global next_screenshot
 

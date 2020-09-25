@@ -854,8 +854,7 @@ def get_mutual_following(
 
 
 def store_followers_data(username, grab, grabbed_followers, logger, logfolder):
-    """ Store grabbed `Followers` data in a local storage at genereated date
-    """
+    """Store grabbed `Followers` data in a local storage at genereated date"""
     query_date = datetime.today().strftime("%d-%m-%Y")
     grabbed_followers_size = len(grabbed_followers)
     file_directory = "{}/relationship_data/{}/followers/".format(logfolder, username)

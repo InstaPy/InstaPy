@@ -174,7 +174,10 @@ def verify_commenting(browser, maximum, minimum, logger):
 
 
 def verify_mandatory_words(
-    mand_words, comments, browser, logger,
+    mand_words,
+    comments,
+    browser,
+    logger,
 ):
     if len(mand_words) > 0 or isinstance(comments[0], dict):
         try:
@@ -422,7 +425,10 @@ def process_comments(
     # comments
     if delimit_commenting:
         (commenting_approved, disapproval_reason,) = verify_commenting(
-            browser, max_comments, min_comments, logger,
+            browser,
+            max_comments,
+            min_comments,
+            logger,
         )
         if not commenting_approved:
             logger.info(disapproval_reason)
@@ -432,7 +438,12 @@ def process_comments(
         commenting_approved,
         selected_comments,
         disapproval_reason,
-    ) = verify_mandatory_words(comments_mandatory_words, comments, browser, logger,)
+    ) = verify_mandatory_words(
+        comments_mandatory_words,
+        comments,
+        browser,
+        logger,
+    )
     if not commenting_approved:
         logger.info(disapproval_reason)
         return False
@@ -443,6 +454,11 @@ def process_comments(
     # smart commenting
     if comments and publish:
         comment_state, msg = comment_image(
-            browser, user_name, selected_comments, blacklist, logger, logfolder,
+            browser,
+            user_name,
+            selected_comments,
+            blacklist,
+            logger,
+            logfolder,
         )
         return comment_state

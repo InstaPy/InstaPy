@@ -553,11 +553,11 @@ class InstaPy:
         self, enabled: bool = False, percentage: int = 0, simulate: bool = False
     ):
         """
-            configure stories
-            enabled: to add story to interact
-            percentage: how much to watch
-            simulate: if True, we will simulate watching (faster),
-                      but nothing will be seen on the browser window
+        configure stories
+        enabled: to add story to interact
+        percentage: how much to watch
+        simulate: if True, we will simulate watching (faster),
+                  but nothing will be seen on the browser window
         """
         if self.aborting:
             return self
@@ -570,8 +570,8 @@ class InstaPy:
 
     def set_dont_like(self, tags: list = []):
         """Changes the possible restriction tags, if one of this
-         words is in the description, the image won't be liked but user
-         still might be unfollowed"""
+        words is in the description, the image won't be liked but user
+        still might be unfollowed"""
         if self.aborting:
             return self
 
@@ -585,7 +585,7 @@ class InstaPy:
 
     def set_mandatory_words(self, tags: list = []):
         """Changes the possible restriction tags, if all of this
-         hashtags is in the description, the image will be liked"""
+        hashtags is in the description, the image will be liked"""
         if self.aborting:
             return self
 
@@ -4924,7 +4924,7 @@ class InstaPy:
         peak_server_calls_daily: int = None,
     ):
         """
-         Sets aside QS configuration ANY time in a session
+        Sets aside QS configuration ANY time in a session
         """
 
         # take a reference of the global configuration
