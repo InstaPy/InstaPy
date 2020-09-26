@@ -1,13 +1,22 @@
 """OS Modules environ method to get the setup vars from the Environment"""
 # import built-in & third-party modules
-import time, random, os, csv, json, requests, logging, unicodedata
+import time
+import random
+import os
+import csv
+import json
+import requests
+import unicodedata
+import logging
+import logging.handlers
+
 from datetime import datetime, timedelta
 from math import ceil
 from sys import platform
 from platform import python_version
 from selenium import webdriver
 from selenium.webdriver import DesiredCapabilities
-import logging.handlers
+from logging.handlers import RotatingFileHandler
 from contextlib import contextmanager
 from copy import deepcopy
 
@@ -320,6 +329,7 @@ class InstaPy:
                 page_delay,
                 geckodriver_path,
                 browser_executable_path,
+                self.logfolder,
                 self.logger,
             )
             if len(err_msg) > 0:
@@ -338,7 +348,13 @@ class InstaPy:
             # initialize and setup logging system for the InstaPy object
             logger = logging.getLogger(self.username)
             logger.setLevel(logging.DEBUG)
-            file_handler = logging.FileHandler("{}general.log".format(self.logfolder))
+            # log name and format
+            general_log = "{}general.log".format(self.logfolder)
+            file_handler = logging.FileHandler(general_log)
+            # log rotation, 5 logs with 10MB size each one
+            file_handler = RotatingFileHandler(
+                general_log, maxBytes=10 * 1024 * 1024, backupCount=5
+            )
             file_handler.setLevel(logging.DEBUG)
             extra = {"username": self.username}
             logger_formatter = logging.Formatter(
@@ -369,8 +385,8 @@ class InstaPy:
     ):
         """
         Starts remote session for a selenium server.
-        Creates a new selenium driver instance for remote session or uses provided
-        one. Useful for docker setup.
+        Creates a new selenium driver instance for remote session or uses
+        provided one. Useful for docker setup.
 
         :param selenium_url: string
         :param selenium_driver: selenium WebDriver
@@ -396,11 +412,11 @@ class InstaPy:
     def login(self):
         """Used to login the user either with the username and password"""
         # InstaPy uses page_delay speed to implicit wait for elements,
-        # here we're decreasing it to 5 seconds instead of the default 25 seconds
-        # to speed up the login process.
+        # here we're decreasing it to 5 seconds instead of the default 25
+        # seconds to speed up the login process.
         #
-        # In short: default page_delay speed took 25 seconds trying to locate every
-        # element, now it's taking 5 seconds.
+        # In short: default page_delay speed took 25 seconds trying to locate
+        # every element, now it's taking 5 seconds.
         temporary_page_delay = 5
         self.browser.implicitly_wait(temporary_page_delay)
 
@@ -537,11 +553,11 @@ class InstaPy:
         self, enabled: bool = False, percentage: int = 0, simulate: bool = False
     ):
         """
-            configure stories
-            enabled: to add story to interact
-            percentage: how much to watch
-            simulate: if True, we will simulate watching (faster),
-                      but nothing will be seen on the browser window
+        configure stories
+        enabled: to add story to interact
+        percentage: how much to watch
+        simulate: if True, we will simulate watching (faster),
+                  but nothing will be seen on the browser window
         """
         if self.aborting:
             return self
@@ -554,8 +570,8 @@ class InstaPy:
 
     def set_dont_like(self, tags: list = []):
         """Changes the possible restriction tags, if one of this
-         words is in the description, the image won't be liked but user
-         still might be unfollowed"""
+        words is in the description, the image won't be liked but user
+        still might be unfollowed"""
         if self.aborting:
             return self
 
@@ -569,7 +585,7 @@ class InstaPy:
 
     def set_mandatory_words(self, tags: list = []):
         """Changes the possible restriction tags, if all of this
-         hashtags is in the description, the image will be liked"""
+        hashtags is in the description, the image will be liked"""
         if self.aborting:
             return self
 
@@ -1829,6 +1845,7 @@ class InstaPy:
     def like_by_tags(
         self,
         tags: list = None,
+        use_random_tags: bool = False,
         amount: int = 50,
         skip_top_posts: bool = True,
         use_smart_hashtags: bool = False,
@@ -1860,6 +1877,14 @@ class InstaPy:
         tags = [tag.strip() for tag in tags]
         tags = tags or []
         self.quotient_breach = False
+
+        # if session includes like_by_tags, then randomize the tag list
+        if use_random_tags is True:
+            random.shuffle(tags)
+            for i, tag in enumerate(tags):
+                self.logger.info(
+                    "Tag list randomized: [{}/{}/{}]".format(i + 1, len(tags), tag)
+                )
 
         for index, tag in enumerate(tags):
             if self.quotient_breach:
@@ -4899,7 +4924,7 @@ class InstaPy:
         peak_server_calls_daily: int = None,
     ):
         """
-         Sets aside QS configuration ANY time in a session
+        Sets aside QS configuration ANY time in a session
         """
 
         # take a reference of the global configuration

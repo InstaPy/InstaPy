@@ -755,7 +755,8 @@ def like_image(browser, username, blacklist, logger, logfolder, total_liked_img)
         # sleep real quick right before clicking the element
         sleep(2)
         like_elem = browser.find_elements_by_xpath(like_xpath)
-        click_element(browser, like_elem[0])
+        if len(like_elem) > 0:
+            click_element(browser, like_elem[0])
         # check now we have unlike instead of like
         liked_elem = browser.find_elements_by_xpath(unlike_xpath)
 
@@ -888,8 +889,8 @@ def get_links(browser, page, logger, media, element):
 
 
 def verify_liking(browser, maximum, minimum, logger):
-    """ Get the amount of existing existing likes and compare it against maximum
-    & minimum values defined by user """
+    """Get the amount of existing existing likes and compare it against maximum
+    & minimum values defined by user"""
     try:
         likes_count = browser.execute_script(
             "return window.__additionalData[Object.keys(window.__additionalData)[0]].data"

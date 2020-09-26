@@ -480,10 +480,10 @@ def update_activity(
     browser=None, action="server_calls", state=None, logfolder=None, logger=None
 ):
     """
-        1. Record every Instagram server call (page load, content load, likes,
-        comments, follows, unfollow)
-        2. Take rotative screenshots
-        3. update connection state and record to .json file
+    1. Record every Instagram server call (page load, content load, likes,
+    comments, follows, unfollow)
+    2. Take rotative screenshots
+    3. update connection state and record to .json file
     """
     # check action availability
     quota_supervisor("server_calls")
@@ -969,7 +969,7 @@ def click_element(browser, element, tryNum=0):
       exist, ...). on each attempt try and move the screen around in
       various ways. if all else fails, programmically click the button
       using `execute_script` in the browser.
-      """
+    """
 
     try:
         # use Selenium's built in click function
@@ -984,11 +984,16 @@ def click_element(browser, element, tryNum=0):
 
         if tryNum == 0:
             # try scrolling the element into view
-            browser.execute_script(
-                "document.getElementsByClassName('"
-                + element.get_attribute("class")
-                + "')[0].scrollIntoView({ inline: 'center' });"
-            )
+            try:
+                # This tends to fail because the script fails to get the element class
+                if element.get_attribute("class") != "":
+                    browser.execute_script(
+                        "document.getElementsByClassName('"
+                        + element.get_attribute("class")
+                        + "')[0].scrollIntoView({ inline: 'center' });"
+                    )
+            except Exception:
+                pass
 
         elif tryNum == 1:
             # well, that didn't work, try scrolling to the top and then
@@ -1003,13 +1008,18 @@ def click_element(browser, element, tryNum=0):
         else:
             # try `execute_script` as a last resort
             # print("attempting last ditch effort for click, `execute_script`")
-            browser.execute_script(
-                "document.getElementsByClassName('"
-                + element.get_attribute("class")
-                + "')[0].click()"
-            )
-            # update server calls after last click attempt by JS
-            update_activity(browser, state=None)
+            try:
+                if element.get_attribute("class") != "":
+                    browser.execute_script(
+                        "document.getElementsByClassName('"
+                        + element.get_attribute("class")
+                        + "')[0].click()"
+                    )
+                    # update server calls after last click attempt by JS
+                    update_activity(browser, state=None)
+            except Exception:
+                print("Failed to click an element, giving up now")
+
             # end condition for the recursive function
             return
 
@@ -1239,8 +1249,8 @@ def interruption_handler(
     notify=None,
     logger=None,
 ):
-    """ Handles external interrupt, usually initiated by the user like
-    KeyboardInterrupt with CTRL+C """
+    """Handles external interrupt, usually initiated by the user like
+    KeyboardInterrupt with CTRL+C"""
     if notify is not None and logger is not None:
         logger.warning(notify)
 
@@ -1459,8 +1469,8 @@ def ping_server(host, logger):
 
 
 def emergency_exit(browser, username, logger):
-    """ Raise emergency if the is no connection to server OR if user is not
-    logged in """
+    """Raise emergency if the is no connection to server OR if user is not
+    logged in"""
     server_address = "instagram.com"
     connection_state = ping_server(server_address, logger)
     if connection_state is False:
@@ -1604,14 +1614,14 @@ def get_username(browser, track, logger):
 
 def find_user_id(browser, track, username, logger):
     """  Find the user ID from the loaded page """
+    logger.info(
+        "Attempting to find user ID: Track: {}, Username {}".format(track, username)
+    )
     if track in ["dialog", "profile"]:
         query = "return window.__additionalData[Object.keys(window.__additionalData)[0]].data.graphql.user.id"
 
     elif track == "post":
-        query = (
-            "return window._sharedData.entry_data.PostPage["
-            "0].graphql.shortcode_media.owner.id"
-        )
+        query = "return window._sharedData.entry_data.ProfilePage[0].graphql.user.id"
         meta_XP = read_xpath(find_user_id.__name__, "meta_XP")
 
     failure_message = "Failed to get the user ID of '{}' from {} page!".format(
@@ -1658,8 +1668,8 @@ def find_user_id(browser, track, username, logger):
 
 @contextmanager
 def new_tab(browser):
-    """ USE once a host tab must remain untouched and yet needs extra data-
-    get from guest tab """
+    """USE once a host tab must remain untouched and yet needs extra data-
+    get from guest tab"""
     try:
         # add a guest tab
         browser.execute_script("window.open()")
@@ -2399,7 +2409,7 @@ def get_bounding_box(
 
 def take_rotative_screenshot(browser, logfolder):
     """
-        Make a sequence of screenshots, based on hour:min:secs
+    Make a sequence of screenshots, based on hour:min:secs
     """
     global next_screenshot
 
@@ -2416,14 +2426,27 @@ def take_rotative_screenshot(browser, logfolder):
     next_screenshot += 1
 
 
-def get_query_hash(browser, logger):
-    """ Load Instagram JS file and find query hash code """
+def get_query_hash(browser, logger, edge_followed_by):
+    """
+    Load Instagram JS file and find query hash code
+
+    :param browser: webdriver instance
+    :param logger: the logger instance
+    :param edge_followed_by: query hash flag, edge_followed_by or edge_follow
+    :return: query hash
+    """
     link = "https://www.instagram.com/static/bundles/es6/Consumer.js/1f67555edbd3.js"
     web_address_navigator(browser, link)
     page_source = browser.page_source
+    # There are two query hash, one for followers and following, ie:
+    # t="c76146de99bb02f6415203be841dd25a",n="d04b0a864b4b54837c0d870b0e77e076"
+    if edge_followed_by:
+        pattern_hash = '[a-z0-9]{32}(?=",n=")'  # Used to query: edge_followed_by
+    else:
+        pattern_hash = '[a-z0-9]{32}(?=",u=1)'  # Used to query: edge_follow
     # locate pattern value from JS file
     # sequence of 32 words and/or numbers just before ,n=" value
-    hash = re.findall('[a-z0-9]{32}(?=",n=")', page_source)
+    hash = re.findall(pattern_hash, page_source)
     if hash:
         return hash[0]
     else:

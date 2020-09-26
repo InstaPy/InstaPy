@@ -136,8 +136,8 @@ def inspector(job, peaks):
 
 
 def stochasticity(peaks):
-    """ Generate casually chosen arbitrary peak values based on originals
-    set by the user """
+    """Generate casually chosen arbitrary peak values based on originals
+    set by the user"""
     # in future, stochasticity percentage can be added to th QS parameters
     # for users to define
     stoch_percent = random.randint(70, 85)  # over 70, below 85 would be good
@@ -202,8 +202,8 @@ def stoch_randomizer(value, percent):
 
 
 def remaining_time(sleepyhead, interval):
-    """ Calculate wake up time and return accurate or close-range random
-    sleep seconds """
+    """Calculate wake up time and return accurate or close-range random
+    sleep seconds"""
     extra_sleep_percent = 140  # actually 114 also is not that bad amount
 
     if interval == "hourly":
@@ -272,8 +272,8 @@ def send_message(job, action, interval, nap):
 
 
 def toast_notification(notify, alert, job, interval):
-    """ Send toast notifications about supervising states directly to OS
-    using 'plyer' module """
+    """Send toast notifications about supervising states directly to OS
+    using 'plyer' module"""
     platform_matches = platform.startswith(("win32", "linux", "darwin"))
     if notify is True and platform_matches:
         icons = get_icons()

@@ -40,8 +40,8 @@ def sleep_actual(t):
 
 
 def get_time(labels):
-    """ To get a use out of this helpful function
-        catch in the same order of passed parameters """
+    """To get a use out of this helpful function
+    catch in the same order of passed parameters"""
     if not isinstance(labels, list):
         labels = [labels]
 
