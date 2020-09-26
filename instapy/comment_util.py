@@ -84,11 +84,11 @@ def comment_image(browser, username, comments, blacklist, logger, logfolder):
             )
             return False, "commenting disabled"
 
-        if not comment_elem:
-            logger.warning(
-                "--> Comment Action Likely Failed!" "\t~comment Element was not found"
-            )
-            return False, "commenting disabled"
+    if not comment_elem:
+        logger.warning(
+            "--> Comment Action Likely Failed!" "\t~comment Element was not found"
+        )
+        return False, "commenting disabled"
 
     # wait, to avoid crash
     sleep(3)
