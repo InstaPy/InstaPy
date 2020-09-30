@@ -851,6 +851,8 @@ def get_tags(browser, url):
 
 def get_links(browser, page, logger, media, element):
     links = []
+    post_href = None
+
     try:
         # Get image links in scope from hashtag, location and other pages
         link_elems = element.find_elements_by_xpath('//a[starts-with(@href, "/p/")]')
