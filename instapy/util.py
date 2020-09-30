@@ -956,7 +956,7 @@ def scroll_bottom(browser, element, range_int):
     return
 
 
-def scroll_down(browser, y=50):
+def scroll_down(browser, y: int = 50):
     """
     Scroll down the page by 50 pixels
 

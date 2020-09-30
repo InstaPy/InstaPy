@@ -1438,6 +1438,7 @@ class InstaPy:
         amount: int = 50,
         media: str = None,
         skip_top_posts: bool = True,
+        randomize: bool = False,
     ):
         """Likes (default) 50 images per given locations"""
         if self.aborting:
@@ -1452,6 +1453,9 @@ class InstaPy:
 
         locations = locations or []
         self.quotient_breach = False
+
+        if randomize is True:
+            random.shuffle(locations)
 
         for index, location in enumerate(locations):
             if self.quotient_breach:
