@@ -11,6 +11,7 @@ _The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 - `like_by_locations()` with randomize flag
 
 ### Changed
+- check if liking activity was blocked after every like
 - Call scroll_down() after follower accepted, with this new def the window is scrolled down after accepting a follower.
 - Sorted imports, to make code readable
 
