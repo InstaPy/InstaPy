@@ -1,45 +1,50 @@
 """ Common utilities """
+# import built-in & third-party modules
 import time
 import datetime
-from math import ceil
-from math import radians
-from math import degrees as rad2deg
-from math import cos
 import random
 import re
 import regex
 import signal
 import os
 import sys
+import csv
+import sqlite3
+import json
+import emoji
+
+from math import ceil
+from math import radians
+from math import cos
+from math import degrees as rad2deg
 from sys import exit as clean_exit
 from platform import system
 from platform import python_version
 from subprocess import call
-import csv
-import sqlite3
-import json
+from random import randint
 from contextlib import contextmanager
 from tempfile import gettempdir
-import emoji
-from emoji.unicode_codes import UNICODE_EMOJI
 from argparse import ArgumentParser
 
+from emoji.unicode_codes import UNICODE_EMOJI
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as ec
 from selenium.webdriver.common.by import By
 
+# import InstaPy modules
+from .xpath import read_xpath
+from .event import Event
+from .settings import Settings
 from .time_util import sleep
 from .time_util import sleep_actual
 from .database_engine import get_database
 from .quota_supervisor import quota_supervisor
-from .settings import Settings
 
+# import exceptions
 from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import WebDriverException
 from selenium.common.exceptions import TimeoutException
 
-from .xpath import read_xpath
-from .event import Event
 
 default_profile_pic_instagram = [
     "https://instagram.flas1-2.fna.fbcdn.net/vp"
@@ -671,6 +676,8 @@ def get_active_users(browser, username, posts, boundary, logger):
 
     count = 1
     checked_posts = 0
+    user_list = []
+
     while count <= posts:
         # load next post
         try:
@@ -740,7 +747,6 @@ def get_active_users(browser, username, posts, boundary, logger):
             scroll_it = True
             try_again = 0
             start_time = time.time()
-            user_list = []
 
             if likers_count:
                 amount = (
@@ -945,6 +951,25 @@ def scroll_bottom(browser, element, range_int):
         # update server calls
         update_activity(browser, state=None)
         sleep(1)
+
+    return
+
+
+def scroll_down(browser, y: int = 50):
+    """
+    Scroll down the page by 50 pixels
+
+    This is intended mainly for accept_follow_requests(), since user could
+    have several request to be accepted. By default only 10 users are shown,
+    but InstaPy user could requested to accept more than 10.
+
+    :param y: number of pixels to be moved
+    """
+
+    browser.execute_script("window.scrollBy(0, {})".format(y))
+    # update server calls
+    update_activity(browser, state=None)
+    sleep(randint(1, 5))
 
     return
 
@@ -1254,6 +1279,8 @@ def interruption_handler(
     if notify is not None and logger is not None:
         logger.warning(notify)
 
+    original_handler = None
+
     if not threaded:
         original_handler = signal.signal(SIG_type, handler)
 
@@ -1274,6 +1301,8 @@ def highlight_print(
     # find the number of chars needed off the length of the logger message
     output_len = 28 + len(username) + 3 + len(message) if logger else len(message)
     show_logs = Settings.show_logs
+    upper_char = None
+    lower_char = None
 
     if priority in ["initialization", "end"]:
         # OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
@@ -1365,6 +1394,8 @@ def remove_duplicates(container, keep_order, logger):
 
 def dump_record_activity(profile_name, logger, logfolder):
     """ Dump the record activity data to a local human-readable JSON """
+
+    conn = None
 
     try:
         # get a DB and start a connection
@@ -1580,6 +1611,9 @@ def check_authorization(browser, username, method, logger, notify=True):
 
 def get_username(browser, track, logger):
     """ Get the username of a user from the loaded profile page """
+
+    query = None
+
     if track == "profile":
         query = "return window._sharedData.entry_data. \
                     ProfilePage[0].graphql.user.username"
@@ -1614,6 +1648,10 @@ def get_username(browser, track, logger):
 
 def find_user_id(browser, track, username, logger):
     """  Find the user ID from the loaded page """
+
+    query = None
+    meta_XP = None
+
     logger.info(
         "Attempting to find user ID: Track: {}, Username {}".format(track, username)
     )
@@ -1705,6 +1743,9 @@ def explicit_wait(browser, track, ec_params, logger, timeout=35, notify=True):
         ec_params = [ec_params]
 
     # find condition according to the tracks
+    condition = None
+    ec_name = None
+
     if track == "VOEL":
         elem_address, find_method = ec_params
         ec_name = "visibility of element located"

@@ -10,7 +10,8 @@ import unicodedata
 import logging
 import logging.handlers
 
-from datetime import datetime, timedelta
+from datetime import datetime
+from datetime import timedelta
 from math import ceil
 from sys import platform
 from platform import python_version
@@ -27,11 +28,12 @@ except ModuleNotFoundError:
 
 # import InstaPy modules
 from . import __version__
+from .constants import MEDIA_PHOTO
+from .constants import MEDIA_VIDEO
 from .clarifai_util import check_image
 from .comment_util import comment_image
 from .comment_util import get_comments_on_post
 from .comment_util import process_comments
-from .constants import MEDIA_PHOTO, MEDIA_VIDEO
 from .like_util import check_link
 from .like_util import verify_liking
 from .like_util import get_links_for_tag
@@ -47,7 +49,6 @@ from .settings import Settings
 from .settings import localize_path
 from .print_log_writer import log_follower_num
 from .print_log_writer import log_following_num
-
 from .time_util import sleep
 from .time_util import set_sleep_percentage
 from .util import get_active_users
@@ -62,6 +63,7 @@ from .util import parse_cli_args
 from .util import get_cord_location
 from .util import get_bounding_box
 from .util import file_handling
+from .util import scroll_down
 from .unfollow_util import get_given_user_followers
 from .unfollow_util import get_given_user_following
 from .unfollow_util import unfollow
@@ -87,13 +89,11 @@ from .browser import set_selenium_local_session
 from .browser import close_browser
 from .file_manager import get_workspace
 from .file_manager import get_logfolder
-
 from .pods_util import group_posts
 from .pods_util import get_recent_posts_from_pods
 from .pods_util import share_my_post_with_pods
 from .pods_util import share_with_pods_restriction
 from .pods_util import comment_restriction
-
 from .xpath import read_xpath
 
 # import exceptions
@@ -1438,6 +1438,7 @@ class InstaPy:
         amount: int = 50,
         media: str = None,
         skip_top_posts: bool = True,
+        randomize: bool = False,
     ):
         """Likes (default) 50 images per given locations"""
         if self.aborting:
@@ -1452,6 +1453,9 @@ class InstaPy:
 
         locations = locations or []
         self.quotient_breach = False
+
+        if randomize is True:
+            random.shuffle(locations)
 
         for index, location in enumerate(locations):
             if self.quotient_breach:
@@ -1665,6 +1669,8 @@ class InstaPy:
         followed = 0
         inap_img = 0
         not_valid_users = 0
+        msg = None
+        location = None
 
         locations = locations or []
         self.quotient_breach = False
@@ -2125,6 +2131,7 @@ class InstaPy:
             else False
         )
 
+        username = None
         liked_img = 0
         total_liked_img = 0
         already_liked = 0
@@ -5592,6 +5599,9 @@ class InstaPy:
                         "Reached accepted accounts limit of {} requests".format(amount)
                     )
                     break
+                # catch if the list cannot be accessed, there are more followers under the hood or
+                # because another element <a class="gKAyB " href="/accounts/activity/"> obscures it...
+                scroll_down(self.browser)
 
         self.logger.info("Accepted {} follow requests".format(accepted))
 
@@ -5632,6 +5642,7 @@ class InstaPy:
                 "//a[contains(@href, '/p/')]"
             )
             post_links = []
+            post_link = None
 
             for post_link_elem in post_link_elems:
                 try:
