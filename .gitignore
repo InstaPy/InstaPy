@@ -1,12 +1,14 @@
 # pylint file
 googlecl-pylint.rc.txt
 assets/chromedriver
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
 *$py.class
 
 quickstart.py
+docker_quickstart.py
 
 # C extensions
 *.so
@@ -97,13 +99,21 @@ ENV/
 .DS_Store
 
 # Storage
-instapy.db
+*.db
 logs/
 
 # Editors
 .idea
 .vscode
+*.code-workspace
+.bak
 
 # pytest
 .pytest_cache/
 tests/logs
+
+# Pipfile
+Pipfile
+
+# Instances
+z_*

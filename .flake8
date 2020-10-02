@@ -1,0 +1,18 @@
+[flake8]
+select =
+	E772,
+	F401,
+	F811,
+	E901,
+	E999,
+	F821,
+	F822,
+	F823,
+	C901, # complexity
+	E501, # line length
+	E225 # whitespace around operators
+max_complexity = 70
+max_line_length = 200
+show_source = True
+statistics = True
+count = True
