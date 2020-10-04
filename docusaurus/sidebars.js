@@ -1,6 +1,13 @@
 module.exports = {
-  someSidebar: {
-    Docusaurus: ['doc1', 'doc2', 'doc3'],
-    Features: ['mdx'],
+  docs: {
+    Documentation: [
+      'settings',
+      'actions',
+      'third-party-features',
+      'instance-settings',
+      'relationship-tools',
+      'automate-instapy',
+      'additional-information',
+    ],
   },
 };

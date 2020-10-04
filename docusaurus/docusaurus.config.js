@@ -9,6 +9,7 @@ module.exports = {
   projectName: 'InstaPy', // Usually your repo name.
   themeConfig: {
     googleAdsense: { dataAdClient: 'ca-pub-4875789012193531' },
+    sidebarCollapsible: false,
     navbar: {
       title: 'InstaPy - Documentation',
       logo: {
@@ -79,6 +80,7 @@ module.exports = {
       {
         docs: {
           routeBasePath: '/',
+          path: '../docs',
           sidebarPath: require.resolve('./sidebars.js'),
           editUrl:
             'https://github.com/timgrossmann/InstaPy/edit/master/website/',
