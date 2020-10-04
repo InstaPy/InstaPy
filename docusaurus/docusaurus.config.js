@@ -8,19 +8,20 @@ module.exports = {
   organizationName: 'timgrossmann', // Usually your GitHub org/user name.
   projectName: 'InstaPy', // Usually your repo name.
   themeConfig: {
+    googleAdsense: { dataAdClient: 'ca-pub-4875789012193531' },
     navbar: {
-      title: 'InstaPy',
+      title: 'InstaPy - Documentation',
       logo: {
-        alt: 'InstaPy',
-        src: 'img/logo.svg',
+        alt: 'InstaPy Logo',
+        src: 'img/instapy_logo.png',
       },
       items: [
-        {
-          to: 'docs/',
-          activeBasePath: 'docs',
-          label: 'Docs',
-          position: 'left',
-        },
+        //{
+          //to: 'docs/',
+          //activeBasePath: 'docs',
+          //label: 'Docs',
+          //position: 'left',
+        //},
         //{to: 'blog', label: 'Blog', position: 'left'},
         {
           href: 'https://github.com/timgrossmann/InstaPy',
@@ -49,14 +50,14 @@ module.exports = {
           title: 'Links',
           items: [
             // TODO add affiliate links here
-            {
-              label: 'Style Guide',
-              to: 'docs/',
-            },
-            {
-              label: 'Second Doc',
-              to: 'docs/doc2/',
-            },
+            //{
+              //label: 'Style Guide',
+              //to: 'docs/',
+            //},
+            //{
+              //label: 'Second Doc',
+              //to: 'docs/doc2/',
+            //},
           ],
         },
         {
@@ -87,5 +88,8 @@ module.exports = {
         },
       },
     ],
+  ],
+  plugins: [
+    'docusaurus-plugin-google-adsense',
   ],
 };
