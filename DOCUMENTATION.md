@@ -230,17 +230,19 @@ session.like_by_tags(amount=10, use_smart_hashtags=True)
 ###### Take full control of the actions with the most sophisticated approaches
 
 ```python
-session.set_quota_supervisor(enabled=True, sleep_after=["likes", "comments_d", "follows", "unfollows", "server_calls_h"], sleepyhead=True, stochastic_flow=True, notify_me=True,
-                              peak_likes_hourly=57,
-                              peak_likes_daily=585,
-                               peak_comments_hourly=21,
-                               peak_comments_daily=182,
-                                peak_follows_hourly=48,
-                                peak_follows_daily=None,
-                                 peak_unfollows_hourly=35,
-                                 peak_unfollows_daily=402,
-                                  peak_server_calls_hourly=None,
-                                  peak_server_calls_daily=4700)
+session.set_quota_supervisor(enabled=True,
+                             sleep_after=["likes", "comments_d", "follows", "unfollows", "server_calls_h"],
+                             sleepyhead=True, stochastic_flow=True, notify_me=True,
+                             peak_likes_hourly=57,
+                             peak_likes_daily=585,
+                             peak_comments_hourly=21,
+                             peak_comments_daily=182,
+                             peak_follows_hourly=48,
+                             peak_follows_daily=None,
+                             peak_unfollows_hourly=35,
+                             peak_unfollows_daily=402,
+                             peak_server_calls_hourly=None,
+                             peak_server_calls_daily=4700)
 ```
 #### Parameters:
 `enabled`: put `True` to **activate** or `False` to **deactivate** supervising any time
@@ -585,14 +587,14 @@ session.set_delimit_commenting(enabled=True, comments_mandatory_words=['cat', 'd
 ##### This is used to check the number of _followers_ and/or _following_ a user has and if these numbers _either_ **exceed** the number set OR **does not pass** the number set OR if **their ratio does not reach** desired potency ratio then no further interaction happens
 ```python
 session.set_relationship_bounds(enabled=True,
-				 potency_ratio=1.34,
-				  delimit_by_numbers=True,
-				   max_followers=8500,
-				    max_following=4490,
-				     min_followers=100,
-				      min_following=56,
-				       min_posts=10,
-                max_posts=1000)
+				                        potency_ratio=1.34,
+                                delimit_by_numbers=True,
+                                max_followers=8500,
+                                max_following=4490,
+                                min_followers=100,
+                                min_following=56,
+                                min_posts=10,
+                                max_posts=1000)
 ```
 Use `enabled=True` to **activate** this feature, and `enabled=False` to **deactivate** it, _any time_
 `delimit_by_numbers` is used to **activate** & **deactivate** the usage of max & min values
@@ -632,7 +634,7 @@ session.set_relationship_bounds(enabled=True, potency_ratio=-1.44, delimit_by_nu
 #### This is used to check number of posts of a user and skip if they aren't in the boundaries provided
 ```python
 session.set_relationship_bounds(min_posts=10,
-                                 max_posts=1000)
+                                max_posts=1000)
 ```
 Users that have more than 1000 posts or less than 10 will be discarded
 
@@ -651,11 +653,11 @@ Will skip only users that have more than 1000 posts in their feed
 ##### But you can set a _custom_ sleep delay for each action yourself by using the `set_action_delays` setting!
 ```python
 session.set_action_delays(enabled=True,
-                           like=3,
-                           comment=5,
-                           follow=4.17,
-                           unfollow=28,
-                           story=10)
+                          like=3,
+                          comment=5,
+                          follow=4.17,
+                          unfollow=28,
+                          story=10)
 ```
 _Now it will sleep `3` seconds **after putting every single like**, `5` seconds for every single comment and similarly for the others.._
 
@@ -869,9 +871,9 @@ session.follow_by_list(accs, times=1, sleep_delay=600, interact=False)
 * You can also **interact** with the followed users by enabling `interact=True` which will use the configuration of `set_user_interact` setting:
 ```python
 session.set_user_interact(amount=4,
-				 percentage=50,
-                  randomize=True,
-                   media='Photo')
+                          percentage=50,
+                          randomize=True,
+                          media='Photo')
 session.follow_by_list(followlist=['samantha3', 'larry_ok'], times=2, sleep_delay=600, interact=True)
 ```
 
@@ -942,9 +944,9 @@ The `follow_likers_per_photo` is how many people to follow per each photo
 * You can also **interact** with the followed users by enabling `interact=True` which will use the configuration of `set_user_interact` setting:
 ```python
 session.set_user_interact(amount=2,
-				 percentage=70,
-                  randomize=True,
-                   media='Photo')
+                          percentage=70,
+                          randomize=True,
+                          media='Photo')
 session.follow_likers(['user1' , 'user2'], photos_grab_amount = 2, follow_likers_per_photo = 3, randomize=True, sleep_delay=600, interact=True)
 ```
 
@@ -964,9 +966,9 @@ The `max_pic` will limit number of photos to analyze
 * You can also **interact** with the followed users by enabling `interact=True` which will use the configuration of `set_user_interact` setting:
 ```python
 session.set_user_interact(amount=3,
-				 percentage=32,
-                  randomize=True,
-                   media='Video')
+                          percentage=32,
+                          randomize=True,
+                          media='Video')
 session.follow_commenters(['user1', 'user2', 'user3'], amount=100, daysold=365, max_pic = 100, sleep_delay=600, interact=True)
 ```
 
@@ -1286,14 +1288,14 @@ session.remove_follow_requests(amount=200, sleep_delay=600)
 
  photo_comments = ['Nice shot! @{}',
                    'I love your profile! @{}',
- 	           'Your feed is an inspiration :thumbsup:',
- 	           'Just incredible :open_mouth:',
- 	           'What camera did you use @{}?',
- 	           'Love your posts @{}',
- 	           'Looks awesome @{}',
- 	           'Getting inspired by you @{}',
- 	           ':raised_hands: Yes!',
- 	           'I can feel your passion @{} :muscle:']
+                   'Your feed is an inspiration :thumbsup:',
+                   'Just incredible :open_mouth:',
+                   'What camera did you use @{}?',
+                   'Love your posts @{}',
+                   'Looks awesome @{}',
+                   'Getting inspired by you @{}',
+                   ':raised_hands: Yes!',
+                   'I can feel your passion @{} :muscle:']
 
  session = InstaPy()
 
@@ -2816,6 +2818,12 @@ You can manually download the geckodriver binary and put the path as an argument
 
 ```python
 session = InstaPy(..., geckodriver_path = '/path/to/binary', ...)
+```
+
+If you want, there is a flag to increase the level of verbosity for the geckodriver; by default level is "info".
+[Enabling trace logs](https://firefox-source-docs.mozilla.org/testing/geckodriver/TraceLogs.html)
+```python
+session = InstaPy(..., geckodriver_log_level='trace')
 ```
 
 ### Using one of the templates

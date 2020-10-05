@@ -126,6 +126,7 @@ class InstaPy:
         bypass_security_challenge_using: str = "email",
         want_check_browser: bool = True,
         browser_executable_path: str = None,
+        geckodriver_log_level: str = "info",  # "info" by default
     ):
         print("InstaPy Version: {}".format(__version__))
         cli_args = parse_cli_args()
@@ -331,6 +332,7 @@ class InstaPy:
                 browser_executable_path,
                 self.logfolder,
                 self.logger,
+                geckodriver_log_level,
             )
             if len(err_msg) > 0:
                 raise InstaPyError(err_msg)

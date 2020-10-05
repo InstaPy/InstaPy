@@ -15,13 +15,12 @@ from .util import explicit_wait
 from .util import click_element
 from .util import check_authorization
 from .util import reload_webpage
+from .xpath import read_xpath
 
 # import exceptions
 from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import WebDriverException
 from selenium.common.exceptions import MoveTargetOutOfBoundsException
-
-from .xpath import read_xpath
 
 
 def bypass_suspicious_login(
@@ -307,7 +306,8 @@ def login_user(
     # (valid for placeholder too)
 
     # wait until it navigates to the login page
-    login_page_title = "Login"
+    # 10/2020 -> "WebDriver:GetTitle" - {"value":"Instagram"}
+    login_page_title = "Instagram"
     explicit_wait(browser, "TC", login_page_title, logger)
 
     # wait until the 'username' input element is located and visible
