@@ -35,6 +35,11 @@ xpath["dismiss_notification_offer"] = {
     "dismiss_elem_loc": "//button[text()='Not Now']",
 }
 
+xpath["dissmiss_save_information"] = {
+    "offer_elem_loc": "//*[contains(text(), 'Save Info')]",
+    "dismiss_elem_loc": "//*[contains(text(), 'Not Now')]",
+}
+
 xpath["extract_information"] = {
     "close_overlay": "//div/div[@role='dialog']",
     "one_pic_elem": "//section/main/article/div[1]/div/div[10]/div[3]/a/div",
