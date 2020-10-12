@@ -269,9 +269,7 @@ def login_user(
     # if user is still not logged in, then there is an issue with the cookie
     # so go create a new cookie..
     if cookie_loaded:
-        print(
-            "Issue with cookie for user {}. Creating " "new cookie...".format(username)
-        )
+        print("Issue with cookie for user {}. Creating new cookie...".format(username))
 
     # Check if the first div is 'Create an Account' or 'Log In'
     try:

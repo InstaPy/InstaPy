@@ -3860,13 +3860,20 @@ class InstaPy:
 
         return self
 
-    def like_by_feed(self, **kwargs):
-        """Like the users feed"""
+    def like_by_feed(self, amount, randomize, unfollow, interact):
+        """
+        Like the users feed
+
+        :param amount: Specifies how many total likes you want to perform
+        :param randomize: randomly skips posts to be liked on your feed
+        :param unfollow: unfollows the author of a post which was considered inappropriate
+        :param interact: visits the author's profile page of a
+        """
 
         if self.aborting:
             return self
 
-        for i in self.like_by_feed_generator(**kwargs):
+        for i in self.like_by_feed_generator(amount, randomize, unfollow, interact):
             pass
 
         return self
@@ -3878,7 +3885,14 @@ class InstaPy:
         unfollow: bool = False,
         interact: bool = False,
     ):
-        """Like the users feed"""
+        """
+        Like the users feed
+
+        :param amount: Specifies how many total likes you want to perform
+        :param randomize: randomly skips posts to be liked on your feed
+        :param unfollow: unfollows the author of a post which was considered inappropriate
+        :param interact: visits the author's profile page of a
+        """
 
         if self.aborting:
             return
@@ -4434,8 +4448,10 @@ class InstaPy:
             dump_follow_restriction(self.username, self.logger, self.logfolder)
             dump_record_activity(self.username, self.logger, self.logfolder)
 
-            with open("{}followed.txt".format(self.logfolder), "w") as followFile:
-                followFile.write(str(self.followed))
+            with open("{}followed.txt".format(self.logfolder), "a") as followFile:
+                followFile.write(
+                    "{:%Y-%m-%d %H:%M} {}\n".format(datetime.now(), self.followed or 0)
+                )
 
             # output live stats before leaving
             self.live_report()
