@@ -3873,7 +3873,7 @@ class InstaPy:
         if self.aborting:
             return self
 
-        for i in self.like_by_feed_generator(amount, randomize, unfollow, interact):
+        for _ in self.like_by_feed_generator(amount, randomize, unfollow, interact):
             pass
 
         return self
