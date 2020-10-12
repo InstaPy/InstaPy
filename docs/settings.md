@@ -1,6 +1,5 @@
 ---
 title: Settings
-slug: /
 ---
 
 ### Liking
