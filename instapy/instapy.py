@@ -578,7 +578,7 @@ class InstaPy:
             return self
 
         if not isinstance(tags, list):
-            self.logger.warning("Unable to use your set_dont_like " "configuration!")
+            self.logger.warning("Unable to use your set_dont_like configuration!")
             self.aborting = True
 
         self.dont_like = tags
@@ -593,7 +593,7 @@ class InstaPy:
 
         if not isinstance(tags, list):
             self.logger.warning(
-                "Unable to use your set_mandatory_words " "configuration!"
+                "Unable to use your set_mandatory_words configuration!"
             )
             self.aborting = True
 
@@ -2338,7 +2338,7 @@ class InstaPy:
             if liked_img < amount:
                 self.logger.info("-------------")
                 self.logger.info(
-                    "--> Given amount not fullfilled, " "image pool reached its end\n"
+                    "--> Given amount not fullfilled, image pool reached its end\n"
                 )
 
         self.logger.info("User: {}".format(username.encode("utf-8")))
@@ -2651,7 +2651,7 @@ class InstaPy:
             if liked_img < amount:
                 self.logger.info("-------------")
                 self.logger.info(
-                    "--> Given amount not fullfilled, image pool " "reached its end\n"
+                    "--> Given amount not fullfilled, image pool reached its end\n"
                 )
 
         if len(usernames) > 1:
@@ -2957,7 +2957,7 @@ class InstaPy:
             if liked_img < amount:
                 self.logger.info("-------------")
                 self.logger.info(
-                    "--> Given amount not fullfilled, image pool " "reached its end\n"
+                    "--> Given amount not fullfilled, image pool reached its end\n"
                 )
 
         # final words
@@ -3940,7 +3940,7 @@ class InstaPy:
 
             num_of_search += 1
 
-            for i, link in enumerate(links):
+            for _, link in enumerate(links):
                 if liked_img == amount:
                     break
 
@@ -3961,7 +3961,7 @@ class InstaPy:
                 else:
                     if link in history:
                         self.logger.info(
-                            "This link has already " "been visited: {}".format(link)
+                            "This link has already been visited: {}".format(link)
                         )
                         continue
                     else:
@@ -4046,7 +4046,7 @@ class InstaPy:
 
                                         except Exception as err:
                                             self.logger.error(
-                                                "Image check error:" " {}".format(err)
+                                                "Image check error: {}".format(err)
                                             )
 
                                     # commenting
@@ -5112,7 +5112,7 @@ class InstaPy:
         else:
             if media is not None:
                 self.logger.warning(
-                    "Unkown media type set at" " comment replies! Treating as 'any'."
+                    "Unkown media type set at comment replies! Treating as 'any'."
                 )
 
             self.comment_replies = replies
