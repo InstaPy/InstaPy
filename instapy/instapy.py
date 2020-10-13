@@ -592,9 +592,7 @@ class InstaPy:
             return self
 
         if not isinstance(tags, list):
-            self.logger.warning(
-                "Unable to use your set_mandatory_words configuration!"
-            )
+            self.logger.warning("Unable to use your set_mandatory_words configuration!")
             self.aborting = True
 
         self.mandatory_words = tags
