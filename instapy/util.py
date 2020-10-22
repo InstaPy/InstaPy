@@ -1917,6 +1917,13 @@ def is_page_available(browser, logger):
 @contextmanager
 def smart_run(session, threaded=False):
     try:
+        session.browser.get('https://instagram.com/accounts/login')
+        session.browser.implicitly_wait(5)
+        for element in session.browser.find_elements_by_tag_name('button'):
+         if element.text.strip().lower() == 'accept': 
+            element.click()
+            break
+            
         session.login()
         yield
     except NoSuchElementException:
