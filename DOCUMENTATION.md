@@ -78,6 +78,7 @@
  <br />
 
 - **[Relationship tools](#relationship-tools)**
+  - [Is selected user is verified](#is-user-verified)
   - [Grab Followers of a user](#grab-followers-of-a-user)
   - [Grab Following of a user](#grab-following-of-a-user)
   - [Pick Unfollowers of a user](#pick-unfollowers-of-a-user)
@@ -1906,6 +1907,16 @@ session = InstaPy(username=insta_username,
 <br />
 
 ## Relationship tools
+
+### Is user verified
+###### Returns `true` or `false` depending if the the user is verified or not
+```python
+isUserVerified = session.isUserVerified(username="username1")
+```
+### Parameters:
+`username`: A desired username to grab its followers
+
+
 ### Grab Followers of a user
 ###### Gets and returns `followers` of the given user in desired amount, also can save locally
 ```python
