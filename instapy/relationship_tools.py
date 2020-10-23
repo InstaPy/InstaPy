@@ -852,6 +852,21 @@ def get_mutual_following(
 
     return mutual_following
 
+def isUserVerified(browser, username, logger):
+    """ Retrieve if user is verified """
+    if username is None or not isinstance(username, str):
+        logger.info("Username not inserted")
+        return None
+    
+    user_link = "https://www.instagram.com/{}/".format(username)
+    web_address_navigator(browser, user_link)
+
+    try:
+        browser.find_element_by_class_name('coreSpriteVerifiedBadge')
+        return True
+    except Exception:
+        return False
+
 
 def store_followers_data(username, grab, grabbed_followers, logger, logfolder):
     """Store grabbed `Followers` data in a local storage at genereated date"""
