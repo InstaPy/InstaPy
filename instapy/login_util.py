@@ -292,6 +292,15 @@ def login_user(
                 return False
 
     if login_elem is not None:
+        # elulcao Oct 24
+        # Error rised here due to <button class="sqdOP L3NKy y3zKF" type="button">
+        # Cookie could not be loaded, but selenium session displayed we are in,
+        # then the failure for the `login_elem` button. What we can do then is
+        # to move back to the Login page
+        #
+        # I saw this issue if InstaPy session hasn't been used in a long time
+        print("Check if browser is using Instagram Home page")
+        web_address_navigator(browser, ig_homepage)
         try:
             (ActionChains(browser).move_to_element(login_elem).click().perform())
         except MoveTargetOutOfBoundsException:
@@ -439,7 +448,7 @@ def login_user(
         pass
 
     if "instagram.com/accounts/onetap" in browser.current_url:
-        browser.get("https://instagram.com")
+        browser.get(ig_homepage)
 
     # wait until page fully load
     explicit_wait(browser, "PFL", [], logger, 5)
