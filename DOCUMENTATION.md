@@ -78,7 +78,7 @@
  <br />
 
 - **[Relationship tools](#relationship-tools)**
-  - [Is selected user is verified](#is-user-verified)
+  - [Check if selected user has the verified blue badge](#is-user-verified)
   - [Grab Followers of a user](#grab-followers-of-a-user)
   - [Grab Following of a user](#grab-following-of-a-user)
   - [Pick Unfollowers of a user](#pick-unfollowers-of-a-user)
@@ -1908,7 +1908,7 @@ session = InstaPy(username=insta_username,
 
 ## Relationship tools
 
-### Is user verified
+### Check if selected user has the verified blue badge
 ###### Returns `true` or `false` depending if the the user is verified or not
 ```python
 isUserVerified = session.isUserVerified(username="username1")

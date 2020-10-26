@@ -852,10 +852,19 @@ def get_mutual_following(
 
     return mutual_following
 
-def isUserVerified(browser, username, logger):
-    """ Retrieve if user is verified """
+def is_user_verified(browser, username: str, logger):
+    """Retrieve if user is verified (blue badge)
+
+    Args:
+        browser (WebDriver): The browser session created with InstaPy
+        username (str): The username to check
+        logger (LoggerAdapter): The logger
+
+    Returns:
+        Returns true if the user has the badge, false otherwise
+    """
     if username is None or not isinstance(username, str):
-        logger.info("Username not inserted")
+        logger.info("Please enter a username to check the verified badge  ~leaving out of an invalid value")
         return None
     
     user_link = "https://www.instagram.com/{}/".format(username)
