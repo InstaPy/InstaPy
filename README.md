@@ -28,13 +28,13 @@ Implemented in Python using the Selenium module.<p>
   </p>
 </p>
 
-[Twitter of InstaPy](https://twitter.com/InstaPy) | [Twitter of Tim](https://twitter.com/timigrossmann) | [Discord Channel](https://discord.gg/FDETsht) | [How it works (FreeCodingCamp)](https://www.freecodecamp.org/news/my-open-source-instagram-bot-got-me-2-500-real-followers-for-5-in-server-costs-e40491358340/) |   
+
+[Twitter of InstaPy](https://twitter.com/InstaPy) | [Twitter of Tim](https://twitter.com/timigrossmann) | [Discord Channel](https://discord.gg/FDETsht) | [How it works (Medium)](https://medium.freecodecamp.com/my-open-source-instagram-bot-got-me-2-500-real-followers-for-5-in-server-costs-e40491358340) |   
 [Talk about automating your Instagram](https://youtu.be/4TmKFZy-ioQ) | [Talk about doing Open-Source work](https://www.youtube.com/watch?v=A_UtST302Og&t=0s&list=PLa4P1NPX9hthXV-wko0xyxFpbhYZFkW7o) | [Listen to the "Talk Python to me"-Episode](https://talkpython.fm/episodes/show/142/automating-the-web-with-selenium-and-instapy)
 
 
 **Newsletter: [Sign Up for the Newsletter here!](http://eepurl.com/cZbV_v)**   
-**Official Video Guide: [Get it here!](https://www.udemy.com/instapy-guide/?couponCode=INSTAPY_OFFICIAL)**   
-**Guide to Bot Creation: [Learn to Build your own Bots with the Creators of InstaPy](https://www.udemy.com/course/the-complete-guide-to-bot-creation/?referralCode=7418EBB47E11E34D86C9)**
+**Official Video Guide: [Get it here!](https://www.udemy.com/instapy-guide/?couponCode=INSTAPY_OFFICIAL)**
 
 
 ## Table of contents
@@ -111,8 +111,6 @@ pip install instapy -U
 #### Video tutorials:
 **[Official InstaPy Guide on Udemy](https://www.udemy.com/instapy-guide/?couponCode=INSTAPY_OFFICIAL)**
 
-**[Complete Guide to Bot Creation](https://www.udemy.com/course/the-complete-guide-to-bot-creation/?referralCode=7418EBB47E11E34D86C9)**
-
 **[Installation on Windows](https://www.youtube.com/watch?v=9DkEl2MrFQk&list=PLa4P1NPX9hthXV-wko0xyxFpbhYZFkW7o&index=11&t=40s)**
 
 **[Installation on MacOS](https://www.youtube.com/watch?v=TqQWM63Hhh4&t=11s&list=PLa4P1NPX9hthXV-wko0xyxFpbhYZFkW7o&index=12)**
@@ -126,9 +124,6 @@ pip install instapy -U
 
 **[How to RaspberryPi](https://github.com/InstaPy/instapy-docs/blob/master/How_Tos/How_to_Raspberry.md) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**
 
-**[RealPythons InstaPy Guide](https://realpython.com/instagram-bot-python-instapy/) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**
-
-**[InstaPy : développez vous-même votre bot Instagram !](https://www.yubigeek.com/instapy-bot-instagram/) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**
 
 ## External Tools:
 
@@ -197,4 +192,4 @@ Support this project by becoming a sponsor. Your logo will show up here with a l
 
 ---
 
-> **Disclaimer**<a name="disclaimer" />: Please note that this is a research project. I am by no means responsible for any usage of this tool. Use it on your behalf. I'm also not responsible if your accounts get banned due to the extensive use of this tool.
+> **Disclaimer**<a name="disclaimer" />: Please Note that this is a research project. I am by no means responsible for any usage of this tool. Use on your own behalf. I'm also not responsible if your accounts get banned due to extensive use of this tool.

@@ -15,12 +15,13 @@ from .util import explicit_wait
 from .util import click_element
 from .util import check_authorization
 from .util import reload_webpage
-from .xpath import read_xpath
 
 # import exceptions
 from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import WebDriverException
 from selenium.common.exceptions import MoveTargetOutOfBoundsException
+
+from .xpath import read_xpath
 
 
 def bypass_suspicious_login(
@@ -162,7 +163,7 @@ def check_browser(browser, logfolder, logger, proxy_address):
 
     # check connection status
     try:
-        logger.info("-- Connection Checklist [1/2] (Internet Connection Status)")
+        logger.info("-- Connection Checklist [1/3] (Internet Connection Status)")
         browser.get("view-source:https://ip4.seeip.org/geoip")
         pre = browser.find_element_by_tag_name("pre").text
         current_ip_info = json.loads(pre)
@@ -206,8 +207,46 @@ def check_browser(browser, logfolder, logger, proxy_address):
         )
         return False
 
+    # check Instagram.com status
+    try:
+        logger.info("-- Connection Checklist [2/3] (Instagram Server Status)")
+        browser.get("https://isitdownorjust.me/instagram-com/")
+        sleep(2)
+        # collect isitdownorjust.me website information
+        website_status = browser.find_element_by_xpath(
+            read_xpath(login_user.__name__, "website_status")
+        )
+        response_time = browser.find_element_by_xpath(
+            read_xpath(login_user.__name__, "response_time")
+        )
+        response_code = browser.find_element_by_xpath(
+            read_xpath(login_user.__name__, "response_code")
+        )
+
+        logger.info("- Instagram WebSite Status: {} ".format(website_status.text))
+        logger.info("- Instagram Response Time: {} ".format(response_time.text))
+        logger.info("- Instagram Reponse Code: {}".format(response_code.text))
+        logger.info("- Instagram Server Status: ok")
+        update_activity(
+            browser,
+            action=None,
+            state="Instagram servers are running correctly",
+            logfolder=logfolder,
+            logger=logger,
+        )
+    except Exception:
+        logger.warn("- Instagram Server Status: error")
+        update_activity(
+            browser,
+            action=None,
+            state="Instagram server is down",
+            logfolder=logfolder,
+            logger=logger,
+        )
+        return False
+
     # check if hide-selenium extension is running
-    logger.info("-- Connection Checklist [2/2] (Hide Selenium Extension)")
+    logger.info("-- Connection Checklist [3/3] (Hide Selenium Extension)")
     webdriver = browser.execute_script("return window.navigator.webdriver")
     logger.info("- window.navigator.webdriver response: {}".format(webdriver))
     if webdriver:
@@ -233,8 +272,7 @@ def login_user(
     assert username, "Username not provided"
     assert password, "Password not provided"
 
-    # Hotfix - this check crashes more often than not -- plus in not necessary,
-    # I can verify my own connection
+    # Hotfix - this check crashes more often than not -- plus in not necessary, I can verify my own connection
     if want_check_browser:
         if not check_browser(browser, logfolder, logger, proxy_address):
             return False
@@ -263,13 +301,14 @@ def login_user(
     )
     if login_state is True:
         dismiss_notification_offer(browser, logger)
-        dissmiss_save_information(browser, logger)
         return True
 
     # if user is still not logged in, then there is an issue with the cookie
     # so go create a new cookie..
     if cookie_loaded:
-        print("Issue with cookie for user {}. Creating new cookie...".format(username))
+        print(
+            "Issue with cookie for user {}. Creating " "new cookie...".format(username)
+        )
 
     # Check if the first div is 'Create an Account' or 'Log In'
     try:
@@ -283,13 +322,7 @@ def login_user(
                 read_xpath(login_user.__name__, "login_elem_no_such_exception")
             )
         except NoSuchElementException:
-            print("Could not pass the login A/B test. Trying last string...")
-            try:
-                login_elem = browser.find_element_by_xpath(
-                    read_xpath(login_user.__name__, "login_elem_no_such_exception_2")
-                )
-            except NoSuchElementException:
-                return False
+            return False
 
     if login_elem is not None:
         try:
@@ -305,8 +338,7 @@ def login_user(
     # (valid for placeholder too)
 
     # wait until it navigates to the login page
-    # 10/2020 -> "WebDriver:GetTitle" - {"value":"Instagram"}
-    login_page_title = "Instagram"
+    login_page_title = "Login"
     explicit_wait(browser, "TC", login_page_title, logger)
 
     # wait until the 'username' input element is located and visible
@@ -361,7 +393,6 @@ def login_user(
 
     dismiss_get_app_offer(browser, logger)
     dismiss_notification_offer(browser, logger)
-    dissmiss_save_information(browser, logger)
 
     # check for login error messages and display it in the logs
     if "instagram.com/challenge" in browser.current_url:
@@ -485,27 +516,6 @@ def dismiss_notification_offer(browser, logger):
     )
 
     if offer_loaded:
-        dismiss_elem = browser.find_element_by_xpath(dismiss_elem_loc)
-        click_element(browser, dismiss_elem)
-
-
-def dissmiss_save_information(browser, logger):
-    """ Dismiss 'Save Your Login Info?' offer on session start """
-    # This question occurs when pkl doesn't exist
-    offer_elem_loc = read_xpath(dissmiss_save_information.__name__, "offer_elem_loc")
-    dismiss_elem_loc = read_xpath(
-        dissmiss_save_information.__name__, "dismiss_elem_loc"
-    )
-
-    offer_loaded = explicit_wait(
-        browser, "VOEL", [offer_elem_loc, "XPath"], logger, 4, False
-    )
-
-    if offer_loaded:
-        # When prompted chose "Not Now", we don't know if saving information
-        # contributes or stimulate IG to target the acct, it would be better to
-        # just pretend that we are using IG in different browsers.
-        logger.info("Do not save Login Info by now")
         dismiss_elem = browser.find_element_by_xpath(dismiss_elem_loc)
         click_element(browser, dismiss_elem)
 

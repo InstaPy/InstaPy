@@ -1,23 +1,13 @@
 """OS Modules environ method to get the setup vars from the Environment"""
 # import built-in & third-party modules
-import time
-import random
-import os
-import csv
-import json
-import requests
-import unicodedata
-import logging
-import logging.handlers
-
-from datetime import datetime
-from datetime import timedelta
+import time, random, os, csv, json, requests, logging, unicodedata
+from datetime import datetime, timedelta
 from math import ceil
 from sys import platform
 from platform import python_version
 from selenium import webdriver
 from selenium.webdriver import DesiredCapabilities
-from logging.handlers import RotatingFileHandler
+import logging.handlers
 from contextlib import contextmanager
 from copy import deepcopy
 
@@ -28,12 +18,11 @@ except ModuleNotFoundError:
 
 # import InstaPy modules
 from . import __version__
-from .constants import MEDIA_PHOTO
-from .constants import MEDIA_VIDEO
 from .clarifai_util import check_image
 from .comment_util import comment_image
+from .comment_util import verify_commenting
 from .comment_util import get_comments_on_post
-from .comment_util import process_comments
+from .constants import MEDIA_PHOTO, MEDIA_VIDEO
 from .like_util import check_link
 from .like_util import verify_liking
 from .like_util import get_links_for_tag
@@ -49,6 +38,7 @@ from .settings import Settings
 from .settings import localize_path
 from .print_log_writer import log_follower_num
 from .print_log_writer import log_following_num
+
 from .time_util import sleep
 from .time_util import set_sleep_percentage
 from .util import get_active_users
@@ -63,7 +53,6 @@ from .util import parse_cli_args
 from .util import get_cord_location
 from .util import get_bounding_box
 from .util import file_handling
-from .util import scroll_down
 from .unfollow_util import get_given_user_followers
 from .unfollow_util import get_given_user_following
 from .unfollow_util import unfollow
@@ -89,11 +78,13 @@ from .browser import set_selenium_local_session
 from .browser import close_browser
 from .file_manager import get_workspace
 from .file_manager import get_logfolder
+
 from .pods_util import group_posts
 from .pods_util import get_recent_posts_from_pods
 from .pods_util import share_my_post_with_pods
 from .pods_util import share_with_pods_restriction
 from .pods_util import comment_restriction
+
 from .xpath import read_xpath
 
 # import exceptions
@@ -126,7 +117,6 @@ class InstaPy:
         bypass_security_challenge_using: str = "email",
         want_check_browser: bool = True,
         browser_executable_path: str = None,
-        geckodriver_log_level: str = "info",  # "info" by default
     ):
         print("InstaPy Version: {}".format(__version__))
         cli_args = parse_cli_args()
@@ -263,7 +253,6 @@ class InstaPy:
         self.min_posts = None
         self.skip_business_categories = []
         self.skip_bio_keyword = []
-        self.mandatory_bio_keywords = []
         self.dont_skip_business_categories = []
         self.skip_business = False
         self.skip_non_business = False
@@ -330,9 +319,7 @@ class InstaPy:
                 page_delay,
                 geckodriver_path,
                 browser_executable_path,
-                self.logfolder,
                 self.logger,
-                geckodriver_log_level,
             )
             if len(err_msg) > 0:
                 raise InstaPyError(err_msg)
@@ -350,13 +337,7 @@ class InstaPy:
             # initialize and setup logging system for the InstaPy object
             logger = logging.getLogger(self.username)
             logger.setLevel(logging.DEBUG)
-            # log name and format
-            general_log = "{}general.log".format(self.logfolder)
-            file_handler = logging.FileHandler(general_log)
-            # log rotation, 5 logs with 10MB size each one
-            file_handler = RotatingFileHandler(
-                general_log, maxBytes=10 * 1024 * 1024, backupCount=5
-            )
+            file_handler = logging.FileHandler("{}general.log".format(self.logfolder))
             file_handler.setLevel(logging.DEBUG)
             extra = {"username": self.username}
             logger_formatter = logging.Formatter(
@@ -387,8 +368,8 @@ class InstaPy:
     ):
         """
         Starts remote session for a selenium server.
-        Creates a new selenium driver instance for remote session or uses
-        provided one. Useful for docker setup.
+        Creates a new selenium driver instance for remote session or uses provided
+        one. Useful for docker setup.
 
         :param selenium_url: string
         :param selenium_driver: selenium WebDriver
@@ -414,11 +395,11 @@ class InstaPy:
     def login(self):
         """Used to login the user either with the username and password"""
         # InstaPy uses page_delay speed to implicit wait for elements,
-        # here we're decreasing it to 5 seconds instead of the default 25
-        # seconds to speed up the login process.
+        # here we're decreasing it to 5 seconds instead of the default 25 seconds
+        # to speed up the login process.
         #
-        # In short: default page_delay speed took 25 seconds trying to locate
-        # every element, now it's taking 5 seconds.
+        # In short: default page_delay speed took 25 seconds trying to locate every
+        # element, now it's taking 5 seconds.
         temporary_page_delay = 5
         self.browser.implicitly_wait(temporary_page_delay)
 
@@ -555,11 +536,11 @@ class InstaPy:
         self, enabled: bool = False, percentage: int = 0, simulate: bool = False
     ):
         """
-        configure stories
-        enabled: to add story to interact
-        percentage: how much to watch
-        simulate: if True, we will simulate watching (faster),
-                  but nothing will be seen on the browser window
+            configure stories
+            enabled: to add story to interact
+            percentage: how much to watch
+            simulate: if True, we will simulate watching (faster),
+                      but nothing will be seen on the browser window
         """
         if self.aborting:
             return self
@@ -572,13 +553,13 @@ class InstaPy:
 
     def set_dont_like(self, tags: list = []):
         """Changes the possible restriction tags, if one of this
-        words is in the description, the image won't be liked but user
-        still might be unfollowed"""
+         words is in the description, the image won't be liked but user
+         still might be unfollowed"""
         if self.aborting:
             return self
 
         if not isinstance(tags, list):
-            self.logger.warning("Unable to use your set_dont_like configuration!")
+            self.logger.warning("Unable to use your set_dont_like " "configuration!")
             self.aborting = True
 
         self.dont_like = tags
@@ -587,12 +568,14 @@ class InstaPy:
 
     def set_mandatory_words(self, tags: list = []):
         """Changes the possible restriction tags, if all of this
-        hashtags is in the description, the image will be liked"""
+         hashtags is in the description, the image will be liked"""
         if self.aborting:
             return self
 
         if not isinstance(tags, list):
-            self.logger.warning("Unable to use your set_mandatory_words configuration!")
+            self.logger.warning(
+                "Unable to use your set_mandatory_words " "configuration!"
+            )
             self.aborting = True
 
         self.mandatory_words = tags
@@ -708,7 +691,9 @@ class InstaPy:
             return
 
         for tag in tags:
-            req = requests.get("https://apidisplaypurposes.com/tag/{}".format(tag))
+            req = requests.get(
+                "https://d212rkvo8t62el.cloudfront.net/tag/{}".format(tag)
+            )
             data = json.loads(req.text)
 
             if data["tagExists"] is True:
@@ -763,7 +748,7 @@ class InstaPy:
                 bbox["lat_max"],
                 radius,
             )
-            url = "https://displaypurposes.com/local/?bbox={}".format(bbox_url)
+            url = "https://query.displaypurposes.com/local/?bbox={}".format(bbox_url)
 
             req = requests.get(url)
             data = json.loads(req.text)
@@ -1336,7 +1321,6 @@ class InstaPy:
             self.skip_business_categories,
             self.dont_skip_business_categories,
             self.skip_bio_keyword,
-            self.mandatory_bio_keywords,
             self.logger,
             self.logfolder,
         )
@@ -1362,10 +1346,9 @@ class InstaPy:
         skip_business: bool = False,
         business_percentage: int = 100,
         skip_business_categories: list = [],
+        skip_bio_keyword: list = [],
         dont_skip_business_categories: list = [],
         skip_non_business: bool = False,
-        skip_bio_keyword: list = [],
-        mandatory_bio_keywords: list = [],
     ):
 
         self.skip_business = skip_business
@@ -1376,7 +1359,6 @@ class InstaPy:
         self.skip_private_percentage = private_percentage
         self.skip_non_business = skip_non_business
         self.skip_bio_keyword = skip_bio_keyword
-        self.mandatory_bio_keywords = mandatory_bio_keywords
         if skip_business:
             self.skip_business_categories = skip_business_categories
             if len(skip_business_categories) == 0:
@@ -1438,7 +1420,6 @@ class InstaPy:
         amount: int = 50,
         media: str = None,
         skip_top_posts: bool = True,
-        randomize: bool = False,
     ):
         """Likes (default) 50 images per given locations"""
         if self.aborting:
@@ -1453,9 +1434,6 @@ class InstaPy:
 
         locations = locations or []
         self.quotient_breach = False
-
-        if randomize is True:
-            random.shuffle(locations)
 
         for index, location in enumerate(locations):
             if self.quotient_breach:
@@ -1564,27 +1542,38 @@ class InstaPy:
                                 and checked_img
                                 and commenting
                             ):
-                                comments = self.comments + (
-                                    self.video_comments
-                                    if is_video
-                                    else self.photo_comments
-                                )
-                                success = process_comments(
-                                    comments,
-                                    temp_comments,
-                                    self.delimit_commenting,
-                                    self.max_comments,
-                                    self.min_comments,
-                                    self.comments_mandatory_words,
-                                    self.username,
-                                    self.blacklist,
-                                    self.browser,
-                                    self.logger,
-                                    self.logfolder,
-                                )
 
-                                if success:
-                                    commented += 1
+                                if self.delimit_commenting:
+                                    (
+                                        self.commenting_approved,
+                                        disapproval_reason,
+                                    ) = verify_commenting(
+                                        self.browser,
+                                        self.max_comments,
+                                        self.min_comments,
+                                        self.comments_mandatory_words,
+                                        self.logger,
+                                    )
+                                if self.commenting_approved:
+                                    # smart commenting
+                                    comments = self.fetch_smart_comments(
+                                        is_video, temp_comments
+                                    )
+                                    if comments:
+                                        comment_state, msg = comment_image(
+                                            self.browser,
+                                            user_name,
+                                            comments,
+                                            self.blacklist,
+                                            self.logger,
+                                            self.logfolder,
+                                        )
+                                        if comment_state is True:
+                                            commented += 1
+
+                                else:
+                                    self.logger.info(disapproval_reason)
+
                             else:
                                 self.logger.info("--> Not commented")
                                 sleep(1)
@@ -1669,8 +1658,6 @@ class InstaPy:
         followed = 0
         inap_img = 0
         not_valid_users = 0
-        msg = None
-        location = None
 
         locations = locations or []
         self.quotient_breach = False
@@ -1764,65 +1751,76 @@ class InstaPy:
                             and user_name not in self.dont_include
                             and checked_img
                         ):
-                            comments = self.comments + (
-                                self.video_comments if is_video else self.photo_comments
-                            )
 
-                            if comments:
-                                success = process_comments(
-                                    comments,
-                                    temp_comments,
-                                    self.delimit_commenting,
+                            if self.delimit_commenting:
+                                (
+                                    self.commenting_approved,
+                                    disapproval_reason,
+                                ) = verify_commenting(
+                                    self.browser,
                                     self.max_comments,
                                     self.min_comments,
                                     self.comments_mandatory_words,
-                                    self.username,
-                                    self.blacklist,
-                                    self.browser,
                                     self.logger,
-                                    self.logfolder,
                                 )
+                            if self.commenting_approved:
+                                # smart commenting
+                                comments = self.fetch_smart_comments(
+                                    is_video, temp_comments
+                                )
+                                if comments:
+                                    comment_state, msg = comment_image(
+                                        self.browser,
+                                        user_name,
+                                        comments,
+                                        self.blacklist,
+                                        self.logger,
+                                        self.logfolder,
+                                    )
+                                    if comment_state is True:
+                                        commented += 1
+                                        # reset jump counter after a
+                                        # successful comment
+                                        self.jumps["consequent"]["comments"] = 0
 
-                                if success:
-                                    commented += 1
-                                    # reset jump counter after a
-                                    # successful comment
-                                    self.jumps["consequent"]["comments"] = 0
+                                        # try to follow
+                                        if (
+                                            self.do_follow
+                                            and user_name not in self.dont_include
+                                            and checked_img
+                                            and following
+                                            and not follow_restriction(
+                                                "read",
+                                                user_name,
+                                                self.follow_times,
+                                                self.logger,
+                                            )
+                                        ):
 
-                                    # try to follow
-                                    if (
-                                        self.do_follow
-                                        and user_name not in self.dont_include
-                                        and checked_img
-                                        and following
-                                        and not follow_restriction(
-                                            "read",
-                                            user_name,
-                                            self.follow_times,
-                                            self.logger,
-                                        )
-                                    ):
-                                        follow_state, msg = follow_user(
-                                            self.browser,
-                                            "post",
-                                            self.username,
-                                            user_name,
-                                            None,
-                                            self.blacklist,
-                                            self.logger,
-                                            self.logfolder,
-                                        )
-                                        if follow_state is True:
-                                            followed += 1
+                                            follow_state, msg = follow_user(
+                                                self.browser,
+                                                "post",
+                                                self.username,
+                                                user_name,
+                                                None,
+                                                self.blacklist,
+                                                self.logger,
+                                                self.logfolder,
+                                            )
+                                            if follow_state is True:
+                                                followed += 1
 
-                                    else:
-                                        self.logger.info("--> Not following")
-                                        sleep(1)
+                                        else:
+                                            self.logger.info("--> Not following")
+                                            sleep(1)
 
-                            elif msg == "jumped":
-                                # will break the loop after certain
-                                # consecutive jumps
-                                self.jumps["consequent"]["comments"] += 1
+                                elif msg == "jumped":
+                                    # will break the loop after certain
+                                    # consecutive jumps
+                                    self.jumps["consequent"]["comments"] += 1
+
+                            else:
+                                self.logger.info(disapproval_reason)
 
                         else:
                             self.logger.info("--> Not commented")
@@ -1851,7 +1849,6 @@ class InstaPy:
     def like_by_tags(
         self,
         tags: list = None,
-        use_random_tags: bool = False,
         amount: int = 50,
         skip_top_posts: bool = True,
         use_smart_hashtags: bool = False,
@@ -1883,14 +1880,6 @@ class InstaPy:
         tags = [tag.strip() for tag in tags]
         tags = tags or []
         self.quotient_breach = False
-
-        # if session includes like_by_tags, then randomize the tag list
-        if use_random_tags is True:
-            random.shuffle(tags)
-            for i, tag in enumerate(tags):
-                self.logger.info(
-                    "Tag list randomized: [{}/{}/{}]".format(i + 1, len(tags), tag)
-                )
 
         for index, tag in enumerate(tags):
             if self.quotient_breach:
@@ -1999,27 +1988,38 @@ class InstaPy:
                                 and checked_img
                                 and commenting
                             ):
-                                comments = self.comments + (
-                                    self.video_comments
-                                    if is_video
-                                    else self.photo_comments
-                                )
-                                success = process_comments(
-                                    comments,
-                                    temp_comments,
-                                    self.delimit_commenting,
-                                    self.max_comments,
-                                    self.min_comments,
-                                    self.comments_mandatory_words,
-                                    self.username,
-                                    self.blacklist,
-                                    self.browser,
-                                    self.logger,
-                                    self.logfolder,
-                                )
 
-                                if success:
-                                    commented += 1
+                                if self.delimit_commenting:
+                                    (
+                                        self.commenting_approved,
+                                        disapproval_reason,
+                                    ) = verify_commenting(
+                                        self.browser,
+                                        self.max_comments,
+                                        self.min_comments,
+                                        self.comments_mandatory_words,
+                                        self.logger,
+                                    )
+                                if self.commenting_approved:
+                                    # smart commenting
+                                    comments = self.fetch_smart_comments(
+                                        is_video, temp_comments
+                                    )
+                                    if comments:
+                                        comment_state, msg = comment_image(
+                                            self.browser,
+                                            user_name,
+                                            comments,
+                                            self.blacklist,
+                                            self.logger,
+                                            self.logfolder,
+                                        )
+                                        if comment_state is True:
+                                            commented += 1
+
+                                else:
+                                    self.logger.info(disapproval_reason)
+
                             else:
                                 self.logger.info("--> Not commented")
                                 sleep(1)
@@ -2131,7 +2131,6 @@ class InstaPy:
             else False
         )
 
-        username = None
         liked_img = 0
         total_liked_img = 0
         already_liked = 0
@@ -2288,27 +2287,38 @@ class InstaPy:
                                 and checked_img
                                 and commenting
                             ):
-                                comments = self.comments + (
-                                    self.video_comments
-                                    if is_video
-                                    else self.photo_comments
-                                )
-                                success = process_comments(
-                                    comments,
-                                    temp_comments,
-                                    self.delimit_commenting,
-                                    self.max_comments,
-                                    self.min_comments,
-                                    self.comments_mandatory_words,
-                                    self.username,
-                                    self.blacklist,
-                                    self.browser,
-                                    self.logger,
-                                    self.logfolder,
-                                )
 
-                                if success:
-                                    commented += 1
+                                if self.delimit_commenting:
+                                    (
+                                        self.commenting_approved,
+                                        disapproval_reason,
+                                    ) = verify_commenting(
+                                        self.browser,
+                                        self.max_comments,
+                                        self.min_comments,
+                                        self.comments_mandatory_words,
+                                        self.logger,
+                                    )
+                                if self.commenting_approved:
+                                    # smart commenting
+                                    comments = self.fetch_smart_comments(
+                                        is_video, temp_comments
+                                    )
+                                    if comments:
+                                        comment_state, msg = comment_image(
+                                            self.browser,
+                                            user_name,
+                                            comments,
+                                            self.blacklist,
+                                            self.logger,
+                                            self.logfolder,
+                                        )
+                                        if comment_state is True:
+                                            commented += 1
+
+                                else:
+                                    self.logger.info(disapproval_reason)
+
                             else:
                                 self.logger.info("--> Not commented")
                                 sleep(1)
@@ -2336,7 +2346,7 @@ class InstaPy:
             if liked_img < amount:
                 self.logger.info("-------------")
                 self.logger.info(
-                    "--> Given amount not fullfilled, image pool reached its end\n"
+                    "--> Given amount not fullfilled, " "image pool reached its end\n"
                 )
 
         self.logger.info("User: {}".format(username.encode("utf-8")))
@@ -2573,27 +2583,38 @@ class InstaPy:
                                         )
 
                                 if commenting and checked_img:
-                                    comments = self.comments + (
-                                        self.video_comments
-                                        if is_video
-                                        else self.photo_comments
-                                    )
-                                    success = process_comments(
-                                        comments,
-                                        temp_comments,
-                                        self.delimit_commenting,
-                                        self.max_comments,
-                                        self.min_comments,
-                                        self.comments_mandatory_words,
-                                        self.username,
-                                        self.blacklist,
-                                        self.browser,
-                                        self.logger,
-                                        self.logfolder,
-                                    )
 
-                                    if success:
-                                        commented += 1
+                                    if self.delimit_commenting:
+                                        (
+                                            self.commenting_approved,
+                                            disapproval_reason,
+                                        ) = verify_commenting(
+                                            self.browser,
+                                            self.max_comments,
+                                            self.min_comments,
+                                            self.comments_mandatory_words,
+                                            self.logger,
+                                        )
+                                    if self.commenting_approved:
+                                        # smart commenting
+                                        comments = self.fetch_smart_comments(
+                                            is_video, temp_comments
+                                        )
+                                        if comments:
+                                            comment_state, msg = comment_image(
+                                                self.browser,
+                                                user_name,
+                                                comments,
+                                                self.blacklist,
+                                                self.logger,
+                                                self.logfolder,
+                                            )
+                                            if comment_state is True:
+                                                commented += 1
+
+                                    else:
+                                        self.logger.info(disapproval_reason)
+
                                 else:
                                     self.logger.info("--> Not commented")
                                     sleep(1)
@@ -2649,7 +2670,7 @@ class InstaPy:
             if liked_img < amount:
                 self.logger.info("-------------")
                 self.logger.info(
-                    "--> Given amount not fullfilled, image pool reached its end\n"
+                    "--> Given amount not fullfilled, image pool " "reached its end\n"
                 )
 
         if len(usernames) > 1:
@@ -2884,27 +2905,48 @@ class InstaPy:
                                         )
 
                                 if commenting and checked_img:
-                                    comments = self.comments + (
-                                        self.video_comments
-                                        if is_video
-                                        else self.photo_comments
-                                    )
-                                    success = process_comments(
-                                        comments,
-                                        temp_comments,
-                                        self.delimit_commenting,
-                                        self.max_comments,
-                                        self.min_comments,
-                                        self.comments_mandatory_words,
-                                        self.username,
-                                        self.blacklist,
-                                        self.browser,
-                                        self.logger,
-                                        self.logfolder,
-                                    )
 
-                                    if success:
-                                        commented += 1
+                                    if self.delimit_commenting:
+                                        (
+                                            self.commenting_approved,
+                                            disapproval_reason,
+                                        ) = verify_commenting(
+                                            self.browser,
+                                            self.max_comments,
+                                            self.min_comments,
+                                            self.comments_mandatory_words,
+                                            self.logger,
+                                        )
+                                    if self.commenting_approved:
+                                        if temp_comments:
+                                            # use clarifai related comments
+                                            # only!
+                                            comments = temp_comments
+
+                                        elif is_video:
+                                            comments = (
+                                                self.comments + self.video_comments
+                                            )
+
+                                        else:
+                                            comments = (
+                                                self.comments + self.photo_comments
+                                            )
+
+                                        comment_state, msg = comment_image(
+                                            self.browser,
+                                            user_name,
+                                            comments,
+                                            self.blacklist,
+                                            self.logger,
+                                            self.logfolder,
+                                        )
+                                        if comment_state is True:
+                                            commented += 1
+
+                                    else:
+                                        self.logger.info(disapproval_reason)
+
                                 else:
                                     self.logger.info("--> Not commented")
                                     sleep(1)
@@ -2955,7 +2997,7 @@ class InstaPy:
             if liked_img < amount:
                 self.logger.info("-------------")
                 self.logger.info(
-                    "--> Given amount not fullfilled, image pool reached its end\n"
+                    "--> Given amount not fullfilled, image pool " "reached its end\n"
                 )
 
         # final words
@@ -3858,20 +3900,13 @@ class InstaPy:
 
         return self
 
-    def like_by_feed(self, amount, randomize, unfollow, interact):
-        """
-        Like the users feed
-
-        :param amount: Specifies how many total likes you want to perform
-        :param randomize: randomly skips posts to be liked on your feed
-        :param unfollow: unfollows the author of a post which was considered inappropriate
-        :param interact: visits the author's profile page of a
-        """
+    def like_by_feed(self, **kwargs):
+        """Like the users feed"""
 
         if self.aborting:
             return self
 
-        for _ in self.like_by_feed_generator(amount, randomize, unfollow, interact):
+        for i in self.like_by_feed_generator(**kwargs):
             pass
 
         return self
@@ -3883,14 +3918,7 @@ class InstaPy:
         unfollow: bool = False,
         interact: bool = False,
     ):
-        """
-        Like the users feed
-
-        :param amount: Specifies how many total likes you want to perform
-        :param randomize: randomly skips posts to be liked on your feed
-        :param unfollow: unfollows the author of a post which was considered inappropriate
-        :param interact: visits the author's profile page of a
-        """
+        """Like the users feed"""
 
         if self.aborting:
             return
@@ -3938,7 +3966,7 @@ class InstaPy:
 
             num_of_search += 1
 
-            for _, link in enumerate(links):
+            for i, link in enumerate(links):
                 if liked_img == amount:
                     break
 
@@ -3959,7 +3987,7 @@ class InstaPy:
                 else:
                     if link in history:
                         self.logger.info(
-                            "This link has already been visited: {}".format(link)
+                            "This link has already " "been visited: {}".format(link)
                         )
                         continue
                     else:
@@ -4044,7 +4072,7 @@ class InstaPy:
 
                                         except Exception as err:
                                             self.logger.error(
-                                                "Image check error: {}".format(err)
+                                                "Image check error:" " {}".format(err)
                                             )
 
                                     # commenting
@@ -4054,27 +4082,38 @@ class InstaPy:
                                         and checked_img
                                         and commenting
                                     ):
-                                        comments = self.comments + (
-                                            self.video_comments
-                                            if is_video
-                                            else self.photo_comments
-                                        )
-                                        success = process_comments(
-                                            comments,
-                                            temp_comments,
-                                            self.delimit_commenting,
-                                            self.max_comments,
-                                            self.min_comments,
-                                            self.comments_mandatory_words,
-                                            self.username,
-                                            self.blacklist,
-                                            self.browser,
-                                            self.logger,
-                                            self.logfolder,
-                                        )
+                                        if self.delimit_commenting:
+                                            (
+                                                self.commenting_approved,
+                                                disapproval_reason,
+                                            ) = verify_commenting(
+                                                self.browser,
+                                                self.max_comments,
+                                                self.min_comments,
+                                                self.comments_mandatory_words,
+                                                self.logger,
+                                            )
 
-                                        if success:
-                                            commented += 1
+                                        if self.commenting_approved:
+                                            # smart commenting
+                                            comments = self.fetch_smart_comments(
+                                                is_video, temp_comments
+                                            )
+                                            if comments:
+                                                comment_state, msg = comment_image(
+                                                    self.browser,
+                                                    user_name,
+                                                    comments,
+                                                    self.blacklist,
+                                                    self.logger,
+                                                    self.logfolder,
+                                                )
+                                            if comment_state is True:
+                                                commented += 1
+
+                                        else:
+                                            self.logger.info(disapproval_reason)
+
                                     else:
                                         self.logger.info("--> Not commented")
                                         sleep(1)
@@ -4452,10 +4491,8 @@ class InstaPy:
             dump_follow_restriction(self.username, self.logger, self.logfolder)
             dump_record_activity(self.username, self.logger, self.logfolder)
 
-            with open("{}followed.txt".format(self.logfolder), "a") as followFile:
-                followFile.write(
-                    "{:%Y-%m-%d %H:%M} {}\n".format(datetime.now(), self.followed or 0)
-                )
+            with open("{}followed.txt".format(self.logfolder), "w") as followFile:
+                followFile.write(str(self.followed))
 
             # output live stats before leaving
             self.live_report()
@@ -4836,25 +4873,38 @@ class InstaPy:
                             and checked_img
                             and commenting
                         ):
-                            comments = self.comments + (
-                                self.video_comments if is_video else self.photo_comments
-                            )
-                            success = process_comments(
-                                comments,
-                                temp_comments,
-                                self.delimit_commenting,
-                                self.max_comments,
-                                self.min_comments,
-                                self.comments_mandatory_words,
-                                self.username,
-                                self.blacklist,
-                                self.browser,
-                                self.logger,
-                                self.logfolder,
-                            )
 
-                            if success:
-                                commented += 1
+                            if self.delimit_commenting:
+                                (
+                                    self.commenting_approved,
+                                    disapproval_reason,
+                                ) = verify_commenting(
+                                    self.browser,
+                                    self.max_comments,
+                                    self.min_comments,
+                                    self.comments_mandatory_words,
+                                    self.logger,
+                                )
+                            if self.commenting_approved:
+                                # smart commenting
+                                comments = self.fetch_smart_comments(
+                                    is_video, temp_comments
+                                )
+                                if comments:
+                                    comment_state, msg = comment_image(
+                                        self.browser,
+                                        user_name,
+                                        comments,
+                                        self.blacklist,
+                                        self.logger,
+                                        self.logfolder,
+                                    )
+
+                                    if comment_state is True:
+                                        commented += 1
+                            else:
+                                self.logger.info(disapproval_reason)
+
                         else:
                             self.logger.info("--> Not commented")
                             sleep(1)
@@ -4953,7 +5003,7 @@ class InstaPy:
         peak_server_calls_daily: int = None,
     ):
         """
-        Sets aside QS configuration ANY time in a session
+         Sets aside QS configuration ANY time in a session
         """
 
         # take a reference of the global configuration
@@ -5116,7 +5166,7 @@ class InstaPy:
         else:
             if media is not None:
                 self.logger.warning(
-                    "Unkown media type set at comment replies! Treating as 'any'."
+                    "Unkown media type set at" " comment replies! Treating as 'any'."
                 )
 
             self.comment_replies = replies
@@ -5621,9 +5671,6 @@ class InstaPy:
                         "Reached accepted accounts limit of {} requests".format(amount)
                     )
                     break
-                # catch if the list cannot be accessed, there are more followers under the hood or
-                # because another element <a class="gKAyB " href="/accounts/activity/"> obscures it...
-                scroll_down(self.browser)
 
         self.logger.info("Accepted {} follow requests".format(accepted))
 
@@ -5664,7 +5711,6 @@ class InstaPy:
                 "//a[contains(@href, '/p/')]"
             )
             post_links = []
-            post_link = None
 
             for post_link_elem in post_link_elems:
                 try:
