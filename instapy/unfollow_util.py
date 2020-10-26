@@ -676,8 +676,10 @@ def get_users_through_dialog_with_graphql(
     else:
         logger.info("GraphQL query hash: [{}]".format(query_hash))
 
-    graphql_query_URL = "view-source:https://www.instagram.com/graphql/query/?query_hash={}".format(
-        query_hash
+    graphql_query_URL = (
+        "view-source:https://www.instagram.com/graphql/query/?query_hash={}".format(
+            query_hash
+        )
     )
     variables = {
         "id": str(user_id),
