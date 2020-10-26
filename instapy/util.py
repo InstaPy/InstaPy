@@ -2399,9 +2399,8 @@ def file_handling(file):
             # extract file's lines in list
             for line in f.readlines():
                 if line != "\n":
-                    element = line.strip("\n").lower()
-                    # remove spaces
-                    element = "".join(e for e in element if e != " ")
+                    # remove leading whitespaces, newline and tab characters
+                    element = line.lstrip().strip("\n")
                     elements.append(element)
     except FileNotFoundError:
         return ["FileNotFoundError"]
