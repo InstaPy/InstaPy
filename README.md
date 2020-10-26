@@ -50,9 +50,9 @@ Implemented in Python using the Selenium module.<p>
 - [Externals and additionals tools](https://instapy.org/#external-tools)
   * [Web Interface](https://instapy.io)
 - [Running InstaPy on Docker](https://instapy.org/#docker)
-- [Documentation of all Instapy's features](#documentation)
-- [Support](https://instapy.io)
-- [Credits](https://instapy.io)
+- [Documentation of all Instapy's features](https://instapy.org/settings)
+- [Support](https://instapy.org/#support)
+- [Credits](https://instapy.org/#credits)
 
 <br />
 
