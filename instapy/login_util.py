@@ -15,13 +15,12 @@ from .util import explicit_wait
 from .util import click_element
 from .util import check_authorization
 from .util import reload_webpage
+from .xpath import read_xpath
 
 # import exceptions
 from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import WebDriverException
 from selenium.common.exceptions import MoveTargetOutOfBoundsException
-
-from .xpath import read_xpath
 
 
 def bypass_suspicious_login(
@@ -264,14 +263,13 @@ def login_user(
     )
     if login_state is True:
         dismiss_notification_offer(browser, logger)
+        dissmiss_save_information(browser, logger)
         return True
 
     # if user is still not logged in, then there is an issue with the cookie
     # so go create a new cookie..
     if cookie_loaded:
-        print(
-            "Issue with cookie for user {}. Creating " "new cookie...".format(username)
-        )
+        print("Issue with cookie for user {}. Creating new cookie...".format(username))
 
     # Check if the first div is 'Create an Account' or 'Log In'
     try:
@@ -307,7 +305,8 @@ def login_user(
     # (valid for placeholder too)
 
     # wait until it navigates to the login page
-    login_page_title = "Login"
+    # 10/2020 -> "WebDriver:GetTitle" - {"value":"Instagram"}
+    login_page_title = "Instagram"
     explicit_wait(browser, "TC", login_page_title, logger)
 
     # wait until the 'username' input element is located and visible
@@ -362,6 +361,7 @@ def login_user(
 
     dismiss_get_app_offer(browser, logger)
     dismiss_notification_offer(browser, logger)
+    dissmiss_save_information(browser, logger)
 
     # check for login error messages and display it in the logs
     if "instagram.com/challenge" in browser.current_url:
@@ -485,6 +485,27 @@ def dismiss_notification_offer(browser, logger):
     )
 
     if offer_loaded:
+        dismiss_elem = browser.find_element_by_xpath(dismiss_elem_loc)
+        click_element(browser, dismiss_elem)
+
+
+def dissmiss_save_information(browser, logger):
+    """ Dismiss 'Save Your Login Info?' offer on session start """
+    # This question occurs when pkl doesn't exist
+    offer_elem_loc = read_xpath(dissmiss_save_information.__name__, "offer_elem_loc")
+    dismiss_elem_loc = read_xpath(
+        dissmiss_save_information.__name__, "dismiss_elem_loc"
+    )
+
+    offer_loaded = explicit_wait(
+        browser, "VOEL", [offer_elem_loc, "XPath"], logger, 4, False
+    )
+
+    if offer_loaded:
+        # When prompted chose "Not Now", we don't know if saving information
+        # contributes or stimulate IG to target the acct, it would be better to
+        # just pretend that we are using IG in different browsers.
+        logger.info("Do not save Login Info by now")
         dismiss_elem = browser.find_element_by_xpath(dismiss_elem_loc)
         click_element(browser, dismiss_elem)
 

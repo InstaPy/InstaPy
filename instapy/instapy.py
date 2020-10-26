@@ -126,6 +126,7 @@ class InstaPy:
         bypass_security_challenge_using: str = "email",
         want_check_browser: bool = True,
         browser_executable_path: str = None,
+        geckodriver_log_level: str = "info",  # "info" by default
     ):
         print("InstaPy Version: {}".format(__version__))
         cli_args = parse_cli_args()
@@ -331,6 +332,7 @@ class InstaPy:
                 browser_executable_path,
                 self.logfolder,
                 self.logger,
+                geckodriver_log_level,
             )
             if len(err_msg) > 0:
                 raise InstaPyError(err_msg)
@@ -576,7 +578,7 @@ class InstaPy:
             return self
 
         if not isinstance(tags, list):
-            self.logger.warning("Unable to use your set_dont_like " "configuration!")
+            self.logger.warning("Unable to use your set_dont_like configuration!")
             self.aborting = True
 
         self.dont_like = tags
@@ -590,9 +592,7 @@ class InstaPy:
             return self
 
         if not isinstance(tags, list):
-            self.logger.warning(
-                "Unable to use your set_mandatory_words " "configuration!"
-            )
+            self.logger.warning("Unable to use your set_mandatory_words configuration!")
             self.aborting = True
 
         self.mandatory_words = tags
@@ -2336,7 +2336,7 @@ class InstaPy:
             if liked_img < amount:
                 self.logger.info("-------------")
                 self.logger.info(
-                    "--> Given amount not fullfilled, " "image pool reached its end\n"
+                    "--> Given amount not fullfilled, image pool reached its end\n"
                 )
 
         self.logger.info("User: {}".format(username.encode("utf-8")))
@@ -2649,7 +2649,7 @@ class InstaPy:
             if liked_img < amount:
                 self.logger.info("-------------")
                 self.logger.info(
-                    "--> Given amount not fullfilled, image pool " "reached its end\n"
+                    "--> Given amount not fullfilled, image pool reached its end\n"
                 )
 
         if len(usernames) > 1:
@@ -2955,7 +2955,7 @@ class InstaPy:
             if liked_img < amount:
                 self.logger.info("-------------")
                 self.logger.info(
-                    "--> Given amount not fullfilled, image pool " "reached its end\n"
+                    "--> Given amount not fullfilled, image pool reached its end\n"
                 )
 
         # final words
@@ -3858,13 +3858,20 @@ class InstaPy:
 
         return self
 
-    def like_by_feed(self, **kwargs):
-        """Like the users feed"""
+    def like_by_feed(self, amount, randomize, unfollow, interact):
+        """
+        Like the users feed
+
+        :param amount: Specifies how many total likes you want to perform
+        :param randomize: randomly skips posts to be liked on your feed
+        :param unfollow: unfollows the author of a post which was considered inappropriate
+        :param interact: visits the author's profile page of a
+        """
 
         if self.aborting:
             return self
 
-        for i in self.like_by_feed_generator(**kwargs):
+        for _ in self.like_by_feed_generator(amount, randomize, unfollow, interact):
             pass
 
         return self
@@ -3876,7 +3883,14 @@ class InstaPy:
         unfollow: bool = False,
         interact: bool = False,
     ):
-        """Like the users feed"""
+        """
+        Like the users feed
+
+        :param amount: Specifies how many total likes you want to perform
+        :param randomize: randomly skips posts to be liked on your feed
+        :param unfollow: unfollows the author of a post which was considered inappropriate
+        :param interact: visits the author's profile page of a
+        """
 
         if self.aborting:
             return
@@ -3924,7 +3938,7 @@ class InstaPy:
 
             num_of_search += 1
 
-            for i, link in enumerate(links):
+            for _, link in enumerate(links):
                 if liked_img == amount:
                     break
 
@@ -3945,7 +3959,7 @@ class InstaPy:
                 else:
                     if link in history:
                         self.logger.info(
-                            "This link has already " "been visited: {}".format(link)
+                            "This link has already been visited: {}".format(link)
                         )
                         continue
                     else:
@@ -4030,7 +4044,7 @@ class InstaPy:
 
                                         except Exception as err:
                                             self.logger.error(
-                                                "Image check error:" " {}".format(err)
+                                                "Image check error: {}".format(err)
                                             )
 
                                     # commenting
@@ -4432,8 +4446,10 @@ class InstaPy:
             dump_follow_restriction(self.username, self.logger, self.logfolder)
             dump_record_activity(self.username, self.logger, self.logfolder)
 
-            with open("{}followed.txt".format(self.logfolder), "w") as followFile:
-                followFile.write(str(self.followed))
+            with open("{}followed.txt".format(self.logfolder), "a") as followFile:
+                followFile.write(
+                    "{:%Y-%m-%d %H:%M} {}\n".format(datetime.now(), self.followed or 0)
+                )
 
             # output live stats before leaving
             self.live_report()
@@ -5094,7 +5110,7 @@ class InstaPy:
         else:
             if media is not None:
                 self.logger.warning(
-                    "Unkown media type set at" " comment replies! Treating as 'any'."
+                    "Unkown media type set at comment replies! Treating as 'any'."
                 )
 
             self.comment_replies = replies
