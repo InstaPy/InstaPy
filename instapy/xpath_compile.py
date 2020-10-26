@@ -35,6 +35,11 @@ xpath["dismiss_notification_offer"] = {
     "dismiss_elem_loc": "//button[text()='Not Now']",
 }
 
+xpath["dissmiss_save_information"] = {
+    "offer_elem_loc": "//*[contains(text(), 'Save Info')]",
+    "dismiss_elem_loc": "//*[contains(text(), 'Not Now')]",
+}
+
 xpath["extract_information"] = {
     "close_overlay": "//div/div[@role='dialog']",
     "one_pic_elem": "//section/main/article/div[1]/div/div[10]/div[3]/a/div",
@@ -106,7 +111,7 @@ xpath["get_links_for_location"] = {
     "main_elem": "//main/article/div[2]",
 }
 
-xpath["get_links_from_feed"] = {"get_links": "//article/div[2]/div[2]/a"}
+xpath["get_links_from_feed"] = {"get_links": "//article/div[3]/div[2]/a"}
 
 xpath["get_links_for_tag"] = {
     "top_elements": "//main/article/div[1]",
@@ -142,8 +147,9 @@ xpath["like_comment"] = {
 }
 
 xpath["like_image"] = {
-    "like": "//section/span/button[*[local-name()='svg']/@aria-label='Like']",
-    "unlike": "//section/span/button[*[local-name()='svg']/@aria-label='Unlike']",
+    "like": "//section/span/button/div/span[*[local-name()='svg']/@aria-label='Like']",
+    "unlike": "//section/span/button/div/span[*[local-name()='svg']/@aria-label='Unlike']",
+    "play": "//*/span[contains(@aria-label, 'Play')]",
 }
 
 xpath["like_from_image"] = {
@@ -155,6 +161,7 @@ xpath["login_user"] = {
     "input_username_XP": "//input[@name='username']",
     "login_elem": "//button[text()='Log In']",
     "login_elem_no_such_exception": "//a[text()='Log in']",
+    "login_elem_no_such_exception_2": "//div[text()='Log In']",
     "nav": "//nav",
     "website_status": "//span[@id='status']",
     "response_time": "//span[@id='response']",
@@ -166,7 +173,7 @@ xpath["login_user"] = {
 }
 
 xpath["open_comment_section"] = {
-    "comment_elem": "//button[*[local-name()='svg']/@aria-label='Comment']"
+    "comment_elem": "//button/div[*[local-name()='svg']/@aria-label='Comment']"
 }
 
 xpath["unfollow"] = {

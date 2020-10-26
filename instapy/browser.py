@@ -1,18 +1,16 @@
-# selenium
+# import built-in & third-party modules
+import os
+import zipfile
+import shutil
+
+from os.path import sep
 from selenium import webdriver
-from selenium.common.exceptions import WebDriverException
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.firefox.options import Options as Firefox_Options
 from selenium.webdriver import Remote
 from webdriverdownloader import GeckoDriverDownloader
 
-# general libs
-import os
-import zipfile
-import shutil
-from os.path import sep
-
-# local project
+# import InstaPy modules
 from .util import interruption_handler
 from .util import highlight_print
 from .util import emergency_exit
@@ -22,6 +20,10 @@ from .util import web_address_navigator
 from .file_manager import use_assets
 from .settings import Settings
 from .time_util import sleep
+
+# import exceptions
+from selenium.common.exceptions import WebDriverException
+from selenium.common.exceptions import UnexpectedAlertPresentException
 
 
 def get_geckodriver():
@@ -33,7 +35,7 @@ def get_geckodriver():
     asset_path = use_assets()
     gdd = GeckoDriverDownloader(asset_path, asset_path)
     # skips download if already downloaded
-    bin_path, sym_path = gdd.download_and_install()
+    sym_path = gdd.download_and_install()[1]
     return sym_path
 
 
@@ -61,7 +63,9 @@ def set_selenium_local_session(
     page_delay,
     geckodriver_path,
     browser_executable_path,
+    logfolder,
     logger,
+    geckodriver_log_level,
 ):
     """Starts local session for a selenium server.
     Default case scenario."""
@@ -91,6 +95,10 @@ def set_selenium_local_session(
     if browser_executable_path is not None:
         firefox_options.binary = browser_executable_path
 
+    # set "info" by default
+    # set "trace" for debubging, Development only
+    firefox_options.log.level = geckodriver_log_level
+
     # set English language
     firefox_profile.set_preference("intl.accept_languages", "en-US")
     firefox_profile.set_preference("general.useragent.override", user_agent)
@@ -110,11 +118,21 @@ def set_selenium_local_session(
     # mute audio while watching stories
     firefox_profile.set_preference("media.volume_scale", "0.0")
 
+    # prevent Hide Selenium Extension: error
+    firefox_profile.set_preference("dom.webdriver.enabled", False)
+    firefox_profile.set_preference("useAutomationExtension", False)
+    firefox_profile.set_preference("general.platform.override", "iPhone")
+    firefox_profile.update_preferences()
+
+    # geckodriver log in specific user logfolder
+    geckodriver_log = "{}geckodriver.log".format(logfolder)
+
     # prefer user path before downloaded one
     driver_path = geckodriver_path or get_geckodriver()
     browser = webdriver.Firefox(
         firefox_profile=firefox_profile,
         executable_path=driver_path,
+        log_path=geckodriver_log,
         options=firefox_options,
     )
 
@@ -131,7 +149,15 @@ def set_selenium_local_session(
     browser.implicitly_wait(page_delay)
 
     # set mobile viewport (iPhone X)
-    browser.set_window_size(375, 812)
+    try:
+        browser.set_window_size(375, 812)
+    except UnexpectedAlertPresentException as exc:
+        logger.exception(
+            "Unexpected alert on resizing web browser!\n\t"
+            "{}".format(str(exc).encode("utf-8"))
+        )
+        close_browser(browser, False, logger)
+        return browser, "Unexpected alert on browser resize"
 
     message = "Session started!"
     highlight_print("browser", message, "initialization", "info", logger)
@@ -189,9 +215,9 @@ def close_browser(browser, threaded_session, logger):
 
 def retry(max_retry_count=3, start_page=None):
     """
-        Decorator which refreshes the page and tries to execute the function again.
-        Use it like that: @retry() => the '()' are important because its a decorator
-        with params.
+    Decorator which refreshes the page and tries to execute the function again.
+    Use it like that: @retry() => the '()' are important because its a decorator
+    with params.
     """
 
     def real_decorator(org_func):
