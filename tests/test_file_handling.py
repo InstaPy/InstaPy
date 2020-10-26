@@ -8,7 +8,7 @@ class TestFileHandling(unittest.TestCase):
 
     # list of expected entries
     global expected_entries
-    expected_entries = ["This is a comment...", "photography", "portrait"]
+    expected_entries = ["photography", "portrait", "minimalistic"]
 
     def test_valid_entries(self):
         """Check file_handling with valid entries"""
