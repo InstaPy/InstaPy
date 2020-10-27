@@ -78,6 +78,7 @@
  <br />
 
 - **[Relationship tools](#relationship-tools)**
+  - [Check if selected user has the verified blue badge](#is-user-verified)
   - [Grab Followers of a user](#grab-followers-of-a-user)
   - [Grab Following of a user](#grab-following-of-a-user)
   - [Pick Unfollowers of a user](#pick-unfollowers-of-a-user)
@@ -1908,6 +1909,17 @@ session = InstaPy(username=insta_username,
 <br />
 
 ## Relationship tools
+
+### Check if selected user has the verified blue badge
+###### Returns `true` or `false` depending if the the user is verified or not
+###### From relationship_tools use `is_user_verified` method 
+```python
+isUserVerified = relationship_tools.is_user_verified(session.browser, username="username1", session.logger)
+```
+### Parameters:
+`username`: A desired username to grab its followers
+
+
 ### Grab Followers of a user
 ###### Gets and returns `followers` of the given user in desired amount, also can save locally
 ```python
