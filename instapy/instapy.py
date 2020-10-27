@@ -4217,7 +4217,7 @@ class InstaPy:
         # except:
         except Exception:
             self.logger.info("Campaign {} first run".format(campaign))
-    
+
     def grab_followers(
         self,
         username: str = None,
