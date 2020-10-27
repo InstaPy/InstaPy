@@ -1910,8 +1910,9 @@ session = InstaPy(username=insta_username,
 
 ### Check if selected user has the verified blue badge
 ###### Returns `true` or `false` depending if the the user is verified or not
+###### From relationship_tools use `is_user_verified` method 
 ```python
-isUserVerified = session.isUserVerified(username="username1")
+isUserVerified = relationship_tools.is_user_verified(session.browser, username="username1", session.logger)
 ```
 ### Parameters:
 `username`: A desired username to grab its followers
