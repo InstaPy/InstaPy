@@ -82,7 +82,6 @@ from .relationship_tools import get_unfollowers
 from .relationship_tools import get_nonfollowers
 from .relationship_tools import get_fans
 from .relationship_tools import get_mutual_following
-from .relationship_tools import isUserVerified
 from .database_engine import get_database
 from .text_analytics import text_analysis
 from .text_analytics import yandex_supported_languages
@@ -4218,17 +4217,6 @@ class InstaPy:
         # except:
         except Exception:
             self.logger.info("Campaign {} first run".format(campaign))
-
-    def isUserVerified(self, username: str = None):
-        """ Retrive if user is verified """
-
-        if username is None or not isinstance(username, str):
-            self.logger.warning(
-                "Please provide a username to be able to check if it's verified"
-            )
-            return self
-
-        return isUserVerified(self.browser, username, self.logger)
     
     def grab_followers(
         self,
