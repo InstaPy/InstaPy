@@ -1895,7 +1895,7 @@ Specifying the Firefox executable path can also help you if you are getting the 
 
 `selenium.common.exceptions.SessionNotCreatedException: Message: Unable to find a matching set of capabilities`
 
-example on a Windows machine (with the right path also works on Linux and MAC)
+example on a Windows machine (with the right path also works on Linux and macOS)
 ```python
 session = InstaPy(username=insta_username,
                   password=insta_password,
@@ -2960,8 +2960,25 @@ There several steps to this fix.
 2. Download an older version.
 3. Prevent Google Chrome from auto-updating.
 
+#### Ubuntu and Geckodriver
 
-#### MAC FIX
+Occasionally *Instapy* will stop working because one of the issue below has been thrown.
+
+>_Traceback (most recent call last):
+....//download_url = self.get_download_url(version, os_name=os_name, bitness=bitness)
+File "/home/user/.local/lib/python3.8/site-packages/webdriverdownloader/webdriverdownloader.py", line 324, in get_download_url
+raise RuntimeError(info_message)
+RuntimeError: Error, unable to determine correct filename for 64bit linux
+
+Which means that `geckodriver` is not istalled in the machine that's is executing InstaPy. Proceed to install it:
+
+```bash
+$ sudo apt install firefox-geckodriver
+```
+
+If you are using another version of the geckodriver consider to update the location; check [Custom geckodriver](#Custom-geckodriver) if necessary.
+
+#### macOS Fix
 Since *Instapy* seems to work well, in my experience on my Mac, with chromedriver version 2.36, I will downgrade my Google Chrome. I do not use Google Chrome, so this isn't an issue.
 
 
