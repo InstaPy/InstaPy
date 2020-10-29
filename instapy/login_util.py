@@ -271,26 +271,28 @@ def login_user(
             "Issue with cookie for user '{}'. Creating new cookie...".format(username)
         )
 
-        # Error could be faced due to "<button class="sqdOP L3NKy y3zKF" type="button">
-        # Cookie could not be loaded" or similar.
-        # Session displayed we are in, but then a failure for the first `login_elem`
-        # like the element is no longer attached to the DOM.
+        # Error could be faced due to "<button class="sqdOP L3NKy y3zKF"
+        # type="button"> Cookie could not be loaded" or similar.
+        # Session displayed we are in, but then a failure for the first
+        # `login_elem` like the element is no longer attached to the DOM.
         # Saw this issue when session hasn't been used for a while; wich means
         # "expiry" values in cookie are outdated.
-        logger.info("Check if browser is using Instagram Home page")
         try:
-            # Since having issues with the cookie a new one can be generated
+            # Since having issues with the cookie a new one can be generated,
+            # if cookie cannot be created or deleted stop execution.
             logger.info("Deleting old cookie...")
             browser.delete_all_cookies()
-        except Exception as exc:
-            if isinstance(exc, WebDriverException):
+        except Exception as e:
+            if isinstance(e, WebDriverException):
                 # NF: start
                 logger.exception(
                     "Error occurred while deleting cookies from web browser!\n\t{}".format(
-                        str(exc).encode("utf-8")
+                        str(e).encode("utf-8")
                     )
                 )
+                return False
                 # NF: end
+
         web_address_navigator(browser, ig_homepage)
 
     # Check if the first div is 'Create an Account' or 'Log In'
@@ -310,8 +312,13 @@ def login_user(
                 login_elem = browser.find_element_by_xpath(
                     read_xpath(login_user.__name__, "login_elem_no_such_exception_2")
                 )
-            except NoSuchElementException:
+            except NoSuchElementException as e:
+                # NF: start
+                logger.exception(
+                    "Login A/B test failed!\n\t{}".format(str(e).encode("utf-8"))
+                )
                 return False
+                # NF: end
 
     if login_elem is not None:
         try:
