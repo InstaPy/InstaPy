@@ -271,23 +271,27 @@ def login_user(
             "Issue with cookie for user '{}'. Creating new cookie...".format(username)
         )
 
-    # Error rised here due to <button class="sqdOP L3NKy y3zKF" type="button">
-    # Cookie could not be loaded, but selenium session displayed we are in,
-    # then the failure for the `login_elem`. Before hitting the stale element,
-    # reload the page and then read the xpath.
-    # I saw this issue when InstaPy session hasn't been used for a while
-    logger.info("Check if browser is using Instagram Home page")
-    try:
-        logger.info("Deleting old cookie")
-        browser.delete_all_cookies()
-    except Exception as exc:
-        if isinstance(exc, WebDriverException):
-            logger.exception(
-                "Error occurred while deleting cookies from web browser!\n\t{}".format(
-                    str(exc).encode("utf-8")
+        # Error could be faced due to "<button class="sqdOP L3NKy y3zKF" type="button">
+        # Cookie could not be loaded" or similar.
+        # Session displayed we are in, but then a failure for the first `login_elem`
+        # like the element is no longer attached to the DOM.
+        # Saw this issue when session hasn't been used for a while; wich means
+        # "expiry" values in cookie are outdated.
+        logger.info("Check if browser is using Instagram Home page")
+        try:
+            # Since having issues with the cookie a new one can be generated
+            logger.info("Deleting old cookie...")
+            browser.delete_all_cookies()
+        except Exception as exc:
+            if isinstance(exc, WebDriverException):
+                # NF: start
+                logger.exception(
+                    "Error occurred while deleting cookies from web browser!\n\t{}".format(
+                        str(exc).encode("utf-8")
+                    )
                 )
-            )
-    web_address_navigator(browser, ig_homepage)
+                # NF: end
+        web_address_navigator(browser, ig_homepage)
 
     # Check if the first div is 'Create an Account' or 'Log In'
     try:
