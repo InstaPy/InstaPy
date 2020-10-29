@@ -29,7 +29,7 @@ from .util import truncate_float
 from .util import get_query_hash
 from .util import is_follow_me
 from .util import get_epoch_time_diff
-from .util import get_following_status
+from .follow_util import get_following_status
 from .print_log_writer import log_followed_pool
 from .print_log_writer import log_uncertain_unfollowed_pool
 from .print_log_writer import log_record_all_unfollowed
