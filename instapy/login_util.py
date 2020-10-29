@@ -4,6 +4,7 @@ import pickle
 import socket
 import os
 import json
+
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.keys import Keys
 
@@ -72,9 +73,9 @@ def bypass_suspicious_login(
     # update server calls
     update_activity(browser, state=None)
 
-    print("Instagram detected an unusual login attempt")
-    print('Check Instagram App for "Suspicious Login attempt" prompt')
-    print("A security code was sent to your {}".format(option_text))
+    logger.info("Instagram detected an unusual login attempt")
+    logger.info('Check Instagram App for "Suspicious Login attempt" prompt')
+    logger.info("A security code was sent to your {}".format(option_text))
 
     security_code = None
     try:
@@ -132,10 +133,7 @@ def bypass_suspicious_login(
         )
 
         if wrong_login is not None:
-            wrong_login_msg = (
-                "Wrong security code! Please check the code Instagram"
-                "sent you and try again."
-            )
+            wrong_login_msg = "Wrong security code! Please check the code Instagram sent you and try again."
             update_activity(
                 browser,
                 action=None,
@@ -143,7 +141,7 @@ def bypass_suspicious_login(
                 logfolder=logfolder,
                 logger=logger,
             )
-            print(wrong_login_msg)
+            logger.warn(wrong_login_msg)
 
     except NoSuchElementException:
         # correct security code
@@ -251,7 +249,7 @@ def login_user(
             browser.add_cookie(cookie)
             cookie_loaded = True
     except (WebDriverException, OSError, IOError):
-        print("Cookie file not found, creating cookie...")
+        logger.warn("Cookie file not found, creating cookie...")
 
     # force refresh after cookie load or check_authorization() will FAIL
     reload_webpage(browser)
@@ -267,9 +265,29 @@ def login_user(
         return True
 
     # if user is still not logged in, then there is an issue with the cookie
-    # so go create a new cookie..
+    # so go create a new cookie.
     if cookie_loaded:
-        print("Issue with cookie for user {}. Creating new cookie...".format(username))
+        logger.warn(
+            "Issue with cookie for user '{}'. Creating new cookie...".format(username)
+        )
+
+    # Error rised here due to <button class="sqdOP L3NKy y3zKF" type="button">
+    # Cookie could not be loaded, but selenium session displayed we are in,
+    # then the failure for the `login_elem`. Before hitting the stale element,
+    # reload the page and then read the xpath.
+    # I saw this issue when InstaPy session hasn't been used for a while
+    logger.info("Check if browser is using Instagram Home page")
+    try:
+        logger.info("Deleting old cookie")
+        browser.delete_all_cookies()
+    except Exception as exc:
+        if isinstance(exc, WebDriverException):
+            logger.exception(
+                "Error occurred while deleting cookies from web browser!\n\t{}".format(
+                    str(exc).encode("utf-8")
+                )
+            )
+    web_address_navigator(browser, ig_homepage)
 
     # Check if the first div is 'Create an Account' or 'Log In'
     try:
@@ -277,13 +295,13 @@ def login_user(
             read_xpath(login_user.__name__, "login_elem")
         )
     except NoSuchElementException:
-        print("Login A/B test detected! Trying another string...")
+        logger.warn("Login A/B test detected! Trying another string...")
         try:
             login_elem = browser.find_element_by_xpath(
                 read_xpath(login_user.__name__, "login_elem_no_such_exception")
             )
         except NoSuchElementException:
-            print("Could not pass the login A/B test. Trying last string...")
+            logger.warn("Could not pass the login A/B test. Trying last string...")
             try:
                 login_elem = browser.find_element_by_xpath(
                     read_xpath(login_user.__name__, "login_elem_no_such_exception_2")
@@ -292,15 +310,6 @@ def login_user(
                 return False
 
     if login_elem is not None:
-        # elulcao Oct 24
-        # Error rised here due to <button class="sqdOP L3NKy y3zKF" type="button">
-        # Cookie could not be loaded, but selenium session displayed we are in,
-        # then the failure for the `login_elem` button. What we can do then is
-        # to move back to the Login page
-        #
-        # I saw this issue if InstaPy session hasn't been used in a long time
-        print("Check if browser is using Instagram Home page")
-        web_address_navigator(browser, ig_homepage)
         try:
             (ActionChains(browser).move_to_element(login_elem).click().perform())
         except MoveTargetOutOfBoundsException:
