@@ -84,8 +84,8 @@ def get_following_status(
 
 
 def verify_username_by_id(browser, username, person, person_id, logger, logfolder):
-    """ Check if the given user has changed username after the time of
-    followed """
+    """Check if the given user has changed username after the time of
+    followed"""
 
     # try to find the user by ID
     if person_id is None:
