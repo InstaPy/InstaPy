@@ -891,7 +891,7 @@ def get_mutual_following(
     # if all_followers is False we have targeted a private account that we don't follow
     if not all_followers:
         return False
-        
+
     # get `Following` data
     all_following = get_following(
         browser,
