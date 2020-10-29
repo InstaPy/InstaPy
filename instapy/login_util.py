@@ -280,18 +280,18 @@ def login_user(
         try:
             # Since having issues with the cookie a new one can be generated,
             # if cookie cannot be created or deleted stop execution.
-            logger.info("Deleting old cookie...")
+            logger.info("Deleting browser cookies...")
             browser.delete_all_cookies()
         except Exception as e:
+            # NF: start
             if isinstance(e, WebDriverException):
-                # NF: start
                 logger.exception(
                     "Error occurred while deleting cookies from web browser!\n\t{}".format(
                         str(e).encode("utf-8")
                     )
                 )
-                return False
-                # NF: end
+            return False
+            # NF: end
 
         web_address_navigator(browser, ig_homepage)
 
