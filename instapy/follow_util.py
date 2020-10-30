@@ -1,15 +1,15 @@
 """ Module which handles the follow features """
-
+# import InstaPy modules
 from .util import web_address_navigator
 from .util import get_username_from_id
 from .util import is_page_available
 from .util import update_activity
 from .util import explicit_wait
 from .util import load_user_id
-
-from selenium.common.exceptions import NoSuchElementException
-
 from .xpath import read_xpath
+
+# import exceptions
+from selenium.common.exceptions import NoSuchElementException
 
 
 def get_following_status(
