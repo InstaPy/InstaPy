@@ -1,7 +1,7 @@
 # These are supported funding model platforms
 
 github: [timgrossmann]
-patreon: # Replace with a single Patreon username
+patreon: timgrossmann
 open_collective: InstaPy
 ko_fi: timgrossmann
 tidelift: # Replace with a single Tidelift platform-name/package-name e.g., npm/babel
