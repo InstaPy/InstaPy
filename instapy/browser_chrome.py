@@ -93,6 +93,8 @@ def set_selenium_local_session(
 
     #TODO: prevent hide selenium extension error
 
+     #TODO: extension to hide selenium, check out browser_firefox to see how it's done
+
     chromedriver_log = "{}chromedriver.log".format(logfolder)
     chrome_options.add_argument("--log_path={}".format(chromedriver_log))
     driver_path = chromedriver_path or get_chromedriver()
@@ -102,7 +104,7 @@ def set_selenium_local_session(
         # log_path=chromedriver_log,
         options=chrome_options
     )
-    #TODO: extension to hide selenium
+   
 
     if proxy_username and proxy_password:
         # proxy_authentication(browser, logger, proxy_username, proxy_password)
