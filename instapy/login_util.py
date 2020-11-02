@@ -163,7 +163,12 @@ def check_browser(browser, logfolder, logger, proxy_address):
     # check connection status
     try:
         logger.info("-- Connection Checklist [1/2] (Internet Connection Status)")
-        browser.get("view-source:https://ip4.seeip.org/geoip")
+        print("BROWSER CLASS NAME:", browser.typeofbr)
+        if "Chrome" == browser.typeofbr:
+            browser.get("https://ip4.seeip.org/geoip")
+        elif "Firefox" == browser.typeofbr:
+            browser.get("view-source:https://ip4.seeip.org/geoip")
+
         pre = browser.find_element_by_tag_name("pre").text
         current_ip_info = json.loads(pre)
         if (
@@ -195,8 +200,8 @@ def check_browser(browser, logfolder, logger, proxy_address):
                 logfolder=logfolder,
                 logger=logger,
             )
-    except Exception:
-        logger.warn("- Internet Connection Status: error")
+    except Exception as exc:
+        logger.warn("- Internet Connection Status: error, {}".format(exc))
         update_activity(
             browser,
             action=None,

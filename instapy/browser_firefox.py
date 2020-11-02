@@ -96,7 +96,7 @@ def set_selenium_local_session(
         firefox_options.binary = browser_executable_path
 
     # set "info" by default
-    # set "trace" for debubging, Development only
+    # set "trace" for debugging, Development only
     firefox_options.log.level = geckodriver_log_level
 
     # set English language
@@ -161,7 +161,7 @@ def set_selenium_local_session(
 
     message = "Session started!"
     highlight_print("browser", message, "initialization", "info", logger)
-
+    browser.typeofbr = "Firefox"
     return browser, err_msg
 
 
