@@ -2,8 +2,9 @@ from instapy import InstaPy
 
 
 def session_run():
-  session = InstaPy(username="gunlukkiralikvilla_ist",
-                    password="Gudeberk78",
+  session = InstaPy(
+                    username="xx",
+                    password="xx",
                     headless_browser=False,
                     isChrome=True
                     )

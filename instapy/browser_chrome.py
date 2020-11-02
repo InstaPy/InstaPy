@@ -93,7 +93,7 @@ def set_selenium_local_session(
 
     #TODO: prevent hide selenium extension error
 
-     #TODO: extension to hide selenium, check out browser_firefox to see how it's done
+    #TODO: extension to hide selenium, check out browser_firefox to see how it's done
 
     chromedriver_log = "{}chromedriver.log".format(logfolder)
     chrome_options.add_argument("--log_path={}".format(chromedriver_log))
