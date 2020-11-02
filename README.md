@@ -35,7 +35,13 @@ Implemented in Python using the Selenium module.<p>
 **Newsletter: [Sign Up for the Newsletter here!](http://eepurl.com/cZbV_v)**   
 **Official Video Guide: [Get it here!](https://www.udemy.com/instapy-guide/?couponCode=INSTAPY_OFFICIAL)**   
 **Guide to Bot Creation: [Learn to Build your own Bots with the Creators of InstaPy](https://www.udemy.com/course/the-complete-guide-to-bot-creation/?referralCode=7418EBB47E11E34D86C9)**    
+
+<br />
+
 **Learn Automation from Scratch: [The School of Automation](https://www.school-of-automation.com)**
+
+[<img src="https://static1.squarespace.com/static/5f71907917b093635185fc3e/t/5f9d03cec73af0034b6ffa3a/1604126514869/?format=1500w" width="250"/>](https://www.school-of-automation.com)
+
 
 <br />
 
