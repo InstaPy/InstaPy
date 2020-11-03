@@ -6,7 +6,7 @@ def session_run():
                     username="xx",
                     password="xx",
                     headless_browser=False,
-                    isChrome=True
+                    typeofbr="Chrome"
                     )
 
   session.login()
