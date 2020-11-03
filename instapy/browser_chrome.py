@@ -91,9 +91,8 @@ def set_selenium_local_session(
     
     chrome_options.add_argument("--mute-audio")
 
-    #TODO: prevent hide selenium extension error
-
     #TODO: extension to hide selenium, check out browser_firefox to see how it's done
+    # 
 
     chromedriver_log = "{}chromedriver.log".format(logfolder)
     chrome_options.add_argument("--log_path={}".format(chromedriver_log))
@@ -130,7 +129,7 @@ def set_selenium_local_session(
 
 
 
-# def proxy_authentication(browser, logger, proxy_username, proxy_password):
+# def proxy_authentication(browser, logger, proxy_username, proxy_password): TODO: implement this
     
 
     
@@ -145,47 +144,3 @@ def close_browser(browser, threaded_session, logger):
                     "Error ocurred while deleting cookies"
                     "from web browser!\n\t{}".format(str(exc).encode('utf-8'))       
                 )
-
-# class custom_browser(Remote):
-#     """ Custom browser instance for manupulation later on """
-
-#     def find_element_by_xpath(self, *args, **kwargs):
-#         """ example usage of hooking into built in functions """
-#         rv = super(custom_browser, self).find_element_by_xpath(*args, **kwargs)
-#         return rv
-
-#     def wait_for_valid_connection(self, username, logger):
-#         counter = 0
-#         while True and counter < 10:
-#             sirens_wailing, emergency_state = emergency_exit(self, username, logger)
-#             if sirens_wailing and emergency_state == "not connected":
-#                 logger.warning("there is no valid connection")
-#                 counter += 1
-#                 sleep(60)
-#             else:
-#                 break
-
-#     def wait_for_valid_authorization(self, username, logger):
-#         # save current page
-#         current_url = get_current_url(self)
-
-#         # stuck on invalid auth
-#         auth_method = "activity counts"
-#         counter = 0
-#         while True and counter < 10:
-#             login_state = check_authorization(self, username, auth_method, logger)
-#             if login_state is False:
-#                 logger.warning("not logged in")
-#                 counter += 1
-#                 sleep(60)
-#             else:
-#                 break
-
-#         # return to original page
-#         web_address_navigator(self, current_url)
-
-
-# def convert_selenium_browser(driver):
-#     """ Changed the class to our custom class """
-#     driver.__class__ = custom_browser
-#     return driver

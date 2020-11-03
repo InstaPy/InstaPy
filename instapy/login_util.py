@@ -163,7 +163,7 @@ def check_browser(browser, logfolder, logger, proxy_address):
     # check connection status
     try:
         logger.info("-- Connection Checklist [1/2] (Internet Connection Status)")
-        print("BROWSER CLASS NAME:", browser.typeofbr)
+        logger.info("-- You are using a {} browser.".format(browser.typeofbr))
         if "Chrome" == browser.typeofbr:
             browser.get("https://ip4.seeip.org/geoip")
         elif "Firefox" == browser.typeofbr:
@@ -201,7 +201,7 @@ def check_browser(browser, logfolder, logger, proxy_address):
                 logger=logger,
             )
     except Exception as exc:
-        logger.warn("- Internet Connection Status: error, {}".format(exc))
+        logger.warn("- Internet Connection Status: error, {}".format(str(exc).encode('utf-8')))
         update_activity(
             browser,
             action=None,
@@ -212,13 +212,14 @@ def check_browser(browser, logfolder, logger, proxy_address):
         return False
 
     # check if hide-selenium extension is running
-    logger.info("-- Connection Checklist [2/2] (Hide Selenium Extension)")
-    webdriver = browser.execute_script("return window.navigator.webdriver")
-    logger.info("- window.navigator.webdriver response: {}".format(webdriver))
-    if webdriver:
-        logger.warn("- Hide Selenium Extension: error")
-    else:
-        logger.info("- Hide Selenium Extension: ok")
+    # TODO: implement hide-selenium extension for chrome browser
+    # logger.info("-- Connection Checklist [2/2] (Hide Selenium Extension)")
+    # webdriver = browser.execute_script("return window.navigator.webdriver")
+    # logger.info("- window.navigator.webdriver response: {}".format(webdriver))
+    # if webdriver:
+    #     logger.warn("- Hide Selenium Extension: error")
+    # else:
+    #     logger.info("- Hide Selenium Extension: ok")
 
     # everything is ok, then continue(True)
     return True
