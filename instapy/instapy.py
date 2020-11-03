@@ -9,6 +9,7 @@ import requests
 import unicodedata
 import logging
 import logging.handlers
+import shutil
 
 from datetime import datetime
 from datetime import timedelta
@@ -136,7 +137,7 @@ class InstaPy:
         geckodriver_log_level: str = "info",  # "info" by default
         chromedriver_log_level: int = 2, # TODO: replace this with auto check
         # there probably exists a conversion chart for log levels
-        typeofbr: str = "Firefox" # should be Firefox or Chrome
+        typeofbr: str = "" # should be Firefox or Chrome
     ):
         print("InstaPy Version: {}".format(__version__))
         cli_args = parse_cli_args()
@@ -164,7 +165,9 @@ class InstaPy:
             else:
                 raise InstaPyError("The 'nogui' parameter isn't supported on Windows.")
         
-        self.typeofbr = typeofbr
+        
+
+
 
         self.browser = None
         self.page_delay = page_delay
@@ -329,6 +332,17 @@ class InstaPy:
         self.logger = self.get_instapy_logger(self.show_logs, log_handler)
 
         get_database(make=True)  # IMPORTANT: think twice before relocating
+
+        if not typeofbr: # attempt to automatically determine browser type by checking which drivers are found
+            temp_browser_drivertype = (shutil.which("geckodriver") or shutil.which("chromedriver")) or (shutil.which("geckodriver.exe") or shutil.which("chromedriver.exe"))
+            if "gecko" in temp_browser_drivertype:
+                typeofbr = "Firefox"
+            elif "chrome" in temp_browser_drivertype:
+                typeofbr = "Chrome"
+            else:
+                self.logger.warning("Automatic browser type detection failed. Please add geckodriver or chromedriver to PATH.")
+        
+        self.typeofbr = typeofbr
 
         if selenium_local_session and self.typeofbr == "Chrome":
             self.browser, err_msg = chrome_set_selenium_local_session(
