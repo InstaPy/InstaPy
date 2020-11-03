@@ -87,9 +87,9 @@ def set_selenium_local_session(
         chrome_options.add_experimental_option("prefs", prefs)
 
     if proxy_address and proxy_port:
-    chrome_options.add_argument("--mute-audio")
         chrome_options.add_argument('{0}:{1}'.format(proxy_address, proxy_port))
     
+    chrome_options.add_argument("--mute-audio")
 
     #TODO: extension to hide selenium, check out browser_firefox to see how it's done
     # 
