@@ -136,8 +136,7 @@ class InstaPy:
         geckodriver_log_level: str = "info",  # "info" by default
         chromedriver_log_level: int = 2, # TODO: replace this with auto check
         # there probably exists a conversion chart for log levels
-        isChrome: bool = False #TODO: replace this 
-        # with an automated check that finds which driver is in PATH
+        typeofbr: str = "Firefox" # should be Firefox or Chrome
     ):
         print("InstaPy Version: {}".format(__version__))
         cli_args = parse_cli_args()
@@ -165,7 +164,7 @@ class InstaPy:
             else:
                 raise InstaPyError("The 'nogui' parameter isn't supported on Windows.")
         
-        self.isChrome = isChrome
+        self.typeofbr = typeofbr
 
         self.browser = None
         self.page_delay = page_delay
@@ -331,7 +330,7 @@ class InstaPy:
 
         get_database(make=True)  # IMPORTANT: think twice before relocating
 
-        if selenium_local_session and isChrome:
+        if selenium_local_session and self.typeofbr == "Chrome":
             self.browser, err_msg = chrome_set_selenium_local_session(
                 proxy_address,
                 proxy_port,
@@ -350,7 +349,7 @@ class InstaPy:
             if len(err_msg) > 0:
                 raise InstaPyError(err_msg)
 
-        if selenium_local_session and not isChrome:
+        if selenium_local_session and not self.typeofbr == "Chrome":
             self.browser, err_msg = set_selenium_local_session(
                 proxy_address,
                 proxy_port,
@@ -4468,7 +4467,7 @@ class InstaPy:
 
         Settings.InstaPy_is_running = False
 
-        if self.isChrome:
+        if self.typeofbr == "Chrome":
             chrome_close_browser(self.browser, threaded_session, self.logger)
         else:
             close_browser(self.browser, threaded_session, self.logger)
