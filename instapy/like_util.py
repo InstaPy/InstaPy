@@ -770,7 +770,7 @@ def like_image(browser, username, blacklist, logger, logfolder, total_liked_img)
         # Now, move until 'Comment' section to determine the status of post
         # Notice that some videos comes from TikTok and could have larger size
         # c'est la vie...
-        logger.info("--> Found 'Play' button for a video, traying to like it")
+        logger.info("--> Found 'Play' button for a video, trying to like it")
         browser.execute_script("arguments[0].scrollIntoView(true);", element)
 
     # find first for like element
