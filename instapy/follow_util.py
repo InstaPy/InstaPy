@@ -38,6 +38,7 @@ def get_following_status(
             browser, username, person, None, logger, logfolder
         )
         if person_new:
+            ig_homepage = "https://www.instagram.com/"
             web_address_navigator(browser, ig_homepage + person_new)
             valid_page = is_page_available(browser, logger)
             if not valid_page:
