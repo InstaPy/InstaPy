@@ -719,6 +719,8 @@ def get_users_through_dialog_with_graphql(
     # TODO: simulation implmentation
 
     real_amount = amount
+    followers_list = []
+
     if randomize and amount >= 3:
         # expanding the population for better sampling distribution
         amount = amount * 1.9
@@ -772,7 +774,6 @@ def get_users_through_dialog_with_graphql(
         # edge_type: used to check followers or following in JSON
         #            "edge_followed_by" or "edge_follow"
         followers_page = data["data"]["user"][str(edge_type)]["edges"]
-        followers_list = []
     except:
         # sometimes IG page displays a message that "Failed to Load. Retry"
         # so, instead of terminatig the App we will move to next step.
@@ -817,7 +818,6 @@ def get_users_through_dialog_with_graphql(
         try:
             # get all followers of current page
             followers_page = data["data"]["user"][str(edge_type)]["edges"]
-            followers_list = []
         except:
             logger.error("JSON (2) cannot be loaded, moving on...")
             return [], []
