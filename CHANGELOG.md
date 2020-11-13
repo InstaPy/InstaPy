@@ -10,6 +10,7 @@ _The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 ### Added
 
 - Handle situation if stale elements detected when cookie cannot be loaded
+- Convert Documentation to Docusaurus
 - Added function that clicks accept at instagram cookie dialogue
 
 ### Fixed
