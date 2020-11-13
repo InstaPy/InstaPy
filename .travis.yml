@@ -16,6 +16,7 @@ stages:
     - name: static analysis
     - name: test
     - name: docs
+      if: branch = master AND fork = false
     - name: pypi-prod
       if: type = push AND fork = false AND tag =~ ^\d+\.\d+\.\d+
 
@@ -70,9 +71,6 @@ jobs:
       language: node_js
       node_js:
         - '10'
-      branches:
-        only:
-          - master
       cache:
         yarn: true
       script:
