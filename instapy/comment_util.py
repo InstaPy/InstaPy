@@ -57,6 +57,26 @@ def open_comment_section(browser, logger):
     else:
         logger.warning(missing_comment_elem_warning)
 
+def open_target_profile(browser, logger):
+    missing_target_profile_elem_warning = (
+        "--> Target Profile Button Not Found!"
+        "\t~may cause issues with browser windows of smaller widths"
+    )
+
+    target_profile_elem = browser.find_elements_by_xpath(
+        read_xpath(open_target_profile.__name__, "target_profile")
+    )
+
+    if len(target_profile_elem) > 0:
+        try:
+            click_element(browser, target_profile_elem[0])
+
+        except WebDriverException:
+            logger.warning(missing_target_profile_elem_warning)
+
+    else:
+        logger.warning(missing_target_profile_elem_warning)
+
 
 def comment_image(browser, username, comments, blacklist, logger, logfolder):
     """Checks if it should comment on the image"""
@@ -132,6 +152,9 @@ def comment_image(browser, username, comments, blacklist, logger, logfolder):
 
     logger.info("--> Commented: {}".format(rand_comment.encode("utf-8")))
     Event().commented(username)
+
+    # Going back to the profile page of the user we commented before
+    open_target_profile(browser, logger)
 
     # get the post-comment delay time to sleep
     naply = get_action_delay("comment")

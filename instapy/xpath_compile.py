@@ -124,6 +124,10 @@ xpath["get_number_of_posts"] = {
     "num_of_posts_txt_no_such_element": "//section/div[3]/div/header/section/ul/li[1]/span/span",
 }
 
+xpath["open_target_profile"] = {
+    "target_profile": "//section/main/div/ul/div/li/div/div/div[2]/h2/div[1]/a"
+}
+
 xpath["get_relationship_counts"] = {
     "following_count": "//a[contains(@href,'following') and not(contains(@href,'mutual'))]/span",
     "followers_count": "//a[contains(@href,'followers') and not(contains(@href,'mutual'))]/span",

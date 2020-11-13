@@ -15,6 +15,7 @@ _The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 - Fixed typo in message when a video is tried to like.
 - Fixed the problem where `followers_list` could be used without being initialized.
+- Fixed follow element not found on comment page
 
 ## [0.6.12] - 2020-10-26
 
