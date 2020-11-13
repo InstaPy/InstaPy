@@ -15,6 +15,8 @@ script: tox
 stages:
     - name: static analysis
     - name: test
+    - name: docs
+      if: type = push AND branch = master AND fork = false
     - name: pypi-prod
       if: type = push AND fork = false AND tag =~ ^\d+\.\d+\.\d+
 
@@ -64,6 +66,18 @@ jobs:
           branches:
             only:
               - master
+
+    - stage: docs
+      language: node_js
+      node_js:
+        - '10'
+      cache:
+        yarn: true
+      script:
+        - git config --global user.name "${GH_NAME}"
+        - git config --global user.email "${GH_EMAIL}"
+        - echo "machine github.com login ${GH_NAME} password ${GH_TOKEN}" > ~/.netrc
+        - cd docusaurus && yarn && GIT_USER="${GH_NAME}" yarn deploy
 
   allow_failures:
     - python: "3.8-dev"
