@@ -216,6 +216,7 @@ def check_browser(browser, logfolder, logger, proxy_address):
     # everything is ok, then continue(True)
     return True
 
+
 def accept_cookies(browser, logger):
     missing_accept_button_elem_warning = (
         "--> Accept Cookies Button Not Found!"
@@ -235,6 +236,7 @@ def accept_cookies(browser, logger):
 
     else:
         logger.warning(missing_accept_button_elem_warning)
+
 
 def login_user(
     browser,
@@ -266,9 +268,9 @@ def login_user(
         for cookie in pickle.load(
             open("{0}{1}_cookie.pkl".format(logfolder, username), "rb")
         ):
-            if 'sameSite' in cookie:
-                if cookie['sameSite'] == 'None':
-                    cookie['sameSite'] = 'Strict'
+            if "sameSite" in cookie:
+                if cookie["sameSite"] == "None":
+                    cookie["sameSite"] = "Strict"
             browser.add_cookie(cookie)
             cookie_loaded = True
     except (WebDriverException, OSError, IOError):
@@ -276,7 +278,7 @@ def login_user(
 
     # force refresh after cookie load or check_authorization() will FAIL
     reload_webpage(browser)
-    #accept_cookies(browser, logger)
+    # accept_cookies(browser, logger)
     # cookie has been LOADED, so the user SHOULD be logged in
     # check if the user IS logged in
     login_state = check_authorization(

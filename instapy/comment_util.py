@@ -57,6 +57,7 @@ def open_comment_section(browser, logger):
     else:
         logger.warning(missing_comment_elem_warning)
 
+
 def open_target_profile(browser, logger):
     missing_target_profile_elem_warning = (
         "--> Target Profile Button Not Found!"

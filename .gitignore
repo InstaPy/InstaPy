@@ -117,3 +117,6 @@ Pipfile
 
 # Instances
 z_*
+
+# config for testing
+local_templates/*
