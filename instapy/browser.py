@@ -1,19 +1,16 @@
-# selenium
-from selenium import webdriver
-from selenium.common.exceptions import WebDriverException
-from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.firefox.options import Options as Firefox_Options
-from selenium.webdriver import Remote
-from selenium.common.exceptions import UnexpectedAlertPresentException
-from webdriverdownloader import GeckoDriverDownloader
-
-# general libs
+# import built-in & third-party modules
 import os
 import zipfile
 import shutil
-from os.path import sep
 
-# local project
+from os.path import sep
+from selenium import webdriver
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.firefox.options import Options as Firefox_Options
+from selenium.webdriver import Remote
+from webdriverdownloader import GeckoDriverDownloader
+
+# import InstaPy modules
 from .util import interruption_handler
 from .util import highlight_print
 from .util import emergency_exit
@@ -23,6 +20,10 @@ from .util import web_address_navigator
 from .file_manager import use_assets
 from .settings import Settings
 from .time_util import sleep
+
+# import exceptions
+from selenium.common.exceptions import WebDriverException
+from selenium.common.exceptions import UnexpectedAlertPresentException
 
 
 def get_geckodriver():
@@ -64,6 +65,7 @@ def set_selenium_local_session(
     browser_executable_path,
     logfolder,
     logger,
+    geckodriver_log_level,
 ):
     """Starts local session for a selenium server.
     Default case scenario."""
@@ -92,6 +94,10 @@ def set_selenium_local_session(
 
     if browser_executable_path is not None:
         firefox_options.binary = browser_executable_path
+
+    # set "info" by default
+    # set "trace" for debubging, Development only
+    firefox_options.log.level = geckodriver_log_level
 
     # set English language
     firefox_profile.set_preference("intl.accept_languages", "en-US")
