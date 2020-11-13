@@ -1,7 +1,9 @@
+const path = require('path');
+
 module.exports = {
   title: 'InstaPy',
   tagline: 'Tool to automate your Social Media interactions.',
-  url: 'https://docs.instapy.io',
+  url: 'https://instapy.org',
   baseUrl: '/',
   onBrokenLinks: 'throw',
   favicon: 'img/favicon.ico',
@@ -9,6 +11,10 @@ module.exports = {
   projectName: 'InstaPy', // Usually your repo name.
   themeConfig: {
     googleAdsense: { dataAdClient: 'ca-pub-4875789012193531' },
+    gtag: {
+      trackingID: 'G-F16VNTTQ7S',
+      anonymizeIP: false,
+    },
     sidebarCollapsible: false,
     navbar: {
       title: 'InstaPy - Documentation',
@@ -92,6 +98,6 @@ module.exports = {
     ],
   ],
   plugins: [
-    'docusaurus-plugin-google-adsense',
+    path.resolve(__dirname, 'plugin-google-adsense'),
   ],
 };
