@@ -16,7 +16,7 @@ stages:
     - name: static analysis
     - name: test
     - name: docs
-      if: branch = master AND fork = false
+      if: type = push AND branch = master AND fork = false
     - name: pypi-prod
       if: type = push AND fork = false AND tag =~ ^\d+\.\d+\.\d+
 
@@ -73,11 +73,6 @@ jobs:
         - '10'
       cache:
         yarn: true
-      on:
-        repo: timgrossmann/InstaPy
-        branches:
-          only:
-            - master
       script:
         - git config --global user.name "${GH_NAME}"
         - git config --global user.email "${GH_EMAIL}"
