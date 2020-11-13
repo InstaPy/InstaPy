@@ -216,6 +216,25 @@ def check_browser(browser, logfolder, logger, proxy_address):
     # everything is ok, then continue(True)
     return True
 
+def accept_cookies(browser, logger):
+    missing_accept_button_elem_warning = (
+        "--> Accept Cookies Button Not Found!"
+        "\t~may cause issues with browser windows of smaller widths"
+    )
+
+    accept_button_elem = browser.find_elements_by_xpath(
+        read_xpath(accept_cookies.__name__, "accept_button")
+    )
+
+    if len(accept_button_elem) > 0:
+        try:
+            click_element(browser, accept_button_elem[0])
+
+        except WebDriverException:
+            logger.warning(missing_accept_button_elem_warning)
+
+    else:
+        logger.warning(missing_accept_button_elem_warning)
 
 def login_user(
     browser,
@@ -239,6 +258,7 @@ def login_user(
 
     ig_homepage = "https://www.instagram.com"
     web_address_navigator(browser, ig_homepage)
+    accept_cookies(browser, logger)
     cookie_loaded = False
 
     # try to load cookie from username
@@ -246,6 +266,9 @@ def login_user(
         for cookie in pickle.load(
             open("{0}{1}_cookie.pkl".format(logfolder, username), "rb")
         ):
+            if 'sameSite' in cookie:
+                if cookie['sameSite'] == 'None':
+                    cookie['sameSite'] = 'Strict'
             browser.add_cookie(cookie)
             cookie_loaded = True
     except (WebDriverException, OSError, IOError):
@@ -253,7 +276,7 @@ def login_user(
 
     # force refresh after cookie load or check_authorization() will FAIL
     reload_webpage(browser)
-
+    #accept_cookies(browser, logger)
     # cookie has been LOADED, so the user SHOULD be logged in
     # check if the user IS logged in
     login_state = check_authorization(

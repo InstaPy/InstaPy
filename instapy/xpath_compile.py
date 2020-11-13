@@ -3,6 +3,10 @@
 
 xpath = {}
 
+xpath["accept_cookies"] = {
+    "accept_button": "//button[text()='Accept']"
+}
+
 xpath["bypass_suspicious_login"] = {
     "bypass_with_sms_option": "//label[contains(text(),'Phone:')]",
     "bypass_with_email_option": "//label[contains(text(),'Email:')]",
