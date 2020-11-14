@@ -76,8 +76,8 @@ xpath["get_comment_input"] = {
 xpath["get_comments_on_post"] = {
     "commenter_elem": "//h3/a",
     "comments_block": "//div/div/h3/../../../..",
-    "like_button_full_XPath": "//div/span/div/button/div/span[*[local-name()='svg']/@aria-label='Like']",
-    "unlike_button_full_XPath": "//div/span/div/button/div/span[*[local-name()='svg']/@aria-label='Unlike']",
+    "like_button_full_XPath": "//*[*[local-name()='svg']/@aria-label='Like']",
+    "unlike_button_full_XPath": "//*[*[local-name()='svg']/@aria-label='Unlike']",
 }
 
 xpath["get_cord_location"] = {"json_text": "//body"}
