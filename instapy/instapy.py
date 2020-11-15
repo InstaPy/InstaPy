@@ -1310,11 +1310,11 @@ class InstaPy:
         self.min_posts = min_posts if enabled is True else None
         self.max_posts = max_posts if enabled is True else None
 
-    def validate_user_call(self, user_name: str):
+    def validate_user_call(self, target_username: str):
         """ Short call of validate_username() function """
         validation, details = validate_username(
             self.browser,
-            user_name,
+            target_username,
             self.username,
             self.ignore_users,
             self.blacklist,
@@ -1492,7 +1492,7 @@ class InstaPy:
                 self.logger.info(link)
 
                 try:
-                    inappropriate, user_name, is_video, reason, scope = check_link(
+                    inappropriate, target_username, is_video, reason, scope = check_link(
                         self.browser,
                         link,
                         self.dont_like,
@@ -1512,7 +1512,7 @@ class InstaPy:
 
                     if not inappropriate and self.liking_approved:
                         # validate user
-                        validation, details = self.validate_user_call(user_name)
+                        validation, details = self.validate_user_call(target_username)
 
                         if validation is not True:
                             self.logger.info("--> Not a valid user: {}".format(details))
@@ -1524,7 +1524,7 @@ class InstaPy:
                         # try to like
                         like_state, msg = like_image(
                             self.browser,
-                            user_name,
+                            target_username,
                             self.blacklist,
                             self.logger,
                             self.logfolder,
@@ -1560,7 +1560,7 @@ class InstaPy:
                             # comments
                             if (
                                 self.do_comment
-                                and user_name not in self.dont_include
+                                and target_username not in self.dont_include
                                 and checked_img
                                 and commenting
                             ):
@@ -1569,7 +1569,7 @@ class InstaPy:
                                     if is_video
                                     else self.photo_comments
                                 )
-                                self.user_name = user_name
+                                self.target_username = target_username
                                 success = process_comments(
                                     comments,
                                     temp_comments,
@@ -1578,7 +1578,7 @@ class InstaPy:
                                     self.min_comments,
                                     self.comments_mandatory_words,
                                     self.username,
-                                    self.user_name,
+                                    self.target_username,
                                     self.blacklist,
                                     self.browser,
                                     self.logger,
@@ -1594,11 +1594,11 @@ class InstaPy:
                             # following
                             if (
                                 self.do_follow
-                                and user_name not in self.dont_include
+                                and target_username not in self.dont_include
                                 and checked_img
                                 and following
                                 and not follow_restriction(
-                                    "read", user_name, self.follow_times, self.logger
+                                    "read", target_username, self.follow_times, self.logger
                                 )
                             ):
 
@@ -1606,7 +1606,7 @@ class InstaPy:
                                     self.browser,
                                     "post",
                                     self.username,
-                                    user_name,
+                                    target_username,
                                     None,
                                     self.blacklist,
                                     self.logger,
@@ -1710,7 +1710,7 @@ class InstaPy:
                 self.logger.info(link)
 
                 try:
-                    inappropriate, user_name, is_video, reason, scope = check_link(
+                    inappropriate, target_username, is_video, reason, scope = check_link(
                         self.browser,
                         link,
                         self.dont_like,
@@ -1724,7 +1724,7 @@ class InstaPy:
                     )
                     if not inappropriate:
                         # validate user
-                        validation, details = self.validate_user_call(user_name)
+                        validation, details = self.validate_user_call(target_username)
                         if validation is not True:
                             self.logger.info(details)
                             not_valid_users += 1
@@ -1763,7 +1763,7 @@ class InstaPy:
 
                         if (
                             self.do_comment
-                            and user_name not in self.dont_include
+                            and target_username not in self.dont_include
                             and checked_img
                         ):
                             comments = self.comments + (
@@ -1771,7 +1771,7 @@ class InstaPy:
                             )
 
                             if comments:
-                                self.user_name = user_name
+                                self.target_username = target_username
                                 success = process_comments(
                                     comments,
                                     temp_comments,
@@ -1780,7 +1780,7 @@ class InstaPy:
                                     self.min_comments,
                                     self.comments_mandatory_words,
                                     self.username,
-                                    self.user_name,
+                                    self.target_username,
                                     self.blacklist,
                                     self.browser,
                                     self.logger,
@@ -1796,12 +1796,12 @@ class InstaPy:
                                     # try to follow
                                     if (
                                         self.do_follow
-                                        and user_name not in self.dont_include
+                                        and target_username not in self.dont_include
                                         and checked_img
                                         and following
                                         and not follow_restriction(
                                             "read",
-                                            user_name,
+                                            target_username,
                                             self.follow_times,
                                             self.logger,
                                         )
@@ -1810,7 +1810,7 @@ class InstaPy:
                                             self.browser,
                                             "post",
                                             self.username,
-                                            user_name,
+                                            target_username,
                                             None,
                                             self.blacklist,
                                             self.logger,
@@ -1932,7 +1932,7 @@ class InstaPy:
                 self.logger.info(link)
 
                 try:
-                    inappropriate, user_name, is_video, reason, scope = check_link(
+                    inappropriate, target_username, is_video, reason, scope = check_link(
                         self.browser,
                         link,
                         self.dont_like,
@@ -1952,7 +1952,7 @@ class InstaPy:
 
                     if not inappropriate and self.liking_approved:
                         # validate user
-                        validation, details = self.validate_user_call(user_name)
+                        validation, details = self.validate_user_call(target_username)
                         if validation is not True:
                             self.logger.info(details)
                             not_valid_users += 1
@@ -1963,7 +1963,7 @@ class InstaPy:
                         # try to like
                         like_state, msg = like_image(
                             self.browser,
-                            user_name,
+                            target_username,
                             self.blacklist,
                             self.logger,
                             self.logfolder,
@@ -1999,7 +1999,7 @@ class InstaPy:
                             # comments
                             if (
                                 self.do_comment
-                                and user_name not in self.dont_include
+                                and target_username not in self.dont_include
                                 and checked_img
                                 and commenting
                             ):
@@ -2008,7 +2008,7 @@ class InstaPy:
                                     if is_video
                                     else self.photo_comments
                                 )
-                                self.user_name = user_name
+                                self.target_username = target_username
                                 success = process_comments(
                                     comments,
                                     temp_comments,
@@ -2017,7 +2017,7 @@ class InstaPy:
                                     self.min_comments,
                                     self.comments_mandatory_words,
                                     self.username,
-                                    self.user_name,
+                                    self.target_username,
                                     self.blacklist,
                                     self.browser,
                                     self.logger,
@@ -2033,11 +2033,11 @@ class InstaPy:
                             # following
                             if (
                                 self.do_follow
-                                and user_name not in self.dont_include
+                                and target_username not in self.dont_include
                                 and checked_img
                                 and following
                                 and not follow_restriction(
-                                    "read", user_name, self.follow_times, self.logger
+                                    "read", target_username, self.follow_times, self.logger
                                 )
                             ):
 
@@ -2045,7 +2045,7 @@ class InstaPy:
                                     self.browser,
                                     "post",
                                     self.username,
-                                    user_name,
+                                    target_username,
                                     None,
                                     self.blacklist,
                                     self.logger,
@@ -2061,14 +2061,14 @@ class InstaPy:
                             if interact:
                                 self.logger.info(
                                     "--> User gonna be interacted: '{}'".format(
-                                        user_name
+                                        target_username
                                     )
                                 )
 
                                 # disable revalidating user in like_by_users
                                 with self.feature_in_feature("like_by_users", False):
                                     self.like_by_users(
-                                        user_name,
+                                        target_username,
                                         self.user_interact_amount,
                                         self.user_interact_random,
                                         self.user_interact_media,
@@ -2235,7 +2235,7 @@ class InstaPy:
                 self.logger.info(link)
 
                 try:
-                    inappropriate, user_name, is_video, reason, scope = check_link(
+                    inappropriate, target_username, is_video, reason, scope = check_link(
                         self.browser,
                         link,
                         self.dont_like,
@@ -2256,7 +2256,7 @@ class InstaPy:
                     if not inappropriate and self.liking_approved:
                         like_state, msg = like_image(
                             self.browser,
-                            user_name,
+                            target_username,
                             self.blacklist,
                             self.logger,
                             self.logfolder,
@@ -2290,7 +2290,7 @@ class InstaPy:
 
                             if (
                                 self.do_comment
-                                and user_name not in self.dont_include
+                                and target_username not in self.dont_include
                                 and checked_img
                                 and commenting
                             ):
@@ -2299,7 +2299,7 @@ class InstaPy:
                                     if is_video
                                     else self.photo_comments
                                 )
-                                self.user_name = user_name
+                                self.target_username = target_username
                                 success = process_comments(
                                     comments,
                                     temp_comments,
@@ -2308,7 +2308,7 @@ class InstaPy:
                                     self.min_comments,
                                     self.comments_mandatory_words,
                                     self.username,
-                                    self.user_name,
+                                    self.target_username,
                                     self.blacklist,
                                     self.browser,
                                     self.logger,
@@ -2511,7 +2511,7 @@ class InstaPy:
                 self.logger.info(link)
 
                 try:
-                    inappropriate, user_name, is_video, reason, scope = check_link(
+                    inappropriate, target_username, is_video, reason, scope = check_link(
                         self.browser,
                         link,
                         self.dont_like,
@@ -2551,7 +2551,7 @@ class InstaPy:
                         if self.do_like and liking and self.liking_approved:
                             like_state, msg = like_image(
                                 self.browser,
-                                user_name,
+                                target_username,
                                 self.blacklist,
                                 self.logger,
                                 self.logfolder,
@@ -2586,7 +2586,7 @@ class InstaPy:
                                         if is_video
                                         else self.photo_comments
                                     )
-                                    self.user_name = user_name
+                                    self.target_username = target_username
                                     success = process_comments(
                                         comments,
                                         temp_comments,
@@ -2595,7 +2595,7 @@ class InstaPy:
                                         self.min_comments,
                                         self.comments_mandatory_words,
                                         self.username,
-                                        self.user_name,
+                                        self.target_username,
                                         self.blacklist,
                                         self.browser,
                                         self.logger,
@@ -2830,7 +2830,7 @@ class InstaPy:
                 self.logger.info(link)
 
                 try:
-                    inappropriate, user_name, is_video, reason, scope = check_link(
+                    inappropriate, target_username, is_video, reason, scope = check_link(
                         self.browser,
                         link,
                         self.dont_like,
@@ -2865,7 +2865,7 @@ class InstaPy:
                         if self.do_like and liking and self.liking_approved:
                             like_state, msg = like_image(
                                 self.browser,
-                                user_name,
+                                target_username,
                                 self.blacklist,
                                 self.logger,
                                 self.logfolder,
@@ -2899,7 +2899,7 @@ class InstaPy:
                                         if is_video
                                         else self.photo_comments
                                     )
-                                    self.user_name = user_name
+                                    self.target_username = target_username
                                     success = process_comments(
                                         comments,
                                         temp_comments,
@@ -2908,7 +2908,7 @@ class InstaPy:
                                         self.min_comments,
                                         self.comments_mandatory_words,
                                         self.username,
-                                        self.user_name,
+                                        self.target_username,
                                         self.blacklist,
                                         self.browser,
                                         self.logger,
@@ -3985,7 +3985,7 @@ class InstaPy:
                         try:
                             (
                                 inappropriate,
-                                user_name,
+                                target_username,
                                 is_video,
                                 reason,
                                 scope,
@@ -4011,7 +4011,7 @@ class InstaPy:
                                 )
                             if not inappropriate and self.liking_approved:
                                 # validate user
-                                validation, details = self.validate_user_call(user_name)
+                                validation, details = self.validate_user_call(target_username)
                                 if validation is not True:
                                     self.logger.info(details)
                                     not_valid_users += 1
@@ -4022,7 +4022,7 @@ class InstaPy:
                                 # try to like
                                 like_state, msg = like_image(
                                     self.browser,
-                                    user_name,
+                                    target_username,
                                     self.blacklist,
                                     self.logger,
                                     self.logfolder,
@@ -4062,7 +4062,7 @@ class InstaPy:
                                     # commenting
                                     if (
                                         self.do_comment
-                                        and user_name not in self.dont_include
+                                        and target_username not in self.dont_include
                                         and checked_img
                                         and commenting
                                     ):
@@ -4071,7 +4071,7 @@ class InstaPy:
                                             if is_video
                                             else self.photo_comments
                                         )
-                                        self.user_name = user_name
+                                        self.target_username = target_username
                                         success = process_comments(
                                             comments,
                                             temp_comments,
@@ -4080,7 +4080,7 @@ class InstaPy:
                                             self.min_comments,
                                             self.comments_mandatory_words,
                                             self.username,
-                                            self.user_name,
+                                            self.target_username,
                                             self.blacklist,
                                             self.browser,
                                             self.logger,
@@ -4096,12 +4096,12 @@ class InstaPy:
                                     # following
                                     if (
                                         self.do_follow
-                                        and user_name not in self.dont_include
+                                        and target_username not in self.dont_include
                                         and checked_img
                                         and following
                                         and not follow_restriction(
                                             "read",
-                                            user_name,
+                                            target_username,
                                             self.follow_times,
                                             self.logger,
                                         )
@@ -4110,7 +4110,7 @@ class InstaPy:
                                             self.browser,
                                             "post",
                                             self.username,
-                                            user_name,
+                                            target_username,
                                             None,
                                             self.blacklist,
                                             self.logger,
@@ -4126,11 +4126,11 @@ class InstaPy:
                                     if interact:
                                         self.logger.info(
                                             "--> User gonna be interacted: "
-                                            "'{}'".format(user_name)
+                                            "'{}'".format(target_username)
                                         )
 
                                         self.like_by_users(
-                                            user_name,
+                                            target_username,
                                             self.user_interact_amount,
                                             self.user_interact_random,
                                             self.user_interact_media,
@@ -4163,7 +4163,7 @@ class InstaPy:
                                     self.logger.warning(
                                         "--> Ongoing Unfollow {}: unfollowing"
                                         " '{}' due to inappropriate content...".format(
-                                            inap_unfollow + 1, user_name
+                                            inap_unfollow + 1, target_username
                                         )
                                     )
 
@@ -4171,7 +4171,7 @@ class InstaPy:
                                         self.browser,
                                         "post",
                                         self.username,
-                                        user_name,
+                                        target_username,
                                         None,
                                         None,
                                         self.relationship_data,
@@ -4522,7 +4522,7 @@ class InstaPy:
                 self.logger.info(link)
 
                 try:
-                    inappropriate, user_name, is_video, reason, scope = check_link(
+                    inappropriate, target_username, is_video, reason, scope = check_link(
                         self.browser,
                         link,
                         self.dont_like,
@@ -4537,7 +4537,7 @@ class InstaPy:
 
                     if not inappropriate:
                         # validate user
-                        validation, details = self.validate_user_call(user_name)
+                        validation, details = self.validate_user_call(target_username)
                         if validation is not True:
                             self.logger.info(details)
                             not_valid_users += 1
@@ -4550,7 +4550,7 @@ class InstaPy:
                             self.browser,
                             "post",
                             self.username,
-                            user_name,
+                            target_username,
                             None,
                             self.blacklist,
                             self.logger,
@@ -4654,7 +4654,7 @@ class InstaPy:
                 self.logger.info(link)
 
                 try:
-                    inappropriate, user_name, is_video, reason, scope = check_link(
+                    inappropriate, target_username, is_video, reason, scope = check_link(
                         self.browser,
                         link,
                         self.dont_like,
@@ -4669,7 +4669,7 @@ class InstaPy:
 
                     if not inappropriate:
                         # validate user
-                        validation, details = self.validate_user_call(user_name)
+                        validation, details = self.validate_user_call(target_username)
                         if validation is not True:
                             self.logger.info(details)
                             not_valid_users += 1
@@ -4682,7 +4682,7 @@ class InstaPy:
                             self.browser,
                             "post",
                             self.username,
-                            user_name,
+                            target_username,
                             None,
                             self.blacklist,
                             self.logger,
@@ -4706,7 +4706,7 @@ class InstaPy:
                                     # disable following temporarily
                                     self.do_follow = False
                                     self.interact_by_users(
-                                        user_name,
+                                        target_username,
                                         self.user_interact_amount,
                                         self.user_interact_random,
                                         self.user_interact_media,
@@ -4778,7 +4778,7 @@ class InstaPy:
             self.logger.info("--> {}".format(url.encode("utf-8")))
 
             try:
-                inappropriate, user_name, is_video, reason, scope = check_link(
+                inappropriate, target_username, is_video, reason, scope = check_link(
                     self.browser,
                     url,
                     self.dont_like,
@@ -4798,7 +4798,7 @@ class InstaPy:
 
                 if not inappropriate and self.liking_approved:
                     # validate user
-                    validation, details = self.validate_user_call(user_name)
+                    validation, details = self.validate_user_call(target_username)
                     if validation is not True:
                         self.logger.info(details)
                         not_valid_users += 1
@@ -4809,7 +4809,7 @@ class InstaPy:
                     # try to like
                     like_state, msg = like_image(
                         self.browser,
-                        user_name,
+                        target_username,
                         self.blacklist,
                         self.logger,
                         self.logfolder,
@@ -4840,14 +4840,14 @@ class InstaPy:
 
                         if (
                             self.do_comment
-                            and user_name not in self.dont_include
+                            and target_username not in self.dont_include
                             and checked_img
                             and commenting
                         ):
                             comments = self.comments + (
                                 self.video_comments if is_video else self.photo_comments
                             )
-                            self.user_name = user_name
+                            self.target_username = target_username
                             success = process_comments(
                                 comments,
                                 temp_comments,
@@ -4856,7 +4856,7 @@ class InstaPy:
                                 self.min_comments,
                                 self.comments_mandatory_words,
                                 self.username,
-                                self.user_name,
+                                self.target_username,
                                 self.blacklist,
                                 self.browser,
                                 self.logger,
@@ -4871,18 +4871,18 @@ class InstaPy:
 
                         if (
                             self.do_follow
-                            and user_name not in self.dont_include
+                            and target_username not in self.dont_include
                             and checked_img
                             and following
                             and not follow_restriction(
-                                "read", user_name, self.follow_times, self.logger
+                                "read", target_username, self.follow_times, self.logger
                             )
                         ):
                             follow_state, msg = follow_user(
                                 self.browser,
                                 "post",
                                 self.username,
-                                user_name,
+                                target_username,
                                 None,
                                 self.blacklist,
                                 self.logger,
@@ -4903,7 +4903,7 @@ class InstaPy:
                             # do interactions if any
                             if do_interact and self.user_interact_amount > 0:
                                 self.interact_by_users(
-                                    user_name,
+                                    target_username,
                                     self.user_interact_amount,
                                     self.user_interact_random,
                                     self.user_interact_media,
@@ -5333,7 +5333,7 @@ class InstaPy:
                     self.username, message, "post iteration", "info", self.logger
                 )
 
-                (inappropriate, user_name, is_video, reason, scope) = check_link(
+                (inappropriate, target_username, is_video, reason, scope) = check_link(
                     self.browser,
                     link,
                     self.dont_like,
@@ -5376,7 +5376,7 @@ class InstaPy:
                 # like the post before interacting on comments
                 image_like_state, msg = like_image(
                     self.browser,
-                    user_name,
+                    target_username,
                     self.blacklist,
                     self.logger,
                     self.logfolder,
@@ -5764,7 +5764,7 @@ class InstaPy:
                 post_link = "https://www.instagram.com/p/{}".format(pod_post_id)
                 web_address_navigator(self.browser, post_link)
 
-                inappropriate, user_name, is_video, reason, scope = check_link(
+                inappropriate, target_username, is_video, reason, scope = check_link(
                     self.browser,
                     post_link,
                     self.dont_like,
@@ -5777,21 +5777,21 @@ class InstaPy:
                     self.logger,
                 )
 
-                if user_name != self.username:
+                if target_username != self.username:
                     follow_state, msg = follow_user(
                         self.browser,
                         "post",
                         self.username,
-                        user_name,
+                        target_username,
                         None,
                         self.blacklist,
                         self.logger,
                         self.logfolder,
                     )
 
-                    self.dont_include.add(user_name)
+                    self.dont_include.add(target_username)
 
-                if not inappropriate and user_name != self.username:
+                if not inappropriate and target_username != self.username:
                     pods_like_percent = max(90, min(100, self.like_percentage))
                     liking = random.randint(0, 100) <= pods_like_percent
                     commenting = (
@@ -5801,7 +5801,7 @@ class InstaPy:
                     if liking:
                         like_state, msg = like_image(
                             self.browser,
-                            user_name,
+                            target_username,
                             self.blacklist,
                             self.logger,
                             self.logfolder,
@@ -5823,7 +5823,7 @@ class InstaPy:
 
                         comment_state, msg = comment_image(
                             self.browser,
-                            user_name,
+                            target_username,
                             comments,
                             self.blacklist,
                             self.logger,

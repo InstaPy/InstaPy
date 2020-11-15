@@ -1531,8 +1531,8 @@ def load_user_id(username, person, logger, logfolder):
                     # old entry which does not contain an ID
                     pass
 
-                user_name = entries[1]
-                if user_name == person:
+                target_username = entries[1]
+                if target_username == person:
                     user_id = entries[2]
                     break
 

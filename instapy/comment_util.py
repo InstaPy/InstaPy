@@ -58,7 +58,7 @@ def open_comment_section(browser, logger):
         logger.warning(missing_comment_elem_warning)
 
 
-def open_target_profile(browser, logger, user_name):
+def open_target_profile(browser, logger, target_username):
     """ Clicks the name of the user to follow on comment page """
     missing_target_profile_elem_warning = (
         "--> Target Profile Button Not Found!"
@@ -66,7 +66,7 @@ def open_target_profile(browser, logger, user_name):
     )
 
     target_profile_elem = browser.find_elements_by_xpath(
-        read_xpath(open_target_profile.__name__, "target_profile").format(user_name)
+        read_xpath(open_target_profile.__name__, "target_profile").format(target_username)
     )
 
     if len(target_profile_elem) > 0:
@@ -80,7 +80,7 @@ def open_target_profile(browser, logger, user_name):
         logger.warning(missing_target_profile_elem_warning)
 
 
-def comment_image(browser, username, user_name, comments, blacklist, logger, logfolder):
+def comment_image(browser, username, target_username, comments, blacklist, logger, logfolder):
     """Checks if it should comment on the image"""
     # check action availability
     if quota_supervisor("comments") == "jump":
@@ -156,7 +156,7 @@ def comment_image(browser, username, user_name, comments, blacklist, logger, log
     Event().commented(username)
 
     # Going back to the profile page of the user we commented before
-    open_target_profile(browser, logger, user_name)
+    open_target_profile(browser, logger, target_username)
 
     # get the post-comment delay time to sleep
     naply = get_action_delay("comment")
@@ -440,7 +440,7 @@ def process_comments(
     min_comments,
     comments_mandatory_words,
     username,
-    user_name,
+    target_username,
     blacklist,
     browser,
     logger,
@@ -482,7 +482,7 @@ def process_comments(
         comment_state, msg = comment_image(
             browser,
             username,
-            user_name,
+            target_username,
             selected_comments,
             blacklist,
             logger,
