@@ -11,6 +11,7 @@ _The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 - Handle situation if stale elements detected when cookie cannot be loaded
 - Convert Documentation to Docusaurus
+- Fixed typo in `dismiss_save_information`
 
 ### Fixed
 
