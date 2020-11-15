@@ -269,6 +269,9 @@ def login_user(
         for cookie in pickle.load(
             open("{0}{1}_cookie.pkl".format(logfolder, username), "rb")
         ):
+            # Sets the 'sameSite' parameter in the locally stored cookie to
+            # 'Strict'. The 'Strict' value is required by Instagram to prevent
+            # cross-site scripting
             if "sameSite" in cookie:
                 if cookie["sameSite"] == "None":
                     cookie["sameSite"] = "Strict"
