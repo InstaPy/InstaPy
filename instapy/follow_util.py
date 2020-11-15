@@ -89,23 +89,22 @@ def verify_username_by_id(browser, username, person, person_id, logger, logfolde
     followed"""
 
     # try to find the user by ID
-    if person_id is None:
-        person_id = load_user_id(username, person, logger, logfolder)
+    person_id = load_user_id(username, person, logger, logfolder)
 
-    if person_id and person_id not in [None, "unknown", "undefined"]:
+    # if person_id is None, inform the InstaPy user that record does not exist
+    if person_id not in [None, "unknown", "undefined"]:
         # get the [new] username of the user from the stored user ID
         person_new = get_username_from_id(browser, person_id, logger)
-        if person_new:
-            if person_new != person:
-                logger.info(
-                    "User '{}' has changed username and now is called '{}' :S".format(
-                        person, person_new
-                    )
-                )
-            return person_new
-        else:
-            logger.info("The user with the ID of '{}' is unreachable".format(person))
-    else:
-        logger.info("The user ID of '{}' doesn't exist in local records".format(person))
 
+        # if person_new is None, inform the InstaPy user that record does not exist
+        if person_new is not None and person_new != person:
+            logger.info(
+                "User '{}' has changed username and now is called '{}' :S".format(
+                    person, person_new
+                )
+            )
+            return person_new
+
+    # check who call this def, since will receive a None value
+    logger.info("User '{}' doesn't exist in local records".format(person))
     return None
