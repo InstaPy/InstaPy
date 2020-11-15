@@ -672,7 +672,7 @@ def get_unfollowers(
             )
     else:
         logger.info(
-            "Yay! You have No Unfollowers from {}!  ^v^".format(selected_filename)
+            "Yay! You have no Unfollowers from {}!  ^v^".format(selected_filename)
         )
         return [], []
 
@@ -1113,7 +1113,7 @@ def load_followers_data(username, compare_by, compare_track, logger, logfolder):
     # check if there is any file to be compared
     if not followers_data_files:
         logger.info(
-            "There are No `Followers` data files in the {} location to "
+            "There are no `Followers` data files in the {} location to "
             "compare".format(files_location)
         )
         return [], None
