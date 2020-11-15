@@ -261,7 +261,7 @@ def login_user(
     )
     if login_state is True:
         dismiss_notification_offer(browser, logger)
-        dissmiss_save_information(browser, logger)
+        dismiss_save_information(browser, logger)
         return True
 
     # if user is still not logged in, then there is an issue with the cookie
@@ -390,7 +390,7 @@ def login_user(
 
     dismiss_get_app_offer(browser, logger)
     dismiss_notification_offer(browser, logger)
-    dissmiss_save_information(browser, logger)
+    dismiss_save_information(browser, logger)
 
     # check for login error messages and display it in the logs
     if "instagram.com/challenge" in browser.current_url:
@@ -518,13 +518,11 @@ def dismiss_notification_offer(browser, logger):
         click_element(browser, dismiss_elem)
 
 
-def dissmiss_save_information(browser, logger):
+def dismiss_save_information(browser, logger):
     """ Dismiss 'Save Your Login Info?' offer on session start """
     # This question occurs when pkl doesn't exist
-    offer_elem_loc = read_xpath(dissmiss_save_information.__name__, "offer_elem_loc")
-    dismiss_elem_loc = read_xpath(
-        dissmiss_save_information.__name__, "dismiss_elem_loc"
-    )
+    offer_elem_loc = read_xpath(dismiss_save_information.__name__, "offer_elem_loc")
+    dismiss_elem_loc = read_xpath(dismiss_save_information.__name__, "dismiss_elem_loc")
 
     offer_loaded = explicit_wait(
         browser, "VOEL", [offer_elem_loc, "XPath"], logger, 4, False
