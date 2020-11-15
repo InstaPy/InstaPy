@@ -4,6 +4,7 @@ import pickle
 import socket
 import os
 import json
+
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.keys import Keys
 
@@ -72,9 +73,9 @@ def bypass_suspicious_login(
     # update server calls
     update_activity(browser, state=None)
 
-    print("Instagram detected an unusual login attempt")
-    print('Check Instagram App for "Suspicious Login attempt" prompt')
-    print("A security code was sent to your {}".format(option_text))
+    logger.info("Instagram detected an unusual login attempt")
+    logger.info('Check Instagram App for "Suspicious Login attempt" prompt')
+    logger.info("A security code was sent to your {}".format(option_text))
 
     security_code = None
     try:
@@ -132,10 +133,7 @@ def bypass_suspicious_login(
         )
 
         if wrong_login is not None:
-            wrong_login_msg = (
-                "Wrong security code! Please check the code Instagram"
-                "sent you and try again."
-            )
+            wrong_login_msg = "Wrong security code! Please check the code Instagram sent you and try again."
             update_activity(
                 browser,
                 action=None,
@@ -143,7 +141,7 @@ def bypass_suspicious_login(
                 logfolder=logfolder,
                 logger=logger,
             )
-            print(wrong_login_msg)
+            logger.warn(wrong_login_msg)
 
     except NoSuchElementException:
         # correct security code
@@ -251,7 +249,7 @@ def login_user(
             browser.add_cookie(cookie)
             cookie_loaded = True
     except (WebDriverException, OSError, IOError):
-        print("Cookie file not found, creating cookie...")
+        logger.warn("Cookie file not found, creating cookie...")
 
     # force refresh after cookie load or check_authorization() will FAIL
     reload_webpage(browser)
@@ -267,9 +265,35 @@ def login_user(
         return True
 
     # if user is still not logged in, then there is an issue with the cookie
-    # so go create a new cookie..
+    # so go create a new cookie.
     if cookie_loaded:
-        print("Issue with cookie for user {}. Creating new cookie...".format(username))
+        logger.warn(
+            "Issue with cookie for user '{}'. Creating new cookie...".format(username)
+        )
+
+        # Error could be faced due to "<button class="sqdOP L3NKy y3zKF"
+        # type="button"> Cookie could not be loaded" or similar.
+        # Session displayed we are in, but then a failure for the first
+        # `login_elem` like the element is no longer attached to the DOM.
+        # Saw this issue when session hasn't been used for a while; wich means
+        # "expiry" values in cookie are outdated.
+        try:
+            # Since having issues with the cookie a new one can be generated,
+            # if cookie cannot be created or deleted stop execution.
+            logger.info("Deleting browser cookies...")
+            browser.delete_all_cookies()
+        except Exception as e:
+            # NF: start
+            if isinstance(e, WebDriverException):
+                logger.exception(
+                    "Error occurred while deleting cookies from web browser!\n\t{}".format(
+                        str(e).encode("utf-8")
+                    )
+                )
+            return False
+            # NF: end
+
+        web_address_navigator(browser, ig_homepage)
 
     # Check if the first div is 'Create an Account' or 'Log In'
     try:
@@ -277,19 +301,24 @@ def login_user(
             read_xpath(login_user.__name__, "login_elem")
         )
     except NoSuchElementException:
-        print("Login A/B test detected! Trying another string...")
+        logger.warn("Login A/B test detected! Trying another string...")
         try:
             login_elem = browser.find_element_by_xpath(
                 read_xpath(login_user.__name__, "login_elem_no_such_exception")
             )
         except NoSuchElementException:
-            print("Could not pass the login A/B test. Trying last string...")
+            logger.warn("Could not pass the login A/B test. Trying last string...")
             try:
                 login_elem = browser.find_element_by_xpath(
                     read_xpath(login_user.__name__, "login_elem_no_such_exception_2")
                 )
-            except NoSuchElementException:
+            except NoSuchElementException as e:
+                # NF: start
+                logger.exception(
+                    "Login A/B test failed!\n\t{}".format(str(e).encode("utf-8"))
+                )
                 return False
+                # NF: end
 
     if login_elem is not None:
         try:
@@ -439,7 +468,7 @@ def login_user(
         pass
 
     if "instagram.com/accounts/onetap" in browser.current_url:
-        browser.get("https://instagram.com")
+        browser.get(ig_homepage)
 
     # wait until page fully load
     explicit_wait(browser, "PFL", [], logger, 5)

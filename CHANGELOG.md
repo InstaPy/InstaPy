@@ -4,8 +4,23 @@ The **goal** of this file is explaining to the users of our project the notable 
 
 _The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html)_
 
-## [0.6.12] - 2020-10-26
+
+## [0.6.13] - UNRELEASED
+
 ### Added
+
+- Handle situation if stale elements detected when cookie cannot be loaded
+- Convert Documentation to Docusaurus
+
+### Fixed
+
+- Fixed typo in message when a video is tried to like.
+- Fixed the problem where `followers_list` could be used without being initialized.
+
+## [0.6.12] - 2020-10-26
+
+### Added
+
 - Defined local variables ( ie: 'unfollow_state') to fix message for referenced before assignment
 - *.code-workspace in .gitignore for vscode project (macOS)
 - `like_by_locations()` with randomize flag
@@ -15,6 +30,7 @@ _The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 - information for geckodriver_log_level, development only
 
 ### Changed
+
 - check if liking activity was blocked after every like
 - Call scroll_down() after follower accepted, with this new def the window is scrolled down after accepting a follower.
 - Sorted imports, to make code readable
@@ -24,6 +40,7 @@ _The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 - `like_by_feed` limits from 100 to 50
 
 ### Fixed
+
 - fixed some comments were double quotes were not necessary
 - issue where `getTitle` was timing out
 - `get_users_through_dialog_with_graphql` with a new try/except
@@ -31,7 +48,7 @@ _The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 ## [0.6.11] - 2020-09-25
 
-### Added 
+### Added
 - Use random tag list for `session.like_by_tags`
 
 ### Changed
@@ -49,18 +66,21 @@ _The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 ## [0.6.10] - 2020-07-30
 
 ### Added
+
 - Generallize mandatory words and add mandatory_bio_keywords
 
-### Changed 
+### Changed
+
 - Update xpath for like/unlike and comment
 - Fix `like_by_feed()` xpath
 - `get_like_on_feed()` improve function readability
 
 ### Fixed
+
 - "UnboundLocalError: local variable 'commenting_approved' referenced before assignment" error when bot tries to comment
 - Typo updating configuration object. Changed nofity into notify
 - Add specific firefox preference agent data to prevent error
-- Smart location url 
+- Smart location url
 - Error "Hide Selenium Extension: Error" mentioned in #5304
 - XPATH for like svg
 
@@ -71,11 +91,10 @@ _The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 - Additional parameter `browser_executable_path` now available when initializing InstaPy. Use it to run a specific installation of Firefox.
 - A new feature - `target_list()` to parse text files containing target lists of users, hashtags etc.
 
-
 ### Changed
-- Remove `view-source` which stops bot from proceeding 
-- Remove instagram status check
 
+- Remove `view-source` which stops bot from proceeding
+- Remove instagram status check
 
 ## [0.6.8] - 2020-01-28
 
@@ -83,20 +102,17 @@ _The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 - xPath for breaking LIKE and COMMENT
 
-
 ## [0.6.7] - 2020-01-05
 
 ### Fixed
 
 - Adjusted follow xPath
 
-
 ## [0.6.6] - 2019-11-11
 
 ### Changed
 
 - Additional web checks default `False` to avoid erros on runtime
-
 
 ## [0.6.5] - 2019-10-20
 
