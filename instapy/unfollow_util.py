@@ -598,7 +598,9 @@ def unfollow(
     return unfollow_num
 
 
-def follow_user(browser, track, login, target_username, button, blacklist, logger, logfolder):
+def follow_user(
+    browser, track, login, target_username, button, blacklist, logger, logfolder
+):
     """Follow a user either from the profile page or post page or dialog box"""
     # list of available tracks to follow in: ["profile", "post dialog"]
 
@@ -620,7 +622,14 @@ def follow_user(browser, track, login, target_username, button, blacklist, logge
         if following_status in ["Follow", "Follow Back"]:
             click_visibly(browser, follow_button)  # click to follow
             follow_state, msg = verify_action(
-                browser, "follow", track, login, target_username, None, logger, logfolder
+                browser,
+                "follow",
+                track,
+                login,
+                target_username,
+                None,
+                logger,
+                logfolder,
             )
             if follow_state is not True:
                 return False, msg
@@ -630,7 +639,9 @@ def follow_user(browser, track, login, target_username, button, blacklist, logge
                 logger.info("--> Already following '{}'!\n".format(target_username))
 
             elif following_status == "Requested":
-                logger.info("--> Already requested '{}' to follow!\n".format(target_username))
+                logger.info(
+                    "--> Already requested '{}' to follow!\n".format(target_username)
+                )
 
             sleep(1)
             return False, "already followed"
@@ -658,7 +669,9 @@ def follow_user(browser, track, login, target_username, button, blacklist, logge
 
             else:
                 logger.warning(
-                    "--> Couldn't unfollow '{}'!\t~unexpected failure".format(target_username)
+                    "--> Couldn't unfollow '{}'!\t~unexpected failure".format(
+                        target_username
+                    )
                 )
                 return False, "unexpected failure"
     elif track == "dialog":

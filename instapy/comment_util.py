@@ -66,7 +66,9 @@ def open_target_profile(browser, logger, target_username):
     )
 
     target_profile_elem = browser.find_elements_by_xpath(
-        read_xpath(open_target_profile.__name__, "target_profile").format(target_username)
+        read_xpath(open_target_profile.__name__, "target_profile").format(
+            target_username
+        )
     )
 
     if len(target_profile_elem) > 0:
@@ -80,7 +82,9 @@ def open_target_profile(browser, logger, target_username):
         logger.warning(missing_target_profile_elem_warning)
 
 
-def comment_image(browser, username, target_username, comments, blacklist, logger, logfolder):
+def comment_image(
+    browser, username, target_username, comments, blacklist, logger, logfolder
+):
     """Checks if it should comment on the image"""
     # check action availability
     if quota_supervisor("comments") == "jump":

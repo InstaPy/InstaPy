@@ -1492,7 +1492,13 @@ class InstaPy:
                 self.logger.info(link)
 
                 try:
-                    inappropriate, target_username, is_video, reason, scope = check_link(
+                    (
+                        inappropriate,
+                        target_username,
+                        is_video,
+                        reason,
+                        scope,
+                    ) = check_link(
                         self.browser,
                         link,
                         self.dont_like,
@@ -1598,7 +1604,10 @@ class InstaPy:
                                 and checked_img
                                 and following
                                 and not follow_restriction(
-                                    "read", target_username, self.follow_times, self.logger
+                                    "read",
+                                    target_username,
+                                    self.follow_times,
+                                    self.logger,
                                 )
                             ):
 
@@ -1710,7 +1719,13 @@ class InstaPy:
                 self.logger.info(link)
 
                 try:
-                    inappropriate, target_username, is_video, reason, scope = check_link(
+                    (
+                        inappropriate,
+                        target_username,
+                        is_video,
+                        reason,
+                        scope,
+                    ) = check_link(
                         self.browser,
                         link,
                         self.dont_like,
@@ -1932,7 +1947,13 @@ class InstaPy:
                 self.logger.info(link)
 
                 try:
-                    inappropriate, target_username, is_video, reason, scope = check_link(
+                    (
+                        inappropriate,
+                        target_username,
+                        is_video,
+                        reason,
+                        scope,
+                    ) = check_link(
                         self.browser,
                         link,
                         self.dont_like,
@@ -2037,7 +2058,10 @@ class InstaPy:
                                 and checked_img
                                 and following
                                 and not follow_restriction(
-                                    "read", target_username, self.follow_times, self.logger
+                                    "read",
+                                    target_username,
+                                    self.follow_times,
+                                    self.logger,
                                 )
                             ):
 
@@ -2235,7 +2259,13 @@ class InstaPy:
                 self.logger.info(link)
 
                 try:
-                    inappropriate, target_username, is_video, reason, scope = check_link(
+                    (
+                        inappropriate,
+                        target_username,
+                        is_video,
+                        reason,
+                        scope,
+                    ) = check_link(
                         self.browser,
                         link,
                         self.dont_like,
@@ -2511,7 +2541,13 @@ class InstaPy:
                 self.logger.info(link)
 
                 try:
-                    inappropriate, target_username, is_video, reason, scope = check_link(
+                    (
+                        inappropriate,
+                        target_username,
+                        is_video,
+                        reason,
+                        scope,
+                    ) = check_link(
                         self.browser,
                         link,
                         self.dont_like,
@@ -2830,7 +2866,13 @@ class InstaPy:
                 self.logger.info(link)
 
                 try:
-                    inappropriate, target_username, is_video, reason, scope = check_link(
+                    (
+                        inappropriate,
+                        target_username,
+                        is_video,
+                        reason,
+                        scope,
+                    ) = check_link(
                         self.browser,
                         link,
                         self.dont_like,
@@ -4011,7 +4053,9 @@ class InstaPy:
                                 )
                             if not inappropriate and self.liking_approved:
                                 # validate user
-                                validation, details = self.validate_user_call(target_username)
+                                validation, details = self.validate_user_call(
+                                    target_username
+                                )
                                 if validation is not True:
                                     self.logger.info(details)
                                     not_valid_users += 1
@@ -4522,7 +4566,13 @@ class InstaPy:
                 self.logger.info(link)
 
                 try:
-                    inappropriate, target_username, is_video, reason, scope = check_link(
+                    (
+                        inappropriate,
+                        target_username,
+                        is_video,
+                        reason,
+                        scope,
+                    ) = check_link(
                         self.browser,
                         link,
                         self.dont_like,
@@ -4654,7 +4704,13 @@ class InstaPy:
                 self.logger.info(link)
 
                 try:
-                    inappropriate, target_username, is_video, reason, scope = check_link(
+                    (
+                        inappropriate,
+                        target_username,
+                        is_video,
+                        reason,
+                        scope,
+                    ) = check_link(
                         self.browser,
                         link,
                         self.dont_like,
