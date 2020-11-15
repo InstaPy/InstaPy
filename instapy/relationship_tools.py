@@ -672,7 +672,7 @@ def get_unfollowers(
             )
     else:
         logger.info(
-            "Yay! You have no any Unfollowers from {}!  ^v^".format(selected_filename)
+            "Yay! You have No Unfollowers from {}!  ^v^".format(selected_filename)
         )
         return [], []
 
@@ -1113,7 +1113,7 @@ def load_followers_data(username, compare_by, compare_track, logger, logfolder):
     # check if there is any file to be compared
     if not followers_data_files:
         logger.info(
-            "There are no any `Followers` data files in the {} location to "
+            "There are No `Followers` data files in the {} location to "
             "compare".format(files_location)
         )
         return [], None
@@ -1170,7 +1170,7 @@ def load_followers_data(username, compare_by, compare_track, logger, logfolder):
         else:
             selected_filename = sorted_filenames[-1]
             logger.info(
-                "No any data exists for today!  ~choosing the last existing "
+                "No data exists for today!  ~choosing the last existing "
                 "data from {}".format(selected_filename)
             )
 
@@ -1201,7 +1201,7 @@ def load_followers_data(username, compare_by, compare_track, logger, logfolder):
         else:
             selected_filename = sorted_filenames[-1]
             logger.info(
-                "No any data exists for this month!  ~choosing the last "
+                "No data exists for this month!  ~choosing the last "
                 "existing data from {}".format(selected_filename)
             )
 
@@ -1232,7 +1232,7 @@ def load_followers_data(username, compare_by, compare_track, logger, logfolder):
         else:
             selected_filename = sorted_filenames[-1]
             logger.info(
-                "No any data exists for this year!  ~choosing the last existing data from {}".format(
+                "No data exists for this year!  ~choosing the last existing data from {}".format(
                     selected_filename
                 )
             )

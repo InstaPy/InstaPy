@@ -218,6 +218,7 @@ def check_browser(browser, logfolder, logger, proxy_address):
 
 
 def accept_cookies(browser, logger):
+    """ Presses 'Accept' button on cookie dialogue """
     missing_accept_button_elem_warning = (
         "--> Accept Cookies Button Not Found!"
         "\t~may cause issues with browser windows of smaller widths"

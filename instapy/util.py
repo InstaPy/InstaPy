@@ -877,7 +877,7 @@ def get_active_users(browser, username, posts, boundary, logger):
 def delete_line_from_file(filepath, userToDelete, logger):
     """ Remove user's record from the followed pool file after unfollowing """
     if not os.path.isfile(filepath):
-        # in case of there is no any followed pool file yet
+        # in case there is no followed pool file yet
         return 0
 
     try:
@@ -1662,7 +1662,7 @@ def find_user_id(browser, track, username, logger):
         query = "return window._sharedData.entry_data.ProfilePage[0].graphql.user.id"
         meta_XP = read_xpath(find_user_id.__name__, "meta_XP")
 
-    failure_message = "Failed to get the user ID of '{}' from {} page!".format(
+    failure_message = "Failed to get the user ID of '{}' from {} page! Will try to verify follow in next iteration".format(
         username, track
     )
 

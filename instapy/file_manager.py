@@ -76,7 +76,7 @@ def set_workspace(path=None):
                 )
 
         else:
-            message = "No any custom workspace provided.\t~using existing.."
+            message = "No custom workspace provided.\t~using existing.."
             highlight_print(
                 Settings.profile["name"], message, "workspace", "info", Settings.logger
             )

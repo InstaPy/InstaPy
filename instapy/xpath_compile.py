@@ -127,7 +127,7 @@ xpath["get_number_of_posts"] = {
 }
 
 xpath["open_target_profile"] = {
-    "target_profile": "//section/main/div/ul/div/li/div/div/div[2]/h2/div[1]/a"
+    "target_profile": '//*[contains(@class, "Igw0E")]/*[contains(@href, "{}")]'
 }
 
 xpath["get_relationship_counts"] = {

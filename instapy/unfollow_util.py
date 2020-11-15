@@ -409,7 +409,7 @@ def unfollow(
             )
 
         if len(unfollow_list) < 1:
-            logger.info("There are no any users available to unfollow")
+            logger.info("There are no users available to unfollow")
             return 0
 
         # choose the desired order of the elements
@@ -1180,7 +1180,7 @@ def get_given_user_following(
 
     # skip early for no followers
     if not allfollowing:
-        logger.info("'{}' has no any following".format(user_name))
+        logger.info("'{}' has no following".format(user_name))
         return [], []
 
     elif allfollowing < amount:

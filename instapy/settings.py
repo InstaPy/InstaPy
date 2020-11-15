@@ -1,7 +1,7 @@
 """
 Global variables
 
-By design, import no any other local module inside this file.
+By design, import no other local module inside this file.
 Vice verse, it'd produce circular dependent imports.
 """
 

@@ -58,14 +58,15 @@ def open_comment_section(browser, logger):
         logger.warning(missing_comment_elem_warning)
 
 
-def open_target_profile(browser, logger):
+def open_target_profile(browser, logger, user_name):
+    """ Clicks the name of the user to follow on comment page """
     missing_target_profile_elem_warning = (
         "--> Target Profile Button Not Found!"
         "\t~may cause issues with browser windows of smaller widths"
     )
 
     target_profile_elem = browser.find_elements_by_xpath(
-        read_xpath(open_target_profile.__name__, "target_profile")
+        read_xpath(open_target_profile.__name__, "target_profile").format(user_name)
     )
 
     if len(target_profile_elem) > 0:
@@ -79,7 +80,7 @@ def open_target_profile(browser, logger):
         logger.warning(missing_target_profile_elem_warning)
 
 
-def comment_image(browser, username, comments, blacklist, logger, logfolder):
+def comment_image(browser, username, user_name, comments, blacklist, logger, logfolder):
     """Checks if it should comment on the image"""
     # check action availability
     if quota_supervisor("comments") == "jump":
@@ -155,7 +156,7 @@ def comment_image(browser, username, comments, blacklist, logger, logfolder):
     Event().commented(username)
 
     # Going back to the profile page of the user we commented before
-    open_target_profile(browser, logger)
+    open_target_profile(browser, logger, user_name)
 
     # get the post-comment delay time to sleep
     naply = get_action_delay("comment")
@@ -336,7 +337,7 @@ def get_comments_on_post(
                     "of them are already liked.".format(len(comment_unlike_buttons))
                 )
             else:
-                logger.info("There are no any comments available on this post.")
+                logger.info("There are No comments available on this post.")
             return None
 
     except NoSuchElementException:
@@ -422,7 +423,7 @@ def get_comments_count(browser, logger):
 
     # if not comments_count:
     #     if comments_count == 0:
-    #         msg = "There are no any comments in the post."
+    #         msg = "There are No comments in the post."
     #         return 0, msg
     #     else:
     #         msg = "Couldn't get comments' count."
@@ -438,6 +439,7 @@ def process_comments(
     max_comments,
     min_comments,
     comments_mandatory_words,
+    username,
     user_name,
     blacklist,
     browser,
@@ -479,6 +481,7 @@ def process_comments(
     if comments and publish:
         comment_state, msg = comment_image(
             browser,
+            username,
             user_name,
             selected_comments,
             blacklist,

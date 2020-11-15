@@ -1569,6 +1569,7 @@ class InstaPy:
                                     if is_video
                                     else self.photo_comments
                                 )
+                                self.user_name = user_name
                                 success = process_comments(
                                     comments,
                                     temp_comments,
@@ -1577,6 +1578,7 @@ class InstaPy:
                                     self.min_comments,
                                     self.comments_mandatory_words,
                                     self.username,
+                                    self.user_name,
                                     self.blacklist,
                                     self.browser,
                                     self.logger,
@@ -1769,6 +1771,7 @@ class InstaPy:
                             )
 
                             if comments:
+                                self.user_name = user_name
                                 success = process_comments(
                                     comments,
                                     temp_comments,
@@ -1777,6 +1780,7 @@ class InstaPy:
                                     self.min_comments,
                                     self.comments_mandatory_words,
                                     self.username,
+                                    self.user_name,
                                     self.blacklist,
                                     self.browser,
                                     self.logger,
@@ -2004,6 +2008,7 @@ class InstaPy:
                                     if is_video
                                     else self.photo_comments
                                 )
+                                self.user_name = user_name
                                 success = process_comments(
                                     comments,
                                     temp_comments,
@@ -2012,6 +2017,7 @@ class InstaPy:
                                     self.min_comments,
                                     self.comments_mandatory_words,
                                     self.username,
+                                    self.user_name,
                                     self.blacklist,
                                     self.browser,
                                     self.logger,
@@ -2293,6 +2299,7 @@ class InstaPy:
                                     if is_video
                                     else self.photo_comments
                                 )
+                                self.user_name = user_name
                                 success = process_comments(
                                     comments,
                                     temp_comments,
@@ -2301,6 +2308,7 @@ class InstaPy:
                                     self.min_comments,
                                     self.comments_mandatory_words,
                                     self.username,
+                                    self.user_name,
                                     self.blacklist,
                                     self.browser,
                                     self.logger,
@@ -2578,6 +2586,7 @@ class InstaPy:
                                         if is_video
                                         else self.photo_comments
                                     )
+                                    self.user_name = user_name
                                     success = process_comments(
                                         comments,
                                         temp_comments,
@@ -2586,6 +2595,7 @@ class InstaPy:
                                         self.min_comments,
                                         self.comments_mandatory_words,
                                         self.username,
+                                        self.user_name,
                                         self.blacklist,
                                         self.browser,
                                         self.logger,
@@ -2889,6 +2899,7 @@ class InstaPy:
                                         if is_video
                                         else self.photo_comments
                                     )
+                                    self.user_name = user_name
                                     success = process_comments(
                                         comments,
                                         temp_comments,
@@ -2897,6 +2908,7 @@ class InstaPy:
                                         self.min_comments,
                                         self.comments_mandatory_words,
                                         self.username,
+                                        self.user_name,
                                         self.blacklist,
                                         self.browser,
                                         self.logger,
@@ -4059,6 +4071,7 @@ class InstaPy:
                                             if is_video
                                             else self.photo_comments
                                         )
+                                        self.user_name = user_name
                                         success = process_comments(
                                             comments,
                                             temp_comments,
@@ -4067,6 +4080,7 @@ class InstaPy:
                                             self.min_comments,
                                             self.comments_mandatory_words,
                                             self.username,
+                                            self.user_name,
                                             self.blacklist,
                                             self.browser,
                                             self.logger,
@@ -4833,6 +4847,7 @@ class InstaPy:
                             comments = self.comments + (
                                 self.video_comments if is_video else self.photo_comments
                             )
+                            self.user_name = user_name
                             success = process_comments(
                                 comments,
                                 temp_comments,
@@ -4841,6 +4856,7 @@ class InstaPy:
                                 self.min_comments,
                                 self.comments_mandatory_words,
                                 self.username,
+                                self.user_name,
                                 self.blacklist,
                                 self.browser,
                                 self.logger,
@@ -5080,7 +5096,7 @@ class InstaPy:
         else:
             self.logger.info(
                 "Sessional Live Report:\n"
-                "\t|> No any statistics to show\n"
+                "\t|> No statistics to show\n"
                 "\n{}\n{}".format(owner_relationship_info, run_time_msg)
             )
 
