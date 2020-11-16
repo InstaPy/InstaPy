@@ -353,7 +353,7 @@ class InstaPyTelegramBot:
         else:
             return (
                 "Sessional Live Report:\n"
-                "|> No statistics to show\n"
+                "|> No any statistics to show\n"
                 "\n{}".format(run_time_msg)
             )
 

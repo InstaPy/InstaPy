@@ -30,7 +30,7 @@ Every time you grab `Followers` data in `"full"` range of **any** user, it is al
     + If the user **already do have** a `Followers` data loaded _earlier_ in the **same** session, it will run a _smart_ `data-matching` _algorithm_.
     And **there**, it will **load only the new data** _from the server_ and then **return a compact result** of _current data_.
     The _algorithm_ **works like**: _load the usernames **until hits the** ones from the **previous query** at certain amount_.
-    + **Also if** the `live_match` is `False` and the user has **no** _sessional_ `Followers` data, **then** it will load `live` data at _requested range_.
+    + **Also if** the `live_match` is `False` and the user has **no any** _sessional_ `Followers` data, **then** it will load `live` data at _requested range_.
     + As a **result**, `live_match=False` saves lots of `precious time` and `server requests`.
 + `live_match=True`:
     + It will **always** load `live` data from the server at _requested range_.
@@ -89,7 +89,7 @@ Every time you grab `Following` data in `"full"` range of **any** user, it is al
     + If the user **already do have** a `Following` data loaded _earlier_ in the **same** session, it will run a _smart_ `data-matching` _algorithm_.
     And **there**, it will **load only the new data** _from the server_ and then **return a compact result** of _current data_.
     The _algorithm_ **works like**: _load the usernames **until hits the** ones from the **previous query** at certain amount_.
-    + **Also if** the `live_match` is `False` and the user has **no** _sessional_ `Following` data, **then** it will load `live` data at _requested range_.
+    + **Also if** the `live_match` is `False` and the user has **no any** _sessional_ `Following` data, **then** it will load `live` data at _requested range_.
     + As a **result**, `live_match=False` saves lots of `precious time` and `server requests`.
 + `live_match=True`:
     + It will **always** load `live` data from the server at _requested range_.
@@ -163,7 +163,7 @@ Every time you grab `Followers` data in `"full"` range of **any** user, it is al
     + If the user **already do have** a `Followers` data loaded _earlier_ in the **same** session, it will run a _smart_ `data-matching` _algorithm_.
     And **there**, it will **load only the new data** _from the server_ and then **return a compact result** of _current data_.
     The _algorithm_ **works like**: _load the usernames **until hits the** ones from the **previous query** at certain amount_.
-    + **Also if** the `live_match` is `False` and the user has **no** _sessional_ `Followers` data, **then** it will load `live` data at _requested range_.
+    + **Also if** the `live_match` is `False` and the user has **no any** _sessional_ `Followers` data, **then** it will load `live` data at _requested range_.
     + As a **result**, `live_match=False` saves lots of `precious time` and `server requests`.
 + `live_match=True`:
     + It will **always** load `live` data from the server at _requested range_.
@@ -222,7 +222,7 @@ Every time you grab `Followers` and/or `Following` data in `"full"` range of **a
     + If the user **already do have** a `Followers` and/or `Following` data loaded _earlier_ in the **same** session, it will run a _smart_ `data-matching` _algorithm_.
     And **there**, it will **load only the new data** _from the server_ and then **return a compact result** of _current data_.
     The _algorithm_ **works like**: _load the usernames **until hits the** ones from the **previous query** at certain amount_.
-    + **Also if** the `live_match` is `False` and the user has **no** _sessional_ `Followers` and/or `Following` data, **then** it will load `live` data at _requested range_.
+    + **Also if** the `live_match` is `False` and the user has **no any** _sessional_ `Followers` and/or `Following` data, **then** it will load `live` data at _requested range_.
     + As a **result**, `live_match=False` saves lots of `precious time` and `server requests`.
 + `live_match=True`:
     + It will **always** load `live` data from the server at _requested range_.
@@ -269,7 +269,7 @@ Every time you grab `Followers` and/or `Following` data in `"full"` range of **a
     + If the user **already do have** a `Followers` and/or `Following` data loaded _earlier_ in the **same** session, it will run a _smart_ `data-matching` _algorithm_.
     And **there**, it will **load only the new data** _from the server_ and then **return a compact result** of _current data_.
     The _algorithm_ **works like**: _load the usernames **until hits the** ones from the **previous query** at certain amount_.
-    + **Also if** the `live_match` is `False` and the user has **no** _sessional_ `Followers` and/or `Following` data, **then** it will load `live` data at _requested range_.
+    + **Also if** the `live_match` is `False` and the user has **no any** _sessional_ `Followers` and/or `Following` data, **then** it will load `live` data at _requested range_.
     + As a **result**, `live_match=False` saves lots of `precious time` and `server requests`.
 + `live_match=True`:
     + It will **always** load `live` data from the server at _requested range_.
@@ -315,7 +315,7 @@ Every time you grab `Followers` and/or `Following` data in `"full"` range of **a
     + If the user **already do have** a `Followers` and/or `Following` data loaded _earlier_ in the **same** session, it will run a _smart_ `data-matching` _algorithm_.
     And **there**, it will **load only the new data** _from the server_ and then **return a compact result** of _current data_.
     The _algorithm_ **works like**: _load the usernames **until hits the** ones from the **previous query** at certain amount_.
-    + **Also if** the `live_match` is `False` and the user has **no** _sessional_ `Followers` and/or `Following` data, **then** it will load `live` data at _requested range_.
+    + **Also if** the `live_match` is `False` and the user has **no any** _sessional_ `Followers` and/or `Following` data, **then** it will load `live` data at _requested range_.
     + As a **result**, `live_match=False` saves lots of `precious time` and `server requests`.
 + `live_match=True`:
     + It will **always** load `live` data from the server at _requested range_.

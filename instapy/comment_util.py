@@ -341,7 +341,7 @@ def get_comments_on_post(
                     "of them are already liked.".format(len(comment_unlike_buttons))
                 )
             else:
-                logger.info("There are No comments available on this post.")
+                logger.info("There are no any comments available on this post.")
             return None
 
     except NoSuchElementException:
@@ -427,7 +427,7 @@ def get_comments_count(browser, logger):
 
     # if not comments_count:
     #     if comments_count == 0:
-    #         msg = "There are No comments in the post."
+    #         msg = "There are no any comments in the post."
     #         return 0, msg
     #     else:
     #         msg = "Couldn't get comments' count."

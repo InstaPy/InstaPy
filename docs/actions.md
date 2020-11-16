@@ -496,7 +496,7 @@ It will first _analyze comments' content_ and if it _is appropriate_, then it wi
 All those inappropriate comments will neither be liked, nor replied to.
 
 If you have **not followed** any of those 3 _text analysis_ combinations OR **misconfigured** them:
-Comments' content will _not be able to be analyzed_ and that's why _no comments will be_ replied.
+Comments' content will _not be able to be analyzed_ and that's why _no any comments will be_ replied.
 _Yet_, it will like _all of the comments_ that are available.
 
 In conclusion, the whole block SHOULD look like this,

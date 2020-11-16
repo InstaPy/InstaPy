@@ -5152,7 +5152,7 @@ class InstaPy:
         else:
             self.logger.info(
                 "Sessional Live Report:\n"
-                "\t|> No statistics to show\n"
+                "\t|> No any statistics to show\n"
                 "\n{}\n{}".format(owner_relationship_info, run_time_msg)
             )
 
