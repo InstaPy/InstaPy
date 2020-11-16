@@ -1193,7 +1193,7 @@ def get_given_user_following(
 
     # skip early for no followers
     if not allfollowing:
-        logger.info("'{}' has no any following".format(user_name))
+        logger.info("'{}' has no any following".format(target_username))
         return [], []
 
     elif allfollowing < amount:
