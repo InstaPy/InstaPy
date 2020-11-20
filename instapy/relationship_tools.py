@@ -5,10 +5,12 @@ import glob
 import random
 import json
 
+from .follow_util import get_following_status
 from .time_util import sleep
 from .util import web_address_navigator
 from .util import get_relationship_counts
 from .util import interruption_handler
+from .util import is_private_profile
 from .util import truncate_float
 from .util import progress_tracker
 
@@ -17,6 +19,7 @@ from selenium.common.exceptions import NoSuchElementException, WebDriverExceptio
 
 def get_followers(
     browser,
+    self_username,
     username,
     grab,
     relationship_data,
@@ -56,7 +59,19 @@ def get_followers(
         )
         grab = followers_count
 
-    # TO-DO: Check if user's account is not private
+    # Check if user's account is private and we don't follow
+    following_status, _ = get_following_status(
+        browser, "profile", self_username, username, None, logger, logfolder
+    )
+
+    is_private = is_private_profile(browser, logger, following_status == "Following")
+    if (
+        is_private is None
+        or (is_private is True and following_status not in ["Following", True])
+        or (following_status == "Blocked")
+    ):
+        logger.info("This user is private and we are not following")
+        return False
 
     # sets the amount of usernames to be matched in the next queries
     match = (
@@ -296,6 +311,7 @@ def get_followers(
 
 def get_following(
     browser,
+    self_username,
     username,
     grab,
     relationship_data,
@@ -334,7 +350,19 @@ def get_following(
         )
         grab = following_count
 
-    # TO-DO: Check if user's account is not private
+    # Check if user's account is private and we don't follow
+    following_status, _ = get_following_status(
+        browser, "profile", self_username, username, None, logger, logfolder
+    )
+
+    is_private = is_private_profile(browser, logger, following_status == "Following")
+    if (
+        is_private is None
+        or (is_private is True and following_status not in ["Following", True])
+        or (following_status == "Blocked")
+    ):
+        logger.info("This user is private and we are not following")
+        return False
 
     # sets the amount of usernames to be matched in the next queries
     match = (
@@ -576,6 +604,7 @@ def get_following(
 
 def get_unfollowers(
     browser,
+    self_username,
     username,
     compare_by,
     compare_track,
@@ -620,6 +649,7 @@ def get_unfollowers(
 
     current_followers = get_followers(
         browser,
+        self_username,
         username,
         "full",
         relationship_data,
@@ -629,6 +659,10 @@ def get_unfollowers(
         logfolder,
     )
 
+    # if current_followers is False we have targeted a private account that we don't follow
+    if not current_followers:
+        return False, False
+
     all_unfollowers = [
         follower for follower in prior_followers if follower not in current_followers
     ]
@@ -636,6 +670,7 @@ def get_unfollowers(
     if len(all_unfollowers) > 0:
         current_following = get_following(
             browser,
+            self_username,
             username,
             "full",
             relationship_data,
@@ -680,7 +715,14 @@ def get_unfollowers(
 
 
 def get_nonfollowers(
-    browser, username, relationship_data, live_match, store_locally, logger, logfolder
+    browser,
+    self_username,
+    username,
+    relationship_data,
+    live_match,
+    store_locally,
+    logger,
+    logfolder,
 ):
     """ Finds Nonfollowers of a given user """
 
@@ -694,6 +736,7 @@ def get_nonfollowers(
     # get `Followers` data
     all_followers = get_followers(
         browser,
+        self_username,
         username,
         "full",
         relationship_data,
@@ -702,9 +745,15 @@ def get_nonfollowers(
         logger,
         logfolder,
     )
+
+    # if all_followers is False we have targeted a private account that we don't follow
+    if not all_followers:
+        return False
+
     # get `Following` data
     all_following = get_following(
         browser,
+        self_username,
         username,
         "full",
         relationship_data,
@@ -740,7 +789,14 @@ def get_nonfollowers(
 
 
 def get_fans(
-    browser, username, relationship_data, live_match, store_locally, logger, logfolder
+    browser,
+    self_username,
+    username,
+    relationship_data,
+    live_match,
+    store_locally,
+    logger,
+    logfolder,
 ):
     """ Find Fans of a given user """
 
@@ -753,6 +809,7 @@ def get_fans(
     # get `Followers` data
     all_followers = get_followers(
         browser,
+        self_username,
         username,
         "full",
         relationship_data,
@@ -761,9 +818,15 @@ def get_fans(
         logger,
         logfolder,
     )
+
+    # if all_followers is False we have targeted a private account that we don't follow
+    if not all_followers:
+        return False
+
     # get `Following` data
     all_following = get_following(
         browser,
+        self_username,
         username,
         "full",
         relationship_data,
@@ -794,7 +857,14 @@ def get_fans(
 
 
 def get_mutual_following(
-    browser, username, relationship_data, live_match, store_locally, logger, logfolder
+    browser,
+    self_username,
+    username,
+    relationship_data,
+    live_match,
+    store_locally,
+    logger,
+    logfolder,
 ):
     """ Find Mutual Following of a given user """
 
@@ -808,6 +878,7 @@ def get_mutual_following(
     # get `Followers` data
     all_followers = get_followers(
         browser,
+        self_username,
         username,
         "full",
         relationship_data,
@@ -816,9 +887,15 @@ def get_mutual_following(
         logger,
         logfolder,
     )
+
+    # if all_followers is False we have targeted a private account that we don't follow
+    if not all_followers:
+        return False
+
     # get `Following` data
     all_following = get_following(
         browser,
+        self_username,
         username,
         "full",
         relationship_data,
