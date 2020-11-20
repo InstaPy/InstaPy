@@ -251,7 +251,7 @@ def unfollow(
 
             # Unfollow only the users who do not follow you back
             unfollow_list = get_nonfollowers(
-                browser, username, relationship_data, False, True, logger, logfolder
+                browser, username, username, relationship_data, False, True, logger, logfolder
             )
 
         # pick only the users in the right track- ["all" or "nonfollowers"]
@@ -261,6 +261,7 @@ def unfollow(
             if unfollow_track == "nonfollowers":
                 all_followers = get_followers(
                     browser,
+                    username,
                     username,
                     "full",
                     relationship_data,
@@ -323,6 +324,7 @@ def unfollow(
             logger.info("Unfollowing the users you are following")
             unfollow_list = get_following(
                 browser,
+                username,
                 username,
                 "full",
                 relationship_data,
