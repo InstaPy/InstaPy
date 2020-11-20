@@ -251,7 +251,14 @@ def unfollow(
 
             # Unfollow only the users who do not follow you back
             unfollow_list = get_nonfollowers(
-                browser, username, username, relationship_data, False, True, logger, logfolder
+                browser,
+                username,
+                username,
+                relationship_data,
+                False,
+                True,
+                logger,
+                logfolder,
             )
 
         # pick only the users in the right track- ["all" or "nonfollowers"]
