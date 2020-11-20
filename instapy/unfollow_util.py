@@ -20,7 +20,10 @@ from .util import click_element
 from .util import web_address_navigator
 from .util import get_relationship_counts
 from .util import emergency_exit
+from .util import load_user_id
 from .util import find_user_id
+from .util import explicit_wait
+from .util import get_username_from_id
 from .util import is_page_available
 from .util import reload_webpage
 from .util import click_visibly
@@ -29,7 +32,6 @@ from .util import truncate_float
 from .util import get_query_hash
 from .util import is_follow_me
 from .util import get_epoch_time_diff
-from .follow_util import get_following_status
 from .print_log_writer import log_followed_pool
 from .print_log_writer import log_uncertain_unfollowed_pool
 from .print_log_writer import log_record_all_unfollowed
@@ -145,6 +147,80 @@ def set_automated_followed_pool(
         )
 
     return automatedFollowedPool
+
+
+def get_following_status(
+    browser, track, username, person, person_id, logger, logfolder
+):
+    """ Verify if you are following the user in the loaded page """
+
+    if person == username:
+        return "OWNER", None
+
+    if track == "profile":
+        user_link = "https://www.instagram.com/{}/".format(person)
+        web_address_navigator(browser, user_link)
+
+    follow_button_XP = read_xpath(get_following_status.__name__, "follow_button_XP")
+    failure_msg = "--> Unable to detect the following status of '{}'!"
+    user_inaccessible_msg = (
+        "Couldn't access the profile page of '{}'!\t~might have changed the"
+        " username".format(person)
+    )
+    # check if the page is available
+    valid_page = is_page_available(browser, logger)
+    if not valid_page:
+        logger.warning(user_inaccessible_msg)
+        person_new = verify_username_by_id(
+            browser, username, person, None, logger, logfolder
+        )
+        if person_new:
+            user_link = "https://www.instagram.com/{}/".format(person_new)
+            web_address_navigator(browser, user_link)
+            valid_page = is_page_available(browser, logger)
+            if not valid_page:
+                logger.error(failure_msg.format(person_new.encode("utf-8")))
+                return "UNAVAILABLE", None
+
+        else:
+            logger.error(failure_msg.format(person.encode("utf-8")))
+            return "UNAVAILABLE", None
+    # wait until the follow button is located and visible, then get it
+    try:
+        follow_button = browser.find_element_by_xpath(
+            read_xpath(get_following_status.__name__, "follow_span_XP_following")
+        )
+        return "Following", follow_button
+    except NoSuchElementException:
+        try:
+            browser.find_element_by_xpath(
+                read_xpath(get_following_status.__name__, "follow_button_XP")
+            )
+            follow_button_XP = read_xpath(
+                get_following_status.__name__, "follow_button_XP"
+            )
+        except Exception:
+            return "UNAVAILABLE", None
+    follow_button = explicit_wait(
+        browser, "VOEL", [follow_button_XP, "XPath"], logger, 7, False
+    )
+
+    if not follow_button:
+        browser.execute_script("location.reload()")
+        update_activity(browser, state=None)
+
+        follow_button = explicit_wait(
+            browser, "VOEL", [follow_button_XP, "XPath"], logger, 14, False
+        )
+        if not follow_button:
+            # cannot find the any of the expected buttons
+            logger.error(failure_msg.format(person.encode("utf-8")))
+            return None, None
+
+    # get follow status
+    following_status = follow_button.text
+
+    return following_status, follow_button
 
 
 def unfollow(
@@ -1480,6 +1556,33 @@ def get_user_id(browser, track, username, logger):
         user_id = find_user_id(browser, track, username, logger)
 
     return user_id
+
+
+def verify_username_by_id(browser, username, person, person_id, logger, logfolder):
+    """Check if the given user has changed username after the time of ollowed"""
+    # try to find the user by ID
+    if person_id is None:
+        person_id = load_user_id(username, person, logger, logfolder)
+
+    if person_id and person_id not in [None, "unknown", "undefined"]:
+        # get the [new] username of the user from the stored user ID
+        person_new = get_username_from_id(browser, person_id, logger)
+        if person_new:
+            if person_new != person:
+                logger.info(
+                    "User '{}' has changed username and now is called '{}' :S".format(
+                        person, person_new
+                    )
+                )
+            return person_new
+
+        else:
+            logger.info("The user with the ID of '{}' is unreachable".format(person))
+
+    else:
+        logger.info("The user ID of '{}' doesn't exist in local records".format(person))
+
+    return None
 
 
 def verify_action(
