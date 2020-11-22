@@ -596,7 +596,7 @@ def check_link(
     if graphql:
         media = post_page["graphql"]["shortcode_media"]
         is_video = media["is_video"]
-        user_name = media["owner"]["username"]
+        target_username = media["owner"]["username"]
         image_text = media["edge_media_to_caption"]["edges"]
         image_text = image_text[0]["node"]["text"] if image_text else None
         location = media["location"]
@@ -626,13 +626,13 @@ def check_link(
         """.format(
                 media_edge_string
             ),
-            user_name,
+            target_username,
         )
 
     else:
         media = post_page[0]["shortcode_media"]
         is_video = media["is_video"]
-        user_name = media["owner"]["username"]
+        target_username = media["owner"]["username"]
         image_text = media["caption"]
         owner_comments = browser.execute_script(
             """
@@ -648,7 +648,7 @@ def check_link(
             else {
                 return null;}
         """,
-            user_name,
+            target_username,
         )
 
     if owner_comments == "":
@@ -675,7 +675,7 @@ def check_link(
     if image_text is None:
         image_text = "No description"
 
-    logger.info("Image from: {}".format(user_name.encode("utf-8")))
+    logger.info("Image from: {}".format(target_username.encode("utf-8")))
     logger.info("Link: {}".format(post_link.encode("utf-8")))
     logger.info("Description: {}".format(image_text.encode("utf-8")))
 
@@ -684,7 +684,7 @@ def check_link(
         if not check_character_set(image_text):
             return (
                 True,
-                user_name,
+                target_username,
                 is_video,
                 "Mandatory language not fulfilled",
                 "Not mandatory language",
@@ -699,7 +699,7 @@ def check_link(
         if not evaluate_mandatory_words(image_text, mandatory_words):
             return (
                 True,
-                user_name,
+                target_username,
                 is_video,
                 "Mandatory words not fulfilled",
                 "Not mandatory likes",
@@ -708,7 +708,7 @@ def check_link(
     image_text_lower = [x.lower() for x in image_text]
     ignore_if_contains_lower = [x.lower() for x in ignore_if_contains]
     if any((word in image_text_lower for word in ignore_if_contains_lower)):
-        return False, user_name, is_video, "None", "Pass"
+        return False, target_username, is_video, "None", "Pass"
 
     dont_like_regex = []
 
@@ -742,9 +742,9 @@ def check_link(
             inapp_unit = 'Inappropriate! ~ contains "{}"'.format(
                 quashed if iffy == quashed else '" in "'.join([str(iffy), str(quashed)])
             )
-            return True, user_name, is_video, inapp_unit, "Undesired word"
+            return True, target_username, is_video, inapp_unit, "Undesired word"
 
-    return False, user_name, is_video, "None", "Success"
+    return False, target_username, is_video, "None", "Success"
 
 
 def like_image(browser, username, blacklist, logger, logfolder, total_liked_img):

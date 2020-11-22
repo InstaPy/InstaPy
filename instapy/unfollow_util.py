@@ -598,7 +598,9 @@ def unfollow(
     return unfollow_num
 
 
-def follow_user(browser, track, login, user_name, button, blacklist, logger, logfolder):
+def follow_user(
+    browser, track, login, target_username, button, blacklist, logger, logfolder
+):
     """Follow a user either from the profile page or post page or dialog box"""
     # list of available tracks to follow in: ["profile", "post dialog"]
 
@@ -610,27 +612,36 @@ def follow_user(browser, track, login, user_name, button, blacklist, logger, log
         if track == "profile":
             # check URL of the webpage, if it already is user's profile
             # page, then do not navigate to it again
-            user_link = "https://www.instagram.com/{}/".format(user_name)
+            user_link = "https://www.instagram.com/{}/".format(target_username)
             web_address_navigator(browser, user_link)
 
         # find out CURRENT following status
         following_status, follow_button = get_following_status(
-            browser, track, login, user_name, None, logger, logfolder
+            browser, track, login, target_username, None, logger, logfolder
         )
         if following_status in ["Follow", "Follow Back"]:
             click_visibly(browser, follow_button)  # click to follow
             follow_state, msg = verify_action(
-                browser, "follow", track, login, user_name, None, logger, logfolder
+                browser,
+                "follow",
+                track,
+                login,
+                target_username,
+                None,
+                logger,
+                logfolder,
             )
             if follow_state is not True:
                 return False, msg
 
         elif following_status in ["Following", "Requested"]:
             if following_status == "Following":
-                logger.info("--> Already following '{}'!\n".format(user_name))
+                logger.info("--> Already following '{}'!\n".format(target_username))
 
             elif following_status == "Requested":
-                logger.info("--> Already requested '{}' to follow!\n".format(user_name))
+                logger.info(
+                    "--> Already requested '{}' to follow!\n".format(target_username)
+                )
 
             sleep(1)
             return False, "already followed"
@@ -647,7 +658,7 @@ def follow_user(browser, track, login, user_name, button, blacklist, logger, log
                 failure_msg = following_status
 
             logger.warning(
-                "--> Couldn't follow '{}'!\t~{}".format(user_name, failure_msg)
+                "--> Couldn't follow '{}'!\t~{}".format(target_username, failure_msg)
             )
             return False, following_status
 
@@ -658,7 +669,9 @@ def follow_user(browser, track, login, user_name, button, blacklist, logger, log
 
             else:
                 logger.warning(
-                    "--> Couldn't unfollow '{}'!\t~unexpected failure".format(user_name)
+                    "--> Couldn't unfollow '{}'!\t~unexpected failure".format(
+                        target_username
+                    )
                 )
                 return False, "unexpected failure"
     elif track == "dialog":
@@ -666,24 +679,24 @@ def follow_user(browser, track, login, user_name, button, blacklist, logger, log
         sleep(3)
 
     # general tasks after a successful follow
-    logger.info("--> Followed '{}'!".format(user_name.encode("utf-8")))
-    Event().followed(user_name)
+    logger.info("--> Followed '{}'!".format(target_username.encode("utf-8")))
+    Event().followed(target_username)
     update_activity(
         browser, action="follows", state=None, logfolder=logfolder, logger=logger
     )
 
     # get user ID to record alongside username
-    user_id = get_user_id(browser, track, user_name, logger)
+    user_id = get_user_id(browser, track, target_username, logger)
 
     logtime = datetime.now().strftime("%Y-%m-%d %H:%M")
-    log_followed_pool(login, user_name, logger, logfolder, logtime, user_id)
+    log_followed_pool(login, target_username, logger, logfolder, logtime, user_id)
 
-    follow_restriction("write", user_name, None, logger)
+    follow_restriction("write", target_username, None, logger)
 
     if blacklist["enabled"] is True:
         action = "followed"
         add_user_to_blacklist(
-            user_name, blacklist["campaign"], action, logger, logfolder
+            target_username, blacklist["campaign"], action, logger, logfolder
         )
 
     # get the post-follow delay time to sleep
@@ -701,7 +714,7 @@ def scroll_to_bottom_of_followers_list(browser):
 def get_users_through_dialog_with_graphql(
     browser,
     login,
-    user_name,
+    target_username,
     amount,
     users_count,
     randomize,
@@ -999,7 +1012,7 @@ def follow_through_dialog(
 def get_given_user_followers(
     browser,
     login,
-    user_name,
+    target_username,
     amount,
     dont_include,
     randomize,
@@ -1015,7 +1028,7 @@ def get_given_user_followers(
 
     :param browser: webdriver instance
     :param login:
-    :param user_name: given username of account to follow
+    :param target_username: given username of account to follow
     :param amount: the number of followers to follow
     :param dont_include: ignore these usernames
     :param randomize: randomly select from users' followers
@@ -1025,26 +1038,26 @@ def get_given_user_followers(
     :param logfolder: the logger folder
     :return: list of user's followers also followed
     """
-    user_name = user_name.strip().lower()
+    target_username = target_username.strip().lower()
 
-    user_link = "https://www.instagram.com/{}/".format(user_name)
+    user_link = "https://www.instagram.com/{}/".format(target_username)
     web_address_navigator(browser, user_link)
 
     if not is_page_available(browser, logger):
         return [], []
 
     # check how many people are following this user.
-    allfollowers, _ = get_relationship_counts(browser, user_name, logger)
+    allfollowers, _ = get_relationship_counts(browser, target_username, logger)
 
     # skip early for no followers
     if not allfollowers:
-        logger.info("'{}' has no followers".format(user_name))
+        logger.info("'{}' has no followers".format(target_username))
         return [], []
 
     elif allfollowers < amount:
         logger.warning(
             "'{}' has less followers- {}, than the given amount of {}".format(
-                user_name, allfollowers, amount
+                target_username, allfollowers, amount
             )
         )
 
@@ -1058,7 +1071,7 @@ def get_given_user_followers(
         update_activity(browser, state=None)
 
     except NoSuchElementException:
-        logger.error("Could not find followers' link for '{}'".format(user_name))
+        logger.error("Could not find followers' link for '{}'".format(target_username))
         return [], []
 
     except BaseException as e:
@@ -1070,7 +1083,7 @@ def get_given_user_followers(
     person_list, simulated_list = get_users_through_dialog_with_graphql(
         browser,
         login,
-        user_name,
+        target_username,
         amount,
         allfollowers,
         randomize,
@@ -1091,7 +1104,7 @@ def get_given_user_followers(
 def get_given_user_following(
     browser,
     login,
-    user_name,
+    target_username,
     amount,
     dont_include,
     randomize,
@@ -1107,7 +1120,7 @@ def get_given_user_following(
 
     :param browser: webdriver instance
     :param login:
-    :param user_name: given username of account to follow
+    :param target_username: given username of account to follow
     :param amount: the number of followers to follow
     :param dont_include: ignore these usernames
     :param randomize: randomly select from users' followers
@@ -1117,9 +1130,9 @@ def get_given_user_following(
     :param logfolder: the logger folder
     :return: list of user's following
     """
-    user_name = user_name.strip().lower()
+    target_username = target_username.strip().lower()
 
-    user_link = "https://www.instagram.com/{}/".format(user_name)
+    user_link = "https://www.instagram.com/{}/".format(target_username)
     web_address_navigator(browser, user_link)
 
     if not is_page_available(browser, logger):
@@ -1167,33 +1180,33 @@ def get_given_user_following(
                     else:
                         logger.info(
                             "Failed to get following count of '{}'  ~empty "
-                            "list".format(user_name)
+                            "list".format(target_username)
                         )
                         allfollowing = None
 
                 except (NoSuchElementException, IndexError):
                     logger.error(
                         "\nError occured during getting the following count "
-                        "of '{}'\n".format(user_name)
+                        "of '{}'\n".format(target_username)
                     )
                     return [], []
 
     # skip early for no followers
     if not allfollowing:
-        logger.info("'{}' has no any following".format(user_name))
+        logger.info("'{}' has no any following".format(target_username))
         return [], []
 
     elif allfollowing < amount:
         logger.warning(
             "'{}' has less following- {} than the desired amount of {}".format(
-                user_name, allfollowing, amount
+                target_username, allfollowing, amount
             )
         )
 
     try:
         following_link = browser.find_elements_by_xpath(
             read_xpath(get_given_user_following.__name__, "following_link").format(
-                user_name
+                target_username
             )
         )
         click_element(browser, following_link[0])
@@ -1201,7 +1214,7 @@ def get_given_user_following(
         update_activity(browser, state=None)
 
     except NoSuchElementException:
-        logger.error("Could not find following's link for '{}'".format(user_name))
+        logger.error("Could not find following's link for '{}'".format(target_username))
         return [], []
 
     except BaseException as e:
@@ -1213,7 +1226,7 @@ def get_given_user_following(
     person_list, simulated_list = get_users_through_dialog_with_graphql(
         browser,
         login,
-        user_name,
+        target_username,
         amount,
         allfollowing,
         randomize,

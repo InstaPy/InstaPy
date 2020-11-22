@@ -3,6 +3,8 @@
 
 xpath = {}
 
+xpath["accept_cookie_dialogue"] = {"accept_button": "//button[text()='Accept']"}
+
 xpath["bypass_suspicious_login"] = {
     "bypass_with_sms_option": "//label[contains(text(),'Phone:')]",
     "bypass_with_email_option": "//label[contains(text(),'Email:')]",
@@ -122,6 +124,10 @@ xpath["get_links_for_tag"] = {
 xpath["get_number_of_posts"] = {
     "num_of_posts_txt": "//section/main/div/ul/li[1]/span/span",
     "num_of_posts_txt_no_such_element": "//section/div[3]/div/header/section/ul/li[1]/span/span",
+}
+
+xpath["open_target_profile"] = {
+    "target_profile": '//*[contains(@class, "Igw0E")]/*[contains(@href, "{}")]'
 }
 
 xpath["get_relationship_counts"] = {

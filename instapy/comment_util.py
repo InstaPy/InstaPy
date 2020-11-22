@@ -58,7 +58,33 @@ def open_comment_section(browser, logger):
         logger.warning(missing_comment_elem_warning)
 
 
-def comment_image(browser, username, comments, blacklist, logger, logfolder):
+def open_target_profile(browser, logger, target_username):
+    """ Clicks the name of the user to follow on comment page """
+    missing_target_profile_elem_warning = (
+        "--> Target Profile Button Not Found!"
+        "\t~may cause issues with browser windows of smaller widths"
+    )
+
+    target_profile_elem = browser.find_elements_by_xpath(
+        read_xpath(open_target_profile.__name__, "target_profile").format(
+            target_username
+        )
+    )
+
+    if len(target_profile_elem) > 0:
+        try:
+            click_element(browser, target_profile_elem[0])
+
+        except WebDriverException:
+            logger.warning(missing_target_profile_elem_warning)
+
+    else:
+        logger.warning(missing_target_profile_elem_warning)
+
+
+def comment_image(
+    browser, username, target_username, comments, blacklist, logger, logfolder
+):
     """Checks if it should comment on the image"""
     # check action availability
     if quota_supervisor("comments") == "jump":
@@ -132,6 +158,9 @@ def comment_image(browser, username, comments, blacklist, logger, logfolder):
 
     logger.info("--> Commented: {}".format(rand_comment.encode("utf-8")))
     Event().commented(username)
+
+    # Going back to the profile page of the user we commented before
+    open_target_profile(browser, logger, target_username)
 
     # get the post-comment delay time to sleep
     naply = get_action_delay("comment")
@@ -414,7 +443,8 @@ def process_comments(
     max_comments,
     min_comments,
     comments_mandatory_words,
-    user_name,
+    username,
+    target_username,
     blacklist,
     browser,
     logger,
@@ -455,7 +485,8 @@ def process_comments(
     if comments and publish:
         comment_state, msg = comment_image(
             browser,
-            user_name,
+            username,
+            target_username,
             selected_comments,
             blacklist,
             logger,

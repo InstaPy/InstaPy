@@ -163,15 +163,16 @@ def check_browser(browser, logfolder, logger, proxy_address):
         logger.info("-- Connection Checklist [1/2] (Internet Connection Status)")
         browser.get("view-source:https://ip4.seeip.org/geoip")
         pre = browser.find_element_by_tag_name("pre").text
-        current_ip_info = json.loads(pre)
+        check_browser.current_ip_info = json.loads(pre)
         if (
             proxy_address is not None
-            and socket.gethostbyname(proxy_address) != current_ip_info["ip"]
+            and socket.gethostbyname(proxy_address)
+            != check_browser.current_ip_info["ip"]
         ):
             logger.warn("- Proxy is set, but it's not working properly")
             logger.warn(
                 '- Expected Proxy IP is "{}", and the current IP is "{}"'.format(
-                    proxy_address, current_ip_info["ip"]
+                    proxy_address, check_browser.current_ip_info["ip"]
                 )
             )
             logger.warn("- Try again or disable the Proxy Address on your setup")
@@ -181,9 +182,9 @@ def check_browser(browser, logfolder, logger, proxy_address):
             logger.info("- Internet Connection Status: ok")
             logger.info(
                 '- Current IP is "{}" and it\'s from "{}/{}"'.format(
-                    current_ip_info["ip"],
-                    current_ip_info["country"],
-                    current_ip_info["country_code"],
+                    check_browser.current_ip_info["ip"],
+                    check_browser.current_ip_info["country"],
+                    check_browser.current_ip_info["country_code"],
                 )
             )
             update_activity(
@@ -217,6 +218,28 @@ def check_browser(browser, logfolder, logger, proxy_address):
     return True
 
 
+def accept_cookie_dialogue(browser, logger):
+    """ Presses 'Accept' button on cookie dialogue """
+    missing_accept_button_elem_warning = (
+        "--> Accept Cookies Button Not Found!"
+        "\t~dialogue doesn't appear always, so not an issue"
+    )
+
+    accept_button_elem = browser.find_elements_by_xpath(
+        read_xpath(accept_cookie_dialogue.__name__, "accept_button")
+    )
+
+    if len(accept_button_elem) > 0:
+        try:
+            click_element(browser, accept_button_elem[0])
+
+        except WebDriverException:
+            logger.warning(missing_accept_button_elem_warning)
+
+    else:
+        logger.warning(missing_accept_button_elem_warning)
+
+
 def login_user(
     browser,
     username,
@@ -239,6 +262,8 @@ def login_user(
 
     ig_homepage = "https://www.instagram.com"
     web_address_navigator(browser, ig_homepage)
+    if check_browser.current_ip_info["continent_code"] == "EU":
+        accept_cookie_dialogue(browser, logger)
     cookie_loaded = False
 
     # try to load cookie from username
@@ -246,6 +271,12 @@ def login_user(
         for cookie in pickle.load(
             open("{0}{1}_cookie.pkl".format(logfolder, username), "rb")
         ):
+            # Sets the 'sameSite' parameter in the locally stored cookie to
+            # 'Strict'. The 'Strict' value is required by Instagram to prevent
+            # cross-site scripting
+            if "sameSite" in cookie:
+                if cookie["sameSite"] == "None":
+                    cookie["sameSite"] = "Strict"
             browser.add_cookie(cookie)
             cookie_loaded = True
     except (WebDriverException, OSError, IOError):
@@ -253,7 +284,6 @@ def login_user(
 
     # force refresh after cookie load or check_authorization() will FAIL
     reload_webpage(browser)
-
     # cookie has been LOADED, so the user SHOULD be logged in
     # check if the user IS logged in
     login_state = check_authorization(
@@ -282,6 +312,9 @@ def login_user(
             # if cookie cannot be created or deleted stop execution.
             logger.info("Deleting browser cookies...")
             browser.delete_all_cookies()
+            if check_browser.current_ip_info["continent_code"] == "EU":
+                accept_cookie_dialogue(browser, logger)
+                browser.get(ig_homepage)
         except Exception as e:
             # NF: start
             if isinstance(e, WebDriverException):

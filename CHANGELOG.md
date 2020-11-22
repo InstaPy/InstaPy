@@ -11,6 +11,8 @@ _The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 - Handle situation if stale elements detected when cookie cannot be loaded
 - Convert Documentation to Docusaurus
+- Check if user's account is private
+- Added function that clicks accept at instagram cookie dialogue
 
 ### Fixed
 
@@ -18,6 +20,8 @@ _The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 - Fixed the problem where `followers_list` could be used without being initialized.
 - Fixed incorrect xpath used by `interact_by_comments`
 - Fixed typo in `dissmiss_save_information` to `dismiss_save_information`
+- Fixed follow element not found on comment page
+- Fixed required sameSite parameter in cookie
 - Reverted check if user's account is private
 
 ## [0.6.12] - 2020-10-26
