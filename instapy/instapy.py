@@ -4328,7 +4328,6 @@ class InstaPy:
         # Get `followers` data
         grabbed_followers = get_followers(
             self.browser,
-            self.username,
             username,
             amount,
             self.relationship_data,
@@ -4377,7 +4376,6 @@ class InstaPy:
         # get `following` data
         grabbed_following = get_following(
             self.browser,
-            self.username,
             username,
             amount,
             self.relationship_data,
@@ -4409,7 +4407,6 @@ class InstaPy:
         # get all and active Unfollowers
         all_unfollowers, active_unfollowers = get_unfollowers(
             self.browser,
-            self.username,
             username,
             compare_by,
             compare_track,
@@ -4434,7 +4431,6 @@ class InstaPy:
         # get Nonfollowers
         nonfollowers = get_nonfollowers(
             self.browser,
-            self.username,
             username,
             self.relationship_data,
             live_match,
@@ -4459,7 +4455,6 @@ class InstaPy:
         # get Fans
         fans = get_fans(
             self.browser,
-            self.username,
             username,
             self.relationship_data,
             live_match,
@@ -4484,7 +4479,6 @@ class InstaPy:
         # get Mutual Following
         mutual_following = get_mutual_following(
             self.browser,
-            self.username,
             username,
             self.relationship_data,
             live_match,
