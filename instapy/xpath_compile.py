@@ -35,7 +35,7 @@ xpath["dismiss_notification_offer"] = {
     "dismiss_elem_loc": "//button[text()='Not Now']",
 }
 
-xpath["dismiss_save_information"] = {
+xpath["dissmiss_save_information"] = {
     "offer_elem_loc": "//*[contains(text(), 'Save Info')]",
     "dismiss_elem_loc": "//*[contains(text(), 'Not Now')]",
 }

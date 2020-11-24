@@ -23,7 +23,7 @@ from .util import explicit_wait
 from .util import extract_text_from_element
 from .util import evaluate_mandatory_words
 from .quota_supervisor import quota_supervisor
-from .unfollow_util import get_following_status
+from .follow_util import get_following_status
 from .event import Event
 from .xpath import read_xpath
 from .comment_util import open_comment_section
