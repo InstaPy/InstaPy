@@ -9,6 +9,7 @@ import requests
 import unicodedata
 import logging
 import logging.handlers
+import shutil
 
 from datetime import datetime
 from datetime import timedelta
@@ -85,8 +86,13 @@ from .relationship_tools import get_mutual_following
 from .database_engine import get_database
 from .text_analytics import text_analysis
 from .text_analytics import yandex_supported_languages
-from .browser import set_selenium_local_session
-from .browser import close_browser
+
+from .browser_chrome import set_selenium_local_session as chrome_set_selenium_local_session
+from .browser_chrome import close_browser as chrome_close_browser
+
+from .browser_firefox import set_selenium_local_session 
+from .browser_firefox import close_browser 
+
 from .file_manager import get_workspace
 from .file_manager import get_logfolder
 from .pods_util import group_posts
@@ -122,11 +128,16 @@ class InstaPy:
         multi_logs: bool = True,
         log_handler=None,  # TODO function type ?
         geckodriver_path: str = None,
+        chromedriver_path: str = None,
+        # TODO: replace the above 2 with an automated check
         split_db: bool = False,
         bypass_security_challenge_using: str = "email",
         want_check_browser: bool = True,
         browser_executable_path: str = None,
         geckodriver_log_level: str = "info",  # "info" by default
+        chromedriver_log_level: int = 2, # TODO: replace this with auto check
+        # there probably exists a conversion chart for log levels
+        typeofbr: str = "" # should be Firefox or Chrome
     ):
         print("InstaPy Version: {}".format(__version__))
         cli_args = parse_cli_args()
@@ -153,6 +164,10 @@ class InstaPy:
                 self.display.start()
             else:
                 raise InstaPyError("The 'nogui' parameter isn't supported on Windows.")
+        
+        
+
+
 
         self.browser = None
         self.page_delay = page_delay
@@ -318,7 +333,37 @@ class InstaPy:
 
         get_database(make=True)  # IMPORTANT: think twice before relocating
 
-        if selenium_local_session:
+        if not typeofbr: # attempt to automatically determine browser type by checking which drivers are found
+            temp_browser_drivertype = (shutil.which("geckodriver") or shutil.which("chromedriver")) or (shutil.which("geckodriver.exe") or shutil.which("chromedriver.exe"))
+            if "gecko" in temp_browser_drivertype:
+                typeofbr = "Firefox"
+            elif "chrome" in temp_browser_drivertype:
+                typeofbr = "Chrome"
+            else:
+                self.logger.warning("Automatic browser type detection failed. Please add geckodriver or chromedriver to PATH.")
+        
+        self.typeofbr = typeofbr
+
+        if selenium_local_session and self.typeofbr == "Chrome":
+            self.browser, err_msg = chrome_set_selenium_local_session(
+                proxy_address,
+                proxy_port,
+                proxy_username,
+                proxy_password,
+                headless_browser,
+                browser_profile_path,
+                disable_image_load,
+                page_delay,
+                chromedriver_path,
+                browser_executable_path,
+                self.logfolder,
+                self.logger,
+                chromedriver_log_level,
+            )
+            if len(err_msg) > 0:
+                raise InstaPyError(err_msg)
+
+        if selenium_local_session and not self.typeofbr == "Chrome":
             self.browser, err_msg = set_selenium_local_session(
                 proxy_address,
                 proxy_port,
@@ -4441,7 +4486,11 @@ class InstaPy:
         """Closes the current session"""
 
         Settings.InstaPy_is_running = False
-        close_browser(self.browser, threaded_session, self.logger)
+
+        if self.typeofbr == "Chrome":
+            chrome_close_browser(self.browser, threaded_session, self.logger)
+        else:
+            close_browser(self.browser, threaded_session, self.logger)
 
         with interruption_handler(threaded=threaded_session):
             # close virtual display

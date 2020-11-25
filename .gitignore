@@ -117,3 +117,7 @@ Pipfile
 
 # Instances
 z_*
+
+# local testing
+
+local_testing.py

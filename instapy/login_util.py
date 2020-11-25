@@ -161,7 +161,12 @@ def check_browser(browser, logfolder, logger, proxy_address):
     # check connection status
     try:
         logger.info("-- Connection Checklist [1/2] (Internet Connection Status)")
-        browser.get("view-source:https://ip4.seeip.org/geoip")
+        logger.info("-- You are using a {} browser.".format(browser.typeofbr))
+        if "Chrome" == browser.typeofbr:
+            browser.get("https://ip4.seeip.org/geoip")
+        elif "Firefox" == browser.typeofbr:
+            browser.get("view-source:https://ip4.seeip.org/geoip")
+
         pre = browser.find_element_by_tag_name("pre").text
         current_ip_info = json.loads(pre)
         if (
@@ -193,8 +198,8 @@ def check_browser(browser, logfolder, logger, proxy_address):
                 logfolder=logfolder,
                 logger=logger,
             )
-    except Exception:
-        logger.warn("- Internet Connection Status: error")
+    except Exception as exc:
+        logger.warn("- Internet Connection Status: error, {}".format(str(exc).encode('utf-8')))
         update_activity(
             browser,
             action=None,
@@ -205,13 +210,14 @@ def check_browser(browser, logfolder, logger, proxy_address):
         return False
 
     # check if hide-selenium extension is running
-    logger.info("-- Connection Checklist [2/2] (Hide Selenium Extension)")
-    webdriver = browser.execute_script("return window.navigator.webdriver")
-    logger.info("- window.navigator.webdriver response: {}".format(webdriver))
-    if webdriver:
-        logger.warn("- Hide Selenium Extension: error")
-    else:
-        logger.info("- Hide Selenium Extension: ok")
+    # TODO: implement hide-selenium extension for chrome browser
+    # logger.info("-- Connection Checklist [2/2] (Hide Selenium Extension)")
+    # webdriver = browser.execute_script("return window.navigator.webdriver")
+    # logger.info("- window.navigator.webdriver response: {}".format(webdriver))
+    # if webdriver:
+    #     logger.warn("- Hide Selenium Extension: error")
+    # else:
+    #     logger.info("- Hide Selenium Extension: ok")
 
     # everything is ok, then continue(True)
     return True
