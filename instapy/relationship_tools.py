@@ -1,3 +1,4 @@
+# import built-in & third-party modules
 import time
 from datetime import datetime
 import os
@@ -5,6 +6,7 @@ import glob
 import random
 import json
 
+# import InstaPy modules
 from .follow_util import get_following_status
 from .time_util import sleep
 from .util import web_address_navigator
@@ -14,6 +16,7 @@ from .util import is_private_profile
 from .util import truncate_float
 from .util import progress_tracker
 
+# import exceptions
 from selenium.common.exceptions import NoSuchElementException, WebDriverException
 
 
@@ -30,11 +33,20 @@ def get_followers(
 ):
     """ Get entire list of followers using graphql queries. """
 
+    # Variables
+    user_data = {}
+    variables = {}
+    all_followers = []
+    sc_rolled = 0
+    grab_notifier = False
+    local_read_failure = False
+    passed_time = "time loop"
+
     if username not in relationship_data:
         relationship_data.update({username: {"all_following": [], "all_followers": []}})
 
     grab_info = (
-        'at "full" range' if grab == "full" else "at the range of " "{}".format(grab)
+        'at "full" range' if grab == "full" else "at the range of {}".format(grab)
     )
     tense = (
         "live"
@@ -65,13 +77,15 @@ def get_followers(
     )
 
     is_private = is_private_profile(browser, logger, following_status == "Following")
+
     if (
         is_private is None
         or (is_private is True and following_status not in ["Following", True])
         or (following_status == "Blocked")
     ):
         logger.info("This user is private and we are not following")
-        return False
+        # Changed False to all_followers[], all_followers is empty
+        return all_followers
 
     # sets the amount of usernames to be matched in the next queries
     match = (
@@ -88,14 +102,11 @@ def get_followers(
         relationship_data[username]["all_followers"] if match is not None else None
     )
 
-    user_data = {}
-    graphql_endpoint = "view-source:https://www.instagram.com/graphql" "/query/"
+    graphql_endpoint = "view-source:https://www.instagram.com/graphql/query/"
     graphql_followers = (
         graphql_endpoint + "?query_hash=37479f2b8209594dde7facb0d904896a"
     )
 
-    all_followers = []
-    variables = {}
     try:
         user_data["id"] = browser.execute_script(
             "return window.__additionalData[Object.keys(window.__additionalData)[0]].data."
@@ -103,21 +114,18 @@ def get_followers(
         )
     except WebDriverException:
         user_data["id"] = browser.execute_script(
-            "return window._sharedData." "entry_data.ProfilePage[0]." "graphql.user.id"
+            "return window._sharedData.entry_data.ProfilePage[0].graphql.user.id"
         )
 
     variables["id"] = user_data["id"]
     variables["first"] = 50
 
     # get follower and user loop
-
-    sc_rolled = 0
-    grab_notifier = False
-    local_read_failure = False
-    passed_time = "time loop"
-
     try:
         has_next_data = True
+        filename = None
+        graphql_queries = None
+        query_date = None
 
         url = "{}&variables={}".format(graphql_followers, str(json.dumps(variables)))
         web_address_navigator(browser, url)
@@ -203,7 +211,6 @@ def get_followers(
                 if matched_followers >= match:
                     new_followers = set(all_followers) - set(all_prior_followers)
                     all_followers = all_followers + all_prior_followers
-                    print("\n")
                     logger.info(
                         "Grabbed {} new usernames from `Followers` in {}  "
                         "~total of {} usernames".format(
@@ -216,7 +223,6 @@ def get_followers(
                     break
 
             if grab != "full" and grabbed >= grab:
-                print("\n")
                 logger.info(
                     "Grabbed {} usernames from `Followers` as requested at {}".format(
                         grabbed, passed_time
@@ -244,7 +250,6 @@ def get_followers(
                                 graphql_queries[username][query_date]["sc_rolled"] += 1
                                 json.dump(graphql_queries, graphql_queries_file)
                     except Exception as exc:
-                        print("\n")
                         logger.info(
                             "Error occurred while writing `scroll` data to "
                             "graphql_queries.json\n{}\n".format(
@@ -254,13 +259,11 @@ def get_followers(
 
                 # take breaks gradually
                 if sc_rolled > 91:
-                    print("\n")
                     logger.info("Queried too much! ~ sleeping a bit :>")
                     sleep(600)
                     sc_rolled = 0
 
     except BaseException as exc:
-        print("\n")
         logger.info(
             "Unable to get `Followers` data:\n\t{}\n".format(str(exc).encode("utf-8"))
         )
@@ -269,7 +272,6 @@ def get_followers(
     all_followers = sorted(set(all_followers), key=lambda x: all_followers.index(x))
 
     if grab_notifier is False:
-        print("\n")
         logger.info(
             "Grabbed {} usernames from `Followers` in {}".format(
                 len(all_followers), passed_time
@@ -283,7 +285,6 @@ def get_followers(
         ):
             store_followers_data(username, grab, all_followers, logger, logfolder)
         elif store_locally is True:
-            print("")
             logger.info(
                 "The `Followers` data is identical with the data in previous "
                 "query  ~not storing the file again"
@@ -299,7 +300,6 @@ def get_followers(
     )
     sleep_n = truncate_float(sleep_n, 4)
 
-    print("")
     logger.info(
         "Zz :[ time to take a good nap  ~sleeping {} {}".format(sleep_n, sleep_s)
     )
@@ -321,11 +321,16 @@ def get_following(
     logfolder,
 ):
     """ Get entire list of following using graphql queries. """
+
+    # Variables
+    user_data = {}
+    variables = {}
+
     if username not in relationship_data:
         relationship_data.update({username: {"all_following": [], "all_followers": []}})
 
     grab_info = (
-        'at "full" range' if grab == "full" else "at the range of " "{}".format(grab)
+        'at "full" range' if grab == "full" else "at the range of {}".format(grab)
     )
     tense = (
         "live"
@@ -379,18 +384,12 @@ def get_following(
         relationship_data[username]["all_following"] if match is not None else None
     )
 
-    user_data = {}
-
     # FIXME: use util.py:get_query_hash to get the hash code
-    graphql_endpoint = "view-source:https://www.instagram.com/graphql" "/query/"
+    graphql_endpoint = "view-source:https://www.instagram.com/graphql/query/"
 
     graphql_following = (
         graphql_endpoint + "?query_hash=58712303d941c6855d4e888c5f0cd22f"
     )
-
-    all_following = []
-
-    variables = {}
 
     try:
         user_data["id"] = browser.execute_script(
@@ -399,7 +398,7 @@ def get_following(
         )
     except WebDriverException:
         user_data["id"] = browser.execute_script(
-            "return window._sharedData." "entry_data.ProfilePage[0]." "graphql.user.id"
+            "return window._sharedData.entry_data.ProfilePage[0].graphql.user.id"
         )
 
     variables["id"] = user_data["id"]
@@ -411,8 +410,12 @@ def get_following(
     grab_notifier = False
     local_read_failure = False
     passed_time = "time loop"
+    all_following = []
 
     try:
+        filename = None
+        query_date = None
+        graphql_queries = None
         has_next_data = True
 
         url = "{}&variables={}".format(graphql_following, str(json.dumps(variables)))
@@ -496,7 +499,6 @@ def get_following(
                 if matched_following >= match:
                     new_following = set(all_following) - set(all_prior_following)
                     all_following = all_following + all_prior_following
-                    print("\n")
                     logger.info(
                         "Grabbed {} new usernames from `Following` in {}  "
                         "~total of {} usernames".format(
@@ -509,7 +511,6 @@ def get_following(
                     break
 
             if grab != "full" and grabbed >= grab:
-                print("\n")
                 logger.info(
                     "Grabbed {} usernames from `Following` as requested at {}".format(
                         grabbed, passed_time
@@ -537,7 +538,6 @@ def get_following(
                                 graphql_queries[username][query_date]["sc_rolled"] += 1
                                 json.dump(graphql_queries, graphql_queries_file)
                     except Exception as exc:
-                        print("\n")
                         logger.info(
                             "Error occurred while writing `scroll` data to "
                             "graphql_queries.json\n{}\n".format(
@@ -547,13 +547,11 @@ def get_following(
 
                 # take breaks gradually
                 if sc_rolled > 91:
-                    print("\n")
                     logger.info("Queried too much! ~ sleeping a bit :>")
                     sleep(600)
                     sc_rolled = 0
 
     except BaseException as exc:
-        print("\n")
         logger.info(
             "Unable to get `Following` data:\n\t{}\n".format(str(exc).encode("utf-8"))
         )
@@ -562,7 +560,6 @@ def get_following(
     all_following = sorted(set(all_following), key=lambda x: all_following.index(x))
 
     if grab_notifier is False:
-        print("\n")
         logger.info(
             "Grabbed {} usernames from `Following` in {}".format(
                 len(all_following), passed_time
@@ -576,7 +573,6 @@ def get_following(
         ):
             store_following_data(username, grab, all_following, logger, logfolder)
         elif store_locally is True:
-            print("")
             logger.info(
                 "The `Following` data is identical with the data in previous "
                 "query  ~not storing the file again"
@@ -592,7 +588,6 @@ def get_following(
     )
     sleep_n = truncate_float(sleep_n, 4)
 
-    print("")
     logger.info(
         "Zz :[ time to take a good nap  ~sleeping {} {}".format(sleep_n, sleep_s)
     )
@@ -802,7 +797,7 @@ def get_fans(
 
     if username is None or not isinstance(username, str):
         logger.info(
-            "Please enter a username to pick Fans  ~leaving out of an " "invalid value"
+            "Please enter a username to pick Fans  ~leaving out of an invalid value"
         )
         return []
 
@@ -998,7 +993,7 @@ def store_all_unfollowers(username, all_unfollowers, logger, logfolder):
     """ Store all Unfollowers data in a local storage at generated date """
     generation_date = datetime.today().strftime("%d-%m-%Y")
     all_unfollowers_size = len(all_unfollowers)
-    file_directory = "{}/relationship_data/{}" "/unfollowers/all_unfollowers/".format(
+    file_directory = "{}/relationship_data/{}/unfollowers/all_unfollowers/".format(
         logfolder, username
     )
     file_name = "{}{}~all~{}".format(
@@ -1179,6 +1174,12 @@ def store_mutual_following(
 
 def load_followers_data(username, compare_by, compare_track, logger, logfolder):
     """ Write grabbed `followers` data into local storage """
+
+    # Variables
+    tracked_filenames = []
+    structured_entries = {}
+    selected_filename = None
+
     # get the list of all existing FULL `Followers` data files in
     # ~/logfolder/username/followers/ location
     files_location = "{}/relationship_data/{}/followers".format(logfolder, username)
@@ -1196,7 +1197,6 @@ def load_followers_data(username, compare_by, compare_track, logger, logfolder):
         return [], None
 
     # Filtrate and get the right track of file to compare
-    tracked_filenames = []
     for data_file in followers_data_files:
         tracked_filenames.append(data_file[:10])
     sorted_filenames = sorted(
@@ -1206,8 +1206,6 @@ def load_followers_data(username, compare_by, compare_track, logger, logfolder):
     this_day = datetime.today().strftime("%d")
     this_month = datetime.today().strftime("%m")
     this_year = datetime.today().strftime("%Y")
-
-    structured_entries = {}
 
     for entry in sorted_filenames:
         entry_day, entry_month, entry_year = entry.split("-")
