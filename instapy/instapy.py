@@ -907,7 +907,9 @@ class InstaPy:
                 "Following commenters of '{}' from {} pictures in last {} "
                 "days...\nScrapping wall..".format(username, max_pic, daysold)
             )
-            commenters = extract_information(self.browser, username, daysold, max_pic)
+            commenters = extract_information(
+                self.browser, username, daysold, max_pic, self.logger
+            )
 
             if len(commenters) > 0:
                 self.logger.info("Going to follow top {} users.\n".format(amount))
@@ -1028,7 +1030,7 @@ class InstaPy:
                 break
 
             photo_urls = get_photo_urls_from_profile(
-                self.browser, username, photos_grab_amount, randomize
+                self.browser, username, photos_grab_amount, randomize, self.logger
             )
             sleep(1)
             if not isinstance(photo_urls, list):
@@ -1038,7 +1040,9 @@ class InstaPy:
                 if self.quotient_breach:
                     break
 
-                likers = users_liked(self.browser, photo_url, follow_likers_per_photo)
+                likers = users_liked(
+                    self.browser, photo_url, follow_likers_per_photo, self.logger
+                )
                 # This way of iterating will prevent sleep interference
                 # between functions
                 random.shuffle(likers)
