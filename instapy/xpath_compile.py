@@ -74,8 +74,8 @@ xpath["get_comment_input"] = {
 }
 
 xpath["get_comments_on_post"] = {
-    "commenter_elem": "//h3/a",
-    "comments_block": "//div/div/h3/../../../..",
+    "commenter_elem": "//*[contains(@class,'FPmhX')]",
+    "comments_block": "//*[contains(@class,'EtaWk')]",
     "like_button_full_XPath": "//*[*[local-name()='svg']/@aria-label='Like']",
     "unlike_button_full_XPath": "//*[*[local-name()='svg']/@aria-label='Unlike']",
 }
@@ -141,7 +141,7 @@ xpath["get_users_through_dialog"] = {"find_dialog_box": "//body/div[4]/div/div[2
 xpath["is_private_profile"] = {"is_private": '//h2[@class="_kcrwx"]'}
 
 xpath["like_comment"] = {
-    "comments_block": "//div/div/h3/../../../..",
+    "comments_block": "//*[contains(@class,'EtaWk')]",
     "span_like_elements": "//span[@aria-label='Like']",
     "comment_like_button": "..",
 }
@@ -170,6 +170,8 @@ xpath["login_user"] = {
     "add_phone_number": "//h2[text()='Add Your Phone Number']",
     "suspicious_login_attempt": "//p[text()='Suspicious Login Attempt']",
     "error_alert": "//p[@id='slfErrorAlert']",
+    "verification_code": "//input[@name='verificationCode']",
+    "confirm": "//button[text()='Confirm']",
 }
 
 xpath["open_comment_section"] = {

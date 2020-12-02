@@ -117,7 +117,7 @@ def comment_image(browser, username, comments, blacklist, logger, logfolder):
                 )
         else:
             logger.warning(
-                "--> Comment Action Likely Failed!" "\t~comment Element was not found"
+                "--> Comment Action Likely Failed!\t~comment Element was not found"
             )
             return False, "commenting disabled"
 
@@ -453,7 +453,7 @@ def process_comments(
 
     # smart commenting
     if comments and publish:
-        comment_state, msg = comment_image(
+        comment_state, _ = comment_image(
             browser,
             user_name,
             selected_comments,
@@ -461,4 +461,5 @@ def process_comments(
             logger,
             logfolder,
         )
+
         return comment_state
