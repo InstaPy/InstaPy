@@ -39,7 +39,8 @@ slug: /
 
 **Newsletter: [Sign Up for the Newsletter here!](http://eepurl.com/cZbV_v)**   
 **Official Video Guide: [Get it here!](https://www.udemy.com/instapy-guide/?couponCode=INSTAPY_OFFICIAL)**   
-**Guide to Bot Creation: [Learn to Build your own Bots with the Creators of InstaPy](https://www.udemy.com/course/the-complete-guide-to-bot-creation/?referralCode=7418EBB47E11E34D86C9)**
+**Guide to Bot Creation: [Learn to Build your own Bots with the Creators of InstaPy](https://www.udemy.com/course/the-complete-guide-to-bot-creation/?referralCode=7418EBB47E11E34D86C9)**     
+**Our Data Visualization Hands-On Workshop: [Learn to create insightful Visualizations from Scratch!](https://amzn.to/2IRrB6U)**   
 
 <br />
 
