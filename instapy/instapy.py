@@ -124,6 +124,7 @@ class InstaPy:
         geckodriver_path: str = None,
         split_db: bool = False,
         bypass_security_challenge_using: str = "email",
+        security_codes: int = 0000,
         want_check_browser: bool = True,
         browser_executable_path: str = None,
         geckodriver_log_level: str = "info",  # "info" by default
@@ -158,6 +159,7 @@ class InstaPy:
         self.page_delay = page_delay
         self.disable_image_load = disable_image_load
         self.bypass_security_challenge_using = bypass_security_challenge_using
+        self.security_codes = security_codes
 
         # choose environment over static typed credentials
         self.username = os.environ.get("INSTA_USER") or username
@@ -430,6 +432,7 @@ class InstaPy:
             self.logfolder,
             self.proxy_address,
             self.bypass_security_challenge_using,
+            self.security_codes,
             self.want_check_browser,
         ):
             message = (
@@ -1580,7 +1583,7 @@ class InstaPy:
                                     self.max_comments,
                                     self.min_comments,
                                     self.comments_mandatory_words,
-                                    self.username,
+                                    user_name,  # Comments with target user
                                     self.blacklist,
                                     self.browser,
                                     self.logger,
@@ -1763,65 +1766,63 @@ class InstaPy:
                             except Exception as err:
                                 self.logger.error("Image check error: {}".format(err))
 
+                        # comments
                         if (
                             self.do_comment
                             and user_name not in self.dont_include
                             and checked_img
+                            and commenting
                         ):
                             comments = self.comments + (
                                 self.video_comments if is_video else self.photo_comments
                             )
 
-                            if comments:
-                                success = process_comments(
-                                    comments,
-                                    temp_comments,
-                                    self.delimit_commenting,
-                                    self.max_comments,
-                                    self.min_comments,
-                                    self.comments_mandatory_words,
-                                    self.username,
-                                    self.blacklist,
-                                    self.browser,
-                                    self.logger,
-                                    self.logfolder,
-                                )
-
-                                if success:
-                                    commented += 1
-                                    # reset jump counter after a
-                                    # successful comment
-                                    self.jumps["consequent"]["comments"] = 0
-
-                                    # try to follow
-                                    if (
-                                        self.do_follow
-                                        and user_name not in self.dont_include
-                                        and checked_img
-                                        and following
-                                        and not follow_restriction(
-                                            "read",
-                                            user_name,
-                                            self.follow_times,
-                                            self.logger,
-                                        )
-                                    ):
-                                        follow_state, msg = follow_user(
-                                            self.browser,
-                                            "post",
-                                            self.username,
-                                            user_name,
-                                            None,
-                                            self.blacklist,
-                                            self.logger,
-                                            self.logfolder,
-                                        )
-                                        if follow_state is True:
-                                            followed += 1
-
-                                    else:
-                                        self.logger.info("--> Not following")
-                                        sleep(1)
+                            success = process_comments(
+                                comments,
+                                temp_comments,
+                                self.delimit_commenting,
+                                self.max_comments,
+                                self.min_comments,
+                                self.comments_mandatory_words,
+                                user_name,  # Comments with target user
+                                self.blacklist,
+                                self.browser,
+                                self.logger,
+                                self.logfolder,
+                            )
+                            if success:
+                                commented += 1
+                                # reset jump counter after a
+                                # successful comment
+                                self.jumps["consequent"]["comments"] = 0
+                                # try to follow
+                                if (
+                                    self.do_follow
+                                    and user_name not in self.dont_include
+                                    and checked_img
+                                    and following
+                                    and not follow_restriction(
+                                        "read",
+                                        user_name,
+                                        self.follow_times,
+                                        self.logger,
+                                    )
+                                ):
+                                    follow_state, msg = follow_user(
+                                        self.browser,
+                                        "post",
+                                        self.username,
+                                        user_name,
+                                        None,
+                                        self.blacklist,
+                                        self.logger,
+                                        self.logfolder,
+                                    )
+                                    if follow_state is True:
+                                        followed += 1
+                                else:
+                                    self.logger.info("--> Not following")
+                                    sleep(1)
 
                             elif msg == "jumped":
                                 # will break the loop after certain
@@ -2015,7 +2016,7 @@ class InstaPy:
                                     self.max_comments,
                                     self.min_comments,
                                     self.comments_mandatory_words,
-                                    self.username,
+                                    user_name,  # Comments with target user
                                     self.blacklist,
                                     self.browser,
                                     self.logger,
@@ -2286,6 +2287,7 @@ class InstaPy:
                                         "Image check error: {}".format(err)
                                     )
 
+                            # comments
                             if (
                                 self.do_comment
                                 and user_name not in self.dont_include
@@ -2304,7 +2306,7 @@ class InstaPy:
                                     self.max_comments,
                                     self.min_comments,
                                     self.comments_mandatory_words,
-                                    self.username,
+                                    user_name,  # Comments with target user
                                     self.blacklist,
                                     self.browser,
                                     self.logger,
@@ -2589,7 +2591,7 @@ class InstaPy:
                                         self.max_comments,
                                         self.min_comments,
                                         self.comments_mandatory_words,
-                                        self.username,
+                                        user_name,  # Comments with target user
                                         self.blacklist,
                                         self.browser,
                                         self.logger,
@@ -2882,6 +2884,7 @@ class InstaPy:
                                             temp_comments,
                                             clarifai_tags,
                                         ) = self.query_clarifai()
+
                                     except Exception as err:
                                         self.logger.error(
                                             "Image check error: {}".format(err)
@@ -2900,7 +2903,7 @@ class InstaPy:
                                         self.max_comments,
                                         self.min_comments,
                                         self.comments_mandatory_words,
-                                        self.username,
+                                        user_name,  # Comments with target user
                                         self.blacklist,
                                         self.browser,
                                         self.logger,
@@ -4051,7 +4054,7 @@ class InstaPy:
                                                 "Image check error: {}".format(err)
                                             )
 
-                                    # commenting
+                                    # comments
                                     if (
                                         self.do_comment
                                         and user_name not in self.dont_include
@@ -4070,7 +4073,7 @@ class InstaPy:
                                             self.max_comments,
                                             self.min_comments,
                                             self.comments_mandatory_words,
-                                            self.username,
+                                            user_name,  # Comments with target user
                                             self.blacklist,
                                             self.browser,
                                             self.logger,
@@ -4834,6 +4837,7 @@ class InstaPy:
                             except Exception as err:
                                 self.logger.error("Image check error: {}".format(err))
 
+                        # comments
                         if (
                             self.do_comment
                             and user_name not in self.dont_include
@@ -4850,7 +4854,7 @@ class InstaPy:
                                 self.max_comments,
                                 self.min_comments,
                                 self.comments_mandatory_words,
-                                self.username,
+                                user_name,  # Comments with target user
                                 self.blacklist,
                                 self.browser,
                                 self.logger,

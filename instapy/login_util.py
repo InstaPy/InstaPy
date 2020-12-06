@@ -4,6 +4,7 @@ import pickle
 import socket
 import os
 import json
+import random
 
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.keys import Keys
@@ -225,6 +226,7 @@ def login_user(
     logfolder,
     proxy_address,
     security_code_to_phone,
+    security_codes,
     want_check_browser,
 ):
     """Logins the user with the given username and password"""
@@ -342,6 +344,7 @@ def login_user(
     input_username_XP = read_xpath(login_user.__name__, "input_username_XP")
     explicit_wait(browser, "VOEL", [input_username_XP, "XPath"], logger)
 
+    # user
     input_username = browser.find_element_by_xpath(input_username_XP)
 
     (
@@ -358,7 +361,7 @@ def login_user(
 
     sleep(1)
 
-    #  password
+    # password
     input_password = browser.find_elements_by_xpath(
         read_xpath(login_user.__name__, "input_password")
     )
@@ -387,6 +390,9 @@ def login_user(
     # update server calls for both 'click' and 'send_keys' actions
     for _ in range(4):
         update_activity(browser, state=None)
+
+    # Check if account is protected with Two Factor Authentication
+    two_factor_authentication(browser, logger, security_codes)
 
     dismiss_get_app_offer(browser, logger)
     dismiss_notification_offer(browser, logger)
@@ -551,3 +557,81 @@ def dismiss_this_was_me(browser):
     except NoSuchElementException:
         # no verification needed
         pass
+
+
+def two_factor_authentication(browser, logger, security_codes):
+    """
+    Check if account is protected with Two Factor Authentication codes
+
+    Args:
+        :browser: Web driver
+        :logger: Library to log actions
+        :security_codes: List of Two Factor Authentication codes, also named as Recovery Codes.
+
+    Returns: None
+    """
+
+    # Wait until page is loaded after user and password were introduced
+    sleep(random.randint(3, 5))
+
+    if "two_factor" in browser.current_url:
+
+        logger.info("- Two Factor Authentication is enabled...")
+
+        # Chose one code from the security_codes list
+        # 0000 is used if no codes were provided in constructor.
+        code = random.choice(security_codes)
+
+        try:
+            # Check Security code is numeric
+            int(code)
+
+            verification_code = read_xpath(login_user.__name__, "verification_code")
+            explicit_wait(browser, "VOEL", [verification_code, "XPath"], logger)
+
+            security_code = browser.find_element_by_xpath(verification_code)
+
+            #  Confirm blue button
+            confirm = browser.find_elements_by_xpath(
+                read_xpath(login_user.__name__, "confirm")
+            )
+
+            (
+                ActionChains(browser)
+                .move_to_element(security_code)
+                .click()
+                .send_keys(code)
+                .perform()
+            )
+
+            sleep(random.randint(1, 3))
+
+            (
+                ActionChains(browser)
+                .move_to_element(confirm[0])
+                .click()
+                .send_keys(Keys.ENTER)
+                .perform()
+            )
+
+            # update server calls for both 'click' and 'send_keys' actions
+            for _ in range(2):
+                update_activity(browser, state=None)
+
+            sleep(random.randint(1, 3))
+
+        except NoSuchElementException as e:
+            # Unable to login to Instagram!
+            logger.warning(
+                "- Secuirty code could not be written!\n\t{}".format(
+                    str(e).encode("utf-8")
+                )
+            )
+        except ValueError:
+            # Unable to login to Instagram!
+            logger.warning("- Secuirty code provided is not a number")
+    else:
+        # Two Factor Authentication is not enabled or the security code has
+        # already been entered in previous session.
+        # Return None and login to Instagram!
+        return
