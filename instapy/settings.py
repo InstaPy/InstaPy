@@ -4,7 +4,7 @@ Global variables
 By design, import no any other local module inside this file.
 Vice verse, it'd produce circular dependent imports.
 """
-
+# import built-in & third-party modules
 from sys import platform
 from os import environ as environmental_variables
 from os.path import join as join_path
@@ -59,8 +59,8 @@ class Settings:
     show_logs = None
 
     user_agent = (
-        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
-        "(KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36"
+        "Mozilla/5.0 (iPhone; CPU iPhone OS 14_2 like Mac OS X) AppleWebKit/605.1.15 "
+        "(KHTML, like Gecko) FxiOS/29.0 Mobile/15E148 Safari/605.1.15"
     )
 
     # state of instantiation of InstaPy

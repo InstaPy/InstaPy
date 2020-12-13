@@ -241,36 +241,50 @@ def login_user(
 
     ig_homepage = "https://www.instagram.com"
     web_address_navigator(browser, ig_homepage)
-    cookie_loaded = False
+
+    cookie_file = "{0}{1}_cookie.pkl".format(logfolder, username)
+    cookie_loaded = None
+    login_state = None
 
     # try to load cookie from username
     try:
-        for cookie in pickle.load(
-            open("{0}{1}_cookie.pkl".format(logfolder, username), "rb")
-        ):
+        for cookie in pickle.load(open(cookie_file, "rb")):
+            # SameSite = Strict, your cookie will only be sent in a
+            # first-party context. In user terms, the cookie will only be sent
+            # if the site for the cookie matches the site currently shown in
+            # the browser's URL bar.
+            if "sameSite" in cookie and cookie["sameSite"] == "None":
+                cookie["sameSite"] = "Strict"
+
             browser.add_cookie(cookie)
-            cookie_loaded = True
+
+        cookie_loaded = True
+        logger.info("- Cookie file for user '{}' loaded...".format(username))
+
+        # force refresh after cookie load or check_authorization() will FAIL
+        reload_webpage(browser)
+
+        # cookie has been LOADED, so the user SHOULD be logged in
+        login_state = check_authorization(
+            browser, username, "activity counts", logger, False
+        )
+
     except (WebDriverException, OSError, IOError):
-        logger.warn("Cookie file not found, creating cookie...")
+        # Just infor the user, not an error
+        logger.info("- Cookie file not found, creating cookie...")
 
-    # force refresh after cookie load or check_authorization() will FAIL
-    reload_webpage(browser)
-
-    # cookie has been LOADED, so the user SHOULD be logged in
-    # check if the user IS logged in
-    login_state = check_authorization(
-        browser, username, "activity counts", logger, False
-    )
-    if login_state is True:
+    if login_state and cookie_loaded:
+        # Cookie loaded and joined IG, dismiss following features if availables
         dismiss_notification_offer(browser, logger)
-        dissmiss_save_information(browser, logger)
+        dismiss_save_information(browser, logger)
+        accept_igcookie_dialogue(browser, logger)
         return True
 
     # if user is still not logged in, then there is an issue with the cookie
     # so go create a new cookie.
     if cookie_loaded:
         logger.warn(
-            "Issue with cookie for user '{}'. Creating new cookie...".format(username)
+            "- Issue with cookie for user '{}'. Creating new cookie...".format(username)
         )
 
         # Error could be faced due to "<button class="sqdOP L3NKy y3zKF"
@@ -282,8 +296,13 @@ def login_user(
         try:
             # Since having issues with the cookie a new one can be generated,
             # if cookie cannot be created or deleted stop execution.
-            logger.info("Deleting browser cookies...")
+            logger.info("- Deleting browser cookies...")
             browser.delete_all_cookies()
+            browser.refresh()
+            # Delete file from Filesystem if any issue with the cookie
+            os.remove(cookie_file)
+            sleep(random.randint(3, 5))
+
         except Exception as e:
             # NF: start
             if isinstance(e, WebDriverException):
@@ -295,7 +314,7 @@ def login_user(
             return False
             # NF: end
 
-        web_address_navigator(browser, ig_homepage)
+    web_address_navigator(browser, ig_homepage)
 
     # Check if the first div is 'Create an Account' or 'Log In'
     try:
@@ -394,9 +413,15 @@ def login_user(
     # Check if account is protected with Two Factor Authentication
     two_factor_authentication(browser, logger, security_codes)
 
+    # Dismiss following features if availables
     dismiss_get_app_offer(browser, logger)
     dismiss_notification_offer(browser, logger)
-    dissmiss_save_information(browser, logger)
+    dismiss_save_information(browser, logger)
+
+    # IG: "Accept cookies from Instagram on this browser?"
+    # They said that they're using cookies to help to personalize the content,
+    # server relevant ads and provide safer experience.
+    accept_igcookie_dialogue(browser, logger)
 
     # check for login error messages and display it in the logs
     if "instagram.com/challenge" in browser.current_url:
@@ -482,12 +507,25 @@ def login_user(
     # Check if user is logged-in (If there's two 'nav' elements)
     nav = browser.find_elements_by_xpath(read_xpath(login_user.__name__, "nav"))
     if len(nav) == 2:
-        # create cookie for username
-        pickle.dump(
-            browser.get_cookies(),
-            open("{0}{1}_cookie.pkl".format(logfolder, username), "wb"),
-        )
-        return True
+        # create cookie for username and save it
+        cookies_list = browser.get_cookies()
+
+        for cookie in cookies_list:
+            if "sameSite" in cookie and cookie["sameSite"] == "None":
+                cookie["sameSite"] = "Strict"
+
+        try:
+            # Open the cookie file to store the data
+            with open(cookie_file, "wb") as cookie_f_handler:
+                pickle.dump(cookies_list, cookie_f_handler)
+
+        except pickle.PicklingError:
+            # Next time, cookie will be created for the session so we are safe
+            logger.warn("- Browser cookie list could not be saved to your local...")
+
+        finally:
+            return True
+
     else:
         return False
 
@@ -524,13 +562,11 @@ def dismiss_notification_offer(browser, logger):
         click_element(browser, dismiss_elem)
 
 
-def dissmiss_save_information(browser, logger):
+def dismiss_save_information(browser, logger):
     """ Dismiss 'Save Your Login Info?' offer on session start """
     # This question occurs when pkl doesn't exist
-    offer_elem_loc = read_xpath(dissmiss_save_information.__name__, "offer_elem_loc")
-    dismiss_elem_loc = read_xpath(
-        dissmiss_save_information.__name__, "dismiss_elem_loc"
-    )
+    offer_elem_loc = read_xpath(dismiss_save_information.__name__, "offer_elem_loc")
+    dismiss_elem_loc = read_xpath(dismiss_save_information.__name__, "dismiss_elem_loc")
 
     offer_loaded = explicit_wait(
         browser, "VOEL", [offer_elem_loc, "XPath"], logger, 4, False
@@ -540,7 +576,7 @@ def dissmiss_save_information(browser, logger):
         # When prompted chose "Not Now", we don't know if saving information
         # contributes or stimulate IG to target the acct, it would be better to
         # just pretend that we are using IG in different browsers.
-        logger.info("Do not save Login Info by now")
+        logger.info("- Do not save Login Info by now...")
         dismiss_elem = browser.find_element_by_xpath(dismiss_elem_loc)
         click_element(browser, dismiss_elem)
 
@@ -635,3 +671,18 @@ def two_factor_authentication(browser, logger, security_codes):
         # already been entered in previous session.
         # Return None and login to Instagram!
         return
+
+
+def accept_igcookie_dialogue(browser, logger):
+    """ Presses 'Accept' button on IG cookie dialogue """
+
+    offer_elem_loc = read_xpath(accept_igcookie_dialogue.__name__, "accept_button")
+
+    offer_loaded = explicit_wait(
+        browser, "VOEL", [offer_elem_loc, "XPath"], logger, 4, False
+    )
+
+    if offer_loaded:
+        logger.info("- Accepted IG cookies by default...")
+        accept_elem = browser.find_element_by_xpath(offer_elem_loc)
+        click_element(browser, accept_elem)

@@ -15,6 +15,7 @@ _The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 - Added informational message when videos found instead of images in `likers_from_photo`
 - Two Factor Authentication check when acct is protected
 - Added Pull Request Template
+- Added function `accept_igcookie_dialogue` that clicks accept at IG cookie dialogue
 
 ### Fixed
 
@@ -26,6 +27,11 @@ _The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 - Fixed xpath for `likers_from_photo`
 - Changed windows size to `iPhone XS Max: 414, 896`
 - Fixed `process_comments` where some comments used the InstaPy user
+- Updated `user_agent` profile to be the same for the bot session
+- Fixed required `sameSite:Strict` parameter in browser cookie session
+- Fixed `login_session` for issues when cookie cannot be loaded
+- Fixed `likes_dialog_close_xpath` to generic format
+- Fixed `validate_username` to navigate user profile to read their Bio
 
 ## [0.6.12] - 2020-10-26
 

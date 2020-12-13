@@ -452,8 +452,15 @@ class InstaPy:
         try:
             save_account_progress(self.browser, self.username, self.logger)
         except Exception as e:
+            # Comment:
+            # Saw this error:
+            # "TypeError: window._sharedData.entry_data.ProfilePage is undefined"
+            # when IG deleted a pic or video due community guidelines, then the
+            # FF session shows a different page that interrupts the normal flow.
             self.logger.warning(
-                "Unable to save account progress, skipping data update " + str(e)
+                "Unable to save account progress, skipping data update \n\t{}".format(
+                    str(e).encode("utf-8")
+                )
             )
 
         # logs only followers/following numbers when able to login,
@@ -3960,7 +3967,8 @@ class InstaPy:
                     break
 
                 if randomize and random.choice([True, False]):
-                    self.logger.warning("Post Randomly Skipped...\n")
+                    # Just inform that this post is randomly skipped
+                    self.logger.info("Post randomly skipped...")
                     skipped_img += 1
                     continue
                 else:

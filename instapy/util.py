@@ -42,6 +42,7 @@ from .quota_supervisor import quota_supervisor
 
 # import exceptions
 from selenium.common.exceptions import NoSuchElementException
+from selenium.common.exceptions import StaleElementReferenceException
 from selenium.common.exceptions import WebDriverException
 from selenium.common.exceptions import TimeoutException
 
@@ -313,7 +314,7 @@ def validate_username(
                                 username,
                                 "potential user"
                                 if not reverse_relationship
-                                else "massive " "follower",
+                                else "massive follower",
                                 truncate_float(relationship_ratio, 2),
                             )
                         )
@@ -331,7 +332,7 @@ def validate_username(
             )
         except WebDriverException:
             logger.error("~cannot get number of posts for username")
-            inap_msg = "---> Sorry, couldn't check for number of posts of " "username\n"
+            inap_msg = "---> Sorry, couldn't check for number of posts of username\n"
             return False, inap_msg
         if max_posts:
             if number_of_posts > max_posts:
@@ -386,7 +387,7 @@ def validate_username(
             logger.error("~cannot get if user has business account active")
             return (
                 False,
-                "---> Sorry, couldn't get if user has business " "account active\n",
+                "---> Sorry, couldn't get if user has business account active\n",
             )
 
         if skip_non_business and not is_business_account:
@@ -400,7 +401,7 @@ def validate_username(
                 category = getUserData("graphql.user.business_category_name", browser)
             except WebDriverException:
                 logger.error("~cannot get category name for user")
-                return False, "---> Sorry, couldn't get category name for " "user\n"
+                return False, "---> Sorry, couldn't get category name for user\n"
 
             if len(skip_business_categories) == 0:
                 # skip if not in dont_include
@@ -430,12 +431,16 @@ def validate_username(
                     )
 
     if len(skip_bio_keyword) > 0 or len(mandatory_bio_keywords) > 0:
+        # Navigate to the target user profile to read the Bio
+        user_link = "https://www.instagram.com/{}/".format(username)
+        web_address_navigator(browser, user_link)
+
         # if contain stop words then skip
         try:
             profile_bio = getUserData("graphql.user.biography", browser).lower()
         except WebDriverException:
-            logger.error("~cannot get user bio")
-            return False, "---> Sorry, couldn't get get user bio " "account active\n"
+            logger.error("~cannot read '{}' bio".format(username))
+            return False, "---> Sorry, couldn't get get user bio account active\n"
         for bio_keyword in skip_bio_keyword:
             if bio_keyword.lower() in profile_bio:
                 return (
@@ -467,7 +472,7 @@ def getUserData(
         update_activity(browser, state=None)
 
         data = browser.execute_script(
-            "return window._sharedData." "entry_data.ProfilePage[0]." + query
+            "return window._sharedData.entry_data.ProfilePage[0]." + query
         )
         return data
 
@@ -598,7 +603,9 @@ def add_user_to_blacklist(username, campaign, action, logger, logfolder):
                 }
             )
     except Exception as err:
-        logger.error("blacklist dictWrite error {}".format(err))
+        logger.error(
+            "blacklist dictWrite error \n\t{}".format(str(err).encode("utf-8"))
+        )
 
     logger.info(
         "--> {} added to blacklist for {} campaign (action: {})".format(
@@ -630,9 +637,7 @@ def get_active_users(browser, username, posts, boundary, logger):
             if topCount_elements:  # prevent an empty string scenario
                 total_posts = format_number(topCount_elements[0].text)
             else:
-                logger.info(
-                    "Failed to get posts count on your profile!  ~empty " "string"
-                )
+                logger.info("Failed to get posts count on your profile!  ~empty string")
                 total_posts = None
         except NoSuchElementException:
             logger.info("Failed to get posts count on your profile!")
@@ -660,7 +665,7 @@ def get_active_users(browser, username, posts, boundary, logger):
     )
     # posts argument is the number of posts to collect usernames
     logger.info(
-        "Getting active users who liked the latest {} posts:\n  {}".format(
+        "Getting active users who liked the latest {} posts:\n {}".format(
             posts, message
         )
     )
@@ -695,7 +700,7 @@ def get_active_users(browser, username, posts, boundary, logger):
                     likers_count += 1
                 else:
                     logger.info(
-                        "Failed to get likers count on your post {}  "
+                        "Failed to get likers count on your post {} "
                         "~empty string".format(count)
                     )
                     likers_count = None
@@ -719,7 +724,7 @@ def get_active_users(browser, username, posts, boundary, logger):
 
             except (IndexError, NoSuchElementException):
                 # Video have no likes button / no posts in page
-                logger.info("video found, try next post until we run out of posts")
+                logger.info("Video found, try next post until we run out of posts")
 
                 # edge case of account having only videos,  or last post is a video.
                 if checked_posts >= total_posts:
@@ -786,11 +791,12 @@ def get_active_users(browser, username, posts, boundary, logger):
                     sleep_actual(1.2)  # old value 5.6
                     sc_rolled += 1
 
-                user_list = get_users_from_dialog(user_list, dialog)
+                user_list = get_users_from_dialog(user_list, dialog, logger)
 
                 # write & update records at Progress Tracker
                 if amount:
                     progress_tracker(len(user_list), amount, start_time, None)
+                    print("\n")
 
                 if boundary is not None:
                     if len(user_list) >= boundary:
@@ -809,8 +815,8 @@ def get_active_users(browser, username, posts, boundary, logger):
                         if try_again <= 1:  # can increase the amount of tries
                             logger.info(
                                 "Failed to get the desired amount of "
-                                "usernames but trying again.."
-                                "\t|> post:{}  |> attempt: {}\n".format(
+                                "usernames but trying again..."
+                                "\t|> post: {} |> attempt: {}\n".format(
                                     posts, try_again + 1
                                 )
                             )
@@ -820,10 +826,10 @@ def get_active_users(browser, username, posts, boundary, logger):
                             nap_it = 4 if try_again == 0 else 7
                             sleep_actual(nap_it)
 
-            user_list = get_users_from_dialog(user_list, dialog)
+            user_list = get_users_from_dialog(user_list, dialog, logger)
 
             logger.info(
-                "Post {}  |  Likers: found {}, catched {}\n\n".format(
+                "Post {} | Likers: found {}, catched {}\n\n".format(
                     count, likers_count, len(user_list)
                 )
             )
@@ -907,8 +913,9 @@ def delete_line_from_file(filepath, userToDelete, logger):
                 os.remove(file_path_old)
 
             except OSError as e:
-                logger.error("Can't remove file_path_old {}".format(str(e)))
-                sleep(5)
+                logger.error(
+                    "Can't remove file_path_old \n\t{}".format(str(e).encode("utf-8"))
+                )
 
         # rename original file to _old
         os.rename(filepath, file_path_old)
@@ -920,7 +927,9 @@ def delete_line_from_file(filepath, userToDelete, logger):
 
             except OSError as e:
                 logger.error(
-                    "Can't rename file_path_Temp to filepath {}".format(str(e))
+                    "Can't rename file_path_Temp to filepath \n\t{}".format(
+                        str(e).encode("utf-8")
+                    )
                 )
                 sleep(5)
 
@@ -928,7 +937,9 @@ def delete_line_from_file(filepath, userToDelete, logger):
         os.remove(file_path_old)
 
     except BaseException as e:
-        logger.error("delete_line_from_file error {}".format(str(e).encode("utf-8")))
+        logger.error(
+            "delete_line_from_file error \n\t{}".format(str(e).encode("utf-8"))
+        )
 
 
 def scroll_bottom(browser, element, range_int):
@@ -1531,7 +1542,7 @@ def load_user_id(username, person, logger, logfolder):
 
     except BaseException as exc:
         logger.exception(
-            "Failed to load the user ID of '{}'!\n{}".format(
+            "Failed to load the user ID of '{}'!\n\t{}".format(
                 person, str(exc).encode("utf-8")
             )
         )
@@ -1808,8 +1819,8 @@ def get_username_from_id(browser, user_id, logger):
 
     query_hash = "42323d64886122307be10013ad2dcc44"  # earlier-
     # "472f257a40c653c64c666ce877d59d2b"
-    graphql_query_URL = (
-        "https://www.instagram.com/graphql/query/?query_hash" "={}".format(query_hash)
+    graphql_query_URL = "https://www.instagram.com/graphql/query/?query_hash={}".format(
+        query_hash
     )
     variables = {"id": str(user_id), "first": 1}
     post_url = "{}&variables={}".format(graphql_query_URL, str(json.dumps(variables)))
@@ -1897,7 +1908,7 @@ def is_page_available(browser, logger):
 
             elif "Content Unavailable" in page_title:
                 logger.warning(
-                    "The page isn't available!\t~the user may have blocked " "you..."
+                    "The page isn't available!\t~the user may have blocked you..."
                 )
 
             return False
@@ -2189,22 +2200,33 @@ def is_follow_me(browser, person=None):
     return getUserData("graphql.user.follows_viewer", browser)
 
 
-def get_users_from_dialog(old_data, dialog):
+def get_users_from_dialog(old_data, dialog, logger):
     """
     Prepared to work specially with the dynamic data load in the 'Likes'
     dialog box
     """
 
-    user_blocks = dialog.find_elements_by_tag_name("a")
-    loaded_users = [
-        extract_text_from_element(u)
-        for u in user_blocks
-        if extract_text_from_element(u)
-    ]
-    new_data = old_data + loaded_users
-    new_data = remove_duplicates(new_data, True, None)
+    try:
+        user_blocks = dialog.find_elements_by_tag_name("a")
+        loaded_users = [
+            extract_text_from_element(u)
+            for u in user_blocks
+            if extract_text_from_element(u)
+        ]
+        new_data = old_data + loaded_users
+        new_data = remove_duplicates(new_data, True, None)
 
-    return new_data
+        return new_data
+
+    except (NoSuchElementException, StaleElementReferenceException) as exc:
+        # Catch stale elemets if any
+        logger.error(
+            "Error occured while retrieving data.\n\t{}".format(
+                str(exc).encode("utf-8")
+            )
+        )
+
+        return old_data
 
 
 def progress_tracker(current_value, highest_value, initial_time, logger):
@@ -2247,9 +2269,9 @@ def progress_tracker(current_value, highest_value, initial_time, logger):
         )
 
         total_message = (
-            "\r  {}/{} {}  {}%    "
-            "|> Elapsed: {}    "
-            "|> ETA: {}      ".format(
+            "\r  {0}/{1} {2}  {3}% "
+            "|> Elapsed: {4:20} "
+            "|> ETA: {5:20} ".format(
                 current_value,
                 highest_value,
                 progress_container,
@@ -2268,7 +2290,9 @@ def progress_tracker(current_value, highest_value, initial_time, logger):
             logger = Settings.logger
 
         logger.info(
-            "Error occurred with Progress Tracker:\n{}".format(str(exc).encode("utf-8"))
+            "Error occurred with Progress Tracker:\n\t{}".format(
+                str(exc).encode("utf-8")
+            )
         )
 
 

@@ -191,6 +191,7 @@ def get_followers(
 
             # write & update records at Progress Tracker
             progress_tracker(grabbed, highest_value, start_time, logger)
+            print("\n")
 
             finish_time = time.time()
             diff_time = finish_time - start_time
@@ -479,6 +480,7 @@ def get_following(
 
             # write & update records at Progress Tracker
             progress_tracker(grabbed, highest_value, start_time, logger)
+            print("\n")
 
             finish_time = time.time()
             diff_time = finish_time - start_time
