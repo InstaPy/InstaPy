@@ -18,7 +18,7 @@ xpath["dismiss_this_was_me"] = {
 
 xpath["class_selectors"] = {
     "likes_dialog_body_xpath": "//main",
-    "likes_dialog_close_xpath": "//div/button/span",
+    "likes_dialog_close_xpath": "//*[*[local-name()='svg']/@aria-label='Close']",
 }
 
 xpath["confirm_unfollow"] = {"button_xp": "//button[text()='Unfollow']"}
@@ -35,7 +35,7 @@ xpath["dismiss_notification_offer"] = {
     "dismiss_elem_loc": "//button[text()='Not Now']",
 }
 
-xpath["dissmiss_save_information"] = {
+xpath["dismiss_save_information"] = {
     "offer_elem_loc": "//*[contains(text(), 'Save Info')]",
     "dismiss_elem_loc": "//*[contains(text(), 'Not Now')]",
 }
@@ -196,3 +196,5 @@ xpath["likers_from_photo"] = {
     "liked_counter_button": "//a[contains(@href,'liked_by')]/span",
     "second_counter_button": "//a[contains(@href,'liked_by')]",
 }
+
+xpath["accept_igcookie_dialogue"] = {"accept_button": "//button[text()='Accept']"}

@@ -395,17 +395,18 @@ def likers_from_photo(browser, amount=20, logger=None):
             if previous_len + 10 >= amount:
                 logger.info("Scrolling finished...")
                 if amount < 10:
-                    user_list = get_users_from_dialog(user_list, dialog)
+                    user_list = get_users_from_dialog(user_list, dialog, logger)
                 sleep(1)
                 break
 
             previous_len = len(user_list)
             scroll_bottom(browser, dialog, 2)
 
-            user_list = get_users_from_dialog(user_list, dialog)
+            user_list = get_users_from_dialog(user_list, dialog, logger)
 
             # write & update records at Progress Tracker
             progress_tracker(len(user_list), amount, start_time, None)
+            print("\n")
 
         random.shuffle(user_list)
         sleep(1)
