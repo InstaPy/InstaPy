@@ -18,7 +18,6 @@ xpath["dismiss_this_was_me"] = {
 
 xpath["get_comment_post"] = {
     "comment_post": "//button[text()='Post']",
-    
 }
 
 xpath["class_selectors"] = {
