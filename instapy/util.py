@@ -1519,7 +1519,7 @@ def emergency_exit(browser, username, logger):
 
 
 def load_user_id(username, person, logger, logfolder):
-    """ Load the user ID at reqeust from local records """
+    """ Load the user ID at request from local records """
     pool_name = "{0}{1}_followedPool.csv".format(logfolder, username)
     user_id = "undefined"
 
