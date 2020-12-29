@@ -215,6 +215,7 @@ class InstaPy:
         self.automatedFollowedPool = {"all": [], "eligible": []}
         self.do_like = False
         self.like_percentage = 0
+        self.do_comment_liked_photo = False
         self.do_story = False
         self.story_percentage = 0
         self.story_simulate = False
@@ -505,7 +506,12 @@ class InstaPy:
             }
         )
 
-    def set_do_comment(self, enabled: bool = False, percentage: int = 0):
+    def set_do_comment(
+        self,
+        enabled: bool = False,
+        comment_liked_photo: bool = False,
+        percentage: int = 0,
+    ):
         """
         Defines if images should be commented or not.
         E.g. percentage=25 means every ~4th picture will be commented.
@@ -515,6 +521,7 @@ class InstaPy:
             return self
 
         self.do_comment = enabled
+        self.do_comment_liked_photo = comment_liked_photo  # Comment a liked photo
         self.comment_percentage = percentage
 
         return self
@@ -1545,10 +1552,13 @@ class InstaPy:
                             liked_img,
                         )
 
-                        if like_state is True:
-                            liked_img += 1
-                            # reset jump counter after a successful like
-                            self.jumps["consequent"]["likes"] = 0
+                        if like_state is True or self.do_comment_liked_photo:
+                            if self.do_comment_liked_photo:
+                                already_liked += 1
+                            else:
+                                liked_img += 1
+                                # reset jump counter after a successful like
+                                self.jumps["consequent"]["likes"] = 0
 
                             checked_img = True
                             temp_comments = []
@@ -1590,9 +1600,11 @@ class InstaPy:
                                     self.max_comments,
                                     self.min_comments,
                                     self.comments_mandatory_words,
+                                    self.username,
                                     user_name,  # Comments with target user
                                     self.blacklist,
                                     self.browser,
+                                    link,
                                     self.logger,
                                     self.logfolder,
                                 )
@@ -1791,9 +1803,11 @@ class InstaPy:
                                 self.max_comments,
                                 self.min_comments,
                                 self.comments_mandatory_words,
+                                self.username,
                                 user_name,  # Comments with target user
                                 self.blacklist,
                                 self.browser,
+                                link,
                                 self.logger,
                                 self.logfolder,
                             )
@@ -1978,10 +1992,13 @@ class InstaPy:
                             liked_img,
                         )
 
-                        if like_state is True:
-                            liked_img += 1
-                            # reset jump counter after a successful like
-                            self.jumps["consequent"]["likes"] = 0
+                        if like_state is True or self.do_comment_liked_photo:
+                            if self.do_comment_liked_photo:
+                                already_liked += 1
+                            else:
+                                liked_img += 1
+                                # reset jump counter after a successful like
+                                self.jumps["consequent"]["likes"] = 0
 
                             checked_img = True
                             temp_comments = []
@@ -2023,9 +2040,11 @@ class InstaPy:
                                     self.max_comments,
                                     self.min_comments,
                                     self.comments_mandatory_words,
+                                    self.username,
                                     user_name,  # Comments with target user
                                     self.blacklist,
                                     self.browser,
+                                    link,
                                     self.logger,
                                     self.logfolder,
                                 )
@@ -2268,11 +2287,14 @@ class InstaPy:
                             self.logfolder,
                             total_liked_img,
                         )
-                        if like_state is True:
-                            total_liked_img += 1
-                            liked_img += 1
-                            # reset jump counter after a successful like
-                            self.jumps["consequent"]["likes"] = 0
+                        if like_state is True or self.do_comment_liked_photo:
+                            if self.do_comment_liked_photo:
+                                already_liked += 1
+                            else:
+                                total_liked_img += 1
+                                liked_img += 1
+                                # reset jump counter after a successful like
+                                self.jumps["consequent"]["likes"] = 0
 
                             checked_img = True
                             temp_comments = []
@@ -2313,9 +2335,11 @@ class InstaPy:
                                     self.max_comments,
                                     self.min_comments,
                                     self.comments_mandatory_words,
+                                    self.username,
                                     user_name,  # Comments with target user
                                     self.blacklist,
                                     self.browser,
+                                    link,
                                     self.logger,
                                     self.logfolder,
                                 )
@@ -2562,11 +2586,14 @@ class InstaPy:
                                 self.logfolder,
                                 total_liked_img,
                             )
-                            if like_state is True:
-                                total_liked_img += 1
-                                liked_img += 1
-                                # reset jump counter after a successful like
-                                self.jumps["consequent"]["likes"] = 0
+                            if like_state is True or self.do_comment_liked_photo:
+                                if self.do_comment_liked_photo:
+                                    already_liked += 1
+                                else:
+                                    total_liked_img += 1
+                                    liked_img += 1
+                                    # reset jump counter after a successful like
+                                    self.jumps["consequent"]["likes"] = 0
 
                                 # comment
                                 checked_img = True
@@ -2598,9 +2625,11 @@ class InstaPy:
                                         self.max_comments,
                                         self.min_comments,
                                         self.comments_mandatory_words,
+                                        self.username,
                                         user_name,  # Comments with target user
                                         self.blacklist,
                                         self.browser,
+                                        link,
                                         self.logger,
                                         self.logfolder,
                                     )
@@ -2874,11 +2903,14 @@ class InstaPy:
                                 self.logfolder,
                                 total_liked_img,
                             )
-                            if like_state is True:
-                                total_liked_img += 1
-                                liked_img += 1
-                                # reset jump counter after a successful like
-                                self.jumps["consequent"]["likes"] = 0
+                            if like_state is True or self.do_comment_liked_photo:
+                                if self.do_comment_liked_photo:
+                                    already_liked += 1
+                                else:
+                                    total_liked_img += 1
+                                    liked_img += 1
+                                    # reset jump counter after a successful like
+                                    self.jumps["consequent"]["likes"] = 0
 
                                 # comment
                                 checked_img = True
@@ -2910,9 +2942,11 @@ class InstaPy:
                                         self.max_comments,
                                         self.min_comments,
                                         self.comments_mandatory_words,
+                                        self.username,
                                         user_name,  # Comments with target user
                                         self.blacklist,
                                         self.browser,
+                                        link,
                                         self.logger,
                                         self.logfolder,
                                     )
@@ -4032,11 +4066,13 @@ class InstaPy:
                                     liked_img,
                                 )
 
-                                if like_state is True:
-                                    liked_img += 1
-                                    # reset jump counter after a successful
-                                    # like
-                                    self.jumps["consequent"]["likes"] = 0
+                                if like_state is True or self.do_comment_liked_photo:
+                                    if self.do_comment_liked_photo:
+                                        already_liked += 1
+                                    else:
+                                        liked_img += 1
+                                        # reset jump counter after a successful like
+                                        self.jumps["consequent"]["likes"] = 0
 
                                     checked_img = True
                                     temp_comments = []
@@ -4081,9 +4117,11 @@ class InstaPy:
                                             self.max_comments,
                                             self.min_comments,
                                             self.comments_mandatory_words,
+                                            self.username,
                                             user_name,  # Comments with target user
                                             self.blacklist,
                                             self.browser,
+                                            link,
                                             self.logger,
                                             self.logfolder,
                                         )
@@ -4823,10 +4861,13 @@ class InstaPy:
                         liked_img,
                     )
 
-                    if like_state is True:
-                        liked_img += 1
-                        # reset jump counter after a successful like
-                        self.jumps["consequent"]["likes"] = 0
+                    if like_state is True or self.do_comment_liked_photo:
+                        if self.do_comment_liked_photo:
+                            already_liked += 1
+                        else:
+                            liked_img += 1
+                            # reset jump counter after a successful like
+                            self.jumps["consequent"]["likes"] = 0
 
                         checked_img = True
                         temp_comments = []
@@ -4862,9 +4903,11 @@ class InstaPy:
                                 self.max_comments,
                                 self.min_comments,
                                 self.comments_mandatory_words,
+                                self.username,
                                 user_name,  # Comments with target user
                                 self.blacklist,
                                 self.browser,
+                                url,
                                 self.logger,
                                 self.logfolder,
                             )
@@ -5814,7 +5857,7 @@ class InstaPy:
                             self.liked_img,
                         )
 
-                        if like_state is True:
+                        if like_state is True or self.do_comment_liked_photo:
                             self.liked_img += 1
 
                         elif msg == "block on likes":

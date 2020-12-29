@@ -1,6 +1,18 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+###############################################################################
+# Note:
+# Update the xpaths with a generic form, try to avoid using xpaths like the
+# Browser is displaying; i.e.: /html/body/div[2]/div/div[2]/div[1]/div[2].
+# Usually the Browser use the most un-portable form and then it could be broken
+# after IG updates the DOM.
+#
+# Absolute: paths are the direct way to locate an element, "/html/body/div[2]"
+# Relative: starts with a double slash “//” that means it can start to search
+#           anywhere in the DOM structure, "//div[@class=’form-group’]"
+###############################################################################
+
 xpath = {}
 
 xpath["bypass_suspicious_login"] = {
@@ -188,8 +200,8 @@ xpath["watch_story_for_tag"] = {"explore_stories": "//section/main/header/div[1]
 xpath["watch_story_for_user"] = {"explore_stories": "//section/main/div/header/div/div"}
 
 xpath["watch_story"] = {
-    "next_first": "/html/body/span/section/div/div/section/div[2]/button",
-    "next": "/html/body/span/section/div/div/section/div[2]/button[2]",
+    "next_first": "//*[contains(@class,'Cd8X1')]",
+    "next": "//*[contains(@class,'FhutL')]",
 }
 
 xpath["likers_from_photo"] = {

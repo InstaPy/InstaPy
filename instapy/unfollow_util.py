@@ -1265,7 +1265,7 @@ def follow_restriction(operation, username, limit, logger):
                 else:
                     exceed_msg = "" if follow_data["times"] == limit else "more than "
                     logger.info(
-                        "---> {} has already been followed {}{} times".format(
+                        "--> {} has already been followed {}{} times".format(
                             username, exceed_msg, str(limit)
                         )
                     )

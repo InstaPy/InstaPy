@@ -65,7 +65,7 @@ def get_links_from_feed(browser, amount, num_of_search, logger):
             logger.info("~~~~~~~~~~~~~~~~~~~~~~~~~~~")
 
     except BaseException as e:
-        logger.error("link_elems error {}".format(str(e)))
+        logger.error("link_elems error \n\t{}".format(str(e).encode("utf-8")))
 
     return links
 
@@ -881,7 +881,8 @@ def get_links(browser, page, logger, media, element):
     try:
         # Get image links in scope from hashtag, location and other pages
         link_elems = element.find_elements_by_xpath('//a[starts-with(@href, "/p/")]')
-        sleep(2)
+        sleep(random.randint(2, 5))
+
         if link_elems:
             for link_elem in link_elems:
                 try:
@@ -904,14 +905,22 @@ def get_links(browser, page, logger, media, element):
 
                         if post_category in media:
                             links.append(post_href)
+
                 except WebDriverException:
-                    logger.info(
-                        "Cannot detect post media type. Skip {}".format(post_href)
-                    )
+                    # If "post_href" is None skip the logger to avoid confusion,
+                    # the links that are not empty will be catched into the next
+                    # loop. Other case, the "post_href" is not empty and needs
+                    # to be displayed to the STDOUT fo further review.
+                    if post_href:
+                        logger.info(
+                            "Cannot detect post media type. Skip {}".format(post_href)
+                        )
         else:
             logger.info("'{}' page does not contain a picture".format(page))
+
     except BaseException as e:
-        logger.error("link_elems error {}".format(str(e)))
+        logger.error("link_elems error \n\t{}".format(str(e).encode("utf-8")))
+
     return links
 
 
@@ -1014,7 +1023,7 @@ def like_comment(browser, original_comment_text, logger):
 
     except (NoSuchElementException, StaleElementReferenceException) as exc:
         logger.error(
-            "Error occured while liking a comment.\n\t{}\n\n".format(
+            "Error occured while liking a comment.\n\t{}".format(
                 str(exc).encode("utf-8")
             )
         )

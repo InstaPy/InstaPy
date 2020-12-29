@@ -1,6 +1,10 @@
 """ Module that handles the like features """
+# import built-in & third-party modules
+
+# import InstaPy modules
 from .util import update_activity
 
+# import exceptions
 from selenium.common.exceptions import NoSuchElementException
 
 LIKE_TAG_CLASS = "coreSpriteHeartOpen"
@@ -33,7 +37,7 @@ def get_like_on_feed(browser, amount):
                     break
                 yield button
 
-            print("---> Total Likes uptil now ->", likes_performed)
+            print("--> Total Likes uptil now ->", likes_performed)
 
             browser.execute_script("window.scrollTo(0, document.body.scrollHeight);")
             update_activity(browser, state=None)

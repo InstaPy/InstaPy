@@ -178,7 +178,7 @@ def validate_username(
                     "owner's username"
                 )
                 inap_msg = (
-                    "---> Sorry, this page isn't available!\t~either "
+                    "--> Sorry, this page isn't available!\t~either "
                     "link is broken or page is removed\n"
                 )
                 return False, inap_msg
@@ -188,13 +188,12 @@ def validate_username(
         # `username_or_link`, then it is a `username`
 
     if username == own_username:
-        inap_msg = "---> Username '{}' is yours!\t~skipping user\n".format(own_username)
+        inap_msg = "--> Username '{}' is yours!\t~skipping user\n".format(own_username)
         return False, inap_msg
 
     if username in ignore_users:
-        inap_msg = (
-            "---> '{}' is in the `ignore_users` list\t~skipping "
-            "user\n".format(username)
+        inap_msg = "--> '{}' is in the `ignore_users` list\t~skipping " "user\n".format(
+            username
         )
         return False, inap_msg
 
@@ -209,7 +208,7 @@ def validate_username(
                         logger.info("Username in BlackList: {} ".format(username))
                         return (
                             False,
-                            "---> {} is in blacklist  ~skipping "
+                            "--> {} is in blacklist  ~skipping "
                             "user\n".format(username),
                         )
 
@@ -332,7 +331,7 @@ def validate_username(
             )
         except WebDriverException:
             logger.error("~cannot get number of posts for username")
-            inap_msg = "---> Sorry, couldn't check for number of posts of username\n"
+            inap_msg = "--> Sorry, couldn't check for number of posts of username\n"
             return False, inap_msg
         if max_posts:
             if number_of_posts > max_posts:
@@ -369,7 +368,7 @@ def validate_username(
             profile_pic = getUserData("graphql.user.profile_pic_url", browser)
         except WebDriverException:
             logger.error("~cannot get the post profile pic url")
-            return False, "---> Sorry, couldn't get if user profile pic url\n"
+            return False, "--> Sorry, couldn't get if user profile pic url\n"
         if (
             profile_pic in default_profile_pic_instagram
             or str(profile_pic).find("11906329_960233084022564_1448528159_a.jpg") > 0
@@ -387,13 +386,13 @@ def validate_username(
             logger.error("~cannot get if user has business account active")
             return (
                 False,
-                "---> Sorry, couldn't get if user has business account active\n",
+                "--> Sorry, couldn't get if user has business account active\n",
             )
 
         if skip_non_business and not is_business_account:
             return (
                 False,
-                "---> Skiping non business because skip_non_business set to True",
+                "--> Skiping non business because skip_non_business set to True",
             )
 
         if is_business_account:
@@ -401,7 +400,7 @@ def validate_username(
                 category = getUserData("graphql.user.business_category_name", browser)
             except WebDriverException:
                 logger.error("~cannot get category name for user")
-                return False, "---> Sorry, couldn't get category name for user\n"
+                return False, "--> Sorry, couldn't get category name for user\n"
 
             if len(skip_business_categories) == 0:
                 # skip if not in dont_include
@@ -440,7 +439,7 @@ def validate_username(
             profile_bio = getUserData("graphql.user.biography", browser).lower()
         except WebDriverException:
             logger.error("~cannot read '{}' bio".format(username))
-            return False, "---> Sorry, couldn't get get user bio account active\n"
+            return False, "--> Sorry, couldn't get get user bio account active\n"
         for bio_keyword in skip_bio_keyword:
             if bio_keyword.lower() in profile_bio:
                 return (
@@ -513,7 +512,7 @@ def update_activity(
             with open(path, "w") as json_file:
                 json.dump(data, json_file, indent=4)
         except Exception:
-            logger.warn("Unable to update JSON state file")
+            logger.warning("Unable to update JSON state file")
 
     # in case is just a state update and there is no server call
     if action is None:
@@ -1677,9 +1676,7 @@ def find_user_id(browser, track, username, logger):
             update_activity(browser, state=None)
 
             user_id = browser.execute_script(
-                "return window._sharedData."
-                "entry_data.ProfilePage[0]."
-                "graphql.user.id"
+                "return window._sharedData.entry_data.ProfilePage[0].graphql.user.id"
             )
 
         except WebDriverException:
@@ -2506,7 +2503,7 @@ def get_query_hash(browser, logger, edge_followed_by):
     if hash:
         return hash[0]
     else:
-        logger.warn("Query Hash not found")
+        logger.warning("Query Hash not found")
 
 
 def file_handling(file):
