@@ -201,6 +201,16 @@ pip install instapy==0.1.1
 pip uninstall instapy
 ```
 
+<ins
+  class="adsbygoogle"
+  data-ad-layout="in-article"
+  data-ad-format="fluid"
+  data-ad-client="ca-pub-4875789012193531"
+  data-ad-slot="9530237054"
+></ins>
+<script>
+  (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
 
 ## Workspace folders
 ### Migrating your data to the workspace folder
@@ -483,6 +493,16 @@ python quickstart.py -u abc
 
 </details>
 
+<ins
+  class="adsbygoogle"
+  data-ad-layout="in-article"
+  data-ad-format="fluid"
+  data-ad-client="ca-pub-4875789012193531"
+  data-ad-slot="9530237054"
+></ins>
+<script>
+  (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
 
 ## Extensions
 [1. Session scheduling with Telegram](https://github.com/Tkd-Alex/Telegram-InstaPy-Scheduling)
@@ -870,3 +890,14 @@ while True:
   schedule.run_pending()
   time.sleep(10)
 ```
+
+<ins
+  class="adsbygoogle"
+  data-ad-layout="in-article"
+  data-ad-format="fluid"
+  data-ad-client="ca-pub-4875789012193531"
+  data-ad-slot="9530237054"
+></ins>
+<script>
+  (adsbygoogle = window.adsbygoogle || []).push({});
+</script>

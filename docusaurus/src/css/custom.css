@@ -23,3 +23,8 @@
   margin: 0 calc(-1 * var(--ifm-pre-padding));
   padding: 0 var(--ifm-pre-padding);
 }
+
+.adsbygoogle {
+  display: block;
+  text-align: center;
+}

@@ -88,6 +88,16 @@ session.comment_by_locations(['224442573'], amount=5, skip_top_posts=False)
 
 This method allows commenting by locations, without liking posts. To get locations follow instructions in 'Like by Locations'
 
+<ins
+  class="adsbygoogle"
+  data-ad-layout="in-article"
+  data-ad-format="fluid"
+  data-ad-client="ca-pub-4875789012193531"
+  data-ad-slot="9530237054"
+></ins>
+<script>
+  (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
 
 ### Follow by Tags
 
@@ -201,6 +211,16 @@ session.set_user_interact(amount=5, randomize=True, percentage=50, media='Photo'
 session.follow_user_followers(['friend1', 'friend2', 'friend3'], amount=10, randomize=False, interact=True)
 ```
 
+<ins
+  class="adsbygoogle"
+  data-ad-layout="in-article"
+  data-ad-format="fluid"
+  data-ad-client="ca-pub-4875789012193531"
+  data-ad-slot="9530237054"
+></ins>
+<script>
+  (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
 
 ### Follow the likers of photos of users
 ##### This will follow the people those liked photos of given list of users
@@ -402,6 +422,16 @@ session.interact_user_followers(['natgeo'], amount=10, randomize=True)
 ```
 > **Note**: [simulation](#simulation) takes place while running this feature.
 
+<ins
+  class="adsbygoogle"
+  data-ad-layout="in-article"
+  data-ad-format="fluid"
+  data-ad-client="ca-pub-4875789012193531"
+  data-ad-slot="9530237054"
+></ins>
+<script>
+  (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
 
 ### Interact with users that someone else is following
 

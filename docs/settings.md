@@ -113,6 +113,16 @@ session.like_by_tags(amount=10, use_smart_hashtags=True)
  `limit`: Defines amount limit of generated hashtags by hashtag
  `log_tags`: Shows generated hashtags before use it (default is True)
 
+<ins
+  class="adsbygoogle"
+  data-ad-layout="in-article"
+  data-ad-format="fluid"
+  data-ad-client="ca-pub-4875789012193531"
+  data-ad-slot="9530237054"
+></ins>
+<script>
+  (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
 
 ### Quota Supervisor
 ###### Take full control of the actions with the most sophisticated approaches
@@ -303,6 +313,16 @@ session.like_by_tags(['soccer', 'cr7', 'neymar'], amount=100, media='Photo')
 
 ```
 
+<ins
+  class="adsbygoogle"
+  data-ad-layout="in-article"
+  data-ad-format="fluid"
+  data-ad-client="ca-pub-4875789012193531"
+  data-ad-slot="9530237054"
+></ins>
+<script>
+  (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
 
 ### Simulation
 ##### During indirect data retrieval, **simulation** happens to provide a _genuine_ activity flow triggered by a wise algorithm.
@@ -409,6 +429,17 @@ session.set_skip_users(skip_bio_keyword=["lifestyle"],
 ```
 This will skip users that have "lifestyle" and users that don't have "art" or "photography" in their bio or username.
 See the [Mandatory Words](#mandatory-words) section for details on how to define complex mandatory words conditions.
+
+<ins
+  class="adsbygoogle"
+  data-ad-layout="in-article"
+  data-ad-format="fluid"
+  data-ad-client="ca-pub-4875789012193531"
+  data-ad-slot="9530237054"
+></ins>
+<script>
+  (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
 
 ### Liking based on the number of existing likes a post has
 ##### This is used to check the number of existing likes a post has and if it _either_ **exceed** the _maximum_ value set OR **does not pass** the _minimum_ value set then it will not like that post
