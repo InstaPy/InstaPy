@@ -61,6 +61,16 @@ popeye_cinderella_followers = [follower for follower in popeye_followers if foll
 #### PROs
 You can **use** this tool to take a **backup** of _your_ **or** _any other user's_ **current** followers.
 
+<ins
+  class="adsbygoogle"
+  data-ad-layout="in-article"
+  data-ad-format="fluid"
+  data-ad-client="ca-pub-4875789012193531"
+  data-ad-slot="9530237054"
+></ins>
+<script>
+  (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
 
 ### Grab Following of a user
 ###### Gets and returns `following` of the given user in desired amount, also can save locally
@@ -201,6 +211,16 @@ sleep(200)
 session.unfollow_users(amount=len(active_unfollowers), customList=(True, active_unfollowers, "all"), style="RANDOM", unfollow_after=None, sleep_delay=600)
 ```
 
+<ins
+  class="adsbygoogle"
+  data-ad-layout="in-article"
+  data-ad-format="fluid"
+  data-ad-client="ca-pub-4875789012193531"
+  data-ad-slot="9530237054"
+></ins>
+<script>
+  (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
 
 ### Pick Nonfollowers of a user
 ###### Compares the `Followers` data against `Following` data of a user and returns the `Nonfollowers` data
@@ -339,3 +359,14 @@ There are **several** `use cases` of this tool for **various purposes**.
     Winnie_mutual_following = session.pick_mutual_following(username="WinnieThePooh", live_match=True, store_locally=True)
     ##now, he will write a message to his mutual followers to help him get a new honey pot :>
     ```
+
+<ins
+  class="adsbygoogle"
+  data-ad-layout="in-article"
+  data-ad-format="fluid"
+  data-ad-client="ca-pub-4875789012193531"
+  data-ad-slot="9530237054"
+></ins>
+<script>
+  (adsbygoogle = window.adsbygoogle || []).push({});
+</script>

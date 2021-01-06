@@ -141,6 +141,17 @@ session.set_use_clarifai(enabled=True, api_key='xxx', probability=0.90, full_mat
 session.clarifai_check_img_for(['food', 'lunch'], comment=True, comments=['Tasty!', 'Yum!'])
 ```
 
+<ins
+  class="adsbygoogle"
+  data-ad-layout="in-article"
+  data-ad-format="fluid"
+  data-ad-client="ca-pub-4875789012193531"
+  data-ad-slot="9530237054"
+></ins>
+<script>
+  (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+
 #### Querying Multiple Models with Workflow (Single API Call)
 You can query multiple Clarifai models with a single API call by setting up a custom workflow.  Using a `workflow` is the recommended way to query multiple models. Alternatively, it is possible to query multiple models separately (see Querying Multiple Models (Multiple API Calls) below).
 
@@ -261,6 +272,16 @@ session.set_use_yandex(enabled=True, API_key='', match_language=False)
 ##### Legal Notice
 [Powered by Yandex.Translate](http://translate.yandex.com/)
 
+<ins
+  class="adsbygoogle"
+  data-ad-layout="in-article"
+  data-ad-format="fluid"
+  data-ad-client="ca-pub-4875789012193531"
+  data-ad-slot="9530237054"
+></ins>
+<script>
+  (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
 
 #### MeaningCloud Sentiment Analysis API
 <img src="https://www.meaningcloud.com/developer/img/LogoMeaningCloud210x85.png" width="210" align="right" />
@@ -388,7 +409,19 @@ _Now that text is gonna be labeled **inappropriate** COS its polarity is `"P"` w
 ##### Legal Notice
 This project uses MeaningCloud™ (http://www.meaningcloud.com) for Text Analytics.
 
+<ins
+  class="adsbygoogle"
+  data-ad-layout="in-article"
+  data-ad-format="fluid"
+  data-ad-client="ca-pub-4875789012193531"
+  data-ad-slot="9530237054"
+></ins>
+<script>
+  (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+
 ---
+
 ### Telegram Integration
 
 This feature allows to connect your InstaPy session with a Telegram bot and send commands

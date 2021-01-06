@@ -46,6 +46,17 @@ InstaPy(username=insta_username,
         security_codes=["01234567", "76543210", "01237654"],)
 ```
 
+<ins
+  class="adsbygoogle"
+  data-ad-layout="in-article"
+  data-ad-format="fluid"
+  data-ad-client="ca-pub-4875789012193531"
+  data-ad-slot="9530237054"
+></ins>
+<script>
+  (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+
 ### Use a proxy
 
 You can use InstaPy behind a proxy by specifying server address, port and/or proxy authentication credentials. It works with and without ```headless_browser``` option.
@@ -119,3 +130,14 @@ session = InstaPy(username=insta_username,
                   password=insta_password,
                   browser_executable_path=r"D:\Program Files\Mozilla Firefox\firefox.exe")
 ```
+
+<ins
+  class="adsbygoogle"
+  data-ad-layout="in-article"
+  data-ad-format="fluid"
+  data-ad-client="ca-pub-4875789012193531"
+  data-ad-slot="9530237054"
+></ins>
+<script>
+  (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
