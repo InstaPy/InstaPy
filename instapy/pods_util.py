@@ -1,7 +1,12 @@
+# import built-in & third-party modules
 import requests
 import sqlite3
+
+# import InstaPy modules
 from .settings import Settings
 from .database_engine import get_database
+
+# import exceptions
 
 
 def get_server_endpoint(topic):
@@ -78,6 +83,8 @@ def share_my_post_with_pods(postid, topic, engagement_mode, logger):
 
 def share_with_pods_restriction(operation, postid, limit, logger):
     """ Keep track of already shared posts """
+    conn = None
+
     try:
         # get a DB and start a connection
         db, id = get_database()
@@ -125,7 +132,7 @@ def share_with_pods_restriction(operation, postid, limit, logger):
                 else:
                     exceed_msg = "" if share_data["times"] == limit else "more than "
                     logger.info(
-                        "---> {} has already been shared with pods {}{} times".format(
+                        "--> {} has already been shared with pods {}{} times".format(
                             postid, exceed_msg, str(limit)
                         )
                     )
@@ -146,6 +153,8 @@ def share_with_pods_restriction(operation, postid, limit, logger):
 
 def comment_restriction(operation, postid, limit, logger):
     """ Keep track of already shared posts """
+    conn = None
+
     try:
         # get a DB and start a connection
         db, id = get_database()
@@ -193,7 +202,7 @@ def comment_restriction(operation, postid, limit, logger):
                 else:
                     exceed_msg = "" if share_data["times"] == limit else "more than "
                     logger.info(
-                        "---> {} has been commented on {}{} times".format(
+                        "--> {} has been commented on {}{} times".format(
                             postid, exceed_msg, str(limit)
                         )
                     )

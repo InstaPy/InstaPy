@@ -5,7 +5,9 @@ The **goal** of this file is explaining to the users of our project the notable 
 _The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html)_
 
 
-## [0.6.13] - UNRELEASED
+## [0.6.14] - UNRELEASED
+
+## [0.6.13] - 2020-12-30
 
 ### Added
 
@@ -16,6 +18,7 @@ _The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 - Two Factor Authentication check when acct is protected
 - Added Pull Request Template
 - Added function `accept_igcookie_dialogue` that clicks accept at IG cookie dialogue
+- Added `comment_liked_photo` to `set_do_comment` to be able to comment twice a photo that is already liked; deactivated by default
 
 ### Fixed
 
@@ -32,6 +35,9 @@ _The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 - Fixed `login_session` for issues when cookie cannot be loaded
 - Fixed `likes_dialog_close_xpath` to generic format
 - Fixed `validate_username` to navigate user profile to read their Bio
+- Fixed `Liked button now found, might be a video` that could be floodig general log
+- Fixed `logger.warn` to `logger.warning` as default warning in Python
+- Fixed xpath for `watch_story`
 
 ## [0.6.12] - 2020-10-26
 
@@ -60,7 +66,6 @@ _The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 - fixed some comments were double quotes were not necessary
 - issue where `getTitle` was timing out
 - `get_users_through_dialog_with_graphql` with a new try/except
-
 
 ## [0.6.11] - 2020-09-25
 

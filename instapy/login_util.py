@@ -42,7 +42,7 @@ def bypass_suspicious_login(
                 read_xpath(bypass_suspicious_login.__name__, "bypass_with_sms_option")
             )
         except NoSuchElementException:
-            logger.warn(
+            logger.warning(
                 "Unable to choose ({}) option to bypass the challenge".format(
                     bypass_security_challenge_using.upper()
                 )
@@ -54,7 +54,7 @@ def bypass_suspicious_login(
                 read_xpath(bypass_suspicious_login.__name__, "bypass_with_email_option")
             )
         except NoSuchElementException:
-            logger.warn(
+            logger.warning(
                 "Unable to choose ({}) option to bypass the challenge".format(
                     bypass_security_challenge_using.upper()
                 )
@@ -142,7 +142,7 @@ def bypass_suspicious_login(
                 logfolder=logfolder,
                 logger=logger,
             )
-            logger.warn(wrong_login_msg)
+            logger.warning(wrong_login_msg)
 
     except NoSuchElementException:
         # correct security code
@@ -169,14 +169,14 @@ def check_browser(browser, logfolder, logger, proxy_address):
             proxy_address is not None
             and socket.gethostbyname(proxy_address) != current_ip_info["ip"]
         ):
-            logger.warn("- Proxy is set, but it's not working properly")
-            logger.warn(
+            logger.warning("- Proxy is set, but it's not working properly")
+            logger.warning(
                 '- Expected Proxy IP is "{}", and the current IP is "{}"'.format(
                     proxy_address, current_ip_info["ip"]
                 )
             )
-            logger.warn("- Try again or disable the Proxy Address on your setup")
-            logger.warn("- Aborting connection...")
+            logger.warning("- Try again or disable the Proxy Address on your setup")
+            logger.warning("- Aborting connection...")
             return False
         else:
             logger.info("- Internet Connection Status: ok")
@@ -195,7 +195,7 @@ def check_browser(browser, logfolder, logger, proxy_address):
                 logger=logger,
             )
     except Exception:
-        logger.warn("- Internet Connection Status: error")
+        logger.warning("- Internet Connection Status: error")
         update_activity(
             browser,
             action=None,
@@ -210,7 +210,7 @@ def check_browser(browser, logfolder, logger, proxy_address):
     webdriver = browser.execute_script("return window.navigator.webdriver")
     logger.info("- window.navigator.webdriver response: {}".format(webdriver))
     if webdriver:
-        logger.warn("- Hide Selenium Extension: error")
+        logger.warning("- Hide Selenium Extension: error")
     else:
         logger.info("- Hide Selenium Extension: ok")
 
@@ -283,7 +283,7 @@ def login_user(
     # if user is still not logged in, then there is an issue with the cookie
     # so go create a new cookie.
     if cookie_loaded:
-        logger.warn(
+        logger.warning(
             "- Issue with cookie for user '{}'. Creating new cookie...".format(username)
         )
 
@@ -322,13 +322,13 @@ def login_user(
             read_xpath(login_user.__name__, "login_elem")
         )
     except NoSuchElementException:
-        logger.warn("Login A/B test detected! Trying another string...")
+        logger.warning("Login A/B test detected! Trying another string...")
         try:
             login_elem = browser.find_element_by_xpath(
                 read_xpath(login_user.__name__, "login_elem_no_such_exception")
             )
         except NoSuchElementException:
-            logger.warn("Could not pass the login A/B test. Trying last string...")
+            logger.warning("Could not pass the login A/B test. Trying last string...")
             try:
                 login_elem = browser.find_element_by_xpath(
                     read_xpath(login_user.__name__, "login_elem_no_such_exception_2")
@@ -431,7 +431,7 @@ def login_user(
             account_disabled = browser.find_element_by_xpath(
                 read_xpath(login_user.__name__, "account_disabled")
             )
-            logger.warn(account_disabled.text)
+            logger.warning(account_disabled.text)
             update_activity(
                 browser,
                 action=None,
@@ -453,7 +453,7 @@ def login_user(
                 "At the moment there isn't a phone number linked to your Instagram "
                 "account. Please, add a phone number to your account, and try again."
             )
-            logger.warn(challenge_warn_msg)
+            logger.warning(challenge_warn_msg)
             update_activity(
                 browser,
                 action=None,
@@ -486,7 +486,7 @@ def login_user(
         error_alert = browser.find_element_by_xpath(
             read_xpath(login_user.__name__, "error_alert")
         )
-        logger.warn(error_alert.text)
+        logger.warning(error_alert.text)
         update_activity(
             browser,
             action=None,
@@ -521,7 +521,7 @@ def login_user(
 
         except pickle.PicklingError:
             # Next time, cookie will be created for the session so we are safe
-            logger.warn("- Browser cookie list could not be saved to your local...")
+            logger.warning("- Browser cookie list could not be saved to your local...")
 
         finally:
             return True

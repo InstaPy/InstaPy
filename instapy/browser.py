@@ -162,7 +162,7 @@ def proxy_authentication(browser, logger, proxy_username, proxy_password):
 
     # FIXME: https://github.com/SeleniumHQ/selenium/issues/7239
     # this feauture is not working anymore due to the Selenium bug report above
-    logger.warn(
+    logger.warning(
         "Proxy Authentication is not working anymore due to the Selenium bug "
         "report: https://github.com/SeleniumHQ/selenium/issues/7239"
     )
@@ -179,7 +179,7 @@ def proxy_authentication(browser, logger, proxy_username, proxy_password):
         )
         alert_popup.accept()
     except Exception:
-        logger.warn("Unable to proxy authenticate")
+        logger.warning("Unable to proxy authenticate")
 
 
 def close_browser(browser, threaded_session, logger):

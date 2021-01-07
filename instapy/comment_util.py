@@ -1,22 +1,23 @@
 # -*- coding: utf-8 -*-
 """ Module which handles the commenting features """
-
+# import built-in & third-party modules
 import random
 import emoji
 
+# import InstaPy modules
 from .time_util import sleep
 from .util import update_activity
 from .util import add_user_to_blacklist
 from .util import click_element
 from .util import get_action_delay
 from .util import explicit_wait
-from .util import extract_text_from_element
 from .util import web_address_navigator
 from .util import evaluate_mandatory_words
 from .event import Event
 from .quota_supervisor import quota_supervisor
 from .xpath import read_xpath
 
+# import exceptions
 from selenium.common.exceptions import WebDriverException
 from selenium.common.exceptions import InvalidElementStateException
 from selenium.common.exceptions import NoSuchElementException
@@ -157,16 +158,14 @@ def verify_commenting(browser, maximum, minimum, logger):
         return False, disapproval_reason
 
     if maximum is not None and comments_count > maximum:
-        disapproval_reason = (
-            "Not commented on this post! ~more comments exist"
-            " off maximum limit at {}".format(comments_count)
+        disapproval_reason = "Not commented on this post! ~more comments exist off maximum limit at {}".format(
+            comments_count
         )
         return False, disapproval_reason
 
     elif minimum is not None and comments_count < minimum:
-        disapproval_reason = (
-            "Not commented on this post! ~less comments exist"
-            " off minumum limit at {}".format(comments_count)
+        disapproval_reason = "Not commented on this post! ~less comments exist off minumum limit at {}".format(
+            comments_count
         )
         return False, disapproval_reason
 
@@ -238,30 +237,26 @@ def get_comments_on_post(
     browser, owner, poster, amount, post_link, ignore_users, randomize, logger
 ):
     """ Fetch comments data on posts """
-
     web_address_navigator(browser, post_link)
 
-    orig_amount = amount
+    comments = []
+    commenters = []
+
     if randomize is True:
         amount = amount * 3
 
     # check if commenting on the post is enabled
-    commenting_state, msg = is_commenting_enabled(browser, logger)
-    if commenting_state is not True:
-        logger.info(msg)
+    (commenting_approved, disapproval_reason,) = verify_commenting(
+        browser,
+        None,
+        None,
+        logger,
+    )
+    if not commenting_approved:
+        logger.info(disapproval_reason)
         return None
 
-    # check if there are any comments in the post
-    comments_count, msg = get_comments_count(browser, logger)
-    if not comments_count:
-        logger.info(msg)
-        return None
-
-    # get comments & commenters information
-
-    # efficient location
-    comments_block_XPath = read_xpath(get_comments_on_post.__name__, "comments_block")
-    # path
+    # get comments & commenters information path
     like_button_full_XPath = read_xpath(
         get_comments_on_post.__name__, "like_button_full_XPath"
     )
@@ -269,8 +264,6 @@ def get_comments_on_post(
         get_comments_on_post.__name__, "unlike_button_full_XPath"
     )
 
-    comments = []
-    commenters = []
     # wait for page fully load [IMPORTANT!]
     explicit_wait(browser, "PFL", [], logger, 10)
 
@@ -278,49 +271,51 @@ def get_comments_on_post(
         all_comment_like_buttons = browser.find_elements_by_xpath(
             like_button_full_XPath
         )
+
         if all_comment_like_buttons:
-            comments_block = browser.find_elements_by_xpath(comments_block_XPath)
-            for comment_line in comments_block:
-                commenter_elem = comment_line.find_element_by_xpath(
-                    read_xpath(get_comments_on_post.__name__, "commenter_elem")
-                )
-                commenter = extract_text_from_element(commenter_elem)
+            commenter = None
+            comment = None
+
+            data = browser.execute_script(
+                "return window.__additionalData[Object.keys(window.__additionalData)].data."
+                "graphql.shortcode_media.edge_media_to_parent_comment"
+            )
+            for value in data["edges"]:
+                commenter = value["node"]["owner"]["username"]
+                comment = value["node"]["text"]
+
                 if (
                     commenter
-                    and commenter not in [owner, poster, ignore_users]
                     and commenter not in commenters
+                    and commenter not in [owner, poster, ignore_users]
+                    and comment
                 ):
                     commenters.append(commenter)
-                else:
-                    continue
-
-                comment_elem = comment_line.find_elements_by_tag_name("span")[0]
-                comment = extract_text_from_element(comment_elem)
-                if comment:
                     comments.append(comment)
                 else:
-                    commenters.remove(commenters[-1])
-                    continue
+                    logger.info("Could not grab any commenter from this post")
 
         else:
             comment_unlike_buttons = browser.find_elements_by_xpath(
                 unlike_button_full_XPath
             )
+
             if comment_unlike_buttons:
                 logger.info(
-                    "There are {} comments on this post and all "
-                    "of them are already liked.".format(len(comment_unlike_buttons))
+                    "Grabbed {} comment(s) on this post and already liked.".format(
+                        len(comment_unlike_buttons)
+                    )
                 )
             else:
                 logger.info("There are no any comments available on this post.")
             return None
 
     except NoSuchElementException:
-        logger.info("Failed to get comments on this post.")
+        logger.info("Failed to grab comments on this post.")
         return None
 
     if not comments:
-        logger.info("Could not grab any usable comments from this post..")
+        logger.info("Could not grab any usable comments from this post...")
         return None
 
     else:
@@ -328,16 +323,11 @@ def get_comments_on_post(
         if randomize is True:
             random.shuffle(comment_data)
 
-        if len(comment_data) < orig_amount:
-            logger.info(
-                "Could grab only {} usable comments from this post..".format(
-                    len(comment_data)
-                )
+        logger.info(
+            "Grabbed only {} usable comment(s) from this post...".format(
+                len(comment_data)
             )
-        else:
-            logger.info(
-                "Grabbed {} usable comments from this post..".format(len(comment_data))
-            )
+        )
 
         return comment_data
 
@@ -382,29 +372,52 @@ def get_comments_count(browser, logger):
             ".graphql.shortcode_media.edge_media_preview_comment.count"
         )
 
-        # media_edge_string = get_media_edge_comment_string(media)
-        # comments_count = media[media_edge_string]["count"]
-
     except Exception as e:
-        try:
-            comments_count = browser.execute_script(
-                "return window.__additionalData[Object.keys(window.__additionalData)[0]].data"
-                ".graphql.shortcode_media.edge_media_preview_comment.count"
-            )
-
-        except Exception as e:
-            msg = "Failed to get comments' count!\n\t{}".format(str(e).encode("utf-8"))
-            return None, msg
-
-    # if not comments_count:
-    #     if comments_count == 0:
-    #         msg = "There are no any comments in the post."
-    #         return 0, msg
-    #     else:
-    #         msg = "Couldn't get comments' count."
-    #         return None, msg
+        msg = "Failed to get comments' count!\n\t{}".format(str(e).encode("utf-8"))
+        return None, msg
 
     return comments_count, "Success"
+
+
+def verify_commented_image(browser, link, owner, logger):
+    """ Fetch comments data on posts to determine if already commented """
+
+    web_address_navigator(browser, link)
+
+    # wait for page fully load [IMPORTANT!]
+    explicit_wait(browser, "PFL", [], logger, 10)
+
+    try:
+        commenter = None
+        comment = None
+        data = browser.execute_script(
+            "return window.__additionalData[Object.keys(window.__additionalData)].data."
+            "graphql.shortcode_media.edge_media_to_parent_comment"
+        )
+        for value in data["edges"]:
+            commenter = value["node"]["owner"]["username"]
+            comment = value["node"]["text"]
+
+            if commenter and commenter == owner:
+                message = (
+                    "--> The post has already been commented on before: '{}'".format(
+                        comment
+                    )
+                )
+                return True, message
+
+    except NoSuchElementException:
+        # Cannot be determined if the post has been comment by InstaPy user,
+        # and then it will not be commented until next loop, maybe comments
+        # on the post have been limited. Return True, to emulate or assume the
+        # post has been commented by user.
+        message = (
+            "--> Failed to get comments on this post, will not comment the post..."
+        )
+        return True, message
+
+    message = "--> Could not found owner's comment in this post, trying to comment..."
+    return None, message
 
 
 def process_comments(
@@ -414,9 +427,11 @@ def process_comments(
     max_comments,
     min_comments,
     comments_mandatory_words,
+    owner,
     user_name,
     blacklist,
     browser,
+    link,
     logger,
     logfolder,
     publish=True,
@@ -444,6 +459,7 @@ def process_comments(
         browser,
         logger,
     )
+
     if not commenting_approved:
         logger.info(disapproval_reason)
         return False
@@ -453,6 +469,21 @@ def process_comments(
 
     # smart commenting
     if comments and publish:
+        # Check if InstaPy already commented on this post, it could be the
+        # case that the image has been liked (manually) but not commented, so
+        # we want to comment the post like usually we do.
+        commented_image, message = verify_commented_image(browser, link, owner, logger)
+
+        if commented_image:
+            # The post has already been commented, either manually or InstaPy
+            # Commenting twice by InstaPy user is not allowd by now or could
+            # not get comments on this post to check if InstaPy user commented
+            # before, so will not comment until next check
+            logger.info(message)
+            return False
+        else:
+            logger.info(message)
+
         comment_state, _ = comment_image(
             browser,
             user_name,
@@ -461,5 +492,9 @@ def process_comments(
             logger,
             logfolder,
         )
+
+        # Return to the target uset page
+        user_link = "https://www.instagram.com/{}/".format(user_name)
+        web_address_navigator(browser, user_link)
 
         return comment_state
