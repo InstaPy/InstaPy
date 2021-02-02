@@ -726,9 +726,8 @@ class InstaPy:
             return
 
         for tag in tags:
-            user_agent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.0.2 Safari/605.1.15"
-            myToken = displaypurposes.generate_api_token(tag, user_agent)
-            head = {"User-Agent": user_agent, "api-token": myToken}
+            myToken = displaypurposes.generate_api_token(tag, Settings.user_agent)
+            head = {"User-Agent": Settings.user_agent, "api-token": myToken}
             req = requests.get(
                 "https://apidisplaypurposes.com/tag/{}".format(tag), headers=head
             )
