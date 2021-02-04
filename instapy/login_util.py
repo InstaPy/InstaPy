@@ -265,13 +265,13 @@ def login_user(
         # force refresh after cookie load or check_authorization() will FAIL
         reload_webpage(browser)
         sleep(4)
-        
+
         # cookie has been LOADED, so the user SHOULD be logged in
         login_state = check_authorization(
             browser, username, "activity counts", logger, False
         )
         sleep(4)
-        
+
     except (WebDriverException, OSError, IOError):
         # Just infor the user, not an error
         logger.info("- Cookie file not found, creating cookie...")
