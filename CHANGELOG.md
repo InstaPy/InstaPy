@@ -7,6 +7,10 @@ _The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 ## [0.6.14] - UNRELEASED
 
+### Added
+
+- Adding delays after load cookie in login.util.py
+
 ## [0.6.13] - 2020-12-30
 
 ### Added
