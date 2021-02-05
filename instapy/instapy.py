@@ -20,7 +20,6 @@ from selenium.webdriver import DesiredCapabilities
 from logging.handlers import RotatingFileHandler
 from contextlib import contextmanager
 from copy import deepcopy
-from apidisplaypurposes import displaypurposes
 
 try:
     from pyvirtualdisplay import Display
@@ -725,12 +724,21 @@ class InstaPy:
             print("set_smart_hashtags is misconfigured")
             return
 
+        if python_version() > "3.5":
+            # CI Travis alert for Python3.5 and apidisplaypurposes
+            from apidisplaypurposes import displaypurposes
+
         for tag in tags:
-            myToken = displaypurposes.generate_api_token(tag, Settings.user_agent)
-            head = {"User-Agent": Settings.user_agent, "api-token": myToken}
-            req = requests.get(
-                "https://apidisplaypurposes.com/tag/{}".format(tag), headers=head
-            )
+            if python_version() > "3.5":
+                myToken = displaypurposes.generate_api_token(tag, Settings.user_agent)
+                head = {"User-Agent": Settings.user_agent, "api-token": myToken}
+                req = requests.get(
+                    "https://apidisplaypurposes.com/tag/{}".format(tag), headers=head
+                )
+             else:
+                # Old fashion request, must fail in Python <= 3.5
+                req = requests.get("https://apidisplaypurposes.com/tag/{}".format(tag))
+
             data = json.loads(req.text)
 
             if data["tagExists"] is True:
