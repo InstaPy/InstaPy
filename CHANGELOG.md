@@ -9,7 +9,8 @@ _The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 ### Added
 
-- Adding delays after load cookie in login.util.py
+- Added delays after load cookie in login.util.py
+- Added `apidisplaypurposes about` in `smart_hashtags` and new api token; Python3.5
 
 ## [0.6.13] - 2020-12-30
 
