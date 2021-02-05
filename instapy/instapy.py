@@ -725,7 +725,19 @@ class InstaPy:
             return
 
         for tag in tags:
-            req = requests.get("https://apidisplaypurposes.com/tag/{}".format(tag))
+            if python_version() > "3.5":
+                # CI Travis alert for Python3.5 and apidisplaypurposes
+                from apidisplaypurposes import displaypurposes
+
+                myToken = displaypurposes.generate_api_token(tag, Settings.user_agent)
+                head = {"User-Agent": Settings.user_agent, "api-token": myToken}
+                req = requests.get(
+                    "https://apidisplaypurposes.com/tag/{}".format(tag), headers=head
+                )
+            else:
+                # Old fashion request, must fail in Python <= 3.5
+                req = requests.get("https://apidisplaypurposes.com/tag/{}".format(tag))
+
             data = json.loads(req.text)
 
             if data["tagExists"] is True:
@@ -1904,11 +1916,11 @@ class InstaPy:
         elif use_smart_location_hashtags is True and self.smart_location_hashtags != []:
             self.logger.info("Using smart location hashtags")
             tags = self.smart_location_hashtags
-
-        # deletes white spaces in tags
-        tags = [tag.strip() for tag in tags]
-        tags = tags or []
-        self.quotient_breach = False
+        else:
+            # deletes white spaces in tags
+            tags = [tag.strip() for tag in tags]
+            tags = tags or []
+            self.quotient_breach = False
 
         # if session includes like_by_tags, then randomize the tag list
         if use_random_tags is True:
