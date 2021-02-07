@@ -283,6 +283,9 @@ def login_user(
         accept_igcookie_dialogue(browser, logger)
         return True
 
+    # This fix comes from comment in #6060 If not necessary we can remove it
+    accept_igcookie_dialogue(browser, logger)
+
     # if user is still not logged in, then there is an issue with the cookie
     # so go create a new cookie.
     if cookie_loaded:
