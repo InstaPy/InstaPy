@@ -11,6 +11,11 @@ _The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 - Added delays after load cookie in login.util.py
 - Added `apidisplaypurposes about` in `smart_hashtags` and new api token; Python3.5
+- Added second `accept_igcookie_dialogue` to handled the second "cookie accept screen" that is not automatically accepted
+
+### Changed
+
+- Changed `python-telegram-bot` in requirements to be installed in Pyhton veriosns greater than 3.6, Travis CI error fixed
 
 ## [0.6.13] - 2020-12-30
 

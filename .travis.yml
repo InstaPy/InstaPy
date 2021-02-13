@@ -8,17 +8,17 @@ branches:
     - legacy
     - experimental
 
-install: pip install tox
+install: pip install -U pip tox
 
 script: tox
 
 stages:
-    - name: static analysis
-    - name: test
-    - name: docs
-      if: type = push AND branch = master AND fork = false
-    - name: pypi-prod
-      if: type = push AND fork = false AND tag =~ ^\d+\.\d+\.\d+
+  - name: static analysis
+  - name: test
+  - name: docs
+    if: type = push AND branch = master AND fork = false
+  - name: pypi-prod
+    if: type = push AND fork = false AND tag =~ ^\d+\.\d+\.\d+
 
 jobs:
   fast_finish: true
@@ -70,7 +70,7 @@ jobs:
     - stage: docs
       language: node_js
       node_js:
-        - '10'
+        - "10"
       cache:
         yarn: true
       script:
