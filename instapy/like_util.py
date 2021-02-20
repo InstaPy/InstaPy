@@ -448,6 +448,11 @@ def get_links_for_username(
     if taggedImages:
         user_link = user_link + "tagged/"
 
+    # if private user, we can get links only if we following
+    following_status, _ = get_following_status(
+        browser, "profile", username, person, None, logger, logfolder
+    )
+
     # Check URL of the webpage, if it already is user's profile page,
     # then do not navigate to it again
     web_address_navigator(browser, user_link)
@@ -458,11 +463,6 @@ def get_links_for_username(
             "page may have been removed..."
         )
         return False
-
-    # if private user, we can get links only if we following
-    following_status, _ = get_following_status(
-        browser, "profile", username, person, None, logger, logfolder
-    )
 
     # if following_status is None:
     #    browser.wait_for_valid_connection(browser, username, logger)
