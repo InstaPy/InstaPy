@@ -3257,7 +3257,7 @@ class InstaPy:
         usernames: list,
         posts_grab_amount: int = 3,
         interact_likers_per_post: int = 3,
-        randomize: bool = False
+        randomize: bool = False,
     ):
         """
         Interact with the likers of given user's posts.
@@ -3319,11 +3319,11 @@ class InstaPy:
             )
             try:
                 post_urls = get_photo_urls_from_profile(
-                self.browser, username, posts_grab_amount, randomize, self.logger)
+                    self.browser, username, posts_grab_amount, randomize, self.logger
+                )
 
                 if not isinstance(post_urls, list):
                     post_urls = [post_urls]
-
 
             except (TypeError, RuntimeWarning) as err:
                 if isinstance(err, RuntimeWarning):
@@ -3344,18 +3344,22 @@ class InstaPy:
             )
 
             interacted_personal = 0
-            
+
             for post_index, post_url in enumerate(post_urls):
                 if self.quotient_breach:
                     break
-                
-                likers = users_liked(self.browser, post_url, interact_likers_per_post, self.logger)
+
+                likers = users_liked(
+                    self.browser, post_url, interact_likers_per_post, self.logger
+                )
                 # This way of iterating will prevent sleep interference
                 # between functions
                 random.shuffle(likers)
 
                 self.logger.info(
-                    "Post '{}' [{}/{}]".format((post_url), post_index + 1, len(post_urls))
+                    "Post '{}' [{}/{}]".format(
+                        (post_url), post_index + 1, len(post_urls)
+                    )
                 )
 
                 for liker_index, person in enumerate(likers):
@@ -3367,7 +3371,9 @@ class InstaPy:
                         break
 
                     self.logger.info(
-                        "Liker '{}' [{}/{}]".format((person), liker_index + 1, len(likers))
+                        "Liker '{}' [{}/{}]".format(
+                            (person), liker_index + 1, len(likers)
+                        )
                     )
 
                     validation, details = self.validate_user_call(person)
@@ -3378,12 +3384,16 @@ class InstaPy:
                         continue
 
                     # Do interactions if any
-                    do_interact = random.randint(0, 100) <= self.user_interact_percentage
+                    do_interact = (
+                        random.randint(0, 100) <= self.user_interact_percentage
+                    )
 
                     if not do_interact:
                         self.logger.info(
                             "Skipping user '{}' due to the interaction "
-                            "percentage of {}".format(person, self.user_interact_percentage)
+                            "percentage of {}".format(
+                                person, self.user_interact_percentage
+                            )
                         )
                         continue
 
