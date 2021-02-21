@@ -3252,6 +3252,188 @@ class InstaPy:
 
         return self
 
+    def interact_user_likers(
+        self,
+        usernames: list,
+        posts_grab_amount: int = 3,
+        interact_likers_per_post: int = 3,
+        randomize: bool = False
+    ):
+        """
+        Interact with the likers of given user's posts.
+
+        set_do_comment, set_do_follow and set_do_like are applicable.
+
+        :param usernames: List of users with whose likers to interact.
+        :param posts_grab_amount: Amount of posts to get the likers from per given user.
+        :param interact_likers_per_post: Amount of likers to be interacted with per post.
+        :param randomize: If followers should be chosen randomly.
+        """
+
+        if self.aborting:
+            return self
+
+        if self.do_follow is not True and self.do_like is not True:
+            self.logger.info(
+                "Please enable following or liking in settings in order to "
+                "do interactions."
+            )
+            return self
+
+        elif self.user_interact_amount <= 0:
+            self.logger.info(
+                "Please choose an amount higher than zero in "
+                "`set_user_interact` in order to do interactions."
+            )
+            return self
+
+        if not isinstance(usernames, list):
+            usernames = [usernames]
+
+        if posts_grab_amount > 12:
+            self.logger.info(
+                "Sorry, you can only grab likers from first 12 posts for "
+                "given username now.\n"
+            )
+            posts_grab_amount = 12
+
+        interacted_all = 0
+        not_valid_users = 0
+        simulated_unfollow = 0
+
+        # hold the current global values for differentiating at the end
+        liked_init = self.liked_img
+        already_liked_init = self.already_liked
+        commented_init = self.commented
+        followed_init = self.followed
+        inap_img_init = self.inap_img
+
+        self.quotient_breach = False
+
+        for index, username in enumerate(usernames):
+            if self.quotient_breach:
+                break
+
+            self.logger.info(
+                "User '{}' [{}/{}]".format((username), index + 1, len(usernames))
+            )
+            try:
+                post_urls = get_photo_urls_from_profile(
+                self.browser, username, posts_grab_amount, randomize, self.logger)
+
+                if not isinstance(post_urls, list):
+                    post_urls = [post_urls]
+
+
+            except (TypeError, RuntimeWarning) as err:
+                if isinstance(err, RuntimeWarning):
+                    self.logger.warning(
+                        "Warning: {} , skipping to next user".format(err)
+                    )
+                    continue
+
+                else:
+                    self.logger.error("Sorry, an error occurred: {}".format(err))
+                    self.aborting = True
+                    return self
+
+            print("")
+            self.logger.info(
+                "Grabbed {} posts from '{}'s profile to do "
+                "interaction.".format(len(post_urls), username)
+            )
+
+            interacted_personal = 0
+            
+            for post_index, post_url in enumerate(post_urls):
+                if self.quotient_breach:
+                    break
+                
+                likers = users_liked(self.browser, post_url, interact_likers_per_post, self.logger)
+                # This way of iterating will prevent sleep interference
+                # between functions
+                random.shuffle(likers)
+
+                self.logger.info(
+                    "Post '{}' [{}/{}]".format((post_url), post_index + 1, len(post_urls))
+                )
+
+                for liker_index, person in enumerate(likers):
+                    if self.quotient_breach:
+                        self.logger.warning(
+                            "--> Like quotient reached its peak!"
+                            "\t~leaving Interact-Likers activity\n"
+                        )
+                        break
+
+                    self.logger.info(
+                        "Liker '{}' [{}/{}]".format((person), liker_index + 1, len(likers))
+                    )
+
+                    validation, details = self.validate_user_call(person)
+                    if not validation:
+                        self.logger.info(details)
+                        not_valid_users += 1
+
+                        continue
+
+                    # Do interactions if any
+                    do_interact = random.randint(0, 100) <= self.user_interact_percentage
+
+                    if not do_interact:
+                        self.logger.info(
+                            "Skipping user '{}' due to the interaction "
+                            "percentage of {}".format(person, self.user_interact_percentage)
+                        )
+                        continue
+
+                    else:
+                        interacted_all += 1
+                        interacted_personal += 1
+
+                        self.logger.info(
+                            "Interaction [{}/{}]  |  Total Interaction: {}".format(
+                                interacted_personal, len(likers), interacted_all
+                            )
+                        )
+
+                        with self.feature_in_feature("interact_by_users", False):
+                            self.interact_by_users(
+                                person,
+                                self.user_interact_amount,
+                                self.user_interact_random,
+                                self.user_interact_media,
+                            )
+                        if self.aborting:
+                            return self
+                        sleep(1)
+
+        # final words
+        self.logger.info(
+            "Finished interacting {} people from {} users' `Followers`! xD\n".format(
+                interacted_all, len(usernames)
+            )
+        )
+
+        # find the feature-wide action sizes by taking a difference
+        liked = self.liked_img - liked_init
+        already_liked = self.already_liked - already_liked_init
+        commented = self.commented - commented_init
+        followed = self.followed - followed_init
+        inap_img = self.inap_img - inap_img_init
+
+        # print results
+        self.logger.info("Liked: {}".format(liked))
+        self.logger.info("Already Liked: {}".format(already_liked))
+        self.logger.info("Commented: {}".format(commented))
+        self.logger.info("Followed: {}".format(followed))
+        self.logger.info("Inappropriate: {}".format(inap_img))
+        self.logger.info("Not valid users: {}\n".format(not_valid_users))
+
+        self.not_valid_users += not_valid_users
+
+        return self
+
     def interact_user_following(
         self, usernames: list, amount: int = 10, randomize: bool = False
     ):
