@@ -11,11 +11,11 @@ _The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 - Added delays after load cookie in login.util.py
 - Added `apidisplaypurposes about` in `smart_hashtags` and new api token; Python3.5
+- Added `interact_user_likers` interacting with the likers from a given user's posts
 - Added second `accept_igcookie_dialogue` to handled the second "cookie accept screen" that is not automatically accepted
 
-### Changed
-
-- Changed `python-telegram-bot` in requirements to be installed in Pyhton veriosns greater than 3.6, Travis CI error fixed
+### Fixed
+- Move call to `get_following_status` above `web_address_navigator` inside `get_links_for_username` function
 
 ## [0.6.13] - 2020-12-30
 
