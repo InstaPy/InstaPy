@@ -560,6 +560,28 @@ session.interact_by_comments(usernames=["somebody", "other.buddy"], posts_amount
 + liking a comment doesn't fill up your like quota, but replying to a comment does it to the comment quota. Try to compensate it in your style and do not overuse;
 + using auto-reply capability of this feature can result in unwanted miscommunication between you and the commenter IN CASE OF you do not make an efficient use of text analytics;
 
+### Interact by Likers
+###### Get a user's posts, get the posts' likers and interact with them.
+
+```python
+session.interact_user_likers(usernames=["somebody", "other buddy"],
+                             posts_grab_amount=10,
+                             interact_likers_per_post=5,
+                             randomize=True)
+```
+#### Parameters
+`usernames`
+: A list containing the _usernames_ of users on whose **posts'** _likers will be interacted with_;
+
+`posts_grab_amount`
+: Number of the posts to get from **each user** for getting its likers to interact with;
+
+`interact_likers_per_post`
+: Choose how many likers to get from **each post**;
+
+`randomize`
+: Shuffles the **order** of the **_posts_** from users' feed;
+
 
 ### Accept pending follow requests
 
