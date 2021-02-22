@@ -11,6 +11,7 @@ _The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 - Added delays after load cookie in login.util.py
 - Added `apidisplaypurposes about` in `smart_hashtags` and new api token; Python3.5
+- Added `interact_user_likers` interacting with the likers from a given user's posts.
 
 ## [0.6.13] - 2020-12-30
 
