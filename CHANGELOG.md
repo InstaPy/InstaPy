@@ -15,7 +15,9 @@ _The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 - Added second `accept_igcookie_dialogue` to handled the second "cookie accept screen" that is not automatically accepted
 
 ### Fixed
+
 - Move call to `get_following_status` above `web_address_navigator` inside `get_links_for_username` function
+- Fixed the correct URL `displaypurposes.com`, the old `displaypurposes.com` API is deprecated
 
 ## [0.6.13] - 2020-12-30
 
