@@ -774,7 +774,7 @@ class InstaPy:
     def set_smart_location_hashtags(
         self, locations: list, radius: int = 10, limit: int = 3, log_tags: bool = True
     ):
-        """Generate smart hashtags based on https://displaypurposes.com/map"""
+        """Generate smart hashtags based on https://apidisplaypurposes.com/map"""
         if locations is None:
             self.logger.error("set_smart_location_hashtags is misconfigured")
             return self
@@ -792,7 +792,7 @@ class InstaPy:
                 bbox["lat_max"],
                 radius,
             )
-            url = "https://displaypurposes.com/local/?bbox={}".format(bbox_url)
+            url = "https://apidisplaypurposes.com/local/?bbox={}".format(bbox_url)
 
             req = requests.get(url)
             data = json.loads(req.text)
