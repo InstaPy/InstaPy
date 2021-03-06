@@ -83,7 +83,11 @@ def get_followers(
         or (is_private is True and following_status not in ["Following", True])
         or (following_status == "Blocked")
     ):
-        logger.info("This user is private and we are not following")
+        logger.info(
+            "This user is private and we are not following. '{}':'{}'".format(
+                is_private, following_status
+            )
+        )
         # Changed False to all_followers[], all_followers is empty
         return all_followers
 
@@ -367,7 +371,11 @@ def get_following(
         or (is_private is True and following_status not in ["Following", True])
         or (following_status == "Blocked")
     ):
-        logger.info("This user is private and we are not following")
+        logger.info(
+            "This user is private and we are not following. '{}':'{}'".format(
+                is_private, following_status
+            )
+        )
         return False
 
     # sets the amount of usernames to be matched in the next queries

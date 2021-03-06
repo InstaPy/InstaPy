@@ -69,6 +69,15 @@ next_screenshot = 1
 
 
 def is_private_profile(browser, logger, following=True):
+    """
+    Verify id account is Private
+
+    :param browser: The selenium webdriver instance
+    :param logger: the logger instance
+    :param following: Not accessed
+    :return: None if profile cannot be verified
+    """
+
     is_private = None
     try:
         is_private = browser.execute_script(
@@ -329,24 +338,27 @@ def validate_username(
             number_of_posts = getUserData(
                 "graphql.user.edge_owner_to_timeline_media.count", browser
             )
-        except WebDriverException:
-            logger.error("~cannot get number of posts for username")
-            inap_msg = "--> Sorry, couldn't check for number of posts of username\n"
+
+            if max_posts:
+                if number_of_posts > max_posts:
+                    inap_msg = (
+                        "Number of posts ({}) of '{}' exceeds the maximum limit "
+                        "given {}\n".format(number_of_posts, username, max_posts)
+                    )
+                    return False, inap_msg
+            if min_posts:
+                if number_of_posts < min_posts:
+                    inap_msg = (
+                        "Number of posts ({}) of '{}' is less than the minimum "
+                        "limit given {}\n".format(number_of_posts, username, min_posts)
+                    )
+                    return False, inap_msg
+        except (WebDriverException, TypeError):  # Catch if number_of_posts is NoneType
+            logger.error("~cannot get number of posts for username".format(username))
+            inap_msg = "--> Sorry, couldn't check for number of posts of username: '{}'\n".format(
+                username
+            )
             return False, inap_msg
-        if max_posts:
-            if number_of_posts > max_posts:
-                inap_msg = (
-                    "Number of posts ({}) of '{}' exceeds the maximum limit "
-                    "given {}\n".format(number_of_posts, username, max_posts)
-                )
-                return False, inap_msg
-        if min_posts:
-            if number_of_posts < min_posts:
-                inap_msg = (
-                    "Number of posts ({}) of '{}' is less than the minimum "
-                    "limit given {}\n".format(number_of_posts, username, min_posts)
-                )
-                return False, inap_msg
 
     # Skip users
 
@@ -1987,6 +1999,7 @@ def click_visibly(browser, element):
         )
         # update server calls
         update_activity(browser, state=None)
+        sleep(randint(1, 5))
 
         click_element(browser, element)
 
