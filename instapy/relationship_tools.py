@@ -187,6 +187,7 @@ def get_followers(
             page_info = data["user"]["edge_followed_by"]["page_info"]
             edges = data["user"]["edge_followed_by"]["edges"]
             for user in edges:
+                # If verified_only is True, determine if following user is verified and append to verified_followers
                 if verified_only:
                     if user["node"]["is_verified"]:
                         verified_followers.append(user["node"]["username"])
