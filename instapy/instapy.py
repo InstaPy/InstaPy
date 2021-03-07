@@ -4495,7 +4495,7 @@ class InstaPy:
         amount: int = None,
         live_match: bool = False,
         store_locally: bool = True,
-        verified_only: bool = False
+        verified_only: bool = False,
     ):
         """
          Gets and returns `followers` information of given user
@@ -4536,7 +4536,7 @@ class InstaPy:
             store_locally,
             self.logger,
             self.logfolder,
-            verified_only
+            verified_only,
         )
         return grabbed_followers
 

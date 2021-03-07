@@ -30,7 +30,7 @@ def get_followers(
     store_locally,
     logger,
     logfolder,
-    verified_only=False
+    verified_only=False,
 ):
     """ Get entire list of followers using graphql queries. """
 
@@ -318,6 +318,7 @@ def get_followers(
         return verified_followers
     else:
         return all_followers
+
 
 def get_following(
     browser,
