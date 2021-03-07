@@ -45,6 +45,13 @@ _If the data is requested at the range **else than** `"full"`, it will write **t
 + `6874` means the **count** of the usernames retrieved.
 + `json` is the **filetype** and the data is stored as a `list` in it.
 
+`verified_only`:
+Gives the _option_ to only return followers with a Verified status.
+* `verified_only=True`:
+    + Only returns followers that contain `is_verified` key
+* `verified_only=False`:
+    + Default option, Returns all followers for user
+
 
 There are **several** `use cases` of this tool for **various purposes**.
 _E.g._, inside your **quickstart** script, you can **do** _something like this_:
