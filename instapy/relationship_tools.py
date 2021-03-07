@@ -38,7 +38,6 @@ def get_followers(
     user_data = {}
     variables = {}
     all_followers = []
-    verified_followers = []
     sc_rolled = 0
     grab_notifier = False
     local_read_failure = False
@@ -187,11 +186,12 @@ def get_followers(
             page_info = data["user"]["edge_followed_by"]["page_info"]
             edges = data["user"]["edge_followed_by"]["edges"]
             for user in edges:
-                # If verified_only is True, determine if following user is verified and append to verified_followers
-                if verified_only and user["node"]["is_verified"]:
-                    verified_followers.append(user["node"]["username"])
-
-                all_followers.append(user["node"]["username"])
+                # If verified_only is True, determine if user is verified before adding to all_followers
+                if verified_only:
+                    if user["node"]["is_verified"]:
+                        all_followers.append(user["node"]["username"])
+                else:
+                    all_followers.append(user["node"]["username"])
 
             grabbed = len(set(all_followers))
 
@@ -313,10 +313,7 @@ def get_followers(
     sleep(sleep_t)
     logger.info("Yawn :] let's go!\n")
 
-    if verified_only:
-        return verified_followers
-    else:
-        return all_followers
+    return all_followers
 
 
 def get_following(
