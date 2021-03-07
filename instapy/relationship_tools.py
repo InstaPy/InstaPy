@@ -186,7 +186,6 @@ def get_followers(
             # get followers
             page_info = data["user"]["edge_followed_by"]["page_info"]
             edges = data["user"]["edge_followed_by"]["edges"]
-
             for user in edges:
                 if verified_only:
                     if user["node"]["is_verified"]:
