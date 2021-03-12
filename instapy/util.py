@@ -461,7 +461,7 @@ def validate_username(
                     ),
                 )
         # the mandatory keywords applies to the username as well as the bio text
-        if not evaluate_mandatory_words(
+        if mandatory_bio_keywords and not evaluate_mandatory_words(
             username + " " + profile_bio, mandatory_bio_keywords
         ):
             return False, "Mandatory bio keywords not found"

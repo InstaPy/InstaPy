@@ -6,8 +6,12 @@ _The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 
 ## [0.6.15] - UNRELEASED
+### Added
 
-## [0.6.14] - 2021-03-05
+- Added `verified_only` argument to `get_followers` to return only verified users
+- `mandatory_bio_keywords` control before evaluating for mandatory
+
+## [0.6.14] - UNRELEASED
 
 ### Added
 

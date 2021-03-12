@@ -30,6 +30,7 @@ def get_followers(
     store_locally,
     logger,
     logfolder,
+    verified_only=False,
 ):
     """ Get entire list of followers using graphql queries. """
 
@@ -189,7 +190,12 @@ def get_followers(
             page_info = data["user"]["edge_followed_by"]["page_info"]
             edges = data["user"]["edge_followed_by"]["edges"]
             for user in edges:
-                all_followers.append(user["node"]["username"])
+                # If verified_only is True, determine if user is verified before adding to all_followers
+                if verified_only:
+                    if user["node"]["is_verified"]:
+                        all_followers.append(user["node"]["username"])
+                else:
+                    all_followers.append(user["node"]["username"])
 
             grabbed = len(set(all_followers))
 
