@@ -44,7 +44,8 @@ slug: /
 
 <br />
 
-**Learn Automation from Scratch: [The School of Automation](https://www.school-of-automation.com)**
+**Learn Automation from Scratch: [The School of Automation](https://www.school-of-automation.com)**   
+**Learn the Skills to build your own InstaPy: [Automating Social Media Interactions](https://www.school-of-automation.com/learn/p/automating-social-media-interactions)**.  
 
 <a href="https://www.school-of-automation.com"><img src="https://static1.squarespace.com/static/5f71907917b093635185fc3e/t/5f9d03cec73af0034b6ffa3a/1604126514869/?format=1500w" width="250"/></a>
 
