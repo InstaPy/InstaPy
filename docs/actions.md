@@ -152,12 +152,17 @@ accs = ['therock','natgeo']
 session.follow_by_list(accs, times=1, sleep_delay=600, interact=False)
 ```
 * You can also **interact** with the followed users by enabling `interact=True` which will use the configuration of `set_user_interact` setting:
+
 ```python
 session.set_user_interact(amount=4,
-				 percentage=50,
-                  randomize=True,
-                   media='Photo')
-session.follow_by_list(followlist=['samantha3', 'larry_ok'], times=2, sleep_delay=600, interact=True)
+                          percentage=50,
+                          randomize=True,
+                          media='Photo')
+
+session.follow_by_list(followlist=['samantha3', 'larry_ok'],
+                       times=2,
+                       sleep_delay=600,
+                       interact=True)
 ```
 
 
@@ -237,10 +242,16 @@ The `follow_likers_per_photo` is how many people to follow per each photo
 * You can also **interact** with the followed users by enabling `interact=True` which will use the configuration of `set_user_interact` setting:
 ```python
 session.set_user_interact(amount=2,
-				 percentage=70,
-                  randomize=True,
-                   media='Photo')
-session.follow_likers(['user1' , 'user2'], photos_grab_amount = 2, follow_likers_per_photo = 3, randomize=True, sleep_delay=600, interact=True)
+                          percentage=70,
+                          randomize=True,
+                          media='Photo')
+
+session.follow_likers(['user1' , 'user2'],
+                      photos_grab_amount = 2,
+                      follow_likers_per_photo = 3,
+                      randomize=True,
+                      sleep_delay=600,
+                      interact=True)
 ```
 
 
@@ -259,9 +270,9 @@ The `max_pic` will limit number of photos to analyze
 * You can also **interact** with the followed users by enabling `interact=True` which will use the configuration of `set_user_interact` setting:
 ```python
 session.set_user_interact(amount=3,
-				 percentage=32,
-                  randomize=True,
-                   media='Video')
+                          percentage=32,
+                          randomize=True,
+                          media='Video')
 session.follow_commenters(['user1', 'user2', 'user3'], amount=100, daysold=365, max_pic = 100, sleep_delay=600, interact=True)
 ```
 
@@ -612,15 +623,15 @@ session.remove_follow_requests(amount=200, sleep_delay=600)
   ```python
 
  photo_comments = ['Nice shot! @{}',
-                   'I love your profile! @{}',
- 	           'Your feed is an inspiration :thumbsup:',
- 	           'Just incredible :open_mouth:',
- 	           'What camera did you use @{}?',
- 	           'Love your posts @{}',
- 	           'Looks awesome @{}',
- 	           'Getting inspired by you @{}',
- 	           ':raised_hands: Yes!',
- 	           'I can feel your passion @{} :muscle:']
+                  'I love your profile! @{}',
+ 	                'Your feed is an inspiration :thumbsup:',
+ 	                'Just incredible :open_mouth:',
+ 	                'What camera did you use @{}?',
+ 	                'Love your posts @{}',
+ 	                'Looks awesome @{}',
+ 	                'Getting inspired by you @{}',
+ 	                ':raised_hands: Yes!',
+ 	                'I can feel your passion @{} :muscle:']
 
  session = InstaPy()
 

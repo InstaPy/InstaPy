@@ -1,4 +1,8 @@
 """ Module which handles the follow features """
+# import built-in & third-party modules
+from random import randint
+from time import sleep
+
 # import InstaPy modules
 from .util import web_address_navigator
 from .util import get_username_from_id
@@ -69,6 +73,7 @@ def get_following_status(
     if not follow_button:
         browser.execute_script("location.reload()")
         update_activity(browser, state=None)
+        sleep(randint(1, 5))
 
         follow_button = explicit_wait(
             browser, "VOEL", [follow_button_XP, "XPath"], logger, 14, False

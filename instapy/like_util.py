@@ -471,12 +471,17 @@ def get_links_for_username(
     #    browser.wait_for_valid_authorization(browser, username, logger)
 
     is_private = is_private_profile(browser, logger, following_status == "Following")
+
     if (
         is_private is None
         or (is_private is True and following_status not in ["Following", True])
         or (following_status == "Blocked")
     ):
-        logger.info("This user is private and we are not following")
+        logger.info(
+            "This user is private and we are not following. '{}':'{}'".format(
+                is_private, following_status
+            )
+        )
         return False
 
     # Get links
@@ -487,7 +492,7 @@ def get_links_for_username(
 
     if posts_count is not None and amount > posts_count:
         logger.info(
-            "You have requested to get {} posts from {}'s profile page BUT"
+            "You have requested to get {} posts from {}'s profile page but"
             " there only {} posts available :D".format(amount, person, posts_count)
         )
         amount = posts_count

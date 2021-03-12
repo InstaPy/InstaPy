@@ -6,10 +6,10 @@ _The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 
 ## [0.6.15] - UNRELEASED
-
 ### Added
 
 - Added `verified_only` argument to `get_followers` to return only verified users
+- `mandatory_bio_keywords` control before evaluating for mandatory
 
 ## [0.6.14] - UNRELEASED
 
@@ -19,11 +19,15 @@ _The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 - Added `apidisplaypurposes about` in `smart_hashtags` and new api token; Python3.5
 - Added `interact_user_likers` interacting with the likers from a given user's posts
 - Added second `accept_igcookie_dialogue` to handled the second "cookie accept screen" that is not automatically accepted
+- Added delays after `update_activity()` in `follow_util.py` and `util.py`
+- Added extra trace in `get_followers()`
 
 ### Fixed
 
 - Move call to `get_following_status` above `web_address_navigator` inside `get_links_for_username` function
 - Fixed the correct URL `displaypurposes.com`, the old `displaypurposes.com` API is deprecated
+- Fixed `additional-information.md`, removed extra info for `cron` configuration
+- Fixed `actions.md` and `settings.md` for identation
 
 ## [0.6.13] - 2020-12-30
 
