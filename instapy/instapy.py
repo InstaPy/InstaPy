@@ -275,7 +275,9 @@ class InstaPy:
         self.skip_business_percentage = 100
         self.skip_no_profile_pic_percentage = 100
         self.skip_private_percentage = 100
-        self.relationship_data = {self.username: {"all_following": [], "all_followers": []}}
+        self.relationship_data = {
+            self.username: {"all_following": [], "all_followers": []}
+        }
 
         self.simulation = {"enabled": True, "percentage": 100}
 
