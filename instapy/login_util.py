@@ -239,7 +239,7 @@ def login_user(
         if not check_browser(browser, logfolder, logger, proxy_address):
             return False
 
-    ig_homepage = "https://www.instagram.com"
+    ig_homepage = "https://www.instagram.com/accounts/login/?source=desktop_nav"
     web_address_navigator(browser, ig_homepage)
 
     cookie_file = "{0}{1}_cookie.pkl".format(logfolder, username)
@@ -321,6 +321,8 @@ def login_user(
             # NF: end
 
     web_address_navigator(browser, ig_homepage)
+
+    accept_igcookie_dialogue(browser, logger)
 
     # Check if the first div is 'Create an Account' or 'Log In'
     try:
