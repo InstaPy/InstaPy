@@ -818,7 +818,8 @@ def like_image(browser, username, blacklist, logger, logfolder, total_liked_img)
             logger.info(
                 "--> {} was not able to get liked! maybe blocked?".format(media)
             )
-            sleep(120)
+            input("******** Press Enter to continue ********")
+            sleep(10)
 
     else:
         liked_elem = browser.find_elements_by_xpath(unlike_xpath)
