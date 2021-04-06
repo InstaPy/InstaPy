@@ -905,7 +905,7 @@ def get_links(browser, page, logger, media, element):
                         post_category = element.find_element_by_xpath(
                             "//a[@href='/p/"
                             + post_href.split("/")[-2]
-                            + "/']/child::div[@class='u7YqG']/child::span"
+                            + "/']/child::div[@class='u7YqG']/child::div"
                         ).get_attribute("aria-label")
 
                         if post_category in media:
