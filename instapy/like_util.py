@@ -410,6 +410,7 @@ def get_links_for_tag(browser, tag, amount, skip_top_posts, randomize, media, lo
 
     if skip_top_posts:
         del links[0:9]
+        amount -= 9
 
     if randomize is True:
         random.shuffle(links)
