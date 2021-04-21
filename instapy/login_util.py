@@ -239,9 +239,14 @@ def login_user(
         if not check_browser(browser, logfolder, logger, proxy_address):
             return False
 
-    ig_homepage = "https://www.instagram.com"
+    ig_homepage = "https://www.instagram.com/accounts/login/?source=desktop_nav"
     web_address_navigator(browser, ig_homepage)
-
+    
+    for element in browser.find_elements_by_tag_name('button'):
+        if element.text.strip().lower() == 'accept all':
+            element.click()
+            break
+        
     cookie_file = "{0}{1}_cookie.pkl".format(logfolder, username)
     cookie_loaded = None
     login_state = None
@@ -321,6 +326,8 @@ def login_user(
             # NF: end
 
     web_address_navigator(browser, ig_homepage)
+
+    accept_igcookie_dialogue(browser, logger)
 
     # Check if the first div is 'Create an Account' or 'Log In'
     try:
@@ -681,7 +688,6 @@ def two_factor_authentication(browser, logger, security_codes):
 
 def accept_igcookie_dialogue(browser, logger):
     """ Presses 'Accept' button on IG cookie dialogue """
-
     offer_elem_loc = read_xpath(accept_igcookie_dialogue.__name__, "accept_button")
 
     offer_loaded = explicit_wait(

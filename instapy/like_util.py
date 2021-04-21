@@ -448,11 +448,6 @@ def get_links_for_username(
     if taggedImages:
         user_link = user_link + "tagged/"
 
-    # if private user, we can get links only if we following
-    following_status, _ = get_following_status(
-        browser, "profile", username, person, None, logger, logfolder
-    )
-
     # Check URL of the webpage, if it already is user's profile page,
     # then do not navigate to it again
     web_address_navigator(browser, user_link)
@@ -464,6 +459,11 @@ def get_links_for_username(
         )
         return False
 
+    # if private user, we can get links only if we following
+    following_status, _ = get_following_status(
+        browser, "profile", username, person, None, logger, logfolder
+    )
+
     # if following_status is None:
     #    browser.wait_for_valid_connection(browser, username, logger)
 
@@ -471,17 +471,12 @@ def get_links_for_username(
     #    browser.wait_for_valid_authorization(browser, username, logger)
 
     is_private = is_private_profile(browser, logger, following_status == "Following")
-
     if (
         is_private is None
         or (is_private is True and following_status not in ["Following", True])
         or (following_status == "Blocked")
     ):
-        logger.info(
-            "This user is private and we are not following. '{}':'{}'".format(
-                is_private, following_status
-            )
-        )
+        logger.info("This user is private and we are not following")
         return False
 
     # Get links
@@ -492,7 +487,7 @@ def get_links_for_username(
 
     if posts_count is not None and amount > posts_count:
         logger.info(
-            "You have requested to get {} posts from {}'s profile page but"
+            "You have requested to get {} posts from {}'s profile page BUT"
             " there only {} posts available :D".format(amount, person, posts_count)
         )
         amount = posts_count
@@ -905,7 +900,7 @@ def get_links(browser, page, logger, media, element):
                         post_category = element.find_element_by_xpath(
                             "//a[@href='/p/"
                             + post_href.split("/")[-2]
-                            + "/']/child::div[@class='u7YqG']/child::span"
+                            + "/']/child::div[@class='u7YqG']/child::div"
                         ).get_attribute("aria-label")
 
                         if post_category in media:
