@@ -14,6 +14,7 @@ from .xpath import read_xpath
 
 # import exceptions
 from selenium.common.exceptions import NoSuchElementException
+from selenium.webdriver.common.by import By
 
 
 def get_following_status(
@@ -65,7 +66,15 @@ def get_following_status(
             )
             return "Following", follow_button
         except:
-            return "UNAVAILABLE", None
+            try:
+                user_link = "https://www.instagram.com/{}/".format(person)
+                web_address_navigator(browser, user_link)
+                button = browser.find_element(By.XPATH, "//button[text()='Follow']")
+                button.click()
+                sleep(randit(5,15))
+            except:
+                return "UNAVAILABLE", None
+            return "Following", None
     follow_button = explicit_wait(
         browser, "VOEL", [follow_button_XP, "XPath"], logger, 7, False
     )
