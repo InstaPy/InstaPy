@@ -6,7 +6,7 @@ import emoji
 
 # import InstaPy modules
 from .time_util import sleep
-from .util import update_activity
+from .util import update_activity, getMediaData
 from .util import add_user_to_blacklist
 from .util import click_element
 from .util import get_action_delay
@@ -180,21 +180,13 @@ def verify_mandatory_words(
 ):
     if len(mand_words) > 0 or isinstance(comments[0], dict):
         try:
-            post_desc = browser.execute_script(
-                "return window.__additionalData[Object.keys(window.__additionalData)[0]].data."
-                "graphql.shortcode_media."
-                "edge_media_to_caption.edges[0]['node']['text']"
-            ).lower()
+            post_desc = getMediaData("edge_media_to_caption.edges.0.node.text", browser).lower()
 
         except Exception:
             post_desc = None
 
         try:
-            first_comment = browser.execute_script(
-                "return window.__additionalData[Object.keys(window.__additionalData)[0]].data."
-                "graphql.shortcode_media."
-                "edge_media_to_parent_comment.edges[0]['node']['text']"
-            ).lower()
+            first_comment = getMediaData("edge_media_to_parent_comment.edges.0.node.text", browser).lower()
 
         except Exception:
             first_comment = None
@@ -276,10 +268,7 @@ def get_comments_on_post(
             commenter = None
             comment = None
 
-            data = browser.execute_script(
-                "return window.__additionalData[Object.keys(window.__additionalData)].data."
-                "graphql.shortcode_media.edge_media_to_parent_comment"
-            )
+            data = getMediaData("edge_media_to_parent_comment", browser)
             for value in data["edges"]:
                 commenter = value["node"]["owner"]["username"]
                 comment = value["node"]["text"]
@@ -335,27 +324,7 @@ def get_comments_on_post(
 def is_commenting_enabled(browser, logger):
     """ Find out if commenting on the post is enabled """
 
-    try:
-        comments_disabled = browser.execute_script(
-            "return window.__additionalData[Object.keys(window.__additionalData)[0]].data"
-            ".graphql.shortcode_media.comments_disabled"
-        )
-
-    except WebDriverException:
-        try:
-            browser.execute_script("location.reload()")
-            update_activity(browser, state=None)
-
-            comments_disabled = browser.execute_script(
-                "return window.__additionalData[Object.keys(window.__additionalData)[0]].data"
-                ".graphql.shortcode_media.comments_disabled"
-            )
-
-        except Exception as e:
-            msg = "Failed to check comments' status for verification!\n\t{}".format(
-                str(e).encode("utf-8")
-            )
-            return False, msg
+    comments_disabled = getMediaData("comments_disabled", browser)
 
     if comments_disabled is True:
         msg = "Comments are disabled for this post."
@@ -366,16 +335,8 @@ def is_commenting_enabled(browser, logger):
 
 def get_comments_count(browser, logger):
     """ Get the number of total comments in the post """
-    try:
-        comments_count = browser.execute_script(
-            "return window.__additionalData[Object.keys(window.__additionalData)[0]].data"
-            ".graphql.shortcode_media.edge_media_preview_comment.count"
-        )
 
-    except Exception as e:
-        msg = "Failed to get comments' count!\n\t{}".format(str(e).encode("utf-8"))
-        return None, msg
-
+    comments_count = getMediaData("edge_media_preview_comment.count", browser)
     return comments_count, "Success"
 
 
@@ -390,10 +351,7 @@ def verify_commented_image(browser, link, owner, logger):
     try:
         commenter = None
         comment = None
-        data = browser.execute_script(
-            "return window.__additionalData[Object.keys(window.__additionalData)].data."
-            "graphql.shortcode_media.edge_media_to_parent_comment"
-        )
+        data = getMediaData("edge_media_to_parent_comment", browser)
         for value in data["edges"]:
             commenter = value["node"]["owner"]["username"]
             comment = value["node"]["text"]
