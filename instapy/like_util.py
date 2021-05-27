@@ -22,6 +22,7 @@ from .util import get_action_delay
 from .util import explicit_wait
 from .util import extract_text_from_element
 from .util import evaluate_mandatory_words
+from .util import get_additional_data
 from .quota_supervisor import quota_supervisor
 from .follow_util import get_following_status
 from .event import Event
@@ -540,16 +541,16 @@ def get_media_edge_comment_string(media):
 
 
 def check_link(
-    browser,
-    post_link,
-    dont_like,
-    mandatory_words,
-    mandatory_language,
-    mandatory_character,
-    is_mandatory_character,
-    check_character_set,
-    ignore_if_contains,
-    logger,
+        browser,
+        post_link,
+        dont_like,
+        mandatory_words,
+        mandatory_language,
+        mandatory_character,
+        is_mandatory_character,
+        check_character_set,
+        ignore_if_contains,
+        logger,
 ):
     """
     Check the given link if it is appropriate
@@ -573,22 +574,28 @@ def check_link(
     web_address_navigator(browser, post_link)
 
     # Check if the Post is Valid/Exists
-    try:
-        post_page = browser.execute_script(
-            "return window.__additionalData[Object.keys(window.__additionalData)[0]].data"
-        )
+    # try:
+    #     post_page = browser.execute_script(
+    #         "return window.__additionalData[Object.keys(window.__additionalData)[0]].data"
+    #     )
+    #
+    # except WebDriverException:  # handle the possible `entry_data` error
+    #     try:
+    #         browser.execute_script("location.reload()")
+    #         update_activity(browser, state=None)
+    #
+    #         post_page = browser.execute_script(
+    #             "return window._sharedData.entry_data.PostPage[0]"
+    #         )
+    #
+    #     except WebDriverException:
+    #         post_page = None
 
-    except WebDriverException:  # handle the possible `entry_data` error
-        try:
-            browser.execute_script("location.reload()")
-            update_activity(browser, state=None)
-
-            post_page = browser.execute_script(
-                "return window._sharedData.entry_data.PostPage[0]"
-            )
-
-        except WebDriverException:
-            post_page = None
+    # soup = BeautifulSoup(browser.page_source, "html.parser")
+    # for text in soup(text=re.compile(r"window.__additionalDataLoaded")):
+    #     if re.search("^window.__additionalDataLoaded", text):
+    #         post_page = json.loads(text[48:-2])
+    post_page = get_additional_data(browser)
 
     if post_page is None:
         logger.warning("Unavailable Page: {}".format(post_link.encode("utf-8")))
@@ -607,34 +614,42 @@ def check_link(
         location = media["location"]
         location_name = location["name"] if location else None
         media_edge_string = get_media_edge_comment_string(media)
+        comments = media[media_edge_string]["edges"] if media[media_edge_string]["edges"] else None
+        owner_comments = ""
+        if comments is not None:
+            for comment in comments:
+                if comment["node"]["owner"]["username"] == user_name:
+                    owner_comments.append(comment["node"]["text"])
+
         # double {{ allows us to call .format here:
-        try:
-            browser.execute_script(
-                "window.insta_data = window.__additionalData[Object.keys(window.__additionalData)[0]].data"
-            )
-        except WebDriverException:
-            browser.execute_script(
-                "window.insta_data = window._sharedData.entry_data.PostPage[0]"
-            )
-        owner_comments = browser.execute_script(
-            """
-            latest_comments = window.insta_data.graphql.shortcode_media.{}.edges;
-            if (latest_comments === undefined) {{
-                latest_comments = Array();
-                owner_comments = latest_comments
-                    .filter(item => item.node.owner.username == arguments[0])
-                    .map(item => item.node.text)
-                    .reduce((item, total) => item + '\\n' + total, '');
-                return owner_comments;}}
-            else {{
-                return null;}}
-        """.format(
-                media_edge_string
-            ),
-            user_name,
-        )
+        # try:
+        #     browser.execute_script(
+        #         "window.insta_data = window.__additionalData[Object.keys(window.__additionalData)[0]].data"
+        #     )
+        # except WebDriverException:
+        #     browser.execute_script(
+        #         "window.insta_data = window._sharedData.entry_data.PostPage[0]"
+        #     )
+        # owner_comments = browser.execute_script(
+        #     """
+        #     latest_comments = window.insta_data.graphql.shortcode_media.{}.edges;
+        #     if (latest_comments === undefined) {{
+        #         latest_comments = Array();
+        #         owner_comments = latest_comments
+        #             .filter(item => item.node.owner.username == arguments[0])
+        #             .map(item => item.node.text)
+        #             .reduce((item, total) => item + '\\n' + total, '');
+        #         return owner_comments;}}
+        #     else {{
+        #         return null;}}
+        # """.format(
+        #         media_edge_string
+        #     ),
+        #     user_name,
+        # )
 
     else:
+        logger.info("post_page: {}".format(post_page))
         media = post_page[0]["shortcode_media"]
         is_video = media["is_video"]
         user_name = media["owner"]["username"]
@@ -932,38 +947,12 @@ def get_links(browser, page, logger, media, element):
 def verify_liking(browser, maximum, minimum, logger):
     """Get the amount of existing existing likes and compare it against maximum
     & minimum values defined by user"""
-    try:
-        likes_count = browser.execute_script(
-            "return window.__additionalData[Object.keys(window.__additionalData)[0]].data"
-            ".graphql.shortcode_media.edge_media_preview_like.count"
-        )
 
-    except WebDriverException:
-        try:
-            browser.execute_script("location.reload()")
-            update_activity(browser, state=None)
+    post_page = get_additional_data(browser)
+    likes_count = post_page["graphql"]["shortcode_media"]["edge_media_preview_like"]["count"]
 
-            likes_count = browser.execute_script(
-                "return window._sharedData.entry_data."
-                "PostPage[0].graphql.shortcode_media.edge_media_preview_like"
-                ".count"
-            )
-
-        except WebDriverException:
-            try:
-                likes_count = browser.find_element_by_css_selector(
-                    "section._1w76c._nlmjy > div > a > span"
-                ).text
-
-                if likes_count:
-                    likes_count = format_number(likes_count)
-                else:
-                    logger.info("Failed to check likes' count  ~empty string\n")
-                    return True
-
-            except NoSuchElementException:
-                logger.info("Failed to check likes' count\n")
-                return True
+    if not likes_count:
+        likes_count = 0
 
     if maximum is not None and likes_count > maximum:
         logger.info(
