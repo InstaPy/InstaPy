@@ -574,27 +574,6 @@ def check_link(
     web_address_navigator(browser, post_link)
 
     # Check if the Post is Valid/Exists
-    # try:
-    #     post_page = browser.execute_script(
-    #         "return window.__additionalData[Object.keys(window.__additionalData)[0]].data"
-    #     )
-    #
-    # except WebDriverException:  # handle the possible `entry_data` error
-    #     try:
-    #         browser.execute_script("location.reload()")
-    #         update_activity(browser, state=None)
-    #
-    #         post_page = browser.execute_script(
-    #             "return window._sharedData.entry_data.PostPage[0]"
-    #         )
-    #
-    #     except WebDriverException:
-    #         post_page = None
-
-    # soup = BeautifulSoup(browser.page_source, "html.parser")
-    # for text in soup(text=re.compile(r"window.__additionalDataLoaded")):
-    #     if re.search("^window.__additionalDataLoaded", text):
-    #         post_page = json.loads(text[48:-2])
     post_page = get_additional_data(browser)
 
     if post_page is None:
@@ -614,39 +593,14 @@ def check_link(
         location = media["location"]
         location_name = location["name"] if location else None
         media_edge_string = get_media_edge_comment_string(media)
+        # Gets all comments on media
         comments = media[media_edge_string]["edges"] if media[media_edge_string]["edges"] else None
         owner_comments = ""
+        # Concat all owner comments
         if comments is not None:
             for comment in comments:
                 if comment["node"]["owner"]["username"] == user_name:
-                    owner_comments.append(comment["node"]["text"])
-
-        # double {{ allows us to call .format here:
-        # try:
-        #     browser.execute_script(
-        #         "window.insta_data = window.__additionalData[Object.keys(window.__additionalData)[0]].data"
-        #     )
-        # except WebDriverException:
-        #     browser.execute_script(
-        #         "window.insta_data = window._sharedData.entry_data.PostPage[0]"
-        #     )
-        # owner_comments = browser.execute_script(
-        #     """
-        #     latest_comments = window.insta_data.graphql.shortcode_media.{}.edges;
-        #     if (latest_comments === undefined) {{
-        #         latest_comments = Array();
-        #         owner_comments = latest_comments
-        #             .filter(item => item.node.owner.username == arguments[0])
-        #             .map(item => item.node.text)
-        #             .reduce((item, total) => item + '\\n' + total, '');
-        #         return owner_comments;}}
-        #     else {{
-        #         return null;}}
-        # """.format(
-        #         media_edge_string
-        #     ),
-        #     user_name,
-        # )
+                    owner_comments = owner_comments + "\n" + comment["node"]["text"]
 
     else:
         logger.info("post_page: {}".format(post_page))
@@ -867,27 +821,11 @@ def get_tags(browser, url):
     # then do not navigate to it again
     web_address_navigator(browser, url)
 
-    try:
-        browser.execute_script(
-            "window.insta_data = window.__additionalData[Object.keys(window.__additionalData)[0]].data"
-        )
-    except WebDriverException:
-        browser.execute_script(
-            "window.insta_data = window._sharedData.entry_data.PostPage[0]"
-        )
+    additional_data = get_additional_data(browser)
+    image_text = additional_data["graphql"]["shortcode_media"]["edge_media_to_caption"]["edges"][0]["node"]["text"]
 
-    graphql = browser.execute_script("return ('graphql' in window.insta_data)")
-
-    if graphql:
-        image_text = browser.execute_script(
-            "return window.insta_data.graphql."
-            "shortcode_media.edge_media_to_caption.edges[0].node.text"
-        )
-
-    else:
-        image_text = browser.execute_script(
-            "return window.insta_data.media.caption.text"
-        )
+    if not image_text:
+        image_text = ""
 
     tags = findall(r"#\w*", image_text)
 
