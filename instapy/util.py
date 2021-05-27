@@ -461,15 +461,15 @@ def getUserData(
     shared_data = get_shared_data(browser)
     data = shared_data["entry_data"]["ProfilePage"][0]
 
-    if "." in query:
+    if query.find(".") == -1:
+        data = data[query]
+    else:
         subobjects = query.split(".")
         for subobject in subobjects:
             if data[subobject]:
                 data = data[subobject]
             else:
                 return data
-    else:
-        data = data[query]
 
     return data
 
@@ -481,15 +481,15 @@ def getMediaData(
     additional_data = get_additional_data(browser)
     data = additional_data["graphql"]["shortcode_media"]
 
-    if "." in query:
+    if query.find(".") == -1:
+        data = data[query]
+    else:
         subobjects = query.split(".")
         for subobject in subobjects:
             if data[subobject]:
                 data = data[subobject]
             else:
                 return data
-    else:
-        data = data[query]
 
     return data
 
