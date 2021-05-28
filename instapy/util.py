@@ -466,10 +466,7 @@ def getUserData(
     else:
         subobjects = query.split(".")
         for subobject in subobjects:
-            if data[subobject]:
-                data = data[subobject]
-            else:
-                return data
+            data = data[subobject]
 
     return data
 
@@ -486,10 +483,7 @@ def getMediaData(
     else:
         subobjects = query.split(".")
         for subobject in subobjects:
-            if data[subobject]:
-                data = data[subobject]
-            else:
-                return data
+            data = data[subobject]
 
     return data
 
