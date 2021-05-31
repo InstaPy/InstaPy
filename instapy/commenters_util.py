@@ -316,7 +316,7 @@ def users_liked(browser, photo_url, amount=100, logger=None):
 
 
 def likers_from_photo(browser, amount=20, logger=None):
-    """ Get the list of users from the 'Likes' dialog of a photo """
+    """Get the list of users from the 'Likes' dialog of a photo"""
 
     try:
         if check_exists_by_xpath(

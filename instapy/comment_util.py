@@ -236,7 +236,7 @@ def verify_mandatory_words(
 def get_comments_on_post(
     browser, owner, poster, amount, post_link, ignore_users, randomize, logger
 ):
-    """ Fetch comments data on posts """
+    """Fetch comments data on posts"""
     web_address_navigator(browser, post_link)
 
     comments = []
@@ -333,7 +333,7 @@ def get_comments_on_post(
 
 
 def is_commenting_enabled(browser, logger):
-    """ Find out if commenting on the post is enabled """
+    """Find out if commenting on the post is enabled"""
 
     try:
         comments_disabled = browser.execute_script(
@@ -365,7 +365,7 @@ def is_commenting_enabled(browser, logger):
 
 
 def get_comments_count(browser, logger):
-    """ Get the number of total comments in the post """
+    """Get the number of total comments in the post"""
     try:
         comments_count = browser.execute_script(
             "return window.__additionalData[Object.keys(window.__additionalData)[0]].data"
@@ -380,7 +380,7 @@ def get_comments_count(browser, logger):
 
 
 def verify_commented_image(browser, link, owner, logger):
-    """ Fetch comments data on posts to determine if already commented """
+    """Fetch comments data on posts to determine if already commented"""
 
     web_address_navigator(browser, link)
 
