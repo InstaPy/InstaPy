@@ -4,8 +4,9 @@ from datetime import datetime
 from .util import interruption_handler, getUserData
 from .util import web_address_navigator
 
+
 def get_log_time():
-    """ this method will keep same format for all recored"""
+    """this method will keep same format for all recored"""
     log_time = datetime.now().strftime("%Y-%m-%d %H:%M")
 
     return log_time

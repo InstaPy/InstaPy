@@ -180,13 +180,17 @@ def verify_mandatory_words(
 ):
     if len(mand_words) > 0 or isinstance(comments[0], dict):
         try:
-            post_desc = getMediaData("edge_media_to_caption.edges.0.node.text", browser).lower()
+            post_desc = getMediaData(
+                "edge_media_to_caption.edges.0.node.text", browser
+            ).lower()
 
         except Exception:
             post_desc = None
 
         try:
-            first_comment = getMediaData("edge_media_to_parent_comment.edges.0.node.text", browser).lower()
+            first_comment = getMediaData(
+                "edge_media_to_parent_comment.edges.0.node.text", browser
+            ).lower()
 
         except Exception:
             first_comment = None
@@ -228,7 +232,7 @@ def verify_mandatory_words(
 def get_comments_on_post(
     browser, owner, poster, amount, post_link, ignore_users, randomize, logger
 ):
-    """ Fetch comments data on posts """
+    """Fetch comments data on posts"""
     web_address_navigator(browser, post_link)
 
     comments = []
@@ -322,7 +326,7 @@ def get_comments_on_post(
 
 
 def is_commenting_enabled(browser, logger):
-    """ Find out if commenting on the post is enabled """
+    """Find out if commenting on the post is enabled"""
 
     comments_disabled = getMediaData("comments_disabled", browser)
 
@@ -334,14 +338,14 @@ def is_commenting_enabled(browser, logger):
 
 
 def get_comments_count(browser, logger):
-    """ Get the number of total comments in the post """
+    """Get the number of total comments in the post"""
 
     comments_count = getMediaData("edge_media_preview_comment.count", browser)
     return comments_count, "Success"
 
 
 def verify_commented_image(browser, link, owner, logger):
-    """ Fetch comments data on posts to determine if already commented """
+    """Fetch comments data on posts to determine if already commented"""
 
     web_address_navigator(browser, link)
 

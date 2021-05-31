@@ -56,7 +56,7 @@ def set_automated_followed_pool(
     delay_followbackers,
     pool="followedPool",
 ):
-    """ Generate a user list based on the InstaPy followed usernames """
+    """Generate a user list based on the InstaPy followed usernames"""
     pool_name = "{0}{1}_{2}.csv".format(logfolder, username, pool)
     automatedFollowedPool = {"all": {}, "eligible": {}}
     time_stamp = None
@@ -166,7 +166,7 @@ def unfollow(
     logger,
     logfolder,
 ):
-    """ Unfollows the given amount of users"""
+    """Unfollows the given amount of users"""
 
     msg = None
     unfollow_num = 0
@@ -829,7 +829,7 @@ def get_users_through_dialog_with_graphql(
 
 
 def dialog_username_extractor(buttons):
-    """ Extract username of a follow button from a dialog box """
+    """Extract username of a follow button from a dialog box"""
 
     if not isinstance(buttons, list):
         buttons = [buttons]
@@ -870,7 +870,7 @@ def follow_through_dialog(
     logger,
     logfolder,
 ):
-    """ Will follow username directly inside a dialog box """
+    """Will follow username directly inside a dialog box"""
     if not isinstance(person_list, list):
         person_list = [person_list]
 
@@ -1165,7 +1165,7 @@ def get_given_user_following(
 
 
 def dump_follow_restriction(profile_name, logger, logfolder):
-    """ Dump follow restriction data to a local human-readable JSON """
+    """Dump follow restriction data to a local human-readable JSON"""
 
     conn = None
 
@@ -1295,7 +1295,7 @@ def unfollow_user(
     logger,
     logfolder,
 ):
-    """ Unfollow a user either from the profile or post page or dialog box """
+    """Unfollow a user either from the profile or post page or dialog box"""
     # list of available tracks to unfollow in: ["profile", "post dialog]
     # check action availability
     if quota_supervisor("unfollows") == "jump":
@@ -1405,7 +1405,7 @@ def unfollow_user(
 
 
 def confirm_unfollow(browser):
-    """ Deal with the confirmation dialog boxes during an unfollow """
+    """Deal with the confirmation dialog boxes during an unfollow"""
     attempt = 0
 
     while attempt < 3:
@@ -1434,7 +1434,7 @@ def confirm_unfollow(browser):
 def post_unfollow_cleanup(
     state, username, person, relationship_data, person_id, logger, logfolder
 ):
-    """ Casual local data cleaning after an unfollow """
+    """Casual local data cleaning after an unfollow"""
     if not isinstance(state, list):
         state = [state]
 
@@ -1461,7 +1461,7 @@ def post_unfollow_cleanup(
 
 
 def get_buttons_from_dialog(dialog, channel):
-    """ Gets buttons from the `Followers` or `Following` dialog boxes"""
+    """Gets buttons from the `Followers` or `Following` dialog boxes"""
 
     buttons = None
 
@@ -1481,7 +1481,7 @@ def get_buttons_from_dialog(dialog, channel):
 
 
 def get_user_id(browser, track, username, logger):
-    """ Get user's ID either from a profile page or post page """
+    """Get user's ID either from a profile page or post page"""
     user_id = "unknown"
 
     if track != "dialog":  # currently do not get the user ID for follows
@@ -1494,7 +1494,7 @@ def get_user_id(browser, track, username, logger):
 def verify_action(
     browser, action, track, username, person, person_id, logger, logfolder
 ):
-    """ Verify if the action has succeeded """
+    """Verify if the action has succeeded"""
     # currently supported actions are follow & unfollow
 
     retry_count = 0
@@ -1569,7 +1569,7 @@ def post_unfollow_actions(browser, person, logger):
 
 
 def get_follow_requests(browser, amount, sleep_delay, logger, logfolder):
-    """ Get follow requests from instagram access tool list """
+    """Get follow requests from instagram access tool list"""
 
     user_link = "https://www.instagram.com/accounts/access_tool/current_follow_requests"
     web_address_navigator(browser, user_link)
