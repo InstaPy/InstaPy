@@ -102,7 +102,7 @@ def check_image(
 
 
 def given_tags_in_result(search_tags, clarifai_tags, full_match=False):
-    """Checks the clarifai tags if it contains one (or all) search tags """
+    """Checks the clarifai tags if it contains one (or all) search tags"""
     if full_match:
         return all([tag in clarifai_tags for tag in search_tags])
     else:

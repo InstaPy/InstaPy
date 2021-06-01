@@ -19,7 +19,7 @@ from selenium.common.exceptions import NoSuchElementException
 def get_following_status(
     browser, track, username, person, person_id, logger, logfolder
 ):
-    """ Verify if you are following the user in the loaded page """
+    """Verify if you are following the user in the loaded page"""
     if person == username:
         return "OWNER", None
 

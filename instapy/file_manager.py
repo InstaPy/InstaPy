@@ -28,7 +28,7 @@ def use_assets():
 
 
 def get_workspace():
-    """ Make a workspace ready for user """
+    """Make a workspace ready for user"""
 
     if WORKSPACE["path"]:
         workspace = verify_workspace_name(WORKSPACE["path"])
@@ -47,7 +47,7 @@ def get_workspace():
 
 
 def set_workspace(path=None):
-    """ Set a custom workspace for use """
+    """Set a custom workspace for use"""
 
     if not Settings.InstaPy_is_running:
         if path:
@@ -92,7 +92,7 @@ def set_workspace(path=None):
 
 
 def update_workspace(latest_path):
-    """ Update the workspace constant with its latest path """
+    """Update the workspace constant with its latest path"""
 
     latest_path = slashen(latest_path, "native")
     validate_path(latest_path)
@@ -100,7 +100,7 @@ def update_workspace(latest_path):
 
 
 def move_workspace(old_path, new_path):
-    """ Find data files in old workspace folder and move to new location """
+    """Find data files in old workspace folder and move to new location"""
     # write in future
 
 
@@ -121,7 +121,7 @@ def update_locations():
 
 
 def get_home_path():
-    """ Get user's home directory """
+    """Get user's home directory"""
 
     if python_version() >= "3.5":
         from pathlib import Path
@@ -137,7 +137,7 @@ def get_home_path():
 
 
 def slashen(path, direction="forward"):
-    """ Replace backslashes in paths with forward slashes """
+    """Replace backslashes in paths with forward slashes"""
 
     if direction == "forward":
         path = path.replace("\\", "/")
@@ -153,7 +153,7 @@ def slashen(path, direction="forward"):
 
 
 def remove_last_slash(path):
-    """ Remove the last slash in the given path [if any] """
+    """Remove the last slash in the given path [if any]"""
 
     if path.endswith("/"):
         path = path[:-1]
@@ -162,7 +162,7 @@ def remove_last_slash(path):
 
 
 def verify_workspace_name(path):
-    """ Make sure chosen workspace name is InstaPy friendly """
+    """Make sure chosen workspace name is InstaPy friendly"""
 
     path = slashen(path)
     path = remove_last_slash(path)
@@ -182,7 +182,7 @@ def verify_workspace_name(path):
 
 
 def differ_paths(old, new):
-    """ Compare old and new paths """
+    """Compare old and new paths"""
 
     if old and old.endswith(("\\", "/")):
         old = old[:-1]
@@ -196,7 +196,7 @@ def differ_paths(old, new):
 
 
 def validate_path(path):
-    """ Make sure the given path exists """
+    """Make sure the given path exists"""
 
     if not path_exists(path):
         try:
