@@ -1558,8 +1558,11 @@ def verify_action(
                     follow_button_xp = read_xpath(
                         "get_following_status", "follow_button_XP"
                     )
-                    button = browser.find_element(By.XPATH, follow_button_xp)
-                    button.click()
+                    button = browser.find_element_by_xpath(follow_button_xp)
+                    try:
+                        button.click()
+                    except:
+                        return False, "unexpected"
                     sleep(random.randint(4, 7))
                     return True, "success"
 
