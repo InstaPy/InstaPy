@@ -11,8 +11,6 @@ from datetime import timedelta
 from math import ceil
 
 # import InstaPy modules
-from selenium.webdriver.common.by import By
-
 from .time_util import sleep
 from .util import delete_line_from_file
 from .util import format_number
