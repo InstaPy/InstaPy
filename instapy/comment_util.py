@@ -6,7 +6,8 @@ import emoji
 
 # import InstaPy modules
 from .time_util import sleep
-from .util import update_activity, getMediaData
+from .util import update_activity
+from .util import getMediaData
 from .util import add_user_to_blacklist
 from .util import click_element
 from .util import get_action_delay
