@@ -9,6 +9,12 @@ _The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 ### Added
 
+- Fixed getting additional data from page source
+
+## [0.6.17] - UNRELEASED
+
+### Added
+
 - Fix user following and verification of follow
 
 ## [0.6.15] - UNRELEASED
@@ -17,7 +23,6 @@ _The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 - Added `verified_only` argument to `get_followers` to return only verified users
 - `mandatory_bio_keywords` control before evaluating for mandatory
-- Fixed getting additional data from page source
 
 ## [0.6.14] - UNRELEASED
 
