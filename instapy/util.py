@@ -883,7 +883,7 @@ def get_active_users(browser, username, posts, boundary, logger):
 
 
 def delete_line_from_file(filepath, userToDelete, logger):
-    """ Remove user's record from the followed pool file after unfollowing """
+    """Remove user's record from the followed pool file after unfollowing"""
     if not os.path.isfile(filepath):
         # in case of there is no any followed pool file yet
         return 0
@@ -1127,7 +1127,7 @@ def get_number_of_posts(browser):
 
 
 def get_relationship_counts(browser, username, logger):
-    """ Gets the followers & following counts of a given user """
+    """Gets the followers & following counts of a given user"""
 
     user_link = "https://www.instagram.com/{}/".format(username)
 
@@ -1308,7 +1308,7 @@ def interruption_handler(
 def highlight_print(
     username=None, message=None, priority=None, level=None, logger=None
 ):
-    """ Print headers in a highlighted style """
+    """Print headers in a highlighted style"""
     # can add other highlighters at other priorities enriching this function
 
     # find the number of chars needed off the length of the logger message
@@ -1382,7 +1382,7 @@ def highlight_print(
 
 
 def remove_duplicates(container, keep_order, logger):
-    """ Remove duplicates from all kinds of data types easily """
+    """Remove duplicates from all kinds of data types easily"""
     # add support for data types as needed in future
     # currently only 'list' data type is supported
     if isinstance(container, list):
@@ -1406,7 +1406,7 @@ def remove_duplicates(container, keep_order, logger):
 
 
 def dump_record_activity(profile_name, logger, logfolder):
-    """ Dump the record activity data to a local human-readable JSON """
+    """Dump the record activity data to a local human-readable JSON"""
 
     conn = None
 
@@ -1530,7 +1530,7 @@ def emergency_exit(browser, username, logger):
 
 
 def load_user_id(username, person, logger, logfolder):
-    """ Load the user ID at request from local records """
+    """Load the user ID at request from local records"""
     pool_name = "{0}{1}_followedPool.csv".format(logfolder, username)
     user_id = "undefined"
 
@@ -1562,7 +1562,7 @@ def load_user_id(username, person, logger, logfolder):
 
 
 def check_authorization(browser, username, method, logger, notify=True):
-    """ Check if user is NOW logged in """
+    """Check if user is NOW logged in"""
     if notify is True:
         logger.info("Checking if '{}' is logged in...".format(username))
 
@@ -1623,7 +1623,7 @@ def check_authorization(browser, username, method, logger, notify=True):
 
 
 def get_username(browser, track, logger):
-    """ Get the username of a user from the loaded profile page """
+    """Get the username of a user from the loaded profile page"""
 
     query = None
 
@@ -1660,7 +1660,7 @@ def get_username(browser, track, logger):
 
 
 def find_user_id(browser, track, username, logger):
-    """  Find the user ID from the loaded page """
+    """Find the user ID from the loaded page"""
 
     query = None
     meta_XP = None
@@ -1807,7 +1807,7 @@ def explicit_wait(browser, track, ec_params, logger, timeout=35, notify=True):
 
 
 def get_current_url(browser):
-    """ Get URL of the loaded webpage """
+    """Get URL of the loaded webpage"""
     try:
         current_url = browser.execute_script("return window.location.href")
 
@@ -1822,7 +1822,7 @@ def get_current_url(browser):
 
 
 def get_username_from_id(browser, user_id, logger):
-    """ Convert user ID to username """
+    """Convert user ID to username"""
     # method using graphql 'Account media' endpoint
     logger.info("Trying to find the username from the given user ID by loading a post")
 
@@ -1900,7 +1900,7 @@ def get_username_from_id(browser, user_id, logger):
 
 
 def is_page_available(browser, logger):
-    """ Check if the page is available and valid """
+    """Check if the page is available and valid"""
     expected_keywords = ["Page Not Found", "Content Unavailable"]
     page_title = get_page_title(browser, logger)
 
@@ -1951,7 +1951,7 @@ def smart_run(session, threaded=False):
 
 
 def reload_webpage(browser):
-    """ Reload the current webpage """
+    """Reload the current webpage"""
     browser.execute_script("location.reload()")
     update_activity(browser, state=None)
     sleep(2)
@@ -1960,7 +1960,7 @@ def reload_webpage(browser):
 
 
 def get_page_title(browser, logger):
-    """ Get the title of the webpage """
+    """Get the title of the webpage"""
     # wait for the current page fully load to get the correct page's title
     explicit_wait(browser, "PFL", [], logger, 10)
 
@@ -1985,7 +1985,7 @@ def get_page_title(browser, logger):
 
 
 def click_visibly(browser, element):
-    """ Click as the element become visible """
+    """Click as the element become visible"""
     if element.is_displayed():
         click_element(browser, element)
 
@@ -2007,7 +2007,7 @@ def click_visibly(browser, element):
 
 
 def get_action_delay(action):
-    """ Get the delay time to sleep after doing actions """
+    """Get the delay time to sleep after doing actions"""
     defaults = {"like": 2, "comment": 2, "follow": 3, "unfollow": 10, "story": 3}
     config = Settings.action_delays
 
@@ -2058,7 +2058,7 @@ def get_action_delay(action):
 
 
 def deform_emojis(text):
-    """ Convert unicode emojis into their text form """
+    """Convert unicode emojis into their text form"""
     new_text = ""
     emojiless_text = ""
     data = regex.findall(r"\X", text)
@@ -2088,7 +2088,7 @@ def deform_emojis(text):
 
 
 def extract_text_from_element(elem):
-    """ As an element is valid and contains text, extract it and return """
+    """As an element is valid and contains text, extract it and return"""
     if elem and hasattr(elem, "text") and elem.text:
         text = elem.text
     else:
@@ -2098,7 +2098,7 @@ def extract_text_from_element(elem):
 
 
 def truncate_float(number, precision, round=False):
-    """ Truncate (shorten) a floating point value at given precision """
+    """Truncate (shorten) a floating point value at given precision"""
 
     # don't allow a negative precision [by mistake?]
     precision = abs(precision)
@@ -2123,7 +2123,7 @@ def truncate_float(number, precision, round=False):
 
 
 def get_time_until_next_month():
-    """ Get total seconds remaining until the next month """
+    """Get total seconds remaining until the next month"""
     now = datetime.datetime.now()
     next_month = now.month + 1 if now.month < 12 else 1
     year = now.year if now.month < 12 else now.year + 1
@@ -2135,14 +2135,14 @@ def get_time_until_next_month():
 
 
 def remove_extra_spaces(text):
-    """ Find and remove redundant spaces more than 1 in text """
+    """Find and remove redundant spaces more than 1 in text"""
     new_text = re.sub(r" {2,}", " ", text)
 
     return new_text
 
 
 def has_any_letters(text):
-    """ Check if the text has any letters in it """
+    """Check if the text has any letters in it"""
     # result = re.search("[A-Za-z]", text)   # works only with english letters
     result = any(
         c.isalpha() for c in text
@@ -2240,7 +2240,7 @@ def get_users_from_dialog(old_data, dialog, logger):
 
 
 def progress_tracker(current_value, highest_value, initial_time, logger):
-    """ Provide a progress tracker to keep value updated until finishes """
+    """Provide a progress tracker to keep value updated until finishes"""
     if current_value is None or highest_value is None or highest_value == 0:
         return
 
@@ -2307,7 +2307,7 @@ def progress_tracker(current_value, highest_value, initial_time, logger):
 
 
 def close_dialog_box(browser):
-    """ Click on the close button spec. in the 'Likes' dialog box """
+    """Click on the close button spec. in the 'Likes' dialog box"""
 
     try:
         close = browser.find_element_by_xpath(
@@ -2321,7 +2321,7 @@ def close_dialog_box(browser):
 
 
 def parse_cli_args():
-    """ Parse arguments passed by command line interface """
+    """Parse arguments passed by command line interface"""
 
     AP_kwargs = dict(
         prog="InstaPy",
@@ -2520,7 +2520,7 @@ def get_query_hash(browser, logger, edge_followed_by):
 
 
 def file_handling(file):
-    """ Extracts text file's elements """
+    """Extracts text file's elements"""
     elements = []
     try:
         with open(file, "r") as f:

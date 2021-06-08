@@ -99,7 +99,7 @@ xpath["get_following_status"] = {
                                   text()='Requested' or \
                                   text()='Follow' or \
                                   text()='Follow Back' or \
-                                  text()='Unblock']",
+                                  text()='Unblock' and not(ancestor::*/@role = 'presentation')]",
     "follow_span_XP_following": "//button/div/span[contains(@aria-label, 'Following')]",
 }
 

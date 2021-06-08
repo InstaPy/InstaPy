@@ -32,7 +32,7 @@ def get_followers(
     logfolder,
     verified_only=False,
 ):
-    """ Get entire list of followers using graphql queries. """
+    """Get entire list of followers using graphql queries."""
 
     # Variables
     user_data = {}
@@ -331,7 +331,7 @@ def get_following(
     logger,
     logfolder,
 ):
-    """ Get entire list of following using graphql queries. """
+    """Get entire list of following using graphql queries."""
 
     # Variables
     user_data = {}
@@ -735,7 +735,7 @@ def get_nonfollowers(
     logger,
     logfolder,
 ):
-    """ Finds Nonfollowers of a given user """
+    """Finds Nonfollowers of a given user"""
 
     if username is None or not isinstance(username, str):
         logger.info(
@@ -809,7 +809,7 @@ def get_fans(
     logger,
     logfolder,
 ):
-    """ Find Fans of a given user """
+    """Find Fans of a given user"""
 
     if username is None or not isinstance(username, str):
         logger.info(
@@ -877,7 +877,7 @@ def get_mutual_following(
     logger,
     logfolder,
 ):
-    """ Find Mutual Following of a given user """
+    """Find Mutual Following of a given user"""
 
     if username is None or type(username) != str:
         logger.info(
@@ -974,7 +974,7 @@ def store_followers_data(username, grab, grabbed_followers, logger, logfolder):
 
 
 def store_following_data(username, grab, grabbed_following, logger, logfolder):
-    """ Store grabbed `Following` data in a local storage at generated date """
+    """Store grabbed `Following` data in a local storage at generated date"""
     query_date = datetime.today().strftime("%d-%m-%Y")
     grabbed_following_size = len(grabbed_following)
     file_directory = "{}/relationship_data/{}/following/".format(logfolder, username)
@@ -1006,7 +1006,7 @@ def store_following_data(username, grab, grabbed_following, logger, logfolder):
 
 
 def store_all_unfollowers(username, all_unfollowers, logger, logfolder):
-    """ Store all Unfollowers data in a local storage at generated date """
+    """Store all Unfollowers data in a local storage at generated date"""
     generation_date = datetime.today().strftime("%d-%m-%Y")
     all_unfollowers_size = len(all_unfollowers)
     file_directory = "{}/relationship_data/{}/unfollowers/all_unfollowers/".format(
@@ -1039,7 +1039,7 @@ def store_all_unfollowers(username, all_unfollowers, logger, logfolder):
 
 
 def store_active_unfollowers(username, active_unfollowers, logger, logfolder):
-    """ Store active Unfollowers data in a local storage at generated date """
+    """Store active Unfollowers data in a local storage at generated date"""
     generation_date = datetime.today().strftime("%d-%m-%Y")
     active_unfollowers_size = len(active_unfollowers)
     file_directory = (
@@ -1077,7 +1077,7 @@ def store_active_unfollowers(username, active_unfollowers, logger, logfolder):
 def store_nonfollowers(
     username, followers_size, following_size, nonfollowers, logger, logfolder
 ):
-    """ Store Nonfollowers data in a local storage at generated date """
+    """Store Nonfollowers data in a local storage at generated date"""
     generation_date = datetime.today().strftime("%d-%m-%Y")
     nonfollowers_size = len(nonfollowers)
     file_directory = "{}/relationship_data/{}/nonfollowers/".format(logfolder, username)
@@ -1112,7 +1112,7 @@ def store_nonfollowers(
 
 
 def store_fans(username, followers_size, following_size, fans, logger, logfolder):
-    """ Store Fans data in a local storage at generated date """
+    """Store Fans data in a local storage at generated date"""
     generation_date = datetime.today().strftime("%d-%m-%Y")
     fans_size = len(fans)
 
@@ -1148,7 +1148,7 @@ def store_fans(username, followers_size, following_size, fans, logger, logfolder
 def store_mutual_following(
     username, followers_size, following_size, mutual_following, logger, logfolder
 ):
-    """ Store Mutual Following data in a local storage at generated date """
+    """Store Mutual Following data in a local storage at generated date"""
     generation_date = datetime.today().strftime("%d-%m-%Y")
     mutual_following_size = len(mutual_following)
 
@@ -1189,7 +1189,7 @@ def store_mutual_following(
 
 
 def load_followers_data(username, compare_by, compare_track, logger, logfolder):
-    """ Write grabbed `followers` data into local storage """
+    """Write grabbed `followers` data into local storage"""
 
     # Variables
     tracked_filenames = []

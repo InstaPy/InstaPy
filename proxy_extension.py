@@ -3,7 +3,7 @@ import os
 
 
 def create_proxy_extension(proxy):
-    """ takes proxy looks like login:password@ip:port """
+    """takes proxy looks like login:password@ip:port"""
 
     ip = proxy.split("@")[1].split(":")[0]
     port = int(proxy.split(":")[-1])

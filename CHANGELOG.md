@@ -5,7 +5,14 @@ The **goal** of this file is explaining to the users of our project the notable 
 _The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html)_
 
 
+## [0.6.16] - UNRELEASED
+
+### Added
+
+- Fix user following and verification of follow
+
 ## [0.6.15] - UNRELEASED
+
 ### Added
 
 - Added `verified_only` argument to `get_followers` to return only verified users
