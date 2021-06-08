@@ -329,6 +329,12 @@ def get_comments_on_post(
 def is_commenting_enabled(browser, logger):
     """Find out if commenting on the post is enabled"""
 
+    try:
+        comments_disabled = browser.execute_script(
+            "return window.__additionalData[Object.keys(window.__additionalData)[0]].data"
+            ".graphql.shortcode_media.comments_disabled"
+        )
+
     comments_disabled = getMediaData("comments_disabled", browser)
 
     if comments_disabled is True:
@@ -340,6 +346,16 @@ def is_commenting_enabled(browser, logger):
 
 def get_comments_count(browser, logger):
     """Get the number of total comments in the post"""
+
+    try:
+        comments_count = browser.execute_script(
+            "return window.__additionalData[Object.keys(window.__additionalData)[0]].data"
+            ".graphql.shortcode_media.edge_media_preview_comment.count"
+        )
+
+    except Exception as e:
+        msg = "Failed to get comments' count!\n\t{}".format(str(e).encode("utf-8"))
+        return None, msg
 
     comments_count = getMediaData("edge_media_preview_comment.count", browser)
     return comments_count, "Success"

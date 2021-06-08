@@ -540,11 +540,11 @@ def follow_user(browser, track, login, user_name, button, blacklist, logger, log
         return False, "jumped"
 
     if track in ["profile", "post"]:
-        if track == "profile":
-            # check URL of the webpage, if it already is user's profile
-            # page, then do not navigate to it again
-            user_link = "https://www.instagram.com/{}/".format(user_name)
-            web_address_navigator(browser, user_link)
+        # if track == "profile":
+        # check URL of the webpage, if it already is user's profile
+        # page, then do not navigate to it again
+        user_link = "https://www.instagram.com/{}/".format(user_name)
+        web_address_navigator(browser, user_link)
 
         # find out CURRENT following status
         following_status, follow_button = get_following_status(
@@ -1551,6 +1551,20 @@ def verify_action(
 
                     sleep(4)
                 elif retry_count == 3:
+                    user_link = "https://www.instagram.com/{}/".format(person)
+                    web_address_navigator(browser, user_link)
+                    follow_button_xp = read_xpath(
+                        "get_following_status", "follow_button_XP"
+                    )
+                    button = browser.find_element_by_xpath(follow_button_xp)
+                    try:
+                        button.click()
+                    except:
+                        return False, "unexpected"
+                    sleep(random.randint(4, 7))
+                    return True, "success"
+
+                elif retry_count == 4:
                     logger.warning(
                         "Last {0} is not verified."
                         "\t~'{1}' might be temporarily blocked "
