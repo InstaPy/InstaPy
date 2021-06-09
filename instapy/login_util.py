@@ -28,7 +28,7 @@ from selenium.common.exceptions import MoveTargetOutOfBoundsException
 def bypass_suspicious_login(
     browser, logger, logfolder, bypass_security_challenge_using
 ):
-    """ Bypass suspicious loggin attempt verification. """
+    """Bypass suspicious loggin attempt verification."""
 
     # close sign up Instagram modal if available
     dismiss_get_app_offer(browser, logger)
@@ -537,7 +537,7 @@ def login_user(
 
 
 def dismiss_get_app_offer(browser, logger):
-    """ Dismiss 'Get the Instagram App' page after a fresh login """
+    """Dismiss 'Get the Instagram App' page after a fresh login"""
     offer_elem = read_xpath(dismiss_get_app_offer.__name__, "offer_elem")
     dismiss_elem = read_xpath(dismiss_get_app_offer.__name__, "dismiss_elem")
 
@@ -552,7 +552,7 @@ def dismiss_get_app_offer(browser, logger):
 
 
 def dismiss_notification_offer(browser, logger):
-    """ Dismiss 'Turn on Notifications' offer on session start """
+    """Dismiss 'Turn on Notifications' offer on session start"""
     offer_elem_loc = read_xpath(dismiss_notification_offer.__name__, "offer_elem_loc")
     dismiss_elem_loc = read_xpath(
         dismiss_notification_offer.__name__, "dismiss_elem_loc"
@@ -569,7 +569,7 @@ def dismiss_notification_offer(browser, logger):
 
 
 def dismiss_save_information(browser, logger):
-    """ Dismiss 'Save Your Login Info?' offer on session start """
+    """Dismiss 'Save Your Login Info?' offer on session start"""
     # This question occurs when pkl doesn't exist
     offer_elem_loc = read_xpath(dismiss_save_information.__name__, "offer_elem_loc")
     dismiss_elem_loc = read_xpath(dismiss_save_information.__name__, "dismiss_elem_loc")
@@ -680,7 +680,7 @@ def two_factor_authentication(browser, logger, security_codes):
 
 
 def accept_igcookie_dialogue(browser, logger):
-    """ Presses 'Accept' button on IG cookie dialogue """
+    """Presses 'Accept' button on IG cookie dialogue"""
 
     offer_elem_loc = read_xpath(accept_igcookie_dialogue.__name__, "accept_button")
 
