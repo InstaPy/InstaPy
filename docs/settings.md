@@ -371,7 +371,8 @@ You can set a percentage of skipping:
 
 ##### Skip public account
 ```python
-session.set_skip_users(skip_public=True,
+session.set_skip_users(skip_private=False,
+                       skip_public=True,
                        public_percentage=100)
 ```
 Will skip users that have public account.
