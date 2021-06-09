@@ -1,6 +1,5 @@
 """ Common utilities """
 # import built-in & third-party modules
-import operator
 import time
 import datetime
 import random
