@@ -25,7 +25,7 @@ def get_server_endpoint(topic):
 
 
 def get_recent_posts_from_pods(topic, logger):
-    """ fetches all recent posts shared with pods """
+    """fetches all recent posts shared with pods"""
     params = {"topic": topic}
     r = requests.get(get_server_endpoint(topic) + "/getRecentPostsV1", params=params)
     try:
@@ -65,7 +65,7 @@ def group_posts(posts, logger):
 
 
 def share_my_post_with_pods(postid, topic, engagement_mode, logger):
-    """ share_my_post_with_pod """
+    """share_my_post_with_pod"""
     params = {"postid": postid, "topic": topic, "mode": engagement_mode}
     r = requests.get(get_server_endpoint(topic) + "/publishMyLatestPost", params=params)
     try:
@@ -82,7 +82,7 @@ def share_my_post_with_pods(postid, topic, engagement_mode, logger):
 
 
 def share_with_pods_restriction(operation, postid, limit, logger):
-    """ Keep track of already shared posts """
+    """Keep track of already shared posts"""
     conn = None
 
     try:
@@ -152,7 +152,7 @@ def share_with_pods_restriction(operation, postid, limit, logger):
 
 
 def comment_restriction(operation, postid, limit, logger):
-    """ Keep track of already shared posts """
+    """Keep track of already shared posts"""
     conn = None
 
     try:

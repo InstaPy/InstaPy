@@ -15,7 +15,7 @@ from .settings import Storage
 
 
 def quota_supervisor(job, update=False):
-    """ Supervise activity flow through action engines and take measures"""
+    """Supervise activity flow through action engines and take measures"""
     # --ACTION----------ENGINE--------------FILE--------------OPTION--- #
     #   Like         `like_image`       [like_util.py]      jump|sleep  #
     #   Comment      `comment_image`    [comment_util.py]   jump|sleep  #
@@ -43,7 +43,7 @@ def quota_supervisor(job, update=False):
 
 
 def controller(job):
-    """ Control and supervise """
+    """Control and supervise"""
     if not records:
         load_records()
 
@@ -91,7 +91,7 @@ def controller(job):
 
 
 def inspector(job, peaks):
-    """ Inspect action and return end result """
+    """Inspect action and return end result"""
     lc_extra_check_h, lc_extra_check_d = False, False
 
     hourly_peak = peaks[job]["hourly"]
@@ -180,7 +180,7 @@ def stochasticity(peaks):
 
 
 def stochast_values(peaks, orig_peaks, interval, percent):
-    """ Return randomly generated stochastic peak values """
+    """Return randomly generated stochastic peak values"""
     for job in orig_peaks:
         job_data = orig_peaks[job]
 
@@ -195,7 +195,7 @@ def stochast_values(peaks, orig_peaks, interval, percent):
 
 
 def stoch_randomizer(value, percent):
-    """ Value randomizer for stochastic flow """
+    """Value randomizer for stochastic flow"""
     stochastic_value = random.randint(int((value + 1) * percent / 100), value)
 
     return stochastic_value
@@ -224,7 +224,7 @@ def remaining_time(sleepyhead, interval):
 
 
 def send_message(job, action, interval, nap):
-    """ Send information messages about QS states """
+    """Send information messages about QS states"""
     job = job.replace("_", " ")
 
     if action == "sleep":
@@ -310,7 +310,7 @@ def toast_notification(notify, alert, job, interval):
 
 
 def get_icons():
-    """ Return the locations of icons according to the operating system """
+    """Return the locations of icons according to the operating system"""
     # get full location of icons folder inside package
     icons_path = get_pkg_resource_path("instapy", "icons/")
 
@@ -351,7 +351,7 @@ def get_icons():
 
 
 def load_records():
-    """ Load the data from local DB file """
+    """Load the data from local DB file"""
     db, profile_id = get_database()
     conn = sqlite3.connect(db)
 
@@ -393,7 +393,7 @@ def load_records():
 
 
 def get_record(job, interval):
-    """ Quickly get and return daily or hourly records """
+    """Quickly get and return daily or hourly records"""
     try:
         if interval == "hourly":
             record = records[today][this_hour][job]
@@ -409,7 +409,7 @@ def get_record(job, interval):
 
 
 def update_record(job):
-    """ Update the corresponding record stored in the global Storage class """
+    """Update the corresponding record stored in the global Storage class"""
     # the order of the 2 conditional statements below is crucial
     if today not in records.keys():
         records.update({today: {this_hour: {}}})

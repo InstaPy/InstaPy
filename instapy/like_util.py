@@ -982,7 +982,7 @@ def verify_liking(browser, maximum, minimum, logger):
 
 
 def like_comment(browser, original_comment_text, logger):
-    """ Like the given comment """
+    """Like the given comment"""
     comments_block_XPath = read_xpath(
         like_comment.__name__, "comments_block"
     )  # quite an efficient

@@ -20,7 +20,7 @@ OS_ENV = (
 
 
 def localize_path(*args):
-    """ Join given locations as an OS path """
+    """Join given locations as an OS path"""
 
     if WORKSPACE["path"]:
         path = join_path(WORKSPACE["path"], *args)
@@ -31,7 +31,7 @@ def localize_path(*args):
 
 
 class Settings:
-    """ Globally accessible settings throughout whole project """
+    """Globally accessible settings throughout whole project"""
 
     # locations
     log_location = localize_path("logs")
@@ -86,7 +86,7 @@ class Settings:
 
 
 class Storage:
-    """ Globally accessible standalone storage """
+    """Globally accessible standalone storage"""
 
     # store realtime record activity data
     record_activity = {}

@@ -902,7 +902,7 @@ class InstaPy:
         sleep_delay: int = 600,
         interact: bool = False,
     ):
-        """ Follows users' commenters """
+        """Follows users' commenters"""
 
         if self.aborting:
             return self
@@ -1451,7 +1451,7 @@ class InstaPy:
         self.comments_mandatory_words = comments_mandatory_words
 
     def set_simulation(self, enabled: bool = True, percentage: int = 100):
-        """ Sets aside simulation parameters """
+        """Sets aside simulation parameters"""
         if enabled not in [True, False]:
             self.logger.info(
                 "Invalid simulation parameter! Please use correct syntax "
@@ -3629,7 +3629,7 @@ class InstaPy:
         interact: bool = False,
         sleep_delay: int = 600,
     ):
-        """ Follow the `Followers` of given users """
+        """Follow the `Followers` of given users"""
         if self.aborting:
             return self
 
@@ -4989,7 +4989,7 @@ class InstaPy:
     def interact_by_URL(
         self, urls: list = [], randomize: bool = False, interact: bool = False
     ):
-        """ Interact on posts at given URLs """
+        """Interact on posts at given URLs"""
 
         if self.aborting:
             return self
@@ -5284,7 +5284,7 @@ class InstaPy:
             self.internal_usage.pop(feature)
 
     def live_report(self):
-        """ Report live sessional statistics """
+        """Report live sessional statistics"""
 
         print("")
 
@@ -6123,7 +6123,7 @@ class InstaPy:
                     self.reels_watched += reels
 
     def story_by_users(self, users: list = None):
-        """ Watch stories for specific user(s)"""
+        """Watch stories for specific user(s)"""
         if self.aborting:
             return self
 
