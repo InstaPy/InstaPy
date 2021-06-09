@@ -25,6 +25,7 @@ from random import randint
 from contextlib import contextmanager
 from tempfile import gettempdir
 from argparse import ArgumentParser
+from bs4 import BeautifulSoup
 
 from emoji.unicode_codes import UNICODE_EMOJI
 from selenium.webdriver.support.ui import WebDriverWait
@@ -45,7 +46,6 @@ from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import StaleElementReferenceException
 from selenium.common.exceptions import WebDriverException
 from selenium.common.exceptions import TimeoutException
-
 
 default_profile_pic_instagram = [
     "https://instagram.flas1-2.fna.fbcdn.net/vp"
@@ -78,25 +78,10 @@ def is_private_profile(browser, logger, following=True):
     :return: None if profile cannot be verified
     """
 
-    is_private = None
-    try:
-        is_private = browser.execute_script(
-            "return window.__additionalData[Object.keys(window.__additionalData)[0]]."
-            "data.graphql.user.is_private"
-        )
-
-    except WebDriverException:
-        try:
-            browser.execute_script("location.reload()")
-            update_activity(browser, state=None)
-
-            is_private = browser.execute_script(
-                "return window._sharedData.entry_data."
-                "ProfilePage[0].graphql.user.is_private"
-            )
-
-        except WebDriverException:
-            return None
+    shared_data = get_shared_data(browser)
+    is_private = shared_data["entry_data"]["ProfilePage"][0]["graphql"]["user"][
+        "is_private"
+    ]
 
     return is_private
 
@@ -473,19 +458,36 @@ def validate_username(
 def getUserData(
     query,
     browser,
-    basequery="return window.__additionalData[Object.keys(window.__additionalData)[0]].data.",
+    basequery="no-longer-needed",
 ):
-    try:
-        data = browser.execute_script(basequery + query)
-        return data
-    except WebDriverException:
-        browser.execute_script("location.reload()")
-        update_activity(browser, state=None)
+    shared_data = get_shared_data(browser)
+    data = shared_data["entry_data"]["ProfilePage"][0]
 
-        data = browser.execute_script(
-            "return window._sharedData.entry_data.ProfilePage[0]." + query
-        )
-        return data
+    if query.find(".") == -1:
+        data = data[query]
+    else:
+        subobjects = query.split(".")
+        for subobject in subobjects:
+            data = data[subobject]
+
+    return data
+
+
+def getMediaData(
+    query,
+    browser,
+):
+    additional_data = get_additional_data(browser)
+    data = additional_data["graphql"]["shortcode_media"]
+
+    if query.find(".") == -1:
+        data = data[query]
+    else:
+        subobjects = query.split(".")
+        for subobject in subobjects:
+            data = data[subobject]
+
+    return data
 
 
 def update_activity(
@@ -2558,3 +2560,37 @@ class CustomizedArgumentParser(ArgumentParser):
         will give the location of the 'argparse.py' file that have this method.
         """
         return []
+
+
+def get_additional_data(browser):
+    """
+    Get additional data object from page source
+    Idea and Code by alokkumarsbg
+
+    :param browser: The selenium webdriver instance
+    :return additional_data: Json data from window.__additionalData extracted from page source
+    """
+    additional_data = None
+    soup = BeautifulSoup(browser.page_source, "html.parser")
+    for text in soup(text=re.compile(r"window.__additionalDataLoaded")):
+        if re.search("^window.__additionalDataLoaded", text):
+            additional_data = json.loads(text[48:-2])
+
+    return additional_data
+
+
+def get_shared_data(browser):
+    """
+    Get shared data object from page source
+    Code by schealex
+
+    :param browser: The selenium webdriver instance
+    :return shared_data: Json data from window._sharedData extracted from page source
+    """
+    shared_data = None
+    soup = BeautifulSoup(browser.page_source, "html.parser")
+    for text in soup(text=re.compile(r"window._sharedData")):
+        if re.search("^window._sharedData", text):
+            shared_data = json.loads(text[21:-1])
+
+    return shared_data
