@@ -1394,6 +1394,8 @@ class InstaPy:
         self,
         skip_private: bool = True,
         private_percentage: int = 100,
+        skip_public: bool = False,
+        public_percentage: int = 100,
         skip_no_profile_pic: bool = False,
         no_profile_pic_percentage: int = 100,
         skip_business: bool = False,
@@ -1403,8 +1405,6 @@ class InstaPy:
         skip_non_business: bool = False,
         skip_bio_keyword: list = [],
         mandatory_bio_keywords: list = [],
-        skip_public: bool = False,
-        public_percentage: int = 0,
     ):
 
         self.skip_business = skip_business
