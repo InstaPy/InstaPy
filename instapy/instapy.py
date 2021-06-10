@@ -272,6 +272,8 @@ class InstaPy:
         self.skip_non_business = False
         self.skip_no_profile_pic = False
         self.skip_private = True
+        self.skip_public = False
+        self.skip_public_percentage = 0
         self.skip_business_percentage = 100
         self.skip_no_profile_pic_percentage = 100
         self.skip_private_percentage = 100
@@ -1361,6 +1363,8 @@ class InstaPy:
             self.max_posts,
             self.skip_private,
             self.skip_private_percentage,
+            self.skip_public,
+            self.skip_public_percentage,
             self.skip_no_profile_pic,
             self.skip_no_profile_pic_percentage,
             self.skip_business,
@@ -1390,6 +1394,8 @@ class InstaPy:
         self,
         skip_private: bool = True,
         private_percentage: int = 100,
+        skip_public: bool = False,
+        public_percentage: int = 100,
         skip_no_profile_pic: bool = False,
         no_profile_pic_percentage: int = 100,
         skip_business: bool = False,
@@ -1410,6 +1416,8 @@ class InstaPy:
         self.skip_non_business = skip_non_business
         self.skip_bio_keyword = skip_bio_keyword
         self.mandatory_bio_keywords = mandatory_bio_keywords
+        self.skip_public = skip_public
+        self.skip_public_percentage = public_percentage
         if skip_business:
             self.skip_business_categories = skip_business_categories
             if len(skip_business_categories) == 0:

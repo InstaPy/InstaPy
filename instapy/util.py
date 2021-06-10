@@ -126,6 +126,8 @@ def validate_username(
     max_posts,
     skip_private,
     skip_private_percentage,
+    skip_public,
+    skip_public_percentage,
     skip_no_profile_pic,
     skip_no_profile_pic_percentage,
     skip_business,
@@ -350,14 +352,31 @@ def validate_username(
     # skip private
     if skip_private:
         try:
-            browser.find_element_by_xpath(
-                "//*[contains(text(), 'This Account is Private')]"
-            )
-            is_private = True
-        except NoSuchElementException:
-            is_private = False
-        if is_private and (random.randint(0, 100) <= skip_private_percentage):
-            return False, "{} is private account, by default skip\n".format(username)
+            is_private = getUserData("graphql.user.is_private", browser)
+
+            if is_private and (random.randint(0, 100) <= skip_private_percentage):
+                return False, "{} is private account, by default skip\n".format(
+                    username
+                )
+        except:
+            logger.error("~could not check if profile is public or private")
+            return False, "--> Sorry, could not check if profile is public or private\n"
+
+    # skip public
+    if skip_public:
+        try:
+            is_public = not getUserData("graphql.user.is_private", browser)
+
+            if is_public and (random.randint(0, 100) <= skip_public_percentage):
+                return (
+                    False,
+                    "{} is public account, skip because of configuration\n".format(
+                        username
+                    ),
+                )
+        except:
+            logger.error("~could not check if profile is public or private")
+            return False, "--> Sorry, could not check if profile is public or private\n"
 
     # skip no profile pic
     if skip_no_profile_pic:
