@@ -81,6 +81,8 @@ def is_private_profile(browser, logger, following=True):
     shared_data = get_shared_data(browser)
     data = shared_data["entry_data"]["ProfilePage"][0]
 
+    # Sometimes shared_data["entry_data"]["ProfilePage"][0] is empty, but get_additional_data()
+    # fetches all data needed
     if not data:
         data = get_additional_data(browser)
 
@@ -485,6 +487,8 @@ def getUserData(
     shared_data = get_shared_data(browser)
     data = shared_data["entry_data"]["ProfilePage"][0]
 
+    # Sometimes shared_data["entry_data"]["ProfilePage"][0] is empty, but get_additional_data()
+    # fetches all data needed
     if not data:
         data = get_additional_data(browser)
 
