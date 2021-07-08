@@ -242,6 +242,15 @@ def login_user(
     ig_homepage = "https://www.instagram.com"
     web_address_navigator(browser, ig_homepage)
 
+    for element in browser.find_elements_by_tag_name('button'):
+        if element.text.strip().lower() == 'accept all':
+            logger.info("Clicking accept all cookies button ...")
+            element.click()
+            logger.info("Sleeping 4 seconds ...")
+            sleep(4)
+            break
+
+
     cookie_file = "{0}{1}_cookie.pkl".format(logfolder, username)
     cookie_loaded = None
     login_state = None
