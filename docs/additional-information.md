@@ -512,7 +512,7 @@ python quickstart.py -u abc
 By default, InstaPy downloads the latest version of the geckodriver.
 Unless you need a specific version of the geckodriver, you're ready to go.
 
-You can manually download the geckodriver binary and put the path as an argument to the InstaPy contructor:
+You can manually download the geckodriver binary and put the path as an argument to the InstaPy constructor:
 
 ```python
 session = InstaPy(..., geckodriver_path = '/path/to/binary', ...)

@@ -421,7 +421,7 @@ def likers_from_photo(browser, amount=20, logger=None):
         return user_list
 
     except Exception as exc:
-        logger.warning("Some problem occured! \n\t{}".format(str(exc).encode("utf-8")))
+        logger.warning("Some problem occurred! \n\t{}".format(str(exc).encode("utf-8")))
         return []
 
 

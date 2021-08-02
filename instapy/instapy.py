@@ -927,7 +927,7 @@ class InstaPy:
         inap_img_init = self.inap_img
 
         relax_point = random.randint(7, 14)  # you can use some plain value
-        # `10` instead of this quitely randomized score
+        # `10` instead of this quietly randomized score
         self.quotient_breach = False
 
         for username in usernames:
@@ -2393,7 +2393,7 @@ class InstaPy:
             if liked_img < amount:
                 self.logger.info("-------------")
                 self.logger.info(
-                    "--> Given amount not fullfilled, image pool reached its end\n"
+                    "--> Given amount not fulfilled, image pool reached its end\n"
                 )
 
         self.logger.info("User: {}".format(username.encode("utf-8")))
@@ -2711,7 +2711,7 @@ class InstaPy:
             if liked_img < amount:
                 self.logger.info("-------------")
                 self.logger.info(
-                    "--> Given amount not fullfilled, image pool reached its end\n"
+                    "--> Given amount not fulfilled, image pool reached its end\n"
                 )
 
         if len(usernames) > 1:
@@ -3023,7 +3023,7 @@ class InstaPy:
             if liked_img < amount:
                 self.logger.info("-------------")
                 self.logger.info(
-                    "--> Given amount not fullfilled, image pool reached its end\n"
+                    "--> Given amount not fulfilled, image pool reached its end\n"
                 )
 
         # final words
@@ -5389,7 +5389,7 @@ class InstaPy:
         else:
             if media is not None:
                 self.logger.warning(
-                    "Unkown media type set at comment replies! Treating as 'any'."
+                    "Unknown media type set at comment replies! Treating as 'any'."
                 )
 
             self.comment_replies = replies
@@ -5493,7 +5493,7 @@ class InstaPy:
 
         if media not in [MEDIA_PHOTO, MEDIA_VIDEO, None]:
             self.logger.warning(
-                "Unkown media type- '{}' set at"
+                "Unknown media type- '{}' set at"
                 " Interact-By-Comments!\t~treating as any..".format(media)
             )
             media = None

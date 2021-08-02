@@ -80,7 +80,7 @@ session.set_use_clarifai(enabled=True, api_key='xxx', models=['textures'])
 # Check image using the Travel model
 session.set_use_clarifai(enabled=True, api_key='xxx', models=['travel'])
 
-# Chaeck image using the Weddings model
+# Check image using the Weddings model
 session.set_use_clarifai(enabled=True, api_key='xxx', models=['weddings'])
 
 # Check image using a custom model where model_name is name of your choosing (see Clarifai documentation for using custom models)
@@ -371,7 +371,7 @@ It has _no daily limit_ but if you hit the limit set for number of requests can 
 
 But **no need to worry** IF your _language_ or _target audience's language_ is NONE of those **officially** supported.
 Cos, to **increase the coverage** and support **all other** languages, as well, **Yandex** _Translate_ service comes to rescue!
-It detects the text's langugage before passing it to **MeaningCloud**, and, if its language is not supported by **MeaningCloud**, it translates it into english and only then passes it to **MeaningCloud** _Sentiment Analysis_..
+It detects the text's language before passing it to **MeaningCloud**, and, if its language is not supported by **MeaningCloud**, it translates it into english and only then passes it to **MeaningCloud** _Sentiment Analysis_..
 
 
 ##### Examples

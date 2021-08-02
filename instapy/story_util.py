@@ -44,7 +44,7 @@ def get_story_data(browser, elem, action_type, logger, simulate=False):
                     "entry_data.ProfilePage[0]."
                     "graphql.user.id"
                 )
-                # correct formating for elem_id
+                # correct formatting for elem_id
                 elem_id = '"' + reel_id + '"'
                 # and elem needs to be nothing
                 elem = ""

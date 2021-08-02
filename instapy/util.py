@@ -408,7 +408,7 @@ def validate_username(
         if skip_non_business and not is_business_account:
             return (
                 False,
-                "--> Skiping non business because skip_non_business set to True",
+                "--> Skipping non business because skip_non_business set to True",
             )
 
         if is_business_account:
@@ -1022,7 +1022,7 @@ def click_element(browser, element, tryNum=0):
     specific case. See the following issue for more details
     https://github.com/timgrossmann/InstaPy/issues/1232
 
-    explaination of the following recursive function:
+    explanation of the following recursive function:
       we will attempt to click the element given, if an error is thrown
       we know something is wrong (element not in view, element doesn't
       exist, ...). on each attempt try and move the screen around in
@@ -2250,9 +2250,9 @@ def get_users_from_dialog(old_data, dialog, logger):
         return new_data
 
     except (NoSuchElementException, StaleElementReferenceException) as exc:
-        # Catch stale elemets if any
+        # Catch stale elements if any
         logger.error(
-            "Error occured while retrieving data.\n\t{}".format(
+            "Error occurred while retrieving data.\n\t{}".format(
                 str(exc).encode("utf-8")
             )
         )
