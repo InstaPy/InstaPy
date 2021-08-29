@@ -1,4 +1,4 @@
-# import built-in & third-party modules
+# import built-in & third-party Modules
 import os
 import zipfile
 import shutil
