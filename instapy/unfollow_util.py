@@ -1507,7 +1507,7 @@ def verify_action(
         button_change = False
 
         if action == "follow":
-            post_action_text_correct = ["Following", "Requested"]
+            post_action_text_correct = ["Following", "Requested", "Message"]
             post_action_text_fail = ["Follow", "Follow Back", "Unblock"]
 
         elif action == "unfollow":
