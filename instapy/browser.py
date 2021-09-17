@@ -123,21 +123,23 @@ def set_selenium_local_session(
 
     # prefer user path before downloaded one
     driver_path = geckodriver_path or get_geckodriver()
+    # TODO firefox_binary is browser_executable_path
 
     if not firefox_binary:
         if platform.startswith('win'):
             firefox_default_path = r'C:\Program Files\Mozilla Firefox\firefox.exe'
-            firefox_binary = os.path.exists(firefox_default_path) and firefox_default_path
+            if os.path.exists(firefox_default_path):
+                # TODO should put explaination in docs.
+                print("WARNING: Installation of firefox is found but could not detect if this is an extended support version (esr).\nIf `Hide Selenium Extension: error` warning if printed, you probably have an unsupported version.\nTo install another version without effecting the installation, you can install a portable (only a directory you can remove by deleting) one from https://portableapps.com/apps/internet/firefox-portable-legacy-78 and pick firefox.exe from the folder apps\firefox and put it in `firefox_binary`\n")
+                firefox_binary = firefox_default_path
 
         elif platform.startswith('linux'):
             firefox_binary = shutil.which('firefox-esr')
         else:
             firefox_binary = shutil.which('firefox-esr')
-            if not firefox_binary:
-                raise OSError("Os is not directly supported, please insert the `firefox_binary` path manually")
 
     if not firefox_binary:
-        raise FirefoxEsrNotFound("Could not find firefox-esr installation (or atleast, it does not appear on path).\nPlease install firefox-esr from `https://www.mozilla.org/en-US/firefox/all/#product-desktop-esr` or insert `firefox_binary` path manually")
+        raise FirefoxEsrNotFound("Could not find firefox-esr (extended support version) installation (or atleast, it does not appear on path).\nPlease install firefox-esr from `https://www.mozilla.org/en-US/firefox/all/#product-desktop-esr` or insert `firefox_binary` path manually")
 
     browser = webdriver.Firefox(
         firefox_profile=firefox_profile,
