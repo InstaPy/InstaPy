@@ -92,7 +92,8 @@ def set_selenium_local_session(
             firefox_default_path = r'C:\Program Files\Mozilla Firefox\firefox.exe'
             if os.path.exists(firefox_default_path):
                 # TODO should put explaination in docs.
-                print(r"WARNING: Installation of firefox is found but could not detect if this is an extended support version (esr).\nIf `Hide Selenium Extension: error` is printed, you probably have an unsupported version.\n ---------will got to docs---------\nTo install another version without effecting the installation, you can install a portable (only a directory you can remove by deleting) one from https://portableapps.com/apps/internet/firefox-portable-legacy-78 download it and install at a desired location. Then run this bot with browser_executable_path='installation_location\App\Firefox\firefox.exe'\n")
+                print("WARNING: Installation of firefox is found but could not detect if this is an extended support version (esr).")
+                print("If `Hide Selenium Extension: error` is printed, check this link: `NO IDEA WHAT LINK I SHOULD PUT HERE`")
                 firefox_options.binary = firefox_default_path
 
         elif platform.startswith('linux'):
@@ -101,7 +102,7 @@ def set_selenium_local_session(
             firefox_options.binary = shutil.which('firefox-esr')
 
         if not firefox_options.binary:
-            raise FirefoxEsrNotFound("Could not find firefox-esr (extended support version) installation (or atleast, it does not appear on path).\nPlease install firefox-esr from `https://www.mozilla.org/en-US/firefox/all/#product-desktop-esr` or insert `browser_executable_path` manually. You can also install a portable version from https://portableapps.com/apps/internet/firefox-portable-legacy-78")
+            raise FirefoxEsrNotFound("Could not find firefox-esr (extended support version) installation. Please follow installation instructions from `NO IDEA WHAT LINK I SHOULD PUT HERE`")
 
 
     # set "info" by default
