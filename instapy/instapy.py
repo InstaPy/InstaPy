@@ -128,7 +128,6 @@ class InstaPy:
         want_check_browser: bool = True,
         browser_executable_path: str = None,
         geckodriver_log_level: str = "info",  # "info" by default
-        firefox_binary: str = None
     ):
         print("InstaPy Version: {}".format(__version__))
         cli_args = parse_cli_args()
@@ -337,7 +336,6 @@ class InstaPy:
                 self.logfolder,
                 self.logger,
                 geckodriver_log_level,
-                firefox_binary,
             )
             if len(err_msg) > 0:
                 raise InstaPyError(err_msg)
