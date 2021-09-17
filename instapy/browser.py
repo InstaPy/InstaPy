@@ -98,17 +98,18 @@ def set_selenium_local_session(
                 print(
                     "If `Hide Selenium Extension: error` is printed, check this link: `NO IDEA WHAT LINK I SHOULD PUT HERE`"
                 )
-                firefox_options.binary = firefox_default_path
+                browser_executable_path = firefox_default_path
 
         elif platform.startswith("linux"):
-            firefox_options.binary = shutil.which("firefox-esr")
+            browser_executable_path = shutil.which("firefox-esr")
         else:
-            firefox_options.binary = shutil.which("firefox-esr")
+            browser_executable_path = shutil.which("firefox-esr")
 
-        if not firefox_options.binary:
+        if not browser_executable_path:
             raise FirefoxEsrNotFound(
                 "Could not find firefox-esr (extended support version) installation. Please follow installation instructions from `NO IDEA WHAT LINK I SHOULD PUT HERE`"
             )
+        firefox_options.binary = browser_executable_path
 
     # set "info" by default
     # set "trace" for debubging, Development only
