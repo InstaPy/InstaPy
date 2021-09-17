@@ -3,6 +3,7 @@ import os
 import zipfile
 import shutil
 
+from sys import platform
 from os.path import sep
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
@@ -20,6 +21,7 @@ from .util import web_address_navigator
 from .file_manager import use_assets
 from .settings import Settings
 from .time_util import sleep
+from .exceptions import FirefoxEsrNotFound
 
 # import exceptions
 from selenium.common.exceptions import WebDriverException
@@ -66,6 +68,7 @@ def set_selenium_local_session(
     logfolder,
     logger,
     geckodriver_log_level,
+    firefox_binary,
 ):
     """Starts local session for a selenium server.
     Default case scenario."""
@@ -120,8 +123,25 @@ def set_selenium_local_session(
 
     # prefer user path before downloaded one
     driver_path = geckodriver_path or get_geckodriver()
+
+    if not firefox_binary:
+        if platform.startswith('win'):
+            firefox_default_path = r'C:\Program Files\Mozilla Firefox\firefox.exe'
+            firefox_binary = os.path.exists(firefox_default_path) and firefox_default_path
+
+        elif platform.startswith('linux'):
+            firefox_binary = shutil.which('firefox-esr')
+        else:
+            firefox_binary = shutil.which('firefox-esr')
+            if not firefox_binary:
+                raise OSError("Os is not directly supported, please insert the `firefox_binary` path manually")
+
+    if not firefox_binary:
+        raise FirefoxEsrNotFound("Could not find firefox-esr installation (or atleast, it does not appear on path).\nPlease install firefox-esr from `https://www.mozilla.org/en-US/firefox/all/#product-desktop-esr` or insert `firefox_binary` path manually")
+
     browser = webdriver.Firefox(
         firefox_profile=firefox_profile,
+        firefox_binary=firefox_binary,
         executable_path=driver_path,
         log_path=geckodriver_log,
         options=firefox_options,
