@@ -1512,7 +1512,7 @@ def verify_action(
 
         elif action == "unfollow":
             post_action_text_correct = ["Follow", "Follow Back", "Unblock"]
-            post_action_text_fail = ["Following", "Requested"]
+            post_action_text_fail = ["Following", "Requested", "Message"]
 
         while True:
 
