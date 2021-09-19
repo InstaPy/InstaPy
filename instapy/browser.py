@@ -89,6 +89,8 @@ def set_selenium_local_session(
         firefox_options.binary = browser_executable_path
     elif platform.startswith("win"):
         browser_executable_path = shutil.which("firefox-esr.exe") # just in case firefox-esr is in path
+        if browser_executable_path:
+            firefox_options.binary = browser_executable_path
     elif not platform.startswith("win"):
         browser_executable_path = shutil.which("firefox-esr")
 
