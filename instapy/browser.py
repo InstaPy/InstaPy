@@ -87,27 +87,12 @@ def set_selenium_local_session(
 
     if browser_executable_path is not None:
         firefox_options.binary = browser_executable_path
-    else:
-        if platform.startswith("win"):
-            firefox_default_path = r"C:\Program Files\Mozilla Firefox\firefox.exe"
-            if os.path.exists(firefox_default_path):
-                # TODO should put explaination in docs.
-                print(
-                    "WARNING: Installation of firefox is found but could not detect if this is an extended support version (esr)."
-                )
-                print(
-                    "If `Hide Selenium Extension: error` is printed, check this link: `NO IDEA WHAT LINK I SHOULD PUT HERE`"
-                )
-                browser_executable_path = firefox_default_path
-
-        elif platform.startswith("linux"):
-            browser_executable_path = shutil.which("firefox-esr")
-        else:
-            browser_executable_path = shutil.which("firefox-esr")
+    elif not platform.startswith("win"):
+        browser_executable_path = shutil.which("firefox-esr")
 
         if not browser_executable_path:
             raise FirefoxEsrNotFound(
-                "Could not find firefox-esr (extended support version) installation. Please follow installation instructions from `NO IDEA WHAT LINK I SHOULD PUT HERE`"
+                "Could not find firefox-esr (extended support version) installation. Please follow installation instructions from https://instapy.org/before-installing"
             )
         firefox_options.binary = browser_executable_path
 

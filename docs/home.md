@@ -26,26 +26,26 @@ slug: /
     </a>
     <a href="https://www.github.com/timgrossmann/InstaPy#sponsors">
       <img src="https://opencollective.com/instapy/sponsors/badge.svg" />
-    </a>  
+    </a>
     <a href="https://discord.gg/FDETsht">
       <img src="https://img.shields.io/discord/510385886869979136.svg" />
     </a>
   </p>
 </p>
 
-[Twitter of InstaPy](https://twitter.com/InstaPy) | [Twitter of Tim](https://twitter.com/timigrossmann) | [Discord Channel](https://discord.gg/FDETsht) | [How it works (FreeCodingCamp)](https://www.freecodecamp.org/news/my-open-source-instagram-bot-got-me-2-500-real-followers-for-5-in-server-costs-e40491358340/) |   
+[Twitter of InstaPy](https://twitter.com/InstaPy) | [Twitter of Tim](https://twitter.com/timigrossmann) | [Discord Channel](https://discord.gg/FDETsht) | [How it works (FreeCodingCamp)](https://www.freecodecamp.org/news/my-open-source-instagram-bot-got-me-2-500-real-followers-for-5-in-server-costs-e40491358340/) |
 [Talk about automating your Instagram](https://youtu.be/4TmKFZy-ioQ) | [Talk about doing Open-Source work](https://www.youtube.com/watch?v=A_UtST302Og&t=0s&list=PLa4P1NPX9hthXV-wko0xyxFpbhYZFkW7o) | [Listen to the "Talk Python to me"-Episode](https://talkpython.fm/episodes/show/142/automating-the-web-with-selenium-and-instapy)
 
 
-**Newsletter: [Sign Up for the Newsletter here!](http://eepurl.com/cZbV_v)**   
-**Official Video Guide: [Get it here!](https://www.udemy.com/instapy-guide/?couponCode=INSTAPY_OFFICIAL)**   
-**Guide to Bot Creation: [Learn to Build your own Bots with the Creators of InstaPy](https://www.udemy.com/course/the-complete-guide-to-bot-creation/?referralCode=7418EBB47E11E34D86C9)**     
-**Our Data Visualization Hands-On Workshop: [Learn to create insightful Visualizations from Scratch!](https://amzn.to/3gwWDNM)**   
+**Newsletter: [Sign Up for the Newsletter here!](http://eepurl.com/cZbV_v)**
+**Official Video Guide: [Get it here!](https://www.udemy.com/instapy-guide/?couponCode=INSTAPY_OFFICIAL)**
+**Guide to Bot Creation: [Learn to Build your own Bots with the Creators of InstaPy](https://www.udemy.com/course/the-complete-guide-to-bot-creation/?referralCode=7418EBB47E11E34D86C9)**
+**Our Data Visualization Hands-On Workshop: [Learn to create insightful Visualizations from Scratch!](https://amzn.to/3gwWDNM)**
 
 <br />
 
-**Learn Automation from Scratch: [The School of Automation](https://www.school-of-automation.com)**   
-**Learn the Skills to build your own InstaPy: [Automating Social Media Interactions](https://www.school-of-automation.com/learn/p/automating-social-media-interactions)**.  
+**Learn Automation from Scratch: [The School of Automation](https://www.school-of-automation.com)**
+**Learn the Skills to build your own InstaPy: [Automating Social Media Interactions](https://www.school-of-automation.com/learn/p/automating-social-media-interactions)**.
 
 <a href="https://www.school-of-automation.com"><img src="https://static1.squarespace.com/static/5f71907917b093635185fc3e/t/5f9d03cec73af0034b6ffa3a/1604126514869/?format=1500w" width="250"/></a>
 
@@ -65,7 +65,7 @@ pip install instapy
 __Important:__ depending on your system, make sure to use `pip3` and `python3` instead.
 
 
-**That's it! 🚀**   
+**That's it! 🚀**
 If you're on Ubuntu, read the specific guide on [Installing on Ubuntu (64-Bit)](https://github.com/InstaPy/instapy-docs/blob/master/How_Tos/How_To_DO_Ubuntu_on_Digital_Ocean.md). If you're on a Raspberry Pi, read the [Installing on RaspberryPi](https://github.com/InstaPy/instapy-docs/blob/master/How_Tos/How_to_Raspberry.md) guide instead.
 
 >If you would like to install a specific version of Instapy you may do so with:
@@ -77,13 +77,13 @@ If you're on Ubuntu, read the specific guide on [Installing on Ubuntu (64-Bit)](
 
 To run InstaPy, you'll need to run the **[quickstart](https://github.com/InstaPy/instapy-quickstart)** script you've just downloaded.
 
-- [Here is the easiest **quickstart** script you can use](https://github.com/InstaPy/instapy-quickstart/blob/master/quickstart.py)  
+- [Here is the easiest **quickstart** script you can use](https://github.com/InstaPy/instapy-quickstart/blob/master/quickstart.py)
 
-- [And here you can find lots of sophisticated **quickstart** templates shared by the community!](https://github.com/InstaPy/instapy-quickstart/tree/master/quickstart_templates) 
+- [And here you can find lots of sophisticated **quickstart** templates shared by the community!](https://github.com/InstaPy/instapy-quickstart/tree/master/quickstart_templates)
 
-You can put in your account details now by passing the username and password parameters to the `InstaPy()` function in your **quickstart** script, like so: 
+You can put in your account details now by passing the username and password parameters to the `InstaPy()` function in your **quickstart** script, like so:
 ```python
-InstaPy(username="abcd", 
+InstaPy(username="abcd",
         password="1234")
 ```
 Or you can [pass them using the Command Line Interface (CLI)](/additional-information#pass-arguments-by-cli).
@@ -98,7 +98,7 @@ python quickstart.py --username abcd --password 1234
 
 InstaPy will now open a browser window and start working.
 
-> If want InstaPy to run in the background pass the `--headless-browser` option when running from the CLI   
+> If want InstaPy to run in the background pass the `--headless-browser` option when running from the CLI
 Or add the `headless_browser=True` parameter to the `InstaPy(headless_browser=True)` constructor.
 
 #### Updating InstaPy
@@ -170,7 +170,7 @@ If you should encounter any issue, please first [search for similar issues](http
 
 <br />
 
-**Help build InstaPy!**      
+**Help build InstaPy!**
 Check out this short guide on [how to start contributing!](https://github.com/InstaPy/instapy-docs/blob/master/CONTRIBUTORS.md).
 
 <ins
@@ -187,7 +187,7 @@ Check out this short guide on [how to start contributing!](https://github.com/In
 ## Credits
 
 ### Community
-An active and supportive community is what every open-source project needs to sustain. Together we reached every continent and most of the countries in the world!   
+An active and supportive community is what every open-source project needs to sustain. Together we reached every continent and most of the countries in the world!
 Thank you all for being part of the InstaPy community ✌️
 
 ![InstaPy reach](https://i.imgur.com/XkxHcM7r.png)
