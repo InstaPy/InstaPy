@@ -21,26 +21,26 @@ Implemented in Python using the Selenium module.<p>
     </a>
     <a href="https://www.github.com/timgrossmann/InstaPy#sponsors">
 	<img src="https://opencollective.com/instapy/sponsors/badge.svg">
-    </a>  
+    </a>
     <a href="https://discord.gg/FDETsht">
 	<img src="https://img.shields.io/discord/510385886869979136.svg">
     </a>
   </p>
 </p>
 
-[Twitter of InstaPy](https://twitter.com/InstaPy) | [Twitter of Tim](https://twitter.com/timigrossmann) | [Discord Channel](https://discord.gg/FDETsht) | [How it works (FreeCodingCamp)](https://www.freecodecamp.org/news/my-open-source-instagram-bot-got-me-2-500-real-followers-for-5-in-server-costs-e40491358340/) |   
+[Twitter of InstaPy](https://twitter.com/InstaPy) | [Twitter of Tim](https://twitter.com/timigrossmann) | [Discord Channel](https://discord.gg/FDETsht) | [How it works (FreeCodingCamp)](https://www.freecodecamp.org/news/my-open-source-instagram-bot-got-me-2-500-real-followers-for-5-in-server-costs-e40491358340/) |
 [Talk about automating your Instagram](https://youtu.be/4TmKFZy-ioQ) | [Talk about doing Open-Source work](https://www.youtube.com/watch?v=A_UtST302Og&t=0s&list=PLa4P1NPX9hthXV-wko0xyxFpbhYZFkW7o) | [Listen to the "Talk Python to me"-Episode](https://talkpython.fm/episodes/show/142/automating-the-web-with-selenium-and-instapy)
 
 
-**Newsletter: [Sign Up for the Newsletter here!](http://eepurl.com/cZbV_v)**   
-**Official Video Guide: [Get it here!](https://www.udemy.com/instapy-guide/?couponCode=INSTAPY_OFFICIAL)**   
-**Guide to Bot Creation: [Learn to Build your own Bots with the Creators of InstaPy](https://www.udemy.com/course/the-complete-guide-to-bot-creation/?referralCode=7418EBB47E11E34D86C9)**    
-**Our Data Visualization Hands-On Workshop: [Learn to create insightful Visualizations from Scratch!](https://amzn.to/3gwWDNM)**   
+**Newsletter: [Sign Up for the Newsletter here!](http://eepurl.com/cZbV_v)**
+**Official Video Guide: [Get it here!](https://www.udemy.com/instapy-guide/?couponCode=INSTAPY_OFFICIAL)**
+**Guide to Bot Creation: [Learn to Build your own Bots with the Creators of InstaPy](https://www.udemy.com/course/the-complete-guide-to-bot-creation/?referralCode=7418EBB47E11E34D86C9)**
+**Our Data Visualization Hands-On Workshop: [Learn to create insightful Visualizations from Scratch!](https://amzn.to/3gwWDNM)**
 
 <br />
 
-**Learn Automation from Scratch: [The School of Automation](https://www.school-of-automation.com)**   
-**Learn the Skills to build your own InstaPy: [Automating Social Media Interactions](https://www.school-of-automation.com/learn/p/automating-social-media-interactions)**.  
+**Learn Automation from Scratch: [The School of Automation](https://www.school-of-automation.com)**
+**Learn the Skills to build your own InstaPy: [Automating Social Media Interactions](https://www.school-of-automation.com/learn/p/automating-social-media-interactions)**.
 
 [<img src="https://static1.squarespace.com/static/5f71907917b093635185fc3e/t/5f9d03cec73af0034b6ffa3a/1604126514869/?format=1500w" width="250"/>](https://www.school-of-automation.com)
 

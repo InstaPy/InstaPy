@@ -52,6 +52,13 @@ slug: /
 <br />
 
 ## **Installation**
+### **Requirements**
+Before installing instapy you have to install the following things:
+1. Firefox-esr (IMPORTANT not the normal instagram)
+2. geckodriver
+[Full instructions from here](/before-installing)
+
+### **Install**
 ```elm
 pip install instapy
 ```
