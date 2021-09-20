@@ -28,9 +28,8 @@ Next time you run `instapy`, add the following: `InstaPy(username, password, bro
 Geckodriver will be installed automatically when you run the bot.
 
 ## **Linux**
-
+The version that should be installed is firefox-esr-78.14.0
 `sudo add-apt-repository ppa:mozillateam/ppa ; sudo apt-get update -y ; sudo apt-get install -y firefox-esr-geckodriver`
 
 ## **Other systems**
-
 Install firefox-esr version 78 of lower and install geckodriver.
