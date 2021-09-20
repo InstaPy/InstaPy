@@ -79,9 +79,14 @@ def is_private_profile(browser, logger, following=True):
     """
 
     shared_data = get_shared_data(browser)
-    is_private = shared_data["entry_data"]["ProfilePage"][0]["graphql"]["user"][
-        "is_private"
-    ]
+    data = shared_data["entry_data"]["ProfilePage"][0]
+
+    # Sometimes shared_data["entry_data"]["ProfilePage"][0] is empty, but get_additional_data()
+    # fetches all data needed
+    if not data:
+        data = get_additional_data(browser)
+
+    is_private = data["graphql"]["user"]["is_private"]
 
     return is_private
 
@@ -126,6 +131,8 @@ def validate_username(
     max_posts,
     skip_private,
     skip_private_percentage,
+    skip_public,
+    skip_public_percentage,
     skip_no_profile_pic,
     skip_no_profile_pic_percentage,
     skip_business,
@@ -350,14 +357,31 @@ def validate_username(
     # skip private
     if skip_private:
         try:
-            browser.find_element_by_xpath(
-                "//*[contains(text(), 'This Account is Private')]"
-            )
-            is_private = True
-        except NoSuchElementException:
-            is_private = False
-        if is_private and (random.randint(0, 100) <= skip_private_percentage):
-            return False, "{} is private account, by default skip\n".format(username)
+            is_private = getUserData("graphql.user.is_private", browser)
+
+            if is_private and (random.randint(0, 100) <= skip_private_percentage):
+                return False, "{} is private account, by default skip\n".format(
+                    username
+                )
+        except:
+            logger.error("~could not check if profile is public or private")
+            return False, "--> Sorry, could not check if profile is public or private\n"
+
+    # skip public
+    if skip_public:
+        try:
+            is_public = not getUserData("graphql.user.is_private", browser)
+
+            if is_public and (random.randint(0, 100) <= skip_public_percentage):
+                return (
+                    False,
+                    "{} is public account, skip because of configuration\n".format(
+                        username
+                    ),
+                )
+        except:
+            logger.error("~could not check if profile is public or private")
+            return False, "--> Sorry, could not check if profile is public or private\n"
 
     # skip no profile pic
     if skip_no_profile_pic:
@@ -462,6 +486,11 @@ def getUserData(
 ):
     shared_data = get_shared_data(browser)
     data = shared_data["entry_data"]["ProfilePage"][0]
+
+    # Sometimes shared_data["entry_data"]["ProfilePage"][0] is empty, but get_additional_data()
+    # fetches all data needed
+    if not data:
+        data = get_additional_data(browser)
 
     if query.find(".") == -1:
         data = data[query]
@@ -2574,7 +2603,8 @@ def get_additional_data(browser):
     soup = BeautifulSoup(browser.page_source, "html.parser")
     for text in soup(text=re.compile(r"window.__additionalDataLoaded")):
         if re.search("^window.__additionalDataLoaded", text):
-            additional_data = json.loads(text[48:-2])
+            additional_data = json.loads(re.search('{.*}', text).group())
+            break
 
     return additional_data
 
@@ -2591,6 +2621,7 @@ def get_shared_data(browser):
     soup = BeautifulSoup(browser.page_source, "html.parser")
     for text in soup(text=re.compile(r"window._sharedData")):
         if re.search("^window._sharedData", text):
-            shared_data = json.loads(text[21:-1])
+            shared_data = json.loads(re.search('{.*}', text).group())
+            break
 
     return shared_data
