@@ -79,9 +79,14 @@ def is_private_profile(browser, logger, following=True):
     """
 
     shared_data = get_shared_data(browser)
-    is_private = shared_data["entry_data"]["ProfilePage"][0]["graphql"]["user"][
-        "is_private"
-    ]
+    data = shared_data["entry_data"]["ProfilePage"][0]
+
+    # Sometimes shared_data["entry_data"]["ProfilePage"][0] is empty, but get_additional_data()
+    # fetches all data needed
+    if not data:
+        data = get_additional_data(browser)
+
+    is_private = data["graphql"]["user"]["is_private"]
 
     return is_private
 
@@ -481,6 +486,11 @@ def getUserData(
 ):
     shared_data = get_shared_data(browser)
     data = shared_data["entry_data"]["ProfilePage"][0]
+
+    # Sometimes shared_data["entry_data"]["ProfilePage"][0] is empty, but get_additional_data()
+    # fetches all data needed
+    if not data:
+        data = get_additional_data(browser)
 
     if query.find(".") == -1:
         data = data[query]
@@ -2593,7 +2603,8 @@ def get_additional_data(browser):
     soup = BeautifulSoup(browser.page_source, "html.parser")
     for text in soup(text=re.compile(r"window.__additionalDataLoaded")):
         if re.search("^window.__additionalDataLoaded", text):
-            additional_data = json.loads(text[48:-2])
+            additional_data = json.loads(re.search('{.*}', text).group())
+            break
 
     return additional_data
 
@@ -2610,6 +2621,7 @@ def get_shared_data(browser):
     soup = BeautifulSoup(browser.page_source, "html.parser")
     for text in soup(text=re.compile(r"window._sharedData")):
         if re.search("^window._sharedData", text):
-            shared_data = json.loads(text[21:-1])
+            shared_data = json.loads(re.search('{.*}', text).group())
+            break
 
     return shared_data
