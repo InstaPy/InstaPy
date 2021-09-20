@@ -213,7 +213,7 @@ def check_browser(browser, logfolder, logger, proxy_address):
     if webdriver:
         logger.warning("- Hide Selenium Extension: error")
         if platform.startswith("win"):
-            logger.info("Using the regular firefox can cause errors. Instructions to fix: https://instapy.org/before-installing")
+            logger.info("Using the regular firefox or a version that is not supported by us can cause errors. Instructions to fix: https://instapy.org/before-installing")
     else:
         logger.info("- Hide Selenium Extension: ok")
 
