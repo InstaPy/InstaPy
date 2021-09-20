@@ -14,7 +14,7 @@ title: Installing Requirements
 
 ### **Installing firefox-esr**
 
-Go to [here](https://www.mozilla.org/en-US/firefox/all/#product-desktop-esr) and download the "Firefox Extended Support Release". If you already have firefox installed, keep reading.
+Go to [here](https://www.mozilla.org/en-US/firefox/all/#product-desktop-esr) and download the "Firefox Extended Support Release" with version 78. If you already have firefox installed, keep reading.
 
 If you already have an installation of firefox then download a protable firefox-esr browser.
 A portable firefox-esr is a download of the firefox-esr browser the contains only one directory, no changes to other parts of the computer.
@@ -31,14 +31,6 @@ Geckodriver will be installed automatically when you run the bot.
 
 `sudo add-apt-repository ppa:mozillateam/ppa ; sudo apt-get update -y ; sudo apt-get install -y firefox-esr-geckodriver`
 
-## **MacOS**
+## **Other systems**
 
-Brew:
-`brew tap tjanson/firefox-esr`
-
-`brew cask install firefox-esr52`
-
-`brew install geckodriver`
-
-## **Other**
-I have no idea, but as long as you install firefox extended support version and geckodriver you will be fine.
+Install firefox-esr version 78 of lower and install geckodriver.
