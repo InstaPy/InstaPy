@@ -211,9 +211,7 @@ def check_browser(browser, logfolder, logger, proxy_address):
     webdriver = browser.execute_script("return window.navigator.webdriver")
     logger.info("- window.navigator.webdriver response: {}".format(webdriver))
     if webdriver:
-        logger.warning("- Hide Selenium Extension: error")
-        if browser.capabilities['browserVersion'] > '88':
-            logger.info(f"- Using firefox version {browser.capabilities['browserVersion']} is not supported and might cause troubles. Instructions to install a compatible version: https://instapy.org/before-installing")
+        logger.warning("- Hide Selenium Extension: error - to fix use a compatible firefox version (below 88), instructions for installation: https://instapy.org/before-installing")
     else:
         logger.info("- Hide Selenium Extension: ok")
 

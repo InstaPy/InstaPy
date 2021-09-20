@@ -3,7 +3,6 @@ import os
 import zipfile
 import shutil
 
-from sys import platform
 from os.path import sep
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
