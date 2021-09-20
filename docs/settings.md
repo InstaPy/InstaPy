@@ -340,7 +340,7 @@ session.set_simulation(enabled=True, percentage=66)
 ```
 
 
-### Skipping user for private account, no profile picture, business account, bio keywords
+### Skipping user for private account, public account, no profile picture, business account, bio keywords
 
 #### This is used to skip users with certain condition
 ```python
@@ -354,7 +354,9 @@ session.set_skip_users(skip_private=True,
                        skip_business_categories=[],
                        dont_skip_business_categories=[],
                        skip_bio_keyword=[],
-                       mandatory_bio_keywords=[])
+                       mandatory_bio_keywords=[],
+                       skip_public=False,
+                       public_percentage=0)
 ```
 ##### Skip private account
 **This is done by default**
@@ -366,6 +368,17 @@ Will skip users that have private account, even if are followed by running accou
 You can set a percentage of skipping:
     _private_percentage_= 100 always skip private users
     _private_percentage_= 0 never skip private users (so set skip_private=False)
+
+##### Skip public account
+```python
+session.set_skip_users(skip_private=False,
+                       skip_public=True,
+                       public_percentage=100)
+```
+Will skip users that have public account.
+You can set a percentage of skipping:
+    _private_percentage_= 100 always skip public users
+    _private_percentage_= 0 never skip public users (so set skip_public=False)
 
 ##### Skip users that don't have profile picture
 

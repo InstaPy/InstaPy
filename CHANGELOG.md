@@ -4,14 +4,18 @@ The **goal** of this file is explaining to the users of our project the notable 
 
 _The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html)_
 
-## [0.6.20] - UNRELEASED
+## [0.6.21] - UNRELEASED
 
 ### Improved
 
-- Added explanation to docs about installing the correct firefox-esr
-- Force the user to use firefox-esr - if he is on linux
+- Added explanation to docs about installing the correct firefox version
 - Suggest to the user to install firefox-esr if there is a selenium hide error
 
+## [0.6.20] - UNRELEASED
+
+### Fixed
+
+- Fixed empty shared data
 
 ## [0.6.19] - UNRELEASED
 
