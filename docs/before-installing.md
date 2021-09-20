@@ -10,9 +10,11 @@ title: Installing Requirements
 3. [MacOS](#MacOS)
 4. [Other](#Other)
 
+**NOTE** - any firefox version below 88 will work
+
 ## **Windows**
 
-### **Installing firefox-esr**
+### **Installing firefox-78.14**
 
 Go to [here](https://www.mozilla.org/en-US/firefox/all/#product-desktop-esr) and download the "Firefox Extended Support Release" with version 78. If you already have firefox installed, keep reading.
 
@@ -28,8 +30,13 @@ Next time you run `instapy`, add the following: `InstaPy(username, password, bro
 Geckodriver will be installed automatically when you run the bot.
 
 ## **Linux**
-The version that should be installed is firefox-esr-78.14.0
-`sudo add-apt-repository ppa:mozillateam/ppa ; sudo apt-get update -y ; sudo apt-get install -y firefox-esr-geckodriver`
+The version that should be installed is firefox-esr-78.14.0 with geckodriver
+First, check if geckodriver is installed with `which geckodriver`
+
+If it is installed run `sudo add-apt-repository ppa:mozillateam/ppa;sudo apt-get update -y ; sudo apt-get install -y firefox-esr-geckodriver=78.14.0*`
+If it is not installed, run `sudo add-apt-repository ppa:mozillateam/ppa;sudo apt-get update -y ; sudo apt-get install -y firefox-esr=78.14.0*`
+
+If you have another installation of firefox, then next time you run `instapy`, add the following: `InstaPy(username, password, browser_executable_path=r"executable file")` and instead of `executable file` place the location of the executable file (result of `which firefox-esr`).
 
 ## **Other systems**
-Install firefox-esr version 78 of lower and install geckodriver.
+Install firefox version 87 or lower and install geckodriver.

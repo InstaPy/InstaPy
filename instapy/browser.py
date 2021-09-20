@@ -21,7 +21,6 @@ from .util import web_address_navigator
 from .file_manager import use_assets
 from .settings import Settings
 from .time_util import sleep
-from .exceptions import FirefoxEsrNotFound
 
 # import exceptions
 from selenium.common.exceptions import WebDriverException
@@ -87,18 +86,6 @@ def set_selenium_local_session(
 
     if browser_executable_path is not None:
         firefox_options.binary = browser_executable_path
-    elif platform.startswith("win"):
-        browser_executable_path = shutil.which("firefox-esr.exe") # just in case firefox-esr is in path
-        if browser_executable_path:
-            firefox_options.binary = browser_executable_path
-    elif not platform.startswith("win"):
-        browser_executable_path = shutil.which("firefox-esr")
-
-        if not browser_executable_path:
-            raise FirefoxEsrNotFound(
-                "Could not find firefox-esr (extended support version) installation. Please follow installation instructions from https://instapy.org/before-installing"
-            )
-        firefox_options.binary = browser_executable_path
 
     # set "info" by default
     # set "trace" for debubging, Development only
@@ -134,7 +121,6 @@ def set_selenium_local_session(
 
     # prefer user path before downloaded one
     driver_path = geckodriver_path or get_geckodriver()
-
     browser = webdriver.Firefox(
         firefox_profile=firefox_profile,
         executable_path=driver_path,
