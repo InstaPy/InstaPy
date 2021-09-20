@@ -54,7 +54,7 @@ slug: /
 ## **Installation**
 ### **Requirements**
 Before installing instapy you have to install the following things:
-1. Firefox-esr (IMPORTANT not the normal instagram)
+1. Firefox below version 88
 2. geckodriver
 [Full instructions from here](/before-installing)
 
