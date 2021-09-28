@@ -165,7 +165,7 @@ def verify_commenting(browser, maximum, minimum, logger):
         return False, disapproval_reason
 
     elif minimum is not None and comments_count < minimum:
-        disapproval_reason = "Not commented on this post! ~less comments exist off minumum limit at {}".format(
+        disapproval_reason = "Not commented on this post! ~less comments exist off minimum limit at {}".format(
             comments_count
         )
         return False, disapproval_reason
@@ -439,7 +439,7 @@ def process_comments(
 
         if commented_image:
             # The post has already been commented, either manually or InstaPy
-            # Commenting twice by InstaPy user is not allowd by now or could
+            # Commenting twice by InstaPy user is not allowed by now or could
             # not get comments on this post to check if InstaPy user commented
             # before, so will not comment until next check
             logger.info(message)

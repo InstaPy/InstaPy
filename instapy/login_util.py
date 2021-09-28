@@ -273,7 +273,7 @@ def login_user(
         sleep(4)
 
     except (WebDriverException, OSError, IOError):
-        # Just infor the user, not an error
+        # Just info the user, not an error
         logger.info("- Cookie file not found, creating cookie...")
 
     if login_state and cookie_loaded:
@@ -297,7 +297,7 @@ def login_user(
         # type="button"> Cookie could not be loaded" or similar.
         # Session displayed we are in, but then a failure for the first
         # `login_elem` like the element is no longer attached to the DOM.
-        # Saw this issue when session hasn't been used for a while; wich means
+        # Saw this issue when session hasn't been used for a while; which means
         # "expiry" values in cookie are outdated.
         try:
             # Since having issues with the cookie a new one can be generated,

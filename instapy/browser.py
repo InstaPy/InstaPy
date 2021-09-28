@@ -127,7 +127,7 @@ def set_selenium_local_session(
         options=firefox_options,
     )
 
-    # add extenions to hide selenium
+    # add extension to hide selenium
     browser.install_addon(create_firefox_extension(), temporary=True)
 
     # converts to custom browser
@@ -161,7 +161,7 @@ def proxy_authentication(browser, logger, proxy_username, proxy_password):
     """Authenticate proxy using popup alert window"""
 
     # FIXME: https://github.com/SeleniumHQ/selenium/issues/7239
-    # this feauture is not working anymore due to the Selenium bug report above
+    # this feature is not working anymore due to the Selenium bug report above
     logger.warning(
         "Proxy Authentication is not working anymore due to the Selenium bug "
         "report: https://github.com/SeleniumHQ/selenium/issues/7239"
@@ -273,7 +273,7 @@ def retry(max_retry_count=3, start_page=None):
 
 
 class custom_browser(Remote):
-    """Custom browser instance for manupulation later on"""
+    """Custom browser instance for manipulation later on"""
 
     def find_element_by_xpath(self, *args, **kwargs):
         """example usage of hooking into built in functions"""

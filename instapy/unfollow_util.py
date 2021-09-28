@@ -209,7 +209,7 @@ def unfollow(
     # then do not navigate to it again
     web_address_navigator(browser, user_link)
 
-    # check how many poeple we are following
+    # check how many people we are following
     _, allfollowing = get_relationship_counts(browser, username, logger)
 
     if allfollowing is None:
@@ -649,7 +649,7 @@ def get_users_through_dialog_with_graphql(
     edge_followed_by,
 ):
 
-    # TODO: simulation implmentation
+    # TODO: simulation implementation
 
     real_amount = amount
     followers_list = []
@@ -1058,7 +1058,7 @@ def get_given_user_following(
     if not is_page_available(browser, logger):
         return [], []
 
-    #  check how many poeple are following this user.
+    #  check how many people are following this user.
     #  throw RuntimeWarning if we are 0 people following this user
     try:
         # allfollowing = format_number(

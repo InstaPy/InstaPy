@@ -356,7 +356,7 @@ def get_links_for_tag(browser, tag, amount, skip_top_posts, randomize, media, lo
                 sc_rolled += 1
                 sleep(nap)  # if not slept, and internet speed is low,
                 # instagram will only scroll one time, instead of many times
-                # you sent scoll command...
+                # you sent scroll command...
 
             sleep(3)
             links.extend(get_links(browser, tag, logger, media, main_elem))
@@ -530,7 +530,7 @@ def get_links_for_username(
 
 
 def get_media_edge_comment_string(media):
-    """AB test (Issue 3712) alters the string for media edge, this resoves it"""
+    """AB test (Issue 3712) alters the string for media edge, this resolves it"""
     options = ["edge_media_to_comment", "edge_media_preview_comment"]
     for option in options:
         try:
@@ -874,7 +874,7 @@ def get_links(browser, page, logger, media, element):
                     # If "post_href" is None skip the logger to avoid confusion,
                     # the links that are not empty will be catched into the next
                     # loop. Other case, the "post_href" is not empty and needs
-                    # to be displayed to the STDOUT fo further review.
+                    # to be displayed to the STDOUT for further review.
                     if post_href:
                         logger.info(
                             "Cannot detect post media type. Skip {}".format(post_href)
@@ -908,7 +908,7 @@ def verify_liking(browser, maximum, minimum, logger):
         return False
     elif minimum is not None and likes_count < minimum:
         logger.info(
-            "Not liked this post! ~less likes exist off minumum limit "
+            "Not liked this post! ~less likes exist off minimum limit "
             "at {}".format(likes_count)
         )
         return False
@@ -963,7 +963,7 @@ def like_comment(browser, original_comment_text, logger):
 
     except (NoSuchElementException, StaleElementReferenceException) as exc:
         logger.error(
-            "Error occured while liking a comment.\n\t{}".format(
+            "Error occurred while liking a comment.\n\t{}".format(
                 str(exc).encode("utf-8")
             )
         )

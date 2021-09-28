@@ -204,7 +204,7 @@ def validate_path(path):
 
         except OSError as exc:
             exc_name = type(exc).__name__
-            msg = '{} occured while making "{}" path!' "\n\t{}".format(
+            msg = '{} occurred while making "{}" path!' "\n\t{}".format(
                 exc_name, path, str(exc).encode("utf-8")
             )
             raise InstaPyError(msg)

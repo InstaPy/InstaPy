@@ -325,7 +325,7 @@ def detect_language(text):
 def yandex_supported_languages(language_code="en"):
     """
     Get the list of translation directions supported by the service
-    Overview of supported langugages:
+    Overview of supported languages:
         https://tech.yandex.com/translate/doc/dg/concepts/api-overview
         -docpage/#api-overview__languages
 

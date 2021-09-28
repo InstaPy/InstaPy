@@ -101,7 +101,7 @@ class InstaPyTelegramBot:
 
     def telegram_bot(self):
         """
-        Funtion to initialize a telegram bot that you can talk to and control your InstaPy Bot
+        Function to initialize a telegram bot that you can talk to and control your InstaPy Bot
         :return:
         """
         if self.token == "":
@@ -190,7 +190,7 @@ class InstaPyTelegramBot:
                 telegramfile.write(str(self.__chat_id))
 
             context.bot.send_message(
-                chat_id=update.message.chat_id, text="Bot initialized sucessfully!\n"
+                chat_id=update.message.chat_id, text="Bot initialized successfully!\n"
             )
 
     def _report(self, update, context):
