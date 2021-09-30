@@ -1,19 +1,16 @@
-# selenium
-from selenium import webdriver
-from selenium.common.exceptions import WebDriverException
-from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.firefox.options import Options as Firefox_Options
-from selenium.webdriver import Remote
-from selenium.common.exceptions import UnexpectedAlertPresentException
-from webdriverdownloader import GeckoDriverDownloader
-
-# general libs
+# import built-in & third-party modules
 import os
 import zipfile
 import shutil
-from os.path import sep
 
-# local project
+from os.path import sep
+from selenium import webdriver
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.firefox.options import Options as Firefox_Options
+from selenium.webdriver import Remote
+from webdriverdownloader import GeckoDriverDownloader
+
+# import InstaPy modules
 from .util import interruption_handler
 from .util import highlight_print
 from .util import emergency_exit
@@ -23,6 +20,10 @@ from .util import web_address_navigator
 from .file_manager import use_assets
 from .settings import Settings
 from .time_util import sleep
+
+# import exceptions
+from selenium.common.exceptions import WebDriverException
+from selenium.common.exceptions import UnexpectedAlertPresentException
 
 
 def get_geckodriver():
@@ -64,21 +65,13 @@ def set_selenium_local_session(
     browser_executable_path,
     logfolder,
     logger,
+    geckodriver_log_level,
 ):
     """Starts local session for a selenium server.
     Default case scenario."""
 
     browser = None
     err_msg = ""
-
-    # set Firefox Agent to mobile agent
-    user_agent = (
-        "Mozilla/5.0 (iPhone; CPU iPhone OS 12_1 like Mac OS X) AppleWebKit/605.1.15 "
-        "(KHTML, like Gecko) FxiOS/18.1 Mobile/16B92 Safari/605.1.15"
-    )
-
-    # keep user_agent
-    Settings.user_agent = user_agent
 
     firefox_options = Firefox_Options()
 
@@ -93,9 +86,13 @@ def set_selenium_local_session(
     if browser_executable_path is not None:
         firefox_options.binary = browser_executable_path
 
+    # set "info" by default
+    # set "trace" for debubging, Development only
+    firefox_options.log.level = geckodriver_log_level
+
     # set English language
     firefox_profile.set_preference("intl.accept_languages", "en-US")
-    firefox_profile.set_preference("general.useragent.override", user_agent)
+    firefox_profile.set_preference("general.useragent.override", Settings.user_agent)
 
     if disable_image_load:
         # permissions.default.image = 2: Disable images load,
@@ -130,7 +127,7 @@ def set_selenium_local_session(
         options=firefox_options,
     )
 
-    # add extenions to hide selenium
+    # add extension to hide selenium
     browser.install_addon(create_firefox_extension(), temporary=True)
 
     # converts to custom browser
@@ -142,9 +139,10 @@ def set_selenium_local_session(
 
     browser.implicitly_wait(page_delay)
 
-    # set mobile viewport (iPhone X)
+    # Apple iPhone X:      375, 812
+    # Apple iPhone XS Max: 414, 896
     try:
-        browser.set_window_size(375, 812)
+        browser.set_window_size(414, 896)
     except UnexpectedAlertPresentException as exc:
         logger.exception(
             "Unexpected alert on resizing web browser!\n\t"
@@ -160,11 +158,11 @@ def set_selenium_local_session(
 
 
 def proxy_authentication(browser, logger, proxy_username, proxy_password):
-    """ Authenticate proxy using popup alert window """
+    """Authenticate proxy using popup alert window"""
 
     # FIXME: https://github.com/SeleniumHQ/selenium/issues/7239
-    # this feauture is not working anymore due to the Selenium bug report above
-    logger.warn(
+    # this feature is not working anymore due to the Selenium bug report above
+    logger.warning(
         "Proxy Authentication is not working anymore due to the Selenium bug "
         "report: https://github.com/SeleniumHQ/selenium/issues/7239"
     )
@@ -181,7 +179,7 @@ def proxy_authentication(browser, logger, proxy_username, proxy_password):
         )
         alert_popup.accept()
     except Exception:
-        logger.warn("Unable to proxy authenticate")
+        logger.warning("Unable to proxy authenticate")
 
 
 def close_browser(browser, threaded_session, logger):
@@ -275,10 +273,10 @@ def retry(max_retry_count=3, start_page=None):
 
 
 class custom_browser(Remote):
-    """ Custom browser instance for manupulation later on """
+    """Custom browser instance for manipulation later on"""
 
     def find_element_by_xpath(self, *args, **kwargs):
-        """ example usage of hooking into built in functions """
+        """example usage of hooking into built in functions"""
         rv = super(custom_browser, self).find_element_by_xpath(*args, **kwargs)
         return rv
 
@@ -314,6 +312,6 @@ class custom_browser(Remote):
 
 
 def convert_selenium_browser(driver):
-    """ Changed the class to our custom class """
+    """Changed the class to our custom class"""
     driver.__class__ = custom_browser
     return driver

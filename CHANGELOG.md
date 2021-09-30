@@ -4,21 +4,130 @@ The **goal** of this file is explaining to the users of our project the notable 
 
 _The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html)_
 
-## [0.6.12] - UNRELEASED
+## [0.6.21] - UNRELEASED
+
+### Changed
+
+- Change the ip data supplier to https://freegeoip.app/ from https://seeip.org/
+
+## [0.6.20] - UNRELEASED
+
+### Fixed
+
+- Fixed empty shared data
+
+## [0.6.19] - UNRELEASED
+
+### Fixed
+
+- Fixed xpath for when images cannot be detected
+
+## [0.6.18] - UNRELEASED
+
 ### Added
+
+- Skipping of public account with (optional) percentage
+
+## [0.6.17] - UNRELEASED
+
+### Added
+
+- Fixed getting additional data from page source
+
+## [0.6.16] - UNRELEASED
+
+### Added
+
+- Fix user following and verification of follow
+
+## [0.6.15] - UNRELEASED
+
+### Added
+
+- Added `verified_only` argument to `get_followers` to return only verified users
+- `mandatory_bio_keywords` control before evaluating for mandatory
+
+## [0.6.14] - UNRELEASED
+
+### Added
+
+- Added delays after load cookie in login.util.py
+- Added `apidisplaypurposes about` in `smart_hashtags` and new api token; Python3.5
+- Added `interact_user_likers` interacting with the likers from a given user's posts
+- Added second `accept_igcookie_dialogue` to handled the second "cookie accept screen" that is not automatically accepted
+- Added delays after `update_activity()` in `follow_util.py` and `util.py`
+- Added extra trace in `get_followers()`
+
+### Fixed
+
+- Move call to `get_following_status` above `web_address_navigator` inside `get_links_for_username` function
+- Fixed the correct URL `displaypurposes.com`, the old `displaypurposes.com` API is deprecated
+- Fixed `additional-information.md`, removed extra info for `cron` configuration
+- Fixed `actions.md` and `settings.md` for identation
+
+## [0.6.13] - 2020-12-30
+
+### Added
+
+- Handle situation if stale elements detected when cookie cannot be loaded
+- Convert Documentation to Docusaurus
+- Check if user's account is private
+- Added informational message when videos found instead of images in `likers_from_photo`
+- Two Factor Authentication check when acct is protected
+- Added Pull Request Template
+- Added function `accept_igcookie_dialogue` that clicks accept at IG cookie dialogue
+- Added `comment_liked_photo` to `set_do_comment` to be able to comment twice a photo that is already liked; deactivated by default
+
+### Fixed
+
+- Fixed typo in message when a video is tried to like.
+- Fixed the problem where `followers_list` could be used without being initialized.
+- Fixed incorrect xpath used by `interact_by_comments`
+- Fixed typo in `dissmiss_save_information` to `dismiss_save_information`
+- Fixed `get_followers` return for empty list
+- Fixed xpath for `likers_from_photo`
+- Changed windows size to `iPhone XS Max: 414, 896`
+- Fixed `process_comments` where some comments used the InstaPy user
+- Updated `user_agent` profile to be the same for the bot session
+- Fixed required `sameSite:Strict` parameter in browser cookie session
+- Fixed `login_session` for issues when cookie cannot be loaded
+- Fixed `likes_dialog_close_xpath` to generic format
+- Fixed `validate_username` to navigate user profile to read their Bio
+- Fixed `Liked button now found, might be a video` that could be floodig general log
+- Fixed `logger.warn` to `logger.warning` as default warning in Python
+- Fixed xpath for `watch_story`
+
+## [0.6.12] - 2020-10-26
+
+### Added
+
 - Defined local variables ( ie: 'unfollow_state') to fix message for referenced before assignment
 - *.code-workspace in .gitignore for vscode project (macOS)
 - `like_by_locations()` with randomize flag
+- Added firefox_options.log.level = geckodriver_log_level for debugging
+- `dissmiss_save_information` in `login_user()`
+- new path used in login_util.py
+- information for geckodriver_log_level, development only
 
 ### Changed
+
 - check if liking activity was blocked after every like
 - Call scroll_down() after follower accepted, with this new def the window is scrolled down after accepting a follower.
 - Sorted imports, to make code readable
+- Modified followed.txt log to append information
+- `like_image` now needs to handle images and videos
+- Imports were ordered
+- `like_by_feed` limits from 100 to 50
 
+### Fixed
+
+- fixed some comments were double quotes were not necessary
+- issue where `getTitle` was timing out
+- `get_users_through_dialog_with_graphql` with a new try/except
 
 ## [0.6.11] - 2020-09-25
 
-### Added 
+### Added
 - Use random tag list for `session.like_by_tags`
 
 ### Changed
@@ -36,18 +145,21 @@ _The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 ## [0.6.10] - 2020-07-30
 
 ### Added
+
 - Generallize mandatory words and add mandatory_bio_keywords
 
-### Changed 
+### Changed
+
 - Update xpath for like/unlike and comment
 - Fix `like_by_feed()` xpath
 - `get_like_on_feed()` improve function readability
 
 ### Fixed
+
 - "UnboundLocalError: local variable 'commenting_approved' referenced before assignment" error when bot tries to comment
 - Typo updating configuration object. Changed nofity into notify
 - Add specific firefox preference agent data to prevent error
-- Smart location url 
+- Smart location url
 - Error "Hide Selenium Extension: Error" mentioned in #5304
 - XPATH for like svg
 
@@ -58,11 +170,10 @@ _The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 - Additional parameter `browser_executable_path` now available when initializing InstaPy. Use it to run a specific installation of Firefox.
 - A new feature - `target_list()` to parse text files containing target lists of users, hashtags etc.
 
-
 ### Changed
-- Remove `view-source` which stops bot from proceeding 
-- Remove instagram status check
 
+- Remove `view-source` which stops bot from proceeding
+- Remove instagram status check
 
 ## [0.6.8] - 2020-01-28
 
@@ -70,20 +181,17 @@ _The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 - xPath for breaking LIKE and COMMENT
 
-
 ## [0.6.7] - 2020-01-05
 
 ### Fixed
 
 - Adjusted follow xPath
 
-
 ## [0.6.6] - 2019-11-11
 
 ### Changed
 
 - Additional web checks default `False` to avoid erros on runtime
-
 
 ## [0.6.5] - 2019-10-20
 
