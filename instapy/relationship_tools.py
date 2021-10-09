@@ -81,7 +81,7 @@ def get_followers(
 
     if (
         is_private is None
-        or (is_private is True and following_status not in ["Following", True])
+        or (is_private is True and following_status not in ["OWNER", "Following", True])
         or (following_status == "Blocked")
     ):
         logger.info(
@@ -374,7 +374,7 @@ def get_following(
     is_private = is_private_profile(browser, logger, following_status == "Following")
     if (
         is_private is None
-        or (is_private is True and following_status not in ["Following", True])
+        or (is_private is True and following_status not in ["OWNER", "Following", True])
         or (following_status == "Blocked")
     ):
         logger.info(
