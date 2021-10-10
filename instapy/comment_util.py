@@ -81,7 +81,7 @@ def comment_image(browser, username, comments, blacklist, logger, logfolder):
             comment_input = get_comment_input(browser)
             # below, an extra space is added to force
             # the input box to update the reactJS core
-            comment_to_be_sent = rand_comment
+            comment_to_be_sent = rand_comment + " "
 
             # wait, to avoid crash
             sleep(2)
