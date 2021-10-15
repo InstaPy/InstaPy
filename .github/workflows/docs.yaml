@@ -1,0 +1,21 @@
+name: GitHub Pages
+
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 14.x
+      - name: Install and Build
+        run: |
+          git config --global user.name "${GH_NAME}"
+          git config --global user.email "${GH_EMAIL}"
+          echo "machine github.com login ${GH_NAME} password ${GH_TOKEN}" > ~/.netrc
+          cd docusaurus && yarn && GIT_USER="${GH_NAME}" yarn deploy
