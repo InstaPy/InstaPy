@@ -123,7 +123,7 @@ xpath["get_links_for_location"] = {
     "main_elem": "//main/article/div[2]",
 }
 
-xpath["get_links_from_feed"] = {"get_links": "//article/div[3]/div[2]/a"}
+xpath["get_links_from_feed"] = {"get_links": "//*[contains(@class,'c-Yi7')]"}
 
 xpath["get_links_for_tag"] = {
     "top_elements": "//main/article/div[1]",
@@ -159,8 +159,8 @@ xpath["like_comment"] = {
 }
 
 xpath["like_image"] = {
-    "like": "//section/span/button/div/span[*[local-name()='svg']/@aria-label='Like']",
-    "unlike": "//section/span/button/div/span[*[local-name()='svg']/@aria-label='Unlike']",
+    "like": "//*[contains(@class, 'fr66n')]/button/div/*[*[local-name()='svg']/@aria-label='Like']/*",
+    "unlike": "//*[contains(@class, 'fr66n')]/button/div/*[*[local-name()='svg']/@aria-label='Unlike']/*",
     "play": "//*/span[contains(@aria-label, 'Play')]",
 }
 
