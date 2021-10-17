@@ -2,7 +2,7 @@ name: GitHub Pages
 
 on:
   push:
-    branches: [ master ]
+    branches: [master]
 
 jobs:
   build-and-deploy:
@@ -15,7 +15,12 @@ jobs:
           node-version: 14.x
       - name: Install and Build
         run: |
-          git config --global user.name "${GH_NAME}"
-          git config --global user.email "${GH_EMAIL}"
-          echo "machine github.com login ${GH_NAME} password ${GH_TOKEN}" > ~/.netrc
-          cd docusaurus && yarn && GIT_USER="${GH_NAME}" yarn deploy
+          yarn install
+          yarn build
+
+      - name: Deploy
+        uses: JamesIves/github-pages-deploy-action@4.1.4
+        with:
+          branch: gh-pages
+          folder: build
+          clean: true
