@@ -2,17 +2,18 @@ name: PyPi
 
 on:
   push:
-    branches: [ master ]
+    branches: [master]
 
 jobs:
   build:
+    runs-on: ubuntu-latest
     name: Deploy to PyPi
     steps:
       - uses: actions/checkout@v2
       - name: Setup python
         uses: actions/setup-python@v2
         with:
-          python-version: 3.x
+          python-version: 3.9
       - run: pip install sdist bdist_wheel
       - run: python setup.py sdist bdist_wheel
       - name: Publish package

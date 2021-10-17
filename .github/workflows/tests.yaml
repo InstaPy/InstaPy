@@ -1,12 +1,13 @@
 name: Tests
 
-on: [ push, pull_request ]
+on: [push, pull_request]
 
 jobs:
   pytest:
+    runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [ 3.4, 3.5, 3.6, 3.7, 3.8, 3.9, 3.x ]
+        python-version: [3.5, 3.6, 3.7, 3.8, 3.9, 3.x]
     name: Python ${{ matrix.python-version }} test
     steps:
       - uses: actions/checkout@v2
@@ -14,10 +15,14 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.python-version }}
-      - run: pip install pytest
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip wheel flake8 pytest
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
       - run: python -m pytest
 
   lint:
+    runs-on: ubuntu-latest
     name: Linting
     steps:
       - uses: actions/checkout@v2
@@ -25,6 +30,9 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: 3.x
-      - run: pip install black flake8
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip wheel black flake8 pytest
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
       - run: flake8 .
       - run: black -t py34 --check .
