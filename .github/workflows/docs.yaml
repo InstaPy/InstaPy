@@ -15,6 +15,7 @@ jobs:
           node-version: 14.x
       - name: Install and Build
         run: |
+          cd docusaurus
           yarn install
           yarn build
 
@@ -22,5 +23,5 @@ jobs:
         uses: JamesIves/github-pages-deploy-action@4.1.4
         with:
           branch: gh-pages
-          folder: build
+          folder: docusaurus/build
           clean: true
