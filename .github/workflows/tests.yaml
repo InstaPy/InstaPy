@@ -17,7 +17,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: Install dependencies
         run: |
-          python -m pip install --upgrade pip wheel flake8 pytest
+          python -m pip install --upgrade pip flake8 pytest
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
       - run: python -m pytest
 
@@ -32,7 +32,7 @@ jobs:
           python-version: 3.x
       - name: Install dependencies
         run: |
-          python -m pip install --upgrade pip wheel black flake8 pytest
+          python -m pip install --upgrade pip black flake8 pytest
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
       - run: flake8 .
       - run: black -t py34 --check .
