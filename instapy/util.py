@@ -2603,7 +2603,7 @@ def get_additional_data(browser):
     soup = BeautifulSoup(browser.page_source, "html.parser")
     for text in soup(text=re.compile(r"window.__additionalDataLoaded")):
         if re.search("^window.__additionalDataLoaded", text):
-            additional_data = json.loads(re.search('{.*}', text).group())
+            additional_data = json.loads(re.search("{.*}", text).group())
             break
 
     return additional_data
@@ -2621,7 +2621,7 @@ def get_shared_data(browser):
     soup = BeautifulSoup(browser.page_source, "html.parser")
     for text in soup(text=re.compile(r"window._sharedData")):
         if re.search("^window._sharedData", text):
-            shared_data = json.loads(re.search('{.*}', text).group())
+            shared_data = json.loads(re.search("{.*}", text).group())
             break
 
     return shared_data
