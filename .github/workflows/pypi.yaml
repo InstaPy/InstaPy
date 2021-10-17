@@ -16,7 +16,7 @@ jobs:
           python-version: 3.x
       - name: Install requirements
         run: |
-          pip install --upgrade pip sdist bdist_wheel
+          pip install --upgrade pip sdist wheel
           pip install -r requirements.txt
       - name: Build the package
         run: python setup.py sdist bdist_wheel
