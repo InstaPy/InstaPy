@@ -4,14 +4,8 @@ The **goal** of this file is explaining to the users of our project the notable 
 
 _The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html)_
 
-## [0.6.15] - UNRELEASED
 
-### Fixed
-
-- Cannot detect post media type
-- Updated xpath Image "Like" and "Unlike"
-
-## [0.6.14] - UNRELEASED
+## [0.6.14] - 2021-10-18
 
 ### Added
 
@@ -35,6 +29,8 @@ _The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 - Fixed getting additional data from page source
 - Fixed xpath for when images cannot be detected
 - Fixed empty shared data
+- Cannot detect post media type
+- Updated xpath Image "Like" and "Unlike"
 
 ### Changed
 
