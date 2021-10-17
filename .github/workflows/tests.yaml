@@ -11,7 +11,7 @@ jobs:
         python-version: [3.5, 3.6, 3.7, 3.8, 3.9, 3.x]
         exclude:
           - os: macos-latest
-            python-version: "3.5"
+            python-version: [3.5, 3.6, 3.7]
     name: ${{ matrix.os }} Python ${{ matrix.python-version }} test
     steps:
       - uses: actions/checkout@v2
