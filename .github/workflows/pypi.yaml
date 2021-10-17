@@ -2,10 +2,11 @@ name: PyPi
 
 on:
   push:
-    branches: [ master ]
+    branches: [master]
 
 jobs:
   build:
+    runs-on: ubuntu-latest
     name: Deploy to PyPi
     steps:
       - uses: actions/checkout@v2
@@ -13,8 +14,12 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: 3.x
-      - run: pip install sdist bdist_wheel
-      - run: python setup.py sdist bdist_wheel
+      - name: Install requirements
+        run: |
+          pip install --upgrade pip sdist bdist_wheel
+          pip install -r requirements.txt
+      - name: Build the package
+        run: python setup.py sdist bdist_wheel
       - name: Publish package
         if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
         uses: pypa/gh-action-pypi-publish@release/v1
