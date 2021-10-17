@@ -9,6 +9,9 @@ jobs:
       matrix:
         os: [ubuntu-latest, macos-latest]
         python-version: [3.5, 3.6, 3.7, 3.8, 3.9, 3.x]
+        exclude:
+          - os: macos-latest
+            python-version: "3.5"
     name: ${{ matrix.os }} Python ${{ matrix.python-version }} test
     steps:
       - uses: actions/checkout@v2
@@ -18,12 +21,12 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: Install dependencies
         run: |
-          python -m pip install --upgrade pip flake8 pytest
-          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+          python -m pip install --upgrade pip pytest
+          pip install -r requirements.txt
       - run: python -m pytest
 
   lint:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
     name: Linting
     steps:
       - uses: actions/checkout@v2
@@ -34,6 +37,6 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip black flake8 pytest
-          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+          pip install -r requirements.txt
       - run: flake8 .
       - run: black -t py34 --check .
