@@ -11,8 +11,8 @@ jobs:
         python-version: [3.5, 3.6, 3.7, 3.8, 3.9, 3.x]
         exclude:
           - os: macos-latest
-            python-version: [3.5, 3.6, 3.7]
-    name: ${{ matrix.os }} Python ${{ matrix.python-version }} test
+            python-version: 3.5
+    name: ${{ matrix.os }} Python ${{ matrix.python-version }} Test
     steps:
       - uses: actions/checkout@v2
       - name: Setup python
@@ -27,7 +27,10 @@ jobs:
 
   lint:
     runs-on: ${{ matrix.os }}
-    name: Linting
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+    name: ${{ matrix.os }} Python ${{ matrix.python-version }} Linting
     steps:
       - uses: actions/checkout@v2
       - name: Setup python
