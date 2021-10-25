@@ -78,10 +78,10 @@ def get_following_status(
         follow_button = explicit_wait(
             browser, "VOEL", [follow_button_XP, "XPath"], logger, 14, False
         )
-        if not follow_button:
-            # cannot find the any of the expected buttons
-            logger.error(failure_msg.format(person.encode("utf-8")))
-            return None, None
+    if not follow_button:
+        # cannot find the any of the expected buttons
+        logger.error(failure_msg.format(person.encode("utf-8")))
+        return None, None
 
     # get follow status
     following_status = follow_button.text

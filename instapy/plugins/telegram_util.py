@@ -273,10 +273,7 @@ class InstaPyTelegramBot:
     def _error_callback(self, update, error):
         try:
             raise error
-        except Unauthorized:
-            self.__logger.warning("TELEGRAM ERROR {} update={}".format(error, update))
-        except BadRequest:
-            # handle malformed requests - read more below!
+        except (Unauthorized, BadRequest):
             self.__logger.warning("TELEGRAM ERROR {} update={}".format(error, update))
         except TimedOut:
             # handle slow connection problems
@@ -319,7 +316,7 @@ class InstaPyTelegramBot:
         )
         run_time_msg = "[Session lasted {}]".format(run_time_info)
 
-        if any(stat for stat in stats):
+        if any(stats):
             return (
                 "Sessional Live Report:\n"
                 "|> LIKED {} images\n"

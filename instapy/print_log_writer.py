@@ -7,9 +7,7 @@ from .util import web_address_navigator
 
 def get_log_time():
     """this method will keep same format for all recorded"""
-    log_time = datetime.now().strftime("%Y-%m-%d %H:%M")
-
-    return log_time
+    return datetime.now().strftime("%Y-%m-%d %H:%M")
 
 
 def log_follower_num(browser, username, logfolder):
