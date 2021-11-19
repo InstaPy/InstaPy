@@ -36,19 +36,19 @@ Implemented in Python using the Selenium module.<p>
 
 # Find the full documentation in [Docs](/docs)
 **Table of contents**
-- [How to install and run InstaPy](https://instapy.org/#installation)
-  * [Installing InstaPy](https://instapy.org/#installation)
-  * [Running Instapy](https://instapy.org/#installation)
-  * [Updating InstaPy](https://instapy.org/#updating-instapy)
-  * [Guides and tutorials](https://instapy.org/#guides)
-    * [Video tutorials](https://instapy.org/#video-tutorials)
-    * [Written guides](https://instapy.org/#written-guides)
-- [Externals and additionals tools](https://instapy.org/#external-tools)
+- [How to install and run InstaPy](/docs/home.md#installation)
+  * [Installing InstaPy](/docs/home.md#installation)
+  * [Running Instapy](/docs/home.md#installation)
+  * [Updating InstaPy](/docs/home.md#updating-instapy)
+  * [Guides and tutorials](/docs/home.md#guides)
+    * [Video tutorials](/docs/home.md#video-tutorials)
+    * [Written guides](/docs/home.md#written-guides)
+- [Externals and additionals tools](/docs/home.md#external-tools)
   * [Web Interface](https://instapy.io)
-- [Running InstaPy on Docker](https://instapy.org/#docker)
-- [Documentation of all Instapy's features](https://instapy.org/settings)
-- [Support](https://instapy.org/#support)
-- [Credits](https://instapy.org/#credits)
+- [Running InstaPy on Docker](/docs/home.md#docker)
+- [Documentation of all Instapy's features](/docs/settings.md)
+- [Support](/docs/home.md#support)
+- [Credits](/docs/home.md#credits)
 
 <br />
 
