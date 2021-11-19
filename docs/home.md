@@ -90,17 +90,6 @@ Or add the `headless_browser=True` parameter to the `InstaPy(headless_browser=Tr
 pip install instapy -U
 ```
 
-<ins
-  class="adsbygoogle"
-  data-ad-layout="in-article"
-  data-ad-format="fluid"
-  data-ad-client="ca-pub-4875789012193531"
-  data-ad-slot="9530237054"
-></ins>
-<script>
-  (adsbygoogle = window.adsbygoogle || []).push({});
-</script>
-
 ## Guides
 
 #### Video tutorials:
@@ -157,17 +146,6 @@ If you should encounter any issue, please first [search for similar issues](http
 **Help build InstaPy!**      
 Check out this short guide on [how to start contributing!](https://github.com/InstaPy/instapy-docs/blob/master/CONTRIBUTORS.md).
 
-<ins
-  class="adsbygoogle"
-  data-ad-layout="in-article"
-  data-ad-format="fluid"
-  data-ad-client="ca-pub-4875789012193531"
-  data-ad-slot="9530237054"
-></ins>
-<script>
-  (adsbygoogle = window.adsbygoogle || []).push({});
-</script>
-
 ## Credits
 
 ### Community
@@ -199,14 +177,3 @@ Support this project by becoming a sponsor. Your logo will show up here with a l
 ---
 
 > **Disclaimer**<a name="disclaimer" />: Please Note that this is a research project. I am by no means responsible for any usage of this tool. Use on your own behalf. I'm also not responsible if your accounts get banned due to extensive use of this tool.
-
-<ins
-  class="adsbygoogle"
-  data-ad-layout="in-article"
-  data-ad-format="fluid"
-  data-ad-client="ca-pub-4875789012193531"
-  data-ad-slot="9530237054"
-></ins>
-<script>
-  (adsbygoogle = window.adsbygoogle || []).push({});
-</script>
