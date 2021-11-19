@@ -34,7 +34,7 @@ Implemented in Python using the Selenium module.<p>
 
 <br />
 
-# Find the full documentation on [InstaPy.org](https://instapy.org)
+# Find the full documentation in [Docs](/docs)
 **Table of contents**
 - [How to install and run InstaPy](https://instapy.org/#installation)
   * [Installing InstaPy](https://instapy.org/#installation)
