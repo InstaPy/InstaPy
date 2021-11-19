@@ -93,8 +93,6 @@ pip install instapy -U
 ## Guides
 
 #### Video tutorials:
-**[Official InstaPy Guide on Udemy](https://www.udemy.com/instapy-guide/?couponCode=INSTAPY_OFFICIAL)**
-
 **[Complete Guide to Bot Creation](https://www.udemy.com/course/the-complete-guide-to-bot-creation/?referralCode=7418EBB47E11E34D86C9)**
 
 **[Installation on Windows](https://www.youtube.com/watch?v=9DkEl2MrFQk&list=PLa4P1NPX9hthXV-wko0xyxFpbhYZFkW7o&index=11&t=40s)**
