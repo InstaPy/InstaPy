@@ -44,7 +44,6 @@ Implemented in Python using the Selenium module.<p>
     * [Video tutorials](/docs/home.md#video-tutorials)
     * [Written guides](/docs/home.md#written-guides)
 - [Externals and additionals tools](/docs/home.md#external-tools)
-  * [Web Interface](https://instapy.io)
 - [Running InstaPy on Docker](/docs/home.md#docker)
 - [Documentation of all Instapy's features](/docs/settings.md)
 - [Support](/docs/home.md#support)
