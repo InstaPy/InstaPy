@@ -79,11 +79,10 @@ def get_followers(
 
     is_private = is_private_profile(browser, logger, following_status == "Following")
 
-    if (
-        not username == self_username and ( 
+    if not username == self_username and (
         is_private is None
         or (is_private is True and following_status not in ["Following", True])
-        or (following_status == "Blocked"))
+        or (following_status == "Blocked")
     ):
         logger.info(
             "This user is private and we are not following. '{}':'{}'".format(
@@ -373,11 +372,10 @@ def get_following(
     )
 
     is_private = is_private_profile(browser, logger, following_status == "Following")
-    if (
-        not username == self_username and (
+    if not username == self_username and (
         is_private is None
         or (is_private is True and following_status not in ["Following", True])
-        or (following_status == "Blocked"))
+        or (following_status == "Blocked")
     ):
         logger.info(
             "This user is private and we are not following. '{}':'{}'".format(
