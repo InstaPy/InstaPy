@@ -43,7 +43,7 @@ comments=[
     {'mandatory_words': [["high", "tide"]], 'comments': ["High tides are better than low"]}
 
     # Only "summer" AND ("lake" OR "occean") will satisfy this:
-    {'mandatory_words': [["summer", ["lake", "occean"]], 'comments': ["Summer fun"]}
+    {'mandatory_words': [["summer", ["lake", "occean"]]], 'comments': ["Summer fun"]}
 
 ]
 session.set_comments(comments)

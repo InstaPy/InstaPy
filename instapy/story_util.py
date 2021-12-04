@@ -1,21 +1,24 @@
 # import built-in & third-party modules
-import time
 import math
-import requests
-
+import time
 from random import randint
 
-# import InstaPy modules
-from .util import click_element
-from .util import web_address_navigator
-from .util import update_activity
-from .util import get_action_delay
-from .settings import Settings
-from .xpath import read_xpath
+import requests
 
 # import exceptions
-from selenium.common.exceptions import NoSuchElementException
-from selenium.common.exceptions import WebDriverException
+from selenium.common.exceptions import NoSuchElementException, WebDriverException
+from selenium.webdriver.common.by import By
+
+from .settings import Settings
+
+# import InstaPy modules
+from .util import (
+    click_element,
+    get_action_delay,
+    update_activity,
+    web_address_navigator,
+)
+from .xpath import read_xpath
 
 
 def get_story_data(browser, elem, action_type, logger, simulate=False):
@@ -143,11 +146,12 @@ def get_story_data(browser, elem, action_type, logger, simulate=False):
                         time.sleep(randint(3, 6))
                         reels_cnt += 1
             else:
-                story_elem = browser.find_element_by_xpath(
+                story_elem = browser.find_element(
+                    By.XPATH,
                     read_xpath(
                         watch_story.__name__ + "_for_{}".format(action_type),
                         "explore_stories",
-                    )
+                    ),
                 )
 
                 click_element(browser, story_elem)
@@ -160,15 +164,16 @@ def get_story_data(browser, elem, action_type, logger, simulate=False):
                         time.sleep(2)
                         if index == 1:
                             try:
-                                next_elem = browser.find_element_by_xpath(
-                                    read_xpath(watch_story.__name__, "next_first")
+                                next_elem = browser.find_element(
+                                    By.XPATH,
+                                    read_xpath(watch_story.__name__, "next_first"),
                                 )
                             except NoSuchElementException:
                                 continue
                         else:
                             try:
-                                next_elem = browser.find_element_by_xpath(
-                                    read_xpath(watch_story.__name__, "next")
+                                next_elem = browser.find_element(
+                                    By.XPATH, read_xpath(watch_story.__name__, "next")
                                 )
                             except NoSuchElementException:
                                 continue

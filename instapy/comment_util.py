@@ -2,38 +2,45 @@
 """ Module which handles the commenting features """
 # import built-in & third-party modules
 import random
+
 import emoji
+
+# import exceptions
+from selenium.common.exceptions import (
+    InvalidElementStateException,
+    NoSuchElementException,
+    WebDriverException,
+)
+from selenium.webdriver.common.action_chains import ActionChains
+from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
+
+from .event import Event
+from .quota_supervisor import quota_supervisor
 
 # import InstaPy modules
 from .time_util import sleep
-from .util import update_activity
-from .util import getMediaData
-from .util import add_user_to_blacklist
-from .util import click_element
-from .util import get_action_delay
-from .util import explicit_wait
-from .util import web_address_navigator
-from .util import evaluate_mandatory_words
-from .event import Event
-from .quota_supervisor import quota_supervisor
+from .util import (
+    add_user_to_blacklist,
+    click_element,
+    evaluate_mandatory_words,
+    explicit_wait,
+    get_action_delay,
+    getMediaData,
+    update_activity,
+    web_address_navigator,
+)
 from .xpath import read_xpath
-
-# import exceptions
-from selenium.common.exceptions import WebDriverException
-from selenium.common.exceptions import InvalidElementStateException
-from selenium.common.exceptions import NoSuchElementException
-from selenium.webdriver.common.action_chains import ActionChains
-from selenium.webdriver.common.keys import Keys
 
 
 def get_comment_input(browser):
-    comment_input = browser.find_elements_by_xpath(
-        read_xpath(get_comment_input.__name__, "comment_input")
+    comment_input = browser.find_elements(
+        By.XPATH, read_xpath(get_comment_input.__name__, "comment_input")
     )
 
     if len(comment_input) <= 0:
-        comment_input = browser.find_elements_by_xpath(
-            read_xpath(get_comment_input.__name__, "placeholder")
+        comment_input = browser.find_elements(
+            By.XPATH, read_xpath(get_comment_input.__name__, "placeholder")
         )
 
     return comment_input
@@ -45,8 +52,8 @@ def open_comment_section(browser, logger):
         "\t~may cause issues with browser windows of smaller widths"
     )
 
-    comment_elem = browser.find_elements_by_xpath(
-        read_xpath(open_comment_section.__name__, "comment_elem")
+    comment_elem = browser.find_elements(
+        By.XPATH, read_xpath(open_comment_section.__name__, "comment_elem")
     )
 
     if len(comment_elem) > 0:
@@ -265,8 +272,8 @@ def get_comments_on_post(
     explicit_wait(browser, "PFL", [], logger, 10)
 
     try:
-        all_comment_like_buttons = browser.find_elements_by_xpath(
-            like_button_full_XPath
+        all_comment_like_buttons = browser.find_elements(
+            By.XPATH, like_button_full_XPath
         )
 
         if all_comment_like_buttons:
@@ -290,8 +297,8 @@ def get_comments_on_post(
                     logger.info("Could not grab any commenter from this post")
 
         else:
-            comment_unlike_buttons = browser.find_elements_by_xpath(
-                unlike_button_full_XPath
+            comment_unlike_buttons = browser.find_elements(
+                By.XPATH, unlike_button_full_XPath
             )
 
             if comment_unlike_buttons:

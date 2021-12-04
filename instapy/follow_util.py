@@ -3,17 +3,20 @@
 from random import randint
 from time import sleep
 
-# import InstaPy modules
-from .util import web_address_navigator
-from .util import get_username_from_id
-from .util import is_page_available
-from .util import update_activity
-from .util import explicit_wait
-from .util import load_user_id
-from .xpath import read_xpath
-
 # import exceptions
 from selenium.common.exceptions import NoSuchElementException
+from selenium.webdriver.common.by import By
+
+# import InstaPy modules
+from .util import (
+    explicit_wait,
+    get_username_from_id,
+    is_page_available,
+    load_user_id,
+    update_activity,
+    web_address_navigator,
+)
+from .xpath import read_xpath
 
 
 def get_following_status(
@@ -54,14 +57,15 @@ def get_following_status(
 
     # wait until the follow button is located and visible, then get it
     try:
-        browser.find_element_by_xpath(
-            read_xpath(get_following_status.__name__, "follow_button_XP")
+        browser.find_element(
+            By.XPATH, read_xpath(get_following_status.__name__, "follow_button_XP")
         )
         follow_button_XP = read_xpath(get_following_status.__name__, "follow_button_XP")
     except NoSuchElementException:
         try:
-            follow_button = browser.find_element_by_xpath(
-                read_xpath(get_following_status.__name__, "follow_span_XP_following")
+            follow_button = browser.find_element(
+                By.XPATH,
+                read_xpath(get_following_status.__name__, "follow_span_XP_following"),
             )
             return "Following", follow_button
         except:
