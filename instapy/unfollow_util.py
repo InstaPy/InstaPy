@@ -702,9 +702,9 @@ def get_users_through_dialog_with_graphql(
 
     web_address_navigator(browser, url)
 
-    pre = browser.find_element(By.TAG_NAME, "pre")
+    pre = browser.find_element(By.TAG_NAME, "pre").text
     # set JSON object
-    data = json.loads(pre.text)
+    data = json.loads(pre)
 
     try:
         # get all followers or following of current page
@@ -747,10 +747,10 @@ def get_users_through_dialog_with_graphql(
 
         url = "{}&variables={}".format(graphql_query_URL, str(json.dumps(variables)))
         browser.get(url)
-        pre = browser.find_element(By.TAG_NAME, "pre")
+        pre = browser.find_element(By.TAG_NAME, "pre").text
 
         # response to JSON object
-        data = json.loads(pre.text)
+        data = json.loads(pre)
 
         try:
             # get all followers of current page

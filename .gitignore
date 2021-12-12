@@ -115,6 +115,7 @@ tests/logs
 
 # Pipfile
 Pipfile
+Pipfile.lock
 
 # Instances
 z_*
