@@ -10,7 +10,13 @@ from instapy import set_workspace
 set_workspace(path=None)
 
 # get an InstaPy session!
-session = InstaPy()
+your_username = ' ' #input your username here
+your_password = ' ' #input your password here
+
+session = InstaPy(username = your_username,
+                  password = your_password,
+                  headless_browser = False) #headless browser if set True will run without displaying mozilla firefox in background
+
 
 with smart_run(session):
     # general settings
