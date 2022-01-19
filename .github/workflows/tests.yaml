@@ -10,7 +10,7 @@ jobs:
         os: [ubuntu-latest, macos-latest]
         python-version: [3.5, 3.6, 3.7, 3.8, 3.9, 3.x]
         exclude:
-          - os: macos-latest
+          - os: [ubuntu-latest, macos-latest]
             python-version: 3.5
     name: ${{ matrix.os }} Python ${{ matrix.python-version }} Test
     steps:
