@@ -1,11 +1,12 @@
 """ Module that handles the like features """
 # import built-in & third-party modules
 
-# import InstaPy modules
-from .util import update_activity
-
 # import exceptions
 from selenium.common.exceptions import NoSuchElementException
+from selenium.webdriver.common.by import By
+
+# import InstaPy modules
+from .util import update_activity
 
 LIKE_TAG_CLASS = "coreSpriteHeartOpen"
 
@@ -25,7 +26,7 @@ def get_like_on_feed(browser, amount):
     likes_performed = 0
     while likes_performed != amount:
         try:
-            like_buttons = browser.find_elements_by_class_name(LIKE_TAG_CLASS)
+            like_buttons = browser.find_elements(By.CLASS_NAME, LIKE_TAG_CLASS)
         except NoSuchElementException:
             print("Unable to find the like buttons, aborting")
             break

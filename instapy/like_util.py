@@ -10,6 +10,7 @@ from selenium.common.exceptions import (
     StaleElementReferenceException,
     WebDriverException,
 )
+from selenium.webdriver.common.by import By
 
 # import InstaPy modules
 from .comment_util import open_comment_section
@@ -57,8 +58,8 @@ def get_links_from_feed(browser, amount, num_of_search, logger):
         sleep(2)
 
     # get links
-    link_elems = browser.find_elements_by_xpath(
-        read_xpath(get_links_from_feed.__name__, "get_links")
+    link_elems = browser.find_elements(
+        By.XPATH, read_xpath(get_links_from_feed.__name__, "get_links")
     )
 
     total_links = len(link_elems)
@@ -82,16 +83,16 @@ def get_main_element(browser, link_elems, skip_top_posts):
     main_elem = None
 
     if not link_elems:
-        main_elem = browser.find_element_by_xpath(
-            read_xpath(get_links_for_location.__name__, "top_elements")
+        main_elem = browser.find_element(
+            By.XPATH, read_xpath(get_links_for_location.__name__, "top_elements")
         )
     else:
         if skip_top_posts:
-            main_elem = browser.find_element_by_xpath(
-                read_xpath(get_links_for_location.__name__, "main_elem")
+            main_elem = browser.find_element(
+                By.XPATH, read_xpath(get_links_for_location.__name__, "main_elem")
             )
         else:
-            main_elem = browser.find_element_by_tag_name("main")
+            main_elem = browser.find_element(By.TAG_NAME, "main")
 
     return main_elem
 
@@ -116,26 +117,26 @@ def get_links_for_location(
     location_link = "https://www.instagram.com/explore/locations/{}".format(location)
     web_address_navigator(browser, location_link)
 
-    top_elements = browser.find_element_by_xpath(
-        read_xpath(get_links_for_location.__name__, "top_elements")
+    top_elements = browser.find_element(
+        By.XPATH, read_xpath(get_links_for_location.__name__, "top_elements")
     )
-    top_posts = top_elements.find_elements_by_tag_name("a")
+    top_posts = top_elements.find_elements(By.TAG_NAME, "a")
     sleep(1)
 
     if skip_top_posts:
-        main_elem = browser.find_element_by_xpath(
-            read_xpath(get_links_for_location.__name__, "main_elem")
+        main_elem = browser.find_element(
+            By.XPATH, read_xpath(get_links_for_location.__name__, "main_elem")
         )
     else:
-        main_elem = browser.find_element_by_tag_name("main")
+        main_elem = browser.find_element(By.TAG_NAME, "main")
 
-    link_elems = main_elem.find_elements_by_tag_name("a")
+    link_elems = main_elem.find_elements(By.TAG_NAME, "a")
     sleep(1)
 
     if not link_elems:  # this location does not have `Top Posts` or it
         # really is empty..
-        main_elem = browser.find_element_by_xpath(
-            get_links_for_location.__name__, "top_elements"
+        main_elem = browser.find_element(
+            By.XPATH, get_links_for_location.__name__, "top_elements"
         )
         top_posts = []
     sleep(2)
@@ -272,25 +273,25 @@ def get_links_for_tag(browser, tag, amount, skip_top_posts, randomize, media, lo
     tag_link = "https://www.instagram.com/explore/tags/{}".format(tag)
     web_address_navigator(browser, tag_link)
 
-    top_elements = browser.find_element_by_xpath(
-        read_xpath(get_links_for_tag.__name__, "top_elements")
+    top_elements = browser.find_element(
+        By.XPATH, read_xpath(get_links_for_tag.__name__, "top_elements")
     )
-    top_posts = top_elements.find_elements_by_tag_name("a")
+    top_posts = top_elements.find_elements(By.TAG_NAME, "a")
     sleep(1)
 
     if skip_top_posts:
-        main_elem = browser.find_element_by_xpath(
-            read_xpath(get_links_for_tag.__name__, "main_elem")
+        main_elem = browser.find_element(
+            By.XPATH, read_xpath(get_links_for_tag.__name__, "main_elem")
         )
     else:
-        main_elem = browser.find_element_by_tag_name("main")
-    link_elems = main_elem.find_elements_by_tag_name("a")
+        main_elem = browser.find_element(By.TAG_NAME, "main")
+    link_elems = main_elem.find_elements(By.TAG_NAME, "a")
     sleep(1)
 
     if not link_elems:  # this tag does not have `Top Posts` or it really is
         # empty..
-        main_elem = browser.find_element_by_xpath(
-            read_xpath(get_links_for_tag.__name__, "top_elements")
+        main_elem = browser.find_element(
+            By.XPATH, read_xpath(get_links_for_tag.__name__, "top_elements")
         )
         top_posts = []
     sleep(2)
@@ -303,8 +304,8 @@ def get_links_for_tag(browser, tag, amount, skip_top_posts, randomize, media, lo
 
     except WebDriverException:
         try:
-            possible_posts = browser.find_element_by_xpath(
-                read_xpath(get_links_for_tag.__name__, "possible_post")
+            possible_posts = browser.find_element(
+                By.XPATH, read_xpath(get_links_for_tag.__name__, "possible_post")
             ).text
             if possible_posts:
                 possible_posts = format_number(possible_posts)
@@ -494,7 +495,7 @@ def get_links_for_username(
 
     # Get links
     links = []
-    main_elem = browser.find_element_by_tag_name("article")
+    main_elem = browser.find_element(By.TAG_NAME, "article")
     posts_count = get_number_of_posts(browser)
     attempt = 0
 
@@ -514,7 +515,7 @@ def get_links_for_username(
 
         # using `extend`  or `+=` results reference stay alive which affects
         # previous assignment (can use `copy()` for it)
-        main_elem = browser.find_element_by_tag_name("article")
+        main_elem = browser.find_element(By.TAG_NAME, "article")
         links = links + get_links(browser, person, logger, media, main_elem)
         links = sorted(set(links), key=links.index)
 
@@ -743,14 +744,14 @@ def like_image(browser, username, blacklist, logger, logfolder, total_liked_img)
     unlike_xpath = read_xpath(like_image.__name__, "unlike")
     play_xpath = read_xpath(like_image.__name__, "play")
 
-    play_elem = browser.find_elements_by_xpath(play_xpath)
+    play_elem = browser.find_elements(By.XPATH, play_xpath)
     if len(play_elem) == 1:
         # This is because now IG is not only Images, User can share Images and
         # Videos in one post at the same time, it could be Image -> Video or
         # Video -> Image so we will try to Like the post like one object.
         media = "Video"
         comment = read_xpath(open_comment_section.__name__, "comment_elem")
-        element = browser.find_element_by_xpath(comment)
+        element = browser.find_element(By.XPATH, comment)
 
         # Now, move until 'Comment' section to determine the status of post
         # Notice that some videos comes from TikTok and could have larger size
@@ -759,18 +760,18 @@ def like_image(browser, username, blacklist, logger, logfolder, total_liked_img)
         browser.execute_script("arguments[0].scrollIntoView(true);", element)
 
     # find first for like element
-    like_elem = browser.find_elements_by_xpath(like_xpath)
+    like_elem = browser.find_elements(By.XPATH, like_xpath)
 
     if len(like_elem) == 1:
         # sleep real quick right before clicking the element
         sleep(2)
         logger.info("--> {}...".format(media))
 
-        like_elem = browser.find_elements_by_xpath(like_xpath)
+        like_elem = browser.find_elements(By.XPATH, like_xpath)
         if len(like_elem) > 0:
             click_element(browser, like_elem[0])
         # check now we have unlike instead of like
-        liked_elem = browser.find_elements_by_xpath(unlike_xpath)
+        liked_elem = browser.find_elements(By.XPATH, unlike_xpath)
 
         if len(liked_elem) == 1:
             logger.info("--> {} liked!".format(media))
@@ -803,7 +804,7 @@ def like_image(browser, username, blacklist, logger, logfolder, total_liked_img)
             sleep(120)
 
     else:
-        liked_elem = browser.find_elements_by_xpath(unlike_xpath)
+        liked_elem = browser.find_elements(By.XPATH, unlike_xpath)
         if len(liked_elem) == 1:
             logger.info("--> {} already liked!".format(media))
             return False, "already liked"
@@ -818,7 +819,7 @@ def verify_liked_image(browser, logger):
 
     browser.refresh()
     unlike_xpath = read_xpath(like_image.__name__, "unlike")
-    like_elem = browser.find_elements_by_xpath(unlike_xpath)
+    like_elem = browser.find_elements(By.XPATH, unlike_xpath)
 
     if len(like_elem) == 1:
         return True
@@ -853,18 +854,17 @@ def get_links(browser, page, logger, media, element):
 
     try:
         # Get image links in scope from hashtag, location and other pages
-        link_elems = element.find_elements_by_xpath('//a[starts-with(@href, "/p/")]')
+        link_elems = element.find_elements(By.XPATH, '//a[starts-with(@href, "/p/")]')
         sleep(random.randint(2, 5))
 
         if link_elems:
             for link_elem in link_elems:
                 try:
                     post_href = link_elem.get_attribute("href")
-                    post_elem = element.find_elements_by_xpath(
-                        "//a[@href='/p/" + post_href.split("/")[-2] + "/']/child::div"
+                    post_elem = element.find_elements(
+                        By.XPATH,
+                        "//a[@href='/p/" + post_href.split("/")[-2] + "/']/child::div",
                     )
-
-                    logger.info("Verifying media type: {}".format(media))
 
                     if len(post_elem) == 1 and MEDIA_PHOTO in media:
                         logger.info("Found media type: {}".format(MEDIA_PHOTO))
@@ -880,10 +880,11 @@ def get_links(browser, page, logger, media, element):
                         # consider updating the @class,'CzVzU', new format types could be added
                         # Media types from constants.py must be updated here, otherwise the links
                         # cannot be categorized.
-                        post_category = element.find_element_by_xpath(
+                        post_category = element.find_element(
+                            By.XPATH,
                             "//a[@href='/p/"
                             + post_href.split("/")[-2]
-                            + "/']/div[contains(@class,'CzVzU')]/child::*/*[name()='svg']"
+                            + "/']/div[contains(@class,'CzVzU')]/child::*/*[name()='svg']",
                         ).get_attribute("aria-label")
 
                         logger.info("Post category: {}".format(post_category))
@@ -954,15 +955,15 @@ def like_comment(browser, original_comment_text, logger):
     # location path
 
     try:
-        comments_block = browser.find_elements_by_xpath(comments_block_XPath)
+        comments_block = browser.find_elements(By.XPATH, comments_block_XPath)
         for comment_line in comments_block:
-            comment_elem = comment_line.find_elements_by_tag_name("span")[0]
+            comment_elem = comment_line.find_elements(By.TAG_NAME, "span")[0]
             comment = extract_text_from_element(comment_elem)
 
             if comment and (comment == original_comment_text):
                 # find "Like" span (a direct child of Like button)
-                span_like_elements = comment_line.find_elements_by_xpath(
-                    read_xpath(like_comment.__name__, "span_like_elements")
+                span_like_elements = comment_line.find_elements(
+                    By.XPATH, read_xpath(like_comment.__name__, "span_like_elements")
                 )
                 if not span_like_elements:
                     # this is most likely a liked comment
@@ -970,8 +971,8 @@ def like_comment(browser, original_comment_text, logger):
 
                 # like the given comment
                 span_like = span_like_elements[0]
-                comment_like_button = span_like.find_element_by_xpath(
-                    read_xpath(like_comment.__name__, "comment_like_button")
+                comment_like_button = span_like.find_element(
+                    By.XPATH, read_xpath(like_comment.__name__, "comment_like_button")
                 )
                 click_element(browser, comment_like_button)
 

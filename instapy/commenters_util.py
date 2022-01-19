@@ -2,34 +2,39 @@
 # code created by modification of original code copied from
 # https://github.com/timgrossmann/instagram-profilecrawl/blob/master/util/extractor.py
 # import built-in & third-party modules
-import time
-from time import sleep
-from datetime import datetime, timedelta
-import random
 import collections
+import random
+import time
+from datetime import datetime, timedelta
 from operator import itemgetter
+from time import sleep
+
+# import exceptions
+from selenium.common.exceptions import (
+    NoSuchElementException,
+    StaleElementReferenceException,
+)
+from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 
 # import InstaPy modules
-from .util import get_number_of_posts
-from .util import click_element
-from .util import update_activity
-from .util import web_address_navigator
-from .util import username_url_to_username
-from .util import scroll_bottom
-from .util import get_users_from_dialog
-from .util import progress_tracker
-from .util import close_dialog_box
+from .util import (
+    click_element,
+    close_dialog_box,
+    get_number_of_posts,
+    get_users_from_dialog,
+    progress_tracker,
+    scroll_bottom,
+    update_activity,
+    username_url_to_username,
+    web_address_navigator,
+)
 from .xpath import read_xpath
-
-# import exceptions
-from selenium.common.exceptions import NoSuchElementException
-from selenium.common.exceptions import StaleElementReferenceException
 
 
 def check_exists_by_xpath(browser, xpath):
     try:
-        browser.find_element_by_xpath(xpath)
+        browser.find_element(By.XPATH, xpath)
     except NoSuchElementException:
         return False
     return True
@@ -51,17 +56,18 @@ def extract_post_info(browser, logger):
     while check_exists_by_xpath(
         browser, read_xpath(extract_post_info.__name__, "load_more_comments_element")
     ):
-        load_more_comments_element = browser.find_element_by_xpath(
-            read_xpath(extract_post_info.__name__, "load_more_comments_element")
+        load_more_comments_element = browser.find_element(
+            By.XPATH,
+            read_xpath(extract_post_info.__name__, "load_more_comments_element"),
         )
         click_element(browser, load_more_comments_element)
         sleep(0.5)
         # get comment list
-        comment_list = browser.find_element_by_xpath(
-            read_xpath(extract_post_info.__name__, "comment_list")
+        comment_list = browser.find_element(
+            By.XPATH, read_xpath(extract_post_info.__name__, "comment_list")
         )
-        comments = comment_list.find_elements_by_xpath(
-            read_xpath(extract_post_info.__name__, "comments")
+        comments = comment_list.find_elements(
+            By.XPATH, read_xpath(extract_post_info.__name__, "comments")
         )
         # check instagram comment load bug
         if len(comments) == last_comment_count:
@@ -71,18 +77,18 @@ def extract_post_info(browser, logger):
         last_comment_count = len(comments)
 
     # get all comment list
-    comment_list = browser.find_element_by_xpath(
-        read_xpath(extract_post_info.__name__, "comment_list")
+    comment_list = browser.find_element(
+        By.XPATH, read_xpath(extract_post_info.__name__, "comment_list")
     )
-    comments = comment_list.find_elements_by_xpath(
-        read_xpath(extract_post_info.__name__, "comments")
+    comments = comment_list.find_elements(
+        By.XPATH, read_xpath(extract_post_info.__name__, "comments")
     )
 
     # get all commenter list
     try:
         for comm in comments:
             user_commented = (
-                comm.find_element_by_tag_name("a").get_attribute("href").split("/")
+                comm.find_element(By.TAG_NAME, "a").get_attribute("href").split("/")
             )
             logger.info("Found commenter: {}".format(user_commented[3]))
             user_commented_list.append(user_commented[3])
@@ -90,7 +96,7 @@ def extract_post_info(browser, logger):
     except Exception as e:
         logger.warning("Cant get comments".format(str(e).encode("utf-8")))
 
-    date_time = browser.find_element_by_tag_name("time").get_attribute("datetime")
+    date_time = browser.find_element(By.TAG_NAME, "time").get_attribute("datetime")
     return user_commented_list, date_time
 
 
@@ -124,7 +130,7 @@ def extract_information(browser, username, daysold, max_pic, logger):
 
     # PROFILE SCROLLING AND HARVESTING LINKS
     try:
-        body_elem = browser.find_element_by_tag_name("body")
+        body_elem = browser.find_element(By.TAG_NAME, "body")
         previouslen = -1
 
         # every 60 links we will open picture and check it's date not to
@@ -135,9 +141,9 @@ def extract_information(browser, username, daysold, max_pic, logger):
         # cycle that scrolls down the feed and collects links and saving
         # them into links2
         while len(links2) < num_of_posts:
-            prev_divs = browser.find_elements_by_tag_name("main")
+            prev_divs = browser.find_elements(By.TAG_NAME, "main")
             # harvesting current img links:
-            links_elems = [div.find_elements_by_tag_name("a") for div in prev_divs]
+            links_elems = [div.find_elements(By.TAG_NAME, "a") for div in prev_divs]
             links1 = sum(
                 [
                     [link_elem.get_attribute("href") for link_elem in elems]
@@ -175,8 +181,9 @@ def extract_information(browser, username, daysold, max_pic, logger):
 
                     logger.info("Clicking on one photo...")
                     try:
-                        one_pic_elem = browser.find_element_by_xpath(
-                            read_xpath(extract_information.__name__, "one_pic_elem")
+                        one_pic_elem = browser.find_element(
+                            By.XPATH,
+                            read_xpath(extract_information.__name__, "one_pic_elem"),
                         )
                         click_element(browser, one_pic_elem)
                     except Exception:
@@ -187,8 +194,9 @@ def extract_information(browser, username, daysold, max_pic, logger):
                     # following 6 lines give like to opened picture, to use
                     # our time effectively and look less suspicious
                     try:
-                        like_element = browser.find_elements_by_xpath(
-                            read_xpath(extract_information.__name__, "like_element")
+                        like_element = browser.find_elements(
+                            By.XPATH,
+                            read_xpath(extract_information.__name__, "like_element"),
                         )
                         click_element(browser, like_element[0])
                         logger.info("Clicking like...")
@@ -196,8 +204,8 @@ def extract_information(browser, username, daysold, max_pic, logger):
                         pass
                     sleep(2)
 
-                    pic_date_time = browser.find_element_by_tag_name(
-                        "time"
+                    pic_date_time = browser.find_element(
+                        By.TAG_NAME, "time"
                     ).get_attribute("datetime")
                     pastdate = datetime.now() - timedelta(days=daysold)
                     date_of_pic = datetime.strptime(
@@ -206,8 +214,9 @@ def extract_information(browser, username, daysold, max_pic, logger):
 
                     # Informational
                     logger.info("Closing overlay...")
-                    close_overlay = browser.find_element_by_xpath(
-                        read_xpath(extract_information.__name__, "close_overlay")
+                    close_overlay = browser.find_element(
+                        By.XPATH,
+                        read_xpath(extract_information.__name__, "close_overlay"),
                     )
                     click_element(browser, close_overlay)
 
@@ -222,7 +231,7 @@ def extract_information(browser, username, daysold, max_pic, logger):
                         sleep(2)
 
                 previouslen = len(links2)
-                body_elem = browser.find_element_by_tag_name("body")
+                body_elem = browser.find_element(By.TAG_NAME, "body")
                 body_elem.send_keys(Keys.END)
                 sleep(1.5)
 
@@ -322,15 +331,16 @@ def likers_from_photo(browser, amount=20, logger=None):
         if check_exists_by_xpath(
             browser, read_xpath(likers_from_photo.__name__, "second_counter_button")
         ):
-            liked_this = browser.find_elements_by_xpath(
-                read_xpath(likers_from_photo.__name__, "second_counter_button")
+            liked_this = browser.find_elements(
+                By.XPATH,
+                read_xpath(likers_from_photo.__name__, "second_counter_button"),
             )
             element_to_click = liked_this[0]
         elif check_exists_by_xpath(
             browser, read_xpath(likers_from_photo.__name__, "liked_counter_button")
         ):
-            liked_this = browser.find_elements_by_xpath(
-                read_xpath(likers_from_photo.__name__, "liked_counter_button")
+            liked_this = browser.find_elements(
+                By.XPATH, read_xpath(likers_from_photo.__name__, "liked_counter_button")
             )
             likers = []
 
@@ -371,8 +381,8 @@ def likers_from_photo(browser, amount=20, logger=None):
         sleep(1)
 
         # get a reference to the 'Likes' dialog box
-        dialog = browser.find_element_by_xpath(
-            read_xpath("class_selectors", "likes_dialog_body_xpath")
+        dialog = browser.find_element(
+            By.XPATH, read_xpath("class_selectors", "likes_dialog_body_xpath")
         )
 
         # scroll down the page
@@ -436,8 +446,8 @@ def get_photo_urls_from_profile(
     web_address_navigator(browser, "https://www.instagram.com/" + username + "/")
     sleep(1)
 
-    photos_a_elems = browser.find_elements_by_xpath(
-        read_xpath(get_photo_urls_from_profile.__name__, "photos_a_elems")
+    photos_a_elems = browser.find_elements(
+        By.XPATH, read_xpath(get_photo_urls_from_profile.__name__, "photos_a_elems")
     )
 
     links = []

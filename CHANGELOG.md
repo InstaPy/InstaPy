@@ -5,6 +5,17 @@ The **goal** of this file is explaining to the users of our project the notable 
 _The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html)_
 
 
+## [0.6.16] - 2021-12-11
+
+### Added
+
+- Added filter in `extract_text_from_element()` for non-username elements.
+
+### Fixed
+
+- Fixed `is_private_profile()` when 'NoneType' object is not subscriptable
+- Fixed `find_element*()` to `find_element()`
+
 ## [0.6.15] - 2021-12-02
 
 ### Fixed

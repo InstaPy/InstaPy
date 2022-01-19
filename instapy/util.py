@@ -1,51 +1,50 @@
 """ Common utilities """
 # import built-in & third-party modules
-import time
+import csv
 import datetime
+import json
+import os
 import random
 import re
-import regex
 import signal
-import os
-import sys
-import csv
 import sqlite3
-import json
-import emoji
-
-from math import ceil
-from math import radians
-from math import cos
-from math import degrees as rad2deg
-from sys import exit as clean_exit
-from platform import system
-from platform import python_version
-from subprocess import call
-from random import randint
-from contextlib import contextmanager
-from tempfile import gettempdir
+import sys
+import time
 from argparse import ArgumentParser
-from bs4 import BeautifulSoup
+from contextlib import contextmanager
+from math import ceil, cos
+from math import degrees as rad2deg
+from math import radians
+from platform import python_version, system
+from random import randint
+from subprocess import call
+from sys import exit as clean_exit
+from tempfile import gettempdir
 
+import emoji
+import regex
+from bs4 import BeautifulSoup
 from emoji.unicode_codes import UNICODE_EMOJI
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as ec
+
+# import exceptions
+from selenium.common.exceptions import (
+    NoSuchElementException,
+    StaleElementReferenceException,
+    TimeoutException,
+    WebDriverException,
+)
 from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as ec
+from selenium.webdriver.support.ui import WebDriverWait
+
+from .database_engine import get_database
+from .event import Event
+from .quota_supervisor import quota_supervisor
+from .settings import Settings
+from .time_util import sleep, sleep_actual
 
 # import InstaPy modules
 from .xpath import read_xpath
-from .event import Event
-from .settings import Settings
-from .time_util import sleep
-from .time_util import sleep_actual
-from .database_engine import get_database
-from .quota_supervisor import quota_supervisor
-
-# import exceptions
-from selenium.common.exceptions import NoSuchElementException
-from selenium.common.exceptions import StaleElementReferenceException
-from selenium.common.exceptions import WebDriverException
-from selenium.common.exceptions import TimeoutException
 
 default_profile_pic_instagram = [
     "https://instagram.flas1-2.fna.fbcdn.net/vp"
@@ -70,7 +69,7 @@ next_screenshot = 1
 
 def is_private_profile(browser, logger, following=True):
     """
-    Verify id account is Private
+    Verify if account is Private
 
     :param browser: The selenium webdriver instance
     :param logger: the logger instance
@@ -78,15 +77,26 @@ def is_private_profile(browser, logger, following=True):
     :return: None if profile cannot be verified
     """
 
-    shared_data = get_shared_data(browser)
-    data = shared_data["entry_data"]["ProfilePage"][0]
+    try:
+        # Get profile owner information
+        shared_data = get_shared_data(browser)
 
-    # Sometimes shared_data["entry_data"]["ProfilePage"][0] is empty, but get_additional_data()
-    # fetches all data needed
-    if not data:
-        data = get_additional_data(browser)
+        # Sometimes shared_data["entry_data"]["ProfilePage"][0] is empty, but get_additional_data()
+        # fetches all data needed
+        get_key = shared_data.get("entry_data").get("ProfilePage")
 
-    is_private = data["graphql"]["user"]["is_private"]
+        if get_key:
+            data = get_key[0]
+        else:
+            data = get_additional_data(browser)
+    finally:
+        is_private = data["graphql"]["user"]["is_private"]
+
+        logger.info(
+            "Checked if '{}' is private, and it is: '{}'".format(
+                data["graphql"]["user"]["username"], is_private
+            )
+        )
 
     return is_private
 
@@ -485,11 +495,14 @@ def getUserData(
     basequery="no-longer-needed",
 ):
     shared_data = get_shared_data(browser)
-    data = shared_data["entry_data"]["ProfilePage"][0]
 
     # Sometimes shared_data["entry_data"]["ProfilePage"][0] is empty, but get_additional_data()
     # fetches all data needed
-    if not data:
+    get_key = shared_data.get("entry_data").get("ProfilePage")
+
+    if get_key:
+        data = get_key[0]
+    else:
         data = get_additional_data(browser)
 
     if query.find(".") == -1:
@@ -672,8 +685,8 @@ def get_active_users(browser, username, posts, boundary, logger):
         )
     except WebDriverException:
         try:
-            topCount_elements = browser.find_elements_by_xpath(
-                read_xpath(get_active_users.__name__, "topCount_elements")
+            topCount_elements = browser.find_elements(
+                By.XPATH, read_xpath(get_active_users.__name__, "topCount_elements")
             )
 
             if topCount_elements:  # prevent an empty string scenario
@@ -719,8 +732,9 @@ def get_active_users(browser, username, posts, boundary, logger):
     while count <= posts:
         # load next post
         try:
-            latest_post = browser.find_element_by_xpath(
-                read_xpath(get_active_users.__name__, "profile_posts").format(count)
+            latest_post = browser.find_element(
+                By.XPATH,
+                read_xpath(get_active_users.__name__, "profile_posts").format(count),
             )
             # avoid no posts
             if latest_post:
@@ -733,8 +747,8 @@ def get_active_users(browser, username, posts, boundary, logger):
             sleep_actual(2)
 
             try:
-                likers_count = browser.find_element_by_xpath(
-                    read_xpath(get_active_users.__name__, "likers_count")
+                likers_count = browser.find_element(
+                    By.XPATH, read_xpath(get_active_users.__name__, "likers_count")
                 ).text
                 if likers_count:  # prevent an empty string scenarios
                     likers_count = format_number(likers_count)
@@ -750,8 +764,8 @@ def get_active_users(browser, username, posts, boundary, logger):
                 logger.info("Failed to get likers count on your post {}".format(count))
                 likers_count = None
             try:
-                likes_button = browser.find_elements_by_xpath(
-                    read_xpath(get_active_users.__name__, "likes_button")
+                likes_button = browser.find_elements(
+                    By.XPATH, read_xpath(get_active_users.__name__, "likes_button")
                 )
 
                 if likes_button != []:
@@ -778,8 +792,8 @@ def get_active_users(browser, username, posts, boundary, logger):
                 continue
 
             # get a reference to the 'Likes' dialog box
-            dialog = browser.find_element_by_xpath(
-                read_xpath("class_selectors", "likes_dialog_body_xpath")
+            dialog = browser.find_element(
+                By.XPATH, read_xpath("class_selectors", "likes_dialog_body_xpath")
             )
 
             scroll_it = True
@@ -1139,15 +1153,16 @@ def get_number_of_posts(browser):
         )
     except WebDriverException:
         try:
-            num_of_posts_txt = browser.find_element_by_xpath(
-                read_xpath(get_number_of_posts.__name__, "num_of_posts_txt")
+            num_of_posts_txt = browser.find_element(
+                By.XPATH, read_xpath(get_number_of_posts.__name__, "num_of_posts_txt")
             ).text
 
         except NoSuchElementException:
-            num_of_posts_txt = browser.find_element_by_xpath(
+            num_of_posts_txt = browser.find_element(
+                By.XPATH,
                 read_xpath(
                     get_number_of_posts.__name__, "num_of_posts_txt_no_such_element"
-                )
+                ),
             ).text
 
         num_of_posts_txt = num_of_posts_txt.replace(" ", "")
@@ -1175,8 +1190,11 @@ def get_relationship_counts(browser, username, logger):
     except WebDriverException:
         try:
             followers_count = format_number(
-                browser.find_element_by_xpath(
-                    str(read_xpath(get_relationship_counts.__name__, "followers_count"))
+                browser.find_element(
+                    By.XPATH,
+                    str(
+                        read_xpath(get_relationship_counts.__name__, "followers_count")
+                    ),
                 ).text
             )
         except NoSuchElementException:
@@ -1191,15 +1209,15 @@ def get_relationship_counts(browser, username, logger):
 
             except WebDriverException:
                 try:
-                    topCount_elements = browser.find_elements_by_xpath(
+                    topCount_elements = browser.find_elements(
+                        By.XPATH,
                         read_xpath(
                             get_relationship_counts.__name__, "topCount_elements"
-                        )
+                        ),
                     )
 
                     if topCount_elements:
                         followers_count = format_number(topCount_elements[1].text)
-
                     else:
                         logger.info(
                             "Failed to get followers count of '{}'  ~empty "
@@ -1223,8 +1241,11 @@ def get_relationship_counts(browser, username, logger):
     except WebDriverException:
         try:
             following_count = format_number(
-                browser.find_element_by_xpath(
-                    str(read_xpath(get_relationship_counts.__name__, "following_count"))
+                browser.find_element(
+                    By.XPATH,
+                    str(
+                        read_xpath(get_relationship_counts.__name__, "following_count")
+                    ),
                 ).text
             )
 
@@ -1240,15 +1261,15 @@ def get_relationship_counts(browser, username, logger):
 
             except WebDriverException:
                 try:
-                    topCount_elements = browser.find_elements_by_xpath(
+                    topCount_elements = browser.find_elements(
+                        By.XPATH,
                         read_xpath(
                             get_relationship_counts.__name__, "topCount_elements"
-                        )
+                        ),
                     )
 
                     if topCount_elements:
                         following_count = format_number(topCount_elements[2].text)
-
                     else:
                         logger.info(
                             "Failed to get following count of '{}'  ~empty "
@@ -1725,7 +1746,7 @@ def find_user_id(browser, track, username, logger):
         except WebDriverException:
             if track == "post":
                 try:
-                    user_id = browser.find_element_by_xpath(meta_XP).get_attribute(
+                    user_id = browser.find_element(By.XPATH, meta_XP).get_attribute(
                         "content"
                     )
                     if user_id:
@@ -1867,7 +1888,7 @@ def get_username_from_id(browser, user_id, logger):
 
     web_address_navigator(browser, post_url)
     try:
-        pre = browser.find_element_by_tag_name("pre").text
+        pre = browser.find_element(By.TAG_NAME, "pre").text
     except NoSuchElementException:
         logger.info("Encountered an error to find `pre` in page, skipping username.")
         return None
@@ -2119,13 +2140,19 @@ def deform_emojis(text):
 
 
 def extract_text_from_element(elem):
-    """As an element is valid and contains text, extract it and return"""
-    if elem and hasattr(elem, "text") and elem.text:
-        text = elem.text
-    else:
-        text = None
+    """
+    As an element is valid and contains text, extract it and return
+    Added filter to words that has spaces between them, they for sure are not valid username
+    Error looks like: "User: 'NOVEMBER 5'  |> followers: unknown  |> following: unknown  |> relationship ratio: unknown"
+                       ^^^^^^^^^^^^^^^^^
+    """
 
-    return text
+    # if element is valid and contains text withou spaces
+    if elem and hasattr(elem, "text") and elem.text and not re.search("\s", elem.text):
+        return elem.text
+
+    # if the element is not valid, return None
+    return None
 
 
 def truncate_float(number, precision, round=False):
@@ -2248,7 +2275,7 @@ def get_users_from_dialog(old_data, dialog, logger):
     """
 
     try:
-        user_blocks = dialog.find_elements_by_tag_name("a")
+        user_blocks = dialog.find_elements(By.TAG_NAME, "a")
         loaded_users = [
             extract_text_from_element(u)
             for u in user_blocks
@@ -2341,8 +2368,8 @@ def close_dialog_box(browser):
     """Click on the close button spec. in the 'Likes' dialog box"""
 
     try:
-        close = browser.find_element_by_xpath(
-            read_xpath("class_selectors", "likes_dialog_close_xpath")
+        close = browser.find_element(
+            By.XPATH, read_xpath("class_selectors", "likes_dialog_close_xpath")
         )
 
         click_element(browser, close)
@@ -2453,8 +2480,8 @@ def get_cord_location(browser, location):
     base_url = "https://www.instagram.com/explore/locations/"
     query_url = "{}{}{}".format(base_url, location, "?__a=1")
     browser.get(query_url)
-    json_text = browser.find_element_by_xpath(
-        read_xpath(get_cord_location.__name__, "json_text")
+    json_text = browser.find_element(
+        By.XPATH, read_xpath(get_cord_location.__name__, "json_text")
     ).text
     data = json.loads(json_text)
 

@@ -1,23 +1,26 @@
 # import built-in & third-party modules
+import glob
+import json
+import os
+import random
 import time
 from datetime import datetime
-import os
-import glob
-import random
-import json
+
+# import exceptions
+from selenium.common.exceptions import NoSuchElementException, WebDriverException
+from selenium.webdriver.common.by import By
 
 # import InstaPy modules
 from .follow_util import get_following_status
 from .time_util import sleep
-from .util import web_address_navigator
-from .util import get_relationship_counts
-from .util import interruption_handler
-from .util import is_private_profile
-from .util import truncate_float
-from .util import progress_tracker
-
-# import exceptions
-from selenium.common.exceptions import NoSuchElementException, WebDriverException
+from .util import (
+    get_relationship_counts,
+    interruption_handler,
+    is_private_profile,
+    progress_tracker,
+    truncate_float,
+    web_address_navigator,
+)
 
 
 def get_followers(
@@ -174,7 +177,7 @@ def get_followers(
         # fetch all user while still has data
         while has_next_data:
             try:
-                pre = browser.find_element_by_tag_name("pre").text
+                pre = browser.find_element(By.TAG_NAME, "pre").text
             except NoSuchElementException as exc:
                 logger.info(
                     "Encountered an error to find `pre` in page!"
@@ -472,7 +475,7 @@ def get_following(
         # fetch all user while still has data
         while has_next_data:
             try:
-                pre = browser.find_element_by_tag_name("pre").text
+                pre = browser.find_element(By.TAG_NAME, "pre").text
             except NoSuchElementException as exc:
                 logger.info(
                     "Encountered an error to find `pre` in page!"
