@@ -539,7 +539,9 @@ def get_links_for_username(
 
 def get_media_edge_comment_string(media):
     """AB test (Issue 3712) alters the string for media edge, this resolves it"""
-    options = ["edge_media_to_comment", "edge_media_preview_comment"]
+    #options = ["edge_media_to_comment", "edge_media_preview_comment"]
+    #DEF: 20jan
+    options = ["comments", "preview_comments"]
     for option in options:
         try:
             media[option]
@@ -589,10 +591,13 @@ def check_link(
         return True, None, None, "Unavailable Page", "Failure"
 
     # Gets the description of the post's link and checks for the dont_like tags
-    graphql = "graphql" in post_page
+    #DEF: 20jan
+    #graphql = "graphql" in post_page
+    graphql = "items" in post_page
     location_name = None
 
-    if graphql:
+    #if graphql:
+    if graphql and 1==2:
         media = post_page["graphql"]["shortcode_media"]
         is_video = media["is_video"]
         user_name = media["owner"]["username"]
@@ -613,6 +618,27 @@ def check_link(
             for comment in comments:
                 if comment["node"]["owner"]["username"] == user_name:
                     owner_comments = owner_comments + "\n" + comment["node"]["text"]
+
+    if graphql:
+        media = post_page["items"][0]
+        is_video = media["is_unified_video"]
+        user_name = media["user"]["username"]
+        image_text = media["caption"]
+        image_text = image_text["text"] if image_text else None
+        location_name = None
+        media_edge_string = get_media_edge_comment_string(media)
+        # Gets all comments on media
+        comments = (
+            media[media_edge_string]
+            if media[media_edge_string]
+            else None
+        )
+        owner_comments = ""
+        # Concat all owner comments
+        if comments is not None:
+            for comment in comments:
+                if comment["user"]["username"] == user_name:
+                    owner_comments = owner_comments + "\n" + comment["text"]
 
     else:
         logger.info("post_page: {}".format(post_page))
@@ -651,11 +677,15 @@ def check_link(
     if image_text is None:
         if graphql:
             media_edge_string = get_media_edge_comment_string(media)
-            image_text = media[media_edge_string]["edges"]
-            image_text = image_text[0]["node"]["text"] if image_text else None
+            #DEF: 20jan
+            #image_text = media[media_edge_string]["edges"]
+            image_text = media[media_edge_string]
+            #image_text = image_text[0]["node"]["text"] if image_text else None
+            image_text = image_text[0]["text"] if image_text else None
 
         else:
-            image_text = media["comments"]["nodes"]
+            #image_text = media["comments"]["nodes"]
+            image_text = media["comments"]
             image_text = image_text[0]["text"] if image_text else None
 
     if image_text is None:
@@ -762,12 +792,15 @@ def like_image(browser, username, blacklist, logger, logfolder, total_liked_img)
     # find first for like element
     like_elem = browser.find_elements(By.XPATH, like_xpath)
 
-    if len(like_elem) == 1:
+    #DEF: 20jan
+    #if len(like_elem) == 1:
+    if len(like_elem) > 0:
         # sleep real quick right before clicking the element
         sleep(2)
         logger.info("--> {}...".format(media))
 
         like_elem = browser.find_elements(By.XPATH, like_xpath)
+
         if len(like_elem) > 0:
             click_element(browser, like_elem[0])
         # check now we have unlike instead of like

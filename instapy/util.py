@@ -520,7 +520,14 @@ def getMediaData(
     browser,
 ):
     additional_data = get_additional_data(browser)
-    data = additional_data["graphql"]["shortcode_media"]
+    #data = additional_data["graphql"]["shortcode_media"]
+    #DEF: 20jan
+    data = additional_data["items"][0]
+
+    if query=="comments_disabled": query="comment_likes_enabled"
+    if query=="edge_media_to_parent_comment": query="comments"
+    if query=="edge_media_to_parent_comment.count": query="comment_count"
+
 
     if query.find(".") == -1:
         data = data[query]
