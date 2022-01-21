@@ -539,7 +539,6 @@ def get_links_for_username(
 
 def get_media_edge_comment_string(media):
     """AB test (Issue 3712) alters the string for media edge, this resolves it"""
-    #options = ["edge_media_to_comment", "edge_media_preview_comment"]
     #DEF: 20jan
     options = ["comments", "preview_comments"]
     for option in options:
@@ -592,32 +591,9 @@ def check_link(
 
     # Gets the description of the post's link and checks for the dont_like tags
     #DEF: 20jan
-    #graphql = "graphql" in post_page
     graphql = "items" in post_page
     location_name = None
-
-    #if graphql:
-    if graphql and 1==2:
-        media = post_page["graphql"]["shortcode_media"]
-        is_video = media["is_video"]
-        user_name = media["owner"]["username"]
-        image_text = media["edge_media_to_caption"]["edges"]
-        image_text = image_text[0]["node"]["text"] if image_text else None
-        location = media["location"]
-        location_name = location["name"] if location else None
-        media_edge_string = get_media_edge_comment_string(media)
-        # Gets all comments on media
-        comments = (
-            media[media_edge_string]["edges"]
-            if media[media_edge_string]["edges"]
-            else None
-        )
-        owner_comments = ""
-        # Concat all owner comments
-        if comments is not None:
-            for comment in comments:
-                if comment["node"]["owner"]["username"] == user_name:
-                    owner_comments = owner_comments + "\n" + comment["node"]["text"]
+    owner_comments = ""
 
     if graphql:
         media = post_page["items"][0]
@@ -625,17 +601,18 @@ def check_link(
         user_name = media["user"]["username"]
         image_text = media["caption"]
         image_text = image_text["text"] if image_text else None
+        #todo: location found
         location_name = None
         media_edge_string = get_media_edge_comment_string(media)
         # Gets all comments on media
-        comments = (
+        if media_edge_string is not None:
+         comments = (
             media[media_edge_string]
             if media[media_edge_string]
             else None
-        )
-        owner_comments = ""
-        # Concat all owner comments
-        if comments is not None:
+         )
+         # Concat all owner comments
+         if comments is not None:
             for comment in comments:
                 if comment["user"]["username"] == user_name:
                     owner_comments = owner_comments + "\n" + comment["text"]
@@ -678,13 +655,10 @@ def check_link(
         if graphql:
             media_edge_string = get_media_edge_comment_string(media)
             #DEF: 20jan
-            #image_text = media[media_edge_string]["edges"]
             image_text = media[media_edge_string]
-            #image_text = image_text[0]["node"]["text"] if image_text else None
             image_text = image_text[0]["text"] if image_text else None
 
         else:
-            #image_text = media["comments"]["nodes"]
             image_text = media["comments"]
             image_text = image_text[0]["text"] if image_text else None
 
@@ -793,7 +767,6 @@ def like_image(browser, username, blacklist, logger, logfolder, total_liked_img)
     like_elem = browser.find_elements(By.XPATH, like_xpath)
 
     #DEF: 20jan
-    #if len(like_elem) == 1:
     if len(like_elem) > 0:
         # sleep real quick right before clicking the element
         sleep(2)
@@ -1034,3 +1007,26 @@ def like_comment(browser, original_comment_text, logger):
         return False, "error"
 
     return None, "unknown"
+""" Module that handles the like features """
+# import built-in & third-party modules
+import random
+import re
+from re import findall
+
+# import exceptions
+from selenium.common.exceptions import (
+    NoSuchElementException,
+    StaleElementReferenceException,
+    WebDriverException,
+)
+from selenium.webdriver.common.by import By
+
+# import InstaPy modules
+from .comment_util import open_comment_section
+from .constants import (
+    MEDIA_ALL_TYPES,
+    MEDIA_CAROUSEL,
+    MEDIA_IGTV,
+    MEDIA_PHOTO,
+    MEDIA_VIDEO,
+)

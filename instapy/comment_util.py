@@ -283,9 +283,10 @@ def get_comments_on_post(
             comment = None
 
             data = getMediaData("edge_media_to_parent_comment", browser)
-            for value in data["edges"]:
-                commenter = value["node"]["owner"]["username"]
-                comment = value["node"]["text"]
+            #DEF: 20jan
+            for value in data:
+                commenter = value["user"]["username"]
+                comment = value["text"]
 
                 if (
                     commenter
@@ -340,7 +341,8 @@ def is_commenting_enabled(browser, logger):
 
     comments_disabled = getMediaData("comments_disabled", browser)
 
-    if comments_disabled is True:
+    #DEF: mod 20jan
+    if comments_disabled is False:
         msg = "Comments are disabled for this post."
         return False, msg
 
@@ -367,13 +369,9 @@ def verify_commented_image(browser, link, owner, logger):
         comment = None
         data = getMediaData("edge_media_to_parent_comment", browser)
         #DEF: 20jan
-        #for value in data["edges"]:
         for value in data:
-            #commenter = value["node"]["owner"]["username"]
-            #comment = value["node"]["text"]
             commenter = value["user"]["username"]
             comment = value["text"]
-
 
             if commenter and commenter == owner:
                 message = (
