@@ -593,6 +593,7 @@ def check_link(
     #DEF: 20jan
     graphql = "items" in post_page
     location_name = None
+
     owner_comments = ""
 
     if graphql:
@@ -601,8 +602,8 @@ def check_link(
         user_name = media["user"]["username"]
         image_text = media["caption"]
         image_text = image_text["text"] if image_text else None
-        #todo: location found
         location_name = None
+        if "location" in media: location_name = media["location"]["name"]
         media_edge_string = get_media_edge_comment_string(media)
         # Gets all comments on media
         if media_edge_string is not None:
