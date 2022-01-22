@@ -66,7 +66,6 @@ default_profile_pic_instagram = [
 
 next_screenshot = 1
 
-
 def is_private_profile(browser, logger, following=True):
     """
     Verify if account is Private
@@ -76,27 +75,20 @@ def is_private_profile(browser, logger, following=True):
     :param following: Not accessed
     :return: None if profile cannot be verified
     """
-
+    is_private=None
     try:
-        # Get profile owner information
-        shared_data = get_shared_data(browser)
-
-        # Sometimes shared_data["entry_data"]["ProfilePage"][0] is empty, but get_additional_data()
-        # fetches all data needed
-        get_key = shared_data.get("entry_data").get("ProfilePage")
-
-        if get_key:
-            data = get_key[0]
-        else:
-            data = get_additional_data(browser)
-    finally:
-        #DEF: 22jan
-        is_private = data["items"][0]["user"]["is_private"]
+        #DEF: 22jan function refactored
+        data = get_additional_data(browser)
+        is_private = data["items"][0]
+        is_private = is_private["user"]['is_private'] if is_private else None
         logger.info(
             "Checked if '{}' is private, and it is: '{}'".format(
                 data["items"][0]["user"]["username"], is_private
             )
         )
+    except:
+        logger.info("Cannot find is_private so defined as None")
+        is_private=None
 
     return is_private
 

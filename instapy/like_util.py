@@ -594,6 +594,7 @@ def check_link(
     graphql = "items" in post_page
     location_name = None
 
+    first_comment = ""
     owner_comments = ""
 
     if graphql:
@@ -616,6 +617,7 @@ def check_link(
          if comments is not None:
             for comment in comments:
                 if comment["user"]["username"] == user_name:
+                    if first_comment == "": first_comment=comment["text"]
                     owner_comments = owner_comments + "\n" + comment["text"]
 
     else:
@@ -653,17 +655,10 @@ def check_link(
     elif owner_comments:
         image_text = image_text + "\n" + owner_comments
 
-    # If the image still has no description gets the first comment
+    # If the image still has no description. Get the first comment
     if image_text is None:
-        if graphql:
-            media_edge_string = get_media_edge_comment_string(media)
-            #DEF: 20jan
-            image_text = media[media_edge_string]
-            image_text = image_text[0]["text"] if image_text else None
-
-        else:
-            image_text = media["comments"]
-            image_text = image_text[0]["text"] if image_text else None
+        image_text = first_comment
+        logger.info("Image still no description. Get the first comment and use this as description")
 
     if image_text is None:
         image_text = "No description"
