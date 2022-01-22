@@ -156,7 +156,6 @@ def validate_username(
     logfolder,
 ):
     """Check if we can interact with the user"""
-
     # some features may not provide `username` and in those cases we will
     # get it from post's page.
     if "/" in username_or_link:
@@ -168,9 +167,11 @@ def validate_username(
         web_address_navigator(browser, link)
 
         try:
+            #todo: check if this section works
+            #old "PostPage[0].graphql.shortcode_media.owner.username"
             username = browser.execute_script(
                 "return window._sharedData.entry_data."
-                "PostPage[0].graphql.shortcode_media.owner.username"
+                "PostPage[0].items[0].user.username"
             )
 
         except WebDriverException:
@@ -178,9 +179,11 @@ def validate_username(
                 browser.execute_script("location.reload()")
                 update_activity(browser, state=None)
 
+                #todo: check if this section works
+                #old "PostPage[0].graphql.shortcode_media.owner.username"
                 username = browser.execute_script(
                     "return window._sharedData.entry_data."
-                    "PostPage[0].graphql.shortcode_media.owner.username"
+                    "PostPage[0].items[0].user.username"
                 )
 
             except WebDriverException:
@@ -265,7 +268,7 @@ def validate_username(
                 else "unknown",
             )
         )
-
+        
         if followers_count or following_count:
             if potency_ratio and not delimit_by_numbers:
                 if relationship_ratio and relationship_ratio < potency_ratio:
@@ -496,7 +499,6 @@ def getUserData(
 ):
     shared_data = get_shared_data(browser)
 
-    # Sometimes shared_data["entry_data"]["ProfilePage"][0] is empty, but get_additional_data()
     # fetches all data needed
     get_key = shared_data.get("entry_data").get("ProfilePage")
 
@@ -523,7 +525,7 @@ def getMediaData(
     #DEF: 20jan
     data = additional_data["items"][0]
    
-    #todo: remove rewrite query by modifing call to getMediaData functions
+    #todo: remove rewrite query by modifing call to getMediaData functions in other files
     if query=="comments_disabled": query="comment_likes_enabled"
     if query=="edge_media_to_parent_comment": query="comments"
     if query=="edge_media_to_parent_comment.count": query="comment_count"

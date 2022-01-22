@@ -108,8 +108,8 @@ def comment_image(browser, username, comments, blacklist, logger, logfolder):
             (
                 ActionChains(browser)
                 .move_to_element(comment_input[0])
-                .send_keys(Keys.ENTER)
                 .send_keys(Keys.TAB)
+                .send_keys(Keys.ENTER)
                 .perform()
             )
 

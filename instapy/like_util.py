@@ -619,11 +619,13 @@ def check_link(
                     owner_comments = owner_comments + "\n" + comment["text"]
 
     else:
+        #DEF: 22jan
         logger.info("post_page: {}".format(post_page))
-        media = post_page[0]["shortcode_media"]
-        is_video = media["is_video"]
-        user_name = media["owner"]["username"]
+        media = post_page["items"][0]
+        is_video = media["is_unified_video"]
+        user_name = media["user"]["username"]
         image_text = media["caption"]
+        image_text = image_text["text"] if image_text else None
         owner_comments = browser.execute_script(
             """
             latest_comments = window._sharedData.entry_data.PostPage[
@@ -702,7 +704,6 @@ def check_link(
         return False, user_name, is_video, "None", "Pass"
 
     dont_like_regex = []
-
     for dont_likes in dont_like:
         if dont_likes.startswith("#"):
             dont_like_regex.append(dont_likes + r"([^\d\w]|$)")
@@ -843,11 +844,11 @@ def get_tags(browser, url):
     web_address_navigator(browser, url)
 
     additional_data = get_additional_data(browser)
-    image_text = additional_data["graphql"]["shortcode_media"]["edge_media_to_caption"][
-        "edges"
-    ][0]["node"]["text"]
+    #DEF: 22jan
+    image_text = additional_data["items"][0]["caption"]
+    image_text = image_text["text"] if image_text else None
 
-    if not image_text:
+    if not image_text is None:
         image_text = ""
 
     tags = findall(r"#\w*", image_text)
