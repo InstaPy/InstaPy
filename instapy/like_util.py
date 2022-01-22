@@ -931,9 +931,8 @@ def verify_liking(browser, maximum, minimum, logger):
     & minimum values defined by user"""
 
     post_page = get_additional_data(browser)
-    likes_count = post_page["graphql"]["shortcode_media"]["edge_media_preview_like"][
-        "count"
-    ]
+    #DEF: 22jan
+    likes_count = post_page["items"][0]["like_count"]
 
     if not likes_count:
         likes_count = 0

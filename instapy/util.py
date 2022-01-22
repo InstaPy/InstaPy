@@ -90,11 +90,11 @@ def is_private_profile(browser, logger, following=True):
         else:
             data = get_additional_data(browser)
     finally:
-        is_private = data["graphql"]["user"]["is_private"]
-
+        #DEF: 22jan
+        is_private = data["items"][0]["user"]["is_private"]
         logger.info(
             "Checked if '{}' is private, and it is: '{}'".format(
-                data["graphql"]["user"]["username"], is_private
+                data["items"][0]["user"]["username"], is_private
             )
         )
 
@@ -2493,8 +2493,11 @@ def get_cord_location(browser, location):
     ).text
     data = json.loads(json_text)
 
-    lat = data["graphql"]["location"]["lat"]
-    lon = data["graphql"]["location"]["lng"]
+    #DEF: 22jan
+    lat = lon = ""
+    if "location" in data["items"][0]:
+     lat = data["items"][0]["location"]["lat"]
+     lon = data["items"][0]["location"]["lng"]
 
     return lat, lon
 
