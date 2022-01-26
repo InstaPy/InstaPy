@@ -38,7 +38,7 @@ Implemented in Python using the Selenium module.<p>
 **Table of contents**
 - [How to install and run InstaPy](/docs/home.md#installation)
   * [Installing InstaPy](/docs/home.md#installation)
-  * [Running Instapy](/docs/home.md#installation)
+  * [Running Instapy](/docs/home.md#running-instapy)
   * [Updating InstaPy](/docs/home.md#updating-instapy)
   * [Guides and tutorials](/docs/home.md#guides)
     * [Video tutorials](/docs/home.md#video-tutorials)
