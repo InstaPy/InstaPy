@@ -210,3 +210,10 @@ xpath["likers_from_photo"] = {
 }
 
 xpath["accept_igcookie_dialogue"] = {"accept_button": "//button[text()='Accept']"}
+
+xpath["message_users"] = {
+    "user_button": "/html/body/div[1]/section/div[2]/div/div[2]/div[1]/div/div[3]/button",
+    "next_button": "/html/body/div[1]/section/div[1]/header/div/div[2]/button",
+    "message_box": "/html/body/div[1]/section/div[2]/div/div/div[2]/div/div/div[1]/textarea",
+    "send_button": "/html/body/div[1]/section/div[2]/div/div/div[2]/div/div/div[2]/button",
+}
