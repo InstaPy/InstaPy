@@ -539,8 +539,8 @@ def get_links_for_username(
 
 def get_media_edge_comment_string(media):
     """AB test (Issue 3712) alters the string for media edge, this resolves it"""
-    #DEF: 20jan
-    options = ["comments", "preview_comments"]
+    #DEF: 26jan
+    options = ["comments", "preview_comments", "edge_media_preview_comment"]
     for option in options:
         try:
             media[option]
@@ -588,62 +588,64 @@ def check_link(
     if post_page is None:
         logger.warning("Unavailable Page: {}".format(post_link.encode("utf-8")))
         return True, None, None, "Unavailable Page", "Failure"
-
-    # Gets the description of the post's link and checks for the dont_like tags
-    #DEF: 20jan
-    graphql = "items" in post_page
+    
     location_name = None
-
+    is_video = None
+    user_name = None
+    image_text = None
+    owner_comments = None
     first_comment = ""
     owner_comments = ""
 
-    if graphql:
-        media = post_page["items"][0]
-        is_video = media["is_unified_video"]
-        user_name = media["user"]["username"]
-        image_text = media["caption"]
-        image_text = image_text["text"] if image_text else None
-        location_name = None
-        if "location" in media: location_name = media["location"]["name"]
-        media_edge_string = get_media_edge_comment_string(media)
-        # Gets all comments on media
-        if media_edge_string is not None:
-         comments = (
-            media[media_edge_string]
-            if media[media_edge_string]
-            else None
-         )
-         # Concat all owner comments
-         if comments is not None:
-            for comment in comments:
-                if comment["user"]["username"] == user_name:
-                    if first_comment == "": first_comment=comment["text"]
-                    owner_comments = owner_comments + "\n" + comment["text"]
+    #DEF: 26jan -  added try except to catch IG updated data structure
+    """ todo: finding the comments of the users """
+    try: 
+        graphql = "items" in post_page
+        if graphql:
+            media = post_page["items"][0]
+            is_video = media["is_unified_video"]
+            user_name = media["user"]["username"]
+            image_text = media["caption"]
+            image_text = image_text["text"] if image_text else None
+            if "location" in media: location_name = media["location"]["name"]
+            media_edge_string = get_media_edge_comment_string(media)
+            # Gets all comments on media
+            if media_edge_string is not None:
+                comments = (
+                    media[media_edge_string]
+                    if media[media_edge_string]
+                    else None
+                )
+            # Concat all owner comments
+            if comments is not None:
+                for comment in comments:
+                    if comment["user"]["username"] == user_name:
+                        if first_comment == "": first_comment=comment["text"]
+                        owner_comments = owner_comments + "\n" + comment["text"]
 
-    else:
-        #DEF: 22jan
-        logger.info("post_page: {}".format(post_page))
-        media = post_page["items"][0]
-        is_video = media["is_unified_video"]
-        user_name = media["user"]["username"]
-        image_text = media["caption"]
-        image_text = image_text["text"] if image_text else None
-        owner_comments = browser.execute_script(
-            """
-            latest_comments = window._sharedData.entry_data.PostPage[
-            0].media.comments.nodes;
-            if (latest_comments === undefined) {
-                latest_comments = Array();
-                owner_comments = latest_comments
-                    .filter(item => item.user.username == arguments[0])
-                    .map(item => item.text)
-                    .reduce((item, total) => item + '\\n' + total, '');
-                return owner_comments;}
-            else {
-                return null;}
-        """,
-            user_name,
-        )
+        else:
+            media = post_page["graphql"]["shortcode_media"]
+            is_video = media["is_video"]
+            user_name = media["owner"]["username"]
+            image_text = media["edge_media_to_caption"]["edges"][0]['node']['text']
+            media_edge_string = get_media_edge_comment_string(media)
+            # Gets all comments on media
+            if media_edge_string is not None:
+                comments = (
+                    media[media_edge_string]['edges']
+                    if media[media_edge_string]['edges']
+                else None
+                )
+            # Concat all owner comments
+            if comments is not None:
+                for comment in comments:
+                    if comment["user"]["username"] == user_name:
+                        if first_comment == "": first_comment=comment["text"]
+                        owner_comments = owner_comments + "\n" + comment["text"]
+            
+    except:
+        logger.warning("Stopped... IG 'post_page' changed. This is the dump: {}".format(post_page))
+        return True, None, None, "Unavailable Data", "Failure"
 
     if owner_comments == "":
         owner_comments = None
@@ -1026,3 +1028,5 @@ from .constants import (
     MEDIA_PHOTO,
     MEDIA_VIDEO,
 )
+
+
