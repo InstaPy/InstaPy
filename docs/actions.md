@@ -680,3 +680,19 @@ Take a list of users and watch their stories.
 ```python
 session.story_by_users(['user1', 'user2'])
 ```
+
+### Message Users
+
+Sends direct messages to users.
+
+```python
+# send 'Hello World!' to user1, user2, and user3 individually
+session.message_users(['user1', 'user2', 'user3'], "Hello World!", False):
+```
+
+#### Parameters:
+`usernames`: The usernames to message.
+
+`message`: The message to send the users.
+
+`group`: Whether or not to send the message in a group chat consisting of `usernames`.

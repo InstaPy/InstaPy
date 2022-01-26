@@ -95,6 +95,7 @@ from .pods_util import share_my_post_with_pods
 from .pods_util import share_with_pods_restriction
 from .pods_util import comment_restriction
 from .xpath import read_xpath
+from .message_util import message_users, message_user
 
 # import exceptions
 from selenium.common.exceptions import NoSuchElementException
@@ -491,7 +492,7 @@ class InstaPy:
         random_range_to: int = None,
         safety_match: bool = True,
     ):
-        """ Set custom sleep delay after actions """
+        """Set custom sleep delay after actions"""
         Settings.action_delays.update(
             {
                 "enabled": enabled,
@@ -902,7 +903,7 @@ class InstaPy:
         sleep_delay: int = 600,
         interact: bool = False,
     ):
-        """ Follows users' commenters """
+        """Follows users' commenters"""
 
         if self.aborting:
             return self
@@ -1022,7 +1023,7 @@ class InstaPy:
         sleep_delay: int = 600,
         interact: bool = False,
     ):
-        """ Follows users' likers """
+        """Follows users' likers"""
         if self.aborting:
             return self
 
@@ -1344,7 +1345,7 @@ class InstaPy:
         self.max_posts = max_posts if enabled is True else None
 
     def validate_user_call(self, user_name: str):
-        """ Short call of validate_username() function """
+        """Short call of validate_username() function"""
         validation, details = validate_username(
             self.browser,
             user_name,
@@ -1451,7 +1452,7 @@ class InstaPy:
         self.comments_mandatory_words = comments_mandatory_words
 
     def set_simulation(self, enabled: bool = True, percentage: int = 100):
-        """ Sets aside simulation parameters """
+        """Sets aside simulation parameters"""
         if enabled not in [True, False]:
             self.logger.info(
                 "Invalid simulation parameter! Please use correct syntax "
@@ -3629,7 +3630,7 @@ class InstaPy:
         interact: bool = False,
         sleep_delay: int = 600,
     ):
-        """ Follow the `Followers` of given users """
+        """Follow the `Followers` of given users"""
         if self.aborting:
             return self
 
@@ -3817,7 +3818,7 @@ class InstaPy:
         interact: bool = False,
         sleep_delay: int = 600,
     ):
-        """ Follow the `Following` of given users """
+        """Follow the `Following` of given users"""
         if self.aborting:
             return self
 
@@ -4627,7 +4628,7 @@ class InstaPy:
     def pick_nonfollowers(
         self, username: str = None, live_match: bool = False, store_locally: bool = True
     ):
-        """ Returns Nonfollowers data of a given user """
+        """Returns Nonfollowers data of a given user"""
 
         message = "Starting to pick Nonfollowers of {}..".format(username)
         highlight_print(self.username, message, "feature", "info", self.logger)
@@ -4989,7 +4990,7 @@ class InstaPy:
     def interact_by_URL(
         self, urls: list = [], randomize: bool = False, interact: bool = False
     ):
-        """ Interact on posts at given URLs """
+        """Interact on posts at given URLs"""
 
         if self.aborting:
             return self
@@ -5284,7 +5285,7 @@ class InstaPy:
             self.internal_usage.pop(feature)
 
     def live_report(self):
-        """ Report live sessional statistics """
+        """Report live sessional statistics"""
 
         print("")
 
@@ -5356,7 +5357,7 @@ class InstaPy:
             )
 
     def set_do_reply_to_comments(self, enabled: bool = False, percentage: int = 0):
-        """ Define if the comments on posts should be replied """
+        """Define if the comments on posts should be replied"""
 
         self.do_reply_to_comments = enabled
         self.reply_to_comments_percent = percentage
@@ -5364,7 +5365,7 @@ class InstaPy:
         return self
 
     def set_comment_replies(self, replies: list = [], media: str = None):
-        """ Set the replies to comments """
+        """Set the replies to comments"""
 
         if not replies:
             self.logger.info("Please, provide some comment replies for use next time.")
@@ -5395,7 +5396,7 @@ class InstaPy:
         subjectivity: str = None,
         confidence: bool = 100,
     ):
-        """ Set MeaningCloud Sentiment Analysis API configuration """
+        """Set MeaningCloud Sentiment Analysis API configuration"""
 
         if license_key is None:
             license_key = os.environ.get("MEANINGCLOUD_LIC_KEY")
@@ -5430,7 +5431,7 @@ class InstaPy:
         match_language: bool = False,
         language_code: str = "en",
     ):
-        """ Set Yandex Translate API configuration """
+        """Set Yandex Translate API configuration"""
 
         if API_key is None:
             API_key = os.environ.get("YANDEX_API_KEY")
@@ -5838,7 +5839,7 @@ class InstaPy:
             )
 
     def run_time(self):
-        """ Get the time session lasted in seconds """
+        """Get the time session lasted in seconds"""
 
         real_time = time.time()
         run_time = real_time - self.start_time
@@ -5895,7 +5896,7 @@ class InstaPy:
         return self
 
     def join_pods(self, topic: str = "general", engagement_mode: str = "normal"):
-        """ Join pods """
+        """Join pods"""
         if topic not in self.allowed_pod_topics:
             self.logger.error(
                 "You have entered an invalid topic for pods, allowed topics are : {}. Exiting...".format(
@@ -6091,7 +6092,7 @@ class InstaPy:
                 self.logger.error("Failed for {} with Error {}".format(pod_post, err))
 
     def story_by_tags(self, tags: list = None):
-        """ Watch stories for specific tag(s) """
+        """Watch stories for specific tag(s)"""
         if self.aborting:
             return self
 
@@ -6123,7 +6124,7 @@ class InstaPy:
                     self.reels_watched += reels
 
     def story_by_users(self, users: list = None):
-        """ Watch stories for specific user(s)"""
+        """Watch stories for specific user(s)"""
         if self.aborting:
             return self
 
@@ -6155,7 +6156,7 @@ class InstaPy:
                     self.reels_watched += reels
 
     def target_list(self, file):
-        """ Extracts target list from text file """
+        """Extracts target list from text file"""
         target_list = file_handling(file)
 
         if "FileNotFoundError" in target_list:
@@ -6163,3 +6164,14 @@ class InstaPy:
             return []
 
         return target_list
+
+    def message_users(self, usernames: list, message: str, group=False):
+        """Sends message to users"""
+        if group:
+            # sends message to all users at once in a group DM
+            message_users(self.browser, usernames, message, self.logger)
+        else:
+            # sends message to users individually
+            for user in usernames:
+                message_user(self.browser, user, message, self.logger)
+        return
