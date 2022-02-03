@@ -24,25 +24,27 @@ Implemented in Python using the Selenium module.<p>
     </a>
   </p>
 </p>
+<h1>salom</h1>
 
-[Twitter of InstaPy](https://twitter.com/InstaPy) | [Discord Channel](https://discord.gg/FDETsht) | [How it works (FreeCodingCamp)](https://www.freecodecamp.org/news/my-open-source-instagram-bot-got-me-2-500-real-followers-for-5-in-server-costs-e40491358340/) |   
+[Twitter of InstaPy](https://twitter.com/InstaPy) | [Discord Channel](https://discord.gg/FDETsht) | [How it works (FreeCodingCamp)](https://www.freecodecamp.org/news/my-open-source-instagram-bot-got-me-2-500-real-followers-for-5-in-server-costs-e40491358340/) |  
 [Talk about automating your Instagram](https://youtu.be/4TmKFZy-ioQ) | [Talk about doing Open-Source work](https://www.youtube.com/watch?v=A_UtST302Og&t=0s&list=PLa4P1NPX9hthXV-wko0xyxFpbhYZFkW7o) | [Listen to the "Talk Python to me"-Episode](https://talkpython.fm/episodes/show/142/automating-the-web-with-selenium-and-instapy)
 
-
-**Newsletter: [Sign Up for the Newsletter here!](http://eepurl.com/cZbV_v)**   
-**Guide to Bot Creation: [Learn to Build your own Bots](https://www.udemy.com/course/the-complete-guide-to-bot-creation/?referralCode=7418EBB47E11E34D86C9)**    
+**Newsletter: [Sign Up for the Newsletter here!](http://eepurl.com/cZbV_v)**  
+**Guide to Bot Creation: [Learn to Build your own Bots](https://www.udemy.com/course/the-complete-guide-to-bot-creation/?referralCode=7418EBB47E11E34D86C9)**
 
 <br />
 
 # Find the full documentation in [Docs](/docs)
+
 **Table of contents**
+
 - [How to install and run InstaPy](/docs/home.md#installation)
-  * [Installing InstaPy](/docs/home.md#installation)
-  * [Running Instapy](/docs/home.md#installation)
-  * [Updating InstaPy](/docs/home.md#updating-instapy)
-  * [Guides and tutorials](/docs/home.md#guides)
-    * [Video tutorials](/docs/home.md#video-tutorials)
-    * [Written guides](/docs/home.md#written-guides)
+  - [Installing InstaPy](/docs/home.md#installation)
+  - [Running Instapy](/docs/home.md#installation)
+  - [Updating InstaPy](/docs/home.md#updating-instapy)
+  - [Guides and tutorials](/docs/home.md#guides)
+    - [Video tutorials](/docs/home.md#video-tutorials)
+    - [Written guides](/docs/home.md#written-guides)
 - [Externals and additionals tools](/docs/home.md#external-tools)
 - [Running InstaPy on Docker](/docs/home.md#docker)
 - [Documentation of all Instapy's features](/docs/settings.md)
@@ -52,8 +54,10 @@ Implemented in Python using the Selenium module.<p>
 <br />
 
 ## Credits
+
 ### Community
-An active and supportive community is what every open-source project needs to sustain. Together we reached every continent and most of the countries in the world!   
+
+An active and supportive community is what every open-source project needs to sustain. Together we reached every continent and most of the countries in the world!  
 Thank you all for being part of the InstaPy community ✌️
 
 <p align="center">
