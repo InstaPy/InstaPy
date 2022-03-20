@@ -616,26 +616,11 @@ def check_link(
 
     else:
         logger.info("post_page: {}".format(post_page))
-        media = post_page[0]["shortcode_media"]
-        is_video = media["is_video"]
-        user_name = media["owner"]["username"]
-        image_text = media["caption"]
-        owner_comments = browser.execute_script(
-            """
-            latest_comments = window._sharedData.entry_data.PostPage[
-            0].media.comments.nodes;
-            if (latest_comments === undefined) {
-                latest_comments = Array();
-                owner_comments = latest_comments
-                    .filter(item => item.user.username == arguments[0])
-                    .map(item => item.text)
-                    .reduce((item, total) => item + '\\n' + total, '');
-                return owner_comments;}
-            else {
-                return null;}
-        """,
-            user_name,
-        )
+        media = post_page ['items'] [0]
+        is_video = media ["is_unified_video"]
+        user_name = media ["user"] ["username"]
+        image_text = media ["caption"] ["text"]
+        owner_comments = ""
 
     if owner_comments == "":
         owner_comments = None
