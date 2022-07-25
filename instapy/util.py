@@ -24,7 +24,7 @@ from tempfile import gettempdir
 import emoji
 import regex
 from bs4 import BeautifulSoup
-from emoji.unicode_codes import UNICODE_EMOJI
+from emoji.unicode_codes import EMOJI_DATA
 
 # import exceptions
 from selenium.common.exceptions import (
@@ -2117,7 +2117,7 @@ def deform_emojis(text):
     emojis_in_text = []
 
     for word in data:
-        if any(char in UNICODE_EMOJI for char in word):
+        if any(char in EMOJI_DATA for char in word):
             word_emoji = emoji.demojize(word).replace(":", "").replace("_", " ")
             if word_emoji not in emojis_in_text:  # do not add an emoji if
                 # already exists in text
