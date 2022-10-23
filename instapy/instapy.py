@@ -730,18 +730,15 @@ class InstaPy:
             return
 
         for tag in tags:
-            if python_version() > "3.5":
-                # CI Travis alert for Python3.5 and apidisplaypurposes
-                from apidisplaypurposes import displaypurposes
 
-                myToken = displaypurposes.generate_api_token(tag, Settings.user_agent)
-                head = {"User-Agent": Settings.user_agent, "api-token": myToken}
-                req = requests.get(
-                    "https://apidisplaypurposes.com/tag/{}".format(tag), headers=head
-                )
-            else:
-                # Old fashion request, must fail in Python <= 3.5
-                req = requests.get("https://apidisplaypurposes.com/tag/{}".format(tag))
+            # CI Travis alert for Python3.5 and apidisplaypurposes
+            from apidisplaypurposes import displaypurposes
+
+            myToken = displaypurposes.generate_api_token(tag, Settings.user_agent)
+            head = {"user-agent": displaypurposes.USER_AGENTS["chrome"], "api-token": myToken}
+            req = requests.get(
+                "https://apidisplaypurposes.com/tag/{}".format(tag), headers=head
+            )
 
             data = json.loads(req.text)
 
