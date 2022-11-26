@@ -1,8 +1,7 @@
 """Module only used to log the number of followers to a file"""
 from datetime import datetime
 
-from .util import interruption_handler, getUserData
-from .util import web_address_navigator
+from .util import getUserData, interruption_handler, web_address_navigator
 
 
 def get_log_time():

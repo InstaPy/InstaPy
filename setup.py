@@ -1,15 +1,14 @@
 # This Python file uses the following encoding: utf-8
 
-from setuptools import setup
-from os import path
-
+import re
 # io.open is needed for projects that support Python 2.7
 # It ensures open() defaults to text mode with universal newlines,
 # and accepts an argument to specify the text encoding
 # Python 3 only projects can skip this import and use built-in open()
 from io import open as io_open
-import re
+from os import path
 
+from setuptools import setup
 
 summary = "Tool for automated Instagram interactions"
 project_homepage = "https://github.com/InstaPy/InstaPy"

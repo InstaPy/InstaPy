@@ -1,29 +1,25 @@
 # import built-in & third-party modules
 import os
-import zipfile
 import shutil
-
+import zipfile
 from os.path import sep
+
 from selenium import webdriver
+# import exceptions
+from selenium.common.exceptions import (UnexpectedAlertPresentException,
+                                        WebDriverException)
+from selenium.webdriver import Remote
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.firefox.options import Options as Firefox_Options
-from selenium.webdriver import Remote
 from webdriverdownloader import GeckoDriverDownloader
 
-# import InstaPy modules
-from .util import interruption_handler
-from .util import highlight_print
-from .util import emergency_exit
-from .util import get_current_url
-from .util import check_authorization
-from .util import web_address_navigator
 from .file_manager import use_assets
 from .settings import Settings
 from .time_util import sleep
-
-# import exceptions
-from selenium.common.exceptions import WebDriverException
-from selenium.common.exceptions import UnexpectedAlertPresentException
+# import InstaPy modules
+from .util import (check_authorization, emergency_exit, get_current_url,
+                   highlight_print, interruption_handler,
+                   web_address_navigator)
 
 
 def get_geckodriver():
@@ -277,7 +273,7 @@ class custom_browser(Remote):
 
     def find_element_by_xpath(self, *args, **kwargs):
         """example usage of hooking into built in functions"""
-        rv = super(custom_browser, self).find_element_by_xpath(*args, **kwargs)
+        rv = super().find_element_by_xpath(*args, **kwargs)
         return rv
 
     def wait_for_valid_connection(self, username, logger):
@@ -298,7 +294,7 @@ class custom_browser(Remote):
         # stuck on invalid auth
         auth_method = "activity counts"
         counter = 0
-        while True and counter < 10:
+        while counter < 10:
             login_state = check_authorization(self, username, auth_method, logger)
             if login_state is False:
                 logger.warning("not logged in")

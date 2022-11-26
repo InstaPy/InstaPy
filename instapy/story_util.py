@@ -4,20 +4,15 @@ import time
 from random import randint
 
 import requests
-
 # import exceptions
-from selenium.common.exceptions import NoSuchElementException, WebDriverException
+from selenium.common.exceptions import (NoSuchElementException,
+                                        WebDriverException)
 from selenium.webdriver.common.by import By
 
 from .settings import Settings
-
 # import InstaPy modules
-from .util import (
-    click_element,
-    get_action_delay,
-    update_activity,
-    web_address_navigator,
-)
+from .util import (click_element, get_action_delay, update_activity,
+                   web_address_navigator)
 from .xpath import read_xpath
 
 
@@ -84,7 +79,7 @@ def get_story_data(browser, elem, action_type, logger, simulate=False):
         }
         if cookie["name"] == "csrftoken":
             csrftoken = cookie["value"]
-        if not (cookie["name"] == "urlgen") and not (cookie["name"] == "rur"):
+        if not cookie["name"] == "urlgen" and not cookie["name"] == "rur":
             all_args["expires"] = cookie["expiry"]
 
         session.cookies.set(**all_args)

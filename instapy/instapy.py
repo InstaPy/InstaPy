@@ -34,73 +34,37 @@ from . import __version__
 from .browser import close_browser, set_selenium_local_session
 from .clarifai_util import check_image
 from .comment_util import comment_image, get_comments_on_post, process_comments
-from .commenters_util import (
-    extract_information,
-    get_photo_urls_from_profile,
-    users_liked,
-)
+from .commenters_util import (extract_information, get_photo_urls_from_profile,
+                              users_liked)
 from .constants import MEDIA_PHOTO, MEDIA_VIDEO
 from .database_engine import get_database
 from .exceptions import InstaPyError
 from .file_manager import get_logfolder, get_workspace
-from .like_util import (
-    check_link,
-    get_links_for_location,
-    get_links_for_tag,
-    get_links_for_username,
-    get_links_from_feed,
-    get_tags,
-    like_comment,
-    like_image,
-    verify_liking,
-)
+from .like_util import (check_link, get_links_for_location, get_links_for_tag,
+                        get_links_for_username, get_links_from_feed, get_tags,
+                        like_comment, like_image, verify_liking)
 from .login_util import login_user
-from .pods_util import (
-    comment_restriction,
-    get_recent_posts_from_pods,
-    group_posts,
-    share_my_post_with_pods,
-    share_with_pods_restriction,
-)
+from .pods_util import (comment_restriction, get_recent_posts_from_pods,
+                        group_posts, share_my_post_with_pods,
+                        share_with_pods_restriction)
 from .print_log_writer import log_follower_num, log_following_num
-from .relationship_tools import (
-    get_fans,
-    get_followers,
-    get_following,
-    get_mutual_following,
-    get_nonfollowers,
-    get_unfollowers,
-)
+from .relationship_tools import (get_fans, get_followers, get_following,
+                                 get_mutual_following, get_nonfollowers,
+                                 get_unfollowers)
 from .settings import Settings, localize_path
 from .story_util import watch_story
 from .text_analytics import text_analysis, yandex_supported_languages
 from .time_util import set_sleep_percentage, sleep
-from .unfollow_util import (
-    dump_follow_restriction,
-    follow_restriction,
-    follow_user,
-    get_follow_requests,
-    get_given_user_followers,
-    get_given_user_following,
-    set_automated_followed_pool,
-    unfollow,
-    unfollow_user,
-)
-from .util import (
-    dump_record_activity,
-    file_handling,
-    get_active_users,
-    get_bounding_box,
-    get_cord_location,
-    highlight_print,
-    interruption_handler,
-    parse_cli_args,
-    save_account_progress,
-    scroll_down,
-    truncate_float,
-    validate_username,
-    web_address_navigator,
-)
+from .unfollow_util import (dump_follow_restriction, follow_restriction,
+                            follow_user, get_follow_requests,
+                            get_given_user_followers, get_given_user_following,
+                            set_automated_followed_pool, unfollow,
+                            unfollow_user)
+from .util import (dump_record_activity, file_handling, get_active_users,
+                   get_bounding_box, get_cord_location, highlight_print,
+                   interruption_handler, parse_cli_args, save_account_progress,
+                   scroll_down, truncate_float, validate_username,
+                   web_address_navigator)
 from .xpath import read_xpath
 
 

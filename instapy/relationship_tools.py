@@ -7,20 +7,16 @@ import time
 from datetime import datetime
 
 # import exceptions
-from selenium.common.exceptions import NoSuchElementException, WebDriverException
+from selenium.common.exceptions import (NoSuchElementException,
+                                        WebDriverException)
 from selenium.webdriver.common.by import By
 
 # import InstaPy modules
 from .follow_util import get_following_status
 from .time_util import sleep
-from .util import (
-    get_relationship_counts,
-    interruption_handler,
-    is_private_profile,
-    progress_tracker,
-    truncate_float,
-    web_address_navigator,
-)
+from .util import (get_relationship_counts, interruption_handler,
+                   is_private_profile, progress_tracker, truncate_float,
+                   web_address_navigator)
 
 
 def get_followers(

@@ -9,46 +9,27 @@ from datetime import datetime, timedelta
 from math import ceil
 
 # import exceptions
-from selenium.common.exceptions import (
-    ElementNotVisibleException,
-    NoSuchElementException,
-    WebDriverException,
-)
+from selenium.common.exceptions import (ElementNotVisibleException,
+                                        NoSuchElementException,
+                                        WebDriverException)
 from selenium.webdriver.common.by import By
 
 from .database_engine import get_database
 from .event import Event
 from .follow_util import get_following_status
-from .print_log_writer import (
-    get_log_time,
-    log_followed_pool,
-    log_record_all_unfollowed,
-    log_uncertain_unfollowed_pool,
-)
+from .print_log_writer import (get_log_time, log_followed_pool,
+                               log_record_all_unfollowed,
+                               log_uncertain_unfollowed_pool)
 from .quota_supervisor import quota_supervisor
 from .relationship_tools import get_followers, get_following, get_nonfollowers
-
 # import InstaPy modules
 from .time_util import sleep
-from .util import (
-    add_user_to_blacklist,
-    click_element,
-    click_visibly,
-    delete_line_from_file,
-    emergency_exit,
-    find_user_id,
-    format_number,
-    get_action_delay,
-    get_epoch_time_diff,
-    get_query_hash,
-    get_relationship_counts,
-    is_follow_me,
-    is_page_available,
-    reload_webpage,
-    truncate_float,
-    update_activity,
-    web_address_navigator,
-)
+from .util import (add_user_to_blacklist, click_element, click_visibly,
+                   delete_line_from_file, emergency_exit, find_user_id,
+                   format_number, get_action_delay, get_epoch_time_diff,
+                   get_query_hash, get_relationship_counts, is_follow_me,
+                   is_page_available, reload_webpage, truncate_float,
+                   update_activity, web_address_navigator)
 from .xpath import read_xpath
 
 
@@ -711,7 +692,7 @@ def get_users_through_dialog_with_graphql(
         # edge_type: used to check followers or following in JSON
         #            "edge_followed_by" or "edge_follow"
         followers_page = data["data"]["user"][str(edge_type)]["edges"]
-    except:
+    except Exception:
         # sometimes IG page displays a message that "Failed to Load. Retry"
         # so, instead of terminatig the App we will move to next step.
         # Cool down maybe ^.^
@@ -755,7 +736,7 @@ def get_users_through_dialog_with_graphql(
         try:
             # get all followers of current page
             followers_page = data["data"]["user"][str(edge_type)]["edges"]
-        except:
+        except Exception:
             logger.error("JSON (2) cannot be loaded, moving on...")
             return [], []
 
@@ -1565,7 +1546,7 @@ def verify_action(
                     button = browser.find_element(By.XPATH, follow_button_xp)
                     try:
                         button.click()
-                    except:
+                    except Exception:
                         return False, "unexpected"
                     sleep(random.randint(4, 7))
                     return True, "success"

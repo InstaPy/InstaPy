@@ -8,14 +8,8 @@ from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.by import By
 
 # import InstaPy modules
-from .util import (
-    explicit_wait,
-    get_username_from_id,
-    is_page_available,
-    load_user_id,
-    update_activity,
-    web_address_navigator,
-)
+from .util import (explicit_wait, get_username_from_id, is_page_available,
+                   load_user_id, update_activity, web_address_navigator)
 from .xpath import read_xpath
 
 
@@ -68,7 +62,7 @@ def get_following_status(
                 read_xpath(get_following_status.__name__, "follow_span_XP_following"),
             )
             return "Following", follow_button
-        except:
+        except Exception:
             return "UNAVAILABLE", None
     follow_button = explicit_wait(
         browser, "VOEL", [follow_button_XP, "XPath"], logger, 7, False

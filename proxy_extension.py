@@ -1,5 +1,5 @@
-import zipfile
 import os
+import zipfile
 
 
 def create_proxy_extension(proxy):

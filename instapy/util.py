@@ -25,14 +25,10 @@ import emoji
 import regex
 from bs4 import BeautifulSoup
 from emoji.unicode_codes import UNICODE_EMOJI
-
 # import exceptions
-from selenium.common.exceptions import (
-    NoSuchElementException,
-    StaleElementReferenceException,
-    TimeoutException,
-    WebDriverException,
-)
+from selenium.common.exceptions import (NoSuchElementException,
+                                        StaleElementReferenceException,
+                                        TimeoutException, WebDriverException)
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as ec
 from selenium.webdriver.support.ui import WebDriverWait
@@ -42,7 +38,6 @@ from .event import Event
 from .quota_supervisor import quota_supervisor
 from .settings import Settings
 from .time_util import sleep, sleep_actual
-
 # import InstaPy modules
 from .xpath import read_xpath
 
@@ -373,7 +368,7 @@ def validate_username(
                 return False, "{} is private account, by default skip\n".format(
                     username
                 )
-        except:
+        except Exception:
             logger.error("~could not check if profile is public or private")
             return False, "--> Sorry, could not check if profile is public or private\n"
 
@@ -389,7 +384,7 @@ def validate_username(
                         username
                     ),
                 )
-        except:
+        except Exception:
             logger.error("~could not check if profile is public or private")
             return False, "--> Sorry, could not check if profile is public or private\n"
 

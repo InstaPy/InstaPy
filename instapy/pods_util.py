@@ -1,10 +1,11 @@
 # import built-in & third-party modules
-import requests
 import sqlite3
 
+import requests
+
+from .database_engine import get_database
 # import InstaPy modules
 from .settings import Settings
-from .database_engine import get_database
 
 # import exceptions
 

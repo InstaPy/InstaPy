@@ -6,22 +6,15 @@ you will need to create your token on the telegram app and speak with @botfather
 you will need to have a username (go to settings -> profile -> Username
 """
 
-from ..util import truncate_float
-from telegram.ext import Updater
-from telegram.ext import CommandHandler
-from telegram.ext import MessageHandler
-from telegram.ext import Filters
-from telegram.error import (
-    TelegramError,
-    Unauthorized,
-    BadRequest,
-    TimedOut,
-    ChatMigrated,
-    NetworkError,
-)
 import logging
-import requests
 import os
+
+import requests
+from telegram.error import (BadRequest, ChatMigrated, NetworkError,
+                            TelegramError, TimedOut, Unauthorized)
+from telegram.ext import CommandHandler, Filters, MessageHandler, Updater
+
+from ..util import truncate_float
 
 
 class InstaPyTelegramBot:

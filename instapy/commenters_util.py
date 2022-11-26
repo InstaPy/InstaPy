@@ -10,25 +10,16 @@ from operator import itemgetter
 from time import sleep
 
 # import exceptions
-from selenium.common.exceptions import (
-    NoSuchElementException,
-    StaleElementReferenceException,
-)
+from selenium.common.exceptions import (NoSuchElementException,
+                                        StaleElementReferenceException)
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 
 # import InstaPy modules
-from .util import (
-    click_element,
-    close_dialog_box,
-    get_number_of_posts,
-    get_users_from_dialog,
-    progress_tracker,
-    scroll_bottom,
-    update_activity,
-    username_url_to_username,
-    web_address_navigator,
-)
+from .util import (click_element, close_dialog_box, get_number_of_posts,
+                   get_users_from_dialog, progress_tracker, scroll_bottom,
+                   update_activity, username_url_to_username,
+                   web_address_navigator)
 from .xpath import read_xpath
 
 

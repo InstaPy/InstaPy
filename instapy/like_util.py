@@ -5,41 +5,24 @@ import re
 from re import findall
 
 # import exceptions
-from selenium.common.exceptions import (
-    NoSuchElementException,
-    StaleElementReferenceException,
-    WebDriverException,
-)
+from selenium.common.exceptions import (NoSuchElementException,
+                                        StaleElementReferenceException,
+                                        WebDriverException)
 from selenium.webdriver.common.by import By
 
 # import InstaPy modules
 from .comment_util import open_comment_section
-from .constants import (
-    MEDIA_ALL_TYPES,
-    MEDIA_CAROUSEL,
-    MEDIA_IGTV,
-    MEDIA_PHOTO,
-    MEDIA_VIDEO,
-)
+from .constants import (MEDIA_ALL_TYPES, MEDIA_CAROUSEL, MEDIA_IGTV,
+                        MEDIA_PHOTO, MEDIA_VIDEO)
 from .event import Event
 from .follow_util import get_following_status
 from .quota_supervisor import quota_supervisor
 from .time_util import sleep
-from .util import (
-    add_user_to_blacklist,
-    click_element,
-    evaluate_mandatory_words,
-    explicit_wait,
-    extract_text_from_element,
-    format_number,
-    get_action_delay,
-    get_additional_data,
-    get_number_of_posts,
-    is_page_available,
-    is_private_profile,
-    update_activity,
-    web_address_navigator,
-)
+from .util import (add_user_to_blacklist, click_element,
+                   evaluate_mandatory_words, explicit_wait,
+                   extract_text_from_element, format_number, get_action_delay,
+                   get_additional_data, get_number_of_posts, is_page_available,
+                   is_private_profile, update_activity, web_address_navigator)
 from .xpath import read_xpath
 
 

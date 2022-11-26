@@ -7,18 +7,15 @@ Official Documentations:
 """
 
 import json
-import requests
-from meaningcloud import SentimentResponse, SentimentRequest
 
-from .util import deform_emojis
-from .util import has_any_letters
-from .util import get_time_until_next_month
-from .util import truncate_float
+import requests
+from meaningcloud import SentimentRequest, SentimentResponse
+from requests.exceptions import ConnectionError, SSLError
+
 from .settings import Settings
 from .time_util import sleep
-
-from requests.exceptions import SSLError
-from requests.exceptions import ConnectionError
+from .util import (deform_emojis, get_time_until_next_month, has_any_letters,
+                   truncate_float)
 
 YANDEX_API_VERSION = "v1.5"
 YANDEX_HOST = "https://translate.yandex.net"

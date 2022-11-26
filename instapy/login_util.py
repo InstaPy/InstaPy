@@ -7,25 +7,17 @@ import random
 import socket
 
 # import exceptions
-from selenium.common.exceptions import (
-    MoveTargetOutOfBoundsException,
-    NoSuchElementException,
-    WebDriverException,
-)
+from selenium.common.exceptions import (MoveTargetOutOfBoundsException,
+                                        NoSuchElementException,
+                                        WebDriverException)
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 
 # import InstaPy modules
 from .time_util import sleep
-from .util import (
-    check_authorization,
-    click_element,
-    explicit_wait,
-    reload_webpage,
-    update_activity,
-    web_address_navigator,
-)
+from .util import (check_authorization, click_element, explicit_wait,
+                   reload_webpage, update_activity, web_address_navigator)
 from .xpath import read_xpath
 
 

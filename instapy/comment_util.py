@@ -4,32 +4,21 @@
 import random
 
 import emoji
-
 # import exceptions
-from selenium.common.exceptions import (
-    InvalidElementStateException,
-    NoSuchElementException,
-    WebDriverException,
-)
+from selenium.common.exceptions import (InvalidElementStateException,
+                                        NoSuchElementException,
+                                        WebDriverException)
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 
 from .event import Event
 from .quota_supervisor import quota_supervisor
-
 # import InstaPy modules
 from .time_util import sleep
-from .util import (
-    add_user_to_blacklist,
-    click_element,
-    evaluate_mandatory_words,
-    explicit_wait,
-    get_action_delay,
-    getMediaData,
-    update_activity,
-    web_address_navigator,
-)
+from .util import (add_user_to_blacklist, click_element,
+                   evaluate_mandatory_words, explicit_wait, get_action_delay,
+                   getMediaData, update_activity, web_address_navigator)
 from .xpath import read_xpath
 
 
