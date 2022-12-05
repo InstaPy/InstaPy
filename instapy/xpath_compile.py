@@ -126,10 +126,11 @@ xpath["get_links_for_location"] = {
 xpath["get_links_from_feed"] = {"get_links": "//*[contains(@class,'c-Yi7')]"}
 
 xpath["get_links_for_tag"] = {
-    "top_elements": "//main/article/div[1]",
-    "main_elem": "//main/article/div[2]",
-    "possible_post": "//span[contains(@class, 'g47SY')]",
+    "top_elements": "//main/article/div[1]/div[1]/div[1]",
+    "main_elem": "//main/article/div[1]/div[1]/div[1]/div[1]",
+    "possible_post": "//div[contains(@class, '_aabd _aa8k _aanf')]",
 }
+
 
 xpath["get_number_of_posts"] = {
     "num_of_posts_txt": "//section/main/div/ul/li[1]/span/span",
@@ -137,8 +138,8 @@ xpath["get_number_of_posts"] = {
 }
 
 xpath["get_relationship_counts"] = {
-    "following_count": "//a[contains(@href,'following') and not(contains(@href,'mutual'))]/span",
-    "followers_count": "//a[contains(@href,'followers') and not(contains(@href,'mutual'))]/span",
+    "following_count": "//a[contains(@href,'following') and not(contains(@href,'mutual'))]//span",
+    "followers_count": "//a[contains(@href,'followers') and not(contains(@href,'mutual'))]//span",
     "topCount_elements": "//span[contains(@class,'g47SY')]",
 }
 
@@ -159,8 +160,8 @@ xpath["like_comment"] = {
 }
 
 xpath["like_image"] = {
-    "like": "//*[contains(@class, 'fr66n')]/button/div/*[*[local-name()='svg']/@aria-label='Like']/*",
-    "unlike": "//*[contains(@class, 'fr66n')]/button/div/*[*[local-name()='svg']/@aria-label='Unlike']/*",
+    "like": "//*[contains(@class, '_aamw')]/button/div/*[*[local-name()='svg']/@aria-label='Like']/*",
+    "unlike": "//*[contains(@class, '_aamw')]/button/div/*[*[local-name()='svg']/@aria-label='Unlike']/*",
     "play": "//*/span[contains(@aria-label, 'Play')]",
 }
 

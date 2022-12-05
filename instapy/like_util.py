@@ -344,7 +344,8 @@ def get_links_for_tag(browser, tag, amount, skip_top_posts, randomize, media, lo
 
     # Get links
     links = get_links(browser, tag, logger, media, main_elem)
-    filtered_links = len(links)
+    # Disabling this are there are only 9 "Top Posts" now
+    filtered_links = 1
     try_again = 0
     sc_rolled = 0
     nap = 1.5
@@ -615,27 +616,14 @@ def check_link(
                     owner_comments = owner_comments + "\n" + comment["node"]["text"]
 
     else:
-        logger.info("post_page: {}".format(post_page))
-        media = post_page[0]["shortcode_media"]
-        is_video = media["is_video"]
-        user_name = media["owner"]["username"]
-        image_text = media["caption"]
-        owner_comments = browser.execute_script(
-            """
-            latest_comments = window._sharedData.entry_data.PostPage[
-            0].media.comments.nodes;
-            if (latest_comments === undefined) {
-                latest_comments = Array();
-                owner_comments = latest_comments
-                    .filter(item => item.user.username == arguments[0])
-                    .map(item => item.text)
-                    .reduce((item, total) => item + '\\n' + total, '');
-                return owner_comments;}
-            else {
-                return null;}
-        """,
-            user_name,
-        )
+        media = post_page ['items'] [0]
+        is_video = media ["is_unified_video"]
+        user_name = media ["user"] ["username"]
+        image_text = None
+        if media["caption"]:
+            image_text = media ["caption"] ["text"]
+        # RC: Disabling owner's comments temporarily
+        owner_comments = ""
 
     if owner_comments == "":
         owner_comments = None
@@ -647,16 +635,17 @@ def check_link(
     elif owner_comments:
         image_text = image_text + "\n" + owner_comments
 
+    # RC: Dropping this temporarily
     # If the image still has no description gets the first comment
-    if image_text is None:
-        if graphql:
-            media_edge_string = get_media_edge_comment_string(media)
-            image_text = media[media_edge_string]["edges"]
-            image_text = image_text[0]["node"]["text"] if image_text else None
+    # if image_text is None:
+    #     if graphql:
+    #         media_edge_string = get_media_edge_comment_string(media)
+    #         image_text = media[media_edge_string]["edges"]
+    #         image_text = image_text[0]["node"]["text"] if image_text else None
 
-        else:
-            image_text = media["comments"]["nodes"]
-            image_text = image_text[0]["text"] if image_text else None
+    #     else:
+    #         image_text = media["comments"]["nodes"]
+    #         image_text = image_text[0]["text"] if image_text else None
 
     if image_text is None:
         image_text = "No description"
@@ -884,7 +873,7 @@ def get_links(browser, page, logger, media, element):
                             By.XPATH,
                             "//a[@href='/p/"
                             + post_href.split("/")[-2]
-                            + "/']/div[contains(@class,'CzVzU')]/child::*/*[name()='svg']",
+                            + "/']/div[contains(@class,'_aatp')]/child::*/*[name()='svg']",
                         ).get_attribute("aria-label")
 
                         logger.info("Post category: {}".format(post_category))
@@ -924,9 +913,7 @@ def verify_liking(browser, maximum, minimum, logger):
     & minimum values defined by user"""
 
     post_page = get_additional_data(browser)
-    likes_count = post_page["graphql"]["shortcode_media"]["edge_media_preview_like"][
-        "count"
-    ]
+    likes_count = post_page["items"][0]["like_count"]
 
     if not likes_count:
         likes_count = 0
