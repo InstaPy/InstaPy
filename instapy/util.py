@@ -24,7 +24,7 @@ from tempfile import gettempdir
 import emoji
 import regex
 from bs4 import BeautifulSoup
-from emoji.unicode_codes import UNICODE_EMOJI
+from emoji.unicode_codes import EMOJI_DATA
 
 # import exceptions
 from selenium.common.exceptions import (
@@ -491,7 +491,7 @@ def getUserData(
 
     # Sometimes shared_data["entry_data"]["ProfilePage"][0] is empty, but get_additional_data()
     # fetches all data needed
-    get_key = shared_data.get("entry_data").get("ProfilePage")
+    get_key = [shared_data]
 
     if get_key:
         data = get_key[0]
@@ -2085,7 +2085,7 @@ def deform_emojis(text):
     emojis_in_text = []
 
     for word in data:
-        if any(char in UNICODE_EMOJI for char in word):
+        if any(char in EMOJI_DATA for char in word):
             word_emoji = emoji.demojize(word).replace(":", "").replace("_", " ")
             if word_emoji not in emojis_in_text:  # do not add an emoji if
                 # already exists in text
@@ -2591,11 +2591,17 @@ def get_additional_data(browser):
     :return additional_data: Json data from window.__additionalData extracted from page source
     """
     additional_data = None
-    soup = BeautifulSoup(browser.page_source, "html.parser")
-    for text in soup(text=re.compile(r"window.__additionalDataLoaded")):
-        if re.search("^window.__additionalDataLoaded", text):
-            additional_data = json.loads(re.search("{.*}", text).group())
-            break
+    # soup = BeautifulSoup(browser.page_source, "html.parser")
+    # for text in soup(text=re.compile(r"window.__additionalDataLoaded")):
+    #     if re.search("^window.__additionalDataLoaded", text):
+    #         additional_data = json.loads(re.search("{.*}", text).group())
+    #         break
+    original_url = browser.current_url
+    if not additional_data:
+        browser.get('view-source:'+ browser.current_url +'?__a=1&__d=dis')
+        text = browser.find_element(By.TAG_NAME, "pre").text
+        additional_data = json.loads(re.search("{.*}", text).group())
+        browser.get(original_url)
 
     return additional_data
 
@@ -2609,10 +2615,8 @@ def get_shared_data(browser):
     :return shared_data: Json data from window._sharedData extracted from page source
     """
     shared_data = None
-    soup = BeautifulSoup(browser.page_source, "html.parser")
-    for text in soup(text=re.compile(r"window._sharedData")):
-        if re.search("^window._sharedData", text):
-            shared_data = json.loads(re.search("{.*}", text).group())
-            break
+    browser.get('view-source:'+ browser.current_url +'?__a=1&__d=dis')
+    text = browser.find_element(By.TAG_NAME, "pre").text
+    shared_data = json.loads(re.search("{.*}", text).group())
 
     return shared_data

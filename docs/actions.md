@@ -234,9 +234,9 @@ session.follow_likers(['user1' , 'user2'], photos_grab_amount = 2, follow_likers
 ```
 _in this case 2 random photos from each given user will be analyzed and 3 people who liked them will be followed, so 6 follows in total_
 The `usernames` can be any list
-The `photos_grab_amount` is how many photos will I grat from users profile and analyze who liked it
+The `photos_grab_amount` is how many photos will I take from each user's profile and analyze who liked it
 The `follow_likers_per_photo` is how many people to follow per each photo
-`randomize=False` will take photos from newes, true will take random from first 12
+`randomize=False` will take photos from newest, true will take random from first 12
 `sleep_delay` is used to define break time after some good following (_averagely ~`10` follows_)
 
 * You can also **interact** with the followed users by enabling `interact=True` which will use the configuration of `set_user_interact` setting:

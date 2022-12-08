@@ -63,7 +63,7 @@ def get_links_from_feed(browser, amount, num_of_search, logger):
     )
 
     total_links = len(link_elems)
-    logger.info(f"Total of links feched for analysis: {total_links}")
+    logger.info("Total of links feched for analysis: {}".format(total_links))
     links = []
     try:
         if link_elems:
@@ -74,7 +74,7 @@ def get_links_from_feed(browser, amount, num_of_search, logger):
             logger.info("~~~~~~~~~~~~~~~~~~~~~~~~~~~")
 
     except BaseException as e:
-        logger.error(f"link_elems error \n\t{str(e).encode('utf-8')}")
+        logger.error("link_elems error \n\t{}".format(str(e).encode("utf-8")))
 
     return links
 
@@ -114,7 +114,7 @@ def get_links_for_location(
         # Make it an array to use it in the following part
         media = [media]
 
-    location_link = f"https://www.instagram.com/explore/locations/{location}"
+    location_link = "https://www.instagram.com/explore/locations/{}".format(location)
     web_address_navigator(browser, location_link)
 
     top_elements = browser.find_element(
@@ -149,7 +149,8 @@ def get_links_for_location(
 
     except WebDriverException:
         logger.info(
-            f"Failed to get the amount of possible posts in '{location}' location"
+            "Failed to get the amount of possible posts in '{}' "
+            "location".format(location)
         )
         possible_posts = None
 
@@ -210,7 +211,9 @@ def get_links_for_location(
             if len(links) == filtered_links:
                 try_again += 1
                 nap = 3 if try_again == 1 else 5
-                logger.info(f"Insufficient amount of links ~ trying again: {try_again}")
+                logger.info(
+                    "Insufficient amount of links ~ trying again: {}".format(try_again)
+                )
                 sleep(3)
 
                 if try_again > 2:  # you can try again as much as you want
@@ -267,7 +270,7 @@ def get_links_for_tag(browser, tag, amount, skip_top_posts, randomize, media, lo
 
     tag = tag[1:] if tag[:1] == "#" else tag
 
-    tag_link = f"https://www.instagram.com/explore/tags/{tag}"
+    tag_link = "https://www.instagram.com/explore/tags/{}".format(tag)
     web_address_navigator(browser, tag_link)
 
     top_elements = browser.find_element(
@@ -315,7 +318,9 @@ def get_links_for_tag(browser, tag, amount, skip_top_posts, randomize, media, lo
                 possible_posts = None
 
         except NoSuchElementException:
-            logger.info(f"Failed to get the amount of possible posts in {tag} tag")
+            logger.info(
+                "Failed to get the amount of possible posts in {} tag".format(tag)
+            )
             possible_posts = None
 
     if skip_top_posts:
@@ -339,7 +344,8 @@ def get_links_for_tag(browser, tag, amount, skip_top_posts, randomize, media, lo
 
     # Get links
     links = get_links(browser, tag, logger, media, main_elem)
-    filtered_links = len(links)
+    # Disabling this are there are only 9 "Top Posts" now
+    filtered_links = 1
     try_again = 0
     sc_rolled = 0
     nap = 1.5
@@ -375,7 +381,9 @@ def get_links_for_tag(browser, tag, amount, skip_top_posts, randomize, media, lo
             if len(links) == filtered_links:
                 try_again += 1
                 nap = 3 if try_again == 1 else 5
-                logger.info(f"Insufficient amount of links ~ trying again: {try_again}")
+                logger.info(
+                    "Insufficient amount of links ~ trying again: {}".format(try_again)
+                )
                 sleep(3)
 
                 if try_again > 2:  # you can try again as much as you want
@@ -444,9 +452,9 @@ def get_links_for_username(
         # Make it an array to use it in the following part
         media = [media]
 
-    logger.info(f"Getting {person} image list...")
+    logger.info("Getting {} image list...".format(person))
 
-    user_link = f"https://www.instagram.com/{person}/"
+    user_link = "https://www.instagram.com/{}/".format(person)
     if taggedImages:
         user_link = user_link + "tagged/"
 
@@ -578,7 +586,7 @@ def check_link(
     post_page = get_additional_data(browser)
 
     if post_page is None:
-        logger.warning(f"Unavailable Page: {post_link.encode('utf-8')}")
+        logger.warning("Unavailable Page: {}".format(post_link.encode("utf-8")))
         return True, None, None, "Unavailable Page", "Failure"
 
     # Gets the description of the post's link and checks for the dont_like tags
@@ -608,27 +616,14 @@ def check_link(
                     owner_comments = owner_comments + "\n" + comment["node"]["text"]
 
     else:
-        logger.info(f"post_page: {post_page}")
-        media = post_page[0]["shortcode_media"]
-        is_video = media["is_video"]
-        user_name = media["owner"]["username"]
-        image_text = media["caption"]
-        owner_comments = browser.execute_script(
-            """
-            latest_comments = window._sharedData.entry_data.PostPage[
-            0].media.comments.nodes;
-            if (latest_comments === undefined) {
-                latest_comments = Array();
-                owner_comments = latest_comments
-                    .filter(item => item.user.username == arguments[0])
-                    .map(item => item.text)
-                    .reduce((item, total) => item + '\\n' + total, '');
-                return owner_comments;}
-            else {
-                return null;}
-        """,
-            user_name,
-        )
+        media = post_page ['items'] [0]
+        is_video = media ["is_unified_video"]
+        user_name = media ["user"] ["username"]
+        image_text = None
+        if media["caption"]:
+            image_text = media ["caption"] ["text"]
+        # RC: Disabling owner's comments temporarily
+        owner_comments = ""
 
     if owner_comments == "":
         owner_comments = None
@@ -640,23 +635,24 @@ def check_link(
     elif owner_comments:
         image_text = image_text + "\n" + owner_comments
 
+    # RC: Dropping this temporarily
     # If the image still has no description gets the first comment
-    if image_text is None:
-        if graphql:
-            media_edge_string = get_media_edge_comment_string(media)
-            image_text = media[media_edge_string]["edges"]
-            image_text = image_text[0]["node"]["text"] if image_text else None
+    # if image_text is None:
+    #     if graphql:
+    #         media_edge_string = get_media_edge_comment_string(media)
+    #         image_text = media[media_edge_string]["edges"]
+    #         image_text = image_text[0]["node"]["text"] if image_text else None
 
-        else:
-            image_text = media["comments"]["nodes"]
-            image_text = image_text[0]["text"] if image_text else None
+    #     else:
+    #         image_text = media["comments"]["nodes"]
+    #         image_text = image_text[0]["text"] if image_text else None
 
     if image_text is None:
         image_text = "No description"
 
-    logger.info(f"Image from: {user_name.encode('utf-8')}")
-    logger.info(f"Image link: {post_link.encode('utf-8')}")
-    logger.info(f"Description: {image_text.encode('utf-8')}")
+    logger.info("Image from: {}".format(user_name.encode("utf-8")))
+    logger.info("Image link: {}".format(post_link.encode("utf-8")))
+    logger.info("Description: {}".format(image_text.encode("utf-8")))
 
     # Check if mandatory character set, before adding the location to the text
     if mandatory_language:
@@ -671,7 +667,7 @@ def check_link(
 
     # Append location to image_text so we can search through both in one go
     if location_name:
-        logger.info(f"Location: {location_name.encode('utf-8')}")
+        logger.info("Location: {}".format(location_name.encode("utf-8")))
         image_text = image_text + "\n" + location_name
 
     if mandatory_words:
@@ -758,7 +754,7 @@ def like_image(browser, username, blacklist, logger, logfolder, total_liked_img)
     if len(like_elem) == 1:
         # sleep real quick right before clicking the element
         sleep(2)
-        logger.info(f"--> {media}...")
+        logger.info("--> {}...".format(media))
 
         like_elem = browser.find_elements(By.XPATH, like_xpath)
         if len(like_elem) > 0:
@@ -767,7 +763,7 @@ def like_image(browser, username, blacklist, logger, logfolder, total_liked_img)
         liked_elem = browser.find_elements(By.XPATH, unlike_xpath)
 
         if len(liked_elem) == 1:
-            logger.info(f"--> {media} liked!")
+            logger.info("--> {} liked!".format(media))
             Event().liked(username)
             update_activity(
                 browser, action="likes", state=None, logfolder=logfolder, logger=logger
@@ -791,13 +787,15 @@ def like_image(browser, username, blacklist, logger, logfolder, total_liked_img)
 
         else:
             # if like not seceded wait for 2 min
-            logger.info(f"--> {media} was not able to get liked! maybe blocked?")
+            logger.info(
+                "--> {} was not able to get liked! maybe blocked?".format(media)
+            )
             sleep(120)
 
     else:
         liked_elem = browser.find_elements(By.XPATH, unlike_xpath)
         if len(liked_elem) == 1:
-            logger.info(f"--> {media} already liked!")
+            logger.info("--> {} already liked!".format(media))
             return False, "already liked"
 
     logger.info("--> Invalid Like Element!")
@@ -858,7 +856,7 @@ def get_links(browser, page, logger, media, element):
                     )
 
                     if len(post_elem) == 1 and MEDIA_PHOTO in media:
-                        logger.info(f"Found media type: {MEDIA_PHOTO}")
+                        logger.info("Found media type: {}".format(MEDIA_PHOTO))
                         links.append(post_href)
 
                     if len(post_elem) == 2:
@@ -875,10 +873,10 @@ def get_links(browser, page, logger, media, element):
                             By.XPATH,
                             "//a[@href='/p/"
                             + post_href.split("/")[-2]
-                            + "/']/div[contains(@class,'CzVzU')]/child::*/*[name()='svg']",
+                            + "/']/div[contains(@class,'_aatp')]/child::*/*[name()='svg']",
                         ).get_attribute("aria-label")
 
-                        logger.info(f"Post category: {post_category}")
+                        logger.info("Post category: {}".format(post_category))
 
                         if post_category in media:
                             links.append(post_href)
@@ -889,12 +887,14 @@ def get_links(browser, page, logger, media, element):
                     # loop. Other case, the "post_href" is not empty and needs
                     # to be displayed to the STDOUT for further review.
                     if post_href:
-                        logger.info(f"Cannot detect post media type. Skip {post_href}")
+                        logger.info(
+                            "Cannot detect post media type. Skip {}".format(post_href)
+                        )
         else:
-            logger.info(f"'{page}' page does not contain a picture")
+            logger.info("'{}' page does not contain a picture".format(page))
 
     except BaseException as e:
-        logger.error(f"link_elems error \n\t{str(e).encode('utf-8')}")
+        logger.error("link_elems error \n\t{}".format(str(e).encode("utf-8")))
 
     # This block is intended to provide more information to the InstaPy user, they would like to
     # know why the Links cannot be "[Un]Liked", I would like to say that first check if the Media
@@ -903,7 +903,7 @@ def get_links(browser, page, logger, media, element):
     # If the user can use the link outside InstaPy, they would know IG targeted the acct as
     # automated.
     for i, link in enumerate(links):
-        logger.info(f"Links retrieved:: [{i + 1}/{link}]")
+        logger.info("Links retrieved:: [{}/{}]".format(i + 1, link))
 
     return links
 
@@ -913,9 +913,7 @@ def verify_liking(browser, maximum, minimum, logger):
     & minimum values defined by user"""
 
     post_page = get_additional_data(browser)
-    likes_count = post_page["graphql"]["shortcode_media"]["edge_media_preview_like"][
-        "count"
-    ]
+    likes_count = post_page["items"][0]["like_count"]
 
     if not likes_count:
         likes_count = 0
@@ -983,7 +981,9 @@ def like_comment(browser, original_comment_text, logger):
 
     except (NoSuchElementException, StaleElementReferenceException) as exc:
         logger.error(
-            f"Error occurred while liking a comment.\n\t{str(exc).encode('utf-8')}"
+            "Error occurred while liking a comment.\n\t{}".format(
+                str(exc).encode("utf-8")
+            )
         )
         return False, "error"
 
