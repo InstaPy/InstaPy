@@ -9,27 +9,46 @@ from datetime import datetime, timedelta
 from math import ceil
 
 # import exceptions
-from selenium.common.exceptions import (ElementNotVisibleException,
-                                        NoSuchElementException,
-                                        WebDriverException)
+from selenium.common.exceptions import (
+    ElementNotVisibleException,
+    NoSuchElementException,
+    WebDriverException,
+)
 from selenium.webdriver.common.by import By
 
 from .database_engine import get_database
 from .event import Event
 from .follow_util import get_following_status
-from .print_log_writer import (get_log_time, log_followed_pool,
-                               log_record_all_unfollowed,
-                               log_uncertain_unfollowed_pool)
+from .print_log_writer import (
+    get_log_time,
+    log_followed_pool,
+    log_record_all_unfollowed,
+    log_uncertain_unfollowed_pool,
+)
 from .quota_supervisor import quota_supervisor
 from .relationship_tools import get_followers, get_following, get_nonfollowers
+
 # import InstaPy modules
 from .time_util import sleep
-from .util import (add_user_to_blacklist, click_element, click_visibly,
-                   delete_line_from_file, emergency_exit, find_user_id,
-                   format_number, get_action_delay, get_epoch_time_diff,
-                   get_query_hash, get_relationship_counts, is_follow_me,
-                   is_page_available, reload_webpage, truncate_float,
-                   update_activity, web_address_navigator)
+from .util import (
+    add_user_to_blacklist,
+    click_element,
+    click_visibly,
+    delete_line_from_file,
+    emergency_exit,
+    find_user_id,
+    format_number,
+    get_action_delay,
+    get_epoch_time_diff,
+    get_query_hash,
+    get_relationship_counts,
+    is_follow_me,
+    is_page_available,
+    reload_webpage,
+    truncate_float,
+    update_activity,
+    web_address_navigator,
+)
 from .xpath import read_xpath
 
 
@@ -42,7 +61,7 @@ def set_automated_followed_pool(
     pool="followedPool",
 ):
     """Generate a user list based on the InstaPy followed usernames"""
-    pool_name = "{0}{1}_{2}.csv".format(logfolder, username, pool)
+    pool_name = f"{logfolder}{username}_{pool}.csv"
     automatedFollowedPool = {"all": {}, "eligible": {}}
     time_stamp = None
     user = None
@@ -159,7 +178,7 @@ def unfollow(
     unfollow_track = None
     unfollow_state = None
     customList_data = None
-    user_link = "https://www.instagram.com/{}/".format(username)
+    user_link = f"https://www.instagram.com/{username}/"
 
     if (
         customList is not None
@@ -409,7 +428,7 @@ def unfollow(
                         # time filter pass, user is now eligble to unfollow
                         if followedback_status is not True:
 
-                            user_link = "https://www.instagram.com/{}/".format(person)
+                            user_link = f"https://www.instagram.com/{person}/"
                             web_address_navigator(browser, user_link)
                             valid_page = is_page_available(browser, logger)
 
@@ -463,7 +482,7 @@ def unfollow(
                             logfolder,
                         )
                     except BaseException as e:
-                        logger.error("Unfollow loop error:  {}\n".format(str(e)))
+                        logger.error(f"Unfollow loop error:  {str(e)}\n")
 
                     post_unfollow_actions(browser, person, logger)
 
@@ -493,7 +512,7 @@ def unfollow(
                     # run time)
                     if person in white_list:
                         delete_line_from_file(
-                            "{0}{1}_followedPool.csv".format(logfolder, username),
+                            f"{logfolder}{username}_followedPool.csv",
                             person,
                             logger,
                         )
@@ -507,7 +526,7 @@ def unfollow(
                     index += 1
                     continue
         except BaseException as e:
-            logger.error("Unfollow loop error:  {}\n".format(str(e)))
+            logger.error(f"Unfollow loop error:  {str(e)}\n")
     else:
         logger.info(
             "Please select a proper unfollow method!  ~leaving unfollow activity\n"
@@ -528,7 +547,7 @@ def follow_user(browser, track, login, user_name, button, blacklist, logger, log
         # if track == "profile":
         # check URL of the webpage, if it already is user's profile
         # page, then do not navigate to it again
-        user_link = "https://www.instagram.com/{}/".format(user_name)
+        user_link = f"https://www.instagram.com/{user_name}/"
         web_address_navigator(browser, user_link)
 
         # find out CURRENT following status
@@ -545,10 +564,10 @@ def follow_user(browser, track, login, user_name, button, blacklist, logger, log
 
         elif following_status in ["Following", "Requested"]:
             if following_status == "Following":
-                logger.info("--> Already following '{}'!\n".format(user_name))
+                logger.info(f"--> Already following '{user_name}'!\n")
 
             elif following_status == "Requested":
-                logger.info("--> Already requested '{}' to follow!\n".format(user_name))
+                logger.info(f"--> Already requested '{user_name}' to follow!\n")
 
             sleep(1)
             return False, "already followed"
@@ -564,9 +583,7 @@ def follow_user(browser, track, login, user_name, button, blacklist, logger, log
                 # Trace the current status
                 failure_msg = following_status
 
-            logger.warning(
-                "--> Couldn't follow '{}'!\t~{}".format(user_name, failure_msg)
-            )
+            logger.warning(f"--> Couldn't follow '{user_name}'!\t~{failure_msg}")
             return False, following_status
 
         elif following_status is None:
@@ -576,7 +593,7 @@ def follow_user(browser, track, login, user_name, button, blacklist, logger, log
 
             else:
                 logger.warning(
-                    "--> Couldn't unfollow '{}'!\t~unexpected failure".format(user_name)
+                    f"--> Couldn't unfollow '{user_name}'!\t~unexpected failure"
                 )
                 return False, "unexpected failure"
     elif track == "dialog":
@@ -584,7 +601,7 @@ def follow_user(browser, track, login, user_name, button, blacklist, logger, log
         sleep(3)
 
     # general tasks after a successful follow
-    logger.info("--> Followed '{}'!".format(user_name.encode("utf-8")))
+    logger.info(f"--> Followed '{user_name.encode('utf-8')}'!")
     Event().followed(user_name)
     update_activity(
         browser, action="follows", state=None, logfolder=logfolder, logger=logger
@@ -666,12 +683,10 @@ def get_users_through_dialog_with_graphql(
     if query_hash is None:
         logger.info("Unable to locate GraphQL query hash")
     else:
-        logger.info("GraphQL query hash: [{}]".format(query_hash))
+        logger.info(f"GraphQL query hash: [{query_hash}]")
 
     graphql_query_URL = (
-        "view-source:https://www.instagram.com/graphql/query/?query_hash={}".format(
-            query_hash
-        )
+        f"view-source:https://www.instagram.com/graphql/query/?query_hash={query_hash}"
     )
     variables = {
         "id": str(user_id),
@@ -679,7 +694,7 @@ def get_users_through_dialog_with_graphql(
         "fetch_mutual": "true",
         "first": 50,
     }
-    url = "{}&variables={}".format(graphql_query_URL, str(json.dumps(variables)))
+    url = f"{graphql_query_URL}&variables={str(json.dumps(variables))}"
 
     web_address_navigator(browser, url)
 
@@ -726,7 +741,7 @@ def get_users_through_dialog_with_graphql(
             "after": end_cursor,
         }
 
-        url = "{}&variables={}".format(graphql_query_URL, str(json.dumps(variables)))
+        url = f"{graphql_query_URL}&variables={str(json.dumps(variables))}"
         browser.get(url)
         pre = browser.find_element(By.TAG_NAME, "pre").text
 
@@ -806,9 +821,7 @@ def get_users_through_dialog_with_graphql(
     followers_list = random.sample(followers_list, real_amount)
 
     for i, user in enumerate(followers_list):
-        logger.info(
-            "To be followed: [{}/{}/{}]".format(i + 1, len(followers_list), user)
-        )
+        logger.info(f"To be followed: [{i + 1}/{len(followers_list)}/{user}]")
 
     return followers_list, []
 
@@ -868,7 +881,7 @@ def follow_through_dialog(
     try:
         for person, button in zip(person_list, buttons):
             if followNum >= amount:
-                logger.info("--> Total follow number reached: {}".format(followNum))
+                logger.info(f"--> Total follow number reached: {followNum}")
                 break
 
             elif jumps["consequent"]["follows"] >= jumps["limit"]["follows"]:
@@ -904,12 +917,10 @@ def follow_through_dialog(
                     jumps["consequent"]["follows"] += 1
 
             else:
-                logger.info("Not followed '{}'  ~inappropriate user".format(person))
+                logger.info(f"Not followed '{person}'  ~inappropriate user")
 
     except BaseException as e:
-        logger.error(
-            "Error occurred while following through dialog box:\n{}".format(str(e))
-        )
+        logger.error(f"Error occurred while following through dialog box:\n{str(e)}")
 
     return person_followed
 
@@ -945,7 +956,7 @@ def get_given_user_followers(
     """
     user_name = user_name.strip().lower()
 
-    user_link = "https://www.instagram.com/{}/".format(user_name)
+    user_link = f"https://www.instagram.com/{user_name}/"
     web_address_navigator(browser, user_link)
 
     if not is_page_available(browser, logger):
@@ -956,7 +967,7 @@ def get_given_user_followers(
 
     # skip early for no followers
     if not allfollowers:
-        logger.info("'{}' has no followers".format(user_name))
+        logger.info(f"'{user_name}' has no followers")
         return [], []
 
     elif allfollowers < amount:
@@ -976,11 +987,11 @@ def get_given_user_followers(
         update_activity(browser, state=None)
 
     except NoSuchElementException:
-        logger.error("Could not find followers' link for '{}'".format(user_name))
+        logger.error(f"Could not find followers' link for '{user_name}'")
         return [], []
 
     except BaseException as e:
-        logger.error("`followers_link` error {}".format(str(e)))
+        logger.error(f"`followers_link` error {str(e)}")
         return [], []
 
     channel = "Follow"
@@ -1037,7 +1048,7 @@ def get_given_user_following(
     """
     user_name = user_name.strip().lower()
 
-    user_link = "https://www.instagram.com/{}/".format(user_name)
+    user_link = f"https://www.instagram.com/{user_name}/"
     web_address_navigator(browser, user_link)
 
     if not is_page_available(browser, logger):
@@ -1099,7 +1110,7 @@ def get_given_user_following(
 
     # skip early for no followers
     if not allfollowing:
-        logger.info("'{}' has no any following".format(user_name))
+        logger.info(f"'{user_name}' has no any following")
         return [], []
 
     elif allfollowing < amount:
@@ -1121,11 +1132,11 @@ def get_given_user_following(
         update_activity(browser, state=None)
 
     except NoSuchElementException:
-        logger.error("Could not find following's link for '{}'".format(user_name))
+        logger.error(f"Could not find following's link for '{user_name}'")
         return [], []
 
     except BaseException as e:
-        logger.error("`following_link` error {}".format(str(e)))
+        logger.error(f"`following_link` error {str(e)}")
         return [], []
 
     channel = "Follow"
@@ -1172,7 +1183,7 @@ def dump_follow_restriction(profile_name, logger, logfolder):
 
         if data:
             # get the existing data
-            filename = "{}followRestriction.json".format(logfolder)
+            filename = f"{logfolder}followRestriction.json"
             if os.path.isfile(filename):
                 with open(filename) as followResFile:
                     current_data = json.load(followResFile)
@@ -1291,7 +1302,7 @@ def unfollow_user(
     if track in ["profile", "post"]:
         # Method of unfollowing from a user's profile page or post page
         if track == "profile":
-            user_link = "https://www.instagram.com/{}/".format(person)
+            user_link = f"https://www.instagram.com/{person}/"
             web_address_navigator(browser, user_link)
 
         # find out CURRENT follow status
@@ -1343,9 +1354,7 @@ def unfollow_user(
                 # Trace the current status
                 failure_msg = following_status
 
-            logger.warning(
-                "--> Couldn't unfollow '{}'!\t~{}".format(person, failure_msg)
-            )
+            logger.warning(f"--> Couldn't unfollow '{person}'!\t~{failure_msg}")
             post_unfollow_cleanup(
                 "uncertain",
                 username,
@@ -1364,7 +1373,7 @@ def unfollow_user(
 
             else:
                 logger.warning(
-                    "--> Couldn't unfollow '{}'!\t~unexpected failure".format(person)
+                    f"--> Couldn't unfollow '{person}'!\t~unexpected failure"
                 )
                 return False, "unexpected failure"
     elif track == "dialog":
@@ -1375,7 +1384,7 @@ def unfollow_user(
         confirm_unfollow(browser)
 
     # general tasks after a successful unfollow
-    logger.info("--> Unfollowed '{}'!".format(person))
+    logger.info(f"--> Unfollowed '{person}'!")
     Event().unfollowed(person)
     update_activity(
         browser, action="unfollows", state=None, logfolder=logfolder, logger=logger
@@ -1425,9 +1434,7 @@ def post_unfollow_cleanup(
     if not isinstance(state, list):
         state = [state]
 
-    delete_line_from_file(
-        "{0}{1}_followedPool.csv".format(logfolder, username), person, logger
-    )
+    delete_line_from_file(f"{logfolder}{username}_followedPool.csv", person, logger)
 
     if "successful" in state:
         if person in relationship_data[username]["all_following"]:
@@ -1516,8 +1523,7 @@ def verify_action(
                 button_change = False
             else:
                 logger.error(
-                    "Hey! Last {} is not verified out of an unexpected "
-                    "failure!".format(action)
+                    f"Hey! Last {action} is not verified out of an unexpected failure!"
                 )
                 return False, "unexpected"
 
@@ -1538,7 +1544,7 @@ def verify_action(
 
                     sleep(4)
                 elif retry_count == 3:
-                    user_link = "https://www.instagram.com/{}/".format(person)
+                    user_link = f"https://www.instagram.com/{person}/"
                     web_address_navigator(browser, user_link)
                     follow_button_xp = read_xpath(
                         "get_following_status", "follow_button_XP"
@@ -1560,7 +1566,7 @@ def verify_action(
                     sleep(210)
                     return False, "temporary block"
 
-        logger.info("Last {} is verified after reloading the page!".format(action))
+        logger.info(f"Last {action} is verified after reloading the page!")
 
     return True, "success"
 
@@ -1628,9 +1634,7 @@ def get_follow_requests(browser, amount, sleep_delay, logger, logfolder):
 
 def set_followback_in_pool(username, person, person_id, logtime, logger, logfolder):
     # first we delete the user from pool
-    delete_line_from_file(
-        "{0}{1}_followedPool.csv".format(logfolder, username), person, logger
-    )
+    delete_line_from_file(f"{logfolder}{username}_followedPool.csv", person, logger)
 
     # return the username with new timestamp
     log_followed_pool(username, person, logger, logfolder, logtime, person_id)
@@ -1645,9 +1649,7 @@ def refresh_follow_time_in_pool(
     )
 
     # first we delete the user from pool
-    delete_line_from_file(
-        "{0}{1}_followedPool.csv".format(logfolder, username), person, logger
-    )
+    delete_line_from_file(f"{logfolder}{username}_followedPool.csv", person, logger)
 
     # return the username with new timestamp
     log_followed_pool(username, person, logger, logfolder, logtime, person_id)

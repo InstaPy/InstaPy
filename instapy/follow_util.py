@@ -8,8 +8,14 @@ from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.by import By
 
 # import InstaPy modules
-from .util import (explicit_wait, get_username_from_id, is_page_available,
-                   load_user_id, update_activity, web_address_navigator)
+from .util import (
+    explicit_wait,
+    get_username_from_id,
+    is_page_available,
+    load_user_id,
+    update_activity,
+    web_address_navigator,
+)
 from .xpath import read_xpath
 
 
@@ -109,5 +115,5 @@ def verify_username_by_id(browser, username, person, person_id, logger, logfolde
             return person_new
 
     # check who call this def, since will receive a None value
-    logger.info("User '{}' doesn't exist in local records".format(person))
+    logger.info(f"User '{person}' doesn't exist in local records")
     return None

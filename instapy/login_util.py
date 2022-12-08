@@ -7,17 +7,25 @@ import random
 import socket
 
 # import exceptions
-from selenium.common.exceptions import (MoveTargetOutOfBoundsException,
-                                        NoSuchElementException,
-                                        WebDriverException)
+from selenium.common.exceptions import (
+    MoveTargetOutOfBoundsException,
+    NoSuchElementException,
+    WebDriverException,
+)
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 
 # import InstaPy modules
 from .time_util import sleep
-from .util import (check_authorization, click_element, explicit_wait,
-                   reload_webpage, update_activity, web_address_navigator)
+from .util import (
+    check_authorization,
+    click_element,
+    explicit_wait,
+    reload_webpage,
+    update_activity,
+    web_address_navigator,
+)
 from .xpath import read_xpath
 
 
@@ -77,11 +85,11 @@ def bypass_suspicious_login(
 
     logger.info("Instagram detected an unusual login attempt")
     logger.info('Check Instagram App for "Suspicious Login attempt" prompt')
-    logger.info("A security code was sent to your {}".format(option_text))
+    logger.info(f"A security code was sent to your {option_text}")
 
     security_code = None
     try:
-        path = "{}state.json".format(logfolder)
+        path = f"{logfolder}state.json"
         data = {}
         # check if file exists and has content
         if os.path.isfile(path) and os.path.getsize(path) > 0:
@@ -92,7 +100,7 @@ def bypass_suspicious_login(
         # update connection state
         security_code = data["challenge"]["security_code"]
     except Exception:
-        logger.info("Security Code not present in {}state.json file".format(logfolder))
+        logger.info(f"Security Code not present in {logfolder}state.json file")
 
     if security_code is None:
         security_code = input("Type the security code here: ")
@@ -210,7 +218,7 @@ def check_browser(browser, logfolder, logger, proxy_address):
     # check if hide-selenium extension is running
     logger.info("-- Connection Checklist [2/2] (Hide Selenium Extension)")
     webdriver = browser.execute_script("return window.navigator.webdriver")
-    logger.info("- window.navigator.webdriver response: {}".format(webdriver))
+    logger.info(f"- window.navigator.webdriver response: {webdriver}")
     if webdriver:
         logger.warning("- Hide Selenium Extension: error")
     else:
@@ -244,7 +252,7 @@ def login_user(
     ig_homepage = "https://www.instagram.com"
     web_address_navigator(browser, ig_homepage)
 
-    cookie_file = "{0}{1}_cookie.pkl".format(logfolder, username)
+    cookie_file = f"{logfolder}{username}_cookie.pkl"
     cookie_loaded = None
     login_state = None
 
@@ -262,7 +270,7 @@ def login_user(
 
         sleep(4)
         cookie_loaded = True
-        logger.info("- Cookie file for user '{}' loaded...".format(username))
+        logger.info(f"- Cookie file for user '{username}' loaded...")
 
         # force refresh after cookie load or check_authorization() will FAIL
         reload_webpage(browser)
@@ -292,7 +300,7 @@ def login_user(
     # so go create a new cookie.
     if cookie_loaded:
         logger.warning(
-            "- Issue with cookie for user '{}'. Creating new cookie...".format(username)
+            f"- Issue with cookie for user '{username}'. Creating new cookie..."
         )
 
         # Error could be faced due to "<button class="sqdOP L3NKy y3zKF"
@@ -345,9 +353,7 @@ def login_user(
                 )
             except NoSuchElementException as e:
                 # NF: start
-                logger.exception(
-                    "Login A/B test failed!\n\t{}".format(str(e).encode("utf-8"))
-                )
+                logger.exception(f"Login A/B test failed!\n\t{str(e).encode('utf-8')}")
                 return False
                 # NF: end
 
@@ -669,9 +675,7 @@ def two_factor_authentication(browser, logger, security_codes):
         except NoSuchElementException as e:
             # Unable to login to Instagram!
             logger.warning(
-                "- Secuirty code could not be written!\n\t{}".format(
-                    str(e).encode("utf-8")
-                )
+                f"- Secuirty code could not be written!\n\t{str(e).encode('utf-8')}"
             )
         except ValueError:
             # Unable to login to Instagram!

@@ -20,7 +20,7 @@ def use_workspace():
 
 def use_assets():
     """Get asset folder"""
-    assets_path = "{}{}assets".format(use_workspace(), native_slash)
+    assets_path = f"{use_workspace()}{native_slash}assets"
     validate_path(assets_path)
     return assets_path
 
@@ -33,9 +33,9 @@ def get_workspace():
 
     else:
         home_dir = get_home_path()
-        workspace = "{}/{}".format(home_dir, WORKSPACE["name"])
+        workspace = f"{home_dir}/{WORKSPACE['name']}"
 
-    message = 'Workspace in use: "{}"'.format(workspace)
+    message = f'Workspace in use: "{workspace}"'
     highlight_print(
         Settings.profile["name"], message, "workspace", "info", Settings.logger
     )
@@ -54,7 +54,7 @@ def set_workspace(path=None):
             if workspace_is_new:
                 update_workspace(path)
                 update_locations()
-                message = 'Custom workspace set: "{}" :]'.format(path)
+                message = f'Custom workspace set: "{path}" :]'
                 highlight_print(
                     Settings.profile["name"],
                     message,
@@ -169,7 +169,7 @@ def verify_workspace_name(path):
 
     if default_workspace_name not in custom_workspace_name:
         if default_workspace_name.lower() not in custom_workspace_name.lower():
-            path += "/{}".format(default_workspace_name)
+            path += f"/{default_workspace_name}"
         else:
             nicer_name = custom_workspace_name.lower().replace(
                 default_workspace_name.lower(), default_workspace_name

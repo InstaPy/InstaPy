@@ -70,7 +70,7 @@ def create_proxy_extension(proxy):
     if not os.path.exists(dir_path):
         os.makedirs(dir_path)
 
-    pluginfile = "%s/proxy_auth_%s:%s.zip" % (dir_path, ip, port)
+    pluginfile = f"{dir_path}/proxy_auth_{ip}:{port}.zip"
     with zipfile.ZipFile(pluginfile, "w") as zp:
         zp.writestr("manifest.json", manifest_json)
         zp.writestr("background.js", background_js)

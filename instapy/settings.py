@@ -6,6 +6,7 @@ Vice verse, it'd produce circular dependent imports.
 """
 from os import environ as environmental_variables
 from os.path import join as join_path
+
 # import built-in & third-party modules
 from sys import platform
 

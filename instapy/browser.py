@@ -5,9 +5,12 @@ import zipfile
 from os.path import sep
 
 from selenium import webdriver
+
 # import exceptions
-from selenium.common.exceptions import (UnexpectedAlertPresentException,
-                                        WebDriverException)
+from selenium.common.exceptions import (
+    UnexpectedAlertPresentException,
+    WebDriverException,
+)
 from selenium.webdriver import Remote
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.firefox.options import Options as Firefox_Options
@@ -16,10 +19,16 @@ from webdriverdownloader import GeckoDriverDownloader
 from .file_manager import use_assets
 from .settings import Settings
 from .time_util import sleep
+
 # import InstaPy modules
-from .util import (check_authorization, emergency_exit, get_current_url,
-                   highlight_print, interruption_handler,
-                   web_address_navigator)
+from .util import (
+    check_authorization,
+    emergency_exit,
+    get_current_url,
+    highlight_print,
+    interruption_handler,
+    web_address_navigator,
+)
 
 
 def get_geckodriver():
@@ -112,7 +121,7 @@ def set_selenium_local_session(
     firefox_profile.update_preferences()
 
     # geckodriver log in specific user logfolder
-    geckodriver_log = "{}geckodriver.log".format(logfolder)
+    geckodriver_log = f"{logfolder}geckodriver.log"
 
     # prefer user path before downloaded one
     driver_path = geckodriver_path or get_geckodriver()
@@ -141,8 +150,7 @@ def set_selenium_local_session(
         browser.set_window_size(414, 896)
     except UnexpectedAlertPresentException as exc:
         logger.exception(
-            "Unexpected alert on resizing web browser!\n\t"
-            "{}".format(str(exc).encode("utf-8"))
+            f"Unexpected alert on resizing web browser!\n\t{str(exc).encode('utf-8')}"
         )
         close_browser(browser, False, logger)
         return browser, "Unexpected alert on browser resize"
