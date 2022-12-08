@@ -2598,7 +2598,7 @@ def get_additional_data(browser):
     #         break
     original_url = browser.current_url
     if not additional_data:
-        browser.get('view-source:'+ browser.current_url +'?__a=1&__d=dis')
+        browser.get("view-source:" + browser.current_url + "?__a=1&__d=dis")
         text = browser.find_element(By.TAG_NAME, "pre").text
         additional_data = json.loads(re.search("{.*}", text).group())
         browser.get(original_url)
@@ -2615,7 +2615,7 @@ def get_shared_data(browser):
     :return shared_data: Json data from window._sharedData extracted from page source
     """
     shared_data = None
-    browser.get('view-source:'+ browser.current_url +'?__a=1&__d=dis')
+    browser.get("view-source:" + browser.current_url + "?__a=1&__d=dis")
     text = browser.find_element(By.TAG_NAME, "pre").text
     shared_data = json.loads(re.search("{.*}", text).group())
 
