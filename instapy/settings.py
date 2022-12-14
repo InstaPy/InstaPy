@@ -23,8 +23,7 @@ def localize_path(*args):
     """Join given locations as an OS path"""
 
     if WORKSPACE["path"]:
-        path = join_path(WORKSPACE["path"], *args)
-        return path
+        return join_path(WORKSPACE["path"], *args)
 
     else:
         return None

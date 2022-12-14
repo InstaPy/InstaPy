@@ -180,6 +180,4 @@ def add_profile(conn, cursor, name):
 
 def select_profile_by_username(cursor, name):
     cursor.execute(SELECT_FROM_PROFILE_WHERE_NAME, {"name": name})
-    profile = cursor.fetchone()
-
-    return profile
+    return cursor.fetchone()
