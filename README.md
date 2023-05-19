@@ -38,14 +38,14 @@ Implemented in Python using the Selenium module.<p>
 **Table of contents**
 - [How to install and run InstaPy](/docs/home.md#installation)
   * [Installing InstaPy](/docs/home.md#installation)
-  * [Running Instapy](/docs/home.md#running-instapy)
+  * [Running InstaPy](/docs/home.md#running-instapy)
   * [Updating InstaPy](/docs/home.md#updating-instapy)
   * [Guides and tutorials](/docs/home.md#guides)
     * [Video tutorials](/docs/home.md#video-tutorials)
     * [Written guides](/docs/home.md#written-guides)
 - [Externals and additionals tools](/docs/home.md#external-tools)
 - [Running InstaPy on Docker](/docs/home.md#docker)
-- [Documentation of all Instapy's features](/docs/settings.md)
+- [Documentation of all InstaPy's features](/docs/settings.md)
 - [Support](/docs/home.md#support)
 - [Credits](/docs/home.md#credits)
 
