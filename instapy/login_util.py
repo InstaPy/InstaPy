@@ -7,25 +7,17 @@ import random
 import socket
 
 # import exceptions
-from selenium.common.exceptions import (
-    MoveTargetOutOfBoundsException,
-    NoSuchElementException,
-    WebDriverException,
-)
+from selenium.common.exceptions import (MoveTargetOutOfBoundsException,
+                                        NoSuchElementException,
+                                        WebDriverException)
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 
 # import InstaPy modules
 from .time_util import sleep
-from .util import (
-    check_authorization,
-    click_element,
-    explicit_wait,
-    reload_webpage,
-    update_activity,
-    web_address_navigator,
-)
+from .util import (check_authorization, click_element, explicit_wait,
+                   reload_webpage, update_activity, web_address_navigator)
 from .xpath import read_xpath
 
 
@@ -172,8 +164,9 @@ def check_browser(browser, logfolder, logger, proxy_address):
     # check connection status
     try:
         logger.info("-- Connection Checklist [1/2] (Internet Connection Status)")
-        browser.get("view-source:https://freegeoip.app/json")
+        browser.get("view-source:http://ip-api.com/json")
         pre = browser.find_element(By.TAG_NAME, "pre").text
+        pre = pre.replace("query", "ip")
         current_ip_info = json.loads(pre)
         if (
             proxy_address is not None
@@ -193,8 +186,8 @@ def check_browser(browser, logfolder, logger, proxy_address):
             logger.info(
                 '- Current IP is "{}" and it\'s from "{}/{}"'.format(
                     current_ip_info["ip"],
-                    current_ip_info["country_name"],
-                    current_ip_info["country_code"],
+                    current_ip_info["country"],
+                    current_ip_info["countryCode"],
                 )
             )
             update_activity(
