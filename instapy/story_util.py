@@ -58,7 +58,7 @@ def get_story_data(browser, elem, action_type, logger, simulate=False):
                 )
                 return {"status": "not_ok", "reels_cnt": 0}
     else:
-        reel_id = "tag:{}".format(elem)
+        reel_id = f"tag:{elem}"
 
     graphql_query_url = (
         "https://www.instagram.com/graphql/query/?query_hash={}"
@@ -84,7 +84,7 @@ def get_story_data(browser, elem, action_type, logger, simulate=False):
         }
         if cookie["name"] == "csrftoken":
             csrftoken = cookie["value"]
-        if not (cookie["name"] == "urlgen") and not (cookie["name"] == "rur"):
+        if not cookie["name"] == "urlgen" and not cookie["name"] == "rur":
             all_args["expires"] = cookie["expiry"]
 
         session.cookies.set(**all_args)
@@ -140,7 +140,7 @@ def get_story_data(browser, elem, action_type, logger, simulate=False):
                             },
                             headers=headers,
                         )
-                        logger.info("  --> simulated watch reel # {}".format(index))
+                        logger.info(f"  --> simulated watch reel # {index}")
                         update_activity()
                         index += 1
                         time.sleep(randint(3, 6))
@@ -149,7 +149,7 @@ def get_story_data(browser, elem, action_type, logger, simulate=False):
                 story_elem = browser.find_element(
                     By.XPATH,
                     read_xpath(
-                        watch_story.__name__ + "_for_{}".format(action_type),
+                        watch_story.__name__ + f"_for_{action_type}",
                         "explore_stories",
                     ),
                 )
@@ -196,10 +196,10 @@ def watch_story(browser, elem, logger, action_type, simulate=False):
     elem = elem.lower()
 
     if action_type == "tag":
-        story_link = "https://www.instagram.com/explore/tags/{}".format(elem)
+        story_link = f"https://www.instagram.com/explore/tags/{elem}"
 
     else:
-        story_link = "https://www.instagram.com/{}".format(elem)
+        story_link = f"https://www.instagram.com/{elem}"
 
     web_address_navigator(browser, story_link)
     # wait for the page to load

@@ -139,7 +139,7 @@ def comment_image(browser, username, comments, blacklist, logger, logfolder):
     except WebDriverException as ex:
         logger.error(ex)
 
-    logger.info("--> Commented: {}".format(rand_comment.encode("utf-8")))
+    logger.info(f"--> Commented: {rand_comment.encode('utf-8')}")
     Event().commented(username)
 
     # get the post-comment delay time to sleep
@@ -157,12 +157,12 @@ def verify_commenting(browser, maximum, minimum, logger):
 
     commenting_state, msg = is_commenting_enabled(browser, logger)
     if commenting_state is not True:
-        disapproval_reason = "--> Not commenting! {}".format(msg)
+        disapproval_reason = f"--> Not commenting! {msg}"
         return False, disapproval_reason
 
     comments_count, msg = get_comments_count(browser, logger)
     if comments_count is None:
-        disapproval_reason = "--> Not commenting! {}".format(msg)
+        disapproval_reason = f"--> Not commenting! {msg}"
         return False, disapproval_reason
 
     if maximum is not None and comments_count > maximum:
@@ -325,9 +325,7 @@ def get_comments_on_post(
             random.shuffle(comment_data)
 
         logger.info(
-            "Grabbed only {} usable comment(s) from this post...".format(
-                len(comment_data)
-            )
+            f"Grabbed only {len(comment_data)} usable comment(s) from this post..."
         )
 
         return comment_data
@@ -370,9 +368,7 @@ def verify_commented_image(browser, link, owner, logger):
 
             if commenter and commenter == owner:
                 message = (
-                    "--> The post has already been commented on before: '{}'".format(
-                        comment
-                    )
+                    f"--> The post has already been commented on before: '{comment}'"
                 )
                 return True, message
 
@@ -464,7 +460,7 @@ def process_comments(
         )
 
         # Return to the target uset page
-        user_link = "https://www.instagram.com/{}/".format(user_name)
+        user_link = f"https://www.instagram.com/{user_name}/"
         web_address_navigator(browser, user_link)
 
         return comment_state

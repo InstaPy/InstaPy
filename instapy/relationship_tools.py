@@ -49,20 +49,16 @@ def get_followers(
     if username not in relationship_data:
         relationship_data.update({username: {"all_following": [], "all_followers": []}})
 
-    grab_info = (
-        'at "full" range' if grab == "full" else "at the range of {}".format(grab)
-    )
+    grab_info = 'at "full" range' if grab == "full" else f"at the range of {grab}"
     tense = (
         "live"
         if (live_match is True or not relationship_data[username]["all_followers"])
         else "fresh"
     )
 
-    logger.info(
-        "Retrieving {} `Followers` data of {} {}".format(tense, username, grab_info)
-    )
+    logger.info(f"Retrieving {tense} `Followers` data of {username} {grab_info}")
 
-    user_link = "https://www.instagram.com/{}/".format(username)
+    user_link = f"https://www.instagram.com/{username}/"
     web_address_navigator(browser, user_link)
 
     # Get followers count
@@ -135,12 +131,12 @@ def get_followers(
         graphql_queries = None
         query_date = None
 
-        url = "{}&variables={}".format(graphql_followers, str(json.dumps(variables)))
+        url = f"{graphql_followers}&variables={str(json.dumps(variables))}"
         web_address_navigator(browser, url)
 
         # Get stored graphql queries data to be used
         try:
-            filename = "{}graphql_queries.json".format(logfolder)
+            filename = f"{logfolder}graphql_queries.json"
             query_date = datetime.today().strftime("%d-%m-%Y")
 
             if not os.path.isfile(filename):
@@ -216,7 +212,7 @@ def get_followers(
                 else (diff_time, "seconds")
             )
             diff_n = truncate_float(diff_n, 2)
-            passed_time = "{} {}".format(diff_n, diff_s)
+            passed_time = f"{diff_n} {diff_s}"
 
             if match is not None:
                 matched_followers = len(set(all_followers)) - len(
@@ -249,9 +245,7 @@ def get_followers(
             if has_next_data:
                 variables["after"] = page_info["end_cursor"]
 
-                url = "{}&variables={}".format(
-                    graphql_followers, str(json.dumps(variables))
-                )
+                url = f"{graphql_followers}&variables={str(json.dumps(variables))}"
 
                 web_address_navigator(browser, url)
                 sc_rolled += 1
@@ -278,18 +272,14 @@ def get_followers(
                     sc_rolled = 0
 
     except BaseException as exc:
-        logger.info(
-            "Unable to get `Followers` data:\n\t{}\n".format(str(exc).encode("utf-8"))
-        )
+        logger.info(f"Unable to get `Followers` data:\n\t{str(exc).encode('utf-8')}\n")
 
     # remove possible duplicates
     all_followers = sorted(set(all_followers), key=lambda x: all_followers.index(x))
 
     if grab_notifier is False:
         logger.info(
-            "Grabbed {} usernames from `Followers` in {}".format(
-                len(all_followers), passed_time
-            )
+            f"Grabbed {len(all_followers)} usernames from `Followers` in {passed_time}"
         )
 
     if len(all_followers) > 0:
@@ -314,9 +304,7 @@ def get_followers(
     )
     sleep_n = truncate_float(sleep_n, 4)
 
-    logger.info(
-        "Zz :[ time to take a good nap  ~sleeping {} {}".format(sleep_n, sleep_s)
-    )
+    logger.info(f"Zz :[ time to take a good nap  ~sleeping {sleep_n} {sleep_s}")
     sleep(sleep_t)
     logger.info("Yawn :] let's go!\n")
 
@@ -343,20 +331,16 @@ def get_following(
     if username not in relationship_data:
         relationship_data.update({username: {"all_following": [], "all_followers": []}})
 
-    grab_info = (
-        'at "full" range' if grab == "full" else "at the range of {}".format(grab)
-    )
+    grab_info = 'at "full" range' if grab == "full" else f"at the range of {grab}"
     tense = (
         "live"
         if (live_match is True or not relationship_data[username]["all_following"])
         else "fresh"
     )
 
-    logger.info(
-        "Retrieving {} `Following` data of {} {}".format(tense, username, grab_info)
-    )
+    logger.info(f"Retrieving {tense} `Following` data of {username} {grab_info}")
 
-    user_link = "https://www.instagram.com/{}/".format(username)
+    user_link = f"https://www.instagram.com/{username}/"
     web_address_navigator(browser, user_link)
 
     # Get following count
@@ -436,12 +420,12 @@ def get_following(
         graphql_queries = None
         has_next_data = True
 
-        url = "{}&variables={}".format(graphql_following, str(json.dumps(variables)))
+        url = f"{graphql_following}&variables={str(json.dumps(variables))}"
         web_address_navigator(browser, url)
 
         # Get stored graphql queries data to be used
         try:
-            filename = "{}graphql_queries.json".format(logfolder)
+            filename = f"{logfolder}graphql_queries.json"
             query_date = datetime.today().strftime("%d-%m-%Y")
             if not os.path.isfile(filename):
                 with interruption_handler():
@@ -509,7 +493,7 @@ def get_following(
                 else (diff_time, "seconds")
             )
             diff_n = truncate_float(diff_n, 2)
-            passed_time = "{} {}".format(diff_n, diff_s)
+            passed_time = f"{diff_n} {diff_s}"
 
             if match is not None:
                 matched_following = len(set(all_following)) - len(
@@ -542,9 +526,7 @@ def get_following(
             if has_next_data:
                 variables["after"] = page_info["end_cursor"]
 
-                url = "{}&variables={}".format(
-                    graphql_following, str(json.dumps(variables))
-                )
+                url = f"{graphql_following}&variables={str(json.dumps(variables))}"
 
                 web_address_navigator(browser, url)
                 sc_rolled += 1
@@ -571,18 +553,14 @@ def get_following(
                     sc_rolled = 0
 
     except BaseException as exc:
-        logger.info(
-            "Unable to get `Following` data:\n\t{}\n".format(str(exc).encode("utf-8"))
-        )
+        logger.info(f"Unable to get `Following` data:\n\t{str(exc).encode('utf-8')}\n")
 
     # remove possible duplicates
     all_following = sorted(set(all_following), key=lambda x: all_following.index(x))
 
     if grab_notifier is False:
         logger.info(
-            "Grabbed {} usernames from `Following` in {}".format(
-                len(all_following), passed_time
-            )
+            f"Grabbed {len(all_following)} usernames from `Following` in {passed_time}"
         )
 
     if len(all_following) > 0:
@@ -607,9 +585,7 @@ def get_following(
     )
     sleep_n = truncate_float(sleep_n, 4)
 
-    logger.info(
-        "Zz :[ time to take a good nap  ~sleeping {} {}".format(sleep_n, sleep_s)
-    )
+    logger.info(f"Zz :[ time to take a good nap  ~sleeping {sleep_n} {sleep_s}")
     sleep(sleep_t)
     logger.info("Yawn :] let's go!\n")
 
@@ -720,9 +696,7 @@ def get_unfollowers(
                 )
             )
     else:
-        logger.info(
-            "Yay! You have no any Unfollowers from {}!  ^v^".format(selected_filename)
-        )
+        logger.info(f"Yay! You have no any Unfollowers from {selected_filename}!  ^v^")
         return [], []
 
     return all_unfollowers, active_unfollowers
@@ -948,12 +922,10 @@ def store_followers_data(username, grab, grabbed_followers, logger, logfolder):
     """Store grabbed `Followers` data in a local storage at generated date"""
     query_date = datetime.today().strftime("%d-%m-%Y")
     grabbed_followers_size = len(grabbed_followers)
-    file_directory = "{}/relationship_data/{}/followers/".format(logfolder, username)
-    file_name = "{}{}~{}~{}".format(
-        file_directory, query_date, grab, grabbed_followers_size
-    )
+    file_directory = f"{logfolder}/relationship_data/{username}/followers/"
+    file_name = f"{file_directory}{query_date}~{grab}~{grabbed_followers_size}"
     file_index = 0
-    final_file = "{}.json".format(file_name)
+    final_file = f"{file_name}.json"
 
     try:
         if not os.path.exists(file_directory):
@@ -961,12 +933,12 @@ def store_followers_data(username, grab, grabbed_followers, logger, logfolder):
         # this loop provides unique data files
         while os.path.isfile(final_file):
             file_index += 1
-            final_file = "{}({}).json".format(file_name, file_index)
+            final_file = f"{file_name}({file_index}).json"
 
         with open(final_file, "w") as followers_data:
             with interruption_handler():
                 json.dump(grabbed_followers, followers_data)
-        logger.info("Stored `Followers` data at {} local file".format(final_file))
+        logger.info(f"Stored `Followers` data at {final_file} local file")
 
     except Exception as exc:
         logger.info(
@@ -980,12 +952,10 @@ def store_following_data(username, grab, grabbed_following, logger, logfolder):
     """Store grabbed `Following` data in a local storage at generated date"""
     query_date = datetime.today().strftime("%d-%m-%Y")
     grabbed_following_size = len(grabbed_following)
-    file_directory = "{}/relationship_data/{}/following/".format(logfolder, username)
-    file_name = "{}{}~{}~{}".format(
-        file_directory, query_date, grab, grabbed_following_size
-    )
+    file_directory = f"{logfolder}/relationship_data/{username}/following/"
+    file_name = f"{file_directory}{query_date}~{grab}~{grabbed_following_size}"
     file_index = 0
-    final_file = "{}.json".format(file_name)
+    final_file = f"{file_name}.json"
 
     try:
         if not os.path.exists(file_directory):
@@ -993,12 +963,12 @@ def store_following_data(username, grab, grabbed_following, logger, logfolder):
         # this loop provides unique data files
         while os.path.isfile(final_file):
             file_index += 1
-            final_file = "{}({}).json".format(file_name, file_index)
+            final_file = f"{file_name}({file_index}).json"
 
         with open(final_file, "w") as following_data:
             with interruption_handler():
                 json.dump(grabbed_following, following_data)
-        logger.info("Stored `Following` data at {} local file".format(final_file))
+        logger.info(f"Stored `Following` data at {final_file} local file")
 
     except Exception as exc:
         logger.info(
@@ -1015,11 +985,9 @@ def store_all_unfollowers(username, all_unfollowers, logger, logfolder):
     file_directory = "{}/relationship_data/{}/unfollowers/all_unfollowers/".format(
         logfolder, username
     )
-    file_name = "{}{}~all~{}".format(
-        file_directory, generation_date, all_unfollowers_size
-    )
+    file_name = f"{file_directory}{generation_date}~all~{all_unfollowers_size}"
     file_index = 0
-    final_file = "{}.json".format(file_name)
+    final_file = f"{file_name}.json"
 
     try:
         if not os.path.exists(file_directory):
@@ -1027,12 +995,12 @@ def store_all_unfollowers(username, all_unfollowers, logger, logfolder):
         # this loop provides unique data files
         while os.path.isfile(final_file):
             file_index += 1
-            final_file = "{}({}).json".format(file_name, file_index)
+            final_file = f"{file_name}({file_index}).json"
 
         with open(final_file, "w") as unfollowers_data:
             with interruption_handler():
                 json.dump(all_unfollowers, unfollowers_data)
-        logger.info("Stored all Unfollowers data at {} local file\n".format(final_file))
+        logger.info(f"Stored all Unfollowers data at {final_file} local file\n")
 
     except Exception as exc:
         logger.info(
@@ -1046,14 +1014,11 @@ def store_active_unfollowers(username, active_unfollowers, logger, logfolder):
     generation_date = datetime.today().strftime("%d-%m-%Y")
     active_unfollowers_size = len(active_unfollowers)
     file_directory = (
-        "{}/relationship_data/{}"
-        "/unfollowers/active_unfollowers/".format(logfolder, username)
+        f"{logfolder}/relationship_data/{username}/unfollowers/active_unfollowers/"
     )
-    file_name = "{}{}~active~{}".format(
-        file_directory, generation_date, active_unfollowers_size
-    )
+    file_name = f"{file_directory}{generation_date}~active~{active_unfollowers_size}"
     file_index = 0
-    final_file = "{}.json".format(file_name)
+    final_file = f"{file_name}.json"
 
     try:
         if not os.path.exists(file_directory):
@@ -1061,14 +1026,12 @@ def store_active_unfollowers(username, active_unfollowers, logger, logfolder):
         # this loop provides unique data files
         while os.path.isfile(final_file):
             file_index += 1
-            final_file = "{}({}).json".format(file_name, file_index)
+            final_file = f"{file_name}({file_index}).json"
 
         with open(final_file, "w") as active_unfollowers_data:
             with interruption_handler():
                 json.dump(active_unfollowers, active_unfollowers_data)
-        logger.info(
-            "Stored active Unfollowers data at {} local file\n".format(final_file)
-        )
+        logger.info(f"Stored active Unfollowers data at {final_file} local file\n")
 
     except Exception as exc:
         logger.info(
@@ -1083,7 +1046,7 @@ def store_nonfollowers(
     """Store Nonfollowers data in a local storage at generated date"""
     generation_date = datetime.today().strftime("%d-%m-%Y")
     nonfollowers_size = len(nonfollowers)
-    file_directory = "{}/relationship_data/{}/nonfollowers/".format(logfolder, username)
+    file_directory = f"{logfolder}/relationship_data/{username}/nonfollowers/"
     file_name = "{}{}~[{}-{}]~{}".format(
         file_directory,
         generation_date,
@@ -1092,7 +1055,7 @@ def store_nonfollowers(
         nonfollowers_size,
     )
     file_index = 0
-    final_file = "{}.json".format(file_name)
+    final_file = f"{file_name}.json"
 
     try:
         if not os.path.exists(file_directory):
@@ -1100,12 +1063,12 @@ def store_nonfollowers(
         # this loop provides unique data files
         while os.path.isfile(final_file):
             file_index += 1
-            final_file = "{}({}).json".format(file_name, file_index)
+            final_file = f"{file_name}({file_index}).json"
 
         with open(final_file, "w") as nonfollowers_data:
             with interruption_handler():
                 json.dump(nonfollowers, nonfollowers_data)
-        logger.info("Stored Nonfollowers data at {} local file\n".format(final_file))
+        logger.info(f"Stored Nonfollowers data at {final_file} local file\n")
 
     except Exception as exc:
         logger.info(
@@ -1119,13 +1082,13 @@ def store_fans(username, followers_size, following_size, fans, logger, logfolder
     generation_date = datetime.today().strftime("%d-%m-%Y")
     fans_size = len(fans)
 
-    file_directory = "{}/relationship_data/{}/fans/".format(logfolder, username)
+    file_directory = f"{logfolder}/relationship_data/{username}/fans/"
     file_name = "{}{}~[{}-{}]~{}".format(
         file_directory, generation_date, followers_size, following_size, fans_size
     )
 
     file_index = 0
-    final_file = "{}.json".format(file_name)
+    final_file = f"{file_name}.json"
 
     try:
         if not os.path.exists(file_directory):
@@ -1133,12 +1096,12 @@ def store_fans(username, followers_size, following_size, fans, logger, logfolder
         # this loop provides unique data files
         while os.path.isfile(final_file):
             file_index += 1
-            final_file = "{}({}).json".format(file_name, file_index)
+            final_file = f"{file_name}({file_index}).json"
 
         with open(final_file, "w") as fans_data:
             with interruption_handler():
                 json.dump(fans, fans_data)
-        logger.info("Stored Fans data at {} local file\n".format(final_file))
+        logger.info(f"Stored Fans data at {final_file} local file\n")
 
     except Exception as exc:
         logger.info(
@@ -1155,9 +1118,7 @@ def store_mutual_following(
     generation_date = datetime.today().strftime("%d-%m-%Y")
     mutual_following_size = len(mutual_following)
 
-    file_directory = "{}/relationship_data/{}/mutual_following/".format(
-        logfolder, username
-    )
+    file_directory = f"{logfolder}/relationship_data/{username}/mutual_following/"
     file_name = "{}{}~[{}-{}]~{}".format(
         file_directory,
         generation_date,
@@ -1167,7 +1128,7 @@ def store_mutual_following(
     )
 
     file_index = 0
-    final_file = "{}.json".format(file_name)
+    final_file = f"{file_name}.json"
 
     try:
         if not os.path.exists(file_directory):
@@ -1175,14 +1136,12 @@ def store_mutual_following(
         # this loop provides unique data files
         while os.path.isfile(final_file):
             file_index += 1
-            final_file = "{}({}).json".format(file_name, file_index)
+            final_file = f"{file_name}({file_index}).json"
 
         with open(final_file, "w") as mutual_following_data:
             with interruption_handler():
                 json.dump(mutual_following, mutual_following_data)
-        logger.info(
-            "Stored Mutual Following data at {} local file\n".format(final_file)
-        )
+        logger.info(f"Stored Mutual Following data at {final_file} local file\n")
 
     except Exception as exc:
         logger.info(
@@ -1201,10 +1160,9 @@ def load_followers_data(username, compare_by, compare_track, logger, logfolder):
 
     # get the list of all existing FULL `Followers` data files in
     # ~/logfolder/username/followers/ location
-    files_location = "{}/relationship_data/{}/followers".format(logfolder, username)
+    files_location = f"{logfolder}/relationship_data/{username}/followers"
     followers_data_files = [
-        os.path.basename(file)
-        for file in glob.glob("{}/*~full*.json".format(files_location))
+        os.path.basename(file) for file in glob.glob(f"{files_location}/*~full*.json")
     ]
 
     # check if there is any file to be compared
@@ -1335,9 +1293,7 @@ def load_followers_data(username, compare_by, compare_track, logger, logfolder):
         selected_filename = sorted_filenames[0]
 
     # load that file
-    selected_file = (
-        glob.glob("{}/{}~full*.json".format(files_location, selected_filename))
-    )[0]
+    selected_file = (glob.glob(f"{files_location}/{selected_filename}~full*.json"))[0]
     with open(selected_file) as followers_data_file:
         followers_data = json.load(followers_data_file)
 

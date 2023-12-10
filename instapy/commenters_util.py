@@ -90,7 +90,7 @@ def extract_post_info(browser, logger):
             user_commented = (
                 comm.find_element(By.TAG_NAME, "a").get_attribute("href").split("/")
             )
-            logger.info("Found commenter: {}".format(user_commented[3]))
+            logger.info(f"Found commenter: {user_commented[3]}")
             user_commented_list.append(user_commented[3])
 
     except Exception as e:
@@ -220,7 +220,7 @@ def extract_information(browser, username, daysold, max_pic, logger):
                     )
                     click_element(browser, close_overlay)
 
-                    logger.info("Date of this picture was: {}".format(date_of_pic))
+                    logger.info(f"Date of this picture was: {date_of_pic}")
 
                     if date_of_pic < pastdate:
                         logger.info("Finished scrolling, too old photos...")
@@ -252,9 +252,9 @@ def extract_information(browser, username, daysold, max_pic, logger):
         if max_pic <= 0:
             break
         max_pic -= 1
-        logger.info("{} of max {} --- {} to go.".format(counter, len(links4), max_pic))
+        logger.info(f"{counter} of max {len(links4)} --- {max_pic} to go.")
         counter = counter + 1
-        logger.info("Scrapping link: {}".format(link))
+        logger.info(f"Scrapping link: {link}")
 
         try:
             web_address_navigator(browser, link)
@@ -264,7 +264,7 @@ def extract_information(browser, username, daysold, max_pic, logger):
             # stop if date older than daysago
             pastdate = datetime.now() - timedelta(days=daysold)
             date_of_pic = datetime.strptime(pic_date_time, "%Y-%m-%dT%H:%M:%S.%fZ")
-            logger.info("Date of pic: {}".format(date_of_pic))
+            logger.info(f"Date of pic: {date_of_pic}")
 
             if date_of_pic > pastdate:
                 logger.info("Recent pic, continue...")
@@ -316,9 +316,7 @@ def users_liked(browser, photo_url, amount=100, logger=None):
         sleep(2)
     except NoSuchElementException:
         logger.info(
-            "Could not get information from post: {} nothing to return".format(
-                photo_url
-            )
+            f"Could not get information from post: {photo_url} nothing to return"
         )
 
     return photo_likers
@@ -431,7 +429,7 @@ def likers_from_photo(browser, amount=20, logger=None):
         return user_list
 
     except Exception as exc:
-        logger.warning("Some problem occurred! \n\t{}".format(str(exc).encode("utf-8")))
+        logger.warning(f"Some problem occurred! \n\t{str(exc).encode('utf-8')}")
         return []
 
 
@@ -441,7 +439,7 @@ def get_photo_urls_from_profile(
     # try:
     # input can be both username or user profile url
     username = username_url_to_username(username)
-    logger.info("Getting likers from user: {}".format(username))
+    logger.info(f"Getting likers from user: {username}")
 
     web_address_navigator(browser, "https://www.instagram.com/" + username + "/")
     sleep(1)

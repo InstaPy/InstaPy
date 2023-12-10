@@ -1,10 +1,7 @@
 """ Quickstart script for InstaPy usage """
 
 # imports
-from instapy import InstaPy
-from instapy import smart_run
-from instapy import set_workspace
-
+from instapy import InstaPy, set_workspace, smart_run
 
 # set workspace folder at desired location (default is at your home folder)
 set_workspace(path=None)
