@@ -16,10 +16,8 @@ from math import ceil
 from platform import python_version
 from sys import platform
 
-import requests
-from selenium import webdriver
-from selenium.webdriver import DesiredCapabilities
-from selenium.webdriver.common.by import By
+
+
 
 try:
     from pyvirtualdisplay import Display
@@ -27,7 +25,7 @@ except ModuleNotFoundError:
     pass
 
 # import exceptions
-from selenium.common.exceptions import NoSuchElementException
+
 
 # import InstaPy modules
 from . import __version__
