@@ -210,4 +210,4 @@ xpath["likers_from_photo"] = {
     "second_counter_button": "//a[contains(@href,'liked_by')]",
 }
 
-xpath["accept_igcookie_dialogue"] = {"accept_button": "//button[text()='Accept']"}
+xpath["accept_igcookie_dialogue"] = {"accept_button": "//button[text()='Accept All']"}
