@@ -1,3 +1,5 @@
+**Unfortunately, this project is no longer under active maintenance and is not in working condition since Instagram API went through significant changes.**
+
 <p align="center">
   <img src="https://i.imgur.com/sJzfZsL.jpg" width="154">
   <h1 align="center">InstaPy</h1>
