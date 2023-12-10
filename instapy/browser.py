@@ -9,6 +9,7 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.firefox.options import Options as Firefox_Options
 from selenium.webdriver import Remote
 from webdriverdownloader import GeckoDriverDownloader
+from selenium.webdriver.firefox.service import Service as FirefoxService
 
 # import InstaPy modules
 from .util import interruption_handler
@@ -112,18 +113,18 @@ def set_selenium_local_session(
     # prevent Hide Selenium Extension: error
     firefox_profile.set_preference("dom.webdriver.enabled", False)
     firefox_profile.set_preference("useAutomationExtension", False)
-    firefox_profile.set_preference("general.platform.override", "iPhone")
-    firefox_profile.update_preferences()
-
+    firefox_profile.set_preference("general.platform.override", "iPhone")    
+    firefox_options.profile = firefox_profile
+    
     # geckodriver log in specific user logfolder
     geckodriver_log = "{}geckodriver.log".format(logfolder)
 
     # prefer user path before downloaded one
     driver_path = geckodriver_path or get_geckodriver()
+    ser = FirefoxService(executable_path=driver_path, log_path=geckodriver_log)
     browser = webdriver.Firefox(
-        firefox_profile=firefox_profile,
-        executable_path=driver_path,
-        log_path=geckodriver_log,
+        # firefox_profile=firefox_profile,
+        service=ser,
         options=firefox_options,
     )
 
