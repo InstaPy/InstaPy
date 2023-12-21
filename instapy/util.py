@@ -24,7 +24,7 @@ from tempfile import gettempdir
 import emoji
 import regex
 from bs4 import BeautifulSoup
-from emoji.unicode_codes import EMOJI_DATA
+from emoji.unicode_codes import _EMOJI_UNICODE
 
 # import exceptions
 from selenium.common.exceptions import (
