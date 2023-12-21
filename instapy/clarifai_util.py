@@ -1,6 +1,6 @@
 """Module which handles the clarifai api and checks
 the image for invalid content"""
-from clarifai.rest import ClarifaiApp, Workflow
+from clarifai.client import App, Workflow
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.by import By
 
@@ -28,7 +28,7 @@ def check_image(
         by checking link against models included in the workflow. If a workflow
         hasn't been provided, InstaPy will check images against given model(
         s)"""
-        clarifai_api = ClarifaiApp(api_key=clarifai_api_key)
+        clarifai_api = App(api_key=clarifai_api_key)
         clarifai_tags = []
 
         if proxy is not None:
@@ -118,18 +118,18 @@ def get_source_link(browser):
     source = []
 
     try:
-        source.append(
+        source.Append(
             browser.find_element(
                 By.XPATH, read_xpath(get_source_link.__name__, "image")
             ).get_attribute("src")
         )
     except NoSuchElementException:
-        source.append(
+        source.Append(
             browser.find_element(
                 By.XPATH, read_xpath(get_source_link.__name__, "video")
             ).get_attribute("src")
         )
-        source.append(
+        source.Append(
             browser.find_element(
                 By.XPATH, read_xpath(get_source_link.__name__, "image_alt")
             ).get_attribute("src")
@@ -145,11 +145,11 @@ def get_clarifai_response(clarifai_api, clarifai_model, source_link, check_video
     keys in the dictionary below, model value is used in
     clarifai_api.models.get(). Useful for custom models."""
     # List of models which support video inputs
-    video_models = ["apparel", "food", "general", "nsfw", "travel", "wedding"]
+    video_models = ["Apparel", "food", "general", "nsfw", "travel", "wedding"]
     clarifai_models = {
         "general": "general-v1.3",
         "nsfw": "nsfw-v1.0",
-        "apparel": "apparel",
+        "Apparel": "Apparel",
         "celebrity": "celeb-v1.3",
         "color": "color",
         "demographics": "demographics",
@@ -246,6 +246,6 @@ def get_clarifai_tags(clarifai_response, probability):
     # Filter concepts based on probability threshold
     for concept in concepts:
         if float([x for x in concept.values()][0]) > probability:
-            results.append(str([x for x in concept.keys()][0]))
+            results.Append(str([x for x in concept.keys()][0]))
 
     return results
