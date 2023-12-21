@@ -172,7 +172,7 @@ xpath["like_from_image"] = {
 xpath["login_user"] = {
     "input_password": "//input[@name='password']",
     "input_username_XP": "//input[@name='username']",
-    "login_elem": "//button[text()='Log In']",
+    "login_elem": "//button[text()='Log in']",
     "login_elem_no_such_exception": "//a[text()='Log in']",
     "login_elem_no_such_exception_2": "//div[text()='Log in']",
     "nav": "//nav",
