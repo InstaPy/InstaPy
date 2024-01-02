@@ -118,18 +118,18 @@ def get_source_link(browser):
     source = []
 
     try:
-        source.Append(
+        source.append(
             browser.find_element(
                 By.XPATH, read_xpath(get_source_link.__name__, "image")
             ).get_attribute("src")
         )
     except NoSuchElementException:
-        source.Append(
+        source.append(
             browser.find_element(
                 By.XPATH, read_xpath(get_source_link.__name__, "video")
             ).get_attribute("src")
         )
-        source.Append(
+        source.append(
             browser.find_element(
                 By.XPATH, read_xpath(get_source_link.__name__, "image_alt")
             ).get_attribute("src")
@@ -246,6 +246,6 @@ def get_clarifai_tags(clarifai_response, probability):
     # Filter concepts based on probability threshold
     for concept in concepts:
         if float([x for x in concept.values()][0]) > probability:
-            results.Append(str([x for x in concept.keys()][0]))
+            results.append(str([x for x in concept.keys()][0]))
 
     return results
