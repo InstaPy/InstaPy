@@ -245,7 +245,7 @@ def login_user(
 
     # Hotfix - this check crashes more often than not -- plus in not necessary,
     # I can verify my own connection
-    #if want_check_browser:
+    # if want_check_browser:
     #    if not check_browser(browser, logfolder, logger, proxy_address):
     #        return False
 
@@ -629,7 +629,6 @@ def two_factor_authentication(browser, logger, security_codes):
     sleep(random.randint(3, 5))
 
     if "two_factor" in browser.current_url:
-
         logger.info("- Two Factor Authentication is enabled...")
 
         # Chose one code from the security_codes list

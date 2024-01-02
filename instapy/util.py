@@ -230,7 +230,6 @@ def validate_username(
         or delimit_by_numbers
         and (max_followers or max_following or min_followers or min_following)
     ):
-
         relationship_ratio = None
         reverse_relationship = False
 
@@ -863,11 +862,9 @@ def get_active_users(browser, username, posts, boundary, logger):
                     and likers_count
                     and likers_count - 1 > len(user_list)
                 ):
-
                     if (
                         boundary is not None and likers_count - 1 > boundary
                     ) or boundary is None:
-
                         if try_again <= 1:  # can increase the amount of tries
                             logger.info(
                                 "Failed to get the desired amount of "
@@ -1620,7 +1617,6 @@ def check_authorization(browser, username, method, logger, notify=True):
 
     # different methods can be added in future
     if method == "activity counts":
-
         # navigate to owner's profile page only if it is on an unusual page
         current_url = get_current_url(browser)
         if (
@@ -2634,7 +2630,7 @@ def get_additional_data(browser):
     #         break
     original_url = browser.current_url
     if not additional_data:
-        browser.get('view-source:'+ browser.current_url +'?__a=1&__d=dis')
+        browser.get("view-source:" + browser.current_url + "?__a=1&__d=dis")
         text = browser.find_element(By.TAG_NAME, "pre").text
         additional_data = json.loads(re.search("{.*}", text).group())
         browser.get(original_url)
@@ -2651,7 +2647,7 @@ def get_shared_data(browser):
     :return shared_data: Json data from window._sharedData extracted from page source
     """
     shared_data = None
-    browser.get('view-source:'+ browser.current_url +'?__a=1&__d=dis')
+    browser.get("view-source:" + browser.current_url + "?__a=1&__d=dis")
     text = browser.find_element(By.TAG_NAME, "pre").text
     shared_data = json.loads(re.search("{.*}", text).group())
 

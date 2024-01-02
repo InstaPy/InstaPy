@@ -616,12 +616,12 @@ def check_link(
                     owner_comments = owner_comments + "\n" + comment["node"]["text"]
 
     else:
-        media = post_page ['items'] [0]
-        is_video = media ["is_unified_video"]
-        user_name = media ["user"] ["username"]
+        media = post_page["items"][0]
+        is_video = media["is_unified_video"]
+        user_name = media["user"]["username"]
         image_text = None
         if media["caption"]:
-            image_text = media ["caption"] ["text"]
+            image_text = media["caption"]["text"]
         # RC: Disabling owner's comments temporarily
         owner_comments = ""
 

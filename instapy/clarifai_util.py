@@ -84,7 +84,7 @@ def check_image(
             )
             return False, [], clarifai_tags
 
-        for (tags, should_comment, comments) in img_tags:
+        for tags, should_comment, comments in img_tags:
             if should_comment and given_tags_in_result(tags, clarifai_tags, full_match):
                 return True, comments, clarifai_tags
             elif given_tags_in_result(tags, clarifai_tags, full_match):
