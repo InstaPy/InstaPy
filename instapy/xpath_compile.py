@@ -160,7 +160,7 @@ xpath["like_comment"] = {
 }
 
 xpath["like_image"] = {
-    "like": "//*[contains(@class, '_aamw')]/button/div/*[*[local-name()='svg']/@aria-label='Like']/*",
+    "like": "//svg[descendant::title[contains(text(), 'Like')]]",
     "unlike": "//*[contains(@class, '_aamw')]/button/div/*[*[local-name()='svg']/@aria-label='Unlike']/*",
     "play": "//*/span[contains(@aria-label, 'Play')]",
 }
