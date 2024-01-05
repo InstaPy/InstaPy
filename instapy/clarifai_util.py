@@ -1,6 +1,6 @@
 """Module which handles the clarifai api and checks
 the image for invalid content"""
-from clarifai.rest import ClarifaiApp, Workflow
+from clarifai.client import App, Workflow
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.by import By
 
@@ -28,7 +28,7 @@ def check_image(
         by checking link against models included in the workflow. If a workflow
         hasn't been provided, InstaPy will check images against given model(
         s)"""
-        clarifai_api = ClarifaiApp(api_key=clarifai_api_key)
+        clarifai_api = App(api_key=clarifai_api_key)
         clarifai_tags = []
 
         if proxy is not None:
@@ -84,7 +84,7 @@ def check_image(
             )
             return False, [], clarifai_tags
 
-        for (tags, should_comment, comments) in img_tags:
+        for tags, should_comment, comments in img_tags:
             if should_comment and given_tags_in_result(tags, clarifai_tags, full_match):
                 return True, comments, clarifai_tags
             elif given_tags_in_result(tags, clarifai_tags, full_match):
@@ -145,11 +145,11 @@ def get_clarifai_response(clarifai_api, clarifai_model, source_link, check_video
     keys in the dictionary below, model value is used in
     clarifai_api.models.get(). Useful for custom models."""
     # List of models which support video inputs
-    video_models = ["apparel", "food", "general", "nsfw", "travel", "wedding"]
+    video_models = ["Apparel", "food", "general", "nsfw", "travel", "wedding"]
     clarifai_models = {
         "general": "general-v1.3",
         "nsfw": "nsfw-v1.0",
-        "apparel": "apparel",
+        "Apparel": "Apparel",
         "celebrity": "celeb-v1.3",
         "color": "color",
         "demographics": "demographics",

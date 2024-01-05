@@ -730,12 +730,14 @@ class InstaPy:
             return
 
         for tag in tags:
-
             # CI Travis alert for Python3.5 and apidisplaypurposes
             from apidisplaypurposes import displaypurposes
 
             myToken = displaypurposes.generate_api_token(tag, Settings.user_agent)
-            head = {"user-agent": displaypurposes.USER_AGENTS["chrome"], "api-token": myToken}
+            head = {
+                "user-agent": displaypurposes.USER_AGENTS["chrome"],
+                "api-token": myToken,
+            }
             req = requests.get(
                 "https://apidisplaypurposes.com/tag/{}".format(tag), headers=head
             )
@@ -1406,7 +1408,6 @@ class InstaPy:
         skip_bio_keyword: list = [],
         mandatory_bio_keywords: list = [],
     ):
-
         self.skip_business = skip_business
         self.skip_private = skip_private
         self.skip_no_profile_pic = skip_no_profile_pic
@@ -1437,7 +1438,6 @@ class InstaPy:
     def set_delimit_liking(
         self, enabled: bool = False, max_likes: int = None, min_likes: int = None
     ):
-
         self.delimit_liking = True if enabled is True else False
         self.max_likes = max_likes
         self.min_likes = min_likes
@@ -1449,7 +1449,6 @@ class InstaPy:
         min_comments: int = None,
         comments_mandatory_words: list = [],
     ):
-
         self.delimit_commenting = True if enabled is True else False
         self.max_comments = max_comments
         self.min_comments = min_comments
@@ -1645,7 +1644,6 @@ class InstaPy:
                                     "read", user_name, self.follow_times, self.logger
                                 )
                             ):
-
                                 follow_state, msg = follow_user(
                                     self.browser,
                                     "post",
@@ -2085,7 +2083,6 @@ class InstaPy:
                                     "read", user_name, self.follow_times, self.logger
                                 )
                             ):
-
                                 follow_state, msg = follow_user(
                                     self.browser,
                                     "post",
@@ -2682,7 +2679,6 @@ class InstaPy:
 
             # follow
             if following and not (self.dont_follow_inap_post and inap_img > 0):
-
                 follow_state, msg = follow_user(
                     self.browser,
                     track,
@@ -2999,7 +2995,6 @@ class InstaPy:
 
             # follow
             if following and not (self.dont_follow_inap_post and inap_img > 0):
-
                 follow_state, msg = follow_user(
                     self.browser,
                     "profile",
@@ -3455,7 +3450,6 @@ class InstaPy:
     def interact_user_following(
         self, usernames: list, amount: int = 10, randomize: bool = False
     ):
-
         if self.aborting:
             return self
 
@@ -4853,7 +4847,6 @@ class InstaPy:
         media: str = None,
         interact: bool = False,
     ):
-
         if self.aborting:
             return self
 
@@ -5873,7 +5866,6 @@ class InstaPy:
 
         accepted = 0
         while accepted < amount:
-
             feed_link = "https://www.instagram.com/accounts/activity/?followRequests=1"
             web_address_navigator(self.browser, feed_link)
 

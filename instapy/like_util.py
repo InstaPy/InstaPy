@@ -616,12 +616,12 @@ def check_link(
                     owner_comments = owner_comments + "\n" + comment["node"]["text"]
 
     else:
-        media = post_page ['items'] [0]
-        is_video = media ["is_unified_video"]
-        user_name = media ["user"] ["username"]
+        media = post_page["items"][0]
+        is_video = media["is_unified_video"]
+        user_name = media["user"]["username"]
         image_text = None
         if media["caption"]:
-            image_text = media ["caption"] ["text"]
+            image_text = media["caption"]["text"]
         # RC: Disabling owner's comments temporarily
         owner_comments = ""
 
@@ -749,7 +749,16 @@ def like_image(browser, username, blacklist, logger, logfolder, total_liked_img)
         browser.execute_script("arguments[0].scrollIntoView(true);", element)
 
     # find first for like element
-    like_elem = browser.find_elements(By.XPATH, like_xpath)
+    like_elem = browser.execute_script("""
+        var svgLikeButton = document.querySelector("svg[aria-label='Like']");
+        if (svgLikeButton) {
+            var clickableParent = svgLikeButton.closest('button, a'); // Find the nearest parent that is a button or link
+            if (clickableParent) {
+                clickableParent.scrollIntoView({behavior: 'smooth', block: 'center'}); // Scroll the button into view
+                clickableParent.click(); // Click the clickable parent element
+            }
+        }
+        """)
 
     if len(like_elem) == 1:
         # sleep real quick right before clicking the element
