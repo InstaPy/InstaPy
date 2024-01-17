@@ -486,7 +486,7 @@ session.interact_by_comments(usernames=["somebody", "other buddy"],
 : Choose if it **should reply** to comments;
 
 `interact`
-: Use if you also like to _interact the commenters_ **after** finishing liking (_and then replying to_) comments on the **post**;
+: Use if you also like to _interact with the commenters_ **after** finishing liking (_and then replying to_) comments on the **post**;
 
 `randomize`
 : Shuffles the **order** of the **_posts_** from users' feed and **_comments_** in the given post;
