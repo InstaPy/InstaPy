@@ -28,6 +28,10 @@ xpath["dismiss_this_was_me"] = {
     "this_was_me_button": "//button[@name='choice'][text()='This Was Me']"
 }
 
+xpath["get_comment_post"] = {
+    "comment_post": "//button[text()='Post']",
+}
+
 xpath["class_selectors"] = {
     "likes_dialog_body_xpath": "//main",
     "likes_dialog_close_xpath": "//*[*[local-name()='svg']/@aria-label='Close']",
