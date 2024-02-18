@@ -173,7 +173,7 @@ xpath["login_user"] = {
     "input_password": "//input[@name='password']",
     "input_username_XP": "//input[@name='username']",
     "login_elem": "//button[text()='Log In']",
-    "login_elem_no_such_exception": "//a[text()='Log in']",
+    "login_elem_no_such_exception": "//*[text()='Log in']",
     "login_elem_no_such_exception_2": "//div[text()='Log In']",
     "nav": "//nav",
     "website_status": "//span[@id='status']",
