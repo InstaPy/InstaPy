@@ -72,7 +72,7 @@ xpath["get_active_users"] = {
     "likers_count": "//section/div/div/a/span",
     "likes_button": "//div[@class='Nm9Fw']/a",
     "next_button": "//a[text()='Next']",
-    "topCount_elements": "//span[contains(@class,'g47SY')]",
+    "topCount_elements": '//main/div/header/section/ul/li[2]/a/span/span',
 }
 
 xpath["get_buttons_from_dialog"] = {
