@@ -72,7 +72,7 @@ xpath["get_active_users"] = {
     "likers_count": "//section/div/div/a/span",
     "likes_button": "//div[@class='Nm9Fw']/a",
     "next_button": "//a[text()='Next']",
-    "topCount_elements": "//span[contains(@class,'g47SY')]",
+    "topCount_elements": '//main/div/header/section/ul/li[2]/a/span/span',
 }
 
 xpath["get_buttons_from_dialog"] = {
@@ -173,7 +173,7 @@ xpath["login_user"] = {
     "input_password": "//input[@name='password']",
     "input_username_XP": "//input[@name='username']",
     "login_elem": "//button[text()='Log In']",
-    "login_elem_no_such_exception": "//a[text()='Log in']",
+    "login_elem_no_such_exception": "//*[text()='Log in']",
     "login_elem_no_such_exception_2": "//div[text()='Log In']",
     "nav": "//nav",
     "website_status": "//span[@id='status']",
