@@ -14,7 +14,7 @@ def create_proxy_extension(proxy):
         {
             "version": "1.0.0",
             "manifest_version": 2,
-            "name": "Chrome Proxy",
+            "name": "Chrome proxy",
             "permissions": [
                 "proxy",
                 "tabs",
