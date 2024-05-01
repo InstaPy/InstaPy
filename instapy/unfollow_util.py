@@ -822,7 +822,8 @@ def get_users_through_dialog_with_graphql(
         random.shuffle(followers_list)
 
     # get real amount
-    followers_list = random.sample(followers_list, real_amount)
+    if len(followers_list) > real_amount:
+        followers_list = random.sample(followers_list, real_amount)
 
     for i, user in enumerate(followers_list):
         logger.info(
