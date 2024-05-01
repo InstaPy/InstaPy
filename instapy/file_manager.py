@@ -46,7 +46,7 @@ def get_workspace():
     return WORKSPACE
 
 
-def set_workspace(path=None):
+def set_workspace(path: object = None) -> object:
     """Set a custom workspace for use"""
 
     if not Settings.InstaPy_is_running:
