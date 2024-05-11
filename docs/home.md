@@ -48,7 +48,13 @@ pip install instapy
 ```
 __Important:__ depending on your system, make sure to use `pip3` and `python3` instead.
 
+## **Prequisites**
+``elm
+pip uninstall emoji
+pip install emoji==1.7
 
+pip uninstall clarifai
+pip install clarifai====2.6.2
 **That's it! 🚀**   
 If you're on Ubuntu, read the specific guide on [Installing on Ubuntu (64-Bit)](https://github.com/InstaPy/instapy-docs/blob/master/How_Tos/How_To_DO_Ubuntu_on_Digital_Ocean.md). If you're on a Raspberry Pi, read the [Installing on RaspberryPi](https://github.com/InstaPy/instapy-docs/blob/master/How_Tos/How_to_Raspberry.md) guide instead.
 
