@@ -1,3 +1,12 @@
+<p><b>After Tim got banned by Meta for creating InstaPy</b> and teaching 100K+ people how to automate social media he's now sharing AI automation experiments, tooling and projects along the way.</p>
+</p>If you’re into AI automation, and outsmarting systems, make sure to follow him!</p>
+
+<a>👉 https://automaition.beehiiv.com/</a>
+
+<br />
+<hr />
+<br />
+
 <p align="center">
   <img src="https://i.imgur.com/sJzfZsL.jpg" width="154">
   <h1 align="center">InstaPy</h1>
