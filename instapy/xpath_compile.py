@@ -160,7 +160,7 @@ xpath["like_comment"] = {
 }
 
 xpath["like_image"] = {
-    "like": "//*[contains(@class, '_aamw')]/button/div/*[*[local-name()='svg']/@aria-label='Like']/*",
+    "like": "//svg[descendant::title[contains(text(), 'Like')]]",
     "unlike": "//*[contains(@class, '_aamw')]/button/div/*[*[local-name()='svg']/@aria-label='Unlike']/*",
     "play": "//*/span[contains(@aria-label, 'Play')]",
 }
@@ -172,9 +172,9 @@ xpath["like_from_image"] = {
 xpath["login_user"] = {
     "input_password": "//input[@name='password']",
     "input_username_XP": "//input[@name='username']",
-    "login_elem": "//button[text()='Log In']",
+    "login_elem": "//button[text()='Log in']",
     "login_elem_no_such_exception": "//a[text()='Log in']",
-    "login_elem_no_such_exception_2": "//div[text()='Log In']",
+    "login_elem_no_such_exception_2": "//div[text()='Log in']",
     "nav": "//nav",
     "website_status": "//span[@id='status']",
     "response_time": "//span[@id='response']",

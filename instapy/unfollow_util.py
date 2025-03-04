@@ -71,7 +71,6 @@ def set_automated_followed_pool(
             reader = csv.reader(followedPoolFile)
 
             for row in reader:
-
                 # init
                 followedback = None
                 user_id = "undefined"  # 'undefined' rather than None is *intentional
@@ -238,7 +237,6 @@ def unfollow(
         or nonFollowers is True
         or allFollowing is True
     ):
-
         if nonFollowers is True:
             InstapyFollowed = False
 
@@ -419,7 +417,6 @@ def unfollow(
 
                     # delay unfollowing of follow-backers
                     if delay_followbackers and unfollow_track != "nonfollowers":
-
                         followedback_status = automatedFollowedPool["all"][person][
                             "followedback"
                         ]
@@ -427,7 +424,6 @@ def unfollow(
                         # now it is time to unfollow since
                         # time filter pass, user is now eligble to unfollow
                         if followedback_status is not True:
-
                             user_link = "https://www.instagram.com/{}/".format(person)
                             web_address_navigator(browser, user_link)
                             valid_page = is_page_available(browser, logger)
@@ -652,7 +648,6 @@ def get_users_through_dialog_with_graphql(
     logfolder,
     edge_followed_by,
 ):
-
     # TODO: simulation implementation
 
     real_amount = amount
@@ -1509,7 +1504,6 @@ def verify_action(
     post_action_text_correct = None
 
     if action in ["follow", "unfollow"]:
-
         # assuming button_change testing is relevant to those actions only
         button_change = False
 
@@ -1522,7 +1516,6 @@ def verify_action(
             post_action_text_fail = ["Following", "Requested", "Message"]
 
         while True:
-
             # count retries at beginning
             retry_count += 1
 

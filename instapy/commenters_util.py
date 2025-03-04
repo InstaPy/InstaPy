@@ -401,7 +401,6 @@ def likers_from_photo(browser, amount=20, logger=None):
             or (len(user_list) != previous_len)
             and (len(user_list) < amount)
         ):
-
             if previous_len + 10 >= amount:
                 logger.info("Scrolling finished...")
                 if amount < 10:
