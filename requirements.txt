@@ -1,10 +1,10 @@
 api-display-purposes>=0.0.3; python_version > '3.5'
 certifi>=2018.10.15
 chardet>=3.0.4,<4
-clarifai>=2.4.1
+clarifai==2.6.2
 configparser>=3.5.0,<4
 EasyProcess>=0.2.3
-emoji>=1.6.0
+emoji==1.7
 future>=0.17.1
 grpcio>=1.16.1
 idna>=2.7,<3
