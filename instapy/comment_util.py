@@ -46,6 +46,15 @@ def get_comment_input(browser):
     return comment_input
 
 
+# get element for post comment button
+def get_comment_post(browser):
+    comment_post = browser.find_elements_by_xpath(
+        read_xpath(get_comment_post.__name__, "comment_post")
+    )
+
+    return comment_post
+
+
 def open_comment_section(browser, logger):
     missing_comment_elem_warning = (
         "--> Comment Button Not Found!"
@@ -81,6 +90,7 @@ def comment_image(browser, username, comments, blacklist, logger, logfolder):
     # wait, to avoid crash
     sleep(3)
     comment_input = get_comment_input(browser)
+    comment_post = get_comment_post(browser)
 
     try:
         if len(comment_input) > 0:
@@ -103,13 +113,22 @@ def comment_image(browser, username, comments, blacklist, logger, logfolder):
             )
             # wait, to avoid crash
             sleep(2)
-            # post comment / <enter>
-            (
-                ActionChains(browser)
-                .move_to_element(comment_input[0])
-                .send_keys(Keys.ENTER)
-                .perform()
-            )
+            # if there is an "@" in the comment, must click the Post button
+            if "@" in comment_to_be_sent:
+                (
+                    ActionChains(browser)
+                    .move_to_element(comment_post[0])
+                    .click()
+                    .perform()
+                )
+            # if there is no "@" in the comment, simply press enter
+            else:
+                (
+                    ActionChains(browser)
+                    .move_to_element(comment_input[0])
+                    .send_keys(Keys.ENTER)
+                    .perform()
+                )
 
             update_activity(
                 browser,
