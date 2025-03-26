@@ -68,7 +68,7 @@ def get_following_status(
                 read_xpath(get_following_status.__name__, "follow_span_XP_following"),
             )
             return "Following", follow_button
-        except:
+        except Exception:
             return "UNAVAILABLE", None
     follow_button = explicit_wait(
         browser, "VOEL", [follow_button_XP, "XPath"], logger, 7, False
@@ -115,5 +115,5 @@ def verify_username_by_id(browser, username, person, person_id, logger, logfolde
             return person_new
 
     # check who call this def, since will receive a None value
-    logger.info("User '{}' doesn't exist in local records".format(person))
+    logger.info(f"User '{person}' doesn't exist in local records")
     return None

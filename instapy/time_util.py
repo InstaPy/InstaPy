@@ -1,8 +1,7 @@
 """Helper module to handle time related stuff"""
-from time import sleep as original_sleep
 from datetime import datetime
-from random import gauss
-from random import uniform
+from random import gauss, uniform
+from time import sleep as original_sleep
 
 # Amount of variance to be introduced
 # i.e. random time will be in the range: TIME +/- STDEV %

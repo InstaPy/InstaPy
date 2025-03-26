@@ -69,9 +69,7 @@ def check_image(
                 clarifai_tags.extend(results)
 
         logger.info(
-            "source_link {} got predicted result(s):\n{}".format(
-                source_link, clarifai_tags
-            )
+            f"source_link {source_link} got predicted result(s):\n{clarifai_tags}"
         )
 
         # Will not comment on an image if any of the tags in
@@ -98,7 +96,7 @@ def check_image(
         return True, [], clarifai_tags
 
     except Exception as err:
-        logger.error("Image check error: {}".format(err))
+        logger.error(f"Image check error: {err}")
 
 
 def given_tags_in_result(search_tags, clarifai_tags, full_match=False):

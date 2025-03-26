@@ -1,10 +1,12 @@
 # import built-in & third-party modules
-import requests
 import sqlite3
+
+import requests
+
+from .database_engine import get_database
 
 # import InstaPy modules
 from .settings import Settings
-from .database_engine import get_database
 
 # import exceptions
 
@@ -29,7 +31,7 @@ def get_recent_posts_from_pods(topic, logger):
     params = {"topic": topic}
     r = requests.get(get_server_endpoint(topic) + "/getRecentPostsV1", params=params)
     try:
-        logger.info("Downloaded postids from Pod {}:".format(topic))
+        logger.info(f"Downloaded postids from Pod {topic}:")
         if r.status_code == 200:
             logger.info(r.json())
             return r.json()
@@ -37,7 +39,7 @@ def get_recent_posts_from_pods(topic, logger):
             logger.error(r.text)
             return []
     except Exception as err:
-        logger.error("Could not get postids from pod {} - {}".format(topic, err))
+        logger.error(f"Could not get postids from pod {topic} - {err}")
         return []
 
 
@@ -57,9 +59,7 @@ def group_posts(posts, logger):
             else:
                 normal_post_ids.append(postobj)
         except Exception as err:
-            logger.error(
-                "Failed with Error {}, please upgrade your instapy".format(err)
-            )
+            logger.error(f"Failed with Error {err}, please upgrade your instapy")
             normal_post_ids.append(postobj)
     return no_comments_post_ids, light_post_ids, normal_post_ids, heavy_post_ids
 
@@ -69,7 +69,7 @@ def share_my_post_with_pods(postid, topic, engagement_mode, logger):
     params = {"postid": postid, "topic": topic, "mode": engagement_mode}
     r = requests.get(get_server_endpoint(topic) + "/publishMyLatestPost", params=params)
     try:
-        logger.info("Publishing to Pods {}".format(postid))
+        logger.info(f"Publishing to Pods {postid}")
         if r.status_code == 200:
             logger.info(r.text)
             return True

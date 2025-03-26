@@ -199,28 +199,25 @@ def validate_username(
         # `username_or_link`, then it is a `username`
 
     if username == own_username:
-        inap_msg = "--> Username '{}' is yours!\t~skipping user\n".format(own_username)
+        inap_msg = f"--> Username '{own_username}' is yours!\t~skipping user\n"
         return False, inap_msg
 
     if username in ignore_users:
-        inap_msg = "--> '{}' is in the `ignore_users` list\t~skipping " "user\n".format(
-            username
-        )
+        inap_msg = f"--> '{username}' is in the `ignore_users` list\t~skipping user\n"
         return False, inap_msg
 
-    blacklist_file = "{}blacklist.csv".format(logfolder)
+    blacklist_file = f"{logfolder}blacklist.csv"
     blacklist_file_exists = os.path.isfile(blacklist_file)
     if blacklist_file_exists:
-        with open("{}blacklist.csv".format(logfolder), "rt") as f:
+        with open(f"{logfolder}blacklist.csv", "rt") as f:
             reader = csv.reader(f, delimiter=",")
             for row in reader:
                 for field in row:
                     if field == username:
-                        logger.info("Username in BlackList: {} ".format(username))
+                        logger.info(f"Username in BlackList: {username} ")
                         return (
                             False,
-                            "--> {} is in blacklist  ~skipping "
-                            "user\n".format(username),
+                            f"--> {username} is in blacklist  ~skipping user\n",
                         )
 
     # Checks the potential of target user by relationship status in order
@@ -331,7 +328,7 @@ def validate_username(
                         return False, inap_msg
 
     if min_posts or max_posts or skip_private or skip_no_profile_pic or skip_business:
-        user_link = "https://www.instagram.com/{}/".format(username)
+        user_link = f"https://www.instagram.com/{username}/"
         web_address_navigator(browser, user_link)
 
     if min_posts or max_posts:
@@ -370,10 +367,8 @@ def validate_username(
             is_private = getUserData("graphql.user.is_private", browser)
 
             if is_private and (random.randint(0, 100) <= skip_private_percentage):
-                return False, "{} is private account, by default skip\n".format(
-                    username
-                )
-        except:
+                return False, f"{username} is private account, by default skip\n"
+        except Exception:
             logger.error("~could not check if profile is public or private")
             return False, "--> Sorry, could not check if profile is public or private\n"
 
@@ -385,11 +380,9 @@ def validate_username(
             if is_public and (random.randint(0, 100) <= skip_public_percentage):
                 return (
                     False,
-                    "{} is public account, skip because of configuration\n".format(
-                        username
-                    ),
+                    f"{username} is public account, skip because of configuration\n",
                 )
-        except:
+        except Exception:
             logger.error("~could not check if profile is public or private")
             return False, "--> Sorry, could not check if profile is public or private\n"
 
@@ -404,7 +397,7 @@ def validate_username(
             profile_pic in default_profile_pic_instagram
             or str(profile_pic).find("11906329_960233084022564_1448528159_a.jpg") > 0
         ) and (random.randint(0, 100) <= skip_no_profile_pic_percentage):
-            return False, "{} has default instagram profile picture\n".format(username)
+            return False, f"{username} has default instagram profile picture\n"
 
     # skip business
     if skip_business or skip_non_business:
@@ -439,7 +432,7 @@ def validate_username(
                     if len(dont_skip_business_categories) == 0 and (
                         random.randint(0, 100) <= skip_business_percentage
                     ):
-                        return False, "'{}' has a business account\n".format(username)
+                        return False, f"'{username}' has a business account\n"
                     else:
                         return (
                             False,
@@ -462,14 +455,14 @@ def validate_username(
 
     if len(skip_bio_keyword) > 0 or len(mandatory_bio_keywords) > 0:
         # Navigate to the target user profile to read the Bio
-        user_link = "https://www.instagram.com/{}/".format(username)
+        user_link = f"https://www.instagram.com/{username}/"
         web_address_navigator(browser, user_link)
 
         # if contain stop words then skip
         try:
             profile_bio = getUserData("graphql.user.biography", browser).lower()
         except WebDriverException:
-            logger.error("~cannot read '{}' bio".format(username))
+            logger.error(f"~cannot read '{username}' bio")
             return False, "--> Sorry, couldn't get get user bio account active\n"
         for bio_keyword in skip_bio_keyword:
             if bio_keyword.lower() in profile_bio:
@@ -551,7 +544,7 @@ def update_activity(
     # update state to JSON file
     if state and logfolder and logger:
         try:
-            path = "{}state.json".format(logfolder)
+            path = f"{logfolder}state.json"
             data = {}
             # check if file exists and has content
             if os.path.isfile(path) and os.path.getsize(path) > 0:
@@ -640,12 +633,12 @@ def update_activity(
 
 
 def add_user_to_blacklist(username, campaign, action, logger, logfolder):
-    file_exists = os.path.isfile("{}blacklist.csv".format(logfolder))
+    file_exists = os.path.isfile(f"{logfolder}blacklist.csv")
     fieldnames = ["date", "username", "campaign", "action"]
     today = datetime.date.today().strftime("%m/%d/%y")
 
     try:
-        with open("{}blacklist.csv".format(logfolder), "a+") as blacklist:
+        with open(f"{logfolder}blacklist.csv", "a+") as blacklist:
             writer = csv.DictWriter(blacklist, fieldnames=fieldnames)
             if not file_exists:
                 writer.writeheader()
@@ -658,21 +651,17 @@ def add_user_to_blacklist(username, campaign, action, logger, logfolder):
                 }
             )
     except Exception as err:
-        logger.error(
-            "blacklist dictWrite error \n\t{}".format(str(err).encode("utf-8"))
-        )
+        logger.error(f"blacklist dictWrite error \n\t{str(err).encode('utf-8')}")
 
     logger.info(
-        "--> {} added to blacklist for {} campaign (action: {})".format(
-            username, campaign, action
-        )
+        f"--> {username} added to blacklist for {campaign} campaign (action: {action})"
     )
 
 
 def get_active_users(browser, username, posts, boundary, logger):
     """Returns a list with usernames who liked the latest n posts"""
 
-    user_link = "https://www.instagram.com/{}/".format(username)
+    user_link = f"https://www.instagram.com/{username}/"
 
     # check URL of the webpage, if it already is user's profile page,
     # then do not navigate to it again
@@ -715,15 +704,10 @@ def get_active_users(browser, username, posts, boundary, logger):
         else "~collecting only the visible usernames from posts without scrolling "
         "at the boundary of zero..\n"
         if boundary == 0
-        else "~collecting the usernames from posts with the boundary of {}"
-        "\n".format(boundary)
+        else f"~collecting the usernames from posts with the boundary of {boundary}\n"
     )
     # posts argument is the number of posts to collect usernames
-    logger.info(
-        "Getting active users who liked the latest {} posts:\n {}".format(
-            posts, message
-        )
-    )
+    logger.info(f"Getting active users who liked the latest {posts} posts:\n {message}")
 
     count = 1
     checked_posts = 0
@@ -761,7 +745,7 @@ def get_active_users(browser, username, posts, boundary, logger):
                     )
                     likers_count = None
             except NoSuchElementException:
-                logger.info("Failed to get likers count on your post {}".format(count))
+                logger.info(f"Failed to get likers count on your post {count}")
                 likers_count = None
             try:
                 likes_button = browser.find_elements(
@@ -969,9 +953,7 @@ def delete_line_from_file(filepath, userToDelete, logger):
                 os.remove(file_path_old)
 
             except OSError as e:
-                logger.error(
-                    "Can't remove file_path_old \n\t{}".format(str(e).encode("utf-8"))
-                )
+                logger.error(f"Can't remove file_path_old \n\t{str(e).encode('utf-8')}")
 
         # rename original file to _old
         os.rename(filepath, file_path_old)
@@ -993,9 +975,7 @@ def delete_line_from_file(filepath, userToDelete, logger):
         os.remove(file_path_old)
 
     except BaseException as e:
-        logger.error(
-            "delete_line_from_file error \n\t{}".format(str(e).encode("utf-8"))
-        )
+        logger.error(f"delete_line_from_file error \n\t{str(e).encode('utf-8')}")
 
 
 def scroll_bottom(browser, element, range_int):
@@ -1024,7 +1004,7 @@ def scroll_down(browser, y: int = 50):
     :param y: number of pixels to be moved
     """
 
-    browser.execute_script("window.scrollBy(0, {})".format(y))
+    browser.execute_script(f"window.scrollBy(0, {y})")
     # update server calls
     update_activity(browser, state=None)
     sleep(randint(1, 5))
@@ -1175,7 +1155,7 @@ def get_number_of_posts(browser):
 def get_relationship_counts(browser, username, logger):
     """Gets the followers & following counts of a given user"""
 
-    user_link = "https://www.instagram.com/{}/".format(username)
+    user_link = f"https://www.instagram.com/{username}/"
 
     # check URL of the webpage, if it already is user's profile page,
     # then do not navigate to it again
@@ -1409,7 +1389,7 @@ def highlight_print(
         lower_char = None
 
     if upper_char and (show_logs or priority == "workspace"):
-        print("{}".format(upper_char * int(ceil(output_len / len(upper_char)))))
+        print(f"{upper_char * int(ceil(output_len / len(upper_char)))}")
 
     if level == "info":
         if logger:
@@ -1430,7 +1410,7 @@ def highlight_print(
             print(message)
 
     if lower_char and (show_logs or priority == "workspace"):
-        print("{}".format(lower_char * int(ceil(output_len / len(lower_char)))))
+        print(f"{lower_char * int(ceil(output_len / len(lower_char)))}")
 
 
 def remove_duplicates(container, keep_order, logger):
@@ -1481,7 +1461,7 @@ def dump_record_activity(profile_name, logger, logfolder):
             current_data = {}
 
             # get the existing data
-            filename = "{}recordActivity.json".format(logfolder)
+            filename = f"{logfolder}recordActivity.json"
             if os.path.isfile(filename):
                 with open(filename) as recordActFile:
                     current_data = json.load(recordActFile)
@@ -1533,7 +1513,7 @@ def ping_server(host, logger):
     Remember that a host may not respond to a ping (ICMP) request even if
     the host name is valid.
     """
-    logger.info("Pinging '{}' to check the connectivity...".format(str(host)))
+    logger.info(f"Pinging '{str(host)}' to check the connectivity...")
 
     # ping command count option as function of OS
     param = "-n" if system().lower() == "windows" else "-c"
@@ -1550,15 +1530,13 @@ def ping_server(host, logger):
 
         if connectivity is False:
             logger.warning(
-                "Pinging the server again!\t~total attempts left: {}".format(
-                    ping_attempts
-                )
+                f"Pinging the server again!\t~total attempts left: {ping_attempts}"
             )
             ping_attempts -= 1
             sleep(5)
 
     if connectivity is False:
-        logger.critical("There is no connection to the '{}' server!".format(host))
+        logger.critical(f"There is no connection to the '{host}' server!")
         return False
 
     return True
@@ -1583,7 +1561,7 @@ def emergency_exit(browser, username, logger):
 
 def load_user_id(username, person, logger, logfolder):
     """Load the user ID at request from local records"""
-    pool_name = "{0}{1}_followedPool.csv".format(logfolder, username)
+    pool_name = f"{logfolder}{username}_followedPool.csv"
     user_id = "undefined"
 
     try:
@@ -1605,9 +1583,7 @@ def load_user_id(username, person, logger, logfolder):
 
     except BaseException as exc:
         logger.exception(
-            "Failed to load the user ID of '{}'!\n\t{}".format(
-                person, str(exc).encode("utf-8")
-            )
+            f"Failed to load the user ID of '{person}'!\n\t{str(exc).encode('utf-8')}"
         )
 
     return user_id
@@ -1616,7 +1592,7 @@ def load_user_id(username, person, logger, logfolder):
 def check_authorization(browser, username, method, logger, notify=True):
     """Check if user is NOW logged in"""
     if notify is True:
-        logger.info("Checking if '{}' is logged in...".format(username))
+        logger.info(f"Checking if '{username}' is logged in...")
 
     # different methods can be added in future
     if method == "activity counts":
@@ -1628,7 +1604,7 @@ def check_authorization(browser, username, method, logger, notify=True):
             or "https://www.instagram.com" not in current_url
             or "https://www.instagram.com/graphql/" in current_url
         ):
-            profile_link = "https://www.instagram.com/{}/".format(username)
+            profile_link = f"https://www.instagram.com/{username}/"
             web_address_navigator(browser, profile_link)
 
         # if user is not logged in, `activity_counts` will be `None`- JS `null`
@@ -1668,7 +1644,7 @@ def check_authorization(browser, username, method, logger, notify=True):
 
         if activity_counts is None and activity_counts_new is None:
             if notify is True:
-                logger.critical("--> '{}' is not logged in!\n".format(username))
+                logger.critical(f"--> '{username}' is not logged in!\n")
             return False
 
     return True
@@ -1717,9 +1693,7 @@ def find_user_id(browser, track, username, logger):
     query = None
     meta_XP = None
 
-    logger.info(
-        "Attempting to find user ID: Track: {}, Username {}".format(track, username)
-    )
+    logger.info(f"Attempting to find user ID: Track: {track}, Username {username}")
     if track in ["dialog", "profile"]:
         query = "return window.__additionalData[Object.keys(window.__additionalData)[0]].data.graphql.user.id"
 
@@ -1727,9 +1701,7 @@ def find_user_id(browser, track, username, logger):
         query = "return window._sharedData.entry_data.ProfilePage[0].graphql.user.id"
         meta_XP = read_xpath(find_user_id.__name__, "meta_XP")
 
-    failure_message = "Failed to get the user ID of '{}' from {} page!".format(
-        username, track
-    )
+    failure_message = f"Failed to get the user ID of '{username}' from {track} page!"
 
     try:
         user_id = browser.execute_script(query)
@@ -1753,7 +1725,7 @@ def find_user_id(browser, track, username, logger):
                         user_id = format_number(user_id)
 
                     else:
-                        logger.error("{}\t~empty string".format(failure_message))
+                        logger.error(f"{failure_message}\t~empty string")
                         user_id = None
 
                 except NoSuchElementException:
@@ -1825,7 +1797,7 @@ def explicit_wait(browser, track, ec_params, logger, timeout=35, notify=True):
 
     elif track == "TC":
         expect_in_title = ec_params[0]
-        ec_name = "title contains '{}' string".format(expect_in_title)
+        ec_name = f"title contains '{expect_in_title}' string"
 
         condition = ec.title_contains(expect_in_title)
 
@@ -1849,9 +1821,7 @@ def explicit_wait(browser, track, ec_params, logger, timeout=35, notify=True):
     except TimeoutException:
         if notify is True:
             logger.info(
-                "Timed out with failure while explicitly waiting until {}!\n".format(
-                    ec_name
-                )
+                f"Timed out with failure while explicitly waiting until {ec_name}!\n"
             )
         return False
 
@@ -1884,7 +1854,7 @@ def get_username_from_id(browser, user_id, logger):
         query_hash
     )
     variables = {"id": str(user_id), "first": 1}
-    post_url = "{}&variables={}".format(graphql_query_URL, str(json.dumps(variables)))
+    post_url = f"{graphql_query_URL}&variables={str(json.dumps(variables))}"
 
     web_address_navigator(browser, post_url)
     try:
@@ -1899,7 +1869,7 @@ def get_username_from_id(browser, user_id, logger):
 
         if user_data["edges"]:
             post_code = user_data["edges"][0]["node"]["shortcode"]
-            post_page = "https://www.instagram.com/p/{}".format(post_code)
+            post_page = f"https://www.instagram.com/p/{post_code}"
 
             web_address_navigator(browser, post_page)
             username = get_username(browser, "post", logger)
@@ -1908,7 +1878,7 @@ def get_username_from_id(browser, user_id, logger):
 
         else:
             if user_data["count"] == 0:
-                logger.info("Profile with ID {}: no pics found".format(user_id))
+                logger.info(f"Profile with ID {user_id}: no pics found")
 
             else:
                 logger.info(
@@ -1917,9 +1887,7 @@ def get_username_from_id(browser, user_id, logger):
                 )
 
     else:
-        logger.info(
-            "No profile found, the user may have blocked you (ID: {})".format(user_id)
-        )
+        logger.info(f"No profile found, the user may have blocked you (ID: {user_id})")
         return None
 
     """  method using private API
@@ -1984,7 +1952,7 @@ def smart_run(session, threaded=False):
         yield
     except NoSuchElementException:
         # The problem is with a change in IG page layout
-        log_file = "{}.html".format(time.strftime("%Y%m%d-%H%M%S"))
+        log_file = f"{time.strftime('%Y%m%d-%H%M%S')}.html"
         file_path = os.path.join(gettempdir(), log_file)
 
         with open(file_path, "wb") as fp:
@@ -2122,7 +2090,7 @@ def deform_emojis(text):
             if word_emoji not in emojis_in_text:  # do not add an emoji if
                 # already exists in text
                 emojiless_text += " "
-                new_text += " ({}) ".format(word_emoji)
+                new_text += f" ({word_emoji}) "
                 emojis_in_text.append(word_emoji)
             else:
                 emojiless_text += " "
@@ -2262,7 +2230,7 @@ def get_epoch_time_diff(time_stamp, logger):
 def is_follow_me(browser, person=None):
     # navigate to profile page if not already in it
     if person:
-        user_link = "https://www.instagram.com/{}/".format(person)
+        user_link = f"https://www.instagram.com/{person}/"
         web_address_navigator(browser, user_link)
 
     return getUserData("graphql.user.follows_viewer", browser)
@@ -2289,9 +2257,7 @@ def get_users_from_dialog(old_data, dialog, logger):
     except (NoSuchElementException, StaleElementReferenceException) as exc:
         # Catch stale elements if any
         logger.error(
-            "Error occurred while retrieving data.\n\t{}".format(
-                str(exc).encode("utf-8")
-            )
+            f"Error occurred while retrieving data.\n\t{str(exc).encode('utf-8')}"
         )
 
         return old_data
@@ -2310,9 +2276,9 @@ def progress_tracker(current_value, highest_value, initial_time, logger):
         elapsed_time = real_time - initial_time
         elapsed_formatted = truncate_float(elapsed_time, 2)
         elapsed = (
-            "{} seconds".format(elapsed_formatted)
+            f"{elapsed_formatted} seconds"
             if elapsed_formatted < 60
-            else "{} minutes".format(truncate_float(elapsed_formatted / 60, 2))
+            else f"{truncate_float(elapsed_formatted / 60, 2)} minutes"
         )
 
         eta_time = abs(
@@ -2321,9 +2287,9 @@ def progress_tracker(current_value, highest_value, initial_time, logger):
         )
         eta_formatted = truncate_float(eta_time, 2)
         eta = (
-            "{} seconds".format(eta_formatted)
+            f"{eta_formatted} seconds"
             if eta_formatted < 60
-            else "{} minutes".format(truncate_float(eta_formatted / 60, 2))
+            else f"{truncate_float(eta_formatted / 60, 2)} minutes"
         )
 
         tracker_line = "-----------------------------------"
@@ -2358,9 +2324,7 @@ def progress_tracker(current_value, highest_value, initial_time, logger):
             logger = Settings.logger
 
         logger.info(
-            "Error occurred with Progress Tracker:\n\t{}".format(
-                str(exc).encode("utf-8")
-            )
+            f"Error occurred with Progress Tracker:\n\t{str(exc).encode('utf-8')}"
         )
 
 
@@ -2478,7 +2442,7 @@ def parse_cli_args():
 
 def get_cord_location(browser, location):
     base_url = "https://www.instagram.com/explore/locations/"
-    query_url = "{}{}{}".format(base_url, location, "?__a=1")
+    query_url = f"{base_url}{location}?__a=1"
     browser.get(query_url)
     json_text = browser.find_element(
         By.XPATH, read_xpath(get_cord_location.__name__, "json_text")
@@ -2538,11 +2502,11 @@ def take_rotative_screenshot(browser, logfolder):
     global next_screenshot
 
     if next_screenshot == 1:
-        browser.save_screenshot("{}screenshot_1.png".format(logfolder))
+        browser.save_screenshot(f"{logfolder}screenshot_1.png")
     elif next_screenshot == 2:
-        browser.save_screenshot("{}screenshot_2.png".format(logfolder))
+        browser.save_screenshot(f"{logfolder}screenshot_2.png")
     else:
-        browser.save_screenshot("{}screenshot_3.png".format(logfolder))
+        browser.save_screenshot(f"{logfolder}screenshot_3.png")
         next_screenshot = 0
         # sum +1 next
 
@@ -2634,7 +2598,7 @@ def get_additional_data(browser):
     #         break
     original_url = browser.current_url
     if not additional_data:
-        browser.get('view-source:'+ browser.current_url +'?__a=1&__d=dis')
+        browser.get("view-source:" + browser.current_url + "?__a=1&__d=dis")
         text = browser.find_element(By.TAG_NAME, "pre").text
         additional_data = json.loads(re.search("{.*}", text).group())
         browser.get(original_url)
@@ -2651,7 +2615,7 @@ def get_shared_data(browser):
     :return shared_data: Json data from window._sharedData extracted from page source
     """
     shared_data = None
-    browser.get('view-source:'+ browser.current_url +'?__a=1&__d=dis')
+    browser.get("view-source:" + browser.current_url + "?__a=1&__d=dis")
     text = browser.find_element(By.TAG_NAME, "pre").text
     shared_data = json.loads(re.search("{.*}", text).group())
 

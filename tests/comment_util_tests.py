@@ -1,5 +1,6 @@
-import unittest
 import logging
+import unittest
+
 from instapy.comment_util import *
 
 # Note: This file is using a different name scheme than existing tests

@@ -1,17 +1,17 @@
 """ Realtime and sophisticated quota supervising mechanisms """
-import time as epoch_time
-from datetime import time, timedelta, date, datetime
 import random
-from sys import platform
 import sqlite3
-from plyer import notification
-from pkg_resources import resource_filename as get_pkg_resource_path
+import sys
+import time as epoch_time
+from datetime import date, datetime, time, timedelta
+from sys import platform
 
-from .time_util import sleep_actual
-from .time_util import get_time
+from pkg_resources import resource_filename as get_pkg_resource_path
+from plyer import notification
+
 from .database_engine import get_database
-from .settings import Settings
-from .settings import Storage
+from .settings import Settings, Storage
+from .time_util import get_time, sleep_actual
 
 
 def quota_supervisor(job, update=False):
@@ -81,7 +81,7 @@ def controller(job):
                 logger.warning(
                     "You're about to leave the session. " "InstaPy will exit soon!"
                 )
-                exit()
+                sys.exit()
 
             else:
                 send_message(job, "jump", interval, None)
