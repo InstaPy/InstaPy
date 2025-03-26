@@ -70,7 +70,6 @@ You can put in your account details now by passing the username and password par
 InstaPy(username="abcd", 
         password="1234")
 ```
-Or you can [pass them using the Command Line Interface (CLI)](/additional-information#pass-arguments-by-cli).
 
 Once you have your **quickstart** script configured you can execute the script with the following commands.
 
