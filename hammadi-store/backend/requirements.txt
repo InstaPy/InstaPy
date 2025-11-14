@@ -1,0 +1,8 @@
+Flask==3.0.0
+Flask-SQLAlchemy==3.1.1
+Flask-JWT-Extended==4.6.0
+Flask-CORS==4.0.0
+Flask-Bcrypt==1.0.1
+requests==2.31.0
+python-dotenv==1.0.0
+APScheduler==3.10.4
