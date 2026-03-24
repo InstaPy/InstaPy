@@ -29,6 +29,51 @@ from .util import (
 from .xpath import read_xpath
 
 
+def find_element_with_fallback(browser, logger, primary_xpaths, fallback_xpaths=None):
+    """
+    Find element with fallback support for multiple XPaths (v2024 first, then legacy)
+    
+    Args:
+        browser: Selenium browser instance
+        logger: Logger instance
+        primary_xpaths: List of v2024 XPaths to try first
+        fallback_xpaths: List of legacy XPaths to try if primary fails
+        
+    Returns:
+        WebElement if found, None otherwise
+    """
+    xpaths_to_try = []
+    
+    # Add primary XPaths first (v2024)
+    if isinstance(primary_xpaths, list):
+        xpaths_to_try.extend(primary_xpaths)
+    else:
+        xpaths_to_try.append(primary_xpaths)
+    
+    # Add fallback XPaths (legacy)
+    if fallback_xpaths:
+        if isinstance(fallback_xpaths, list):
+            xpaths_to_try.extend(fallback_xpaths)
+        else:
+            xpaths_to_try.append(fallback_xpaths)
+    
+    for i, xpath in enumerate(xpaths_to_try):
+        try:
+            element = browser.find_element(By.XPATH, xpath)
+            if element:
+                if i == 0:
+                    logger.debug("- Using v2024 XPath selector")
+                elif i < len(primary_xpaths if isinstance(primary_xpaths, list) else [primary_xpaths]):
+                    logger.debug("- Using alternative v2024 XPath selector")
+                else:
+                    logger.debug("- Using legacy XPath selector (fallback)")
+                return element
+        except NoSuchElementException:
+            continue
+    
+    return None
+
+
 def bypass_suspicious_login(
     browser, logger, logfolder, bypass_security_challenge_using
 ):
@@ -333,31 +378,24 @@ def login_user(
     web_address_navigator(browser, ig_homepage)
 
     # Check if the first div is 'Create an Account' or 'Log In'
-    try:
-        login_elem = browser.find_element(
-            By.XPATH, read_xpath(login_user.__name__, "login_elem")
-        )
-    except NoSuchElementException:
-        logger.warning("Login A/B test detected! Trying another string...")
-        try:
-            login_elem = browser.find_element(
-                By.XPATH,
-                read_xpath(login_user.__name__, "login_elem_no_such_exception"),
-            )
-        except NoSuchElementException:
-            logger.warning("Could not pass the login A/B test. Trying last string...")
-            try:
-                login_elem = browser.find_element(
-                    By.XPATH,
-                    read_xpath(login_user.__name__, "login_elem_no_such_exception_2"),
-                )
-            except NoSuchElementException as e:
-                # NF: start
-                logger.exception(
-                    "Login A/B test failed!\n\t{}".format(str(e).encode("utf-8"))
-                )
-                return False
-                # NF: end
+    # v2024 first, then legacy fallbacks
+    login_elem_xpaths_v2024 = [
+        read_xpath(login_user.__name__, "login_elem_v2024"),
+        read_xpath(login_user.__name__, "login_elem_v2024_2"),
+    ]
+    login_elem_xpaths_legacy = [
+        read_xpath(login_user.__name__, "login_elem"),
+        read_xpath(login_user.__name__, "login_elem_no_such_exception"),
+        read_xpath(login_user.__name__, "login_elem_no_such_exception_2"),
+    ]
+    
+    login_elem = find_element_with_fallback(
+        browser, logger, login_elem_xpaths_v2024, login_elem_xpaths_legacy
+    )
+    
+    if login_elem is None:
+        logger.exception("Login button not found with any selector!")
+        return False
 
     if login_elem is not None:
         try:
@@ -377,12 +415,21 @@ def login_user(
     login_page_title = "Instagram"
     explicit_wait(browser, "TC", login_page_title, logger)
 
-    # wait until the 'username' input element is located and visible
-    input_username_XP = read_xpath(login_user.__name__, "input_username_XP")
-    explicit_wait(browser, "VOEL", [input_username_XP, "XPath"], logger)
-
-    # user
-    input_username = browser.find_element(By.XPATH, input_username_XP)
+    # Find username input with v2024 first priority
+    input_username_xpaths_v2024 = [
+        read_xpath(login_user.__name__, "input_username_v2024"),
+    ]
+    input_username_xpaths_legacy = [
+        read_xpath(login_user.__name__, "input_username_XP"),
+    ]
+    
+    input_username = find_element_with_fallback(
+        browser, logger, input_username_xpaths_v2024, input_username_xpaths_legacy
+    )
+    
+    if input_username is None:
+        logger.exception("Username input field not found!")
+        return False
 
     (
         ActionChains(browser)
@@ -398,10 +445,21 @@ def login_user(
 
     sleep(1)
 
-    # password
-    input_password = browser.find_element(
-        By.XPATH, read_xpath(login_user.__name__, "input_password")
+    # Find password input with v2024 first priority
+    input_password_xpaths_v2024 = [
+        read_xpath(login_user.__name__, "input_password_v2024"),
+    ]
+    input_password_xpaths_legacy = [
+        read_xpath(login_user.__name__, "input_password"),
+    ]
+    
+    input_password = find_element_with_fallback(
+        browser, logger, input_password_xpaths_v2024, input_password_xpaths_legacy
     )
+    
+    if input_password is None:
+        logger.exception("Password input field not found!")
+        return False
 
     if not isinstance(password, str):
         password = str(password)
@@ -431,6 +489,25 @@ def login_user(
     # Check if account is protected with Two Factor Authentication
     two_factor_authentication(browser, logger, security_codes)
 
+    # After login attempt, press ENTER again if needed (v2024 fallback)
+    # This handles cases where the first ENTER didn't trigger submission
+    try:
+        # Check if we're still on the login form (password field still exists)
+        still_on_login = browser.find_element(By.XPATH, read_xpath(login_user.__name__, "input_password_v2024"))
+        if still_on_login:
+            logger.info("- Retrying login submission (v2024 compatibility)...")
+            sleep(1)
+            (
+                ActionChains(browser)
+                .send_keys(Keys.ENTER)
+                .perform()
+            )
+            # update server calls
+            update_activity(browser, state=None)
+    except NoSuchElementException:
+        # Login form submitted successfully, moving on
+        pass
+
     # Dismiss following features if availables
     dismiss_get_app_offer(browser, logger)
     dismiss_notification_offer(browser, logger)
@@ -442,13 +519,14 @@ def login_user(
     accept_igcookie_dialogue(browser, logger)
 
     # check for login error messages and display it in the logs
-    if "instagram.com/challenge" in browser.current_url:
-        # check if account is disabled by Instagram,
-        # or there is an active challenge to solve
-        try:
-            account_disabled = browser.find_element(
-                By.XPATH, read_xpath(login_user.__name__, "account_disabled")
-            )
+    if "instagram.com/challenge" in browser.current_url or "instagram.com/login" in browser.current_url:
+        # check if account is disabled by Instagram (v2024 first, then legacy)
+        account_disabled = find_element_with_fallback(
+            browser, logger,
+            [read_xpath(login_user.__name__, "account_disabled_v2024")],
+            [read_xpath(login_user.__name__, "account_disabled")]
+        )
+        if account_disabled:
             logger.warning(account_disabled.text)
             update_activity(
                 browser,
@@ -458,14 +536,14 @@ def login_user(
                 logger=logger,
             )
             return False
-        except NoSuchElementException:
-            pass
 
-        # in case the user doesnt have a phone number linked to the Instagram account
-        try:
-            browser.find_element(
-                By.XPATH, read_xpath(login_user.__name__, "add_phone_number")
-            )
+        # in case the user doesnt have a phone number linked (v2024 first, then legacy)
+        add_phone_number = find_element_with_fallback(
+            browser, logger,
+            [read_xpath(login_user.__name__, "add_phone_number_v2024")],
+            [read_xpath(login_user.__name__, "add_phone_number")]
+        )
+        if add_phone_number:
             challenge_warn_msg = (
                 "Instagram initiated a challenge before allow your account to login. "
                 "At the moment there isn't a phone number linked to your Instagram "
@@ -480,14 +558,14 @@ def login_user(
                 logger=logger,
             )
             return False
-        except NoSuchElementException:
-            pass
 
-        # try to initiate security code challenge
-        try:
-            browser.find_element(
-                By.XPATH, read_xpath(login_user.__name__, "suspicious_login_attempt")
-            )
+        # try to initiate security code challenge (v2024 first, then legacy)
+        suspicious_login = find_element_with_fallback(
+            browser, logger,
+            [read_xpath(login_user.__name__, "suspicious_login_attempt_v2024")],
+            [read_xpath(login_user.__name__, "suspicious_login_attempt")]
+        )
+        if suspicious_login:
             update_activity(
                 browser,
                 action=None,
@@ -496,14 +574,14 @@ def login_user(
                 logger=logger,
             )
             bypass_suspicious_login(browser, logger, logfolder, security_code_to_phone)
-        except NoSuchElementException:
-            pass
 
-    # check for wrong username or password message, and show it to the user
-    try:
-        error_alert = browser.find_element(
-            By.XPATH, read_xpath(login_user.__name__, "error_alert")
-        )
+    # check for wrong username or password message (v2024 first, then legacy)
+    error_alert = find_element_with_fallback(
+        browser, logger,
+        [read_xpath(login_user.__name__, "error_alert_v2024")],
+        [read_xpath(login_user.__name__, "error_alert")]
+    )
+    if error_alert:
         logger.warning(error_alert.text)
         update_activity(
             browser,
@@ -513,8 +591,6 @@ def login_user(
             logger=logger,
         )
         return False
-    except NoSuchElementException:
-        pass
 
     if "instagram.com/accounts/onetap" in browser.current_url:
         browser.get(ig_homepage)
@@ -522,8 +598,13 @@ def login_user(
     # wait until page fully load
     explicit_wait(browser, "PFL", [], logger, 5)
 
-    # Check if user is logged-in (If there's two 'nav' elements)
-    nav = browser.find_element(By.XPATH, read_xpath(login_user.__name__, "nav"))
+    # Check if user is logged-in (If there's nav elements, v2024 first, then legacy)
+    nav = find_element_with_fallback(
+        browser, logger,
+        [read_xpath(login_user.__name__, "nav_v2024")],
+        [read_xpath(login_user.__name__, "nav")]
+    )
+    
     if nav is not None:
         # create cookie for username and save it
         cookies_list = browser.get_cookies()
@@ -545,6 +626,7 @@ def login_user(
             return True
 
     else:
+        logger.warning("- Navigation element not found, login may have failed")
         return False
 
 
@@ -628,7 +710,7 @@ def two_factor_authentication(browser, logger, security_codes):
     # Wait until page is loaded after user and password were introduced
     sleep(random.randint(3, 5))
 
-    if "two_factor" in browser.current_url:
+    if "two_factor" in browser.current_url or "challenge" in browser.current_url:
 
         logger.info("- Two Factor Authentication is enabled...")
 
@@ -640,15 +722,27 @@ def two_factor_authentication(browser, logger, security_codes):
             # Check Security code is numeric
             int(code)
 
-            verification_code = read_xpath(login_user.__name__, "verification_code")
-            explicit_wait(browser, "VOEL", [verification_code, "XPath"], logger)
-
-            security_code = browser.find_element(By.XPATH, verification_code)
-
-            #  Confirm blue button
-            confirm = browser.find_element(
-                By.XPATH, read_xpath(login_user.__name__, "confirm")
+            # Find verification code input with v2024 first priority
+            security_code = find_element_with_fallback(
+                browser, logger,
+                [read_xpath(login_user.__name__, "verification_code_v2024")],
+                [read_xpath(login_user.__name__, "verification_code")]
             )
+            
+            if security_code is None:
+                logger.warning("- Could not find verification code input field")
+                return
+                
+            # Find confirm button with v2024 first priority
+            confirm = find_element_with_fallback(
+                browser, logger,
+                [read_xpath(login_user.__name__, "confirm_v2024")],
+                [read_xpath(login_user.__name__, "confirm")]
+            )
+            
+            if confirm is None:
+                logger.warning("- Could not find confirm button")
+                return
 
             (
                 ActionChains(browser)
@@ -677,13 +771,13 @@ def two_factor_authentication(browser, logger, security_codes):
         except NoSuchElementException as e:
             # Unable to login to Instagram!
             logger.warning(
-                "- Secuirty code could not be written!\n\t{}".format(
+                "- Security code could not be written!\n\t{}".format(
                     str(e).encode("utf-8")
                 )
             )
         except ValueError:
             # Unable to login to Instagram!
-            logger.warning("- Secuirty code provided is not a number")
+            logger.warning("- Security code provided is not a number")
     else:
         # Two Factor Authentication is not enabled or the security code has
         # already been entered in previous session.
@@ -694,13 +788,17 @@ def two_factor_authentication(browser, logger, security_codes):
 def accept_igcookie_dialogue(browser, logger):
     """Presses 'Accept' button on IG cookie dialogue"""
 
-    offer_elem_loc = read_xpath(accept_igcookie_dialogue.__name__, "accept_button")
-
-    offer_loaded = explicit_wait(
-        browser, "VOEL", [offer_elem_loc, "XPath"], logger, 4, False
+    # Try with multiple selectors, v2024 first
+    accept_button_selectors = [
+        read_xpath(accept_igcookie_dialogue.__name__, "accept_button_v2024"),
+        read_xpath(accept_igcookie_dialogue.__name__, "accept_button_v2024_2"),
+        read_xpath(accept_igcookie_dialogue.__name__, "accept_button"),
+    ]
+    
+    accept_elem = find_element_with_fallback(
+        browser, logger, accept_button_selectors[:2], accept_button_selectors[2]
     )
 
-    if offer_loaded:
+    if accept_elem:
         logger.info("- Accepted IG cookies by default...")
-        accept_elem = browser.find_element(By.XPATH, offer_elem_loc)
         click_element(browser, accept_elem)
