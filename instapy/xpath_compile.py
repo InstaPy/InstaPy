@@ -171,10 +171,16 @@ xpath["like_from_image"] = {
 
 xpath["login_user"] = {
     "input_password": "//input[@name='password']",
+    "input_password_alt": "//input[@type='password']",
+    "input_password_aria": "//input[@aria-label='Password']",
     "input_username_XP": "//input[@name='username']",
+    "input_username_alt": "//input[@type='text']",
+    "input_username_aria": "//input[@aria-label='Phone number, username, or email']",
     "login_elem": "//button[text()='Log In']",
     "login_elem_no_such_exception": "//a[text()='Log in']",
     "login_elem_no_such_exception_2": "//div[text()='Log In']",
+    "login_elem_alt": "//button[@type='submit']",
+    "login_elem_aria": "//button[contains(text(),'Log')]",
     "nav": "//nav",
     "website_status": "//span[@id='status']",
     "response_time": "//span[@id='response']",
@@ -183,6 +189,7 @@ xpath["login_user"] = {
     "add_phone_number": "//h2[text()='Add Your Phone Number']",
     "suspicious_login_attempt": "//p[text()='Suspicious Login Attempt']",
     "error_alert": "//p[@id='slfErrorAlert']",
+    "error_alert_alt": "//div[@role='alert']//p",
     "verification_code": "//input[@name='verificationCode']",
     "confirm": "//button[text()='Confirm']",
 }
