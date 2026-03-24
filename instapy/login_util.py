@@ -351,13 +351,27 @@ def login_user(
                     By.XPATH,
                     read_xpath(login_user.__name__, "login_elem_no_such_exception_2"),
                 )
-            except NoSuchElementException as e:
-                # NF: start
-                logger.exception(
-                    "Login A/B test failed!\n\t{}".format(str(e).encode("utf-8"))
-                )
-                return False
-                # NF: end
+            except NoSuchElementException:
+                logger.warning("Trying alternative login button selectors for 2024 layout...")
+                try:
+                    # Try alternative selectors for Instagram 2024 layout
+                    login_elem = browser.find_element(
+                        By.XPATH,
+                        read_xpath(login_user.__name__, "login_elem_alt"),
+                    )
+                except NoSuchElementException:
+                    try:
+                        login_elem = browser.find_element(
+                            By.XPATH,
+                            read_xpath(login_user.__name__, "login_elem_aria"),
+                        )
+                    except NoSuchElementException as e:
+                        # NF: start
+                        logger.exception(
+                            "Login A/B test failed!\n\t{}".format(str(e).encode("utf-8"))
+                        )
+                        return False
+                        # NF: end
 
     if login_elem is not None:
         try:
@@ -381,8 +395,19 @@ def login_user(
     input_username_XP = read_xpath(login_user.__name__, "input_username_XP")
     explicit_wait(browser, "VOEL", [input_username_XP, "XPath"], logger)
 
-    # user
-    input_username = browser.find_element(By.XPATH, input_username_XP)
+    # user - try primary selector first, then fall back to alternatives for 2024 layout
+    try:
+        input_username = browser.find_element(By.XPATH, input_username_XP)
+    except NoSuchElementException:
+        logger.debug("Primary username selector failed, trying alternative selectors...")
+        try:
+            input_username = browser.find_element(
+                By.XPATH, read_xpath(login_user.__name__, "input_username_alt")
+            )
+        except NoSuchElementException:
+            input_username = browser.find_element(
+                By.XPATH, read_xpath(login_user.__name__, "input_username_aria")
+            )
 
     (
         ActionChains(browser)
@@ -398,10 +423,21 @@ def login_user(
 
     sleep(1)
 
-    # password
-    input_password = browser.find_element(
-        By.XPATH, read_xpath(login_user.__name__, "input_password")
-    )
+    # password - try primary selector first, then fall back to alternatives for 2024 layout
+    try:
+        input_password = browser.find_element(
+            By.XPATH, read_xpath(login_user.__name__, "input_password")
+        )
+    except NoSuchElementException:
+        logger.debug("Primary password selector failed, trying alternative selectors...")
+        try:
+            input_password = browser.find_element(
+                By.XPATH, read_xpath(login_user.__name__, "input_password_alt")
+            )
+        except NoSuchElementException:
+            input_password = browser.find_element(
+                By.XPATH, read_xpath(login_user.__name__, "input_password_aria")
+            )
 
     if not isinstance(password, str):
         password = str(password)
@@ -514,7 +550,22 @@ def login_user(
         )
         return False
     except NoSuchElementException:
-        pass
+        # Try alternative error alert selector for 2024 layout
+        try:
+            error_alert = browser.find_element(
+                By.XPATH, read_xpath(login_user.__name__, "error_alert_alt")
+            )
+            logger.warning(error_alert.text)
+            update_activity(
+                browser,
+                action=None,
+                state=error_alert.text,
+                logfolder=logfolder,
+                logger=logger,
+            )
+            return False
+        except NoSuchElementException:
+            pass
 
     if "instagram.com/accounts/onetap" in browser.current_url:
         browser.get(ig_homepage)
