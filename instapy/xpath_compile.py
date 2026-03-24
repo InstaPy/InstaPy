@@ -171,20 +171,31 @@ xpath["like_from_image"] = {
 
 xpath["login_user"] = {
     "input_password": "//input[@name='password']",
+    "input_password_v2024": "//input[@type='password']",
     "input_username_XP": "//input[@name='username']",
+    "input_username_v2024": "//input[@type='text']",
     "login_elem": "//button[text()='Log In']",
+    "login_elem_v2024": "//button[@type='submit']",
     "login_elem_no_such_exception": "//a[text()='Log in']",
     "login_elem_no_such_exception_2": "//div[text()='Log In']",
+    "login_elem_v2024_2": "//div[@role='button' and contains(text(), 'Log')]",
     "nav": "//nav",
+    "nav_v2024": "//header//nav",
     "website_status": "//span[@id='status']",
     "response_time": "//span[@id='response']",
     "response_code": "//span[@id='code']",
     "account_disabled": "//p[contains(text(),'Your account has been disabled')]",
+    "account_disabled_v2024": "//div[contains(text(), 'disabled') or contains(text(), 'suspended')]",
     "add_phone_number": "//h2[text()='Add Your Phone Number']",
+    "add_phone_number_v2024": "//div[contains(text(), 'phone') or contains(text(), 'Phone')]",
     "suspicious_login_attempt": "//p[text()='Suspicious Login Attempt']",
+    "suspicious_login_attempt_v2024": "//div[contains(text(), 'Suspicious') or contains(text(), ' unusual')]",
     "error_alert": "//p[@id='slfErrorAlert']",
+    "error_alert_v2024": "//div[@role='alert']//div[contains(text(), 'password') or contains(text(), 'username') or contains(text(), 'try again')]",
     "verification_code": "//input[@name='verificationCode']",
+    "verification_code_v2024": "//input[@inputmode='numeric']",
     "confirm": "//button[text()='Confirm']",
+    "confirm_v2024": "//button[@type='submit' and (contains(text(), 'Confirm') or contains(text(), 'Submit'))]",
 }
 
 xpath["open_comment_section"] = {
@@ -210,4 +221,8 @@ xpath["likers_from_photo"] = {
     "second_counter_button": "//a[contains(@href,'liked_by')]",
 }
 
-xpath["accept_igcookie_dialogue"] = {"accept_button": "//button[text()='Accept']"}
+xpath["accept_igcookie_dialogue"] = {
+    "accept_button": "//button[text()='Accept']",
+    "accept_button_v2024": "//button[contains(text(), 'Allow') or contains(text(), 'Accept') or contains(text(), '允许') or contains(@title, 'Accept')]",
+    "accept_button_v2024_2": "//button[@type='button' and (contains(text(), 'Allow') or contains(text(), 'cookies'))]",
+}
