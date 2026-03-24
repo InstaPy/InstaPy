@@ -333,31 +333,29 @@ def login_user(
     web_address_navigator(browser, ig_homepage)
 
     # Check if the first div is 'Create an Account' or 'Log In'
-    try:
-        login_elem = browser.find_element(
-            By.XPATH, read_xpath(login_user.__name__, "login_elem")
-        )
-    except NoSuchElementException:
-        logger.warning("Login A/B test detected! Trying another string...")
+    login_elem = None
+    login_xpaths = [
+        ("login_elem", "standard login button"),
+        ("login_elem_2024", "2024 login button with div"),
+        ("login_elem_2024_span", "2024 login button with span"),
+        ("login_elem_2024_alt", "2024 submit button"),
+        ("login_elem_no_such_exception", "alternative login link"),
+        ("login_elem_no_such_exception_2", "alternative login div"),
+    ]
+    
+    for xpath_key, description in login_xpaths:
         try:
             login_elem = browser.find_element(
-                By.XPATH,
-                read_xpath(login_user.__name__, "login_elem_no_such_exception"),
+                By.XPATH, read_xpath(login_user.__name__, xpath_key)
             )
+            logger.info("Found login element using: {}".format(description))
+            break
         except NoSuchElementException:
-            logger.warning("Could not pass the login A/B test. Trying last string...")
-            try:
-                login_elem = browser.find_element(
-                    By.XPATH,
-                    read_xpath(login_user.__name__, "login_elem_no_such_exception_2"),
-                )
-            except NoSuchElementException as e:
-                # NF: start
-                logger.exception(
-                    "Login A/B test failed!\n\t{}".format(str(e).encode("utf-8"))
-                )
-                return False
-                # NF: end
+            continue
+    
+    if login_elem is None:
+        logger.exception("Login A/B test failed! Could not find any login element.")
+        return False
 
     if login_elem is not None:
         try:
@@ -378,11 +376,27 @@ def login_user(
     explicit_wait(browser, "TC", login_page_title, logger)
 
     # wait until the 'username' input element is located and visible
-    input_username_XP = read_xpath(login_user.__name__, "input_username_XP")
-    explicit_wait(browser, "VOEL", [input_username_XP, "XPath"], logger)
-
-    # user
-    input_username = browser.find_element(By.XPATH, input_username_XP)
+    # Try multiple xpaths for 2024 compatibility
+    username_xpaths = [
+        read_xpath(login_user.__name__, "input_username_XP"),
+        read_xpath(login_user.__name__, "input_username_XP_2024"),
+        read_xpath(login_user.__name__, "input_username_XP_2024_alt"),
+    ]
+    
+    input_username = None
+    for xpath in username_xpaths:
+        try:
+            explicit_wait(browser, "VOEL", [xpath, "XPath"], logger, timeout=5)
+            input_username = browser.find_element(By.XPATH, xpath)
+            if input_username is not None:
+                logger.info("Found username input element")
+                break
+        except Exception:
+            continue
+    
+    if input_username is None:
+        logger.exception("Could not find username input field after trying all selectors")
+        return False
 
     (
         ActionChains(browser)
@@ -398,10 +412,26 @@ def login_user(
 
     sleep(1)
 
-    # password
-    input_password = browser.find_element(
-        By.XPATH, read_xpath(login_user.__name__, "input_password")
-    )
+    # password - try multiple xpaths for 2024 compatibility
+    password_xpaths = [
+        read_xpath(login_user.__name__, "input_password"),
+        read_xpath(login_user.__name__, "input_password_2024"),
+        read_xpath(login_user.__name__, "input_password_2024_alt"),
+    ]
+    
+    input_password = None
+    for xpath in password_xpaths:
+        try:
+            input_password = browser.find_element(By.XPATH, xpath)
+            if input_password is not None:
+                logger.info("Found password input element")
+                break
+        except NoSuchElementException:
+            continue
+    
+    if input_password is None:
+        logger.exception("Could not find password input field after trying all selectors")
+        return False
 
     if not isinstance(password, str):
         password = str(password)
@@ -500,21 +530,28 @@ def login_user(
             pass
 
     # check for wrong username or password message, and show it to the user
-    try:
-        error_alert = browser.find_element(
-            By.XPATH, read_xpath(login_user.__name__, "error_alert")
-        )
-        logger.warning(error_alert.text)
-        update_activity(
-            browser,
-            action=None,
-            state=error_alert.text,
-            logfolder=logfolder,
-            logger=logger,
-        )
-        return False
-    except NoSuchElementException:
-        pass
+    # Try multiple error selectors for 2024 compatibility
+    error_xpaths = [
+        read_xpath(login_user.__name__, "error_alert"),
+        read_xpath(login_user.__name__, "error_alert_2024"),
+        read_xpath(login_user.__name__, "error_alert_2024_alt"),
+    ]
+    
+    for error_xpath in error_xpaths:
+        try:
+            error_alert = browser.find_element(By.XPATH, error_xpath)
+            if error_alert and error_alert.text:
+                logger.warning(error_alert.text)
+                update_activity(
+                    browser,
+                    action=None,
+                    state=error_alert.text,
+                    logfolder=logfolder,
+                    logger=logger,
+                )
+                return False
+        except NoSuchElementException:
+            continue
 
     if "instagram.com/accounts/onetap" in browser.current_url:
         browser.get(ig_homepage)

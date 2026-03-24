@@ -171,10 +171,17 @@ xpath["like_from_image"] = {
 
 xpath["login_user"] = {
     "input_password": "//input[@name='password']",
+    "input_password_2024": "//input[@aria-label='Password']",
+    "input_password_2024_alt": "//input[@type='password']",
     "input_username_XP": "//input[@name='username']",
+    "input_username_XP_2024": "//input[@aria-label='Phone number, username, or email']",
+    "input_username_XP_2024_alt": "//input[contains(@aria-label, 'username') or contains(@aria-label, 'Phone') or contains(@aria-label, 'email')]",
     "login_elem": "//button[text()='Log In']",
     "login_elem_no_such_exception": "//a[text()='Log in']",
     "login_elem_no_such_exception_2": "//div[text()='Log In']",
+    "login_elem_2024": "//button//div[text()='Log In']/..",
+    "login_elem_2024_alt": "//button[@type='submit']",
+    "login_elem_2024_span": "//button//span[text()='Log In']/..",
     "nav": "//nav",
     "website_status": "//span[@id='status']",
     "response_time": "//span[@id='response']",
@@ -183,6 +190,8 @@ xpath["login_user"] = {
     "add_phone_number": "//h2[text()='Add Your Phone Number']",
     "suspicious_login_attempt": "//p[text()='Suspicious Login Attempt']",
     "error_alert": "//p[@id='slfErrorAlert']",
+    "error_alert_2024": "//p[contains(@class, 'error')]",
+    "error_alert_2024_alt": "//div[contains(@class, 'error')]//p",
     "verification_code": "//input[@name='verificationCode']",
     "confirm": "//button[text()='Confirm']",
 }
