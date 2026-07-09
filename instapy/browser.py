@@ -6,9 +6,10 @@ import shutil
 from os.path import sep
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.common.by import By
 from selenium.webdriver.firefox.options import Options as Firefox_Options
+from selenium.webdriver.firefox.service import Service as Firefox_Service
 from selenium.webdriver import Remote
-from webdriverdownloader import GeckoDriverDownloader
 
 # import InstaPy modules
 from .util import interruption_handler
@@ -27,16 +28,15 @@ from selenium.common.exceptions import UnexpectedAlertPresentException
 
 
 def get_geckodriver():
-    # prefer using geckodriver from path
+    # prefer using geckodriver from PATH
     gecko_path = shutil.which("geckodriver") or shutil.which("geckodriver.exe")
     if gecko_path:
         return gecko_path
 
-    asset_path = use_assets()
-    gdd = GeckoDriverDownloader(asset_path, asset_path)
-    # skips download if already downloaded
-    sym_path = gdd.download_and_install()[1]
-    return sym_path
+    # Fall back to Selenium Manager (built into Selenium >= 4.6), which
+    # downloads and caches a matching geckodriver automatically. Returning
+    # None lets Selenium resolve the driver itself.
+    return None
 
 
 def create_firefox_extension():
@@ -78,52 +78,54 @@ def set_selenium_local_session(
     if headless_browser:
         firefox_options.add_argument("-headless")
 
+    # Selenium 4 unified the standalone FirefoxProfile into Options: profile
+    # preferences are now set directly on the options object.
     if browser_profile_path is not None:
-        firefox_profile = webdriver.FirefoxProfile(browser_profile_path)
-    else:
-        firefox_profile = webdriver.FirefoxProfile()
+        firefox_options.profile = browser_profile_path
 
     if browser_executable_path is not None:
-        firefox_options.binary = browser_executable_path
+        firefox_options.binary_location = browser_executable_path
 
     # set "info" by default
-    # set "trace" for debubging, Development only
+    # set "trace" for debugging, development only
     firefox_options.log.level = geckodriver_log_level
 
     # set English language
-    firefox_profile.set_preference("intl.accept_languages", "en-US")
-    firefox_profile.set_preference("general.useragent.override", Settings.user_agent)
+    firefox_options.set_preference("intl.accept_languages", "en-US")
+    firefox_options.set_preference("general.useragent.override", Settings.user_agent)
 
     if disable_image_load:
         # permissions.default.image = 2: Disable images load,
         # this setting can improve pageload & save bandwidth
-        firefox_profile.set_preference("permissions.default.image", 2)
+        firefox_options.set_preference("permissions.default.image", 2)
 
     if proxy_address and proxy_port:
-        firefox_profile.set_preference("network.proxy.type", 1)
-        firefox_profile.set_preference("network.proxy.http", proxy_address)
-        firefox_profile.set_preference("network.proxy.http_port", int(proxy_port))
-        firefox_profile.set_preference("network.proxy.ssl", proxy_address)
-        firefox_profile.set_preference("network.proxy.ssl_port", int(proxy_port))
+        firefox_options.set_preference("network.proxy.type", 1)
+        firefox_options.set_preference("network.proxy.http", proxy_address)
+        firefox_options.set_preference("network.proxy.http_port", int(proxy_port))
+        firefox_options.set_preference("network.proxy.ssl", proxy_address)
+        firefox_options.set_preference("network.proxy.ssl_port", int(proxy_port))
 
     # mute audio while watching stories
-    firefox_profile.set_preference("media.volume_scale", "0.0")
+    firefox_options.set_preference("media.volume_scale", "0.0")
 
     # prevent Hide Selenium Extension: error
-    firefox_profile.set_preference("dom.webdriver.enabled", False)
-    firefox_profile.set_preference("useAutomationExtension", False)
-    firefox_profile.set_preference("general.platform.override", "iPhone")
-    firefox_profile.update_preferences()
+    firefox_options.set_preference("dom.webdriver.enabled", False)
+    firefox_options.set_preference("useAutomationExtension", False)
+    firefox_options.set_preference("general.platform.override", "iPhone")
 
     # geckodriver log in specific user logfolder
     geckodriver_log = "{}geckodriver.log".format(logfolder)
 
-    # prefer user path before downloaded one
+    # prefer user path before downloaded one; None lets Selenium Manager
+    # resolve and cache a matching geckodriver automatically
     driver_path = geckodriver_path or get_geckodriver()
+    if driver_path:
+        service = Firefox_Service(executable_path=driver_path, log_output=geckodriver_log)
+    else:
+        service = Firefox_Service(log_output=geckodriver_log)
     browser = webdriver.Firefox(
-        firefox_profile=firefox_profile,
-        executable_path=driver_path,
-        log_path=geckodriver_log,
+        service=service,
         options=firefox_options,
     )
 
@@ -171,7 +173,7 @@ def proxy_authentication(browser, logger, proxy_username, proxy_password):
         # sleep(1) is enough, sleep(2) is to make sure we
         # give time to the popup windows
         sleep(2)
-        alert_popup = browser.switch_to_alert()
+        alert_popup = browser.switch_to.alert
         alert_popup.send_keys(
             "{username}{tab}{password}{tab}".format(
                 username=proxy_username, tab=Keys.TAB, password=proxy_password
@@ -275,9 +277,9 @@ def retry(max_retry_count=3, start_page=None):
 class custom_browser(Remote):
     """Custom browser instance for manipulation later on"""
 
-    def find_element_by_xpath(self, *args, **kwargs):
+    def find_element_by_xpath(self, xpath, *args, **kwargs):
         """example usage of hooking into built in functions"""
-        rv = super(custom_browser, self).find_element_by_xpath(*args, **kwargs)
+        rv = super(custom_browser, self).find_element(By.XPATH, xpath, *args, **kwargs)
         return rv
 
     def wait_for_valid_connection(self, username, logger):
