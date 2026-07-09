@@ -18,7 +18,7 @@ from sys import platform
 
 import requests
 from selenium import webdriver
-from selenium.webdriver import DesiredCapabilities
+from selenium.webdriver.firefox.options import Options as Firefox_Options
 from selenium.webdriver.common.by import By
 
 try:
@@ -410,7 +410,7 @@ class InstaPy:
         else:
             self.browser = webdriver.Remote(
                 command_executor=selenium_url,
-                desired_capabilities=DesiredCapabilities.FIREFOX,
+                options=Firefox_Options(),
             )
 
         # convert_selenium_browser(selenium_driver)

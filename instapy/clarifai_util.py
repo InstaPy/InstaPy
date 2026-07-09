@@ -1,10 +1,15 @@
 """Module which handles the clarifai api and checks
 the image for invalid content"""
-from clarifai.rest import ClarifaiApp, Workflow
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.by import By
 
 from .xpath import read_xpath
+
+# The clarifai image-recognition integration is optional. Its legacy
+# `clarifai.rest` client is not importable on modern clarifai releases, so
+# the import is deferred into check_image(): the rest of InstaPy loads and
+# runs without it, and only the (opt-in) image-check feature needs the
+# dependency installed.
 
 
 def check_image(
@@ -28,6 +33,8 @@ def check_image(
         by checking link against models included in the workflow. If a workflow
         hasn't been provided, InstaPy will check images against given model(
         s)"""
+        from clarifai.rest import ClarifaiApp, Workflow
+
         clarifai_api = ClarifaiApp(api_key=clarifai_api_key)
         clarifai_tags = []
 

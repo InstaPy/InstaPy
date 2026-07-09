@@ -42,6 +42,18 @@ Implemented in Python using the Selenium module.<p>
 <br />
 
 # Find the full documentation in [Docs](/docs)
+
+> **Maintenance note (updated 2026):** this fork was updated to install and
+> import on current Python (3.10+) and Selenium 4. The browser launch code
+> was migrated from removed Selenium 3 APIs (`FirefoxProfile`/`executable_path`
+> kwargs, `DesiredCapabilities`, `switch_to_alert`) to the Selenium 4
+> `Options`/`Service` model, the abandoned `webdriverdownloader` dependency
+> was dropped in favour of the built-in Selenium Manager, and the optional
+> `clarifai` import was made lazy. Note that InstaPy drives Instagram's web UI
+> via hard-coded selectors and the upstream project is unmaintained, so the
+> action selectors may still need re-mapping against the live site. Provided
+> for educational and research use.
+
 **Table of contents**
 - [How to install and run InstaPy](/docs/home.md#installation)
   * [Installing InstaPy](/docs/home.md#installation)
