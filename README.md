@@ -1,7 +1,7 @@
-<p><b>After Tim got banned by Meta for creating InstaPy</b> and teaching 100K+ people how to automate social media he's now sharing AI automation experiments, tooling and projects along the way.</p>
-</p>If you’re into AI automation, and outsmarting systems, make sure to follow him!</p>
+<p><b>After Tim got banned by Meta for creating InstaPy and teaching 100K+ people how to automate social media, he now focuses on other areas away from Social Media.</p>
+</p>If you want real growth without risking your account:</p>
 
-<a>👉 https://automaition.beehiiv.com/</a>
+👉 <a href="https://growus.io/?agent=rec1zpV0XtFbO1Ku1">Try out growus.io</a>
 
 <br />
 <hr />
