@@ -7,6 +7,7 @@ from os.path import sep
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.firefox.options import Options as Firefox_Options
+from selenium.webdriver.firefox.service import Service
 from selenium.webdriver import Remote
 from webdriverdownloader import GeckoDriverDownloader
 
@@ -120,12 +121,9 @@ def set_selenium_local_session(
 
     # prefer user path before downloaded one
     driver_path = geckodriver_path or get_geckodriver()
-    browser = webdriver.Firefox(
-        firefox_profile=firefox_profile,
-        executable_path=driver_path,
-        log_path=geckodriver_log,
-        options=firefox_options,
-    )
+    service = Service(driver_path, log_file=geckodriver_log)
+
+    browser = webdriver.Firefox(options=firefox_options, service=service)
 
     # add extension to hide selenium
     browser.install_addon(create_firefox_extension(), temporary=True)
