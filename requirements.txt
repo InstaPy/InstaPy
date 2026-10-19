@@ -1,5 +1,5 @@
 api-display-purposes>=0.0.3; python_version > '3.5'
-certifi>=2018.10.15
+certifi>=2022.12.07
 chardet>=3.0.4,<4
 clarifai>=2.4.1
 configparser>=3.5.0,<4
