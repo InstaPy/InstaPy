@@ -20,5 +20,5 @@ requests>=2.20.1
 selenium>=3.141.0
 setuptools_rust>=0.11.6
 six>=1.11.0
-urllib3>=1.24.1
+urllib3>=1.26.5
 webdriverdownloader>=1.1.0.3
