@@ -6,11 +6,11 @@ from os.path import exists as path_exists
 from os.path import sep as native_slash
 from platform import python_version
 
-from .util import highlight_print
-from .settings import Settings
-from .settings import localize_path
-from .settings import WORKSPACE
-from .exceptions import InstaPyError
+from instapy.util import highlight_print
+from instapy.settings import Settings
+from instapy.settings import localize_path
+from instapy.settings import WORKSPACE
+from instapy.exceptions import InstaPyError
 
 
 def use_workspace():
@@ -46,7 +46,7 @@ def get_workspace():
     return WORKSPACE
 
 
-def set_workspace(path=None):
+def set_workspace(path: object = None) -> object:
     """Set a custom workspace for use"""
 
     if not Settings.InstaPy_is_running:
