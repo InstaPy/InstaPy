@@ -55,7 +55,6 @@ def text_analysis(text, text_type, logger):
             and (not MEANINGCLOUD_CONFIG or MEANINGCLOUD_CONFIG["enabled"] is not True)
         )
     ):
-
         # No analysis will be held
         print("")
         logger.info('{} text: "{}"'.format(text_type_c, text.encode("utf-8")))
@@ -531,7 +530,6 @@ def lift_meaningcloud_request(request):
         "214",
         "215",
     ]:
-
         if status_code == "103":
             error_msg = (
                 "request too large: exceeded the limit on the number of words"

@@ -250,7 +250,10 @@ def get_comments_on_post(
         amount = amount * 3
 
     # check if commenting on the post is enabled
-    (commenting_approved, disapproval_reason,) = verify_commenting(
+    (
+        commenting_approved,
+        disapproval_reason,
+    ) = verify_commenting(
         browser,
         None,
         None,
@@ -406,10 +409,12 @@ def process_comments(
     logfolder,
     publish=True,
 ):
-
     # comments
     if delimit_commenting:
-        (commenting_approved, disapproval_reason,) = verify_commenting(
+        (
+            commenting_approved,
+            disapproval_reason,
+        ) = verify_commenting(
             browser,
             max_comments,
             min_comments,
